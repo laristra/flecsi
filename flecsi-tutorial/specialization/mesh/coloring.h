@@ -14,11 +14,12 @@
 
 #pragma once
 
+#include <stddef.h>
+
 namespace flecsi {
 namespace tutorial {
 
-struct coloring_map_t
-{
+struct coloring_map_t {
   size_t vertices;
   size_t cells;
 }; // struct coloring_map_t

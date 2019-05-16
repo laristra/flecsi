@@ -14,36 +14,38 @@
 
 #include <iostream>
 
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/data/dense_accessor.h>
 #include <flecsi/execution/execution.h>
 #include <flecsi/io/simple_definition.h>
-#include <flecsi/coloring/dcrs_utils.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
 #include <flecsi/supplemental/mesh/empty_mesh_2d.h>
-#include <flecsi/data/dense_accessor.h>
 
 using namespace flecsi;
 using namespace supplemental;
 
 clog_register_tag(coloring);
 
-void writer(dense_accessor<double, wo, ro, ro> x) {
+void
+writer(dense_accessor<double, wo, na, na> x) {
   std::cout << "exclusive writer write" << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
+  for(int i = 0; i < x.exclusive_size(); i++) {
     x.exclusive(i) = static_cast<double>(i);
   }
 }
 
-void reader(dense_accessor<double, ro, ro, ro> x) {
+void
+reader(dense_accessor<double, ro, ro, ro> x) {
   std::cout << "exclusive reader read: " << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
+  for(int i = 0; i < x.exclusive_size(); i++) {
     ASSERT_EQ(x.exclusive(i), static_cast<double>(i));
   }
 }
 
 flecsi_register_data_client(empty_mesh_2d_t, meshes, mesh1);
 
-flecsi_register_task_simple(writer, loc, single);
-flecsi_register_task_simple(reader, loc, single);
+flecsi_register_task_simple(writer, loc, index);
+flecsi_register_task_simple(reader, loc, index);
 
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
@@ -54,30 +56,34 @@ namespace execution {
 // Specialization driver.
 //----------------------------------------------------------------------------//
 
-void specialization_tlt_init(int argc, char ** argv) {
+void
+specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
 
   auto & context = execution::context_t::instance();
- 
-  ASSERT_EQ(context.execution_state(),
-    static_cast<size_t>(SPECIALIZATION_TLT_INIT));
+
+  ASSERT_EQ(
+    context.execution_state(), static_cast<size_t>(SPECIALIZATION_TLT_INIT));
 
   coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
 
-  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::supplemental, map);
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
 // User driver.
 //----------------------------------------------------------------------------//
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
   auto & context = execution::context_t::instance();
-  ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
+  // There no longer is a separate state for driver and specialization_tlt_init
+  // under control replication.
+  // ASSERT_EQ(context.execution_state(), static_cast<size_t>(DRIVER));
 
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -87,17 +93,15 @@ void driver(int argc, char ** argv) {
 
   auto h = flecsi_get_handle(ch, ns, pressure, double, dense, 0);
 
-  flecsi_execute_task_simple(writer, single, h);
-  flecsi_execute_task_simple(reader, single, h);
+  flecsi_execute_task_simple(writer, index, h);
+  flecsi_execute_task_simple(reader, index, h);
 } // driver
 
 //----------------------------------------------------------------------------//
 // TEST.
 //----------------------------------------------------------------------------//
 
-TEST(data_handle, testname) {
-  
-} // TEST
+TEST(data_handle, testname) {} // TEST
 
 } // namespace execution
 } // namespace flecsi

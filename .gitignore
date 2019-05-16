@@ -3,15 +3,18 @@
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
+compile_commands.json
 *~
 .DS_Store
 build
+build*
 builds
 *_build
 *.Linux
 *.tex
 *.log
 *.aux
+.vscode
 
 flecsi-tutorial/*/*.tex
 flecsi-tutorial/*/*.log

@@ -13,7 +13,7 @@ TEST(checksum, basic) {
   flecsi::utils::checksum_t cs;
 
   double array[N];
-  for (std::size_t i(0); i < N; ++i) {
+  for(std::size_t i(0); i < N; ++i) {
     array[i] = double(i);
   } // for
 

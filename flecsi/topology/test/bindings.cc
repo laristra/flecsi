@@ -11,7 +11,8 @@ using namespace topology;
 
 #define FILTER(E) [&](auto E) -> bool
 
-class Vertex : public mesh_entity__<0, 2> {
+class Vertex : public mesh_entity_u<0, 2>
+{
 public:
   Vertex() {}
 
@@ -21,12 +22,14 @@ public:
   }
 };
 
-class Edge : public mesh_entity__<1, 2> {
+class Edge : public mesh_entity_u<1, 2>
+{
 public:
   Edge() {}
 };
 
-class Cell : public mesh_entity__<2, 2> {
+class Cell : public mesh_entity_u<2, 2>
+{
 public:
   using id_t = flecsi::utils::id_t;
 
@@ -34,11 +37,10 @@ public:
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
-  std::vector<size_t> create_entities(
-      id_t cell_id,
-      size_t dim,
-      domain_connectivity__<2> & c,
-      id_t * e) {
+  std::vector<size_t> create_entities(id_t cell_id,
+    size_t dim,
+    domain_connectivity_u<2> & c,
+    id_t * e) {
 
     id_t * v = c.get_entities(cell_id, 0);
 
@@ -57,19 +59,18 @@ public:
     return {2, 2, 2, 2};
   }
 
-  index_vector_t create_bound_entities(
-      size_t from_domain,
-      size_t to_domain,
-      size_t create_dim,
-      id_t cell_id,
-      domain_connectivity__<2> & primal_conn,
-      domain_connectivity__<2> & domain_conn,
-      id_t * c) {
+  index_vector_t create_bound_entities(size_t from_domain,
+    size_t to_domain,
+    size_t create_dim,
+    id_t cell_id,
+    domain_connectivity_u<2> & primal_conn,
+    domain_connectivity_u<2> & domain_conn,
+    id_t * c) {
 
     id_t * v = primal_conn.get_entities(cell_id, 0);
     id_t * e = primal_conn.get_entities(cell_id, 1);
 
-    switch (create_dim) {
+    switch(create_dim) {
       case 0:
         c[0] = v[0];
         c[1] = e[0];
@@ -108,61 +109,60 @@ public:
   }
 };
 
-class Corner : public mesh_entity__<0, 2> {
+class Corner : public mesh_entity_u<0, 2>
+{
 public:
   Corner() {}
 };
 
-class Wedge : public mesh_entity__<1, 2> {
+class Wedge : public mesh_entity_u<1, 2>
+{
 public:
   Wedge() {}
 };
 
-class TestMesh2dType {
+class TestMesh2dType
+{
 public:
   static constexpr size_t num_dimensions = 2;
 
   static constexpr size_t num_domains = 2;
 
-  using entity_types = std::tuple<
-      std::pair<domain_<0>, Vertex>,
-      std::pair<domain_<0>, Edge>,
-      std::pair<domain_<0>, Cell>,
-      std::pair<domain_<1>, Corner>,
-      std::pair<domain_<1>, Wedge>>;
+  using entity_types = std::tuple<std::pair<domain_<0>, Vertex>,
+    std::pair<domain_<0>, Edge>,
+    std::pair<domain_<0>, Cell>,
+    std::pair<domain_<1>, Corner>,
+    std::pair<domain_<1>, Wedge>>;
 
-  using connectivities = std::tuple<
-      std::tuple<domain_<0>, Vertex, Edge>,
-      std::tuple<domain_<0>, Vertex, Cell>,
-      std::tuple<domain_<0>, Edge, Vertex>,
-      std::tuple<domain_<0>, Edge, Cell>,
-      std::tuple<domain_<0>, Cell, Vertex>,
-      std::tuple<domain_<0>, Cell, Edge>>;
+  using connectivities = std::tuple<std::tuple<domain_<0>, Vertex, Edge>,
+    std::tuple<domain_<0>, Vertex, Cell>,
+    std::tuple<domain_<0>, Edge, Vertex>,
+    std::tuple<domain_<0>, Edge, Cell>,
+    std::tuple<domain_<0>, Cell, Vertex>,
+    std::tuple<domain_<0>, Cell, Edge>>;
 
-  using bindings = std::tuple<
-      std::tuple<domain_<0>, domain_<1>, Cell, Corner>,
-      std::tuple<domain_<0>, domain_<1>, Vertex, Corner>,
-      std::tuple<domain_<1>, domain_<0>, Corner, Cell>,
-      std::tuple<domain_<1>, domain_<0>, Corner, Edge>,
-      std::tuple<domain_<0>, domain_<1>, Edge, Corner>,
-      std::tuple<domain_<1>, domain_<0>, Corner, Vertex>,
-      std::tuple<domain_<0>, domain_<1>, Cell, Wedge>,
-      std::tuple<domain_<0>, domain_<1>, Edge, Wedge>,
-      std::tuple<domain_<0>, domain_<1>, Vertex, Wedge>,
-      std::tuple<domain_<1>, domain_<0>, Wedge, Cell>,
-      std::tuple<domain_<1>, domain_<0>, Wedge, Edge>,
-      std::tuple<domain_<1>, domain_<0>, Wedge, Vertex>>;
+  using bindings = std::tuple<std::tuple<domain_<0>, domain_<1>, Cell, Corner>,
+    std::tuple<domain_<0>, domain_<1>, Vertex, Corner>,
+    std::tuple<domain_<1>, domain_<0>, Corner, Cell>,
+    std::tuple<domain_<1>, domain_<0>, Corner, Edge>,
+    std::tuple<domain_<0>, domain_<1>, Edge, Corner>,
+    std::tuple<domain_<1>, domain_<0>, Corner, Vertex>,
+    std::tuple<domain_<0>, domain_<1>, Cell, Wedge>,
+    std::tuple<domain_<0>, domain_<1>, Edge, Wedge>,
+    std::tuple<domain_<0>, domain_<1>, Vertex, Wedge>,
+    std::tuple<domain_<1>, domain_<0>, Wedge, Cell>,
+    std::tuple<domain_<1>, domain_<0>, Wedge, Edge>,
+    std::tuple<domain_<1>, domain_<0>, Wedge, Vertex>>;
 
-  using index_subspaces = std::tuple<
-    std::tuple<index_space_<0>, index_subspace_<0>>
-  >;
+  using index_subspaces =
+    std::tuple<std::tuple<index_space_<0>, index_subspace_<0>>>;
 
   template<size_t M, size_t D, typename ST>
-  static mesh_entity_base__<num_domains> *
-  create_entity(mesh_topology_base__<ST> * mesh, size_t num_vertices) {
-    switch (M) {
+  static mesh_entity_base_u<num_domains> *
+  create_entity(mesh_topology_base_u<ST> * mesh, size_t num_vertices) {
+    switch(M) {
       case 0: {
-        switch (D) {
+        switch(D) {
           case 1:
             return mesh->template make<Edge>();
           default:
@@ -171,7 +171,7 @@ public:
         break;
       }
       case 1: {
-        switch (D) {
+        switch(D) {
           case 0:
             return mesh->template make<Corner, 1>();
           case 1:
@@ -187,7 +187,7 @@ public:
   }
 };
 
-using TestMesh = mesh_topology__<TestMesh2dType>;
+using TestMesh = mesh_topology_u<TestMesh2dType>;
 
 TEST(mesh_topology, traversal) {
 
@@ -198,21 +198,21 @@ TEST(mesh_topology, traversal) {
 
   vector<Vertex *> vs;
 
-  for (size_t j = 0; j < height + 1; ++j) {
-    for (size_t i = 0; i < width + 1; ++i) {
+  for(size_t j = 0; j < height + 1; ++j) {
+    for(size_t i = 0; i < width + 1; ++i) {
       auto v = mesh->make<Vertex>();
       vs.push_back(v);
     }
   }
 
   size_t width1 = width + 1;
-  for (size_t j = 0; j < height; ++j) {
-    for (size_t i = 0; i < width; ++i) {
+  for(size_t j = 0; j < height; ++j) {
+    for(size_t i = 0; i < width; ++i) {
       auto c = mesh->make<Cell>();
 
       mesh->init_cell<0>(
-          c, {vs[i + j * width1], vs[i + (j + 1) * width1],
-              vs[i + 1 + j * width1], vs[i + 1 + (j + 1) * width1]});
+        c, {vs[i + j * width1], vs[i + (j + 1) * width1],
+             vs[i + 1 + j * width1], vs[i + 1 + (j + 1) * width1]});
     }
   }
 
@@ -221,86 +221,86 @@ TEST(mesh_topology, traversal) {
 
   // mesh->dump();
 
-  for (auto cell : mesh->entities<2>()) {
+  for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
-    for (auto corner : mesh->entities<0, 0, 1>(cell)) {
+    for(auto corner : mesh->entities<0, 0, 1>(cell)) {
       CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
-  for (auto vertex : mesh->entities<0>()) {
+  for(auto vertex : mesh->entities<0>()) {
     CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
-    for (auto corner : mesh->entities<0, 0, 1>(vertex)) {
+    for(auto corner : mesh->entities<0, 0, 1>(vertex)) {
       CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
-  for (auto corner : mesh->entities<0, 1>()) {
+  for(auto corner : mesh->entities<0, 1>()) {
     CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
-    for (auto cell : mesh->entities<2, 1, 0>(corner)) {
+    for(auto cell : mesh->entities<2, 1, 0>(corner)) {
       CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
     }
   }
 
-  for (auto corner : mesh->entities<0, 1>()) {
+  for(auto corner : mesh->entities<0, 1>()) {
     CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
-    for (auto edge : mesh->entities<1, 1, 0>(corner)) {
+    for(auto edge : mesh->entities<1, 1, 0>(corner)) {
       CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
     }
   }
 
-  for (auto edge : mesh->entities<1>()) {
+  for(auto edge : mesh->entities<1>()) {
     CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
-    for (auto corner : mesh->entities<0, 0, 1>(edge)) {
+    for(auto corner : mesh->entities<0, 0, 1>(edge)) {
       CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
-  for (auto corner : mesh->entities<0, 1>()) {
+  for(auto corner : mesh->entities<0, 1>()) {
     CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
-    for (auto vertex : mesh->entities<0, 1, 0>(corner)) {
+    for(auto vertex : mesh->entities<0, 1, 0>(corner)) {
       CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
     }
   }
 
-  for (auto cell : mesh->entities<2>()) {
+  for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
-    for (auto wedge : mesh->entities<1, 0, 1>(cell)) {
+    for(auto wedge : mesh->entities<1, 0, 1>(cell)) {
       CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
-  for (auto edge : mesh->entities<1>()) {
+  for(auto edge : mesh->entities<1>()) {
     CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
-    for (auto wedge : mesh->entities<1, 0, 1>(edge)) {
+    for(auto wedge : mesh->entities<1, 0, 1>(edge)) {
       CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
-  for (auto vertex : mesh->entities<0>()) {
+  for(auto vertex : mesh->entities<0>()) {
     CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
-    for (auto wedge : mesh->entities<1, 0, 1>(vertex)) {
+    for(auto wedge : mesh->entities<1, 0, 1>(vertex)) {
       CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
-  for (auto wedge : mesh->entities<1, 1>()) {
+  for(auto wedge : mesh->entities<1, 1>()) {
     CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
-    for (auto cell : mesh->entities<2, 1, 0>(wedge)) {
+    for(auto cell : mesh->entities<2, 1, 0>(wedge)) {
       CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
     }
   }
 
-  for (auto wedge : mesh->entities<1, 1>()) {
+  for(auto wedge : mesh->entities<1, 1>()) {
     CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
-    for (auto edge : mesh->entities<1, 1, 0>(wedge)) {
+    for(auto edge : mesh->entities<1, 1, 0>(wedge)) {
       CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
     }
   }
 
-  for (auto wedge : mesh->entities<1, 1>()) {
+  for(auto wedge : mesh->entities<1, 1>()) {
     CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
-    for (auto vertex : mesh->entities<0, 1, 0>(wedge)) {
+    for(auto vertex : mesh->entities<0, 1, 0>(wedge)) {
       CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
     }
   }
@@ -327,7 +327,7 @@ TEST(mesh_topology, traversal) {
 
   r4 << r2[0];
 
-  for (auto edge : (r1 | r2) & r3) {
+  for(auto edge : (r1 | r2) & r3) {
     CINCH_CAPTURE() << "---- filter edge id: " << edge.id() << endl;
   }
 

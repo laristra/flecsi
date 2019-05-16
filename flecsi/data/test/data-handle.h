@@ -10,25 +10,24 @@
 #include <iostream>
 #include <vector>
 
-#include <flecsi/utils/common.h>
-#include <flecsi/execution/context.h>
-#include <flecsi/execution/execution.h>
 #include <flecsi/data/data.h>
 #include <flecsi/data/data_client.h>
 #include <flecsi/data/legion/data_policy.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/execution/execution.h>
 #include <flecsi/execution/legion/helper.h>
 #include <flecsi/execution/task_ids.h>
 
-#define np(X)                                                            \
- std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
-           << ": " << #X << " = " << (X) << std::endl
+#include <flecsi/utils/macros.h>
+
+#define np(X)                                                                  \
+  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__      \
+            << ": " << #X << " = " << (X) << std::endl
 
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: Jan 25, 2017
 //----------------------------------------------------------------------------//
-
-
 
 using namespace std;
 using namespace flecsi;
@@ -39,15 +38,14 @@ using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
 template<typename T>
-using accessor_t = flecsi::data::legion::dense_accessor_t<
-  T,
-  flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>
->;
+using accessor_t = flecsi::data::legion::dense_accessor_t<T,
+  flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>>;
 
 namespace flecsi {
 namespace execution {
 
-void task1(accessor_t<double> x) {
+void
+task1(accessor_t<double> x) {
   np(x[0]);
   np(x[1]);
 } // task1
@@ -57,9 +55,10 @@ flecsi_register_task(task1, loc, single);
 const size_t NUM_CELLS = 16;
 const size_t NUM_PARTITIONS = 4;
 
-class data_client : public data::data_client_t{
+class data_client : public data::data_client_t
+{
 public:
-  size_t indices(size_t index_space) const override{
+  size_t indices(size_t index_space) const override {
     return NUM_CELLS;
   }
 };
@@ -70,11 +69,7 @@ using partition_id = size_t;
 using partition_vec = vector<entity_id>;
 
 void
-specialization_tlt_init(
-  int argc,
-  char ** argv
-)
-{
+specialization_tlt_init(int argc, char ** argv) {
   std::cout << "driver start" << std::endl;
 
   context_t & context_ = context_t::instance();
@@ -94,12 +89,12 @@ specialization_tlt_init(
 
   context_t::partitioned_index_space cells_part;
 
-  for(size_t c = 0; c < NUM_CELLS; ++c){
+  for(size_t c = 0; c < NUM_CELLS; ++c) {
     size_t p = c / partition_size;
 
     cells[c] = p;
 
-    if(c % partition_size == partition_size - 1 && c < NUM_CELLS - 1){
+    if(c % partition_size == partition_size - 1 && c < NUM_CELLS - 1) {
       cells_shared[c] = p;
       ++cells_part.shared_count_map[p];
 
@@ -119,45 +114,45 @@ specialization_tlt_init(
     Coloring shared_coloring;
     Coloring ghost_coloring;
 
-    for(size_t c = 0; c < cells.size(); ++c){
+    for(size_t c = 0; c < cells.size(); ++c) {
       size_t p = cells[c];
       ++cells_part.exclusive_count_map[p];
 
-      if(cells_shared[c] < NUM_PARTITIONS){
+      if(cells_shared[c] < NUM_PARTITIONS) {
         ++cells_part.shared_count_map[p];
       }
 
-      if(cells_ghost[c] < NUM_PARTITIONS){
+      if(cells_ghost[c] < NUM_PARTITIONS) {
         ++cells_part.ghost_count_map[p];
       }
     }
 
-    for(auto& itr : cells_part.exclusive_count_map){
+    for(auto & itr : cells_part.exclusive_count_map) {
       size_t p = itr.first;
       int count = itr.second;
       ptr_t start = ia.alloc(count);
 
-      for(int i = 0; i < count; ++i){
+      for(int i = 0; i < count; ++i) {
         coloring[p].points.insert(start + i);
       }
     }
 
-    for(auto& itr : cells_part.shared_count_map){
+    for(auto & itr : cells_part.shared_count_map) {
       size_t p = itr.first;
       int count = itr.second;
       ptr_t start = ia.alloc(count);
 
-      for(int i = 0; i < count; ++i){
+      for(int i = 0; i < count; ++i) {
         shared_coloring[p].points.insert(start + i);
       }
     }
 
-    for(auto& itr : cells_part.ghost_count_map){
+    for(auto & itr : cells_part.ghost_count_map) {
       size_t p = itr.first;
       int count = itr.second;
       ptr_t start = ia.alloc(count);
 
-      for(int i = 0; i < count; ++i){
+      for(int i = 0; i < count; ++i) {
         ghost_coloring[p].points.insert(start + i);
       }
     }
@@ -170,8 +165,8 @@ specialization_tlt_init(
 
     cells_part.entities_lr = h.create_logical_region(is, fs);
 
-    RegionRequirement rr(cells_part.entities_lr, WRITE_DISCARD,
-      EXCLUSIVE, cells_part.entities_lr);
+    RegionRequirement rr(
+      cells_part.entities_lr, WRITE_DISCARD, EXCLUSIVE, cells_part.entities_lr);
 
     rr.add_field(fid_t.fid_entity);
     InlineLauncher il(rr);
@@ -180,13 +175,12 @@ specialization_tlt_init(
 
     pr.wait_until_valid();
 
-    auto ac =
-      pr.get_field_accessor(fid_t.fid_entity).typeify<entity_id>();
+    auto ac = pr.get_field_accessor(fid_t.fid_entity).typeify<entity_id>();
 
     IndexIterator itr(runtime, context, is);
     ptr_t ptr = itr.next();
 
-    for(size_t c = 0; c < cells.size(); ++c){
+    for(size_t c = 0; c < cells.size(); ++c) {
       ac.write(ptr, c);
       ++ptr;
     }
@@ -207,11 +201,10 @@ specialization_tlt_init(
 
   dc.put_index_space(0, cells_part);
 
-  context_.add_index_space("partition1","cells", cells_part);
+  context_.add_index_space("partition1", "cells", cells_part);
 
-  execution::mpilegion_context_policy_t::partitioned_index_space& is3=
-      context_.get_index_space("partition1","cells");
-
+  execution::mpilegion_context_policy_t::partitioned_index_space & is3 =
+    context_.get_index_space("partition1", "cells");
 
   // data client
   // "hydro" namespace
@@ -244,4 +237,4 @@ specialization_tlt_init(
 //#undef DH1
 
 /*~-------------------------------------------------------------------------~-*
-*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/

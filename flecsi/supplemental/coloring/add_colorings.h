@@ -16,15 +16,14 @@
 /*! @file */
 
 namespace flecsi {
-namespace execution {
+namespace supplemental {
 
-struct coloring_map_t
-{
+struct coloring_map_t {
   size_t vertices;
   size_t cells;
 }; // struct coloring_map_t
 
 void add_colorings(coloring_map_t map);
 
-} // namespace execution
+} // namespace supplemental
 } // namespace flecsi

@@ -13,8 +13,8 @@
  *~-------------------------------------------------------------------------~~*/
 
 // includes: flecsi
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/utils/const_string.h>
 
 // includes: C++
 #include <iostream>
@@ -53,7 +53,8 @@ TEST(const_string, all) {
 
   // hash_type_t
 #ifdef __GNUG__
-  EXPECT_EQ(flecsi::utils::type<typename const_string_t::hash_type_t>(), "unsigned long");
+  EXPECT_EQ(flecsi::utils::type<typename const_string_t::hash_type_t>(),
+    "unsigned long");
 #endif
 
   // constructor from C-style string
@@ -73,7 +74,8 @@ TEST(const_string, all) {
   std::string x = "no exception";
   try {
     (void)a[9]; // considered to be out-of-range (not the \0)
-  } catch (...) {
+  }
+  catch(...) {
     x = "caught an exception";
   }
   EXPECT_EQ(x, "caught an exception");
@@ -82,7 +84,7 @@ TEST(const_string, all) {
   // Machine-dependent (via std::size_t); just do sanity checks
   EXPECT_TRUE(a.hash() > 0);
   const const_string_t b("");
-  EXPECT_TRUE(b.hash() == 0); // known via i == n selection in hash__()
+  EXPECT_TRUE(b.hash() == 0);
   const const_string_t c("x");
   EXPECT_TRUE(c.hash() > 0);
 

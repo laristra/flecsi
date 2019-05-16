@@ -59,22 +59,22 @@ namespace flecsi {
 namespace topology {
 
 template<typename T, size_t DIM>
-struct tree_geometry__ {};
+struct tree_geometry_u {};
 
 //-----------------------------------------------------------------//
 //! \brief 1d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry__<T, 1> {
+struct tree_geometry_u<T, 1> {
   using point_t = point<T, 1>;
   using element_t = T;
 
   //-----------------------------------------------------------------//
   //! Return true if point origin lies within the spheroid centered at center
   with radius.
-      //-----------------------------------------------------------------//
-      static bool
-      within(const point_t & origin, const point_t & center, element_t radius) {
+    //-----------------------------------------------------------------//
+    static bool
+    within(const point_t & origin, const point_t & center, element_t radius) {
     return distance(origin, center) <= radius;
   }
 
@@ -89,49 +89,45 @@ struct tree_geometry__<T, 1> {
 
   // initial attempt to get this working, needs to be optimized
 
-  static bool intersects(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & center,
-      element_t radius) {
+  static bool intersects(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & center,
+    element_t radius) {
     return center[0] >= origin[0] - radius &&
            center[0] <= origin[0] + size * scale[0] + radius;
   }
 
-  static bool intersects_box(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & min2,
-      const point_t & max2) {
+  static bool intersects_box(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & min2,
+    const point_t & max2) {
     point_t max1 = origin;
     max1[0] += size * scale[0];
     return intersects_box_(origin, max1, min2, max2);
   }
 
-  static bool intersects_box_(
-      const point_t & min1,
-      const point_t & max1,
-      const point_t & min2,
-      const point_t & max2) {
-    if (max1[0] <= min2[0]) {
+  static bool intersects_box_(const point_t & min1,
+    const point_t & max1,
+    const point_t & min2,
+    const point_t & max2) {
+    if(max1[0] <= min2[0]) {
       return false;
     }
 
-    if (min1[0] >= max2[0]) {
+    if(min1[0] >= max2[0]) {
       return false;
     }
 
     return true;
   }
 
-  static bool intersect_true(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & center,
-      element_t radius) {
+  static bool intersect_true(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & center,
+    element_t radius) {
     return true;
   }
 };
@@ -140,7 +136,7 @@ struct tree_geometry__<T, 1> {
 //! \brief 2d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry__<T, 2> {
+struct tree_geometry_u<T, 2> {
   using point_t = point<T, 2>;
   using element_t = T;
 
@@ -168,45 +164,42 @@ struct tree_geometry__<T, 2> {
   //-----------------------------------------------------------------//
   //! Spheroid/box intersection test.
   //-----------------------------------------------------------------//
-  static bool intersects(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & center,
-      element_t radius) {
+  static bool intersects(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & center,
+    element_t radius) {
     return center[0] >= origin[0] - radius &&
            center[0] <= origin[0] + size * scale[0] + radius &&
            center[1] >= origin[1] - radius &&
            center[1] <= origin[1] + size * scale[1] + radius;
   }
 
-  static bool intersects_box(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & min2,
-      const point_t & max2) {
+  static bool intersects_box(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & min2,
+    const point_t & max2) {
     point_t max1 = origin;
 
-    for (size_t d = 0; d < 2; ++d) {
+    for(size_t d = 0; d < 2; ++d) {
       max1[d] += size * scale[d];
     }
 
     return intersects_box_(origin, max1, min2, max2);
   }
 
-  static bool intersects_box_(
-      const point_t & min1,
-      const point_t & max1,
-      const point_t & min2,
-      const point_t & max2) {
+  static bool intersects_box_(const point_t & min1,
+    const point_t & max1,
+    const point_t & min2,
+    const point_t & max2) {
 
-    for (size_t d = 0; d < 2; ++d) {
-      if (max1[d] <= min2[d]) {
+    for(size_t d = 0; d < 2; ++d) {
+      if(max1[d] <= min2[d]) {
         return false;
       }
 
-      if (min1[d] >= max2[d]) {
+      if(min1[d] >= max2[d]) {
         return false;
       }
     }
@@ -214,12 +207,11 @@ struct tree_geometry__<T, 2> {
     return true;
   }
 
-  static bool intersect_true(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & center,
-      element_t radius) {
+  static bool intersect_true(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & center,
+    element_t radius) {
     return true;
   }
 };
@@ -228,7 +220,7 @@ struct tree_geometry__<T, 2> {
 //! \brief 1d geometry class for computing intersections and distances.
 //-----------------------------------------------------------------//
 template<typename T>
-struct tree_geometry__<T, 3> {
+struct tree_geometry_u<T, 3> {
   using point_t = point<T, 3>;
   using element_t = T;
 
@@ -254,12 +246,11 @@ struct tree_geometry__<T, 3> {
   //-----------------------------------------------------------------//
   //! Spheroid/box intersection test.
   //-----------------------------------------------------------------//
-  static bool intersects(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & center,
-      element_t radius) {
+  static bool intersects(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & center,
+    element_t radius) {
     return center[0] >= origin[0] - radius &&
            center[0] <= origin[0] + size * scale[0] + radius &&
            center[1] >= origin[1] - radius &&
@@ -268,33 +259,31 @@ struct tree_geometry__<T, 3> {
            center[2] <= origin[2] + size * scale[2] + radius;
   }
 
-  static bool intersects_box(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & min2,
-      const point_t & max2) {
+  static bool intersects_box(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & min2,
+    const point_t & max2) {
     point_t max1 = origin;
 
-    for (size_t d = 0; d < 3; ++d) {
+    for(size_t d = 0; d < 3; ++d) {
       max1[d] += size * scale[d];
     }
 
     return intersects_box_(origin, max1, min2, max2);
   }
 
-  static bool intersects_box_(
-      const point_t & min1,
-      const point_t & max1,
-      const point_t & min2,
-      const point_t & max2) {
+  static bool intersects_box_(const point_t & min1,
+    const point_t & max1,
+    const point_t & min2,
+    const point_t & max2) {
 
-    for (size_t d = 0; d < 3; ++d) {
-      if (max1[d] <= min2[d]) {
+    for(size_t d = 0; d < 3; ++d) {
+      if(max1[d] <= min2[d]) {
         return false;
       }
 
-      if (min1[d] >= max2[d]) {
+      if(min1[d] >= max2[d]) {
         return false;
       }
     }
@@ -302,12 +291,11 @@ struct tree_geometry__<T, 3> {
     return true;
   }
 
-  static bool intersect_true(
-      const point_t & origin,
-      element_t size,
-      const point_t & scale,
-      const point_t & center,
-      element_t radius) {
+  static bool intersect_true(const point_t & origin,
+    element_t size,
+    const point_t & scale,
+    const point_t & center,
+    element_t radius) {
     return true;
   }
 };
@@ -317,7 +305,8 @@ struct tree_geometry__<T, 3> {
   parameterized on arbitrary dimension DIM and integer type T.
  */
 template<typename T, size_t DIM>
-class branch_id__ {
+class branch_id_u
+{
 public:
   using int_t = T;
 
@@ -327,7 +316,7 @@ public:
 
   static constexpr size_t max_depth = (bits - 1) / dimension;
 
-  branch_id__() : id_(0) {}
+  branch_id_u() : id_(0) {}
 
   //-----------------------------------------------------------------//
   //! Construct a branch id from an array of dimensions and range for each
@@ -335,22 +324,21 @@ public:
   //! for the branch id.
   //-----------------------------------------------------------------//
   template<typename S>
-  branch_id__(
-      const std::array<point<S, dimension>, 2> & range,
-      const point<S, dimension> & p,
-      size_t depth)
-      : id_(int_t(1) << depth * dimension + (bits - 1) % dimension) {
+  branch_id_u(const std::array<point<S, dimension>, 2> & range,
+    const point<S, dimension> & p,
+    size_t depth)
+    : id_(int_t(1) << depth * dimension + (bits - 1) % dimension) {
     std::array<int_t, dimension> coords;
 
-    for (size_t i = 0; i < dimension; ++i) {
+    for(size_t i = 0; i < dimension; ++i) {
       S min = range[0][i];
       S scale = range[1][i] - min;
       coords[i] = (p[i] - min) / scale * (int_t(1) << (bits - 1) / dimension);
     }
 
     size_t k = 0;
-    for (size_t i = max_depth - depth; i < max_depth; ++i) {
-      for (size_t j = 0; j < dimension; ++j) {
+    for(size_t i = max_depth - depth; i < max_depth; ++i) {
+      for(size_t j = 0; j < dimension; ++j) {
         int_t bit = (coords[j] & int_t(1) << i) >> i;
         id_ |= bit << (k * dimension + j);
       }
@@ -358,20 +346,20 @@ public:
     }
   }
 
-  constexpr branch_id__(const branch_id__ & bid) : id_(bid.id_) {}
+  constexpr branch_id_u(const branch_id_u & bid) : id_(bid.id_) {}
 
   //-----------------------------------------------------------------//
   //! Get the root branch id (depth 0).
   //-----------------------------------------------------------------//
-  static constexpr branch_id__ root() {
-    return branch_id__(int_t(1) << (bits - 1) % dimension);
+  static constexpr branch_id_u root() {
+    return branch_id_u(int_t(1) << (bits - 1) % dimension);
   }
 
   //-----------------------------------------------------------------//
   //! Get the null branch id.
   //-----------------------------------------------------------------//
-  static constexpr branch_id__ null() {
-    return branch_id__(0);
+  static constexpr branch_id_u null() {
+    return branch_id_u(0);
   }
 
   //-----------------------------------------------------------------//
@@ -388,23 +376,23 @@ public:
     int_t id = id_;
     size_t d = 0;
 
-    while (id >>= dimension) {
+    while(id >>= dimension) {
       ++d;
     }
 
     return d;
   }
 
-  branch_id__ & operator=(const branch_id__ & bid) {
+  branch_id_u & operator=(const branch_id_u & bid) {
     id_ = bid.id_;
     return *this;
   }
 
-  constexpr bool operator==(const branch_id__ & bid) const {
+  constexpr bool operator==(const branch_id_u & bid) const {
     return id_ == bid.id_;
   }
 
-  constexpr bool operator!=(const branch_id__ & bid) const {
+  constexpr bool operator!=(const branch_id_u & bid) const {
     return id_ != bid.id_;
   }
 
@@ -437,8 +425,8 @@ public:
   //-----------------------------------------------------------------//
   //! Return the parent of this branch id (depth - 1)
   //-----------------------------------------------------------------//
-  constexpr branch_id__ parent() const {
-    return branch_id__(id_ >> dimension);
+  constexpr branch_id_u parent() const {
+    return branch_id_u(id_ >> dimension);
   }
 
   //-----------------------------------------------------------------//
@@ -447,7 +435,7 @@ public:
   void truncate(size_t to_depth) {
     size_t d = depth();
 
-    if (d < to_depth) {
+    if(d < to_depth) {
       return;
     }
 
@@ -461,19 +449,19 @@ public:
 
     int_t id = id_;
 
-    while ((id & mask) == int_t(0)) {
+    while((id & mask) == int_t(0)) {
       --d;
       id <<= dimension;
     }
 
-    if (d == 0) {
+    if(d == 0) {
       ostr << "<root>";
       return;
     }
 
     id <<= 1 + (bits - 1) % dimension;
 
-    for (size_t i = 1; i <= d; ++i) {
+    for(size_t i = 1; i <= d; ++i) {
       int_t val = (id & mask) >> (bits - dimension);
       ostr << i << ":" << std::bitset<DIM>(val) << " ";
       id <<= dimension;
@@ -488,7 +476,7 @@ public:
     id_ = value;
   }
 
-  bool operator<(const branch_id__ & bid) const {
+  bool operator<(const branch_id_u & bid) const {
     return id_ < bid.id_;
   }
 
@@ -496,17 +484,16 @@ public:
   //! Convert this branch id to coordinates in range.
   //-----------------------------------------------------------------//
   template<typename S>
-  void coordinates(
-      const std::array<point<S, dimension>, 2> & range,
-      point<S, dimension> & p) const {
+  void coordinates(const std::array<point<S, dimension>, 2> & range,
+    point<S, dimension> & p) const {
     std::array<int_t, dimension> coords;
     coords.fill(int_t(0));
 
     int_t id = id_;
     size_t d = 0;
 
-    while (id >> dimension != int_t(0)) {
-      for (size_t j = 0; j < dimension; ++j) {
+    while(id >> dimension != int_t(0)) {
+      for(size_t j = 0; j < dimension; ++j) {
         coords[j] |= (((int_t(1) << j) & id) >> j) << d;
       }
 
@@ -516,7 +503,7 @@ public:
 
     constexpr int_t m = (int_t(1) << max_depth) - 1;
 
-    for (size_t j = 0; j < dimension; ++j) {
+    for(size_t j = 0; j < dimension; ++j) {
       S min = range[0][j];
       S scale = range[1][j] - min;
 
@@ -528,14 +515,15 @@ public:
 private:
   int_t id_;
 
-  constexpr branch_id__(int_t id) : id_(id) {}
+  constexpr branch_id_u(int_t id) : id_(id) {}
 };
 
 //-----------------------------------------------------------------//
 //! All tree entities have an associated entity id of this type which is needed
 to interface with the index space.
-    //-----------------------------------------------------------------//
-    class entity_id_t {
+  //-----------------------------------------------------------------//
+  class entity_id_t
+{
 public:
   entity_id_t() {}
 
@@ -562,14 +550,14 @@ private:
 
 template<typename T, size_t DIM>
 std::ostream &
-operator<<(std::ostream & ostr, const branch_id__<T, DIM> & id) {
+operator<<(std::ostream & ostr, const branch_id_u<T, DIM> & id) {
   id.output_(ostr);
   return ostr;
 }
 
 template<typename T, size_t DIM>
-struct branch_id_hasher__ {
-  size_t operator()(const branch_id__<T, DIM> & k) const {
+struct branch_id_hasher_u {
+  size_t operator()(const branch_id_u<T, DIM> & k) const {
     return std::hash<T>()(k.value_());
   }
 };
@@ -585,7 +573,8 @@ enum class action : uint8_t { none = 0b00, refine = 0b01, coarsen = 0b10 };
 //! and entity types.
 //-----------------------------------------------------------------//
 template<class P>
-class tree_topology : public P, public data::data_client_t {
+class tree_topology : public P, public data::data_client_t
+{
 public:
   using Policy = P;
 
@@ -599,7 +588,7 @@ public:
 
   using branch_int_t = typename Policy::branch_int_t;
 
-  using branch_id_t = branch_id__<branch_int_t, dimension>;
+  using branch_id_t = branch_id_u<branch_int_t, dimension>;
 
   using branch_id_vector_t = std::vector<branch_id_t>;
 
@@ -615,13 +604,13 @@ public:
 
   using entity_id_vector_t = std::vector<entity_id_t>;
 
-  using geometry_t = tree_geometry__<element_t, dimension>;
+  using geometry_t = tree_geometry_u<element_t, dimension>;
 
-  using entity_space_t = index_space__<entity_t *, true, true, false>;
+  using entity_space_t = index_space_u<entity_t *, true, true, false>;
 
-  using branch_space_t = index_space__<branch_t *, true, true, false>;
+  using branch_space_t = index_space_u<branch_t *, true, true, false>;
 
-  using subentity_space_t = index_space__<entity_t *, false, true, false>;
+  using subentity_space_t = index_space_u<entity_t *, false, true, false>;
 
   struct filter_valid {
     bool operator()(entity_t * ent) const {
@@ -642,7 +631,7 @@ public:
     max_depth_ = 0;
     max_scale_ = element_t(1);
 
-    for (size_t d = 0; d < dimension; ++d) {
+    for(size_t d = 0; d < dimension; ++d) {
       range_[0][d] = element_t(0);
       range_[1][d] = element_t(1);
       scale_[d] = element_t(1);
@@ -653,9 +642,8 @@ public:
   //! Construct a tree topology with specified ranges [end, start] for
   //! each dimension.
   //-----------------------------------------------------------------//
-  tree_topology(
-      const point<element_t, dimension> & start,
-      const point<element_t, dimension> & end) {
+  tree_topology(const point<element_t, dimension> & start,
+    const point<element_t, dimension> & end) {
     branch_id_t bid = branch_id_t::root();
     root_ = new branch_t;
     root_->set_id_(bid);
@@ -663,7 +651,7 @@ public:
 
     max_depth_ = 0;
 
-    for (size_t d = 0; d < dimension; ++d) {
+    for(size_t d = 0; d < dimension; ++d) {
       scale_[d] = end[d] - start[d];
       max_scale_ = std::max(max_scale_, scale_[d]);
       range_[0][d] = start[d];
@@ -672,7 +660,7 @@ public:
   }
 
   ~tree_topology() {
-    for (auto ent : entities_) {
+    for(auto ent : entities_) {
       delete ent;
     }
 
@@ -699,7 +687,7 @@ public:
   //-----------------------------------------------------------------//
   auto entities() {
     return entities_
-        .template cast<entity_t *, false, false, false, filter_valid>();
+      .template cast<entity_t *, false, false, false, filter_valid>();
   }
 
   //-----------------------------------------------------------------//
@@ -712,13 +700,13 @@ public:
   //-----------------------------------------------------------------//
   //! Update is called when an entity's coordinates have changed and may trigger
   a reinsertion.
-      //-----------------------------------------------------------------//
-      void
-      update(entity_t * ent) {
+    //-----------------------------------------------------------------//
+    void
+    update(entity_t * ent) {
     branch_id_t bid = ent->get_branch_id();
     branch_id_t nid = to_branch_id(ent->coordinates(), bid.depth());
 
-    if (bid == nid) {
+    if(bid == nid) {
       return;
     }
 
@@ -736,7 +724,7 @@ public:
     branch_map_.clear();
     branch_map_.emplace(root_->id(), root_);
 
-    for (auto ent : entities_) {
+    for(auto ent : entities_) {
       ent->set_branch_id_(branch_id_t::null());
       insert(ent);
     }
@@ -747,11 +735,10 @@ public:
   //! coordinates are assumed to have changed. Additionally expands or contracts
   //! the coordinate ranges of each dimension to [start, end].
   //-----------------------------------------------------------------//
-  void update_all(
-      const point<element_t, dimension> & start,
-      const point<element_t, dimension> & end) {
+  void update_all(const point<element_t, dimension> & start,
+    const point<element_t, dimension> & end) {
 
-    for (size_t d = 0; d < dimension; ++d) {
+    for(size_t d = 0; d < dimension; ++d) {
       scale_[d] = end[d] - start[d];
       max_scale_ = std::max(max_scale_, scale_[d]);
       range_[0][d] = start[d];
@@ -763,7 +750,7 @@ public:
     branch_map_.clear();
     branch_map_.emplace(root_->id(), root_);
 
-    for (auto ent : entities_) {
+    for(auto ent : entities_) {
       ent->set_branch_id_(branch_id_t::null());
       insert(ent);
     }
@@ -784,12 +771,12 @@ public:
     b->remove(ent);
     ent->set_branch_id_(branch_id_t::null());
 
-    switch (b->requested_action_()) {
+    switch(b->requested_action_()) {
       case action::none:
         break;
       case action::coarsen: {
         auto p = static_cast<branch_t *>(b->parent());
-        if (p && Policy::should_coarsen(p)) {
+        if(p && Policy::should_coarsen(p)) {
           coarsen_(p);
         }
         break;
@@ -808,7 +795,7 @@ public:
   point_t unit_coordinates(const point_t & p) {
     point_t pn;
 
-    for (size_t d = 0; d < dimension; ++d) {
+    for(size_t d = 0; d < dimension; ++d) {
       pn[d] = (p[d] - range_[0][d]) / scale_[d];
     }
 
@@ -818,14 +805,14 @@ public:
   //-----------------------------------------------------------------//
   //! Return an index space containing all entities within the specified
   spheroid.
-      //-----------------------------------------------------------------//
-      subentity_space_t
-      find_in_radius(const point_t & center, element_t radius) {
+    //-----------------------------------------------------------------//
+    subentity_space_t
+    find_in_radius(const point_t & center, element_t radius) {
     subentity_space_t ents;
     ents.set_master(entities_);
 
     auto ef = [&](entity_t * ent, const point_t & center,
-                  element_t radius) -> bool {
+                element_t radius) -> bool {
       return geometry_t::within(ent->coordinates(), center, radius);
     };
 
@@ -849,7 +836,7 @@ public:
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
 
     auto ef = [&](entity_t * ent, const point_t & center,
-                  element_t radius) -> bool {
+                element_t radius) -> bool {
       return geometry_t::within(ent->coordinates(), center, radius);
     };
 
@@ -864,9 +851,8 @@ public:
     branch_t * b = find_start_(center, radius, depth, size);
     queue_depth += depth;
 
-    find_(
-        pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
-        geometry_t::intersects, center, radius);
+    find_(pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
+      geometry_t::intersects, center, radius);
 
     sem.acquire();
 
@@ -882,12 +868,12 @@ public:
     ents.set_master(entities_);
 
     auto ef = [&](entity_t * ent, const point_t & min,
-                  const point_t & max) -> bool {
+                const point_t & max) -> bool {
       return geometry_t::within_box(ent->coordinates(), min, max);
     };
 
     element_t radius = 0;
-    for (size_t d = 0; d < dimension; ++d) {
+    for(size_t d = 0; d < dimension; ++d) {
       radius = std::max(radius, max[d] - min[d]);
     }
 
@@ -916,12 +902,12 @@ public:
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
 
     auto ef = [&](entity_t * ent, const point_t & min,
-                  const point_t & max) -> bool {
+                const point_t & max) -> bool {
       return geometry_t::within_box(ent->coordinates(), min, max);
     };
 
     element_t radius = 0;
-    for (size_t d = 0; d < dimension; ++d) {
+    for(size_t d = 0; d < dimension; ++d) {
       radius = std::max(radius, max[d] - min[d]);
     }
 
@@ -943,9 +929,8 @@ public:
     virtual_semaphore sem(1 - int(m));
     std::mutex mtx;
 
-    find_(
-        pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
-        geometry_t::intersects_box, min, max);
+    find_(pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
+      geometry_t::intersects_box, min, max);
 
     sem.acquire();
 
@@ -957,14 +942,13 @@ public:
   //! object ef with args.
   //-----------------------------------------------------------------//
   template<typename EF, typename... ARGS>
-  void apply_in_radius(
-      const point_t & center,
-      element_t radius,
-      EF && ef,
-      ARGS &&... args) {
+  void apply_in_radius(const point_t & center,
+    element_t radius,
+    EF && ef,
+    ARGS &&... args) {
 
     auto f = [&](entity_t * ent, const point_t & center, element_t radius) {
-      if (geometry_t::within(ent->coordinates(), center, radius)) {
+      if(geometry_t::within(ent->coordinates(), center, radius)) {
         ef(ent, std::forward<ARGS>(args)...);
       }
     };
@@ -981,18 +965,17 @@ public:
     object ef with args. (Concurrent version.)
    */
   template<typename EF, typename... ARGS>
-  void apply_in_radius(
-      thread_pool & pool,
-      const point_t & center,
-      element_t radius,
-      EF && ef,
-      ARGS &&... args) {
+  void apply_in_radius(thread_pool & pool,
+    const point_t & center,
+    element_t radius,
+    EF && ef,
+    ARGS &&... args) {
 
     size_t queue_depth = get_queue_depth(pool);
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
 
     auto f = [&](entity_t * ent, const point_t & center, element_t radius) {
-      if (geometry_t::within(ent->coordinates(), center, radius)) {
+      if(geometry_t::within(ent->coordinates(), center, radius)) {
         ef(ent, std::forward<ARGS>(args)...);
       }
     };
@@ -1004,9 +987,8 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    apply_(
-        pool, sem, queue_depth, depth, b, size, f, geometry_t::intersects,
-        center, radius);
+    apply_(pool, sem, queue_depth, depth, b, size, f, geometry_t::intersects,
+      center, radius);
 
     sem.acquire();
   }
@@ -1016,24 +998,23 @@ public:
   //! object ef with args.
   //-----------------------------------------------------------------//
   template<typename EF, typename... ARGS>
-  void apply_in_box(
-      thread_pool & pool,
-      const point_t & min,
-      const point_t & max,
-      EF && ef,
-      ARGS &&... args) {
+  void apply_in_box(thread_pool & pool,
+    const point_t & min,
+    const point_t & max,
+    EF && ef,
+    ARGS &&... args) {
 
     size_t queue_depth = get_queue_depth(pool);
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
 
     auto f = [&](entity_t * ent, const point_t & min, const point_t & max) {
-      if (geometry_t::within_box(ent->coordinates(), min, max)) {
+      if(geometry_t::within_box(ent->coordinates(), min, max)) {
         ef(ent, std::forward<ARGS>(args)...);
       }
     };
 
     element_t radius = 0;
-    for (size_t d = 0; d < dimension; ++d) {
+    for(size_t d = 0; d < dimension; ++d) {
       radius = std::max(radius, max[d] - min[d]);
     }
 
@@ -1050,9 +1031,8 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    apply_(
-        pool, sem, queue_depth, depth, b, size, f, geometry_t::intersects_box,
-        min, max);
+    apply_(pool, sem, queue_depth, depth, b, size, f,
+      geometry_t::intersects_box, min, max);
 
     sem.acquire();
   }
@@ -1062,19 +1042,18 @@ public:
     object ef with args. (Concurrent version.)
    */
   template<typename EF, typename... ARGS>
-  void apply_in_box(
-      const point_t & min,
-      const point_t & max,
-      EF && ef,
-      ARGS &&... args) {
+  void apply_in_box(const point_t & min,
+    const point_t & max,
+    EF && ef,
+    ARGS &&... args) {
     auto f = [&](entity_t * ent, const point_t & min, const point_t & max) {
-      if (geometry_t::within_box(ent->coordinates(), min, max)) {
+      if(geometry_t::within_box(ent->coordinates(), min, max)) {
         ef(ent, std::forward<ARGS>(args)...);
       }
     };
 
     element_t radius = 0;
-    for (size_t d = 0; d < dimension; ++d) {
+    for(size_t d = 0; d < dimension; ++d) {
       radius = std::max(radius, max[d] - min[d]);
     }
 
@@ -1152,9 +1131,8 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    visit_(
-        pool, sem, b, 0, queue_depth, std::forward<F>(f),
-        std::forward<ARGS>(args)...);
+    visit_(pool, sem, b, 0, queue_depth, std::forward<F>(f),
+      std::forward<ARGS>(args)...);
 
     sem.acquire();
   }
@@ -1165,14 +1143,14 @@ public:
   //-----------------------------------------------------------------//
   template<typename F, typename... ARGS>
   void visit_children(branch_t * b, F && f, ARGS &&... args) {
-    if (b->is_leaf()) {
-      for (auto ent : *b) {
+    if(b->is_leaf()) {
+      for(auto ent : *b) {
         f(ent, std::forward<ARGS>(args)...);
       }
       return;
     }
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * bi = b->template child_<branch_t>(i);
       visit_children(bi, std::forward<F>(f), std::forward<ARGS>(args)...);
     }
@@ -1190,9 +1168,8 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    visit_children_(
-        pool, sem, 0, queue_depth, b, std::forward<F>(f),
-        std::forward<ARGS>(args)...);
+    visit_children_(pool, sem, 0, queue_depth, b, std::forward<F>(f),
+      std::forward<ARGS>(args)...);
 
     sem.acquire();
   }
@@ -1229,7 +1206,7 @@ public:
     uint64_t num_entities = entities_.size();
 
     const size_t alloc_size =
-        sizeof(num_entities) + num_entities * sizeof(branch_id_t);
+      sizeof(num_entities) + num_entities * sizeof(branch_id_t);
 
     size = alloc_size;
 
@@ -1239,7 +1216,7 @@ public:
     std::memcpy(buf + pos, &num_entities, sizeof(num_entities));
     pos += sizeof(num_entities);
 
-    for (size_t entity_id = 0; entity_id < num_entities; ++entity_id) {
+    for(size_t entity_id = 0; entity_id < num_entities; ++entity_id) {
       entity_t * ent = entities_[entity_id];
       branch_int_t bid = ent->get_branch_id().value_();
       std::memcpy(buf + pos, &bid, sizeof(bid));
@@ -1256,7 +1233,7 @@ public:
     std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
     pos += sizeof(num_entities);
 
-    for (size_t entity_id = 0; entity_id < num_entities; ++entity_id) {
+    for(size_t entity_id = 0; entity_id < num_entities; ++entity_id) {
       entity_t * ent = new entity_t;
       ent->set_id_(entity_id);
 
@@ -1274,10 +1251,9 @@ public:
   }
 
 private:
-  using branch_map_t = std::unordered_map<
-      branch_id_t,
-      branch_t *,
-      branch_id_hasher__<branch_int_t, dimension>>;
+  using branch_map_t = std::unordered_map<branch_id_t,
+    branch_t *,
+    branch_id_hasher_u<branch_int_t, dimension>>;
 
   branch_id_t to_branch_id(const point_t & p, size_t max_depth) {
     return branch_id_t(range_, p, max_depth);
@@ -1294,7 +1270,7 @@ private:
 
     b->insert(ent);
 
-    switch (b->requested_action_()) {
+    switch(b->requested_action_()) {
       case action::none:
         break;
       case action::refine:
@@ -1311,7 +1287,7 @@ private:
 
     b->insert(ent);
 
-    switch (b->requested_action()) {
+    switch(b->requested_action()) {
       case action::none:
         break;
       case action::refine:
@@ -1323,9 +1299,9 @@ private:
   }
 
   branch_t * find_parent_(branch_id_t bid) {
-    for (;;) {
+    for(;;) {
       auto itr = branch_map_.find(bid);
-      if (itr != branch_map_.end()) {
+      if(itr != branch_map_.end()) {
         return itr->second;
       }
       bid.pop();
@@ -1351,18 +1327,18 @@ private:
     branch_id_t pid = b->id();
     size_t depth = pid.depth() + 1;
 
-    if (!b->template into_branch_<branch_t>()) {
+    if(!b->template into_branch_<branch_t>()) {
       return;
     }
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
       branch_map_.emplace(ci->id(), ci);
     }
 
     max_depth_ = std::max(max_depth_, depth);
 
-    for (auto ent : *b) {
+    for(auto ent : *b) {
       insert(ent, depth);
     }
 
@@ -1374,14 +1350,14 @@ private:
   // insert into p, coarsen all recursive children of b
 
   void coarsen_(branch_t * p, branch_t * b) {
-    if (b->is_leaf()) {
+    if(b->is_leaf()) {
       return;
     }
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      for (auto ent : *ci) {
+      for(auto ent : *ci) {
         p->insert(ent);
         ent->set_branch_id_(p->id());
       }
@@ -1404,11 +1380,10 @@ private:
     return std::log2(double(n)) / bn + 1;
   }
 
-  branch_t * find_start_(
-      const point_t & center,
-      element_t radius,
-      size_t & depth,
-      element_t & size) {
+  branch_t * find_start_(const point_t & center,
+    element_t radius,
+    size_t & depth,
+    element_t & size) {
 
     element_t norm_radius = radius / max_scale_;
 
@@ -1416,7 +1391,7 @@ private:
 
     int d = -std::log2(norm_radius) - 1;
 
-    while (d > 0) {
+    while(d > 0) {
       branch_t * b = find_parent(bid, d);
 
       point_t p2;
@@ -1425,15 +1400,15 @@ private:
       size = std::pow(element_t(2), -d);
 
       bool found = true;
-      for (size_t dim = 0; dim < dimension; ++dim) {
-        if (!(center[dim] - radius > p2[dim] &&
-              center[dim] + radius < p2[dim] + size)) {
+      for(size_t dim = 0; dim < dimension; ++dim) {
+        if(!(center[dim] - radius > p2[dim] &&
+             center[dim] + radius < p2[dim] + size)) {
           found = false;
           break;
         }
       }
 
-      if (found) {
+      if(found) {
         depth = d;
         return b;
       }
@@ -1450,8 +1425,8 @@ private:
   void
   apply_(branch_t * b, element_t size, EF && ef, BF && bf, ARGS &&... args) {
 
-    if (b->is_leaf()) {
-      for (auto ent : *b) {
+    if(b->is_leaf()) {
+      for(auto ent : *b) {
         ef(ent, std::forward<ARGS>(args)...);
       }
       return;
@@ -1459,38 +1434,36 @@ private:
 
     size /= 2;
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      if (bf(ci->coordinates(range_), size, scale_,
-             std::forward<ARGS>(args)...)) {
-        apply_(
-            ci, size, std::forward<EF>(ef), std::forward<BF>(bf),
-            std::forward<ARGS>(args)...);
+      if(bf(ci->coordinates(range_), size, scale_,
+           std::forward<ARGS>(args)...)) {
+        apply_(ci, size, std::forward<EF>(ef), std::forward<BF>(bf),
+          std::forward<ARGS>(args)...);
       }
     }
   }
 
   template<typename EF, typename BF, typename... ARGS>
-  void apply_(
-      thread_pool & pool,
-      virtual_semaphore & sem,
-      size_t queue_depth,
-      size_t depth,
-      branch_t * b,
-      element_t size,
-      EF && ef,
-      BF && bf,
-      ARGS &&... args) {
+  void apply_(thread_pool & pool,
+    virtual_semaphore & sem,
+    size_t queue_depth,
+    size_t depth,
+    branch_t * b,
+    element_t size,
+    EF && ef,
+    BF && bf,
+    ARGS &&... args) {
 
-    if (b->is_leaf()) {
-      for (auto ent : *b) {
+    if(b->is_leaf()) {
+      for(auto ent : *b) {
         ef(ent, std::forward<ARGS>(args)...);
       }
 
       size_t m = branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
-      for (size_t i = 0; i < m; ++i) {
+      for(size_t i = 0; i < m; ++i) {
         sem.release();
       }
 
@@ -1500,35 +1473,35 @@ private:
     size /= 2;
     ++depth;
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      if (bf(ci->coordinates(range_), size, scale_,
-             std::forward<ARGS>(args)...)) {
-        if (depth == queue_depth) {
+      if(bf(ci->coordinates(range_), size, scale_,
+           std::forward<ARGS>(args)...)) {
+        if(depth == queue_depth) {
 
           auto f = [&, size, ci]() {
-            apply_(
-                ci, size, std::forward<EF>(ef), std::forward<BF>(bf),
-                std::forward<ARGS>(args)...);
+            apply_(ci, size, std::forward<EF>(ef), std::forward<BF>(bf),
+              std::forward<ARGS>(args)...);
 
             sem.release();
           };
 
           pool.queue(f);
-        } else {
-          apply_(
-              pool, sem, queue_depth, depth, ci, size, std::forward<EF>(ef),
-              std::forward<BF>(bf), std::forward<ARGS>(args)...);
         }
-      } else {
-        if (depth > queue_depth) {
+        else {
+          apply_(pool, sem, queue_depth, depth, ci, size, std::forward<EF>(ef),
+            std::forward<BF>(bf), std::forward<ARGS>(args)...);
+        }
+      }
+      else {
+        if(depth > queue_depth) {
           continue;
         }
 
         size_t m = branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
-        for (size_t i = 0; i < m; ++i) {
+        for(size_t i = 0; i < m; ++i) {
           sem.release();
         }
       }
@@ -1536,17 +1509,16 @@ private:
   }
 
   template<typename EF, typename BF, typename... ARGS>
-  void find_(
-      branch_t * b,
-      element_t size,
-      subentity_space_t & ents,
-      EF && ef,
-      BF && bf,
-      ARGS &&... args) {
+  void find_(branch_t * b,
+    element_t size,
+    subentity_space_t & ents,
+    EF && ef,
+    BF && bf,
+    ARGS &&... args) {
 
-    if (b->is_leaf()) {
-      for (auto ent : *b) {
-        if (ef(ent, std::forward<ARGS>(args)...)) {
+    if(b->is_leaf()) {
+      for(auto ent : *b) {
+        if(ef(ent, std::forward<ARGS>(args)...)) {
           ents.push_back(ent);
         }
       }
@@ -1555,36 +1527,34 @@ private:
 
     size /= 2;
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      if (bf(ci->coordinates(range_), size, scale_,
-             std::forward<ARGS>(args)...)) {
-        find_(
-            ci, size, ents, std::forward<EF>(ef), std::forward<BF>(bf),
-            std::forward<ARGS>(args)...);
+      if(bf(ci->coordinates(range_), size, scale_,
+           std::forward<ARGS>(args)...)) {
+        find_(ci, size, ents, std::forward<EF>(ef), std::forward<BF>(bf),
+          std::forward<ARGS>(args)...);
       }
     }
   }
 
   template<typename EF, typename BF, typename... ARGS>
-  void find_(
-      thread_pool & pool,
-      virtual_semaphore & sem,
-      std::mutex & mtx,
-      size_t queue_depth,
-      size_t depth,
-      branch_t * b,
-      element_t size,
-      subentity_space_t & ents,
-      EF && ef,
-      BF && bf,
-      ARGS &&... args) {
+  void find_(thread_pool & pool,
+    virtual_semaphore & sem,
+    std::mutex & mtx,
+    size_t queue_depth,
+    size_t depth,
+    branch_t * b,
+    element_t size,
+    subentity_space_t & ents,
+    EF && ef,
+    BF && bf,
+    ARGS &&... args) {
 
-    if (b->is_leaf()) {
+    if(b->is_leaf()) {
       mtx.lock();
-      for (auto ent : *b) {
-        if (ef(ent, std::forward<ARGS>(args)...)) {
+      for(auto ent : *b) {
+        if(ef(ent, std::forward<ARGS>(args)...)) {
           ents.push_back(ent);
         }
       }
@@ -1592,7 +1562,7 @@ private:
 
       size_t m = branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
-      for (size_t i = 0; i < m; ++i) {
+      for(size_t i = 0; i < m; ++i) {
         sem.release();
       }
 
@@ -1602,19 +1572,18 @@ private:
     size /= 2;
     ++depth;
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * ci = b->template child_<branch_t>(i);
 
-      if (bf(ci->coordinates(range_), size, scale_,
-             std::forward<ARGS>(args)...)) {
-        if (depth == queue_depth) {
+      if(bf(ci->coordinates(range_), size, scale_,
+           std::forward<ARGS>(args)...)) {
+        if(depth == queue_depth) {
 
           auto f = [&, size, ci]() {
             subentity_space_t branch_ents;
 
-            find_(
-                ci, size, branch_ents, std::forward<EF>(ef),
-                std::forward<BF>(bf), std::forward<ARGS>(args)...);
+            find_(ci, size, branch_ents, std::forward<EF>(ef),
+              std::forward<BF>(bf), std::forward<ARGS>(args)...);
 
             mtx.lock();
             ents.append(branch_ents);
@@ -1624,20 +1593,21 @@ private:
           };
 
           pool.queue(f);
-        } else {
-          find_(
-              pool, sem, mtx, queue_depth, depth, ci, size, ents,
-              std::forward<EF>(ef), std::forward<BF>(bf),
-              std::forward<ARGS>(args)...);
         }
-      } else {
-        if (depth > queue_depth) {
+        else {
+          find_(pool, sem, mtx, queue_depth, depth, ci, size, ents,
+            std::forward<EF>(ef), std::forward<BF>(bf),
+            std::forward<ARGS>(args)...);
+        }
+      }
+      else {
+        if(depth > queue_depth) {
           continue;
         }
 
         size_t m = branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
-        for (size_t i = 0; i < m; ++i) {
+        for(size_t i = 0; i < m; ++i) {
           sem.release();
         }
       }
@@ -1646,31 +1616,30 @@ private:
 
   template<typename F, typename... ARGS>
   void visit_(branch_t * b, size_t depth, F && f, ARGS &&... args) {
-    if (f(b, depth, std::forward<ARGS>(args)...)) {
+    if(f(b, depth, std::forward<ARGS>(args)...)) {
       return;
     }
 
-    if (b->is_leaf()) {
+    if(b->is_leaf()) {
       return;
     }
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * bi = b->template child_<branch_t>(i);
       visit_(bi, depth + 1, std::forward<F>(f), std::forward<ARGS>(args)...);
     }
   }
 
   template<typename F, typename... ARGS>
-  void visit_(
-      thread_pool & pool,
-      virtual_semaphore & sem,
-      branch_t * b,
-      size_t depth,
-      size_t queue_depth,
-      F && f,
-      ARGS &&... args) {
+  void visit_(thread_pool & pool,
+    virtual_semaphore & sem,
+    branch_t * b,
+    size_t depth,
+    size_t queue_depth,
+    F && f,
+    ARGS &&... args) {
 
-    if (depth == queue_depth) {
+    if(depth == queue_depth) {
       auto vf = [&, depth, b]() {
         visit_(b, depth, std::forward<F>(f), std::forward<ARGS>(args)...);
         sem.release();
@@ -1680,46 +1649,44 @@ private:
       return;
     }
 
-    if (f(b, depth, std::forward<ARGS>(args)...)) {
+    if(f(b, depth, std::forward<ARGS>(args)...)) {
       size_t m = branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
-      for (size_t i = 0; i < m; ++i) {
+      for(size_t i = 0; i < m; ++i) {
         sem.release();
       }
 
       return;
     }
 
-    if (b->is_leaf()) {
+    if(b->is_leaf()) {
       size_t m = branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
-      for (size_t i = 0; i < m; ++i) {
+      for(size_t i = 0; i < m; ++i) {
         sem.release();
       }
 
       return;
     }
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * bi = b->template child_<branch_t>(i);
 
-      visit_(
-          pool, sem, bi, depth + 1, queue_depth, std::forward<F>(f),
-          std::forward<ARGS>(args)...);
+      visit_(pool, sem, bi, depth + 1, queue_depth, std::forward<F>(f),
+        std::forward<ARGS>(args)...);
     }
   }
 
   template<typename F, typename... ARGS>
-  void visit_children_(
-      thread_pool & pool,
-      virtual_semaphore & sem,
-      size_t depth,
-      size_t queue_depth,
-      branch_t * b,
-      F && f,
-      ARGS &&... args) {
+  void visit_children_(thread_pool & pool,
+    virtual_semaphore & sem,
+    size_t depth,
+    size_t queue_depth,
+    branch_t * b,
+    F && f,
+    ARGS &&... args) {
 
-    if (depth == queue_depth) {
+    if(depth == queue_depth) {
       auto vf = [&, b]() {
         visit_children(b, std::forward<F>(f), std::forward<ARGS>(args)...);
         sem.release();
@@ -1729,25 +1696,24 @@ private:
       return;
     }
 
-    if (b->is_leaf()) {
-      for (auto ent : *b) {
+    if(b->is_leaf()) {
+      for(auto ent : *b) {
         f(ent, std::forward<ARGS>(args)...);
       }
 
       size_t m = branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
-      for (size_t i = 0; i < m; ++i) {
+      for(size_t i = 0; i < m; ++i) {
         sem.release();
       }
 
       return;
     }
 
-    for (size_t i = 0; i < branch_t::num_children; ++i) {
+    for(size_t i = 0; i < branch_t::num_children; ++i) {
       branch_t * bi = b->template child_<branch_t>(i);
-      visit_children_(
-          pool, sem, depth + 1, queue_depth, bi, std::forward<F>(f),
-          std::forward<ARGS>(args)...);
+      visit_children_(pool, sem, depth + 1, queue_depth, bi, std::forward<F>(f),
+        std::forward<ARGS>(args)...);
     }
   }
 
@@ -1764,11 +1730,12 @@ private:
 //! Tree entity base class.
 //-----------------------------------------------------------------//
 template<typename T, size_t DIM>
-class tree_entity {
+class tree_entity
+{
 public:
   using id_t = entity_id_t;
 
-  using branch_id_t = branch_id__<T, DIM>;
+  using branch_id_t = branch_id_u<T, DIM>;
 
   tree_entity() : branch_id_(branch_id_t::null()) {}
 
@@ -1811,20 +1778,21 @@ private:
 //! Tree branch base class.
 //-----------------------------------------------------------------//
 template<typename T, size_t DIM>
-class tree_branch__ {
+class tree_branch_u
+{
 public:
   using branch_int_t = T;
 
   static const size_t dimension = DIM;
 
-  using branch_id_t = branch_id__<T, DIM>;
+  using branch_id_t = branch_id_u<T, DIM>;
 
   using id_t = branch_id_t;
 
   static constexpr size_t num_children = branch_int_t(1) << dimension;
 
-  tree_branch__()
-      : action_(action::none), parent_(nullptr), children_(nullptr) {}
+  tree_branch_u()
+    : action_(action::none), parent_(nullptr), children_(nullptr) {}
 
   branch_id_t id() const {
     return id_;
@@ -1851,7 +1819,7 @@ public:
     action_ = action::none;
   }
 
-  tree_branch__ * parent() const {
+  tree_branch_u * parent() const {
     return parent_;
   }
 
@@ -1883,13 +1851,13 @@ private:
 
   template<class B>
   bool into_branch_() {
-    if (children_) {
+    if(children_) {
       return false;
     }
 
     auto c = new B[num_children];
 
-    for (branch_int_t bi = 0; bi < num_children; ++bi) {
+    for(branch_int_t bi = 0; bi < num_children; ++bi) {
       B & ci = c[bi];
       ci.id_ = id_;
       ci.id_.push(bi);
@@ -1904,7 +1872,7 @@ private:
 
   template<class B>
   void into_leaf_() {
-    if (children_) {
+    if(children_) {
       delete[] static_cast<B *>(children_);
       children_ = nullptr;
     }
@@ -1912,8 +1880,8 @@ private:
 
   template<class B>
   void dealloc_() {
-    if (children_) {
-      for (size_t i = 0; i < num_children; ++i) {
+    if(children_) {
+      for(size_t i = 0; i < num_children; ++i) {
         static_cast<B *>(children_)[i].template dealloc_<B>();
       }
 
@@ -1924,8 +1892,8 @@ private:
 
   action action_;
 
-  tree_branch__ * parent_;
-  tree_branch__ * children_;
+  tree_branch_u * parent_;
+  tree_branch_u * children_;
 
   branch_id_t id_;
 };

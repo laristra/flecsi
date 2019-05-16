@@ -1,8 +1,7 @@
 ![logo](doc/flecsi.png)
 
-[![Build Status](https://travis-ci.org/laristra/flecsi.svg?branch=master)](https://travis-ci.org/laristra/flecsi)
+[![Build Status](https://travis-ci.com/laristra/flecsi.svg?branch=master)](https://travis-ci.com/laristra/flecsi)
 [![codecov.io](https://codecov.io/github/laristra/flecsi/coverage.svg?branch=master)](https://codecov.io/github/laristra/flecsi?branch=master)
-[![Quality Gate](https://sonarqube.com/api/badges/gate?key=flecsi%3A%2Fmaster)](https://sonarqube.com/dashboard?id=flecsi%3A%2Fmaster)
 
 # Introduction
 
@@ -41,7 +40,7 @@ the developer [README](developer/README.md).
 # Requirements
 
 The primary requirement for building FleCSI is that you have
-a C++14-capable compiler.
+a C++17-capable compiler.
 
 ## Tools
 
@@ -49,7 +48,7 @@ You'll need the following tools in order to build FleCSI:
 
    * Boost >= 1.56
    * CMake >= 3.0
-   * GCC >= 6.1.1
+   * GCC >= 7.3.0
 
 Install tools in the customary manner for your machine, e.g. by using
 *apt-get* on a Ubuntu system, or *dnf* for Fedora.
@@ -101,6 +100,7 @@ Alternatively, you can run *ccmake* in place of *cmake*, and use
 Finally:
 ```
 $ make
+$ make install
 ```
 builds and installs the FleCSI third-party libraries in the prefix
 that you specified.
@@ -158,7 +158,7 @@ $ cmake .. \
     -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug/ \
     -DENABLE_UNIT_TESTS=ON \
     -DFLECSI_RUNTIME_MODEL=legion \
-    -DENABLE_DOCUMENTATION=ON \
+    -DENABLE_SPHINX=ON \
     -DENABLE_DOXYGEN=ON
 $ make
 ```
@@ -167,7 +167,8 @@ This will build the User and Developer Guides in the *doc* subdirectory.
 In order to build the Doxygen interface documentation, you will need to
 execute:
 ```
-$ make doxygen
+$ make doxygen 
+$ make sphinx
 ```
 which will build the interface documentation (also under the *doc*
 subdirectory).
@@ -204,19 +205,11 @@ the **ngc/devel-gnu** environment module:
 ```
 $ module load ngc   # ngc/devel-gnu is the default
 ```
-which will load up-to-date compiler and documentation tools. You'll
-also want OpenMPI:
-```
-$ module load openmpi
-```
-Finally, you may want a later GCC than what the *ngc* module might
-provide, and you'll need compatible Boost libraries:
-```
-$ module unload gcc
-$ module load gcc/6.2.0
-$ module load boost/1.59.0_gcc-6.2.0
-```
-Note that the Boost module should match the *gcc* version.
+which will load up-to-date compiler and documentation tools.
+It will also load a compatible Boost & MPICH libraries.
+
+Note: Boost & MPICH modules should match the *gcc* version and gcc/8.1.0
+is automatically loaded.
 
 # Release
 

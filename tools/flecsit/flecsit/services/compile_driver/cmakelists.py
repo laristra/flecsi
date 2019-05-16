@@ -16,6 +16,9 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED})
 
 project(${PROJECT})
 
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+
 find_package(FleCSI REQUIRED)
 
 include_directories($${FLECSI_INCLUDE_DIRS})
@@ -35,7 +38,8 @@ add_executable(${TARGET}
 target_compile_definitions(${TARGET} PRIVATE ${FLECSI_DEFINES})
 
 if(FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
-  target_compile_definitions(${TARGET} PRIVATE -DENABLE_BOOST_PROGRAM_OPTIONS)
+  target_compile_definitions(${TARGET} PRIVATE
+    -DFLECSI_ENABLE_BOOST_PROGRAM_OPTIONS)
 endif()
 
 target_link_libraries(${TARGET} FleCSI ${FLECSI_LIBRARIES})

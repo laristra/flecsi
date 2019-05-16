@@ -57,7 +57,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 
 /*!
-mesh_topology__ is parameterized on a class (MESH_TYPE) which gives
+mesh_topology_u is parameterized on a class (MESH_TYPE) which gives
 information about its entity types, connectivities and more. the mesh
 topology is responsibly for computing connectivity info between entities
 of different topological dimension, e.g: vertex -> cell,
@@ -104,65 +104,56 @@ entity set - contains an iterable set of entities. Support set operations such
  @ingroup mesh-topology
  */
 template<class MESH_TYPE>
-class mesh_topology__ : public mesh_topology_base__<mesh_storage__<
-                            MESH_TYPE::num_dimensions,
-                            MESH_TYPE::num_domains,
-                            num_index_subspaces__<MESH_TYPE>::value>> {
+class mesh_topology_u
+  : public mesh_topology_base_u<mesh_storage_u<MESH_TYPE::num_dimensions,
+      MESH_TYPE::num_domains,
+      num_index_subspaces_u<MESH_TYPE>::value>>
+{
   // static verification of mesh policy
 
-  static_assert(
-      verify_mesh::has_member_num_dimensions<MESH_TYPE>::value,
-      "mesh policy missing num_dimensions size_t");
+  static_assert(verify_mesh::has_member_num_dimensions<MESH_TYPE>::value,
+    "mesh policy missing num_dimensions size_t");
 
   static_assert(
-      std::is_convertible<decltype(MESH_TYPE::num_dimensions), size_t>::value,
-      "mesh policy num_dimensions must be size_t");
+    std::is_convertible<decltype(MESH_TYPE::num_dimensions), size_t>::value,
+    "mesh policy num_dimensions must be size_t");
+
+  static_assert(verify_mesh::has_member_num_domains<MESH_TYPE>::value,
+    "mesh policy missing num_domains size_t");
 
   static_assert(
-      verify_mesh::has_member_num_domains<MESH_TYPE>::value,
-      "mesh policy missing num_domains size_t");
+    std::is_convertible<decltype(MESH_TYPE::num_domains), size_t>::value,
+    "mesh policy num_domains must be size_t");
 
-  static_assert(
-      std::is_convertible<decltype(MESH_TYPE::num_domains), size_t>::value,
-      "mesh policy num_domains must be size_t");
+  static_assert(verify_mesh::has_member_entity_types<MESH_TYPE>::value,
+    "mesh policy missing entity_types tuple");
 
-  static_assert(
-      verify_mesh::has_member_entity_types<MESH_TYPE>::value,
-      "mesh policy missing entity_types tuple");
+  static_assert(utils::is_tuple<typename MESH_TYPE::entity_types>::value,
+    "mesh policy entity_types is not a tuple");
 
-  static_assert(
-      utils::is_tuple<typename MESH_TYPE::entity_types>::value,
-      "mesh policy entity_types is not a tuple");
+  static_assert(verify_mesh::has_member_connectivities<MESH_TYPE>::value,
+    "mesh policy missing connectivities tuple");
 
-  static_assert(
-      verify_mesh::has_member_connectivities<MESH_TYPE>::value,
-      "mesh policy missing connectivities tuple");
+  static_assert(utils::is_tuple<typename MESH_TYPE::connectivities>::value,
+    "mesh policy connectivities is not a tuple");
 
-  static_assert(
-      utils::is_tuple<typename MESH_TYPE::connectivities>::value,
-      "mesh policy connectivities is not a tuple");
+  static_assert(verify_mesh::has_member_bindings<MESH_TYPE>::value,
+    "mesh policy missing bindings tuple");
 
-  static_assert(
-      verify_mesh::has_member_bindings<MESH_TYPE>::value,
-      "mesh policy missing bindings tuple");
+  static_assert(utils::is_tuple<typename MESH_TYPE::bindings>::value,
+    "mesh policy bindings is not a tuple");
 
-  static_assert(
-      utils::is_tuple<typename MESH_TYPE::bindings>::value,
-      "mesh policy bindings is not a tuple");
-
-  static_assert(
-      verify_mesh::has_member_create_entity<MESH_TYPE>::value,
-      "mesh policy missing create_entity()");
+  static_assert(verify_mesh::has_member_create_entity<MESH_TYPE>::value,
+    "mesh policy missing create_entity()");
 
 public:
   // mesh storage type definition
-  using storage_t = mesh_storage__<
-      MESH_TYPE::num_dimensions,
-      MESH_TYPE::num_domains,
-      num_index_subspaces__<MESH_TYPE>::value>;
+  using storage_t = mesh_storage_u<MESH_TYPE::num_dimensions,
+    MESH_TYPE::num_domains,
+    num_index_subspaces_u<MESH_TYPE>::value>;
 
   // mesh topology base definition
-  using base_t = mesh_topology_base__<storage_t>;
+  using base_t = mesh_topology_base_u<storage_t>;
 
   // entity ID type
   using id_t = utils::id_t;
@@ -180,32 +171,32 @@ public:
   // tree topologies. It is also useful for detecting illegal usage, such as
   // when a user adds data members.
   //--------------------------------------------------------------------------//
-  using type_identifier_t = mesh_topology__;
+  using type_identifier_t = mesh_topology_u;
 
   // Don't allow the mesh to be copied or copy constructed
 
   //! don't allow mesh to be assigned
-  mesh_topology__ & operator=(const mesh_topology__ &) = delete;
+  mesh_topology_u & operator=(const mesh_topology_u &) = delete;
 
   //! Allow move operations
-  mesh_topology__(mesh_topology__ && o) = default;
+  mesh_topology_u(mesh_topology_u && o) = default;
 
   //! override default move assignement
-  mesh_topology__ & operator=(mesh_topology__ && o) = default;
+  mesh_topology_u & operator=(mesh_topology_u && o) = default;
 
   //! Constructor, takes as input a mesh storage or storage can later be set
-  mesh_topology__(storage_t * ms = nullptr) : base_t(ms) {
-    if (ms != nullptr) {
+  mesh_topology_u(storage_t * ms = nullptr) : base_t(ms) {
+    if(ms != nullptr) {
       initialize_storage();
     } // if
-  } // mesh_topology__()
+  } // mesh_topology_u()
 
   //! Copy constructor: alias another mesh
-  mesh_topology__(const mesh_topology__ & m) : base_t(m.ms_) {}
+  mesh_topology_u(const mesh_topology_u & m) : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
-  virtual ~mesh_topology__() {}
+  virtual ~mesh_topology_u() {}
 
   //--------------------------------------------------------------------------//
   //! Initialize the mesh storage after it has been set
@@ -213,27 +204,26 @@ public:
   //--------------------------------------------------------------------------//
   void initialize_storage() {
 
-    for (size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
-         ++from_domain) {
-      for (size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
-           ++to_domain) {
+    for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+        ++from_domain) {
+      for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
+          ++to_domain) {
         base_t::ms_->topology[from_domain][to_domain].init_(
-            from_domain, to_domain);
+          from_domain, to_domain);
       } // for
     } // for
 
-    for (size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
-         ++to_domain) {
-      for (size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions; ++to_dim) {
+    for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains; ++to_domain) {
+      for(size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions; ++to_dim) {
         auto & master = base_t::ms_->index_spaces[to_domain][to_dim];
 
-        for (size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
-             ++from_domain) {
-          for (size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
-               ++from_dim) {
+        for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+            ++from_domain) {
+          for(size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
+              ++from_dim) {
             get_connectivity_(from_domain, to_domain, from_dim, to_dim)
-                .get_index_space()
-                .set_master(master);
+              .get_index_space()
+              .set_master(master);
           } // for
         } // for
       } // for
@@ -278,12 +268,11 @@ public:
   //! @param super from entity
   //! @param subs to entities
   //--------------------------------------------------------------------------//
-  template<
-      size_t DOM,
-      size_t FROM_DIM,
-      size_t TO_DIM,
-      class ENT_TYPE1,
-      class ENT_TYPE2>
+  template<size_t DOM,
+    size_t FROM_DIM,
+    size_t TO_DIM,
+    class ENT_TYPE1,
+    class ENT_TYPE2>
   void init_entity(ENT_TYPE1 * super, ENT_TYPE2 && subs) {
     init_entity_<DOM, FROM_DIM, TO_DIM>(super, std::forward<ENT_TYPE2>(subs));
   } // init_entity
@@ -300,12 +289,11 @@ public:
   //! @param super from entity
   //! @param subs to entities
   //--------------------------------------------------------------------------//
-  template<
-      size_t DOM,
-      size_t FROM_DIM,
-      size_t TO_DIM,
-      class ENT_TYPE1,
-      class ENT_TYPE2>
+  template<size_t DOM,
+    size_t FROM_DIM,
+    size_t TO_DIM,
+    class ENT_TYPE1,
+    class ENT_TYPE2>
   void init_entity(ENT_TYPE1 * super, std::initializer_list<ENT_TYPE2 *> subs) {
     init_entity_<DOM, FROM_DIM, TO_DIM>(super, subs);
   } // init_entity
@@ -331,10 +319,10 @@ public:
   void init() {
     // Compute mesh connectivity
     using TP = typename MESH_TYPE::connectivities;
-    compute_connectivity__<DOM, std::tuple_size<TP>::value, TP>::compute(*this);
+    compute_connectivity_u<DOM, std::tuple_size<TP>::value, TP>::compute(*this);
 
     using BT = typename MESH_TYPE::bindings;
-    compute_bindings__<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
+    compute_bindings_u<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
   //--------------------------------------------------------------------------//
@@ -347,7 +335,7 @@ public:
   template<size_t DOM = 0>
   void init_bindings() {
     using BT = typename MESH_TYPE::bindings;
-    compute_bindings__<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
+    compute_bindings_u<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
   //--------------------------------------------------------------------------//
@@ -380,11 +368,10 @@ public:
   //! Get the connectivity of the specified from/to domain and from/to
   //! topological dimensions.
   //--------------------------------------------------------------------------//
-  const connectivity_t & get_connectivity(
-      size_t from_domain,
-      size_t to_domain,
-      size_t from_dim,
-      size_t to_dim) const override {
+  const connectivity_t & get_connectivity(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim) const override {
     return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
   } // get_connectivity
 
@@ -392,11 +379,10 @@ public:
   //! Get the connectivity of the specified from/to domain and from/to
   //! topological dimensions.
   //--------------------------------------------------------------------------//
-  connectivity_t & get_connectivity(
-      size_t from_domain,
-      size_t to_domain,
-      size_t from_dim,
-      size_t to_dim) override {
+  connectivity_t & get_connectivity(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim) override {
     return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
   } // get_connectivity
 
@@ -404,10 +390,9 @@ public:
   //! Get the connectivity of the specified domain and from/to topological
   //! dimensions.
   //--------------------------------------------------------------------------//
-  const connectivity_t & get_connectivity(
-      size_t domain,
-      size_t from_dim,
-      size_t to_dim) const override {
+  const connectivity_t & get_connectivity(size_t domain,
+    size_t from_dim,
+    size_t to_dim) const override {
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
@@ -492,7 +477,7 @@ public:
   auto get_entity(id_t global_id) const {
     using etype = entity_type<DIM, DOM>;
     return static_cast<etype *>(
-        base_t::ms_->index_spaces[DOM][DIM][global_id.entity()]);
+      base_t::ms_->index_spaces[DOM][DIM][global_id.entity()]);
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -527,8 +512,8 @@ public:
   auto get_entity(id_t global_id, partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
     return static_cast<etype *>(
-        base_t::ms_
-            ->partition_index_spaces[partition][DOM][DIM][global_id.entity()]);
+      base_t::ms_
+        ->partition_index_spaces[partition][DOM][DIM][global_id.entity()]);
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -545,7 +530,7 @@ public:
   template<size_t DOM = 0>
   auto get_entity(size_t dim, id_t global_id, partition_t partition) {
     return base_t::ms_
-        ->partition_index_spaces[partition][DOM][dim][global_id.entity()];
+      ->partition_index_spaces[partition][DOM][dim][global_id.entity()];
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -559,22 +544,21 @@ public:
   //!
   //! @param e from entity
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE>
+  template<size_t DIM,
+    size_t FROM_DOM,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE>
   const auto entities(const ENT_TYPE * e) const {
 
     const connectivity_t & c =
-        get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
+      get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
-    using dtype = domain_entity__<TO_DOM, etype>;
+    using dtype = domain_entity_u<TO_DOM, etype>;
 
     return c.get_index_space().slice<dtype>(
-        c.range(e->template id<FROM_DOM>()));
+      c.range(e->template id<FROM_DOM>()));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -588,21 +572,20 @@ public:
   //!
   //! @param e from entity
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE>
+  template<size_t DIM,
+    size_t FROM_DOM,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE>
   auto entities(ENT_TYPE * e) {
     connectivity_t & c =
-        get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
+      get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
-    using dtype = domain_entity__<TO_DOM, etype>;
+    using dtype = domain_entity_u<TO_DOM, etype>;
 
     return c.get_index_space().slice<dtype>(
-        c.range(e->template id<FROM_DOM>()));
+      c.range(e->template id<FROM_DOM>()));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -616,12 +599,11 @@ public:
   //!
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM = 0,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE>
-  decltype(auto) entities(domain_entity__<FROM_DOM, ENT_TYPE> & e) const {
+  template<size_t DIM,
+    size_t FROM_DOM = 0,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE>
+  decltype(auto) entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) const {
     return entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -636,12 +618,11 @@ public:
   //!
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM = 0,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE>
-  decltype(auto) entities(domain_entity__<FROM_DOM, ENT_TYPE> & e) {
+  template<size_t DIM,
+    size_t FROM_DOM = 0,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE>
+  decltype(auto) entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
     return entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -655,7 +636,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto entities() const {
     using etype = entity_type<DIM, DOM>;
-    using dtype = domain_entity__<DOM, etype>;
+    using dtype = domain_entity_u<DOM, etype>;
     return base_t::ms_->index_spaces[DOM][DIM].template slice<dtype>();
   } // entities
 
@@ -672,9 +653,9 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto entities(partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
-    using dtype = domain_entity__<DOM, etype>;
+    using dtype = domain_entity_u<DOM, etype>;
     return base_t::ms_->partition_index_spaces[partition][DOM][DIM]
-        .template slice<dtype>();
+      .template slice<dtype>();
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -715,12 +696,11 @@ public:
   //!
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM = 0,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE>
-  decltype(auto) entity_ids(domain_entity__<FROM_DOM, ENT_TYPE> & e) {
+  template<size_t DIM,
+    size_t FROM_DOM = 0,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE>
+  decltype(auto) entity_ids(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
     return entity_ids<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -736,14 +716,13 @@ public:
   //!
   //! @param e from entity
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM = 0,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE>
+  template<size_t DIM,
+    size_t FROM_DOM = 0,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE>
   auto entity_ids(const ENT_TYPE * e) const {
     const connectivity_t & c =
-        get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
+      get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
     return c.get_index_space().ids(c.range(e->template id<FROM_DOM>()));
   } // entities
@@ -759,11 +738,10 @@ public:
   //!
   //! @param e from entity
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE>
+  template<size_t DIM,
+    size_t FROM_DOM,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE>
   void reverse_entities(ENT_TYPE * e) {
     auto & c = get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
@@ -781,12 +759,11 @@ public:
   //!
   //! @param e from entity with compile-time domain
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM = 0,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE>
-  void reverse_entities(domain_entity__<FROM_DOM, ENT_TYPE> & e) {
+  template<size_t DIM,
+    size_t FROM_DOM = 0,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE>
+  void reverse_entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
     return reverse_entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -802,12 +779,11 @@ public:
   //! @param e from entity
   //! @param order order specification
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE,
-      class U>
+  template<size_t DIM,
+    size_t FROM_DOM,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE,
+    class U>
   void reorder_entities(ENT_TYPE * e, U && order) {
     auto & c = get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
@@ -826,15 +802,14 @@ public:
   //! @param e from entity
   //! @param order order specification
   //--------------------------------------------------------------------------//
-  template<
-      size_t DIM,
-      size_t FROM_DOM = 0,
-      size_t TO_DOM = FROM_DOM,
-      class ENT_TYPE,
-      class U>
-  void reverse_entities(domain_entity__<FROM_DOM, ENT_TYPE> & e, U && order) {
+  template<size_t DIM,
+    size_t FROM_DOM = 0,
+    size_t TO_DOM = FROM_DOM,
+    class ENT_TYPE,
+    class U>
+  void reverse_entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e, U && order) {
     return reorder_entities<DIM, FROM_DOM, TO_DOM>(
-        e.entity(), std::forward<U>(order));
+      e.entity(), std::forward<U>(order));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -874,11 +849,11 @@ public:
   //! @param stream output stream
   //--------------------------------------------------------------------------//
   std::ostream & dump(std::ostream & stream) {
-    for (size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
-         ++from_domain) {
+    for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+        ++from_domain) {
       stream << "=================== from domain: " << from_domain << std::endl;
-      for (size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
-           ++to_domain) {
+      for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
+          ++to_domain) {
         stream << "========== to domain: " << to_domain << std::endl;
         base_t::ms_->topology[from_domain][to_domain].dump(stream);
       }
@@ -939,26 +914,26 @@ public:
     std::memcpy(buf + pos, &num_dimensions, sizeof(num_dimensions));
     pos += sizeof(num_dimensions);
 
-    for (size_t domain = 0; domain < MESH_TYPE::num_domains; ++domain) {
-      for (size_t dimension = 0; dimension <= MESH_TYPE::num_dimensions;
-           ++dimension) {
+    for(size_t domain = 0; domain < MESH_TYPE::num_domains; ++domain) {
+      for(size_t dimension = 0; dimension <= MESH_TYPE::num_dimensions;
+          ++dimension) {
         uint64_t num_entities = base_t::ms_->entities[domain][dimension].size();
         std::memcpy(buf + pos, &num_entities, sizeof(num_entities));
         pos += sizeof(num_entities);
       }
     }
 
-    for (size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
-         ++from_domain) {
-      for (size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
-           ++to_domain) {
+    for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+        ++from_domain) {
+      for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
+          ++to_domain) {
 
         auto & dc = base_t::ms_->topology[from_domain][to_domain];
 
-        for (size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
-             ++from_dim) {
-          for (size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions;
-               ++to_dim) {
+        for(size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
+            ++from_dim) {
+          for(size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions;
+              ++to_dim) {
             const connectivity_t & c = dc.get(from_dim, to_dim);
 
             auto & tv = c.to_id_storage();
@@ -968,7 +943,7 @@ public:
 
             size_t bytes = num_to * sizeof(id_vector_t::value_type);
 
-            if (size - pos < bytes) {
+            if(size - pos < bytes) {
               size += bytes + alloc_size;
               buf = (char *)std::realloc(buf, size);
             }
@@ -982,7 +957,7 @@ public:
 
             bytes = num_offsets * sizeof(offset_t);
 
-            if (size - pos < bytes) {
+            if(size - pos < bytes) {
               size += bytes + alloc_size;
               buf = (char *)std::realloc(buf, size);
             }
@@ -1014,24 +989,22 @@ public:
     std::memcpy(&num_dimensions, buf + pos, sizeof(num_dimensions));
     pos += sizeof(num_dimensions);
     assert(
-        num_dimensions == MESH_TYPE::num_dimensions &&
-        "dimension size mismatch");
+      num_dimensions == MESH_TYPE::num_dimensions && "dimension size mismatch");
 
-    unserialize_domains_<
-        storage_t, MESH_TYPE, MESH_TYPE::num_domains, MESH_TYPE::num_dimensions,
-        0>::unserialize(*this, buf, pos);
+    unserialize_domains_<storage_t, MESH_TYPE, MESH_TYPE::num_domains,
+      MESH_TYPE::num_dimensions, 0>::unserialize(*this, buf, pos);
 
-    for (size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
-         ++from_domain) {
-      for (size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
-           ++to_domain) {
+    for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+        ++from_domain) {
+      for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
+          ++to_domain) {
 
         auto & dc = base_t::ms_->topology[from_domain][to_domain];
 
-        for (size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
-             ++from_dim) {
-          for (size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions;
-               ++to_dim) {
+        for(size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
+            ++from_dim) {
+          for(size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions;
+              ++to_dim) {
             connectivity_t & c = dc.get(from_dim, to_dim);
 
             auto & tv = c.to_id_storage();
@@ -1058,11 +1031,10 @@ public:
   //--------------------------------------------------------------------------//
   //! Internal method to append entities to an index space.
   //--------------------------------------------------------------------------//
-  void append_to_index_space_(
-      size_t domain,
-      size_t dim,
-      std::vector<mesh_entity_base_ *> & ents,
-      std::vector<id_t> & ids) override {
+  void append_to_index_space_(size_t domain,
+    size_t dim,
+    std::vector<mesh_entity_base_ *> & ents,
+    std::vector<id_t> & ids) override {
     auto & is = base_t::ms_->index_spaces[domain][dim];
     is.append_(ents, ids);
   }
@@ -1071,23 +1043,23 @@ public:
   auto & get_index_subspace() {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
-    using index_subspaces = typename get_index_subspaces__<MESH_TYPE>::type;
+    using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
 
-    constexpr size_t subspace_index = find_index_subspace_from_id__<
-        std::tuple_size<index_subspaces>::value, index_subspaces,
-        INDEX_SUBSPACE>::find();
+    constexpr size_t subspace_index =
+      find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
+        index_subspaces, INDEX_SUBSPACE>::find();
 
     static_assert(subspace_index != -1, "invalid index subspace");
 
     using subspace_entry_t =
-        typename std::tuple_element<subspace_index, index_subspaces>::type;
+      typename std::tuple_element<subspace_index, index_subspaces>::type;
 
     using index_space_t =
-        typename std::tuple_element<0, subspace_entry_t>::type;
+      typename std::tuple_element<0, subspace_entry_t>::type;
 
-    constexpr size_t index = find_index_space_from_id__<
-        std::tuple_size<entity_types_t>::value, entity_types_t,
-        index_space_t::value>::find();
+    constexpr size_t index =
+      find_index_space_from_id_u<std::tuple_size<entity_types_t>::value,
+        entity_types_t, index_space_t::value>::find();
 
     // never gonna happen since index is a size_t, and cant be negative
     static_assert(index != -1, "invalid index space");
@@ -1099,30 +1071,30 @@ public:
     using entity_t = typename std::tuple_element<2, entry_t>::type;
 
     return base_t::ms_->index_subspaces[INDEX_SUBSPACE]
-        .template cast<domain_entity__<domain_t::value, entity_t>>();
+      .template cast<domain_entity_u<domain_t::value, entity_t>>();
   }
 
   template<size_t INDEX_SUBSPACE>
   const auto & get_index_subspace() const {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
-    using index_subspaces = typename get_index_subspaces__<MESH_TYPE>::type;
+    using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
 
-    constexpr size_t subspace_index = find_index_subspace_from_id__<
-        std::tuple_size<index_subspaces>::value, index_subspaces,
-        INDEX_SUBSPACE>::find();
+    constexpr size_t subspace_index =
+      find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
+        index_subspaces, INDEX_SUBSPACE>::find();
 
     static_assert(subspace_index != -1, "invalid index subspace");
 
     using subspace_entry_t =
-        typename std::tuple_element<subspace_index, index_subspaces>::type;
+      typename std::tuple_element<subspace_index, index_subspaces>::type;
 
     using index_space_t =
-        typename std::tuple_element<0, subspace_entry_t>::type;
+      typename std::tuple_element<0, subspace_entry_t>::type;
 
-    constexpr size_t index = find_index_space_from_id__<
-        std::tuple_size<entity_types_t>::value, entity_types_t,
-        index_space_t::value>::find();
+    constexpr size_t index =
+      find_index_space_from_id_u<std::tuple_size<entity_types_t>::value,
+        entity_types_t, index_space_t::value>::find();
 
     // never gonna happen since index is a size_t, and cant be negative
     static_assert(index != -1, "invalid index space");
@@ -1134,7 +1106,7 @@ public:
     using entity_t = typename std::tuple_element<2, entry_t>::type;
 
     return base_t::ms_->index_subspaces[INDEX_SUBSPACE]
-        .template cast<domain_entity__<domain_t::value, entity_t>>();
+      .template cast<domain_entity_u<domain_t::value, entity_t>>();
   }
 
   size_t get_index_subspace_size_(size_t index_subspace) {
@@ -1143,20 +1115,19 @@ public:
 
 private:
   template<size_t, size_t, class>
-  friend struct compute_connectivity__;
+  friend struct compute_connectivity_u;
 
   template<size_t, size_t, class>
-  friend struct compute_bindings__;
+  friend struct compute_bindings_u;
 
   template<size_t DOM, typename VERT_TYPE>
-  void init_cell_(
-      entity_type<MESH_TYPE::num_dimensions, DOM> * cell,
-      VERT_TYPE && verts) {
+  void init_cell_(entity_type<MESH_TYPE::num_dimensions, DOM> * cell,
+    VERT_TYPE && verts) {
     auto & c = get_connectivity_(DOM, MESH_TYPE::num_dimensions, 0);
 
     assert(cell->template id<DOM>() == c.from_size() && "id mismatch");
 
-    for (entity_type<0, DOM> * v : std::forward<VERT_TYPE>(verts)) {
+    for(entity_type<0, DOM> * v : std::forward<VERT_TYPE>(verts)) {
       c.push(v->template global_id<DOM>());
     } // for
 
@@ -1169,7 +1140,7 @@ private:
 
     assert(super->template id<DOM>() == c.from_size() && "id mismatch");
 
-    for (auto e : std::forward<ENT_TYPE2>(subs)) {
+    for(auto e : std::forward<ENT_TYPE2>(subs)) {
       c.push(e->template global_id<DOM>());
     } // for
 
@@ -1194,8 +1165,8 @@ private:
   //! it may never get called
   //--------------------------------------------------------------------------//
   template<size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
-  typename std::enable_if<
-      (UsingDimension <= 1 || UsingDimension > MESH_TYPE::num_dimensions)>::type
+  typename std::enable_if<(
+    UsingDimension <= 1 || UsingDimension > MESH_TYPE::num_dimensions)>::type
   build_connectivity() {
     assert(false && "shouldn't be in here");
   }
@@ -1213,26 +1184,23 @@ private:
   //! @tparam UsingDimension using topological dimension to build
   //--------------------------------------------------------------------------//
   template<size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
-  typename std::enable_if<
-      (UsingDimension > 1 && UsingDimension <= MESH_TYPE::num_dimensions)>::type
+  typename std::enable_if<(
+    UsingDimension > 1 && UsingDimension <= MESH_TYPE::num_dimensions)>::type
   build_connectivity() {
     // std::cerr << "build: " << DimensionToBuild
     // << " using " << UsingDimension << std::endl;
 
     // Sanity check
-    static_assert(
-        DimensionToBuild <= MESH_TYPE::num_dimensions,
-        "DimensionToBuild must be <= total number of dimensions");
-    static_assert(
-        UsingDimension <= MESH_TYPE::num_dimensions,
-        "UsingDimension must be <= total number of dimensions");
-    static_assert(
-        Domain < MESH_TYPE::num_domains,
-        "Domain must be < total number of domains");
+    static_assert(DimensionToBuild <= MESH_TYPE::num_dimensions,
+      "DimensionToBuild must be <= total number of dimensions");
+    static_assert(UsingDimension <= MESH_TYPE::num_dimensions,
+      "UsingDimension must be <= total number of dimensions");
+    static_assert(Domain < MESH_TYPE::num_domains,
+      "Domain must be < total number of domains");
 
     // Reference to storage from cells to the entity (to be created here).
     connectivity_t & cell_to_entity =
-        get_connectivity_(Domain, UsingDimension, DimensionToBuild);
+      get_connectivity_(Domain, UsingDimension, DimensionToBuild);
 
     // Storage for entity-to-vertex connectivity information.
     connection_vector_t entity_vertex_conn;
@@ -1243,8 +1211,8 @@ private:
     // keep track of the local ids, since they may be added out of order
     std::vector<size_t> entity_ids;
 
-    domain_connectivity__<MESH_TYPE::num_dimensions> & dc =
-        base_t::ms_->topology[Domain][Domain];
+    domain_connectivity_u<MESH_TYPE::num_dimensions> & dc =
+      base_t::ms_->topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
     connectivity_t & cell_to_vertex = dc.template get<UsingDimension>(0);
@@ -1269,26 +1237,26 @@ private:
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
     auto & is = base_t::ms_->index_spaces[Domain][DimensionToBuild]
-                    .template cast<domain_entity__<Domain, entity_type>>();
+                  .template cast<domain_entity_u<Domain, entity_type>>();
 
     auto & cis = base_t::ms_->index_spaces[Domain][UsingDimension]
-                     .template cast<domain_entity__<Domain, cell_type>>();
+                   .template cast<domain_entity_u<Domain, cell_type>>();
 
     // Lookup the index space for the entity type being created.
-    constexpr size_t cell_index_space = find_index_space_from_dimension__<
-        std::tuple_size<typename MESH_TYPE::entity_types>::value,
-        typename MESH_TYPE::entity_types, UsingDimension, Domain>::find();
+    constexpr size_t cell_index_space = find_index_space_from_dimension_u<
+      std::tuple_size<typename MESH_TYPE::entity_types>::value,
+      typename MESH_TYPE::entity_types, UsingDimension, Domain>::find();
 
     // Lookup the index space for the vertices from the mesh
     // specialization.
-    constexpr size_t vertex_index_space = find_index_space_from_dimension__<
-        std::tuple_size<typename MESH_TYPE::entity_types>::value,
-        typename MESH_TYPE::entity_types, 0, Domain>::find();
+    constexpr size_t vertex_index_space = find_index_space_from_dimension_u<
+      std::tuple_size<typename MESH_TYPE::entity_types>::value,
+      typename MESH_TYPE::entity_types, 0, Domain>::find();
 
     // Lookup the index space for the entity type being created.
-    constexpr size_t entity_index_space = find_index_space_from_dimension__<
-        std::tuple_size<typename MESH_TYPE::entity_types>::value,
-        typename MESH_TYPE::entity_types, DimensionToBuild, Domain>::find();
+    constexpr size_t entity_index_space = find_index_space_from_dimension_u<
+      std::tuple_size<typename MESH_TYPE::entity_types>::value,
+      typename MESH_TYPE::entity_types, DimensionToBuild, Domain>::find();
 
     // get the global to local index space map
     auto & context_ = flecsi::execution::context_t::instance();
@@ -1298,7 +1266,7 @@ private:
     // Get the reverse map of the intermediate ids. This map takes
     // vertices defining an entity to the entity id in MIS.
     auto & reverse_intermediate_map =
-        context_.reverse_intermediate_map(DimensionToBuild, Domain);
+      context_.reverse_intermediate_map(DimensionToBuild, Domain);
     auto has_intermediate_map = !reverse_intermediate_map.empty();
 
     // Get the index map for the entity.
@@ -1312,7 +1280,7 @@ private:
     // a counter for added entityes
     size_t entity_counter{0};
 
-    for (auto & citr : gis_to_cis) {
+    for(auto & citr : gis_to_cis) {
       size_t c = citr.second;
 
       // Get the cell object
@@ -1332,12 +1300,12 @@ private:
       // p.second:  A std::vector of id_t containing the ids of the
       //            vertices that define the entity.
       auto sv = cell->create_entities(
-          cell_id, DimensionToBuild, dc, entity_vertices.data());
+        cell_id, DimensionToBuild, dc, entity_vertices.data());
 
       size_t n = sv.size();
 
       // iterate over the newly-defined entities
-      for (size_t i = 0, pos = 0; i < n; ++i) {
+      for(size_t i = 0, pos = 0; i < n; ++i) {
         size_t m = sv[i];
 
         // Get the vertices that define this entity by getting
@@ -1371,14 +1339,14 @@ private:
         //
 
         size_t entity_id;
-        if (has_intermediate_map) {
+        if(has_intermediate_map) {
 
           std::vector<size_t> vertices_mis;
           vertices_mis.reserve(m);
 
           // Push the MIS vertex ids onto a vector to search for the
           // associated entity.
-          for (id_t * aptr{a}; aptr < (a + m); ++aptr) {
+          for(id_t * aptr{a}; aptr < (a + m); ++aptr) {
             vertices_mis.push_back(vertex_map[aptr->entity()]);
           } // for
 
@@ -1388,8 +1356,8 @@ private:
 
           // Lookup the CIS id of the entity.
           entity_id = entity_index_map.at(entity_id_mis);
-
-        } else {
+        }
+        else {
 
           entity_id = entity_counter;
 
@@ -1398,15 +1366,14 @@ private:
         id_t id = id_t::make<DimensionToBuild, Domain>(entity_id, color);
 
         // Emplace the sorted vertices into the entity map
-        auto itr = entity_vertices_map.emplace(
-            std::move(ev), id_t::make<DimensionToBuild, Domain>(
-                               entity_id, cell_id.partition()));
+        auto itr = entity_vertices_map.emplace(std::move(ev),
+          id_t::make<DimensionToBuild, Domain>(entity_id, cell_id.partition()));
 
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
 
         // If the insertion took place
-        if (itr.second) {
+        if(itr.second) {
 
           // what does this do?
           id_vector_t ev2 = id_vector_t(a, a + m);
@@ -1416,8 +1383,8 @@ private:
           max_cell_entity_conns = std::max(max_cell_entity_conns, conns.size());
 
           auto ent =
-              MESH_TYPE::template create_entity<Domain, DimensionToBuild>(
-                  this, m, id);
+            MESH_TYPE::template create_entity<Domain, DimensionToBuild>(
+              this, m, id);
 
           ++entity_counter;
 
@@ -1432,9 +1399,9 @@ private:
 
     // sort the entity connectivity. Entities may have been created out of
     // order.  Sort them using the list of entity ids we kept track of
-    if (has_intermediate_map)
+    if(has_intermediate_map)
       utils::reorder_destructive(
-          entity_ids.begin(), entity_ids.end(), entity_vertex_conn.begin());
+        entity_ids.begin(), entity_ids.end(), entity_vertex_conn.begin());
 
     // Set the connectivity information from the created entities to
     // the vertices.
@@ -1460,7 +1427,7 @@ private:
 
     // The connectivity we will be populating
     auto & out_conn = get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
-    if (!out_conn.empty()) {
+    if(!out_conn.empty()) {
       return;
     } // if
 
@@ -1470,8 +1437,8 @@ private:
     index_vector_t pos(num_entities_(FROM_DIM, FROM_DOM), 0);
 
     // Count how many connectivities go into each slot
-    for (auto to_entity : to_entities) {
-      for (id_t from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
+    for(auto to_entity : to_entities) {
+      for(id_t from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
         ++pos[from_id.entity()];
       }
     }
@@ -1481,11 +1448,11 @@ private:
     std::fill(pos.begin(), pos.end(), 0);
 
     // now do the actual transpose
-    for (auto to_entity : to_entities) {
-      for (auto from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
+    for(auto to_entity : to_entities) {
+      for(auto from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
         auto from_lid = from_id.entity();
         out_conn.set(
-            from_lid, to_entity->template global_id<TO_DOM>(), pos[from_lid]++);
+          from_lid, to_entity->template global_id<TO_DOM>(), pos[from_lid]++);
       }
     }
 
@@ -1497,30 +1464,28 @@ private:
     const auto & context_ = flecsi::execution::context_t::instance();
 
     // find the from index space and get the mapping from global to local
-    constexpr size_t to_index_space = find_index_space_from_dimension__<
-        std::tuple_size<typename MESH_TYPE::entity_types>::value,
-        typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
+    constexpr size_t to_index_space = find_index_space_from_dimension_u<
+      std::tuple_size<typename MESH_TYPE::entity_types>::value,
+      typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
 
-    const auto & to__cis_to_gis = context_.index_map(to_index_space);
+    const auto & to_cis_to_gis = context_.index_map(to_index_space);
 
     // do the final sort of the connectivity arrays
-    for (auto from_id : entity_ids<FROM_DIM, FROM_DOM>()) {
+    for(auto from_id : entity_ids<FROM_DIM, FROM_DOM>()) {
       // get the connectivity array
       size_t count;
       auto conn = out_conn.get_entities(from_id.entity(), count);
       // pack it into a list of id and global id pairs
       std::vector<std::pair<size_t, id_t>> gids(count);
       std::transform(conn, conn + count, gids.begin(), [&](auto id) {
-        return std::make_pair(to__cis_to_gis.at(id.entity()), id);
+        return std::make_pair(to_cis_to_gis.at(id.entity()), id);
       });
       // sort via global id
-      std::sort(gids.begin(), gids.end(), [](auto a, auto b) {
-        return a.first < b.first;
-      });
+      std::sort(gids.begin(), gids.end(),
+        [](auto a, auto b) { return a.first < b.first; });
       // upack the results
-      std::transform(gids.begin(), gids.end(), conn, [](auto id_pair) {
-        return id_pair.second;
-      });
+      std::transform(gids.begin(), gids.end(), conn,
+        [](auto id_pair) { return id_pair.second; });
     }
   } // transpose
 
@@ -1536,19 +1501,18 @@ private:
   //! @tparam DIM intermediate topological dimension DIM'
   //--------------------------------------------------------------------------//
   //--------------------------------------------------------------------------//
-  template<
-      size_t FROM_DOM,
-      size_t TO_DOM,
-      size_t FROM_DIM,
-      size_t TO_DIM,
-      size_t DIM>
+  template<size_t FROM_DOM,
+    size_t TO_DOM,
+    size_t FROM_DIM,
+    size_t TO_DIM,
+    size_t DIM>
   void intersect() {
     // std::cerr << "intersect: " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // The connectivity we will be populating
     connectivity_t & out_conn =
-        get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
-    if (!out_conn.empty()) {
+      get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
+    if(!out_conn.empty()) {
       return;
     } // if
 
@@ -1573,7 +1537,7 @@ private:
     assert(!c2.empty());
 
     // Iterate through entities in "from" topological dimension
-    for (auto from_entity : entities<FROM_DIM, FROM_DOM>()) {
+    for(auto from_entity : entities<FROM_DIM, FROM_DOM>()) {
 
       id_t from_id = from_entity->template global_id<FROM_DOM>();
       id_vector_t & ents = conns[from_id.entity()];
@@ -1588,29 +1552,30 @@ private:
       std::sort(from_verts.begin(), from_verts.end());
 
       // initially set all to id's to unvisited
-      for (auto from_ent2 : entities<DIM, FROM_DOM>(from_entity)) {
-        for (id_t to_id : entity_ids<TO_DIM, TO_DOM>(from_ent2)) {
+      for(auto from_ent2 : entities<DIM, FROM_DOM>(from_entity)) {
+        for(id_t to_id : entity_ids<TO_DIM, TO_DOM>(from_ent2)) {
           visited[to_id.entity()] = false;
         }
       }
 
       // Loop through each from entity again
-      for (auto from_ent2 : entities<DIM, FROM_DOM>(from_entity)) {
-        for (id_t to_id : entity_ids<TO_DIM, TO_DOM>(from_ent2)) {
+      for(auto from_ent2 : entities<DIM, FROM_DOM>(from_entity)) {
+        for(id_t to_id : entity_ids<TO_DIM, TO_DOM>(from_ent2)) {
 
           // If we have already visited, skip
-          if (visited[to_id.entity()]) {
+          if(visited[to_id.entity()]) {
             continue;
           } // if
 
           visited[to_id.entity()] = true;
 
           // If the topological dimensions are the same, always add to id
-          if (FROM_DIM == TO_DIM) {
-            if (from_id != to_id) {
+          if(FROM_DIM == TO_DIM) {
+            if(from_id != to_id) {
               ents.push_back(to_id);
             } // if
-          } else {
+          }
+          else {
             size_t count;
             id_t * ep = c2.get_entities(to_id.entity(), count);
 
@@ -1621,19 +1586,17 @@ private:
 
             // If from vertices contains the to vertices add to id
             // to this connection set
-            if (DIM < TO_DIM) {
-              if (std::includes(
-                      from_verts.begin(), from_verts.end(), to_verts.begin(),
-                      to_verts.end()))
+            if(DIM < TO_DIM) {
+              if(std::includes(from_verts.begin(), from_verts.end(),
+                   to_verts.begin(), to_verts.end()))
                 ents.emplace_back(to_id);
             }
             // If we are going through a higher level, then set
             // intersection is sufficient. i.e. one set does not need to
             // be a subset of the other
             else {
-              if (utils::intersects(
-                      from_verts.begin(), from_verts.end(), to_verts.begin(),
-                      to_verts.end()))
+              if(utils::intersects(from_verts.begin(), from_verts.end(),
+                   to_verts.begin(), to_verts.end()))
                 ents.emplace_back(to_id);
             } // if
 
@@ -1664,63 +1627,63 @@ private:
     connectivity_t & out_conn = get_connectivity_(DOM, FROM_DIM, TO_DIM);
 
     // Check if we have already computed it
-    if (!out_conn.empty()) {
+    if(!out_conn.empty()) {
       return;
     } // if
 
     // if we don't have cell -> vertex connectivities, then
     // try building cell -> vertex connectivity through the
     // faces (3d) or edges(2d)
-    static_assert(
-        MESH_TYPE::num_dimensions <= 3,
-        "this needs to be re-thought for higher dimensions");
+    static_assert(MESH_TYPE::num_dimensions <= 3,
+      "this needs to be re-thought for higher dimensions");
 
-    if (get_connectivity_(DOM, MESH_TYPE::num_dimensions, 0).empty()) {
+    if(get_connectivity_(DOM, MESH_TYPE::num_dimensions, 0).empty()) {
       assert(
-          !get_connectivity_(DOM, MESH_TYPE::num_dimensions - 1, 0).empty() &&
-          " need at least edges(2d)/faces(3) -> vertex connectivity");
+        !get_connectivity_(DOM, MESH_TYPE::num_dimensions - 1, 0).empty() &&
+        " need at least edges(2d)/faces(3) -> vertex connectivity");
       // assume we have cell -> faces, so invert it to get faces -> cells
-      transpose<
-          DOM, DOM, MESH_TYPE::num_dimensions - 1, MESH_TYPE::num_dimensions>();
+      transpose<DOM, DOM, MESH_TYPE::num_dimensions - 1,
+        MESH_TYPE::num_dimensions>();
       // invert faces -> vertices to get vertices -> faces
       transpose<DOM, DOM, 0, MESH_TYPE::num_dimensions - 1>();
       // build cells -> vertices via intersections with faces
-      intersect<
-          DOM, DOM, MESH_TYPE::num_dimensions, 0,
-          MESH_TYPE::num_dimensions - 1>();
+      intersect<DOM, DOM, MESH_TYPE::num_dimensions, 0,
+        MESH_TYPE::num_dimensions - 1>();
     }
 
     // Check if we need to build entities, e.g: edges or faces
-    if (num_entities_(FROM_DIM, DOM) == 0) {
-      if (get_connectivity_(DOM, FROM_DIM + 1, 0).empty())
+    if(num_entities_(FROM_DIM, DOM) == 0) {
+      if(get_connectivity_(DOM, FROM_DIM + 1, 0).empty())
         build_connectivity<DOM, FROM_DIM, MESH_TYPE::num_dimensions>();
       else
         build_connectivity<DOM, FROM_DIM, FROM_DIM + 1>();
     } // if
 
-    if (num_entities_(TO_DIM, DOM) == 0) {
-      if (get_connectivity_(DOM, TO_DIM + 1, 0).empty())
+    if(num_entities_(TO_DIM, DOM) == 0) {
+      if(get_connectivity_(DOM, TO_DIM + 1, 0).empty())
         build_connectivity<DOM, TO_DIM, MESH_TYPE::num_dimensions>();
       else
         build_connectivity<DOM, TO_DIM, TO_DIM + 1>();
     } // if
 
-    if (num_entities_(FROM_DIM, DOM) == 0 && num_entities_(TO_DIM, DOM) == 0) {
+    if(num_entities_(FROM_DIM, DOM) == 0 && num_entities_(TO_DIM, DOM) == 0) {
       return;
     } // if
 
     // Depending on the corresponding topological dimensions, call transpose
     // or intersect as need
-    if (FROM_DIM < TO_DIM) {
+    if(FROM_DIM < TO_DIM) {
       compute_connectivity<DOM, TO_DIM, FROM_DIM>();
       transpose<DOM, DOM, FROM_DIM, TO_DIM>();
-    } else {
-      if (FROM_DIM == 0 && TO_DIM == 0) {
+    }
+    else {
+      if(FROM_DIM == 0 && TO_DIM == 0) {
         // compute vertex to vertex connectivities through shared cells.
         compute_connectivity<DOM, FROM_DIM, MESH_TYPE::num_dimensions>();
         compute_connectivity<DOM, MESH_TYPE::num_dimensions, TO_DIM>();
         intersect<DOM, DOM, FROM_DIM, TO_DIM, MESH_TYPE::num_dimensions>();
-      } else {
+      }
+      else {
         // computer connectivities through shared vertices.
         compute_connectivity<DOM, FROM_DIM, 0>();
         compute_connectivity<DOM, 0, TO_DIM>();
@@ -1738,20 +1701,19 @@ private:
   //! @tparam FROM_DIM from topological dimension
   //! @tparam TO_DIM to topological dimension
   //--------------------------------------------------------------------------//
-  template<
-      size_t FROM_DOM,
-      size_t TO_DOM,
-      size_t FROM_DIM,
-      size_t TO_DIM,
-      typename std::enable_if<(FROM_DOM < TO_DOM)>::type * = nullptr>
+  template<size_t FROM_DOM,
+    size_t TO_DOM,
+    size_t FROM_DIM,
+    size_t TO_DIM,
+    typename std::enable_if<(FROM_DOM < TO_DOM)>::type * = nullptr>
   void compute_bindings_() {
 
     // if the connectivity for a transpose exists, do it
-    if (!get_connectivity_(TO_DOM, FROM_DOM, TO_DIM, FROM_DIM).empty())
+    if(!get_connectivity_(TO_DOM, FROM_DOM, TO_DIM, FROM_DIM).empty())
       transpose<FROM_DOM, TO_DOM, FROM_DIM, TO_DIM>();
 
     // otherwise try building the connectivity directly
-    else if (num_entities_(TO_DIM, TO_DOM) == 0)
+    else if(num_entities_(TO_DIM, TO_DOM) == 0)
       build_bindings<FROM_DOM, TO_DOM, TO_DIM>();
 
   } // compute_bindings
@@ -1765,12 +1727,11 @@ private:
   //! @tparam FROM_DIM from topological dimension
   //! @tparam TO_DIM to topological dimension
   //--------------------------------------------------------------------------//
-  template<
-      size_t FROM_DOM,
-      size_t TO_DOM,
-      size_t FROM_DIM,
-      size_t TO_DIM,
-      typename = typename std::enable_if<(FROM_DOM > TO_DOM)>::type>
+  template<size_t FROM_DOM,
+    size_t TO_DOM,
+    size_t FROM_DIM,
+    size_t TO_DIM,
+    typename = typename std::enable_if<(FROM_DOM > TO_DOM)>::type>
   void compute_bindings_() {
 
     // build the opposite connectivity first
@@ -1800,7 +1761,7 @@ private:
 
     // now try and transpose it
     auto & trans_conn = get_connectivity_(TO_DOM, FROM_DOM, TO_DIM, FROM_DIM);
-    if (!trans_conn.empty())
+    if(!trans_conn.empty())
       transpose<FROM_DOM, TO_DOM, FROM_DIM, TO_DIM>();
 
   } // compute_bindings
@@ -1820,9 +1781,9 @@ private:
 
     // check if requested connectivity is already there, nothing to do
     connectivity_t & out_conn =
-        get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
+      get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
 
-    if (!out_conn.empty())
+    if(!out_conn.empty())
       return;
 
     compute_bindings_<FROM_DOM, TO_DOM, FROM_DIM, TO_DIM>();
@@ -1856,59 +1817,59 @@ private:
 
     // get the cells from mesh storage
     auto & cell_storage =
-        base_t::ms_->index_spaces[FROM_DOM][cell_dim]
-            .template cast<domain_entity__<FROM_DOM, cell_type>>();
+      base_t::ms_->index_spaces[FROM_DOM][cell_dim]
+        .template cast<domain_entity_u<FROM_DOM, cell_type>>();
 
     // get the entities from mesh storage
     auto & binding_storage =
-        base_t::ms_->index_spaces[TO_DOM][TO_DIM]
-            .template cast<domain_entity__<TO_DOM, binding_type>>();
+      base_t::ms_->index_spaces[TO_DOM][TO_DIM]
+        .template cast<domain_entity_u<TO_DOM, binding_type>>();
 
     // Lookup the index space for the cell type.
-    constexpr auto cell_index_space = find_index_space_from_dimension__<
-        std::tuple_size<typename MESH_TYPE::entity_types>::value,
-        typename MESH_TYPE::entity_types, cell_dim, FROM_DOM>::find();
+    constexpr auto cell_index_space = find_index_space_from_dimension_u<
+      std::tuple_size<typename MESH_TYPE::entity_types>::value,
+      typename MESH_TYPE::entity_types, cell_dim, FROM_DOM>::find();
 
     // lookup all primal index spaces in the FROM_DOM
     auto entity_index_spaces =
-        find_all_index_spaces_in_domain__<MESH_TYPE, FROM_DOM>();
+      find_all_index_spaces_in_domain_u<MESH_TYPE, FROM_DOM>();
 
     // Lookup the index space for the entity type being created.
-    constexpr auto binding_index_space = find_index_space_from_dimension__<
-        std::tuple_size<typename MESH_TYPE::entity_types>::value,
-        typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
+    constexpr auto binding_index_space = find_index_space_from_dimension_u<
+      std::tuple_size<typename MESH_TYPE::entity_types>::value,
+      typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
 
     // get the primal mesh connectivity and the domain connectivity
-    domain_connectivity__<num_dims> & primal_conn =
-        base_t::ms_->topology[FROM_DOM][FROM_DOM];
-    domain_connectivity__<num_dims> & domain_conn =
-        base_t::ms_->topology[FROM_DOM][TO_DOM];
+    domain_connectivity_u<num_dims> & primal_conn =
+      base_t::ms_->topology[FROM_DOM][FROM_DOM];
+    domain_connectivity_u<num_dims> & domain_conn =
+      base_t::ms_->topology[FROM_DOM][TO_DOM];
 
     // get the global to local index space map
     auto & context_ = flecsi::execution::context_t::instance();
     auto color = context_.color();
     const auto & cell_gis_to_cis = context_.reverse_index_map(cell_index_space);
     const auto & binding_gis_to_cis =
-        context_.reverse_index_map(binding_index_space);
+      context_.reverse_index_map(binding_index_space);
 
     // Get the map of the different entity ids. This map takes
     // local compacted vids to mesh index space ids.
     // CIS -> MIS.
     using entity_map_t = std::decay_t<decltype(context_.index_map(0))>;
     std::map<size_t, entity_map_t *> entity_cis_to_mis;
-    for (int dim = 0; dim <= num_dims; ++dim) {
+    for(int dim = 0; dim <= num_dims; ++dim) {
       entity_cis_to_mis[dim] = &context_.index_map(entity_index_spaces[dim]);
     }
 
     // Get the reverse map of the intermediate ids. This maps
     // connected entities to their id within the MIS.
     const auto & reverse_intermediate_map =
-        context_.reverse_intermediate_binding_map(TO_DIM, TO_DOM);
+      context_.reverse_intermediate_binding_map(TO_DIM, TO_DOM);
     // stop if one of the mappings is empty
     auto has_intermediate_map = (!reverse_intermediate_map.empty());
     // the simplified id type used for searching
     using simple_id_vector_t =
-        typename std::decay_t<decltype(reverse_intermediate_map)>::key_type;
+      typename std::decay_t<decltype(reverse_intermediate_map)>::key_type;
 
     // This buffer should be large enough to hold all entities
     // that potentially need to be created
@@ -1932,7 +1893,7 @@ private:
 
     // Iterate over cells (this lets us iterate in the order of the global
     // index space)
-    for (auto & cell_itr : cell_gis_to_cis) {
+    for(auto & cell_itr : cell_gis_to_cis) {
 
       // Get the cell object
       auto c = cell_itr.second;
@@ -1946,9 +1907,9 @@ private:
       // new_entity_connection_ids:   A std::vector of id_t containing
       //                              the ids of the entities that define
       //                              the bound entity.
-      auto new_binding_connection_sizes = cell->create_bound_entities(
-          FROM_DOM, TO_DOM, TO_DIM, cell_id, primal_conn, domain_conn,
-          new_binding_connection_ids.data());
+      auto new_binding_connection_sizes =
+        cell->create_bound_entities(FROM_DOM, TO_DOM, TO_DIM, cell_id,
+          primal_conn, domain_conn, new_binding_connection_ids.data());
 
       auto num_new_bindings = new_binding_connection_sizes.size();
 
@@ -1958,7 +1919,7 @@ private:
 
       // Iterate over the newly-defined entities
       size_t new_binding_pos = 0;
-      for (auto num_connections : new_binding_connection_sizes) {
+      for(auto num_connections : new_binding_connection_sizes) {
 
         //---------------------------------------------------------------------
         // Loop over all the connections, and store both their mesh id (mis)
@@ -1978,7 +1939,7 @@ private:
         simple_id_vector_t connected_entities_mis;
         connected_entities_mis.reserve(num_connections + 1);
         connected_entities_mis.emplace_back(
-            0, cell_dim, entity_cis_to_mis[cell_dim]->at(cell_id.entity()));
+          0, cell_dim, entity_cis_to_mis[cell_dim]->at(cell_id.entity()));
 
         // entities_cis is used to store the original encodied binding
         // connections ( no cell in this one, its connectivitty will be sorted
@@ -1986,7 +1947,7 @@ private:
         id_vector_t connected_entities;
         connected_entities.reserve(num_connections);
 
-        for (size_t k = 0; k < num_connections; ++k) {
+        for(size_t k = 0; k < num_connections; ++k) {
 
           // get the connected item id
           auto connection_id = new_binding_connection_ids[new_binding_pos + k];
@@ -1998,7 +1959,7 @@ private:
 
           // if domain is the same as from domain, the connected item is part
           // of the primal mesh
-          if (dom == FROM_DOM) {
+          if(dom == FROM_DOM) {
             dim_flags |= 1U << dim;
             num_new_binding_vertices += dim == 0 ? 1 : 0;
             // also add to entity search list
@@ -2020,13 +1981,13 @@ private:
         // the right id.  Otherwise, it may not match the exclusive, shared,
         // ghost sets.
         size_t new_binding_id_cis;
-        if (has_intermediate_map) {
+        if(has_intermediate_map) {
           // sort for comparison
           std::sort(
-              connected_entities_mis.begin(), connected_entities_mis.end());
+            connected_entities_mis.begin(), connected_entities_mis.end());
           // map the connected entities to a global binding id
           auto new_binding_id_gis =
-              reverse_intermediate_map.at(connected_entities_mis);
+            reverse_intermediate_map.at(connected_entities_mis);
           // then get the new compact id
           new_binding_id_cis = binding_gis_to_cis.at(new_binding_id_gis);
         }
@@ -2038,21 +1999,21 @@ private:
         // now create the entity id, on the same partition as the connected
         // cell. this
         auto new_binding_id =
-            id_t::make<TO_DIM, TO_DOM>(new_binding_id_cis, color);
+          id_t::make<TO_DIM, TO_DOM>(new_binding_id_cis, color);
 
         // Add this id to the cell entity connections
         this_cell_to_binding_conn.push_back(new_binding_id);
 
         // now buid the new entity
         auto ent = MESH_TYPE::template create_entity<TO_DOM, TO_DIM>(
-            this, num_new_binding_vertices, new_binding_id);
+          this, num_new_binding_vertices, new_binding_id);
 
         //---------------------------------------------------------------------
         // Now add the connected entities to the connectivity table, now that
         // we know where it is going.  Note: we could have appended them to
         // a list, and reordered it later, avoiding the dynamic resizing.  But
         // this was WAAAAAYYYYY slower.
-        for (auto connection_id : connected_entities) {
+        for(auto connection_id : connected_entities) {
 
           // get domain and dimension again
           auto dim = connection_id.dimension();
@@ -2062,15 +2023,15 @@ private:
           // not found, create it
           auto map_key = key(dom, dim);
           auto bit = binding_to_entity_conn.find(map_key);
-          if (bit == binding_to_entity_conn.end()) {
+          if(bit == binding_to_entity_conn.end()) {
             bit = binding_to_entity_conn
-                      .emplace(std::make_pair(map_key, connection_vector_t{}))
-                      .first; // first is iterator, second is insertion flag
+                    .emplace(std::make_pair(map_key, connection_vector_t{}))
+                    .first; // first is iterator, second is insertion flag
           }
 
           // resize it and add the connection to the new entities connectivity
           auto & this_binding_to_entities = bit->second;
-          if (this_binding_to_entities.size() <= new_binding_id_cis)
+          if(this_binding_to_entities.size() <= new_binding_id_cis)
             this_binding_to_entities.resize(new_binding_id_cis + 1);
           this_binding_to_entities[new_binding_id_cis].push_back(connection_id);
 
@@ -2088,10 +2049,10 @@ private:
 
     // Reference to storage from cells to the entity (to be created here).
     get_connectivity_(FROM_DOM, TO_DOM, cell_dim, TO_DIM)
-        .init(std::move(cell_to_binding_conn));
+      .init(std::move(cell_to_binding_conn));
 
     // binding to entity conn is a little different.
-    for (const auto & binding_pair : binding_to_entity_conn) {
+    for(const auto & binding_pair : binding_to_entity_conn) {
       // first is the key, and second is the connectivity
       auto & binding_to_entity = binding_pair.second;
       // domain and dimension is encoded in the ids
@@ -2100,7 +2061,7 @@ private:
       auto dim = first.dimension();
       // initialize the connectivity
       get_connectivity_(TO_DOM, dom, TO_DIM, dim)
-          .init(std::move(binding_to_entity));
+        .init(std::move(binding_to_entity));
     }
 
   } // build_bindings
@@ -2109,11 +2070,10 @@ private:
   //! Implementation of get_connectivity for various get_connectivity
   //! convenience methods.
   //--------------------------------------------------------------------------//
-  const connectivity_t & get_connectivity_(
-      size_t from_domain,
-      size_t to_domain,
-      size_t from_dim,
-      size_t to_dim) const {
+  const connectivity_t & get_connectivity_(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim) const {
     assert(from_domain < MESH_TYPE::num_domains && "invalid from domain");
     assert(to_domain < MESH_TYPE::num_domains && "invalid to domain");
     return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
@@ -2123,11 +2083,10 @@ private:
   //! Implementation of get_connectivity for various get_connectivity
   //! convenience methods.
   //--------------------------------------------------------------------------//
-  connectivity_t & get_connectivity_(
-      size_t from_domain,
-      size_t to_domain,
-      size_t from_dim,
-      size_t to_dim) {
+  connectivity_t & get_connectivity_(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim) {
     assert(from_domain < MESH_TYPE::num_domains && "invalid from domain");
     assert(to_domain < MESH_TYPE::num_domains && "invalid to domain");
     return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
@@ -2144,7 +2103,7 @@ private:
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM>
   connectivity_t & get_connectivity_(size_t to_dim) {
     return base_t::ms_->topology[FROM_DOM][TO_DOM].template get<FROM_DIM>(
-        to_dim);
+      to_dim);
   } // get_connectivity
 
   //--------------------------------------------------------------------------//
@@ -2159,7 +2118,7 @@ private:
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   connectivity_t & get_connectivity_() {
     return base_t::ms_->topology[FROM_DOM][TO_DOM]
-        .template get<FROM_DIM, TO_DIM>();
+      .template get<FROM_DIM, TO_DIM>();
   } // get_connectivity
 
   //--------------------------------------------------------------------------//
@@ -2180,7 +2139,7 @@ private:
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-}; // class mesh_topology__
+}; // class mesh_topology_u
 
 } // namespace topology
 } // namespace flecsi

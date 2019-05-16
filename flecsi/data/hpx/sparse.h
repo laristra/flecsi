@@ -46,8 +46,7 @@ namespace flecsi {
 namespace data {
 namespace hpx {
 
-
-//FIXME: sparce data was completely refactored in December 2017. 
+// FIXME: sparce data was completely refactored in December 2017.
 #if 0
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -62,16 +61,16 @@ namespace hpx {
 ///
 ///
 template<typename T>
-struct entry_value__ {
-  entry_value__(size_t entry) : entry(entry) {}
+struct entry_value_u {
+  entry_value_u(size_t entry) : entry(entry) {}
 
-  entry_value__(size_t entry, T value) : entry(entry), value(value) {}
+  entry_value_u(size_t entry, T value) : entry(entry), value(value) {}
 
-  entry_value__() {}
+  entry_value_u() {}
 
   size_t entry;
   T value;
-}; // struct entry_value__
+}; // struct entry_value_u
 
 static constexpr size_t INDICES_FLAG = 1UL << 63;
 static constexpr size_t ENTRIES_FLAG = 1UL << 62;
@@ -98,7 +97,7 @@ struct sparse_accessor_t {
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  using entry_value_t = entry_value__<T>;
+  using entry_value_t = entry_value_u<T>;
 
   using index_space_ =
       topology::index_space<topology::simple_entry<size_t>, true>;
@@ -288,7 +287,7 @@ struct sparse_mutator_t {
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  using entry_value_t = entry_value__<T>;
+  using entry_value_t = entry_value_u<T>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -518,7 +517,7 @@ struct sparse_mutator_t {
   } // commit
 
 private:
-  using spare_map_t = std::multimap<size_t, entry_value__<T>>;
+  using spare_map_t = std::multimap<size_t, entry_value_u<T>>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
 
   size_t num_slots_;
@@ -529,7 +528,7 @@ private:
   size_t num_indices_;
   size_t num_entries_;
   size_t * indices_;
-  entry_value__<T> * entries_;
+  entry_value_u<T> * entries_;
   spare_map_t spare_map_;
   erase_set_t * erase_set_;
 }; // struct sparse_accessor_t
@@ -575,7 +574,7 @@ struct storage_type_t<sparse, DS, MD> {
   static handle_t<T> register_data(
       const data_client_t & data_client,
       data_store_t & data_store,
-      const utils::const_string_t & key,
+      const flecsi::utils::const_string_t & key,
       size_t versions,
       size_t index_space,
       size_t num_entries,
@@ -614,7 +613,7 @@ struct storage_type_t<sparse, DS, MD> {
   static accessor_t<T> get_accessor(
       const data_client_t & data_client,
       data_store_t & data_store,
-      const utils::const_string_t & key,
+      const flecsi::utils::const_string_t & key,
       size_t version) {
     const size_t h = key.hash() ^ data_client.runtime_id();
     auto search = data_store[NS].find(h);
@@ -638,7 +637,7 @@ struct storage_type_t<sparse, DS, MD> {
   static mutator_t<T> get_mutator(
       const data_client_t & data_client,
       data_store_t & data_store,
-      const utils::const_string_t & key,
+      const flecsi::utils::const_string_t & key,
       size_t slots,
       size_t version) {
     const size_t h = key.hash() ^ data_client.runtime_id();
@@ -663,7 +662,7 @@ struct storage_type_t<sparse, DS, MD> {
   static handle_t<T> get_handle(
       const data_client_t & data_client,
       data_store_t & data_store,
-      const utils::const_string_t & key,
+      const flecsi::utils::const_string_t & key,
       size_t version) {
     return {};
   } // get_handle

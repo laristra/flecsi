@@ -20,12 +20,12 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  The global_object_wrapper__ type provides a mechanism to recover type
+  The global_object_wrapper_u type provides a mechanism to recover type
   information so that global objects can be properly deleted.
  */
 
 template<typename OBJECT_TYPE>
-struct global_object_wrapper__ {
+struct global_object_wrapper_u {
 
   /*!
     Delete the object referenced by \em address.
@@ -37,7 +37,7 @@ struct global_object_wrapper__ {
     delete reinterpret_cast<OBJECT_TYPE *>(address);
   } // cleanup
 
-}; // class global_object_wrapper__
+}; // class global_object_wrapper_u
 
 } // namespace execution
 } // namespace flecsi

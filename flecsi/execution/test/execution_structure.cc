@@ -10,11 +10,11 @@
 
 #include <cinchdevel.h>
 
+#include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/mpi_communicator.h>
+#include <flecsi/coloring/parmetis_colorer.h>
 #include <flecsi/execution/execution.h>
 #include <flecsi/io/simple_definition.h>
-#include <flecsi/coloring/dcrs_utils.h>
-#include <flecsi/coloring/parmetis_colorer.h>
-#include <flecsi/coloring/mpi_communicator.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
 
 clog_register_tag(coloring);
@@ -26,15 +26,16 @@ namespace execution {
 // Top-Level Specialization Initialization
 //----------------------------------------------------------------------------//
 
-void specialization_tlt_init(int argc, char ** argv) {
+void
+specialization_tlt_init(int argc, char ** argv) {
 
   clog(error) << "In specialization top-level-task init" << std::endl;
 
-  coloring_map_t map;
+  supplemental::coloring_map_t map;
   map.vertices = 1;
   map.cells = 0;
 
-  flecsi_execute_mpi_task(add_colorings, flecsi::execution, map);
+  flecsi_execute_mpi_task(add_colorings, flecsi::supplemental, map);
 
   clog(error) << "after add_coloring" << std::endl;
 
@@ -44,7 +45,8 @@ void specialization_tlt_init(int argc, char ** argv) {
 // SPMD Specialization Initialization
 //----------------------------------------------------------------------------//
 
-void specialization_spmd_init(int argc, char ** argv) {
+void
+specialization_spmd_init(int argc, char ** argv) {
   clog(error) << "In specialization spmd init" << std::endl;
 } // specialization_spmd_ini
 
@@ -52,7 +54,8 @@ void specialization_spmd_init(int argc, char ** argv) {
 // User driver.
 //----------------------------------------------------------------------------//
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   clog(error) << "In driver" << std::endl;
 
