@@ -23,7 +23,7 @@
 # Require some version of cmake
 #------------------------------------------------------------------------------#
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
 #------------------------------------------------------------------------------#
 # Include project-level CMake configuration file
