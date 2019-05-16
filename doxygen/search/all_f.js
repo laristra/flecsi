@@ -8,7 +8,6 @@ var searchData=
   ['reduction_5fwrapper_2eh',['reduction_wrapper.h',['../legion_2reduction__wrapper_8h.html',1,'(Global Namespace)'],['../mpi_2reduction__wrapper_8h.html',1,'(Global Namespace)']]],
   ['reduction_5fwrapper_5fu',['reduction_wrapper_u',['../structflecsi_1_1execution_1_1legion_1_1reduction__wrapper__u.html',1,'flecsi::execution::legion::reduction_wrapper_u&lt; HASH, TYPE &gt;'],['../structflecsi_1_1execution_1_1mpi_1_1reduction__wrapper__u.html',1,'flecsi::execution::mpi::reduction_wrapper_u&lt; HASH, TYPE &gt;']]],
   ['reduction_5fwrapper_5funique_5fu',['reduction_wrapper_unique_u',['../structflecsi_1_1execution_1_1legion_1_1reduction__wrapper__unique__u.html',1,'flecsi::execution::legion']]],
-  ['register_5fcallback',['register_callback',['../structflecsi_1_1data_1_1storage__class__registration__u.html#a3ef91a830fa63653954da2105fffb495',1,'flecsi::data::storage_class_registration_u']]],
   ['register_5fdomain',['register_domain',['../structflecsi_1_1execution_1_1task__interface__u.html#a4a770f9e1cfcc311acd902f3f82229bd',1,'flecsi::execution::task_interface_u']]],
   ['register_5ffield',['register_field',['../group__data.html#ga49c8b1ccbead983c122e380b5aa0fe75',1,'flecsi::data::field_interface_u']]],
   ['register_5ffield_5finfo',['register_field_info',['../structflecsi_1_1execution_1_1context__u.html#abb9c16033eb5401fa080089ce1ee1c81',1,'flecsi::execution::context_u']]],

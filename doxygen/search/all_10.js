@@ -31,8 +31,6 @@ var searchData=
   ['static_5fverify_2eh',['static_verify.h',['../static__verify_8h.html',1,'']]],
   ['storage_2eh',['storage.h',['../storage_8h.html',1,'']]],
   ['storage_5fclass_2eh',['storage_class.h',['../storage__class_8h.html',1,'']]],
-  ['storage_5fclass_5fregistration_2eh',['storage_class_registration.h',['../storage__class__registration_8h.html',1,'']]],
-  ['storage_5fclass_5fregistration_5fu',['storage_class_registration_u',['../structflecsi_1_1data_1_1storage__class__registration__u.html',1,'flecsi::data']]],
   ['storage_5fclass_5fu',['storage_class_u',['../structflecsi_1_1data_1_1POLICY__NAMESPACE_1_1storage__class__u.html',1,'flecsi::data::POLICY_NAMESPACE']]],
   ['storage_5fclasses_2eh',['storage_classes.h',['../legion_2storage__classes_8h.html',1,'(Global Namespace)'],['../mpi_2storage__classes_8h.html',1,'(Global Namespace)']]],
   ['storage_5flabel_5ft',['storage_label_t',['../storage__class_8h.html#ac662c6859d456a6c33810e5226abbdeb',1,'flecsi::data']]],
