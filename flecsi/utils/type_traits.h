@@ -15,6 +15,9 @@
 
 /*! @file */
 
+#include <iterator>
+#include <type_traits>
+
 namespace flecsi {
 namespace utils {
 
@@ -40,23 +43,20 @@ struct is_container : std::false_type {};
 //! \remark If T is, this version is instantiated.
 //! \remark This version adheres to the strict requirements of an STL container.
 template<typename T>
-struct is_container<
-    T,
-    std::conditional_t<
-        false,
-        detail::is_container<
-            typename T::value_type,
-            typename T::size_type,
-            typename T::allocator_type,
-            typename T::iterator,
-            typename T::const_iterator,
-            decltype(std::declval<T>().size()),
-            decltype(std::declval<T>().begin()),
-            decltype(std::declval<T>().end()),
-            decltype(std::declval<T>().cbegin()),
-            decltype(std::declval<T>().cend()),
-            decltype(std::declval<T>().data())>,
-        void>> : public std::true_type {};
+struct is_container<T,
+  std::conditional_t<false,
+    detail::is_container<typename T::value_type,
+      typename T::size_type,
+      typename T::allocator_type,
+      typename T::iterator,
+      typename T::const_iterator,
+      decltype(std::declval<T>().size()),
+      decltype(std::declval<T>().begin()),
+      decltype(std::declval<T>().end()),
+      decltype(std::declval<T>().cbegin()),
+      decltype(std::declval<T>().cend()),
+      decltype(std::declval<T>().data())>,
+    void>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version adheres to the strict requirements of an STL container.
@@ -80,14 +80,11 @@ struct is_minimal_container : std::false_type {};
 //! \remark If T is, this version is instantiated.
 //! \remark This version uses to a reduced set of requirements for a container.
 template<typename T>
-struct is_minimal_container<
-    T,
-    std::conditional_t<
-        false,
-        is_container<
-            decltype(std::declval<T>().size()),
-            decltype(std::declval<T>().data())>,
-        void>> : public std::true_type {};
+struct is_minimal_container<T,
+  std::conditional_t<false,
+    is_container<decltype(std::declval<T>().size()),
+      decltype(std::declval<T>().data())>,
+    void>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version uses to a reduced set of requirements for a container.
@@ -111,19 +108,39 @@ struct is_iterative_container : std::false_type {};
 //! \remark If T is, this version is instantiated.
 //! \remark This version uses to a reduced set of requirements for a container.
 template<typename T>
-struct is_iterative_container<
-    T,
-    std::conditional_t<
-        false,
-        is_container<
-            decltype(std::declval<T>().begin()),
-            decltype(std::declval<T>().end())>,
-        void>> : public std::true_type {};
+struct is_iterative_container<T,
+  std::conditional_t<false,
+    is_container<decltype(std::declval<T>().begin()),
+      decltype(std::declval<T>().end())>,
+    void>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version uses to a reduced set of requirements for a container.
 template<typename T>
 constexpr bool is_iterative_container_v = is_iterative_container<T>::value;
 
+////////////////////////////////////////////////////////////////////////////////
+//! \brief Check if a particular type T is an iterator.
+////////////////////////////////////////////////////////////////////////////////
+template<typename T>
+struct is_iterator {
+  //! \brief This function will get always get instantiated.
+  static char test(...);
+  //! \brief Use SFINAE to create this function if T is an iterator.
+  template<typename U,
+    typename = typename std::iterator_traits<U>::difference_type,
+    typename = typename std::iterator_traits<U>::pointer,
+    typename = typename std::iterator_traits<U>::reference,
+    typename = typename std::iterator_traits<U>::value_type,
+    typename = typename std::iterator_traits<U>::iterator_category>
+  static long test(U &&);
+  //! \breif True if T is an iterator and test(U) function exists.
+  constexpr static bool value =
+    std::is_same<decltype(test(std::declval<T>())), long>::value;
+};
+
+//! \brief Equal to true if T is an iterator.
+template<typename T>
+constexpr bool is_iterator_v = is_iterator<T>::value;
 } // namespace utils
 } // namespace flecsi

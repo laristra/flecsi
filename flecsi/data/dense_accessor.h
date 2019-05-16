@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/data/accessor.h>
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/data_constants.h>
 #include <flecsi/data/dense_data_handle.h>
 
@@ -51,36 +52,33 @@ struct dense_accessor_base_t {};
  @ingroup data
  */
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-struct accessor_u<
-    data::dense,
-    T,
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+struct accessor_u<data::dense,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS> : public accessor_u<data::base,
+                         T,
+                         EXCLUSIVE_PERMISSIONS,
+                         SHARED_PERMISSIONS,
+                         GHOST_PERMISSIONS>,
+                       public dense_accessor_base_t {
+  using handle_t = dense_data_handle_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>
-    : public accessor_u<
-          data::base,
-          T,
-          EXCLUSIVE_PERMISSIONS,
-          SHARED_PERMISSIONS,
-          GHOST_PERMISSIONS>,
-      public dense_accessor_base_t {
-  using handle_t = dense_data_handle_u<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS>;
+    GHOST_PERMISSIONS>;
 
   /*!
    Copy constructor.
    */
 
+  accessor_u() = default;
+
   accessor_u(const dense_data_handle_u<T, 0, 0, 0> & h)
-      : handle(reinterpret_cast<const handle_t &>(h)) {}
+    : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   /*!
    \brief Provide logical array-based access to the data for this
@@ -246,27 +244,23 @@ struct accessor_u<
   handle_t handle;
 };
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using dense_accessor_u = accessor_u<
-    data::dense,
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using dense_accessor_u = accessor_u<data::dense,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS>;
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-using dense_accessor = dense_accessor_u<
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+using dense_accessor = dense_accessor_u<T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS>;
 
 } // namespace flecsi

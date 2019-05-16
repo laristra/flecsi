@@ -13,23 +13,23 @@ using namespace flecsi;
 TEST(launch, sanity) {
 
   {
-  launch_t l("01011");
+    launch_t l("01011");
 
-  ASSERT_TRUE(launch_single(l));
-  ASSERT_TRUE(launch_index(l));
-  ASSERT_FALSE(launch_leaf(l));
-  ASSERT_TRUE(launch_inner(l));
-  ASSERT_FALSE(launch_idempotent(l));
+    ASSERT_TRUE(launch_single(l));
+    ASSERT_TRUE(launch_index(l));
+    ASSERT_FALSE(launch_leaf(l));
+    ASSERT_TRUE(launch_inner(l));
+    ASSERT_FALSE(launch_idempotent(l));
   } // scope
 
   {
-  launch_t l(single | leaf | idempotent);
+    launch_t l(single | leaf | idempotent);
 
-  ASSERT_TRUE(launch_single(l));
-  ASSERT_FALSE(launch_index(l));
-  ASSERT_TRUE(launch_leaf(l));
-  ASSERT_FALSE(launch_inner(l));
-  ASSERT_TRUE(launch_idempotent(l));
+    ASSERT_TRUE(launch_single(l));
+    ASSERT_FALSE(launch_index(l));
+    ASSERT_TRUE(launch_leaf(l));
+    ASSERT_FALSE(launch_inner(l));
+    ASSERT_TRUE(launch_idempotent(l));
   } // scope
 
 } // TEST

@@ -31,7 +31,6 @@
 #include <flecsi/data/data_client.h>
 #include <flecsi/data/dense_data_handle.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/index_space.h>
 
 ///
@@ -381,16 +380,15 @@ struct storage_class_u<dense> {
   template<typename T, size_t EP, size_t SP, size_t GP>
   using handle_t = dense_handle_t<T, EP, SP, GP>;
 
-  template<
-      typename DATA_CLIENT_TYPE,
-      typename DATA_TYPE,
-      size_t NAMESPACE,
-      size_t NAME,
-      size_t VERSION>
-  static handle_t<DATA_TYPE, 0, 0, 0>
-  get_handle(const data_client_t & data_client) {
+  template<typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION>
+  static handle_t<DATA_TYPE, 0, 0, 0> get_handle(
+    const data_client_t & data_client) {
     handle_t<DATA_TYPE, 0, 0, 0> h;
-    //FIXME add logic here
+    // FIXME add logic here
     return h;
   }
 

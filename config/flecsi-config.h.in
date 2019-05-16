@@ -46,7 +46,10 @@
   #if !defined(REALM_USE_CMAKE)
     #define REALM_USE_CMAKE
   #endif
-  #define ENABLE_LEGION_TLS
+  
+  #if !defined(ENABLE_LEGION_TLS)
+    #define ENABLE_LEGION_TLS
+  #endif
 
   #if !defined(MAPPER_COMPACTION)
     #cmakedefine MAPPER_COMPACTION
@@ -73,16 +76,10 @@
 #cmakedefine FLECSI_COUNTER_TYPE @FLECSI_COUNTER_TYPE@
 
 //----------------------------------------------------------------------------//
-// Boost.Preprocessor
+// Boost
 //----------------------------------------------------------------------------//
 
-#cmakedefine FLECSI_ENABLE_BOOST_PREPROCESSOR
-
-//----------------------------------------------------------------------------//
-// Boost.ProgramOptions
-//----------------------------------------------------------------------------//
-
-#cmakedefine FLECSI_ENABLE_BOOST_PROGRAM_OPTIONS
+#cmakedefine FLECSI_ENABLE_BOOST
 
 //----------------------------------------------------------------------------//
 // Enable coloring

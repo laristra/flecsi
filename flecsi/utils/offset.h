@@ -31,7 +31,8 @@ namespace utils {
  * @tparam COUNT_BITS Number of bits used for the count
  */
 template<size_t COUNT_BITS>
-class offset_u {
+class offset_u
+{
 public:
   static_assert(COUNT_BITS <= 32, "COUNT_BITS max exceeded");
 
@@ -41,8 +42,13 @@ public:
    *
    * Since we ensure that COUNT_BITS <= 32, this will always fit into a
    * uint32_t.
+   *
+   * While this is true, the compliment of a uint32_t is much different
+   * than the compliment of a uint64_t.  Thus for safety and simplicity,
+   * we store count_max as a uint64_t for simplicity.  This will avoid having
+   * to statically cast count_mask.
    */
-  static constexpr uint32_t count_mask = (1ul << COUNT_BITS) - 1;
+  static constexpr uint64_t count_mask = (1ul << COUNT_BITS) - 1;
 
   /**
    * @brief The maximum value of the start index value.
@@ -72,7 +78,7 @@ public:
    * @param count The count (number) of elements
    */
   offset_u(const offset_u & prev, uint32_t count)
-      : offset_u(prev.end(), count) {}
+    : offset_u(prev.end(), count) {}
 
   /**
    * @brief Get the start index of the offset range.

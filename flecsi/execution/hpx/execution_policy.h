@@ -17,8 +17,8 @@
 
 #include <hpx/include/async.hpp>
 #include <hpx/include/lcos.hpp>
-#include <hpx/include/thread_executors.hpp>
 #include <hpx/include/parallel_execution.hpp>
+#include <hpx/include/thread_executors.hpp>
 
 #include <functional>
 #include <tuple>
@@ -31,9 +31,11 @@
 #include <flecsi/execution/hpx/future.h>
 #include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/execution/hpx/task_wrapper.h>
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/export_definitions.h>
 #include <flecsi/utils/tuple_function.h>
+
+#include <flecsi/utils/const_string.h>
+
 //#include "flecsi/execution/task.h"
 
 ///
@@ -61,7 +63,7 @@ struct executor_u {
   static hpx::shared_future<RETURN> execute(Exec && exec, T fun, A && targs) {
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(fun));
     return hpx::async(
-        std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
+      std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
   } // execute_task
 }; // struct executor_u
 
@@ -86,7 +88,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
 
   template<typename FUNCTOR_TYPE>
   using functor_task_wrapper_u =
-      typename flecsi::execution::functor_task_wrapper_u<FUNCTOR_TYPE>;
+    typename flecsi::execution::functor_task_wrapper_u<FUNCTOR_TYPE>;
 
   struct runtime_state_t {};
 
@@ -109,22 +111,14 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   /// \tparam A The arguments type of the task. This is a std::tuple of the
   ///           user task arguments.
   ///
-  template<
-    size_t KEY,
+  template<size_t KEY,
     typename RETURN,
     typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE)
-  >
-  static
-  bool
-  register_task(
-     processor_type_t processor,
-     launch_t launch,
-     std::string name
-  )
-  {
-    return context_t::instance().template register_function<
-      KEY, RETURN, ARG_TUPLE, DELEGATE>();
+    RETURN (*DELEGATE)(ARG_TUPLE)>
+  static bool
+  register_task(processor_type_t processor, launch_t launch, std::string name) {
+    return context_t::instance()
+      .template register_function<KEY, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_task
 
   ///
@@ -136,36 +130,38 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   /// \param user_task_handle
   /// \param args
   ///
-  template<launch_type_t launch,size_t KEY, typename RETURN,
-    typename ARG_TUPLE, typename... ARGS>
+  template<launch_type_t launch,
+    size_t TASK,
+    size_t REDUCTION,
+    typename RETURN,
+    typename ARG_TUPLE,
+    typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
     context_t & context_ = context_t::instance();
 
     // Get the function and processor type.
-    auto fun = context_.function(KEY);
+    auto fun = context_.function(TASK);
 
     //     auto processor_type = context_.processor_type<KEY>();
     //     if (launch == processor_type_t::mpi)
 
+    // FIXME add logic for reduction
+
     return executor_u<RETURN, ARG_TUPLE>::execute(
-        context_t::instance().get_default_executor(),
-        std::move(fun), std::forward_as_tuple(std::forward<ARGS>(args)...));
+      context_t::instance().get_default_executor(), std::move(fun),
+      std::forward_as_tuple(std::forward<ARGS>(args)...));
   } // execute_task
 
   //--------------------------------------------------------------------------//
   // Function interface.
   //--------------------------------------------------------------------------//
-  template<
-    size_t KEY,
+  template<size_t KEY,
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*FUNCTION)(ARG_TUPLE)>
-  static
-  bool
-  register_function()
-  {
+  static bool register_function() {
     return context_t::instance()
-        .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
+      .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   ///
@@ -178,11 +174,10 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   /// \return The return type of the provided function handle.
   ///
   template<typename FUNCTION_HANDLE, typename... ARGS>
-  static decltype(auto)
-  execute_function(FUNCTION_HANDLE & handle, ARGS &&... args) {
-    return handle(
-        context_t::instance().function(handle.get_key()),
-        std::forward_as_tuple(std::forward<ARGS>(args)...));
+  static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
+    ARGS &&... args) {
+    return handle(context_t::instance().function(handle.get_key()),
+      std::forward_as_tuple(std::forward<ARGS>(args)...));
   } // execute_function
 
 }; // struct hpx_execution_policy_t

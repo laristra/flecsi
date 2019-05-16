@@ -25,9 +25,13 @@
 
 #include <legion.h>
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/data.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_field.h>
+
+#include <flecsi/utils/const_string.h>
+#include <flecsi/utils/tuple_walker.h>
 
 clog_register_tag(prolog);
 
@@ -42,7 +46,7 @@ namespace execution {
  @ingroup execution
  */
 
-struct task_prolog_t : public utils::tuple_walker_u<task_prolog_t> {
+struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   /*!
    Construct a task_prolog_t instance.
@@ -51,11 +55,10 @@ struct task_prolog_t : public utils::tuple_walker_u<task_prolog_t> {
    @param context The Legion task runtime context.
    */
 
-  task_prolog_t(
-      Legion::Runtime * runtime,
-      Legion::Context & context,
-      Legion::TaskLauncher & launcher)
-      : runtime(runtime), context(context), launcher(launcher) {
+  task_prolog_t(Legion::Runtime * runtime,
+    Legion::Context & context,
+    Legion::Domain & color_domain)
+    : runtime(runtime), context(context), color_domain(color_domain) {
   } // task_prolog_t
 
   /*!
@@ -74,89 +77,132 @@ struct task_prolog_t : public utils::tuple_walker_u<task_prolog_t> {
    @param context The Legion task runtime context.
    */
 
-  template<
-      typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor_u<
-              T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
-    if(sparse){
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor_u<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    if(sparse) {
       return;
     }
 
     auto & h = a.handle;
 
-    if (!h.global && !h.color) {
+    if(!h.global && !h.color) {
       auto & flecsi_context = context_t::instance();
 
       bool read_phase = false;
       bool write_phase = false;
       const int my_color = runtime->find_local_MPI_rank();
 
-      read_phase = GHOST_PERMISSIONS != reserved;
+      read_phase = GHOST_PERMISSIONS != na;
       write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
-      if (read_phase) {
-        if (!*(h.ghost_is_readable)) {
+      if(read_phase) {
+        if(!*(h.ghost_is_readable)) {
           {
             clog_tag_guard(prolog);
             clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
                         << std::endl;
-
-            // As owner
-            clog(trace) << "rank " << my_color << " arrives & advances "
-                        << *(h.pbarrier_as_owner_ptr) << std::endl;
           } // scope
 
-          // Phase WRITE
-          h.pbarrier_as_owner_ptr->arrive(1);
-
-          // Phase WRITE
-          *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-              context, *(h.pbarrier_as_owner_ptr));
-
-          const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
-
           // As user
-          for (size_t owner{0}; owner < _pbp_size; owner++) {
-            owner_regions.push_back(h.ghost_owners_lregions[owner]);
-            // ndm - need sparse
-            owner_subregions.push_back(h.ghost_owners_subregions[owner]);
-            ghost_regions.push_back(h.ghost_lr);
-            color_regions.push_back(h.color_region);
-            // ndm - need offset and range
-            fids.push_back(h.fid);
-            ghost_copy_args local_args;
-            local_args.data_client_hash = h.data_client_hash;
-            local_args.index_space = h.index_space;
-            local_args.owner = owner;
-            args.push_back(local_args);
-            futures.push_back(Legion::Future::from_value(
-                runtime, *(h.global_to_local_color_map_ptr)));
-            barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
-          } // for owner as user
+
+          ghost_owners_partitions.push_back(h.ghost_owners_lp);
+          //          owner_subregion_partitions.push_back(h.ghost_owners_subregion_lp);
+          ghost_partitions.push_back(h.ghost_lp);
+          entire_regions.push_back(h.entire_region);
+          fids.push_back(h.fid);
+          ghost_copy_args local_args;
+          local_args.data_client_hash = h.data_client_hash;
+          local_args.index_space = h.index_space;
+          local_args.sparse = false;
+          args.push_back(local_args);
 
           *(h.ghost_is_readable) = true;
 
         } // !ghost_is_readable
       } // read_phase
 
-      if (write_phase && (*h.ghost_is_readable)) {
-        // Phase WRITE
-        launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
-
-        // Phase READ
-        launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));
-
+      if(write_phase && (*h.ghost_is_readable)) {
         *(h.ghost_is_readable) = false;
         *(h.write_phase_started) = true;
       } // if
     } // end if
+
   } // handle
+
+  Legion::LogicalPartition create_ghost_owners_partition_for_sparse_entries(
+    size_t idx_space,
+    size_t fid) {
+    auto & context_ = context_t::instance();
+    auto & ispace_dmap = context_.index_space_data_map();
+    // auto& flecsi_ispace = data.index_space(idx_space);
+    // auto& flecsi_sis = data.sparse_index_space(idx_space);
+    size_t sparse_idx_space = idx_space + 8192;
+
+    using field_info_t = context_t::field_info_t;
+
+    auto ghost_owner_pos_fid =
+      LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+
+    auto constexpr key =
+      flecsi::utils::const_string_t{
+        EXPAND_AND_STRINGIFY(sparse_set_owner_position_task)}
+        .hash();
+
+    const auto sparse_set_pos_id = context_.task_id<key>();
+
+    Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id, color_domain,
+      Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
+
+    sparse_pos_launcher
+      .add_region_requirement(Legion::RegionRequirement(
+        ispace_dmap[idx_space].ghost_lp, 0 /*projection ID*/, READ_ONLY,
+        EXCLUSIVE, ispace_dmap[idx_space].entire_region))
+      .add_field(ghost_owner_pos_fid);
+    sparse_pos_launcher
+      .add_region_requirement(Legion::RegionRequirement(
+        ispace_dmap[idx_space].ghost_owners_lp, 0 /*projection ID*/, READ_ONLY,
+        EXCLUSIVE, ispace_dmap[idx_space].entire_region))
+      .add_field(fid);
+    sparse_pos_launcher
+      .add_region_requirement(Legion::RegionRequirement(
+        ispace_dmap[sparse_idx_space].ghost_lp, 0 /*projection ID*/,
+        WRITE_DISCARD, EXCLUSIVE, ispace_dmap[sparse_idx_space].entire_region))
+      .add_field(ghost_owner_pos_fid);
+
+    sparse_pos_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+    auto future = runtime->execute_index_space(context, sparse_pos_launcher);
+    future.wait_all_results(false);
+
+    Legion::LogicalRegion sis_primary_lr =
+      ispace_dmap[sparse_idx_space].entire_region;
+    //				ispace_dmap[sparse_idx_space].primary_lp.get_logical_region();
+
+    Legion::IndexSpace is_of_colors =
+      runtime->create_index_space(context, color_domain);
+
+    ispace_dmap[sparse_idx_space].ghost_owners_ip =
+      runtime->create_partition_by_image(context,
+        sis_primary_lr.get_index_space(),
+        ispace_dmap[sparse_idx_space].ghost_lp,
+        ispace_dmap[sparse_idx_space].entire_region, ghost_owner_pos_fid,
+        is_of_colors);
+
+    runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_ip,
+      "ghost owners index partition");
+    ispace_dmap[sparse_idx_space].ghost_owners_lp =
+      runtime->get_logical_partition(
+        context, sis_primary_lr, ispace_dmap[sparse_idx_space].ghost_owners_ip);
+    runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_lp,
+      "ghost owners logical partition");
+
+    return ispace_dmap[sparse_idx_space].ghost_owners_lp;
+  }
 
   /*!
    Walk the data handles for a flecsi task, store info for ghost copies
@@ -170,133 +216,105 @@ struct task_prolog_t : public utils::tuple_walker_u<task_prolog_t> {
   void launch_copies() {
     auto & flecsi_context = context_t::instance();
 
-    // group owners by owner_regions
-    std::vector<std::set<size_t>> owner_groups;
+    // group by ghost_owners_partition
+    std::vector<std::set<size_t>> handle_groups;
     std::vector<bool> is_sparse_group;
-    for (size_t owner{0}; owner < owner_regions.size(); owner++) {
+    for(size_t handle{0}; handle < ghost_owners_partitions.size(); handle++) {
       bool found_group = false;
-      for (size_t group{0}; group < owner_groups.size(); group++) {
-        auto first = owner_groups[group].begin();
-        if (owner_regions[owner] == owner_regions[*first]) {
-          owner_groups[group].insert(owner);
+      for(size_t group{0}; group < handle_groups.size(); group++) {
+        auto first = handle_groups[group].begin();
+        if(ghost_owners_partitions[handle] == ghost_owners_partitions[*first]) {
+          handle_groups[group].insert(handle);
           found_group = true;
           continue;
         }
       } // for group
-      if (!found_group) {
+      if(!found_group) {
         std::set<size_t> new_group;
-        new_group.insert(owner);
-        owner_groups.push_back(new_group);
-
-        is_sparse_group.push_back(args[owner].sparse);
+        new_group.insert(handle);
+        handle_groups.push_back(new_group);
+        is_sparse_group.push_back(args[handle].sparse);
       }
-    } // for owner
+    } // for handle
 
-    // launch copy task per group of owners with same owner_region
-    for (size_t group{0}; group < owner_groups.size(); group++) {
-      bool sparse = is_sparse_group[group];
-
-      auto first_itr = owner_groups[group].begin();
+    // launch copy task per group of handles with same ghost_owners_partition
+    for(size_t group{0}; group < handle_groups.size(); group++) {
+      bool is_sparse = is_sparse_group[group];
+      auto first_itr = handle_groups[group].begin();
       size_t first = *first_itr;
 
-      Legion::RegionRequirement rr_shared(
-          owner_subregions[first], READ_ONLY, EXCLUSIVE, owner_regions[first]);
-
-      Legion::RegionRequirement rr_ghost(
-          ghost_regions[first], WRITE_DISCARD, EXCLUSIVE, color_regions[first]);
-
+      Legion::RegionRequirement rr_owners(ghost_owners_partitions[first],
+        0 /*projection ID*/, READ_ONLY, EXCLUSIVE, entire_regions[first]);
+      Legion::RegionRequirement rr_ghost(ghost_partitions[first],
+        0 /*projection ID*/, READ_WRITE, EXCLUSIVE, entire_regions[first]);
 
       Legion::RegionRequirement rr_entries_shared;
 
       Legion::RegionRequirement rr_entries_ghost;
 
-      if(sparse){
+      if(is_sparse) {
         rr_entries_shared =
-          Legion::RegionRequirement(
-          owner_entries_regions[first], READ_ONLY, EXCLUSIVE,
-          owner_entries_regions[first]);
+          Legion::RegionRequirement(ghost_owner_entries_partitions[first], 0,
+            READ_ONLY, SIMULTANEOUS, entries_regions[first]);
 
         rr_entries_ghost =
-          Legion::RegionRequirement(
-          color_entries_regions[first], WRITE_DISCARD, EXCLUSIVE,
-          color_entries_regions[first]);        
+          Legion::RegionRequirement(ghost_entries_partitions[first], 0,
+            READ_WRITE, SIMULTANEOUS, entries_regions[first]);
       }
 
       auto ghost_owner_pos_fid =
-          LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+        LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
       rr_ghost.add_field(ghost_owner_pos_fid);
+      rr_entries_ghost.add_field(ghost_owner_pos_fid);
 
       // TODO - circular dependency including internal_task.h
       auto constexpr key =
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
-              .hash();
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
+          .hash();
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();
 
-      // ndm - diff task
+      Legion::IndexLauncher ghost_launcher(ghost_copy_tid, color_domain,
+        Legion::TaskArgument(&args[first], sizeof(args[first])),
+        Legion::ArgumentMap());
 
-      Legion::TaskLauncher ghost_launcher(
-          ghost_copy_tid,
-          Legion::TaskArgument(&args[first], sizeof(args[first])));
+      for(auto handle_itr = handle_groups[group].begin();
+          handle_itr != handle_groups[group].end(); handle_itr++) {
+        size_t handle = *handle_itr;
 
-      ghost_launcher.add_future(futures[first]);
+        rr_owners.add_field(fids[handle]);
+        rr_ghost.add_field(fids[handle]);
 
-      for (auto owner_itr = owner_groups[group].begin();
-           owner_itr != owner_groups[group].end(); owner_itr++) {
-        size_t owner = *owner_itr;
-
-        rr_shared.add_field(fids[owner]);
-        rr_ghost.add_field(fids[owner]);
-
-        if(sparse){
-          rr_entries_shared.add_field(fids[owner]);
-          rr_entries_ghost.add_field(fids[owner]);
+        if(is_sparse) {
+          rr_entries_shared.add_field(fids[handle]);
+          rr_entries_ghost.add_field(fids[handle]);
         }
+      }
 
-        // Phase READ
-        ghost_launcher.add_wait_barrier(*(barrier_ptrs[owner]));
-
-        // Phase WRITE
-        ghost_launcher.add_arrival_barrier(*(barrier_ptrs[owner]));
-
-        // Phase WRITE
-        *(barrier_ptrs[owner]) =
-            runtime->advance_phase_barrier(context, *(barrier_ptrs[owner]));
-      } // for owner
-      // ndm - add rr for sparse shared & ghost
-      ghost_launcher.add_region_requirement(rr_shared);
+      ghost_launcher.add_region_requirement(rr_owners);
       ghost_launcher.add_region_requirement(rr_ghost);
 
-      if(sparse){
+      if(is_sparse) {
         ghost_launcher.add_region_requirement(rr_entries_shared);
         ghost_launcher.add_region_requirement(rr_entries_ghost);
       }
 
-      // Execute the ghost copy task
-      runtime->execute_task(context, ghost_launcher);
-
+      ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+      runtime->execute_index_space(context, ghost_launcher);
     } // for group
 
   } // launch copies
 
-  template<
-    typename T,
+  template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    sparse_accessor <
-    T,
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS
-    > &a
-  )
-  {
-    if(!sparse){
+    GHOST_PERMISSIONS> & a) {
+    if(!sparse) {
       return;
     }
 
@@ -310,117 +328,76 @@ struct task_prolog_t : public utils::tuple_walker_u<task_prolog_t> {
     bool write_phase = false;
     const int my_color = runtime->find_local_MPI_rank();
 
-    read_phase = GHOST_PERMISSIONS != reserved;
+    read_phase = GHOST_PERMISSIONS != na;
     write_phase = (SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw);
 
-    if (read_phase) {
-      if (!*(h.ghost_is_readable)) {
-        {
-          clog_tag_guard(prolog);
-          clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
-                      << std::endl;
+    if(read_phase) {
+      if(!*(h.ghost_is_readable)) {
+        clog_tag_guard(prolog);
+        clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
+                    << std::endl;
 
-          // As owner
-          clog(trace) << "rank " << my_color << " arrives & advances "
-                      << *(h.pbarrier_as_owner_ptr) << std::endl;
-        } // scope
+        // offsets
+        ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
+        //          owner_subregion_partitions.push_back(
+        //			h.ghost_owners_offsets_subregion_lp);
 
-        // Phase WRITE
-        h.pbarrier_as_owner_ptr->arrive(1);
+        if(h.ghost_owners_entries_lp == Legion::LogicalPartition::NO_PART)
+          h.ghost_owners_entries_lp =
+            create_ghost_owners_partition_for_sparse_entries(
+              h.index_space, h.fid);
+        ghost_owner_entries_partitions.push_back(h.ghost_owners_entries_lp);
 
-        // Phase WRITE
-        *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-            context, *(h.pbarrier_as_owner_ptr));
+        entire_regions.push_back(h.offsets_entire_region);
+        entries_regions.push_back(h.entries_entire_region);
 
-        const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
+        ghost_partitions.push_back(h.offsets_ghost_lp);
+        ghost_entries_partitions.push_back(h.entries_ghost_lp);
 
-        // As user
-        for (size_t owner{0}; owner < _pbp_size; owner++) {
+        //         color_partitions.push_back(h.offsets_color_lp);
+        //          color_entries_partitions.push_back(h.entries_color_lp);
 
-          // offsets
-          owner_regions.push_back(h.ghost_owners_offsets_lregions[owner]);
-          owner_subregions.push_back(h.ghost_owners_offsets_subregions[owner]);
+        fids.push_back(h.fid);
 
-          owner_entries_regions.push_back(
-            h.ghost_owners_entries_lregions[owner]);
-          /*
-          owner_entries_subregions.push_back(
-            h.ghost_owners_entries_subregions[owner]);
-            */
-
-          ghost_regions.push_back(h.offsets_ghost_lr);
-          ghost_entries_regions.push_back(h.entries_ghost_lr);
-          
-          color_regions.push_back(h.offsets_color_region);
-          color_entries_regions.push_back(h.entries_color_region);
-
-          fids.push_back(h.fid);
-
-          ghost_copy_args local_args;
-          local_args.data_client_hash = h.data_client_hash;
-          local_args.index_space = h.index_space;
-          local_args.owner = owner;
-          local_args.sparse = true;
-          local_args.reserve = h.reserve;
-          local_args.max_entries_per_index = h.max_entries_per_index;
-          args.push_back(local_args);
-
-          futures.push_back(Legion::Future::from_value(
-              runtime, *(h.global_to_local_color_map_ptr)));
-          barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
-        } // for owner as user
+        ghost_copy_args local_args;
+        local_args.data_client_hash = h.data_client_hash;
+        local_args.index_space = h.index_space;
+        local_args.sparse = true;
+        local_args.reserve = h.reserve;
+        local_args.max_entries_per_index = h.max_entries_per_index;
+        args.push_back(local_args);
 
         *(h.ghost_is_readable) = true;
 
       } // !ghost_is_readable
     } // read_phase
 
-    if (write_phase && (*h.ghost_is_readable)) {
-      // Phase WRITE
-      launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
-
-      // Phase READ
-      launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));
+    if(write_phase && (*h.ghost_is_readable)) {
 
       *(h.ghost_is_readable) = false;
       *(h.write_phase_started) = true;
     } // if
-  }
-
-  template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void
-  handle(
-    ragged_accessor<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & a
-  )
-  {
-    handle(reinterpret_cast<sparse_accessor<
-      T, EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS>&>(a));
   } // handle
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    sparse_mutator<
-    T
-    > &m
-  )
-  {
-    if(!sparse){
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
+    handle(static_cast<base_t &>(a));
+  } // handle
+
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    if(!sparse) {
       return;
     }
-  
+
     auto & h = m.h_;
 
     using sparse_field_data_t = context_t::sparse_field_data_t;
@@ -428,90 +405,68 @@ struct task_prolog_t : public utils::tuple_walker_u<task_prolog_t> {
     auto & flecsi_context = context_t::instance();
     const int my_color = runtime->find_local_MPI_rank();
 
-    //read 
-    if (!*(h.ghost_is_readable)) {
-        {
-          clog_tag_guard(prolog);
-          clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
-                      << std::endl;
+    // read
+    if(!*(h.ghost_is_readable)) {
+      clog_tag_guard(prolog);
+      clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE" << std::endl;
 
-          // As owner
-          clog(trace) << "rank " << my_color << " arrives & advances "
-                      << *(h.pbarrier_as_owner_ptr) << std::endl;
-        } // scope
+      // offsets
+      ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
+      //          owner_subregion_partitions.push_back(
+      //                      h.ghost_owners_offsets_subregion_lp);
+      if(h.ghost_owners_entries_lp == Legion::LogicalPartition::NO_PART)
+        h.ghost_owners_entries_lp =
+          create_ghost_owners_partition_for_sparse_entries(
+            h.index_space, h.fid);
+      ghost_owner_entries_partitions.push_back(h.ghost_owners_entries_lp);
 
-        // Phase WRITE
-        h.pbarrier_as_owner_ptr->arrive(1);
+      entire_regions.push_back(h.offsets_entire_region);
+      entries_regions.push_back(h.entries_entire_region);
 
-        // Phase WRITE
-        *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(
-            context, *(h.pbarrier_as_owner_ptr));
+      ghost_partitions.push_back(h.offsets_ghost_lp);
+      ghost_entries_partitions.push_back(h.entries_ghost_lp);
 
-        const size_t _pbp_size = h.ghost_owners_pbarriers_ptrs.size();
+      //         color_partitions.push_back(h.offsets_color_lp);
+      //          color_entries_partitions.push_back(h.entries_color_lp);
 
-        // As user
-        for (size_t owner{0}; owner < _pbp_size; owner++) {
+      fids.push_back(h.fid);
 
-          // offsets
-          owner_regions.push_back(h.ghost_owners_offsets_lregions[owner]);
-          owner_subregions.push_back(h.ghost_owners_offsets_subregions[owner]);
+      ghost_copy_args local_args;
+      local_args.data_client_hash = h.data_client_hash;
+      local_args.index_space = h.index_space;
+      local_args.sparse = true;
+      local_args.reserve = h.reserve;
+      local_args.max_entries_per_index = h.max_entries_per_index();
+      args.push_back(local_args);
 
-          owner_entries_regions.push_back(
-            h.ghost_owners_entries_lregions[owner]);
-          /*
-          owner_entries_subregions.push_back(
-            h.ghost_owners_entries_subregions[owner]);
-            */
+      *(h.ghost_is_readable) = true;
+    }
 
-          ghost_regions.push_back(h.offsets_ghost_lr);
-          ghost_entries_regions.push_back(h.entries_ghost_lr);
-
-          color_regions.push_back(h.offsets_color_region);
-          color_entries_regions.push_back(h.entries_color_region);
-
-          fids.push_back(h.fid);
-
-          ghost_copy_args local_args;
-          local_args.data_client_hash = h.data_client_hash;
-          local_args.index_space = h.index_space;
-          local_args.owner = owner;
-          local_args.sparse = true;
-          local_args.reserve = h.reserve;
-          local_args.max_entries_per_index = h.max_entries_per_index();
-          args.push_back(local_args);
-
-          futures.push_back(Legion::Future::from_value(
-              runtime, *(h.global_to_local_color_map_ptr)));
-          barrier_ptrs.push_back(h.ghost_owners_pbarriers_ptrs[owner]);
-        } // for owner as user
-
-        *(h.ghost_is_readable) = true;
-     } 
-
-      //write
-      if(*(h.ghost_is_readable) ){
-        // Phase WRITE
-        launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));
-
-        // Phase READ
-        launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));
-
-        *(h.ghost_is_readable) = false;
-        *(h.write_phase_started) = true;
-       }
+    // write
+    if(*(h.ghost_is_readable)) {
+      *(h.ghost_is_readable) = false;
+      *(h.write_phase_started) = true;
+    }
   }
 
-  template<
-    typename T
-  >
-  void
-  handle(
-    ragged_mutator<
-      T
-    > & m
-  )
-  {
-    handle(reinterpret_cast<sparse_mutator<T>&>(m));
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
+    using base_t = typename sparse_mutator<T>::base_t;
+    handle(static_cast<base_t &>(m));
+  }
+
+  /*!
+   Handle individual list items
+   */
+  template<typename T,
+    std::size_t N,
+    template<typename, std::size_t>
+    typename Container,
+    typename =
+      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+  void handle(Container<T, N> & list) {
+    for(auto & item : list)
+      handle(item);
   }
 
   /*!
@@ -519,34 +474,35 @@ struct task_prolog_t : public utils::tuple_walker_u<task_prolog_t> {
    */
 
   template<typename T>
-  static typename std::enable_if_t<
-      !std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(T &) {} // handle
+  static
+    typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
+    handle(T &) {} // handle
 
   // member variables
   Legion::Runtime * runtime;
   Legion::Context & context;
-  Legion::TaskLauncher & launcher;
-  std::vector<Legion::LogicalRegion> owner_regions;
-  std::vector<Legion::LogicalRegion> owner_subregions;
-  std::vector<Legion::LogicalRegion> owner_entries_regions;
-  //std::vector<Legion::LogicalRegion> owner_entries_subregions;
-  std::vector<Legion::LogicalRegion> ghost_regions;
-  std::vector<Legion::LogicalRegion> color_regions;
-  std::vector<Legion::LogicalRegion> ghost_entries_regions;
-  std::vector<Legion::LogicalRegion> color_entries_regions;
+  Legion::Domain & color_domain;
+  std::vector<Legion::LogicalPartition> ghost_owners_partitions;
+  std::vector<Legion::LogicalPartition> ghost_partitions;
+  std::vector<Legion::LogicalRegion> entire_regions;
+  std::vector<Legion::LogicalRegion> entries_regions;
+  //  std::vector<Legion::LogicalPartition> owner_subregion_partitions;
+  std::vector<Legion::LogicalPartition> ghost_owner_entries_partitions;
+  std::vector<Legion::LogicalPartition> ghost_entries_partitions;
+  std::vector<Legion::LogicalPartition> entries_partitions;
+  // Legion::TaskLauncher & launcher;
+
   std::vector<Legion::FieldID> fids;
   struct ghost_copy_args {
     size_t data_client_hash;
     size_t index_space;
-    size_t owner;
     bool sparse = false;
     size_t reserve;
     size_t max_entries_per_index;
   };
+
   std::vector<struct ghost_copy_args> args;
   std::vector<Legion::Future> futures;
-  std::vector<Legion::PhaseBarrier *> barrier_ptrs;
   size_t reserve;
   size_t max_entries_per_index;
   bool sparse = false;

@@ -46,8 +46,7 @@ namespace flecsi {
 namespace data {
 namespace hpx {
 
-
-//FIXME: sparce data was completely refactored in December 2017. 
+// FIXME: sparce data was completely refactored in December 2017.
 #if 0
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -575,7 +574,7 @@ struct storage_type_t<sparse, DS, MD> {
   static handle_t<T> register_data(
       const data_client_t & data_client,
       data_store_t & data_store,
-      const utils::const_string_t & key,
+      const flecsi::utils::const_string_t & key,
       size_t versions,
       size_t index_space,
       size_t num_entries,
@@ -614,7 +613,7 @@ struct storage_type_t<sparse, DS, MD> {
   static accessor_t<T> get_accessor(
       const data_client_t & data_client,
       data_store_t & data_store,
-      const utils::const_string_t & key,
+      const flecsi::utils::const_string_t & key,
       size_t version) {
     const size_t h = key.hash() ^ data_client.runtime_id();
     auto search = data_store[NS].find(h);
@@ -638,7 +637,7 @@ struct storage_type_t<sparse, DS, MD> {
   static mutator_t<T> get_mutator(
       const data_client_t & data_client,
       data_store_t & data_store,
-      const utils::const_string_t & key,
+      const flecsi::utils::const_string_t & key,
       size_t slots,
       size_t version) {
     const size_t h = key.hash() ^ data_client.runtime_id();
@@ -663,7 +662,7 @@ struct storage_type_t<sparse, DS, MD> {
   static handle_t<T> get_handle(
       const data_client_t & data_client,
       data_store_t & data_store,
-      const utils::const_string_t & key,
+      const flecsi::utils::const_string_t & key,
       size_t version) {
     return {};
   } // get_handle

@@ -30,7 +30,8 @@ namespace topology {
 //----------------------------------------------------------------------------//
 
 template<size_t DIMENSION>
-class mesh_definition_u {
+class mesh_definition_u
+{
 public:
   using point_t = point_u<double, DIMENSION>;
 
@@ -74,6 +75,18 @@ public:
 
   virtual std::vector<size_t>
   entities(size_t from_dimension, size_t to_dimension, size_t id) const = 0;
+
+  //--------------------------------------------------------------------------//
+  //! Abstract interface to get the entities of dimension \em to that define
+  //! the entity of dimension \em from.
+  //!
+  //! @param from_dimension The dimension of the entity for which the
+  //!                       definition is being requested.
+  //! @param to_dimension   The dimension of the entities of the definition.
+  //--------------------------------------------------------------------------//
+
+  virtual const std::vector<std::vector<size_t>> &
+  entities(size_t from_dimension, size_t to_dimension) const = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the entities of dimension \em to that define

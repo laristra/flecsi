@@ -19,12 +19,12 @@
   for specialization developers.
  *----------------------------------------------------------------------------*/
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
-#include<flecsi-tutorial/specialization/mesh/mesh.h>
-#include<flecsi/data/data.h>
-#include<flecsi/execution/execution.h>
+#include <flecsi-tutorial/specialization/mesh/mesh.h>
+#include <flecsi/data/data.h>
+#include <flecsi/execution/execution.h>
 
 using namespace flecsi;
 using namespace flecsi::tutorial;
@@ -32,10 +32,7 @@ using namespace flecsi::tutorial;
 // Create an identifier type. This will allow us to switch between
 // object instances using an integer id.
 
-enum identifier_t : size_t {
-  type_1,
-  type_2
-}; // enum identifier_t
+enum identifier_t : size_t { type_1, type_2 }; // enum identifier_t
 
 // Create a data type to store the integer id.
 
@@ -45,8 +42,7 @@ struct data_t {
 
 // Define an accessor type to use as the task argument.
 
-template<
-size_t SHARED_PRIVILEGES>
+template<size_t SHARED_PRIVILEGES>
 using cell_data = dense_accessor<data_t, rw, SHARED_PRIVILEGES, ro>;
 
 // This is a simple base type with one pure virtual method that we will
@@ -63,15 +59,13 @@ struct base_t {
 
 struct type_1_t : public base_t {
 
-  type_1_t(double w0, double w1)
-    : w0_(w0), w1_(w1) {}
+  type_1_t(double w0, double w1) : w0_(w0), w1_(w1) {}
 
   double compute(double x, double y) override {
-    return w0_*x + w1_*y;
+    return w0_ * x + w1_ * y;
   } // compute
 
 private:
-
   double w0_;
   double w1_;
 
@@ -82,7 +76,7 @@ private:
 struct type_2_t : public base_t {
 
   double compute(double x, double y) override {
-    return x*y;
+    return x * y;
   } // compute
 
 }; // struct type_2_t
@@ -92,9 +86,10 @@ namespace example {
 // Define a task to initialize the cell data. This will randomly pick
 // one of the integer ids for each cell.
 
-void update(mesh<ro> m, cell_data<rw> cd) {
-  for(auto c: m.cells(owned)) {
-    const size_t flip = double(rand())/RAND_MAX + 0.5;
+void
+update(mesh<ro> m, cell_data<rw> cd) {
+  for(auto c : m.cells(owned)) {
+    const size_t flip = double(rand()) / RAND_MAX + 0.5;
     cd(c).id = flip ? type_1 : type_2;
   } // for
 } // update
@@ -103,8 +98,9 @@ flecsi_register_task(update, example, loc, single);
 
 // Print the results of executing the "compute" method.
 
-void print(mesh<ro> m, cell_data<ro> cd) {
-  for(auto c: m.cells(owned)) {
+void
+print(mesh<ro> m, cell_data<ro> cd) {
+  for(auto c : m.cells(owned)) {
 
     // This call gets the global object associated with the id we
     // randomly set in the update task.
@@ -132,7 +128,8 @@ flecsi_register_global_object(type_2, derived, base_t);
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+void
+driver(int argc, char ** argv) {
 
   // Initialization of the object instances. In a real code, this would
   // need to occur in the specialization initialization control point.

@@ -15,32 +15,30 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/data_constants.h>
 
 namespace flecsi {
 
 // this empty base class which is the base of all accessors is used by the
 // handle tuple walkers for type checking
-struct accessor_base_t {};
+struct accessor_base_t : public data::data_reference_base_t {};
 
-template<
-    data::storage_label_type_t,
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-struct accessor_u : public accessor_base_t {};
+template<data::storage_label_type_t,
+  typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+struct accessor_u {};
 
-template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-struct accessor_u<
-    data::base,
-    T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> {};
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+struct accessor_u<data::base,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS> : public accessor_base_t {};
 
 } // namespace flecsi

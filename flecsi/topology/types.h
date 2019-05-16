@@ -59,7 +59,7 @@ using connection_vector_t = std::vector<id_vector_t>;
 struct id_vector_hash_t {
   size_t operator()(const id_vector_t & v) const {
     size_t h = 0;
-    for (utils::id_t id : v) {
+    for(utils::id_t id : v) {
       h |= static_cast<size_t>(id.local_id());
     } // for
 
@@ -70,7 +70,7 @@ struct id_vector_hash_t {
 
 // used when building the topology connectivities
 using id_vector_map_t =
-    std::unordered_map<id_vector_t, utils::id_t, id_vector_hash_t>;
+  std::unordered_map<id_vector_t, utils::id_t, id_vector_hash_t>;
 
 // the second topology vector holds the offsets into to from dimension
 using index_vector_t = std::vector<size_t>;
@@ -83,13 +83,15 @@ using index_vector_t = std::vector<size_t>;
 //! \tparam N The number of domains.
 //-----------------------------------------------------------------//
 
-class entity_base_ {
+class entity_base_
+{
 public:
   using id_t = flecsi::utils::id_t;
 };
 
 template<size_t NUM_DOMAINS>
-class entity_base_u : public entity_base_ {
+class entity_base_u : public entity_base_
+{
 public:
   ~entity_base_u() {}
 

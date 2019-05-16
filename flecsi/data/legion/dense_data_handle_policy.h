@@ -39,7 +39,7 @@ struct legion_dense_data_handle_policy_t {
   legion_dense_data_handle_policy_t() {}
 
   legion_dense_data_handle_policy_t(
-      const legion_dense_data_handle_policy_t & p) = default;
+    const legion_dense_data_handle_policy_t & p) = default;
 
   bool * ghost_is_readable;
   bool * write_phase_started;
@@ -55,20 +55,16 @@ struct legion_dense_data_handle_policy_t {
 
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion color_region;
-  Legion::LogicalRegion exclusive_lr;
-  Legion::LogicalRegion shared_lr;
-  Legion::LogicalRegion ghost_lr;
-  std::vector<Legion::LogicalRegion> ghost_owners_lregions;
-  std::vector<Legion::LogicalRegion> ghost_owners_subregions;
+  Legion::LogicalRegion entire_region;
+  Legion::LogicalPartition color_partition;
+  Legion::LogicalPartition primary_lp;
+  Legion::LogicalPartition exclusive_lp;
+  Legion::LogicalPartition shared_lp;
+  Legion::LogicalPartition ghost_lp;
+  Legion::LogicalPartition ghost_owners_lp;
 
   // Tuple-walk copies data_handle then discards updates at the end.
   // Some pointers are necessary for updates to live between walks.
-  Legion::PhaseBarrier * pbarrier_as_owner_ptr;
-  std::vector<Legion::PhaseBarrier *> ghost_owners_pbarriers_ptrs;
-  const Legion::STL::map<
-      LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions

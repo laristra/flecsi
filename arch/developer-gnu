@@ -43,6 +43,9 @@ do
 		--ccmake|-c)
 			cmake_mode=ccmake
 		;;
+    legion|hpx)
+      runtime=$1
+    ;;
 	esac
 
 	shift # next argument
@@ -58,13 +61,11 @@ $cmake_mode \
   -DCMAKE_C_COMPILER=gcc \
   -DCMAKE_C_FLAGS="-fmax-errors=5" \
   -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
-  -DENABLE_BOOST_PROGRAM_OPTIONS=ON \
+  -DENABLE_BOOST=ON \
   -DENABLE_CLOG=ON \
   -DCLOG_ENABLE_TAGS=ON \
-  -DENABLE_=ON \
   -DENABLE_DEVEL_TARGETS=ON \
   -DENABLE_UNIT_TESTS=ON \
-  -DENABLE_JENKINS_OUTPUT=ON \
   -DENABLE_FLECSIT=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
   $cinch_dir

@@ -20,10 +20,11 @@ namespace execution {
 // Function registration.
 //----------------------------------------------------------------------------//
 
-double test_function(double r, double e) {
+double
+test_function(double r, double e) {
   std::cout << "Executing test_function" << std::endl;
   std::cout << "(r,e): (" << r << "," << e << ")" << std::endl;
-  return r*e;
+  return r * e;
 } // function1
 
 flecsi_register_function(test_function, flecsi::execution);
@@ -32,8 +33,9 @@ flecsi_register_function(test_function, flecsi::execution);
 // Driver.
 //----------------------------------------------------------------------------//
 
-void driver(int argc, char ** argv) {
-//FIXME IRINA do something with the handle
+void
+driver(int argc, char ** argv) {
+  // FIXME IRINA do something with the handle
   auto handle = flecsi_function_handle(test_function, flecsi::execution);
 
   double result = flecsi_execute_function(handle, 2.0, 10.0);
@@ -46,9 +48,7 @@ void driver(int argc, char ** argv) {
 // TEST.
 //----------------------------------------------------------------------------//
 
-TEST(simple_function, testname) {
-
-} // TEST
+TEST(simple_function, testname) {} // TEST
 
 } // namespace execution
 } // namespace flecsi

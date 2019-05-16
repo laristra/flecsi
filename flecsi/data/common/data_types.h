@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <bitset>
+#include <ostream>
 
 #include <flecsi/utils/offset.h>
 
@@ -41,6 +42,13 @@ struct sparse_entry_value_u {
   index_t entry;
   T value;
 };
+
+template<typename T>
+std::ostream &
+operator<<(std::ostream & ostr,
+  const flecsi::data::sparse_entry_value_u<T> & ev) {
+  return ostr << "(" << ev.entry << ", " << ev.value << ")";
+} // operator<<
 
 // Generic bitfield type
 using bitset_t = std::bitset<8>;
