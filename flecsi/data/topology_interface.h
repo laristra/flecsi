@@ -98,7 +98,7 @@ struct topology_interface_u {
   } // get_topology
 
   /*!
-    Add a coloring.
+    Set the coloring for an index topology instance.
 
     @tparam TOPOLOGY_TYPE The topology type, which must be derived from
                           one of the FleCSI core topology types, e.g.,
@@ -109,7 +109,6 @@ struct topology_interface_u {
                           to add a coloring.
     @tparam NAME          The name of the topology instance for which
                           to add a coloring.
-    @tparam COLORING_NAME The name of the coloring to add.
 
     @param name     The unhashed name of the coloring for debugging purposes.
                     In general, this interface is not meant to be called
@@ -119,16 +118,15 @@ struct topology_interface_u {
 
   template<typename TOPOLOGY_TYPE,
     size_t NAMESPACE,
-    size_t NAME,
-    size_t COLORING_NAME>
-  void add_coloring(std::string const & name,
+    size_t NAME>
+  void set_coloring(std::string const & name,
     typename TOPOLOGY_TYPE::coloring_t & coloring) {
 
     auto & context_ = execution::context_t::instance();
 
     constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
 
-    context_.add_coloring<TOPOLOGY_TYPE, identifier, COLORING_NAME>(coloring);
+    context_.set_coloring<TOPOLOGY_TYPE, identifier>(coloring);
   } // add_coloring
 
   /*!

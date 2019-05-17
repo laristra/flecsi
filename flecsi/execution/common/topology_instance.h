@@ -35,22 +35,9 @@ struct topology_instance_u {
 
   using coloring_t = typename TOPOLOGY_TYPE::coloring_t;
 
-  template<size_t IDENTIFIER>
-  void add_coloring(coloring_t const & coloring) {
-
-    flog_assert(coloring_map_.find(IDENTIFIER) == coloring_map_.end(),
-      "coloring already exists");
-
-    coloring_map_[IDENTIFIER] = coloring;
+  void set_coloring(coloring_t const & coloring) {
+    coloring_ = coloring;
   } // add_coloring
-
-  template<size_t IDENTIFIER>
-  void remove_coloring() {
-    auto ita = coloring_map_.find(IDENTIFIER);
-    flog_assert(ita != coloring_map_.end(), "launch map does not exist");
-
-    coloring_map_.erase(ita);
-  } // remove_coloring
 
   //--------------------------------------------------------------------------//
   // Launch mapping interface
@@ -93,7 +80,7 @@ struct topology_instance_u {
   } // remove_launch_map
 
 private:
-  std::unordered_map<size_t, coloring_t> coloring_map_;
+  coloring_t coloring_;
   std::unordered_map<size_t, std::vector<size_t>> launch_map_;
 
 }; // struct topology_instance_u

@@ -414,26 +414,44 @@ struct context_u : public CONTEXT_POLICY {
   } // topology_fields_registered
 
   /*!
-    Add a color topology coloring to the FleCSI runtime.
+    Set the coloring for an index topology instance.
 
-    @tparam TOPOLOGY_IDENTIFIER The namespace of the topology instance for which
-                                to add a coloring.
-    @tparam COLORING_NAME       The name of the coloring to add.
+    @tparam TOPOLOGY_IDENTIFIER The identifier of the topology instance for
+                                which to add a coloring.
 
     @param coloring A color_topology_t::coloring_t instance.
    */
 
-  template<size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME>
-  void add_coloring(color_topology_t::coloring_t & coloring) {
+  template<size_t TOPOLOGY_IDENTIFIER>
+  void set_coloring(color_topology_t::coloring_t & coloring) {
 
       flog_assert(color_topology_instances_.find(TOPOLOGY_IDENTIFIER) !=
         color_topology_instances_.end(),
         "topology " << TOPOLOGY_IDENTIFIER << " not registered");
 
-      color_topology_instances_[TOPOLOGY_IDENTIFIER]
-        .add_coloring<COLORING_NAME>(coloring);
-  } // add_coloring
+      color_topology_instances_[TOPOLOGY_IDENTIFIER].set_coloring(coloring);
+  } // set_coloring
 
+  /*!
+    Set the coloring for an unstructured mesh instance.
+
+    @tparam TOPOLOGY_IDENTIFIER The identifier of the topology instance for
+                                which to add a coloring.
+
+    @param coloring A color_topology_t::coloring_t instance.
+   */
+
+  template<size_t TOPOLOGY_IDENTIFIER>
+  void set_coloring(unstructured_mesh_topology_base_t::coloring_t & coloring) {
+
+      flog_assert(color_topology_instances_.find(TOPOLOGY_IDENTIFIER) !=
+        color_topology_instances_.end(),
+        "topology " << TOPOLOGY_IDENTIFIER << " not registered");
+
+      color_topology_instances_[TOPOLOGY_IDENTIFIER].set_coloring(coloring);
+  } // set_coloring
+
+#if 0
   /*!
     Add an unstructured mesh coloring to the FleCSI runtime.
 
@@ -454,6 +472,7 @@ struct context_u : public CONTEXT_POLICY {
       unstructured_mesh_instances_[TOPOLOGY_IDENTIFIER]
         .add_coloring<COLORING_NAME>(coloring);
   } // add_coloring
+#endif
 
 #if 0
   template<typename TOPOLOGY_TYPE,
