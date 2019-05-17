@@ -132,7 +132,6 @@ using graphviz_t = flecsi::utils::graphviz_t;
 
 #define define_action(name)                                                    \
   int action_##name(int argc, char ** argv) {                                  \
-    usleep(200000);                                                            \
     std::cout << "target_" << #name << std::endl;                              \
     return 0;                                                                  \
   }
