@@ -277,6 +277,7 @@ struct legion_execution_policy_t {
 
       switch(processor_type) {
         case processor_type_t::toc:
+          // FIXMElauncher.tag = PREFER_GPU;
         case processor_type_t::loc: {
           clog(info) << "Executing index task: " << TASK << std::endl;
 
