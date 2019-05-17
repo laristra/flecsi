@@ -143,6 +143,17 @@ before_script:
         # git submodule update --init --recursive;
         mkdir -p build;
         cd ${CI_PROJECT_DIR}/build/;
+        echo 'cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+                -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+                ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
+                -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
+                -DENABLE_UNIT_TESTS=ON \
+                -DENABLE_PARMETIS=ON \
+                -DENABLE_COLORING=ON \
+                -DENABLE_DOXYGEN=OFF \
+                -DENABLE_DOCUMENTATION=OFF \
+                -DENABLE_COVERAGE_BUILD=ON \
+                ..';
         cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
@@ -154,29 +165,40 @@ before_script:
           -DENABLE_DOCUMENTATION=OFF \
           -DENABLE_COVERAGE_BUILD=ON \
           ..;
+        echo 'make -k VERBOSE=1 -j2 -l80';
         make -k VERBOSE=1 -j2 -l80;
         mkdir -p install;
+        echo 'make install DESTDIR=install';
         make install DESTDIR=install;
         if [[ ${CI_RUNNER_TAGS} = "docker" ]];
         then
           sudo make install;
         fi;
         ccache -s;
-      fi;
+      fi
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Test" ]];
       then
         cd ${CI_PROJECT_DIR}/build/;
+        echo 'make test ARGS="-V"';
         make test ARGS="-V";
+        echo 'gcovr .';
         gcovr .;
-      fi;
+      fi
     - |
       if [[ ${CI_JOB_STAGE} = "Format" ]];
       then
         cd ${CI_PROJECT_DIR}/build/;
+        if [[ ${CI_RUNNER_TAGS} = "shell" ]];
+        then
+          module unload gcc/7.3.0;
+          module load clang/7.0.0;
+        fi;
+        echo 'clang-format -version';
         clang-format -version;
+        echo 'make format && git diff --exit-code --ignore-submodules';
         make format && git diff --exit-code --ignore-submodules;
-      fi;
+      fi
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" ]];
       then
@@ -188,16 +210,22 @@ before_script:
         cd ../;
         mkdir build;
         cd build;
+        echo 'cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+                -DFLECSI_RUNTIME_MODEL=mpi \
+                -DENABLE_UNIT_TESTS=ON \
+                ..';
         cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
           -DFLECSI_RUNTIME_MODEL=mpi \
           -DENABLE_UNIT_TESTS=ON \
           ..;
+        echo 'make -j2 || make VERBOSE=1';
         make -j2 || make VERBOSE=1;
         if [[ ${RUNTIME} = "mpi" ]];
         then
+          echo 'make test ARGS="CTEST_OUTPUT_ON_FAILURE=1"';
           make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";
         fi;
-      fi;
+      fi
 
 ###############
 # Build Stage #
