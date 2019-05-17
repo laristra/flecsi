@@ -26,6 +26,7 @@ endif()
 # Set the FleCSI libraries.
 #------------------------------------------------------------------------------#
 
-set(FleCSI_LIBRARIES FleCSI)
+set(FleCSI_LIBRARY FleCSI)
+set(FleCSI_LIBRARIES ${FLECSI_LIBRARY_DEPENDENCIES})
 
 set(FleCSI_Tut_LIBRARIES FleCSI-Tut)
