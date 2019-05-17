@@ -8,8 +8,6 @@
 // C++ includes
 #include <iostream>
 
-
-
 // -----------------------------------------------------------------------------
 // Description
 // If you understand this description, and our code, we believe you'll find
@@ -232,8 +230,6 @@ call main(argc,argv)
          } // For each file
 */
 
-
-
 // -----------------------------------------------------------------------------
 // Helper constructs - printing
 // -----------------------------------------------------------------------------
@@ -242,21 +238,19 @@ call main(argc,argv)
 #define printval(x) std::cout << #x " == " << (x) << std::endl
 
 // print()
-inline void print()
-{
-   std::cout << std::endl;
+inline void
+print() {
+  std::cout << std::endl;
 }
 
 // print(x)
 template<class T>
-inline void print(const T &x, const bool newline = true)
-{
-   std::cout << x;
-   if (newline)
-      std::cout << std::endl;
+inline void
+print(const T & x, const bool newline = true) {
+  std::cout << x;
+  if(newline)
+    std::cout << std::endl;
 }
-
-
 
 // -----------------------------------------------------------------------------
 // Visitor
@@ -264,36 +258,31 @@ inline void print(const T &x, const bool newline = true)
 
 class Visitor : public clang::RecursiveASTVisitor<Visitor>
 {
-   clang::CompilerInstance &ci;
-   clang::Sema             &sema;
-   clang::ASTContext       &context;
+  clang::CompilerInstance & ci;
+  clang::Sema & sema;
+  clang::ASTContext & context;
 
 public:
+  Visitor(clang::CompilerInstance & ref)
+    : ci(ref), sema(ref.getSema()), context(ref.getASTContext()) {
+    print("Visitor::Visitor()");
+    printval((void *)&ci);
+    printval((void *)&sema);
+    printval((void *)&context);
+  }
 
-   Visitor(clang::CompilerInstance &ref)
-    : ci(ref), sema(ref.getSema()), context(ref.getASTContext())
-   {
-      print("Visitor::Visitor()");
-      printval((void *)&ci);
-      printval((void *)&sema);
-      printval((void *)&context);
-   }
+  ~Visitor() {
+    print("Visitor::~Visitor()");
+  }
 
-  ~Visitor()
-   {
-      print("Visitor::~Visitor()");
-   }
-
-   // for various types of AST nodes...
-   bool VisitCXXRecordDecl(const clang::CXXRecordDecl *const);
-   bool VisitVarDecl      (const clang::VarDecl       *const);
-   bool VisitCallExpr     (const clang::CallExpr      *const);
-   bool VisitTypeAliasDecl(const clang::TypeAliasDecl *const);
-   bool VisitContinueStmt (const clang::ContinueStmt  *const);
-   // ...
+  // for various types of AST nodes...
+  bool VisitCXXRecordDecl(const clang::CXXRecordDecl * const);
+  bool VisitVarDecl(const clang::VarDecl * const);
+  bool VisitCallExpr(const clang::CallExpr * const);
+  bool VisitTypeAliasDecl(const clang::TypeAliasDecl * const);
+  bool VisitContinueStmt(const clang::ContinueStmt * const);
+  // ...
 };
-
-
 
 // -----------------------------------------------------------------------------
 // Visitor::Visit*()
@@ -305,53 +294,47 @@ public:
 
 // VisitCXXRecordDecl
 // Example: struct foo { };
-bool Visitor::VisitCXXRecordDecl(const clang::CXXRecordDecl *const)
-{
-   print("   >>> Visitor::VisitCXXRecordDecl()");
-   return true;
+bool
+Visitor::VisitCXXRecordDecl(const clang::CXXRecordDecl * const) {
+  print("   >>> Visitor::VisitCXXRecordDecl()");
+  return true;
 }
-
 
 // VisitVarDecl
 // Example: int i = 0;
-bool Visitor::VisitVarDecl(const clang::VarDecl *const)
-{
-   print("   >>> Visitor::VisitVarDecl()");
-   return true;
+bool
+Visitor::VisitVarDecl(const clang::VarDecl * const) {
+  print("   >>> Visitor::VisitVarDecl()");
+  return true;
 }
-
 
 // VisitCallExpr
 // Example: int i = fun();
 // Where fun() is some function.
-bool Visitor::VisitCallExpr(const clang::CallExpr *const)
-{
-   print("   >>> Visitor::VisitCallExpr()");
-   return true;
+bool
+Visitor::VisitCallExpr(const clang::CallExpr * const) {
+  print("   >>> Visitor::VisitCallExpr()");
+  return true;
 }
-
 
 // VisitTypeAliasDecl
 // Example: using Int = int;
-bool Visitor::VisitTypeAliasDecl(const clang::TypeAliasDecl *const)
-{
-   print("   >>> Visitor::VisitTypeAliasDecl()");
-   return true;
+bool
+Visitor::VisitTypeAliasDecl(const clang::TypeAliasDecl * const) {
+  print("   >>> Visitor::VisitTypeAliasDecl()");
+  return true;
 }
-
 
 // VisitContinueStmt
 // Example: continue;
 // Most applications probably wouldn't find too much value in visiting
 // a "continue" statement. We're including this as just another example
 // of the many Visit* functions that someone can provide.
-bool Visitor::VisitContinueStmt(const clang::ContinueStmt *const)
-{
-   print("   >>> Visitor::VisitContinueStmt()");
-   return true;
+bool
+Visitor::VisitContinueStmt(const clang::ContinueStmt * const) {
+  print("   >>> Visitor::VisitContinueStmt()");
+  return true;
 }
-
-
 
 // -----------------------------------------------------------------------------
 // Consumer
@@ -359,32 +342,25 @@ bool Visitor::VisitContinueStmt(const clang::ContinueStmt *const)
 
 class Consumer : public clang::ASTConsumer
 {
-   clang::CompilerInstance &ci;
+  clang::CompilerInstance & ci;
 
 public:
+  Consumer(clang::CompilerInstance & ref) : ci(ref) {
+    print("Consumer::Consumer()");
+    printval((void *)&ci);
+  }
 
-   Consumer(clang::CompilerInstance &ref)
-    : ci(ref)
-   {
-      print("Consumer::Consumer()");
-      printval((void *)&ci);
-   }
+  ~Consumer() {
+    print("Consumer::~Consumer()");
+  }
 
-  ~Consumer()
-   {
-      print("Consumer::~Consumer()");
-   }
-
-   // base function override
-   void HandleTranslationUnit(clang::ASTContext &context) override
-   {
-      print("Consumer::HandleTranslationUnit()");
-      Visitor visitor(ci);
-      visitor.TraverseDecl(context.getTranslationUnitDecl());
-   }
+  // base function override
+  void HandleTranslationUnit(clang::ASTContext & context) override {
+    print("Consumer::HandleTranslationUnit()");
+    Visitor visitor(ci);
+    visitor.TraverseDecl(context.getTranslationUnitDecl());
+  }
 };
-
-
 
 // -----------------------------------------------------------------------------
 // Action
@@ -393,29 +369,23 @@ public:
 class Action : public clang::ASTFrontendAction
 {
 public:
+  Action() {
+    print("Action::Action()");
+  }
 
-   Action()
-   {
-      print("Action::Action()");
-   }
+  ~Action() {
+    print("Action::~Action()");
+  }
 
-  ~Action()
-   {
-      print("Action::~Action()");
-   }
-
-   // base function override
-   std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
-      clang::CompilerInstance &ci,
-      llvm::StringRef file
-   ) override {
-      print("Action::CreateASTConsumer()");
-      printval(file.str());
-      return std::unique_ptr<clang::ASTConsumer>(new Consumer(ci));
-   }
+  // base function override
+  std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
+    clang::CompilerInstance & ci,
+    llvm::StringRef file) override {
+    print("Action::CreateASTConsumer()");
+    printval(file.str());
+    return std::unique_ptr<clang::ASTConsumer>(new Consumer(ci));
+  }
 };
-
-
 
 // -----------------------------------------------------------------------------
 // Factory
@@ -424,26 +394,20 @@ public:
 class Factory : public clang::tooling::FrontendActionFactory
 {
 public:
+  Factory() {
+    print("Factory::Factory()");
+  }
 
-   Factory()
-   {
-      print("Factory::Factory()");
-   }
+  ~Factory() {
+    print("Factory::~Factory()");
+  }
 
-  ~Factory()
-   {
-      print("Factory::~Factory()");
-   }
-
-   // base function override
-   Action *create() override
-   {
-      print("Factory::create()");
-      return new Action();
-   }
+  // base function override
+  Action * create() override {
+    print("Factory::create()");
+    return new Action();
+  }
 };
-
-
 
 // -----------------------------------------------------------------------------
 // Database
@@ -452,101 +416,93 @@ public:
 class Database : public clang::tooling::CompilationDatabase
 {
 public:
+  Database() {
+    print("Database::Database()");
+  }
 
-   Database()
-   {
-      print("Database::Database()");
-   }
+  ~Database() {
+    print("Database::~Database()");
+  }
 
-  ~Database()
-   {
-      print("Database::~Database()");
-   }
+  // base function override
+  std::vector<clang::tooling::CompileCommand> getCompileCommands(
+    const llvm::StringRef file) const override {
+    print("Database::getCompileCommands()");
+    printval(file.str());
 
-   // base function override
-   std::vector<clang::tooling::CompileCommand>
-   getCompileCommands(const llvm::StringRef file) const override
-   {
-      print("Database::getCompileCommands()");
-      printval(file.str());
+    // vector<compilation commands>
+    std::vector<clang::tooling::CompileCommand> commands;
 
-      // vector<compilation commands>
-      std::vector<clang::tooling::CompileCommand> commands;
+    // a compilation command for the given file
+    {
+      clang::tooling::CompileCommand c;
+      c.Directory = ".";
+      c.Filename = file.str();
+      c.CommandLine.push_back("clang++");
+      c.CommandLine.push_back("-std=c++14");
+      c.CommandLine.push_back(file.str());
+      commands.push_back(c);
+    }
 
-      // a compilation command for the given file
-      {
-         clang::tooling::CompileCommand c;
-         c.Directory = ".";
-         c.Filename  = file.str();
-         c.CommandLine.push_back("clang++");
-         c.CommandLine.push_back("-std=c++14");
-         c.CommandLine.push_back(file.str());
-         commands.push_back(c);
-      }
+    // another compilation command for the given file
+    {
+      clang::tooling::CompileCommand c;
+      c.Directory = ".";
+      c.Filename = file.str();
+      c.CommandLine.push_back("clang++");
+      c.CommandLine.push_back("-std=c++14");
+      c.CommandLine.push_back("-DFOOBAR"); // new
+      c.CommandLine.push_back(file.str());
+      commands.push_back(c);
+    }
 
-      // another compilation command for the given file
-      {
-         clang::tooling::CompileCommand c;
-         c.Directory = ".";
-         c.Filename  = file.str();
-         c.CommandLine.push_back("clang++");
-         c.CommandLine.push_back("-std=c++14");
-         c.CommandLine.push_back("-DFOOBAR"); // new
-         c.CommandLine.push_back(file.str());
-         commands.push_back(c);
-      }
-
-      return commands;
-   }
+    return commands;
+  }
 };
-
-
 
 // -----------------------------------------------------------------------------
 // visit()
 // -----------------------------------------------------------------------------
 
-bool visit(const int argc, const char *const *const argv)
-{
-   print("visit()");
+bool
+visit(const int argc, const char * const * const argv) {
+  print("visit()");
 
-   // make a Factory
-   Factory factory;
+  // make a Factory
+  Factory factory;
 
-   // make a Database
-   Database db;
+  // make a Database
+  Database db;
 
-   // make an ArrayRef<string> from the command-line arguments, which
-   // we take to be the files we should examine with our AST visitor
-   std::vector<std::string> vec;
-   for (int a = 1;  a < argc;  ++a)
-      vec.push_back(argv[a]);
-   const clang::ArrayRef<std::string> files(vec);
+  // make an ArrayRef<string> from the command-line arguments, which
+  // we take to be the files we should examine with our AST visitor
+  std::vector<std::string> vec;
+  for(int a = 1; a < argc; ++a)
+    vec.push_back(argv[a]);
+  const clang::ArrayRef<std::string> files(vec);
 
-   // make a ClangTool, from the Database and the ArrayRef
-   clang::tooling::ClangTool ctool(db,files);
+  // make a ClangTool, from the Database and the ArrayRef
+  clang::tooling::ClangTool ctool(db, files);
 
-   // run the ClangTool, with the Factory
-   const int status = ctool.run(&factory);
+  // run the ClangTool, with the Factory
+  const int status = ctool.run(&factory);
 
-   printval(status);
-   return status == 0;
+  printval(status);
+  return status == 0;
 }
-
-
 
 // -----------------------------------------------------------------------------
 // main
 // -----------------------------------------------------------------------------
 
-int main(const int argc, const char *const *const argv)
-{
-   if (argc < 2) {
-      print(argv[0], false);
-      print(": no input files");
-      return 1;
-   }
+int
+main(const int argc, const char * const * const argv) {
+  if(argc < 2) {
+    print(argv[0], false);
+    print(": no input files");
+    return 1;
+  }
 
-   print("main()");
-   visit(argc,argv);
+  print("main()");
+  visit(argc, argv);
 }
