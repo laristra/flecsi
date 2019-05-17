@@ -29,6 +29,16 @@ before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
+  - |
+    if [[ ${CI_RUNNER_TAGS} = "shell" ]];
+    then
+      module load gcc/7.3.0;
+      module load python/3.5.1;
+      source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
+      spack load -r flecsi%gcc@7.3.0 || /bin/true;
+      spack unload flecsi%gcc@7.3.0 || /bin/true;
+      module list;
+    fi
 
 ###################
 ###################
@@ -67,7 +77,6 @@ before_script:
     # when: always
   dependencies: []
   script:
-    - module load gcc/7.3.0
     - mkdir -p build
     - cd ${CI_PROJECT_DIR}/build/
     - cp ${CI_PROJECT_DIR}/spack/repo_env.yaml ./spack.yaml
@@ -159,7 +168,7 @@ before_script:
       then
         cd ${CI_PROJECT_DIR}/build/;
         make test ARGS="-V";
-        $HOME/.local/bin/gcovr .;
+        gcovr .;
       fi;
     - |
       if [[ ${CI_JOB_STAGE} = "Format" ]];
@@ -255,12 +264,6 @@ canary:centOS_mpi:
   variables:
     DISTRO: "centOS"
     RUNTIME: "mpi"
-  before_script:
-    - module load gcc/7.3.0
-    - source ${SPACK_ROOT}/share/spack/setup-env.sh
-    - spack load -r flecsi%gcc@7.3.0
-    - spack unload flecsi%gcc@7.3.0
-    - module list
 
 ##############
 # Build Jobs #
