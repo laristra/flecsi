@@ -95,7 +95,7 @@ before_script:
       fi
     - source ${SPACK_ROOT}/share/spack/setup-env.sh
     - spack repo add ${SPACK_ROOT}/var/spack/repos/builtin/ || /bin/true
-    - spack install flecsi%gcc@7.3.0
+    - spack install flecsi%intel@17.0.6
     - flock -u "${lock_fd}"
 
 ################
