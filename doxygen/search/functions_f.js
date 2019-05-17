@@ -3,6 +3,7 @@ var searchData=
   ['save',['save',['../classflecsi_1_1topology_1_1mesh__topology__u.html#a3b91978948d0036ab7922eabfa186bfa',1,'flecsi::topology::mesh_topology_u']]],
   ['serialize_5f',['serialize_',['../classflecsi_1_1topology_1_1mesh__topology__u.html#a8e70cea55bce3bfd0e60b7176b8f9d57',1,'flecsi::topology::mesh_topology_u']]],
   ['set_5fall_5fprocesses',['set_all_processes',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#ab6d6edaaf621be53b29e3f8f42e450d1',1,'flecsi::execution::legion_context_policy_t']]],
+  ['set_5fcoloring',['set_coloring',['../structflecsi_1_1data_1_1topology__interface__u.html#a91f4d05da18db2d1477879d580f96224',1,'flecsi::data::topology_interface_u::set_coloring()'],['../structflecsi_1_1execution_1_1context__u.html#a0fed31c3cf935907f371cfd4dc3b94c6',1,'flecsi::execution::context_u::set_coloring(color_topology_t::coloring_t &amp;coloring)'],['../structflecsi_1_1execution_1_1context__u.html#a855cc436ce37df3a2a9c3d96313e459b',1,'flecsi::execution::context_u::set_coloring(unstructured_mesh_topology_base_t::coloring_t &amp;coloring)']]],
   ['set_5fcount',['set_count',['../classflecsi_1_1utils_1_1offset__u.html#a7d05c9c49ea64ca488a9ed36a44134a1',1,'flecsi::utils::offset_u']]],
   ['set_5fdifference',['set_difference',['../set__utils_8h.html#a6e360c8844c9d20956dba8007461355b',1,'flecsi::utils']]],
   ['set_5fintersection',['set_intersection',['../set__utils_8h.html#a35d052a83a3f9764429d1c1f54d4812c',1,'flecsi::utils']]],
