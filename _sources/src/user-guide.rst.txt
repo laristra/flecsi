@@ -8,6 +8,7 @@ FleCSI User Guide
 .. toctree::
   :caption: User Guide:
 
+  user-guide/basics
   user-guide/runtime
   user-guide/control
   user-guide/data

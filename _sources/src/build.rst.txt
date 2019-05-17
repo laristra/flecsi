@@ -67,7 +67,7 @@ project is available from github at
 <https://github.com/laristra/flecsi-third-party>`_.
 Note that a suitable version of MPI is required for the superbuild.
 
-.. topic:: Admonishment
+.. admonition:: Admonishment
 
   Users should note that, while this approach is easier, it may not
   provide as robust a solution as individually building each dependency,

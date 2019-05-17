@@ -17,6 +17,7 @@ var searchData=
   ['coloring_5fmap_2eh',['coloring_map.h',['../coloring__map_8h.html',1,'']]],
   ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1coloring_1_1coloring__map__u_1_1coloring__map__t.html',1,'flecsi::coloring::coloring_map_u']]],
   ['coloring_5fmap_5fu',['coloring_map_u',['../structflecsi_1_1coloring_1_1coloring__map__u.html',1,'flecsi::coloring']]],
+  ['coloring_5ft',['coloring_t',['../structflecsi_1_1topology_1_1color__topology__t_1_1coloring__t.html',1,'flecsi::topology::color_topology_t']]],
   ['colors',['colors',['../structflecsi_1_1execution_1_1context__u.html#ade6c89662f58fe1626acadaa7506c5eb',1,'flecsi::execution::context_u']]],
   ['command_5fline_5foptions_2eh',['command_line_options.h',['../command__line__options_8h.html',1,'']]],
   ['common_2eh',['common.h',['../common_8h.html',1,'']]],

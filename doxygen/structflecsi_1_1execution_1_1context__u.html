@@ -105,6 +105,12 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>field_registration_e
 <tr class="memitem:a8b7d5dcc0ebd15cb7f476dfaf062fd56"><td class="memItemLeft" align="right" valign="top"><a id="a8b7d5dcc0ebd15cb7f476dfaf062fd56"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>field_registration_map_t</b> = std::unordered_map&lt; size_t, field_registration_entry_t &gt;</td></tr>
 <tr class="separator:a8b7d5dcc0ebd15cb7f476dfaf062fd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0f8ff1e8d961fe6ee2079a11962bf1c"><td class="memItemLeft" align="right" valign="top"><a id="af0f8ff1e8d961fe6ee2079a11962bf1c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>color_topology_instance_t</b> = <a class="el" href="structflecsi_1_1execution_1_1topology__instance__u.html">topology_instance_u</a>&lt; <a class="el" href="structflecsi_1_1topology_1_1color__topology__t.html">color_topology_t</a> &gt;</td></tr>
+<tr class="separator:af0f8ff1e8d961fe6ee2079a11962bf1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60b6a1983c3004fe711a2b8a2a703f20"><td class="memItemLeft" align="right" valign="top"><a id="a60b6a1983c3004fe711a2b8a2a703f20"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>color_topology_instance_map_t</b> = std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1execution_1_1topology__instance__u.html">color_topology_instance_t</a> &gt;</td></tr>
+<tr class="separator:a60b6a1983c3004fe711a2b8a2a703f20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af932cc4397890e57ce4f86034dad7f67"><td class="memItemLeft" align="right" valign="top"><a id="af932cc4397890e57ce4f86034dad7f67"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>unstructured_mesh_instance_t</b> = <a class="el" href="structflecsi_1_1execution_1_1topology__instance__u.html">topology_instance_u</a>&lt; <a class="el" href="structflecsi_1_1topology_1_1unstructured__mesh__topology__base__t.html">unstructured_mesh_topology_base_t</a> &gt;</td></tr>
 <tr class="separator:af932cc4397890e57ce4f86034dad7f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,9 +202,12 @@ std::map&lt; size_t, std::function&lt; void()&gt; &gt; &amp;&#160;</td><td class
 <tr class="separator:a7d85e14354574168024bab644b8505a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20d6ec33f925c5fbbfb44452c35b2363"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a20d6ec33f925c5fbbfb44452c35b2363">topology_fields_registered</a> (size_t type_key, size_t instance_key)</td></tr>
 <tr class="separator:a20d6ec33f925c5fbbfb44452c35b2363"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58104a85e331c54d87af98b5a03c11f8"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME&gt; </td></tr>
-<tr class="memitem:a58104a85e331c54d87af98b5a03c11f8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a58104a85e331c54d87af98b5a03c11f8">add_coloring</a> (typename TOPOLOGY_TYPE::coloring_t &amp;coloring)</td></tr>
-<tr class="separator:a58104a85e331c54d87af98b5a03c11f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2754b6e6bfff460160bc9b12e49f0179"><td class="memTemplParams" colspan="2">template&lt;size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME&gt; </td></tr>
+<tr class="memitem:a2754b6e6bfff460160bc9b12e49f0179"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a2754b6e6bfff460160bc9b12e49f0179">add_coloring</a> (<a class="el" href="structflecsi_1_1topology_1_1color__topology__t_1_1coloring__t.html">color_topology_t::coloring_t</a> &amp;coloring)</td></tr>
+<tr class="separator:a2754b6e6bfff460160bc9b12e49f0179"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20133c02b8c68ffd9d3660e56b9a3e9d"><td class="memTemplParams" colspan="2">template&lt;size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME&gt; </td></tr>
+<tr class="memitem:a20133c02b8c68ffd9d3660e56b9a3e9d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#a20133c02b8c68ffd9d3660e56b9a3e9d">add_coloring</a> (unstructured_mesh_topology_base_t::coloring_t &amp;coloring)</td></tr>
+<tr class="separator:a20133c02b8c68ffd9d3660e56b9a3e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac61a0645295bb53f6bb68bf059eae632"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME&gt; </td></tr>
 <tr class="memitem:ac61a0645295bb53f6bb68bf059eae632"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1context__u.html#ac61a0645295bb53f6bb68bf059eae632">remove_coloring</a> ()</td></tr>
 <tr class="separator:ac61a0645295bb53f6bb68bf059eae632"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -267,15 +276,15 @@ template&lt;class CONTEXT_POLICY &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a58104a85e331c54d87af98b5a03c11f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a58104a85e331c54d87af98b5a03c11f8">&#9670;&nbsp;</a></span>add_coloring()</h2>
+<a id="a2754b6e6bfff460160bc9b12e49f0179"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2754b6e6bfff460160bc9b12e49f0179">&#9670;&nbsp;</a></span>add_coloring() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;class CONTEXT_POLICY &gt; </div>
 <div class="memtemplate">
-template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME&gt; </div>
+template&lt;size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -283,7 +292,7 @@ template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_IDENTIFIER, size_t COLORING
         <tr>
           <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::add_coloring </td>
           <td>(</td>
-          <td class="paramtype">typename TOPOLOGY_TYPE::coloring_t &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1topology_1_1color__topology__t_1_1coloring__t.html">color_topology_t::coloring_t</a> &amp;&#160;</td>
           <td class="paramname"><em>coloring</em></td><td>)</td>
           <td></td>
         </tr>
@@ -294,10 +303,9 @@ template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_IDENTIFIER, size_t COLORING
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Add a coloring to the FleCSI runtime.</p>
+<p>Add a color topology coloring to the FleCSI runtime.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">TOPOLOGY_TYPE</td><td>The topology type, which must be derived from one of the FleCSI core topology types, e.g., unstructure_mesh_topology_base_t, structured_topology_base_t, ntree_topology_base_t, or set_topology_base_t. </td></tr>
     <tr><td class="paramname">TOPOLOGY_IDENTIFIER</td><td>The namespace of the topology instance for which to add a coloring. </td></tr>
     <tr><td class="paramname">COLORING_NAME</td><td>The name of the coloring to add.</td></tr>
   </table>
@@ -305,7 +313,51 @@ template&lt;typename TOPOLOGY_TYPE , size_t TOPOLOGY_IDENTIFIER, size_t COLORING
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">coloring</td><td>A valid coloring instance for the given topology type. </td></tr>
+    <tr><td class="paramname">coloring</td><td>A color_topology_t::coloring_t instance. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a20133c02b8c68ffd9d3660e56b9a3e9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20133c02b8c68ffd9d3660e56b9a3e9d">&#9670;&nbsp;</a></span>add_coloring() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class CONTEXT_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;size_t TOPOLOGY_IDENTIFIER, size_t COLORING_NAME&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1context__u.html">flecsi::execution::context_u</a>&lt; CONTEXT_POLICY &gt;::add_coloring </td>
+          <td>(</td>
+          <td class="paramtype">unstructured_mesh_topology_base_t::coloring_t &amp;&#160;</td>
+          <td class="paramname"><em>coloring</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Add an unstructured mesh coloring to the FleCSI runtime.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TOPOLOGY_IDENTIFIER</td><td>The namespace of the topology instance for which to add a coloring. </td></tr>
+    <tr><td class="paramname">COLORING_NAME</td><td>The name of the coloring to add.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">coloring</td><td>A color_topology_t::coloring_t instance. </td></tr>
   </table>
   </dd>
 </dl>

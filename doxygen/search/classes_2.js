@@ -7,6 +7,7 @@ var searchData=
   ['color_5ftopology_5ft',['color_topology_t',['../structflecsi_1_1topology_1_1color__topology__t.html',1,'flecsi::topology']]],
   ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1coloring_1_1coloring__map__u_1_1coloring__map__t.html',1,'flecsi::coloring::coloring_map_u']]],
   ['coloring_5fmap_5fu',['coloring_map_u',['../structflecsi_1_1coloring_1_1coloring__map__u.html',1,'flecsi::coloring']]],
+  ['coloring_5ft',['coloring_t',['../structflecsi_1_1topology_1_1color__topology__t_1_1coloring__t.html',1,'flecsi::topology::color_topology_t']]],
   ['const_5fstring',['const_string',['../classconst__string.html',1,'']]],
   ['const_5fstring_5fhasher_5ft',['const_string_hasher_t',['../structflecsi_1_1utils_1_1const__string__hasher__t.html',1,'flecsi::utils']]],
   ['const_5fstring_5ft',['const_string_t',['../classflecsi_1_1utils_1_1const__string__t.html',1,'flecsi::utils']]],

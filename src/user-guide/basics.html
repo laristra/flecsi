@@ -1,0 +1,407 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Index Spaces &mdash; FleCSI  documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/user-guide/basics.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Runtime Model" href="runtime.html" />
+    <link rel="prev" title="FleCSI User Guide" href="../user-guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Building FleCSI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">FleCSI Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">FleCSI User Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Index Spaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#topologies">Topologies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#colorings">Colorings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html">Runtime Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="control.html">Control Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="execution.html">Execution Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flog.html">Logging Utility</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">FleCSI Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen">FleCSI API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">FleCSI Team</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../user-guide.html">FleCSI User Guide</a> &raquo;</li>
+        
+      <li>Index Spaces</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/user-guide/basics.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="index-spaces">
+<h1>Index Spaces<a class="headerlink" href="#index-spaces" title="Permalink to this headline">¶</a></h1>
+<p>In FleCSI, index spaces are used to define field arrays that represent
+the user’s data. In simple terms, you can think of an index space as
+just an enumeration of an array, with the added notion that an index
+space represents a logical space of such arrays.</p>
+<div class="admonition-definition admonition">
+<p class="admonition-title">Definition</p>
+<p>An index space is the space of possible enumerations of a logical set
+of points or indices.</p>
+</div>
+<p>As an example, consider the cells of a mesh. These represent a set that
+can be enumerated to define an index space. If a particular mesh
+instance has 100 cells, these cells define a vector (or index set) in
+the index space of cells. <em>We often still refer to this as an index
+space, or index space instance.</em> The vertices and edges of the mesh also
+define index spaces. In fact, in FleCSI, index spaces are used to
+represent the logical elements or entities of all of our topology types.</p>
+<p>There are several benefits of index spaces. One is that they can be
+iterated upon or over.  As an example, consider a simple <em>for</em> loop:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="nl">i</span><span class="p">:</span> <span class="n">mesh</span><span class="p">.</span><span class="n">cells</span><span class="p">())</span> <span class="p">{</span>
+
+  <span class="c1">// Do something work on the ith</span>
+  <span class="c1">// index of the cells index space.</span>
+
+<span class="p">}</span> <span class="c1">// for</span>
+</pre></div>
+</div>
+<p>This example is just the C++ version of what was stated above about the
+cells of a mesh defining an index space. However, as we will see in the
+following sections, index spaces also improve our ability to reason about
+parallelism, and free us from many of the computer science details that
+obfuscate our algorithms.</p>
+</div>
+<div class="section" id="topologies">
+<h1>Topologies<a class="headerlink" href="#topologies" title="Permalink to this headline">¶</a></h1>
+<p>The primary capability that FleCSI provides is the definition and
+implementation of several distributed-memory topology types. In very
+general terms, a topology is just a C++ type that defines one or more
+index spaces, each of which has one or more user-registered fields. With
+FleCSI, you can <em>register</em> instances of a topology type with the
+runtime, which are then available during execution to do work.</p>
+<div class="admonition-definition admonition">
+<p class="admonition-title">Definition</p>
+<p>A topology defines one or more index spaces.</p>
+</div>
+<p>The most basic topology provided by FleCSI is called the <em>global</em>
+topology. It has a single implicit index space that has a single
+implicit index, i.e., it provides a singleton of data that can be passed
+into a FleCSI task.</p>
+<p>The next most basic topology type provided by FleCSI is the <em>index</em>
+topology. Like the global topology, it has a single implicit index
+space, which you can think of as the <em>indices</em>. The index topology also
+has a runtime-specified size that describes how many indices there
+should be.</p>
+<p>Let’s look at an example of how to register fields against
+the global and index topologies:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">flecsi</span><span class="p">;</span>
+
+<span class="cm">/* Register a field on the index topology */</span>
+<span class="n">flecsi_register_global_field</span><span class="p">(</span><span class="s">&quot;solver&quot;</span><span class="p">,</span> <span class="s">&quot;tolerance&quot;</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+
+<span class="cm">/* Register a field on the index topology */</span>
+<span class="n">flecsi_register_index_field</span><span class="p">(</span><span class="s">&quot;hydro&quot;</span><span class="p">,</span> <span class="s">&quot;index_data&quot;</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The first macro in this example registers a field called <em>tolerance</em> in
+namespace <em>solver</em> with type <em>double</em>. The last argument (<em>1</em>) indicates
+the number of versions of the field that should exist <em>(Versions are
+a useful mechanism for defining data that logically have multiple states
+under the same variable name, e.g., in a multi-step time evolution
+method.)</em></p>
+<p>The second macro registers a field called <em>index_data</em> in namespace
+<em>hydro</em> with type <em>double</em>, and two versions <em>(We will see how to specify
+which version to retrieve later on.)</em></p>
+<p>In both cases, the user does not need to explicitly specify the topology
+type or index space. As we will see, this is necessary for more complex
+topology types that can be customized by a <em>specialization</em>.</p>
+<p>Logically, registering a field against a topology type, adds that field
+to the type itself. This may not be intuitive to everyone, so let’s
+consider what this means. When we create a C++ type, e.g., a class or
+struct, we add data members to it in the definition of the type:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">field_data_t</span> <span class="p">{</span>
+  <span class="kt">double</span> <span class="n">field_a</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">field_b</span><span class="p">;</span>
+<span class="p">};</span> <span class="c1">// struct topology_t</span>
+</pre></div>
+</div>
+<p>This is done manually at the time the type is written. With FleCSI,
+registering fields against a FleCSI topology type is a kind of
+customization that is logically equivalent to our <em>field_data_t</em> example
+type. So, for instance, if we want fields <em>field_a</em>, and <em>field_b</em> to be
+defined for the FleCSI index topology, we would register them like so:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">flecsi_register_index_field</span><span class="p">(</span><span class="s">&quot;radiation&quot;</span><span class="p">,</span> <span class="s">&quot;field_a&quot;</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="n">flecsi_register_index_field</span><span class="p">(</span><span class="s">&quot;radiation&quot;</span><span class="p">,</span> <span class="s">&quot;field_b&quot;</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Optionally, we could also just register the field_data_t struct:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">flecsi_register_index_field</span><span class="p">(</span><span class="s">&quot;radiation&quot;</span><span class="p">,</span> <span class="s">&quot;fields&quot;</span><span class="p">,</span> <span class="n">field_data_t</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Both of these methods of registering fields are valid, and it is left up
+to the user to decide which way makes the most sense. The performance
+implications of choosing one method over the other are equivalent to
+choosing <em>array-of-struct (AoS)</em> or <em>struct-of-array (SoA)</em>. FleCSI does
+not currently support switching or auto-tuning of the data layout.
+However, we may do so in future versions.</p>
+<div class="sidebar">
+<p class="sidebar-title">Memory Allocation</p>
+<p>You may be wondering whether or not field registration in FleCSI
+implies that every instance of a topology type will necessarily create
+an instance of every registered field. This is a valid concern! The
+answer is <em>no!</em> FleCSI will only allocate memory for a field instance
+if it is actually accessed.</p>
+</div>
+<div class="section" id="colorings">
+<h2>Colorings<a class="headerlink" href="#colorings" title="Permalink to this headline">¶</a></h2>
+<p>Let’s continue discussing the index topology so that we can add some
+more details about its index space and define what <em>coloring</em> means in
+FleCSI.</p>
+<p>As stated above, the index topology has a single implicit index space.
+For the index topology, we can think of the implicit index space as just
+being the indices, with a particular instance being defined by its size.</p>
+<p>So far, in our examples we have been using the default <em>instance</em> of the
+index topology. This topology instance has an implicit coloring that
+assigns each index of the topology’s indices to its own id, i.e.,
+index 0 is assigned to color 0, etc. This simple example illustrates the
+definition of a coloring:</p>
+<div class="admonition-definition admonition">
+<p class="admonition-title">Definition</p>
+<p>A coloring is a description of how the indices of an index space
+should be divided into partitions or colors.</p>
+</div>
+<p>The <em>size</em> of the default index topology instance is taken from the
+number of processes with which the FleCSI runtime was launched. This is
+a special case. In general, there is no implied size for a coloring, and
+no association with the details of a particular execution space, i.e.,
+the number of processes.  A coloring only describes how to divide the
+indices of an index space into partitions (or colors in FleCSI’s
+nomenclature).</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>A coloring is not associated with an execution space. This is
+different from the way that many people think about MPI, where a rank
+is statically mapped to a particular process.</p>
+</div>
+<p>Users are allowed to add addtional named instances of the index
+topology. <em>(For the time being, there is one, and only one instance of
+the global topology.)</em> Let’s see how:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">flecsi</span><span class="p">;</span>
+
+<span class="c1">// Namespace scope</span>
+
+<span class="cm">/* Register a named instance of the index topology. */</span>
+<span class="n">flecsi_register_topology</span><span class="p">(</span><span class="n">index_topology_t</span><span class="p">,</span> <span class="s">&quot;toplogies&quot;</span><span class="p">,</span> <span class="s">&quot;hydro indices&quot;</span><span class="p">);</span>
+
+<span class="c1">// Top-level action scope</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="runtime.html" class="btn btn-neutral float-right" title="Runtime Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../user-guide.html" class="btn btn-neutral float-left" title="FleCSI User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+    /* Sidebar */
+    .wy-nav-side {
+      background: #6e808b;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>
