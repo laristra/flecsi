@@ -91,9 +91,9 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(client
+ftest_add_unit(topology
   SOURCES
-    test/client.cc
+    test/topology.cc
 )
 
 ftest_add_unit(privilege

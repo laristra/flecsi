@@ -66,7 +66,7 @@ struct storage_class_u {
     topology_reference_t const & topology) {
     constexpr size_t identifier =
       utils::hash::field_hash<NAMESPACE, NAME, VERSION>();
-    return { identifier, topology.identifier() };
+    return {identifier, topology.identifier()};
   } // get_reference
 
 }; // struct storage_class_u

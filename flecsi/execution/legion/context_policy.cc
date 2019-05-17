@@ -296,12 +296,12 @@ legion_context_policy_t::initialize_global_topology() {
 } // legion_context_policy_t::initialize_global_topology
 
 //----------------------------------------------------------------------------//
-// Implementation of initialize_color_topology.
+// Implementation of initialize_index_topology.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::initialize_color_topology() {
-} // legion_context_policy_t::initialize_color_topology
+legion_context_policy_t::initialize_index_topology() {
+} // legion_context_policy_t::initialize_index_topology
 
 } // namespace execution
 } // namespace flecsi

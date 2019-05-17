@@ -20,8 +20,8 @@
 #else
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/topology/internal/color.h>
 #include <flecsi/topology/internal/global.h>
+#include <flecsi/topology/internal/index.h>
 #endif
 
 #define POLICY_NAMESPACE legion
@@ -43,7 +43,8 @@ namespace global_topology {
   Forward accessor type for bind friend.
  */
 
-template<typename DATA_TYPE, size_t PRIVILEGES> struct accessor_u;
+template<typename DATA_TYPE, size_t PRIVILEGES>
+struct accessor_u;
 
 /*!
   Friend function to bind mapped data into the accessor. This lets init_views
@@ -51,7 +52,8 @@ template<typename DATA_TYPE, size_t PRIVILEGES> struct accessor_u;
  */
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-void bind(accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
+void
+bind(accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
   a.data_ = data;
 } // bind
 
@@ -66,11 +68,11 @@ struct accessor_u : public field_reference_t {
 
   accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
 
-  operator DATA_TYPE & () {
+  operator DATA_TYPE &() {
     return *data_;
   } // value
 
-  operator DATA_TYPE const & () const {
+  operator DATA_TYPE const &() const {
     return *data_;
   } // value
 
@@ -94,7 +96,7 @@ private:
   Color Topology.
  *----------------------------------------------------------------------------*/
 
-namespace color_topology {
+namespace index_topology {
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor_u : public field_reference_t {
@@ -125,7 +127,7 @@ private:
 
 }; // struct accessor_u
 
-} // namespace color_topology
+} // namespace index_topology
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.

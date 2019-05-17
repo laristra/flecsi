@@ -231,8 +231,8 @@ using global_accessor_u =
  */
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-using color_accessor_u =
-  typename FLECSI_RUNTIME_DATA_POLICY::color_accessor_u<DATA_TYPE, PRIVILEGES>;
+using index_accessor_u =
+  typename FLECSI_RUNTIME_DATA_POLICY::index_accessor_u<DATA_TYPE, PRIVILEGES>;
 
 } // namespace data
 } // namespace flecsi

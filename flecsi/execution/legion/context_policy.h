@@ -459,7 +459,7 @@ private:
    *--------------------------------------------------------------------------*/
 
   void initialize_global_topology();
-  void initialize_color_topology();
+  void initialize_index_topology();
 
   /*--------------------------------------------------------------------------*
     Runtime data.

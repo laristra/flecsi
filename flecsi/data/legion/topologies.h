@@ -29,7 +29,7 @@ namespace flecsi {
 namespace topology {
 
 struct global_topology_t;
-struct color_topology_t;
+struct index_topology_t;
 
 template<typename>
 class mesh_topology_u;
@@ -64,10 +64,10 @@ struct topology_u<topology::global_topology_t> {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_u<topology::color_topology_t> {
+struct topology_u<topology::index_topology_t> {
 
-  using color_topology_t = topology::color_topology_t;
-  using topology_reference_t = topology_reference_u<color_topology_t>;
+  using index_topology_t = topology::index_topology_t;
+  using topology_reference_t = topology_reference_u<index_topology_t>;
 
   template<size_t NAMESPACE, size_t NAME>
   static topology_reference_t get_reference() {
@@ -76,7 +76,7 @@ struct topology_u<topology::color_topology_t> {
     return ref;
   } // get_reference
 
-}; // topology_u<topology::color_topology_t>
+}; // topology_u<topology::index_topology_t>
 #endif
 
 /*----------------------------------------------------------------------------*

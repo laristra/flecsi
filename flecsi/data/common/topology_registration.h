@@ -27,8 +27,8 @@
 #else
 #include <flecsi/execution/context.h>
 #include <flecsi/runtime/types.h>
-#include <flecsi/topology/internal/color.h>
 #include <flecsi/topology/internal/global.h>
+#include <flecsi/topology/internal/index.h>
 //#include <flecsi/topology/mesh_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
@@ -470,11 +470,11 @@ struct topology_registration_u<flecsi::topology::global_topology_t,
  */
 
 template<size_t NAMESPACE, size_t NAME>
-struct topology_registration_u<flecsi::topology::color_topology_t,
+struct topology_registration_u<flecsi::topology::index_topology_t,
   NAMESPACE,
   NAME> {
 
-  using TOPOLOGY_TYPE = flecsi::topology::color_topology_t;
+  using TOPOLOGY_TYPE = flecsi::topology::index_topology_t;
 
   static bool register_fields() {
     return true;

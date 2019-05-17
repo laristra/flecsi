@@ -83,8 +83,8 @@ struct legion_data_policy_t {
     legion::global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using color_accessor_u =
-    legion::color_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+  using index_accessor_u =
+    legion::index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
 }; // struct legion_data_policy_t
 

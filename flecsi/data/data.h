@@ -23,8 +23,8 @@
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/field_interface.h>
 #include <flecsi/data/topology_interface.h>
-#include <flecsi/topology/internal/color.h>
 #include <flecsi/topology/internal/global.h>
+#include <flecsi/topology/internal/index.h>
 #include <flecsi/utils/const_string.h>
 
 /*----------------------------------------------------------------------------*
@@ -228,7 +228,7 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
 namespace flecsi {
 namespace topology {
 
-flecsi_register_topology(color_topology_t, "internal", "color_topology");
+flecsi_register_topology(index_topology_t, "internal", "index_topology");
 
 } // namespace topology
 } // namespace flecsi
@@ -257,7 +257,7 @@ flecsi_register_topology(color_topology_t, "internal", "color_topology");
   /* Call the storage policy to register the data */                           \
   inline bool flecsi_internal_unique_name(color_field) =                       \
     flecsi::data::field_interface_t::register_field<                           \
-      flecsi::topology::color_topology_t,                                      \
+      flecsi::topology::index_topology_t,                                      \
       flecsi::data::color,                                                     \
       data_type,                                                               \
       flecsi_internal_string_hash(nspace),                                     \
@@ -287,7 +287,7 @@ flecsi_register_topology(color_topology_t, "internal", "color_topology");
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_get_field(                                                            \
     flecsi_get_topology(                                                       \
-      flecsi::topology::color_topology_t, "internal", "color_topology"),       \
+      flecsi::topology::index_topology_t, "internal", "index_topology"),       \
     nspace,                                                                    \
     name,                                                                      \
     data_type,                                                                 \

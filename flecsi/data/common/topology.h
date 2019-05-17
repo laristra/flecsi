@@ -45,9 +45,8 @@ struct topology_u {
   template<size_t NAMESPACE, size_t NAME>
   static topology_reference_t get_reference() {
     constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
-    return { identifier };
+    return {identifier};
   } // get_reference
-  
 };
 
 } // namespace POLICY_NAMESPACE

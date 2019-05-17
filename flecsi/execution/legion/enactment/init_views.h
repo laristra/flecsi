@@ -95,8 +95,8 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
     LegionRuntime::Arrays::Rect<1> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
 
-    global_topology::bind<DATA_TYPE, PRIVILEGES>(accessor,
-      ac.template raw_rect_ptr<1>(dr, sr, bo));
+    global_topology::bind<DATA_TYPE, PRIVILEGES>(
+      accessor, ac.template raw_rect_ptr<1>(dr, sr, bo));
 
     ++region;
   } // visit

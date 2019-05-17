@@ -116,9 +116,7 @@ struct topology_interface_u {
     @param coloring A valid coloring instance for the given topology type.
    */
 
-  template<typename TOPOLOGY_TYPE,
-    size_t NAMESPACE,
-    size_t NAME>
+  template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
   void set_coloring(std::string const & name,
     typename TOPOLOGY_TYPE::coloring_t & coloring) {
 
