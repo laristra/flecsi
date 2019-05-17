@@ -92,30 +92,13 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a306079843b19b7090243921e0bc38bb8"><td class="memTemplParams" colspan="2">template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 <tr class="memitem:a306079843b19b7090243921e0bc38bb8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="field__interface_8h.html#a306079843b19b7090243921e0bc38bb8">flecsi::data::global_accessor_u</a> = typename FLECSI_RUNTIME_DATA_POLICY::global_accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;</td></tr>
 <tr class="separator:a306079843b19b7090243921e0bc38bb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4524ba2a32a43338b291a4562a85a74"><td class="memTemplParams" colspan="2">template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
-<tr class="memitem:aa4524ba2a32a43338b291a4562a85a74"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="field__interface_8h.html#aa4524ba2a32a43338b291a4562a85a74">flecsi::data::color_accessor_u</a> = typename FLECSI_RUNTIME_DATA_POLICY::color_accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;</td></tr>
-<tr class="separator:aa4524ba2a32a43338b291a4562a85a74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a212cf029318f478ea3fa0262a43998bb"><td class="memTemplParams" colspan="2">template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:a212cf029318f478ea3fa0262a43998bb"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="field__interface_8h.html#a212cf029318f478ea3fa0262a43998bb">flecsi::data::index_accessor_u</a> = typename FLECSI_RUNTIME_DATA_POLICY::index_accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;</td></tr>
+<tr class="separator:a212cf029318f478ea3fa0262a43998bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This file contains the C++ data model interface <em>field_interface_t</em> for FleCSI field data structures. The <em>field_interface_t</em> type is a specialization of the <em>field_interface_u</em> type on the backend runtimne policy that is selected at compile time. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="file_aa4524ba2a32a43338b291a4562a85a74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_aa4524ba2a32a43338b291a4562a85a74">&#9670;&nbsp;</a></span>color_accessor_u</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="field__interface_8h.html#aa4524ba2a32a43338b291a4562a85a74">flecsi::data::color_accessor_u</a> = typedef typename FLECSI_RUNTIME_DATA_POLICY::color_accessor_u&lt;DATA_TYPE, PRIVILEGES&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The color_accessor_u type is the high-level accessor type for FleCSI field data on the color topology. </p>
-
-</div>
-</div>
 <a id="file_a306079843b19b7090243921e0bc38bb8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#file_a306079843b19b7090243921e0bc38bb8">&#9670;&nbsp;</a></span>global_accessor_u</h2>
 
@@ -130,6 +113,23 @@ template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>The global_accessor_u type is the high-level accessor type for FleCSI field data on the global topology. </p>
+
+</div>
+</div>
+<a id="file_a212cf029318f478ea3fa0262a43998bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a212cf029318f478ea3fa0262a43998bb">&#9670;&nbsp;</a></span>index_accessor_u</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="field__interface_8h.html#a212cf029318f478ea3fa0262a43998bb">flecsi::data::index_accessor_u</a> = typedef typename FLECSI_RUNTIME_DATA_POLICY::index_accessor_u&lt;DATA_TYPE, PRIVILEGES&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The color_accessor_u type is the high-level accessor type for FleCSI field data on the color topology. </p>
 
 </div>
 </div>

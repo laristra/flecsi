@@ -2,7 +2,6 @@ var searchData=
 [
   ['checksum_2eh',['checksum.h',['../checksum_8h.html',1,'']]],
   ['client_5fhandle_5fspecializations_2eh',['client_handle_specializations.h',['../client__handle__specializations_8h.html',1,'']]],
-  ['color_2eh',['color.h',['../color_8h.html',1,'']]],
   ['coloring_5fmap_2eh',['coloring_map.h',['../coloring__map_8h.html',1,'']]],
   ['command_5fline_5foptions_2eh',['command_line_options.h',['../command__line__options_8h.html',1,'']]],
   ['common_2eh',['common.h',['../common_8h.html',1,'']]],

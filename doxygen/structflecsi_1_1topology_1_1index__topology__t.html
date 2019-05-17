@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: flecsi::topology::color_topology_t Struct Reference</title>
+<title>Interface Documentation: flecsi::topology::index_topology_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,7 +61,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="structflecsi_1_1topology_1_1color__topology__t.html">color_topology_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="structflecsi_1_1topology_1_1index__topology__t.html">index_topology_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -69,35 +69,35 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
-<a href="structflecsi_1_1topology_1_1color__topology__t-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1topology_1_1index__topology__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::topology::color_topology_t Struct Reference<div class="ingroups"><a class="el" href="group__topology.html">Topology Interface</a></div></div>  </div>
+<div class="title">flecsi::topology::index_topology_t Struct Reference<div class="ingroups"><a class="el" href="group__topology.html">Topology Interface</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="color_8h_source.html">color.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="index_8h_source.html">index.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1color__topology__t_1_1coloring__t.html">coloring_t</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1index__topology__t_1_1coloring__t.html">coloring_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ad58a5a7c52218c139760e5ee85737600"><td class="memItemLeft" align="right" valign="top"><a id="ad58a5a7c52218c139760e5ee85737600"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>type_identifier_t</b> = <a class="el" href="structflecsi_1_1topology_1_1color__topology__t.html">color_topology_t</a></td></tr>
-<tr class="separator:ad58a5a7c52218c139760e5ee85737600"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bca33b846279aa32de358ea93c00878"><td class="memItemLeft" align="right" valign="top"><a id="a6bca33b846279aa32de358ea93c00878"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>type_identifier_t</b> = <a class="el" href="structflecsi_1_1topology_1_1index__topology__t.html">index_topology_t</a></td></tr>
+<tr class="separator:a6bca33b846279aa32de358ea93c00878"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:aa2354cdacba49b454253d83d60bbc932"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>type_identifier_hash</b></td></tr>
-<tr class="separator:aa2354cdacba49b454253d83d60bbc932"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52717b92a8edd172eff8e3ecf7da74e9"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>type_identifier_hash</b></td></tr>
+<tr class="separator:a52717b92a8edd172eff8e3ecf7da74e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The color_topology_u type allows users to register data on a per-color (similar to an MPI rank) basis. This topology will have one instance of each registered field type per color. </p>
+<div class="textblock"><p>The index_topology_u type allows users to register data on an arbitrarily-sized set of indices that have an implicit one-to-one coloring. </p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="aa2354cdacba49b454253d83d60bbc932"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa2354cdacba49b454253d83d60bbc932">&#9670;&nbsp;</a></span>type_identifier_hash</h2>
+<a id="a52717b92a8edd172eff8e3ecf7da74e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52717b92a8edd172eff8e3ecf7da74e9">&#9670;&nbsp;</a></span>type_identifier_hash</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -106,7 +106,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr size_t flecsi::topology::color_topology_t::type_identifier_hash</td>
+          <td class="memname">constexpr size_t flecsi::topology::index_topology_t::type_identifier_hash</td>
         </tr>
       </table>
   </td>
@@ -115,11 +115,11 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">    <a class="code" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(color_topology_t)</div></div><!-- fragment -->
+<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">    <a class="code" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(index_topology_t)</div></div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/flecsi/flecsi/flecsi/topology/internal/<a class="el" href="color_8h_source.html">color.h</a></li>
+<li>/home/flecsi/flecsi/flecsi/topology/internal/<a class="el" href="index_8h_source.html">index.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

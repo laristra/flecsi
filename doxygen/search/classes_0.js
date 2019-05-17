@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['accessor_5fu',['accessor_u',['../structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html',1,'flecsi::data::legion::global_topology::accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;'],['../structflecsi_1_1data_1_1legion_1_1color__topology_1_1accessor__u.html',1,'flecsi::data::legion::color_topology::accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;']]],
+  ['accessor_5fu',['accessor_u',['../structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html',1,'flecsi::data::legion::global_topology::accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;'],['../structflecsi_1_1data_1_1legion_1_1index__topology_1_1accessor__u.html',1,'flecsi::data::legion::index_topology::accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;']]],
   ['are_5fintegral',['are_integral',['../classflecsi_1_1utils_1_1detail_1_1are__integral.html',1,'flecsi::utils::detail']]],
   ['are_5fintegral_3c_20t_2c_20ts_2e_2e_2e_20_3e',['are_integral&lt; T, Ts... &gt;',['../classflecsi_1_1utils_1_1detail_1_1are__integral_3_01T_00_01Ts_8_8_8_01_4.html',1,'flecsi::utils::detail']]],
   ['array_5fref',['array_ref',['../classflecsi_1_1utils_1_1array__ref.html',1,'flecsi::utils']]],
