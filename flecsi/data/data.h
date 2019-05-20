@@ -160,7 +160,7 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
 } // namespace flecsi
 
 /*!
-  @def flecsi_register_global
+  @def flecsi_register_global_field
 
   This macro registers global field data.
   This call does not necessarily cause memory to be allocated. Its
@@ -178,7 +178,7 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
   @ingroup data
  */
 
-#define flecsi_register_global(nspace, name, data_type, versions)              \
+#define flecsi_register_global_field(nspace, name, data_type, versions)        \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
@@ -193,7 +193,7 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
       flecsi::topology::global_index_space>({flecsi_internal_stringify(name)})
 
 /*!
-  @def flecsi_get_global
+  @def flecsi_get_global_field
 
   Access global data
 
@@ -208,7 +208,7 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
   @ingroup data
  */
 
-#define flecsi_get_global(nspace, name, data_type, version)                    \
+#define flecsi_get_global_field(nspace, name, data_type, version)              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
@@ -234,9 +234,9 @@ flecsi_register_topology(index_topology_t, "internal", "index_topology");
 } // namespace flecsi
 
 /*!
-  @def flecsi_register_color
+  @def flecsi_register_index_field
 
-  This macro registers color field data.
+  This macro registers index field data.
   This call does not necessarily cause memory to be allocated. Its
   primary function is to describe the field data to the runtime.
   Memory allocation will likely be deferred.
@@ -251,24 +251,24 @@ flecsi_register_topology(index_topology_t, "internal", "index_topology");
   @ingroup data
  */
 
-#define flecsi_register_color(nspace, name, data_type, versions)               \
+#define flecsi_register_index_field(nspace, name, data_type, versions)         \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
-  inline bool flecsi_internal_unique_name(color_field) =                       \
+  inline bool flecsi_internal_unique_name(index_field) =                       \
     flecsi::data::field_interface_t::register_field<                           \
       flecsi::topology::index_topology_t,                                      \
-      flecsi::data::color,                                                     \
+      flecsi::data::index,                                                     \
       data_type,                                                               \
       flecsi_internal_string_hash(nspace),                                     \
       flecsi_internal_string_hash(name),                                       \
       versions,                                                                \
-      flecsi::topology::color_index_space>({flecsi_internal_stringify(name)})
+      flecsi::topology::index_index_space>({flecsi_internal_stringify(name)})
 
 /*!
-  @def flecsi_get_color
+  @def flecsi_get_index_field
 
-  Access color data
+  Access index data
 
   @param nspace        The string namespace to use to access the variable.
   @param name          The string of the data variable to access.
@@ -281,7 +281,7 @@ flecsi_register_topology(index_topology_t, "internal", "index_topology");
   @ingroup data
  */
 
-#define flecsi_get_color(nspace, name, data_type, version)                     \
+#define flecsi_get_index_field(nspace, name, data_type, version)               \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
@@ -291,5 +291,5 @@ flecsi_register_topology(index_topology_t, "internal", "index_topology");
     nspace,                                                                    \
     name,                                                                      \
     data_type,                                                                 \
-    color,                                                                     \
+    index,                                                                     \
     version)

@@ -102,6 +102,38 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
   } // visit
 
   /*--------------------------------------------------------------------------*
+    Index Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+
+    Legion::PhysicalRegion pr = regions_[region];
+    Legion::LogicalRegion lr = pr.get_logical_region();
+    Legion::IndexSpace is = lr.get_index_space();
+
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(index_topology_t::type_identifier_hash,
+          data::storage_label_t::index)
+        .get_field_info(accessor.identifier())
+        .fid;
+
+    auto ac = pr.get_field_accessor(fid).template typeify<DATA_TYPE>();
+
+    Legion::Domain domain =
+      legion_runtime_->get_index_space_domain(legion_context_, is);
+    LegionRuntime::Arrays::Rect<1> dr = domain.get_rect<1>();
+    LegionRuntime::Arrays::Rect<1> sr;
+    LegionRuntime::Accessor::ByteOffset bo[2];
+
+    index_topology::bind<DATA_TYPE, PRIVILEGES>(
+      accessor, ac.template raw_rect_ptr<1>(dr, sr, bo));
+
+    ++region;
+  } // visit
+
+  /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
    *--------------------------------------------------------------------------*/
 

@@ -133,6 +133,20 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   } // visit
 
   /*--------------------------------------------------------------------------*
+    Index Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(index_topology_t::type_identifier_hash,
+          data::storage_label_t::index)
+        .get_field_info(accessor.identifier())
+        .fid;
+  } // visit
+
+  /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
    *--------------------------------------------------------------------------*/
 

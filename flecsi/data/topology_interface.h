@@ -45,10 +45,6 @@ namespace data {
 template<typename DATA_POLICY>
 struct topology_interface_u {
 
-  template<typename TOPOLOGY_TYPE>
-  using topology_handle_u =
-    typename DATA_POLICY::template topology_handle_u<TOPOLOGY_TYPE>;
-
   /*!
     Register a topology with the FleCSI runtime.
 

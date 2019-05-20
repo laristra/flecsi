@@ -42,14 +42,6 @@ namespace data {
 template<typename DATA_POLICY>
 struct field_interface_u {
 
-  /*
-    Capture the topology handle types that are defined in the DATA_POLICY.
-   */
-
-  template<typename TOPOLOGY_TYPE>
-  using topology_handle_u =
-    typename DATA_POLICY::template topology_handle_u<TOPOLOGY_TYPE>;
-
   /*!
     Register a field with the FleCSI runtime. This method should be thought
     of as registering a field attribute on the given data client type.

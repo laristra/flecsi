@@ -41,7 +41,7 @@ namespace data {
 
 enum storage_label_t : size_t {
   global,
-  color,
+  index,
   dense,
   sparse,
   ragged,

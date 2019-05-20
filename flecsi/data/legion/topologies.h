@@ -20,6 +20,8 @@
 #include <flecsi/data/common/topology.h>
 #undef POLICY_NAMESPACE
 
+#include <legion.h>
+
 namespace flecsi {
 
 /*----------------------------------------------------------------------------*
@@ -39,45 +41,14 @@ class mesh_topology_u;
 namespace data {
 namespace legion {
 
-#if 0
 /*----------------------------------------------------------------------------*
-  Global Topology.
+  Index Topology.
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_u<topology::global_topology_t> {
+struct topology_instance_u<topology::index_topology_t> {
 
-  using global_topology_t = topology::global_topology_t;
-  using topology_reference_t = topology_reference_u<global_topology_t>;
-
-  template<size_t NAMESPACE, size_t NAME>
-  static topology_reference_t get_reference() {
-    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
-    topology_reference_t ref(identifier);
-    return ref;
-  } // get_reference
-
-}; // topology_u<topology::global_topology_t>
-
-/*----------------------------------------------------------------------------*
-  Color Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_u<topology::index_topology_t> {
-
-  using index_topology_t = topology::index_topology_t;
-  using topology_reference_t = topology_reference_u<index_topology_t>;
-
-  template<size_t NAMESPACE, size_t NAME>
-  static topology_reference_t get_reference() {
-    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
-    topology_reference_t ref(identifier);
-    return ref;
-  } // get_reference
-
-}; // topology_u<topology::index_topology_t>
-#endif
+}; // topology_instance_u<topology::index_topology_t>
 
 /*----------------------------------------------------------------------------*
   Mesh Topology.

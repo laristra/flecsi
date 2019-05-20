@@ -27,6 +27,7 @@ set(data_HEADERS
   common/topology_registration.h
   data.h
   field_interface.h
+  topology_instance.h
   topology_interface.h
 )
 
@@ -91,9 +92,14 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(topology
+ftest_add_unit(global
   SOURCES
-    test/topology.cc
+    test/global.cc
+)
+
+ftest_add_unit(index
+  SOURCES
+    test/index.cc
 )
 
 ftest_add_unit(privilege

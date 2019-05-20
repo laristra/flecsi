@@ -93,29 +93,47 @@ private:
 } // namespace global_topology
 
 /*----------------------------------------------------------------------------*
-  Color Topology.
+  Index Topology.
  *----------------------------------------------------------------------------*/
 
 namespace index_topology {
 
+/*!
+  Forward accessor type for bind friend.
+ */
+
+template<typename DATA_TYPE, size_t PRIVILEGES>
+struct accessor_u;
+
+/*!
+  Friend function to bind mapped data into the accessor. This lets init_views
+  to set the private data of the accessor.
+ */
+
+template<typename DATA_TYPE, size_t PRIVILEGES>
+void
+bind(accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
+  a.data_ = data;
+} // bind
+
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor_u : public field_reference_t {
 
+  friend void bind<DATA_TYPE, PRIVILEGES>(accessor_u & a, DATA_TYPE * data);
+
   accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
 
-  /*!
-    Return a raw reference to the data of this accessor.
-   */
+  operator DATA_TYPE &() {
+    return *data_;
+  } // value
+
+  operator DATA_TYPE const &() const {
+    return *data_;
+  } // value
 
   DATA_TYPE * data() {
     return data_;
   } // data
-
-  /*!
-    Assignment operator.
-
-    @param value The value to assign to this accessor.
-   */
 
   accessor_u & operator=(const DATA_TYPE & value) {
     *data_ = value;

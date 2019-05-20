@@ -21,6 +21,7 @@
  */
 
 #include <flecsi/data/legion/storage_classes.h>
+#include <flecsi/data/legion/topologies.h>
 
 namespace flecsi {
 namespace data {
@@ -40,24 +41,6 @@ struct legion_data_policy_t {
   using topology_u =
     legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>;
 
-#if 0
-  template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-  static decltype(auto) get_topology() {
-    using topology_t =
-      legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>;
-
-    return topology_t::template get_handle<NAMESPACE, NAME>();
-  } // get_client_handle
-#endif
-
-  /*
-    Capture the handle type for the given topology type.
-   */
-
-  template<typename TOPOLOGY_TYPE>
-  using topology_handle_u = typename legion::topology_u<
-    typename TOPOLOGY_TYPE::type_identifier_t>::topology_handle_t;
-
   /*--------------------------------------------------------------------------*
     Storage Class Interface.
    *--------------------------------------------------------------------------*/
@@ -69,6 +52,14 @@ struct legion_data_policy_t {
 
   template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
   using storage_class_u = legion::storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>;
+
+  /*--------------------------------------------------------------------------*
+    Topology Instance.
+   *--------------------------------------------------------------------------*/
+
+  template<typename TOPOLOGY_TYPE>
+  using topology_instance_u = typename legion::topology_instance_u<
+    typename TOPOLOGY_TYPE::type_identifier_t>;
 
   /*--------------------------------------------------------------------------*
     Topology Accessor Interface.
