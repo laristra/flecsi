@@ -27,7 +27,6 @@ set(data_HEADERS
   common/topology_registration.h
   data.h
   field_interface.h
-  topology_instance.h
   topology_interface.h
 )
 
