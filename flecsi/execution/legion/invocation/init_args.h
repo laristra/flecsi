@@ -110,7 +110,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
         .fid;
 
     Legion::LogicalRegion region =
-      context_t::instance().global_runtime_data().logical_region;
+      context_t::instance().global_topology_instance().logical_region;
 
     if constexpr(get_privilege<0, PRIVILEGES>() > partition_privilege_t::ro) {
       flog_assert(flecsi_internal_hash(single) == domain_,
@@ -140,8 +140,8 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
     const auto fid =
       context_t::instance()
-        .get_field_info_store(index_topology_t::type_identifier_hash,
-          data::storage_label_t::index)
+        .get_field_info_store(
+          index_topology_t::type_identifier_hash, data::storage_label_t::index)
         .get_field_info(accessor.identifier())
         .fid;
   } // visit

@@ -61,6 +61,15 @@ struct legion_data_policy_t {
   using topology_instance_u = typename legion::topology_instance_u<
     typename TOPOLOGY_TYPE::type_identifier_t>;
 
+  template<typename TOPOLOGY_TYPE>
+  void set_coloring(
+    topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
+      topology_reference,
+    typename TOPOLOGY_TYPE::coloring_t const & coloring) {
+    topology_instance_u<typename TOPOLOGY_TYPE::type_identifier_t>::
+      set_coloring(topology_reference, coloring);
+  } // set_coloring
+
   /*--------------------------------------------------------------------------*
     Topology Accessor Interface.
    *--------------------------------------------------------------------------*/

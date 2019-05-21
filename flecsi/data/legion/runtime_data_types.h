@@ -38,7 +38,7 @@ struct base_data_t {
   Legion::IndexSpace index_space;
   Legion::FieldSpace field_space;
   Legion::LogicalRegion logical_region;
-}; // isbase_t
+}; // base_data_t
 
 /*----------------------------------------------------------------------------*
   Global Topology.
@@ -50,9 +50,10 @@ struct global_runtime_data_t : public base_data_t {};
   Color Topology.
  *----------------------------------------------------------------------------*/
 
-struct color_runtime_data_t : public base_data_t {
-  Legion::IndexPartition color_partition;
-}; // struct color_runtime_data_t
+struct index_runtime_data_t : public base_data_t {
+  size_t colors;
+  Legion::LogicalPartition color_partition;
+}; // struct index_runtime_data_t
 
 } // namespace legion
 } // namespace data

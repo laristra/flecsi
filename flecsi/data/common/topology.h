@@ -49,7 +49,8 @@ struct topology_u {
   } // get_reference
 };
 
-template<typename TOPOLOGY_TYPE> struct topology_instance_u {};
+template<typename TOPOLOGY_TYPE>
+struct topology_instance_u {};
 
 } // namespace POLICY_NAMESPACE
 } // namespace data

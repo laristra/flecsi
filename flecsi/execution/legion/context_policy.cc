@@ -255,7 +255,7 @@ void
 legion_context_policy_t::initialize_global_topology() {
   using namespace Legion;
 
-  global_runtime_data_.id = 4096;
+  global_topology_instance_.id = 4096;
 
   auto legion_runtime_ = Legion::Runtime::get_runtime();
   auto legion_context_ = Legion::Runtime::get_context();
@@ -265,14 +265,14 @@ legion_context_policy_t::initialize_global_topology() {
 
   Domain dom(Domain::from_rect<1>(bounds));
 
-  global_runtime_data_.index_space =
+  global_topology_instance_.index_space =
     legion_runtime_->create_index_space(legion_context_, dom);
 
-  global_runtime_data_.field_space =
+  global_topology_instance_.field_space =
     legion_runtime_->create_field_space(legion_context_);
 
   FieldAllocator allocator = legion_runtime_->create_field_allocator(
-    legion_context_, global_runtime_data_.field_space);
+    legion_context_, global_topology_instance_.field_space);
 
   /*
     Note: This call to get_field_info_store uses the non-const version
@@ -289,10 +289,10 @@ legion_context_policy_t::initialize_global_topology() {
     allocator.allocate_field(fi.type_size, fi.fid);
   } // for
 
-  global_runtime_data_.logical_region =
+  global_topology_instance_.logical_region =
     legion_runtime_->create_logical_region(legion_context_,
-      global_runtime_data_.index_space,
-      global_runtime_data_.field_space);
+      global_topology_instance_.index_space,
+      global_topology_instance_.field_space);
 } // legion_context_policy_t::initialize_global_topology
 
 //----------------------------------------------------------------------------//

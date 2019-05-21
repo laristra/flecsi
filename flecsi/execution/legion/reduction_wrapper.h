@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/flog.h>
 #endif
@@ -31,15 +32,11 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-struct reduction_wrapper_unique_u {};
-
 template<size_t HASH, typename TYPE>
 struct reduction_wrapper_u {
 
   using rhs_t = typename TYPE::RHS;
   using lhs_t = typename TYPE::LHS;
-
-  using oid_t = flecsi::utils::unique_id_t<reduction_wrapper_unique_u>;
 
   /*!
     Register the user-defined reduction operator with the runtime.
@@ -58,7 +55,7 @@ struct reduction_wrapper_u {
       flog(info) << "registering reduction operation " << HASH << std::endl;
     }
 
-    const size_t id = oid_t::instance().next();
+    const size_t id = unique_oid_t::instance().next();
 
     // Register the operation with the Legion runtime
     Legion::Runtime::register_reduction_op<TYPE>(id);

@@ -24,6 +24,7 @@
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/base_topology_types.h>
+#include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/flog.h>
@@ -77,6 +78,22 @@ struct context_u : public CONTEXT_POLICY {
   using field_registration_map_t =
     std::unordered_map<size_t, field_registration_entry_t>;
 
+#if 0
+  /*!
+    Unique id types.
+
+    NOTE: The first template parameter is NOT the counter type. All of the counters use size_t as the counter variable. The first template parameter is used to generate unique counters
+   */
+
+  struct tid_counter_t {};
+  using unique_tid_t =
+    utils::unique_id_u<tid_counter_t, FLECSI_GENERATED_ID_MAX>;
+  struct isid_counter_t {};
+  using unique_isid_t =
+    utils::unique_id_u<isid_counter_t, FLECSI_GENERATED_ID_MAX>;
+#endif
+
+  // FIXME: These can probably go away
   using index_topology_instance_t = topology_instance_u<index_topology_t>;
   using index_topology_instance_map_t =
     std::unordered_map<size_t, index_topology_instance_t>;

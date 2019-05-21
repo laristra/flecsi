@@ -98,13 +98,6 @@ struct legion_context_policy_t {
     void(task_id_t, processor_type_t, task_execution_type_t, std::string &)>;
 
   /*!
-   The unique_tid_t type create a unique id generator for registering
-   tasks.
-   */
-
-  using unique_tid_t = utils::unique_id_t<task_id_t, FLECSI_GENERATED_ID_MAX>;
-
-  /*!
     The task_info_t type is a convenience type for defining the task
     registration map below.
    */
@@ -182,9 +175,9 @@ struct legion_context_policy_t {
   /*!
    */
 
-  data::legion::global_runtime_data_t & global_runtime_data() {
-    return global_runtime_data_;
-  } // global_runtime_data
+  data::legion::global_runtime_data_t & global_topology_instance() {
+    return global_topology_instance_;
+  } // global_topology_instance
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -465,8 +458,9 @@ private:
     Runtime data.
    *--------------------------------------------------------------------------*/
 
-  data::legion::global_runtime_data_t global_runtime_data_;
-  data::legion::color_runtime_data_t color_runtime_data_;
+  data::legion::global_runtime_data_t global_topology_instance_;
+  std::unordered_map<size_t, data::legion::index_runtime_data_t>
+    index_topology_instances_;
 
   size_t process_ = std::numeric_limits<size_t>::max();
   size_t processes_ = std::numeric_limits<size_t>::max();

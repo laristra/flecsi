@@ -103,12 +103,18 @@ square(const T & a) {
 #define FLECSI_GENERATED_ID_MAX 1044480
 #endif
 
-//! Generate unique ids
-template<typename T,
+/*!
+  The unique_id_u type provides a utility to generate a series of unique ids.
+
+  @tparam UNIQUENESS_TYPE A dummy type to differentiate instances.
+  @tparam MAXIMUM         The maximum legal id.
+ */
+
+template<typename UNIQUENESS_TYPE,
   std::size_t MAXIMUM = (std::numeric_limits<std::size_t>::max)()>
-struct unique_id_t {
-  static unique_id_t & instance() {
-    static unique_id_t u;
+struct unique_id_u {
+  static unique_id_u & instance() {
+    static unique_id_u u;
     return u;
   } // instance
 
@@ -118,19 +124,19 @@ struct unique_id_t {
   } // next
 
 private:
-  unique_id_t() : id_(0) {}
-  unique_id_t(const unique_id_t &) {}
-  ~unique_id_t() {}
+  unique_id_u() : id_(0) {}
+  unique_id_u(const unique_id_u &) {}
+  ~unique_id_u() {}
 
   std::size_t id_;
-};
+}; // unique_id_u
 
 //! Create a unique name from the type, address, and unique id
 template<typename T>
 std::string
 unique_name(const T * const t) {
   const void * const address = static_cast<const void *>(t);
-  const std::size_t id = unique_id_t<T>::instance().next();
+  const std::size_t id = unique_id_u<T>::instance().next();
   std::stringstream ss;
   ss << typeid(T).name() << "-" << address << "-" << id;
   return ss.str();

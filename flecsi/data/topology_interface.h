@@ -112,15 +112,14 @@ struct topology_interface_u {
     @param coloring A valid coloring instance for the given topology type.
    */
 
-  template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-  void set_coloring(std::string const & name,
-    typename TOPOLOGY_TYPE::coloring_t & coloring) {
-
-    auto & context_ = execution::context_t::instance();
-
-    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
-
-    context_.set_coloring<TOPOLOGY_TYPE, identifier>(coloring);
+  template<typename TOPOLOGY_TYPE>
+  void set_coloring(
+    topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
+      topology_reference,
+    typename TOPOLOGY_TYPE::type_identifier_t::coloring_t const & coloring,
+    std::string const & name) {
+    DATA_POLICY::template set_coloring<TOPOLOGY_TYPE>(
+      topology_reference, coloring);
   } // add_coloring
 
   /*!

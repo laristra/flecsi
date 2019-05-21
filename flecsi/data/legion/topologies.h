@@ -18,7 +18,12 @@
 #define POLICY_NAMESPACE legion
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/common/topology.h>
+#include <flecsi/execution/context.h>
 #undef POLICY_NAMESPACE
+
+#if !defined(FLECSI_ENABLE_LEGION)
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
 
 #include <legion.h>
 
@@ -47,6 +52,23 @@ namespace legion {
 
 template<>
 struct topology_instance_u<topology::index_topology_t> {
+
+  using topology_reference_t = topology_reference_u<topology::index_topology_t>;
+
+  void set_coloring(topology_reference_t const & topology_reference,
+    topology::index_topology_t::coloring_t const & coloring) {
+
+    // do setup and add to context
+    // index_topology_instances_[topology_reference.identifier()]
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
+
+    // data_.id = //make unique id
+
+  } // set_coloring
+
+private:
+  index_runtime_data_t data_;
 
 }; // topology_instance_u<topology::index_topology_t>
 

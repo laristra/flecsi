@@ -24,6 +24,7 @@
 
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 
@@ -78,9 +79,6 @@ struct field_interface_u {
   static bool register_field(std::string const & name) {
     static_assert(VERSIONS <= utils::hash::field_max_versions,
       "max field versions exceeded");
-
-    using unique_fid_t =
-      utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
 
     field_info_t fi;
 

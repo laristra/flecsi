@@ -114,8 +114,8 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
 
     const auto fid =
       context_t::instance()
-        .get_field_info_store(index_topology_t::type_identifier_hash,
-          data::storage_label_t::index)
+        .get_field_info_store(
+          index_topology_t::type_identifier_hash, data::storage_label_t::index)
         .get_field_info(accessor.identifier())
         .fid;
 
