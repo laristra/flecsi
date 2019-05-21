@@ -15,7 +15,9 @@
 #ifndef flecsi_execution_hpx_context_policy_h
 #define flecsi_execution_hpx_context_policy_h
 
-#if !defined(ENABLE_HPX)
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_HPX)
 #error ENABLE_HPX not defined! This file depends on HPX!
 #endif
 
@@ -31,7 +33,6 @@
 #include <unordered_map>
 
 #include <cinchlog.h>
-#include <flecsi-config.h>
 
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/execution/common/launch.h>
@@ -42,6 +43,8 @@
 #include <flecsi/utils/export_definitions.h>
 
 #include <flecsi/utils/const_string.h>
+
+#include <flecsi/runtime/types.h>
 
 ///
 /// \file hpx/execution_policy.h
