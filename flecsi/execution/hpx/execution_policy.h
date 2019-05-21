@@ -60,7 +60,7 @@ struct executor_u {
   ///
   ///
   template<typename Exec, typename T, typename A>
-  static hpx_future__<RETURN, launch_type_t::single>
+  static hpx_future_u<RETURN, launch_type_t::single>
   execute(Exec && exec, T fun, A && targs) {
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(fun));
     return hpx::async(
@@ -151,12 +151,12 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
         clog(info) << "Executing MPI task: " << KEY << std::endl;
       }
 
-      return executor__<RETURN, ARG_TUPLE>::execute(
+      return executor_u<RETURN, ARG_TUPLE>::execute(
           context_t::instance().get_mpi_executor(),
           std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
     }
 
-    return executor__<RETURN, ARG_TUPLE>::execute(
+    return executor_u<RETURN, ARG_TUPLE>::execute(
         context_t::instance().get_default_executor(),
         std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_task

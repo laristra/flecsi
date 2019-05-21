@@ -201,7 +201,7 @@ struct parmetis_colorer_t : public colorer_t {
         requests.push_back({});
         MPI_Irecv(
             &rbuffers[r][0], static_cast<int>(recv_cnts[r]),
-            mpi_typetraits__<idx_t>::type(), static_cast<int>(r),
+            utils::mpi_typetraits_u<idx_t>::type(), static_cast<int>(r),
             0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
     } // for
@@ -212,7 +212,7 @@ struct parmetis_colorer_t : public colorer_t {
         sbuffers[r].resize(send_cnts[r]);
         MPI_Send(
             &sbuffers[r][0], static_cast<int>(send_cnts[r]),
-            mpi_typetraits__<idx_t>::type(), static_cast<int>(r),
+            utils::mpi_typetraits_u<idx_t>::type(), static_cast<int>(r),
             0, MPI_COMM_WORLD);
       } // if
     } // for

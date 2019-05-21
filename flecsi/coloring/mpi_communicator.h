@@ -436,7 +436,7 @@ public:
         requests.push_back({});
         MPI_Irecv(
             &rbuffers[r][0], static_cast<int>(recv_cnts[r]),
-            mpi_typetraits__<size_t>::type(), static_cast<int>(r),
+            utils::mpi_typetraits_u<size_t>::type(), static_cast<int>(r),
             0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
     } // for
@@ -450,7 +450,7 @@ public:
 
         MPI_Send(
             &sbuffers[r][0], static_cast<int>(send_cnts[r]),
-            mpi_typetraits__<size_t>::type(), static_cast<int>(r),
+            utils::mpi_typetraits_u<size_t>::type(), static_cast<int>(r),
             0, MPI_COMM_WORLD);
       } // if
     } // for
@@ -491,7 +491,7 @@ public:
         requests.push_back({});
         MPI_Irecv(
             &rbuffers[r][0], static_cast<int>(send_cnts[r]),
-            mpi_typetraits__<size_t>::type(), static_cast<int>(r),
+            utils::mpi_typetraits_u<size_t>::type(), static_cast<int>(r),
             0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
     } // for
@@ -502,7 +502,7 @@ public:
       if(recv_cnts[r]) {
         MPI_Send(
             &sbuffers[r][0], static_cast<int>(recv_cnts[r]),
-            mpi_typetraits__<size_t>::type(), static_cast<int>(r),
+            utils::mpi_typetraits_u<size_t>::type(), static_cast<int>(r),
             0, MPI_COMM_WORLD);
       } // if
     } // for

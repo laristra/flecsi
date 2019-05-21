@@ -30,8 +30,6 @@
 namespace flecsi {
 namespace topology {
 
-class mesh_entity_base_;
-
 template<size_t, size_t>
 class mesh_entity_t;
 
