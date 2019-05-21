@@ -193,3 +193,5 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
 
 } // namespace execution
 } // namespace flecsi
+
+#endif // flecsi_execution_hpx_execution_policy_h
