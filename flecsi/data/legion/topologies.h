@@ -15,10 +15,12 @@
 
 /*! @file */
 
-#define POLICY_NAMESPACE legion
 #include <flecsi/data/common/data_reference.h>
-#include <flecsi/data/common/topology.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
+
+#define POLICY_NAMESPACE legion
+#include <flecsi/data/common/topology.h>
 #undef POLICY_NAMESPACE
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -55,20 +57,18 @@ struct topology_instance_u<topology::index_topology_t> {
 
   using topology_reference_t = topology_reference_u<topology::index_topology_t>;
 
-  void set_coloring(topology_reference_t const & topology_reference,
+  static void set_coloring(topology_reference_t const & topology_reference,
     topology::index_topology_t::coloring_t const & coloring) {
 
-    // do setup and add to context
-    // index_topology_instances_[topology_reference.identifier()]
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
 
-    // data_.id = //make unique id
+    auto & data_ = execution::context_t::instance().index_topology_instance(
+      topology_reference.identifier());
+
+    data_.index_space_id = unique_isid_t::instance().next();
 
   } // set_coloring
-
-private:
-  index_runtime_data_t data_;
 
 }; // topology_instance_u<topology::index_topology_t>
 

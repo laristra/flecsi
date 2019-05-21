@@ -73,7 +73,7 @@ struct topology_interface_u {
            typeid(typename TOPOLOGY_TYPE::type_identifier_t).name())
       << std::endl;
 
-    return registration_t::register_fields();
+    return registration_t::add_runtime_data();
   } // register_topology
 
   /*!

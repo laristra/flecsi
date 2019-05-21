@@ -21,6 +21,7 @@
 #include <flecsi/execution/legion/internal_task.h>
 #include <flecsi/execution/legion/mapper.h>
 #include <flecsi/execution/legion/tasks.h>
+#include <flecsi/runtime/types.h>
 #include <flecsi/utils/const_string.h>
 
 namespace flecsi {
@@ -255,7 +256,7 @@ void
 legion_context_policy_t::initialize_global_topology() {
   using namespace Legion;
 
-  global_topology_instance_.id = 4096;
+  global_topology_instance_.index_space_id = unique_isid_t::instance().next();
 
   auto legion_runtime_ = Legion::Runtime::get_runtime();
   auto legion_context_ = Legion::Runtime::get_context();

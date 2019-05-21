@@ -44,6 +44,7 @@
 namespace flecsi {
 namespace execution {
 
+using namespace flecsi::data::legion;
 using namespace boost::program_options;
 
 const size_t FLECSI_TOP_LEVEL_TASK_ID = 0;
@@ -71,6 +72,11 @@ void unset_call_mpi_task(const Legion::Task * task,
   Legion::Runtime * runtime);
 
 struct legion_context_policy_t {
+
+  /*
+    Friend declarations. Some parts of this interface are intentionally private
+    to avoid inadvertent corruption of initialization logic.
+   */
 
   friend void top_level_task(const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions,
@@ -108,6 +114,10 @@ struct legion_context_policy_t {
     std::string,
     registration_function_t>;
 
+  //--------------------------------------------------------------------------//
+  //  Runtime.
+  //--------------------------------------------------------------------------//
+
   /*
     Documentation for this interface is in the top-level context type.
    */
@@ -130,9 +140,17 @@ struct legion_context_policy_t {
     return processes_;
   } // processes
 
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
   size_t threads_per_process() const {
     return threads_per_process_;
   } // threads_per_process
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
 
   size_t threads() const {
     return threads_;
@@ -173,11 +191,20 @@ struct legion_context_policy_t {
   } // colors
 
   /*!
+    Global topology instance.
    */
 
-  data::legion::global_runtime_data_t & global_topology_instance() {
+  global_runtime_data_t & global_topology_instance() {
     return global_topology_instance_;
   } // global_topology_instance
+
+  /*!
+    Index topology instances.
+   */
+
+  index_runtime_data_t & index_topology_instance(size_t instance_identifier) {
+    return index_topology_instances_[instance_identifier];
+  } // index_topology_instance
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -458,9 +485,8 @@ private:
     Runtime data.
    *--------------------------------------------------------------------------*/
 
-  data::legion::global_runtime_data_t global_topology_instance_;
-  std::unordered_map<size_t, data::legion::index_runtime_data_t>
-    index_topology_instances_;
+  global_runtime_data_t global_topology_instance_;
+  std::unordered_map<size_t, index_runtime_data_t> index_topology_instances_;
 
   size_t process_ = std::numeric_limits<size_t>::max();
   size_t processes_ = std::numeric_limits<size_t>::max();

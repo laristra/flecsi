@@ -34,7 +34,7 @@ namespace data {
 namespace legion {
 
 struct base_data_t {
-  size_t id;
+  size_t index_space_id;
   Legion::IndexSpace index_space;
   Legion::FieldSpace field_space;
   Legion::LogicalRegion logical_region;
