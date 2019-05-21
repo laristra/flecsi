@@ -30,14 +30,15 @@ using namespace types;
 
 flecsi_register_field(mesh_t, types, f, struct_type_t, dense, 1, cells);
 
-namespace example {
+namespace flecsi {
+namespace tutorial {
 
 // This task initializes the field of struct_type_t data. Notice that
 // nothing has changed about the iteration logic over the mesh. The only
 // difference is that now the dereferenced values are struct instances.
 
 void
-initialize_field(mesh<ro> mesh, struct_field<rw> f) {
+initialize_field(mesh<rw> mesh, struct_field<rw> f) {
   for(auto c : mesh.cells(owned)) {
     f(c).a = double(c->id()) * 1000.0;
     f(c).b = c->id();
@@ -47,7 +48,7 @@ initialize_field(mesh<ro> mesh, struct_field<rw> f) {
   } // for
 } // initialize_field
 
-flecsi_register_task(initialize_field, example, loc, single);
+flecsi_register_task(initialize_field, tutorial, loc, index);
 
 // This task prints the struct values.
 
@@ -63,9 +64,10 @@ print_field(mesh<ro> mesh, struct_field<ro> f) {
   } // for
 } // print_field
 
-flecsi_register_task(print_field, example, loc, single);
+flecsi_register_task(print_field, tutorial, loc, index);
 
-} // namespace example
+} // namespace tutorial
+} //namespace flecsi
 
 namespace flecsi {
 namespace execution {
@@ -80,8 +82,8 @@ driver(int argc, char ** argv) {
 
   auto f = flecsi_get_handle(m, types, f, struct_type_t, dense, 0);
 
-  flecsi_execute_task(initialize_field, example, single, m, f);
-  flecsi_execute_task(print_field, example, single, m, f);
+  flecsi_execute_task(initialize_field, tutorial, index, m, f);
+  flecsi_execute_task(print_field, tutorial, index, m, f);
 
 } // driver
 
