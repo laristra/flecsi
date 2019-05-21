@@ -80,3 +80,11 @@ set(topology_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+
+#ftest_add_unit(mesh
+#  SOURCES test/mesh.cc
+#)
+
+ftest_add_unit(ntree
+  SOURCES test/ntree.cc
+)

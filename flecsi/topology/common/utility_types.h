@@ -94,5 +94,79 @@ using id_vector_map_t =
 
 using index_vector_t = std::vector<size_t>;
 
+//-----------------------------------------------------------------//
+//! \class entity_base_u types.h
+//! \brief entity_base_u defines a base class that stores the raw info that
+//! a topology needs, i.e: id and rank data
+//!
+//! \tparam N The number of domains.
+//-----------------------------------------------------------------//
+
+class entity_base_
+{
+public:
+  using id_t = flecsi::utils::id_t;
+};
+
+template<size_t NUM_DOMAINS>
+class entity_base_u : public entity_base_
+{
+public:
+  ~entity_base_u() {}
+
+  //-----------------------------------------------------------------//
+  //! Return the id of this entity.
+  //!
+  //! \return The id of the entity.
+  //-----------------------------------------------------------------//
+  template<size_t DOM = 0>
+  id_t global_id() const {
+    return ids_[DOM];
+  } // id
+
+  id_t global_id(size_t domain) const {
+    return ids_[domain];
+  } // id
+
+  template<size_t DOM = 0>
+  size_t id() const {
+    return ids_[DOM].entity();
+  } // id
+
+  size_t id(size_t domain) const {
+    return ids_[domain].entity();
+  } // id
+
+  template<size_t DOM = 0>
+  uint16_t info() const {
+    return ids_[DOM] >> 48;
+  } // info
+
+  //-----------------------------------------------------------------//
+  //! Set the id of this entity.
+  //-----------------------------------------------------------------//
+  template<size_t DOM = 0>
+  void set_global_id(const id_t & id) {
+    ids_[DOM] = id;
+  } // id
+
+  /*!
+   */
+
+  static constexpr size_t get_dim_(size_t meshDim, size_t dim) {
+    return dim > meshDim ? meshDim : dim;
+  } // get_dim_
+
+protected:
+  template<size_t DOM = 0>
+  void set_info(uint16_t info) {
+    ids_[DOM] = (uint64_t(info) << 48) | ids_[DOM];
+  } // set_info
+
+private:
+  std::array<id_t, NUM_DOMAINS> ids_;
+
+}; // class entity_base_u
+
 } // namespace topology
 } // namespace flecsi
