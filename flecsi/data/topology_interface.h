@@ -60,6 +60,9 @@ struct topology_interface_u {
                     sizeof(typename TOPOLOGY_TYPE::type_identifier_t),
       "Topologies may not add data members");
 
+//    DATA_POLICY::register_topology<>();
+
+#if 0
     using registration_t =
       topology_registration_u<typename TOPOLOGY_TYPE::type_identifier_t,
         NAMESPACE,
@@ -74,6 +77,7 @@ struct topology_interface_u {
       << std::endl;
 
     return registration_t::add_runtime_data();
+#endif
   } // register_topology
 
   /*!

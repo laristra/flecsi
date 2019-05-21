@@ -55,6 +55,10 @@ struct index_runtime_data_t : public base_data_t {
   Legion::LogicalPartition color_partition;
 }; // struct index_runtime_data_t
 
+struct unstructured_mesh_runtime_data_t : public base_data_t {
+  std::vector<size_t> index_spaces;
+}; // struct unstructured_mesh_runtime_data_t
+
 } // namespace legion
 } // namespace data
 } // namespace flecsi
