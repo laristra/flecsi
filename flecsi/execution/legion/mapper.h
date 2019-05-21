@@ -103,33 +103,34 @@ public:
     } // end for
 
     // Get our local memories
-  {
-    Machine::MemoryQuery sysmem_query(machine);
-    sysmem_query.local_address_space();
-    sysmem_query.only_kind(Memory::SYSTEM_MEM);
-    local_sysmem = sysmem_query.first();
-    assert(local_sysmem.exists());
-  }
-  if (!local_gpus.empty()) {
-    Machine::MemoryQuery zc_query(machine);
-    zc_query.local_address_space();
-    zc_query.only_kind(Memory::Z_COPY_MEM);
-    local_zerocopy = zc_query.first();
-    assert(local_zerocopy.exists());
-  } else {
-    local_zerocopy = Memory::NO_MEMORY;
-  }
-  if (local_kind == Processor::TOC_PROC) {
-    Machine::MemoryQuery fb_query(machine);
-    fb_query.local_address_space();
-    fb_query.only_kind(Memory::GPU_FB_MEM);
-    fb_query.best_affinity_to(local_proc);
-    local_framebuffer = fb_query.first();
-    assert(local_framebuffer.exists());
-  } else {
-    local_framebuffer = Memory::NO_MEMORY;
-  }
-
+    {
+      Machine::MemoryQuery sysmem_query(machine);
+      sysmem_query.local_address_space();
+      sysmem_query.only_kind(Memory::SYSTEM_MEM);
+      local_sysmem = sysmem_query.first();
+      assert(local_sysmem.exists());
+    }
+    if(!local_gpus.empty()) {
+      Machine::MemoryQuery zc_query(machine);
+      zc_query.local_address_space();
+      zc_query.only_kind(Memory::Z_COPY_MEM);
+      local_zerocopy = zc_query.first();
+      assert(local_zerocopy.exists());
+    }
+    else {
+      local_zerocopy = Memory::NO_MEMORY;
+    }
+    if(local_kind == Processor::TOC_PROC) {
+      Machine::MemoryQuery fb_query(machine);
+      fb_query.local_address_space();
+      fb_query.only_kind(Memory::GPU_FB_MEM);
+      fb_query.best_affinity_to(local_proc);
+      local_framebuffer = fb_query.first();
+      assert(local_framebuffer.exists());
+    }
+    else {
+      local_framebuffer = Memory::NO_MEMORY;
+    }
 
     {
       clog_tag_guard(legion_mapper);
@@ -426,15 +427,15 @@ public:
 
     if(task.regions.size() > 0) {
 
-     Legion::Memory target_mem;
-   //   =
-   //     DefaultMapper::default_policy_select_target_memory(
-   //       ctx, task.target_proc, task.regions[0]);
+      Legion::Memory target_mem;
+      //   =
+      //     DefaultMapper::default_policy_select_target_memory(
+      //       ctx, task.target_proc, task.regions[0]);
 
-    if ((task.tag & PREFER_GPU) && !local_gpus.empty()) 
-			target_mem = local_framebuffer;
-    else
-      target_mem = local_sysmem;
+      if((task.tag & PREFER_GPU) && !local_gpus.empty())
+        target_mem = local_framebuffer;
+      else
+        target_mem = local_sysmem;
 
       // creating ordering constraint (SOA )
       std::vector<Legion::DimensionKind> ordering;
