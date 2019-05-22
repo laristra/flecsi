@@ -16,6 +16,7 @@
 #define __FLECSI_PRIVATE__
 #endif
 
+#include <flecsi/data/legion/data_policy.h>
 #include <flecsi/execution/common/command_line_options.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_task.h>
@@ -297,12 +298,22 @@ legion_context_policy_t::initialize_global_topology() {
 } // legion_context_policy_t::initialize_global_topology
 
 //----------------------------------------------------------------------------//
-// Implementation of initialize_index_topology.
+// Implementation of initialize_default_index_topology.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::initialize_index_topology() {
-} // legion_context_policy_t::initialize_index_topology
+legion_context_policy_t::initialize_default_index_topology() {
+
+  constexpr size_t identifier =
+    utils::hash::topology_hash<flecsi_internal_hash(internal),
+      flecsi_internal_hash(index_topology)>();
+
+  data::topology_reference_u<topology::index_topology_t> reference(identifier);
+  topology::index_topology_t::coloring_t coloring(processes_);
+
+  data::legion_data_policy_t::template set_coloring<topology::index_topology_t>(
+    reference, coloring);
+} // legion_context_policy_t::initialize_default_index_topology
 
 } // namespace execution
 } // namespace flecsi

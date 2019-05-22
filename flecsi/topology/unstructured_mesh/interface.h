@@ -182,13 +182,15 @@ public:
   // Don't allow the mesh to be copied or copy constructed
 
   //! don't allow mesh to be assigned
-  unstructured_mesh_topology_u & operator=(const unstructured_mesh_topology_u &) = delete;
+  unstructured_mesh_topology_u & operator=(
+    const unstructured_mesh_topology_u &) = delete;
 
   //! Allow move operations
   unstructured_mesh_topology_u(unstructured_mesh_topology_u && o) = default;
 
   //! override default move assignement
-  unstructured_mesh_topology_u & operator=(unstructured_mesh_topology_u && o) = default;
+  unstructured_mesh_topology_u & operator=(
+    unstructured_mesh_topology_u && o) = default;
 
   //! Constructor, takes as input a mesh storage or storage can later be set
   unstructured_mesh_topology_u(storage_t * ms = nullptr) : base_t(ms) {
@@ -198,7 +200,8 @@ public:
   } // unstructured_mesh_topology_u()
 
   //! Copy constructor: alias another mesh
-  unstructured_mesh_topology_u(const unstructured_mesh_topology_u & m) : base_t(m.ms_) {}
+  unstructured_mesh_topology_u(const unstructured_mesh_topology_u & m)
+    : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction

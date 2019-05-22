@@ -32,15 +32,15 @@
  *----------------------------------------------------------------------------*/
 
 /*!
-  @def flecsi_register_topology
+  @def flecsi_topology_reference
 
   Declare a variable of type \em type with namespace \em nspace
   and name \em name.
 
-  This macro registers a topology with the FleCSI runtime. This call
-  does not necessarily cause memory to be allocated. It's primary function
-  is to describe the topology type to the runtime. Memory allocation will
-  likely be deferred.
+  This macro returns a reference to a topology instance. This call does not
+  necessarily cause memory to be allocated. It's primary function is to
+  describe the topology type to the runtime. Memory allocation will likely be
+  deferred.
 
   @param type   The topology type.
   @param nspace The string namespace to use to register the variable.
@@ -49,17 +49,13 @@
   @ingroup data
  */
 
-#define flecsi_register_topology(type, nspace, name)                           \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Call the topology interface to register the topology */                   \
-  inline bool flecsi_internal_unique_name(topology_registration_) =            \
-    flecsi::data::topology_interface_t::register_topology<type,                \
-      flecsi_internal_string_hash(nspace),                                     \
-      flecsi_internal_string_hash(name)>({flecsi_internal_stringify(name)})
+#define flecsi_topology_reference(type, nspace, name)                          \
+  flecsi::data::topology_interface_t::topology_reference<type,                 \
+    flecsi_internal_string_hash(nspace),                                       \
+    flecsi_internal_string_hash(name)>({flecsi_internal_stringify(name)})
 
 /*!
-  @def flecsi_get_topology
+  @def flecsi_topology_instance
 
   Access a topology.
 
@@ -70,11 +66,11 @@
   @ingroup data
  */
 
-#define flecsi_get_topology(type, nspace, name)                                \
+#define flecsi_topology_instance(type, nspace, name)                           \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the topology */                \
-  flecsi::data::topology_interface_t::get_topology<type,                       \
+  flecsi::data::topology_interface_t::topology_instance<type,                  \
     flecsi_internal_string_hash(nspace),                                       \
     flecsi_internal_string_hash(name)>()
 
@@ -83,13 +79,13 @@
  *----------------------------------------------------------------------------*/
 
 /*!
-  @def flecsi_register_field
+  @def flecsi_add_field
 
-  This macro registers field data with a data_client_t type. Data
-  registration creates a data attribute for the given topology type.
-  This call does not necessarily cause memory to be allocated. Its
-  primary function is to describe the field data to the runtime.
-  Memory allocation will likely be deferred.
+  This macro registers field data with a topology type. Data registration
+  creates a data attribute for the given topology type.  This call does not
+  necessarily cause memory to be allocated. Its primary function is to describe
+  the field data to the runtime.  Memory allocation will likely be deferred,
+  and will only be done if the field is mapped into a task.
 
   @param topology_type The topology type.
   @param nspace        The string namespace to use to register the variable.
@@ -103,13 +99,13 @@
   @ingroup data
  */
 
-#define flecsi_register_field(                                                 \
+#define flecsi_add_field(                                                      \
   topology_type, nspace, name, data_type, storage_class, versions, ...)        \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
   inline bool flecsi_internal_unique_name(field) =                             \
-    flecsi::data::field_interface_t::register_field<topology_type,             \
+    flecsi::data::field_interface_t::add_field<topology_type,                  \
       flecsi::data::storage_class,                                             \
       data_type,                                                               \
       flecsi_internal_string_hash(nspace),                                     \
@@ -118,7 +114,7 @@
       ##__VA_ARGS__>({flecsi_internal_stringify(name)})
 
 /*!
-  @def flecsi_get_field
+  @def flecsi_field_instance
 
   Access data with a topology instance.
 
@@ -135,12 +131,13 @@
   @ingroup data
  */
 
-#define flecsi_get_field(                                                      \
+#define flecsi_field_instance(                                                 \
   topology, nspace, name, data_type, storage_class, version)                   \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
-  flecsi::data::field_interface_t::get_field<decltype(topology)::topology_t,   \
+  flecsi::data::field_interface_t::field_instance<decltype(                    \
+                                                    topology)::topology_t,     \
     flecsi::data::storage_class,                                               \
     data_type,                                                                 \
     flecsi_internal_string_hash(nspace),                                       \
@@ -151,16 +148,8 @@
   Global Topology Interface.
  *----------------------------------------------------------------------------*/
 
-namespace flecsi {
-namespace topology {
-
-flecsi_register_topology(global_topology_t, "internal", "global_topology");
-
-} // namespace topology
-} // namespace flecsi
-
 /*!
-  @def flecsi_register_global_field
+  @def flecsi_add_global_field
 
   This macro registers global field data.
   This call does not necessarily cause memory to be allocated. Its
@@ -178,12 +167,12 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
   @ingroup data
  */
 
-#define flecsi_register_global_field(nspace, name, data_type, versions)        \
+#define flecsi_add_global_field(nspace, name, data_type, versions)             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
   inline bool flecsi_internal_unique_name(global_field) =                      \
-    flecsi::data::field_interface_t::register_field<                           \
+    flecsi::data::field_interface_t::add_field<                                \
       flecsi::topology::global_topology_t,                                     \
       flecsi::data::global,                                                    \
       data_type,                                                               \
@@ -193,7 +182,7 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
       flecsi::topology::global_index_space>({flecsi_internal_stringify(name)})
 
 /*!
-  @def flecsi_get_global_field
+  @def flecsi_global_field_instance
 
   Access global data
 
@@ -208,12 +197,12 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
   @ingroup data
  */
 
-#define flecsi_get_global_field(nspace, name, data_type, version)              \
+#define flecsi_global_field_instance(nspace, name, data_type, version)         \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_get_field(                                                            \
-    flecsi_get_topology(                                                       \
+  flecsi_field_instance(                                                       \
+    flecsi_topology_reference(                                                 \
       flecsi::topology::global_topology_t, "internal", "global_topology"),     \
     nspace,                                                                    \
     name,                                                                      \
@@ -222,16 +211,8 @@ flecsi_register_topology(global_topology_t, "internal", "global_topology");
     version)
 
 /*----------------------------------------------------------------------------*
-  Color Topology Interface.
+  Default Index Topology Interface.
  *----------------------------------------------------------------------------*/
-
-namespace flecsi {
-namespace topology {
-
-flecsi_register_topology(index_topology_t, "internal", "index_topology");
-
-} // namespace topology
-} // namespace flecsi
 
 /*!
   @def flecsi_register_index_field
@@ -251,12 +232,12 @@ flecsi_register_topology(index_topology_t, "internal", "index_topology");
   @ingroup data
  */
 
-#define flecsi_register_index_field(nspace, name, data_type, versions)         \
+#define flecsi_add_index_field(nspace, name, data_type, versions)              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
   inline bool flecsi_internal_unique_name(index_field) =                       \
-    flecsi::data::field_interface_t::register_field<                           \
+    flecsi::data::field_interface_t::add_field<                                \
       flecsi::topology::index_topology_t,                                      \
       flecsi::data::index,                                                     \
       data_type,                                                               \
@@ -266,7 +247,7 @@ flecsi_register_topology(index_topology_t, "internal", "index_topology");
       flecsi::topology::index_index_space>({flecsi_internal_stringify(name)})
 
 /*!
-  @def flecsi_get_index_field
+  @def flecsi_index_field_instance
 
   Access index data
 
@@ -281,12 +262,12 @@ flecsi_register_topology(index_topology_t, "internal", "index_topology");
   @ingroup data
  */
 
-#define flecsi_get_index_field(nspace, name, data_type, version)               \
+#define flecsi_index_field_instance(nspace, name, data_type, version)          \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_get_field(                                                            \
-    flecsi_get_topology(                                                       \
+  flecsi_field_instance(                                                       \
+    flecsi_topology_reference(                                                 \
       flecsi::topology::index_topology_t, "internal", "index_topology"),       \
     nspace,                                                                    \
     name,                                                                      \

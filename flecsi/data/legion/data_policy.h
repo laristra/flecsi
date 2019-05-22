@@ -62,7 +62,7 @@ struct legion_data_policy_t {
     typename TOPOLOGY_TYPE::type_identifier_t>;
 
   template<typename TOPOLOGY_TYPE>
-  void set_coloring(
+  static void set_coloring(
     topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
       topology_reference,
     typename TOPOLOGY_TYPE::coloring_t const & coloring) {

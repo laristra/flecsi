@@ -44,12 +44,11 @@ template<typename DATA_POLICY>
 struct field_interface_u {
 
   /*!
-    Register a field with the FleCSI runtime. This method should be thought
-    of as registering a field attribute on the given data client type.
-    All instances of the client type will have this attribute. However,
-    this does not mean that each data client instance will have an
-    an instance of the attribute. Attribute instances will be created
-    only when they are actually mapped into a task.
+    Add a field to the given topology type. This method should be thought of as
+    registering a field attribute on the topology.  All instances of the
+    topology type will have this attribute. However, this does not mean that
+    each topology instance will allocate memory for this attribute.  Attribute
+    instances will be created only when they are actually mapped into a task.
 
     @tparam TOPOLOGY_TYPE The data client type on which the data
                           attribute should be registered.
@@ -76,7 +75,7 @@ struct field_interface_u {
     size_t NAME,
     size_t VERSIONS,
     size_t INDEX_SPACE = 0>
-  static bool register_field(std::string const & name) {
+  static bool add_field(std::string const & name) {
     static_assert(VERSIONS <= utils::hash::field_max_versions,
       "max field versions exceeded");
 
@@ -105,7 +104,8 @@ struct field_interface_u {
   } // register_field
 
   /*!
-    Return the handle associated with the given parameters and data client.
+    Return a reference to the field associated with the given parameters and
+    topology instance.
 
     @tparam TOPOLOGY_TYPE The data client type on which the data
                           attribute should be registered.
@@ -128,7 +128,7 @@ struct field_interface_u {
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION = 0>
-  static decltype(auto) get_field(
+  static decltype(auto) field_instance(
     topology_reference_u<TOPOLOGY_TYPE> const & topology_reference) {
 
     static_assert(
@@ -141,7 +141,7 @@ struct field_interface_u {
     return storage_class_t::
       template get_reference<DATA_TYPE, NAMESPACE, NAME, VERSION>(
         topology_reference);
-  } // get_field
+  } // field_instance
 
 #if 0
   /*!

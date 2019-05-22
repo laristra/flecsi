@@ -479,7 +479,7 @@ private:
    *--------------------------------------------------------------------------*/
 
   void initialize_global_topology();
-  void initialize_index_topology();
+  void initialize_default_index_topology();
 
   /*--------------------------------------------------------------------------*
     Runtime data.

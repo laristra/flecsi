@@ -20,42 +20,41 @@
 
 using namespace flecsi;
 
-flecsi_register_index_field("test", "index", double, 2);
-inline auto th = flecsi_get_index_field("test", "index", double, 0);
+flecsi_add_index_field("test", "value", double, 2);
+inline auto th = flecsi_index_field_instance("test", "value", double, 0);
 
-template<size_t PRIVILEGES>
-using index_accessor_u =
-  flecsi::data::index_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
+#if 0
+inline auto ih = flecsi_topology_reference(index_topology_t, "topos", "index");
+inline auto fh0 = flecsi_field_reference(ih, "test", "value", double, 0);
+inline auto fh1 = flecsi_field_reference(ih, "test", "value", double, 1);
 
-namespace index_test {
+namespace ns {
 
-void
-assignment(index_accessor_u<rw> ga, double value) {
-  ga = value;
-} // task
+void update(index_topology_accessor<rw> topo, index_field_accessor<rw> f) {
+}
 
-flecsi_register_task(assignment, index_test, loc, single);
-
-void
-print(index_accessor_u<ro> ga) {
-  flog(info) << "Value: " << ga << std::endl;
-} // print
-
-flecsi_register_task(print, index_test, loc, single);
-
-} // namespace index_test
+}
 
 int
 test(int argc, char ** argv) {
 
   FTEST();
 
-  double value{10.0};
+  std::vector<size_t> lmap;
 
-  flecsi_execute_task(assignment, index_test, single, th, value);
-  flecsi_execute_task(print, index_test, single, th);
+  for(auto & i: lmap) {
+    i = 0;
+  } // for
+
+  ih.set_coloring(coloring);
+  ih.set_launch_map(lmap);
+
+  auto ld = flecsi_launch_domain("ld", 2);
+
+  flecsi_execute_task(update, ns, ld, ih, fh0);
 
   return 0;
 }
 
 ftest_register_test(test);
+#endif

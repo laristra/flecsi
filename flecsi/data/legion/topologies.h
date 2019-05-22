@@ -66,7 +66,7 @@ struct topology_instance_u<topology::index_topology_t> {
     auto & data_ = execution::context_t::instance().index_topology_instance(
       topology_reference.identifier());
 
-    //data_.index_space_id = unique_isid_t::instance().next();
+    data_.index_space_id = unique_isid_t::instance().next();
 
   } // set_coloring
 
@@ -82,16 +82,7 @@ struct topology_instance_u<topology::mesh_topology_u<POLICY_TYPE>> {
   using topology_reference_t =
     topology_reference_u<topology::mesh_topology_u<POLICY_TYPE>>;
 
-
 }; // struct topology_instance_u<topology::mesh_topology_u<POLICY_TYPE>>
-
-
-
-
-
-
-
-
 
 // NOTE THAT THE HANDLE TYPE FOR THIS TYPE WILL NEED TO CAPTURE THE
 // UNDERLYING TOPOLOGY TYPE, i.e., topology::mesh_topology_t<MESH_POLICY>
