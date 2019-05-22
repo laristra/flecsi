@@ -10,7 +10,6 @@ var searchData=
   ['client_5fhandle_5fspecialization_5fu_3c_20topology_3a_3aindex_5ftopology_5ft_20_3e',['client_handle_specialization_u&lt; topology::index_topology_t &gt;',['../structflecsi_1_1data_1_1mpi_1_1client__handle__specialization__u_3_01topology_1_1index__topology__t_01_4.html',1,'flecsi::data::mpi']]],
   ['client_5fhandle_5fspecializations_2eh',['client_handle_specializations.h',['../client__handle__specializations_8h.html',1,'']]],
   ['color',['color',['../structflecsi_1_1execution_1_1context__u.html#abc22e5f9ca4f00cec2dedd48db3e3d4d',1,'flecsi::execution::context_u']]],
-  ['color_5fruntime_5fdata_5ft',['color_runtime_data_t',['../structflecsi_1_1data_1_1legion_1_1color__runtime__data__t.html',1,'flecsi::data::legion']]],
   ['coloring_5fmap_2eh',['coloring_map.h',['../coloring__map_8h.html',1,'']]],
   ['coloring_5fmap_5ft',['coloring_map_t',['../structflecsi_1_1coloring_1_1coloring__map__u_1_1coloring__map__t.html',1,'flecsi::coloring::coloring_map_u']]],
   ['coloring_5fmap_5fu',['coloring_map_u',['../structflecsi_1_1coloring_1_1coloring__map__u.html',1,'flecsi::coloring']]],

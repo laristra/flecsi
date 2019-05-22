@@ -66,6 +66,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -74,9 +75,21 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;flecsi-config.h&gt;</code><br />
 <code>#include &lt;legion.h&gt;</code><br />
+<code>#include &lt;<a class="el" href="common_8h_source.html">flecsi/utils/common.h</a>&gt;</code><br />
 </div>
 <p><a href="runtime_2types_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1fid__counter__t.html">flecsi::fid_counter_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tid__counter__t.html">flecsi::tid_counter_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1isid__counter__t.html">flecsi::isid_counter_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1oid__counter__t.html">flecsi::oid_counter_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:aa7ef98f77da168e20dd9552c4d453068"><td class="memItemLeft" align="right" valign="top"><a id="aa7ef98f77da168e20dd9552c4d453068"></a>
@@ -85,6 +98,18 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::field_id_t</
 <tr class="memitem:a4cf8f06170545ee3b486ae007718a99c"><td class="memItemLeft" align="right" valign="top"><a id="a4cf8f06170545ee3b486ae007718a99c"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::task_id_t</b> = Legion::TaskID</td></tr>
 <tr class="separator:a4cf8f06170545ee3b486ae007718a99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12962d0d0501d78f28e34f789b4cb99c"><td class="memItemLeft" align="right" valign="top"><a id="a12962d0d0501d78f28e34f789b4cb99c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::unique_fid_t</b> = utils::unique_id_u&lt; fid_counter_t, FLECSI_GENERATED_ID_MAX &gt;</td></tr>
+<tr class="separator:a12962d0d0501d78f28e34f789b4cb99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14a4d3c975c4ed1b3cbfd15dd384ffd6"><td class="memItemLeft" align="right" valign="top"><a id="a14a4d3c975c4ed1b3cbfd15dd384ffd6"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::unique_tid_t</b> = utils::unique_id_u&lt; tid_counter_t, FLECSI_GENERATED_ID_MAX &gt;</td></tr>
+<tr class="separator:a14a4d3c975c4ed1b3cbfd15dd384ffd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc58cf0cd805607fd8ac6ba6c3b48842"><td class="memItemLeft" align="right" valign="top"><a id="abc58cf0cd805607fd8ac6ba6c3b48842"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::unique_isid_t</b> = utils::unique_id_u&lt; isid_counter_t, FLECSI_GENERATED_ID_MAX &gt;</td></tr>
+<tr class="separator:abc58cf0cd805607fd8ac6ba6c3b48842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80b37c1ab9cfb06d9a3a6f8f9170ae2a"><td class="memItemLeft" align="right" valign="top"><a id="a80b37c1ab9cfb06d9a3a6f8f9170ae2a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::unique_oid_t</b> = utils::unique_id_u&lt; oid_counter_t, FLECSI_GENERATED_ID_MAX &gt;</td></tr>
+<tr class="separator:a80b37c1ab9cfb06d9a3a6f8f9170ae2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>

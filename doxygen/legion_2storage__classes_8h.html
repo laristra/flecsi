@@ -86,6 +86,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion_1_1index__topology_1_1accessor__u.html">flecsi::data::legion::index_topology::accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion_1_1index__topology_1_1accessor__u.html">flecsi::data::legion::index_topology::accessor_u&lt; DATA_TYPE, PRIVILEGES &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
@@ -98,10 +100,13 @@ Functions</h2></td></tr>
 <tr class="memitem:a86ca4d7e35641e5eb04f3152726583e5"><td class="memTemplParams" colspan="2">template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 <tr class="memitem:a86ca4d7e35641e5eb04f3152726583e5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="legion_2storage__classes_8h.html#a86ca4d7e35641e5eb04f3152726583e5">flecsi::data::legion::global_topology::bind</a> (accessor_u&lt; DATA_TYPE, PRIVILEGES &gt; &amp;a, DATA_TYPE *data)</td></tr>
 <tr class="separator:a86ca4d7e35641e5eb04f3152726583e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2a9f6b9c2c467981f71cf5aa4acd4da"><td class="memTemplParams" colspan="2">template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:ac2a9f6b9c2c467981f71cf5aa4acd4da"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="legion_2storage__classes_8h.html#ac2a9f6b9c2c467981f71cf5aa4acd4da">flecsi::data::legion::index_topology::bind</a> (accessor_u&lt; DATA_TYPE, PRIVILEGES &gt; &amp;a, DATA_TYPE *data)</td></tr>
+<tr class="separator:ac2a9f6b9c2c467981f71cf5aa4acd4da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="file_a86ca4d7e35641e5eb04f3152726583e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a86ca4d7e35641e5eb04f3152726583e5">&#9670;&nbsp;</a></span>bind()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a86ca4d7e35641e5eb04f3152726583e5">&#9670;&nbsp;</a></span>bind() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -112,6 +117,37 @@ template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </div>
           <td class="memname">void flecsi::data::legion::global_topology::bind </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html">accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">DATA_TYPE *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Friend function to bind mapped data into the accessor. This lets init_views to set the private data of the accessor. </p>
+
+</div>
+</div>
+<a id="file_ac2a9f6b9c2c467981f71cf5aa4acd4da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_ac2a9f6b9c2c467981f71cf5aa4acd4da">&#9670;&nbsp;</a></span>bind() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::data::legion::index_topology::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1data_1_1legion_1_1index__topology_1_1accessor__u.html">accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt; &amp;&#160;</td>
           <td class="paramname"><em>a</em>, </td>
         </tr>
         <tr>

@@ -67,6 +67,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="structflecsi_1_1data_1_1legion__data__policy__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::data::legion_data_policy_t Struct Reference</div>  </div>
@@ -79,14 +80,14 @@ Public Types</h2></td></tr>
 template&lt;typename TOPOLOGY_TYPE &gt; </td></tr>
 <tr class="memitem:a252656d2fc83b2440923bc5cd6e57f55"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>topology_u</b> = legion::topology_u&lt; typename TOPOLOGY_TYPE::type_identifier_t &gt;</td></tr>
 <tr class="separator:a252656d2fc83b2440923bc5cd6e57f55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ffd8c8a323345ee73854a8861e7dcaa"><td class="memTemplParams" colspan="2"><a id="a9ffd8c8a323345ee73854a8861e7dcaa"></a>
-template&lt;typename TOPOLOGY_TYPE &gt; </td></tr>
-<tr class="memitem:a9ffd8c8a323345ee73854a8861e7dcaa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>topology_handle_u</b> = typename legion::topology_u&lt; typename TOPOLOGY_TYPE::type_identifier_t &gt;::topology_handle_t</td></tr>
-<tr class="separator:a9ffd8c8a323345ee73854a8861e7dcaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f6d6e6dc7ebf526d9772a4d08cf17fc"><td class="memTemplParams" colspan="2"><a id="a1f6d6e6dc7ebf526d9772a4d08cf17fc"></a>
 template&lt;size_t STORAGE_CLASS, typename TOPOLOGY_TYPE &gt; </td></tr>
 <tr class="memitem:a1f6d6e6dc7ebf526d9772a4d08cf17fc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storage_class_u</b> = legion::storage_class_u&lt; STORAGE_CLASS, TOPOLOGY_TYPE &gt;</td></tr>
 <tr class="separator:a1f6d6e6dc7ebf526d9772a4d08cf17fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6088758334ae2f8cb4bc90f28e74e3f7"><td class="memTemplParams" colspan="2"><a id="a6088758334ae2f8cb4bc90f28e74e3f7"></a>
+template&lt;typename TOPOLOGY_TYPE &gt; </td></tr>
+<tr class="memitem:a6088758334ae2f8cb4bc90f28e74e3f7"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>topology_instance_u</b> = typename legion::topology_instance_u&lt; typename TOPOLOGY_TYPE::type_identifier_t &gt;</td></tr>
+<tr class="separator:a6088758334ae2f8cb4bc90f28e74e3f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade3a652500bbd8330b41240cfa55881a"><td class="memTemplParams" colspan="2"><a id="ade3a652500bbd8330b41240cfa55881a"></a>
 template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 <tr class="memitem:ade3a652500bbd8330b41240cfa55881a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>global_accessor_u</b> = <a class="el" href="structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html">legion::global_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt;</td></tr>
@@ -95,6 +96,13 @@ template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 <tr class="memitem:ac1059b202a2e7e562f3a6e61e68b1619"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>index_accessor_u</b> = <a class="el" href="structflecsi_1_1data_1_1legion_1_1index__topology_1_1accessor__u.html">legion::index_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt;</td></tr>
 <tr class="separator:ac1059b202a2e7e562f3a6e61e68b1619"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a2c431a002954f1d39207c94ffe377e12"><td class="memTemplParams" colspan="2"><a id="a2c431a002954f1d39207c94ffe377e12"></a>
+template&lt;typename TOPOLOGY_TYPE &gt; </td></tr>
+<tr class="memitem:a2c431a002954f1d39207c94ffe377e12"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_coloring</b> (<a class="el" href="structflecsi_1_1data_1_1topology__reference__u.html">topology_reference_u</a>&lt; typename TOPOLOGY_TYPE::type_identifier_t &gt; const &amp;topology_reference, typename TOPOLOGY_TYPE::coloring_t const &amp;coloring)</td></tr>
+<tr class="separator:a2c431a002954f1d39207c94ffe377e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/legion/<a class="el" href="data_2legion_2data__policy_8h_source.html">data_policy.h</a></li>

@@ -66,7 +66,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="structflecsi_1_1data_1_1topology__interface__u-members.html">List of all members</a>  </div>
@@ -77,30 +76,17 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="topology__interface_8h_source.html">topology_interface.h</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a26d17505b6d06a49d399d44560f6f89e"><td class="memTemplParams" colspan="2"><a id="a26d17505b6d06a49d399d44560f6f89e"></a>
-template&lt;typename TOPOLOGY_TYPE &gt; </td></tr>
-<tr class="memitem:a26d17505b6d06a49d399d44560f6f89e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>topology_handle_u</b> = typename DATA_POLICY::template topology_handle_u&lt; TOPOLOGY_TYPE &gt;</td></tr>
-<tr class="separator:a26d17505b6d06a49d399d44560f6f89e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a91f4d05da18db2d1477879d580f96224"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </td></tr>
-<tr class="memitem:a91f4d05da18db2d1477879d580f96224"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#a91f4d05da18db2d1477879d580f96224">set_coloring</a> (std::string const &amp;name, typename TOPOLOGY_TYPE::coloring_t &amp;coloring)</td></tr>
-<tr class="separator:a91f4d05da18db2d1477879d580f96224"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cd791f8190dd80df54c10dfe485da47"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME, size_t COLORING_NAME&gt; </td></tr>
-<tr class="memitem:a6cd791f8190dd80df54c10dfe485da47"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#a6cd791f8190dd80df54c10dfe485da47">remove_coloring</a> (std::string const &amp;name)</td></tr>
-<tr class="separator:a6cd791f8190dd80df54c10dfe485da47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56b3d88eacfaf04caffc9f106d50f50d"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE &gt; </td></tr>
+<tr class="memitem:a56b3d88eacfaf04caffc9f106d50f50d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#a56b3d88eacfaf04caffc9f106d50f50d">set_coloring</a> (<a class="el" href="structflecsi_1_1data_1_1topology__reference__u.html">topology_reference_u</a>&lt; typename TOPOLOGY_TYPE::type_identifier_t &gt; const &amp;<a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#a075fd4ddcc4da2b2d8f93e7b1cf79582">topology_reference</a>, typename TOPOLOGY_TYPE::type_identifier_t::coloring_t const &amp;coloring, std::string const &amp;name)</td></tr>
+<tr class="separator:a56b3d88eacfaf04caffc9f106d50f50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ad5e8be5b9566ee494fe0cadc79525228"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </td></tr>
-<tr class="memitem:ad5e8be5b9566ee494fe0cadc79525228"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#ad5e8be5b9566ee494fe0cadc79525228">register_topology</a> (std::string const &amp;name)</td></tr>
-<tr class="separator:ad5e8be5b9566ee494fe0cadc79525228"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab728c71bdec335befa3a987ba4e933c5"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </td></tr>
-<tr class="memitem:ab728c71bdec335befa3a987ba4e933c5"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#ab728c71bdec335befa3a987ba4e933c5">get_topology</a> ()</td></tr>
-<tr class="separator:ab728c71bdec335befa3a987ba4e933c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a075fd4ddcc4da2b2d8f93e7b1cf79582"><td class="memTemplParams" colspan="2">template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </td></tr>
+<tr class="memitem:a075fd4ddcc4da2b2d8f93e7b1cf79582"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html#a075fd4ddcc4da2b2d8f93e7b1cf79582">topology_reference</a> (std::string const &amp;name)</td></tr>
+<tr class="separator:a075fd4ddcc4da2b2d8f93e7b1cf79582"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename DATA_POLICY&gt;<br />
@@ -114,138 +100,15 @@ struct flecsi::data::topology_interface_u&lt; DATA_POLICY &gt;</h3>
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab728c71bdec335befa3a987ba4e933c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab728c71bdec335befa3a987ba4e933c5">&#9670;&nbsp;</a></span>get_topology()</h2>
+<a id="a56b3d88eacfaf04caffc9f106d50f50d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56b3d88eacfaf04caffc9f106d50f50d">&#9670;&nbsp;</a></span>set_coloring()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename DATA_POLICY &gt; </div>
 <div class="memtemplate">
-template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html">flecsi::data::topology_interface_u</a>&lt; DATA_POLICY &gt;::get_topology </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Return a handle to a topology.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">TOPOLOGY_TYPE</td><td>The topology type. </td></tr>
-    <tr><td class="paramname">NAMESPACE</td><td>The namespace key. Namespaces allow separation of attribute names to avoid collisions. </td></tr>
-    <tr><td class="paramname">NAME</td><td>The attribute name. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ad5e8be5b9566ee494fe0cadc79525228"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5e8be5b9566ee494fe0cadc79525228">&#9670;&nbsp;</a></span>register_topology()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename DATA_POLICY &gt; </div>
-<div class="memtemplate">
-template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static bool <a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html">flecsi::data::topology_interface_u</a>&lt; DATA_POLICY &gt;::register_topology </td>
-          <td>(</td>
-          <td class="paramtype">std::string const &amp;&#160;</td>
-          <td class="paramname"><em>name</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Register a topology with the FleCSI runtime.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">TOPOLOGY_TYPE</td><td>The topology type. </td></tr>
-    <tr><td class="paramname">NAMESPACE</td><td>The namespace key. Namespaces allow separation of attribute names to avoid collisions. </td></tr>
-    <tr><td class="paramname">NAME</td><td>The attribute name. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a6cd791f8190dd80df54c10dfe485da47"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6cd791f8190dd80df54c10dfe485da47">&#9670;&nbsp;</a></span>remove_coloring()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename DATA_POLICY &gt; </div>
-<div class="memtemplate">
-template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME, size_t COLORING_NAME&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html">flecsi::data::topology_interface_u</a>&lt; DATA_POLICY &gt;::remove_coloring </td>
-          <td>(</td>
-          <td class="paramtype">std::string const &amp;&#160;</td>
-          <td class="paramname"><em>name</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Remove a coloring.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">TOPOLOGY_TYPE</td><td>The topology type, which must be derived from one of the FleCSI core topology types, e.g., unstructure_mesh_topology_base_t, structured_topology_base_t, ntree_topology_base_t, or set_topology_base_t. </td></tr>
-    <tr><td class="paramname">NAMESPACE</td><td>The namespace of the topology instance for which to add a coloring. </td></tr>
-    <tr><td class="paramname">NAME</td><td>The name of the topology instance for which to add a coloring. </td></tr>
-    <tr><td class="paramname">COLORING_NAME</td><td>The name of the coloring to add.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>The unhashed name of the coloring for debugging purposes. In general, this interface is not meant to be called directly. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a91f4d05da18db2d1477879d580f96224"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91f4d05da18db2d1477879d580f96224">&#9670;&nbsp;</a></span>set_coloring()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename DATA_POLICY &gt; </div>
-<div class="memtemplate">
-template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </div>
+template&lt;typename TOPOLOGY_TYPE &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -253,14 +116,20 @@ template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html">flecsi::data::topology_interface_u</a>&lt; DATA_POLICY &gt;::set_coloring </td>
           <td>(</td>
-          <td class="paramtype">std::string const &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1data_1_1topology__reference__u.html">topology_reference_u</a>&lt; typename TOPOLOGY_TYPE::type_identifier_t &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>topology_reference</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">typename TOPOLOGY_TYPE::coloring_t &amp;&#160;</td>
-          <td class="paramname"><em>coloring</em>&#160;</td>
+          <td class="paramtype">typename TOPOLOGY_TYPE::type_identifier_t::coloring_t const &amp;&#160;</td>
+          <td class="paramname"><em>coloring</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -287,6 +156,45 @@ template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </div>
   <table class="params">
     <tr><td class="paramname">name</td><td>The unhashed name of the coloring for debugging purposes. In general, this interface is not meant to be called directly. </td></tr>
     <tr><td class="paramname">coloring</td><td>A valid coloring instance for the given topology type. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a075fd4ddcc4da2b2d8f93e7b1cf79582"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a075fd4ddcc4da2b2d8f93e7b1cf79582">&#9670;&nbsp;</a></span>topology_reference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DATA_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;typename TOPOLOGY_TYPE , size_t NAMESPACE, size_t NAME&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1data_1_1topology__interface__u.html">flecsi::data::topology_interface_u</a>&lt; DATA_POLICY &gt;::topology_reference </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return a topology reference.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">TOPOLOGY_TYPE</td><td>The topology type. </td></tr>
+    <tr><td class="paramname">NAMESPACE</td><td>The namespace key. Namespaces allow separation of topology instance names to avoid collisions. </td></tr>
+    <tr><td class="paramname">NAME</td><td>The topology instance name. </td></tr>
   </table>
   </dd>
 </dl>

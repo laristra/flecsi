@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: flecsi::utils::unique_id_t&lt; T, MAXIMUM &gt; Struct Template Reference</title>
+<title>Interface Documentation: flecsi::utils::unique_id_u&lt; UNIQUENESS_TYPE, MAXIMUM &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,41 +61,45 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>utils</b></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">unique_id_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>utils</b></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1unique__id__u.html">unique_id_u</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="structflecsi_1_1utils_1_1unique__id__t-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1utils_1_1unique__id__u-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::utils::unique_id_t&lt; T, MAXIMUM &gt; Struct Template Reference</div>  </div>
+<div class="title">flecsi::utils::unique_id_u&lt; UNIQUENESS_TYPE, MAXIMUM &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Generate unique ids.  
- <a href="structflecsi_1_1utils_1_1unique__id__t.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="common_8h_source.html">common.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a395edacdb6f45db37ae6a6dd09481cc1"><td class="memItemLeft" align="right" valign="top"><a id="a395edacdb6f45db37ae6a6dd09481cc1"></a>
+<tr class="memitem:a5178c7e01a44082de22c9ea2e87c9e8c"><td class="memItemLeft" align="right" valign="top"><a id="a5178c7e01a44082de22c9ea2e87c9e8c"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>next</b> ()</td></tr>
-<tr class="separator:a395edacdb6f45db37ae6a6dd09481cc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a5178c7e01a44082de22c9ea2e87c9e8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a798edb31f5a9a961e6bec74b113084df"><td class="memItemLeft" align="right" valign="top"><a id="a798edb31f5a9a961e6bec74b113084df"></a>
-static <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">unique_id_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>instance</b> ()</td></tr>
-<tr class="separator:a798edb31f5a9a961e6bec74b113084df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac05e6dfd5402d1f0d23eab93e8c71de7"><td class="memItemLeft" align="right" valign="top"><a id="ac05e6dfd5402d1f0d23eab93e8c71de7"></a>
+static <a class="el" href="structflecsi_1_1utils_1_1unique__id__u.html">unique_id_u</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>instance</b> ()</td></tr>
+<tr class="separator:ac05e6dfd5402d1f0d23eab93e8c71de7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T, std::size_t MAXIMUM = (std::numeric_limits&lt;std::size_t&gt;::max)()&gt;<br />
-struct flecsi::utils::unique_id_t&lt; T, MAXIMUM &gt;</h3>
+<div class="textblock"><h3>template&lt;typename UNIQUENESS_TYPE, std::size_t MAXIMUM = (std::numeric_limits&lt;std::size_t&gt;::max)()&gt;<br />
+struct flecsi::utils::unique_id_u&lt; UNIQUENESS_TYPE, MAXIMUM &gt;</h3>
 
-<p>Generate unique ids. </p>
+<p>The <a class="el" href="structflecsi_1_1utils_1_1unique__id__u.html">unique_id_u</a> type provides a utility to generate a series of unique ids.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">UNIQUENESS_TYPE</td><td>A dummy type to differentiate instances. </td></tr>
+    <tr><td class="paramname">MAXIMUM</td><td>The maximum legal id. </td></tr>
+  </table>
+  </dd>
+</dl>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/utils/<a class="el" href="common_8h_source.html">common.h</a></li>
 </ul>

@@ -80,8 +80,6 @@ $(function() {
 Public Types</h2></td></tr>
 <tr class="memitem:afa98e8351e00f04ef919c0ac9c505cb8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#afa98e8351e00f04ef919c0ac9c505cb8">registration_function_t</a> = std::function&lt; void(task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a>, std::string &amp;)&gt;</td></tr>
 <tr class="separator:afa98e8351e00f04ef919c0ac9c505cb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42b969b49b7f03b6eb8e9eaa61e4ed9d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a42b969b49b7f03b6eb8e9eaa61e4ed9d">unique_tid_t</a> = <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">utils::unique_id_t</a>&lt; task_id_t, FLECSI_GENERATED_ID_MAX &gt;</td></tr>
-<tr class="separator:a42b969b49b7f03b6eb8e9eaa61e4ed9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65eca84bab3a3feb63df64d005a48fcb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a65eca84bab3a3feb63df64d005a48fcb">task_info_t</a> = std::tuple&lt; task_id_t, <a class="el" href="group__execution.html#ga17b55445a738f73f7e849315cfce9d53">processor_type_t</a>, <a class="el" href="launch_8h.html#a2dcd3c855f48a701e03219e9634155a3">task_execution_type_t</a>, std::string, <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#afa98e8351e00f04ef919c0ac9c505cb8">registration_function_t</a> &gt;</td></tr>
 <tr class="separator:a65eca84bab3a3feb63df64d005a48fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -102,9 +100,10 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>threads_per_process
 <tr class="memitem:a6d9749c32b8d08d29e90b967a13f62c3"><td class="memItemLeft" align="right" valign="top"><a id="a6d9749c32b8d08d29e90b967a13f62c3"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>threads</b> () const</td></tr>
 <tr class="separator:a6d9749c32b8d08d29e90b967a13f62c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21b34bb7be5d3ff16856955ad2946ecf"><td class="memItemLeft" align="right" valign="top"><a id="a21b34bb7be5d3ff16856955ad2946ecf"></a>
-<a class="el" href="structflecsi_1_1data_1_1legion_1_1global__runtime__data__t.html">data::legion::global_runtime_data_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>global_runtime_data</b> ()</td></tr>
-<tr class="separator:a21b34bb7be5d3ff16856955ad2946ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a979cafa4044d99e40e17b319ec7ccd19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1data_1_1legion_1_1global__runtime__data__t.html">global_runtime_data_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a979cafa4044d99e40e17b319ec7ccd19">global_topology_instance</a> ()</td></tr>
+<tr class="separator:a979cafa4044d99e40e17b319ec7ccd19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1389e198990766ee3ce5a4d9fdf915be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1data_1_1legion_1_1index__runtime__data__t.html">index_runtime_data_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a1389e198990766ee3ce5a4d9fdf915be">index_topology_instance</a> (size_t instance_identifier)</td></tr>
+<tr class="separator:a1389e198990766ee3ce5a4d9fdf915be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a592ff8f5dbf2f8e6cf496282d4fb51a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a592ff8f5dbf2f8e6cf496282d4fb51a9">set_mpi_state</a> (bool active)</td></tr>
 <tr class="separator:a592ff8f5dbf2f8e6cf496282d4fb51a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b91a3c955cd1572cdee39b1339d7563"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b91a3c955cd1572cdee39b1339d7563">set_mpi_task</a> (std::function&lt; void()&gt; &amp;mpi_task)</td></tr>
@@ -208,21 +207,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>top_level_task</b> (c
 
 </div>
 </div>
-<a id="a42b969b49b7f03b6eb8e9eaa61e4ed9d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a42b969b49b7f03b6eb8e9eaa61e4ed9d">&#9670;&nbsp;</a></span>unique_tid_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a42b969b49b7f03b6eb8e9eaa61e4ed9d">flecsi::execution::legion_context_policy_t::unique_tid_t</a> =  <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">utils::unique_id_t</a>&lt;task_id_t, FLECSI_GENERATED_ID_MAX&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The unique_tid_t type create a unique id generator for registering tasks. </p>
-
-</div>
-</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="ad36a79b2fd6ee779782fdeef5bb1f807"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad36a79b2fd6ee779782fdeef5bb1f807">&#9670;&nbsp;</a></span>all_processes()</h2>
@@ -283,6 +267,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>top_level_task</b> (c
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a979cafa4044d99e40e17b319ec7ccd19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a979cafa4044d99e40e17b319ec7ccd19">&#9670;&nbsp;</a></span>global_topology_instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1data_1_1legion_1_1global__runtime__data__t.html">global_runtime_data_t</a>&amp; flecsi::execution::legion_context_policy_t::global_topology_instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Global topology instance. </p>
 
 </div>
 </div>
@@ -371,6 +381,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>top_level_task</b> (c
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a1389e198990766ee3ce5a4d9fdf915be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1389e198990766ee3ce5a4d9fdf915be">&#9670;&nbsp;</a></span>index_topology_instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1data_1_1legion_1_1index__runtime__data__t.html">index_runtime_data_t</a>&amp; flecsi::execution::legion_context_policy_t::index_topology_instance </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>instance_identifier</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Index topology instances. </p>
 
 </div>
 </div>
