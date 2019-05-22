@@ -89,6 +89,7 @@ struct dense_handle_t : public dense_data_handle_u<T,
     // Unmap physical regions and copy back out ex/sh/gh regions if we
     // have write permissions
 
+#ifndef MAPPER_COMPACTION
     if(base_t::exclusive_data) {
       if(base_t::exclusive_priv > privilege_t::ro) {
         std::memcpy(base_t::exclusive_buf, base_t::exclusive_data,
@@ -105,7 +106,6 @@ struct dense_handle_t : public dense_data_handle_u<T,
 
     // ghost is never mapped with write permissions
 
-#ifndef MAPPER_COMPACTION
     if(base_t::master && base_t::combined_data) {
       delete[] base_t::combined_data;
     }
