@@ -57,7 +57,7 @@ struct field_info_t {
 
 struct field_info_store_t {
 
-  void register_field_info(field_info_t const & fi) {
+  void add_field_info(field_info_t const & fi) {
     flog(internal) << "Registering field info" << std::endl
                    << "\tnamespace_hash: " << fi.namespace_hash << std::endl
                    << "\tname_hash: " << fi.name_hash << std::endl
@@ -70,7 +70,7 @@ struct field_info_store_t {
     const size_t offset = data_.size() - 1;
     fid_lookup_[fi.fid] = offset;
     key_lookup_[fi.key] = offset;
-  } // register_field_info
+  } // add_field_info
 
   /*!
     Lookup field info using a hash key.
@@ -87,10 +87,6 @@ struct field_info_store_t {
 
     return data_[ita->second];
   } // get_field_info
-
-  std::vector<field_info_t> const & data() const {
-    return data_;
-  } // data
 
   /*!
     Lookup field info using a hash key.
@@ -124,6 +120,14 @@ struct field_info_store_t {
 
     return data_[ita->second];
   } // get_field_info
+
+  /*!
+    Return the vector of registered fields.
+   */
+
+  std::vector<field_info_t> const & data() const {
+    return data_;
+  } // data
 
 private:
   std::vector<field_info_t> data_;

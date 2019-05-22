@@ -35,8 +35,8 @@ namespace legion {
 
 struct base_data_t {
   size_t index_space_id;
-  Legion::IndexSpace index_space;
-  Legion::FieldSpace field_space;
+  //Legion::IndexSpace index_space;
+  //Legion::FieldSpace field_space;
   Legion::LogicalRegion logical_region;
 }; // base_data_t
 
@@ -55,9 +55,17 @@ struct index_runtime_data_t : public base_data_t {
   Legion::LogicalPartition color_partition;
 }; // struct index_runtime_data_t
 
-struct unstructured_mesh_runtime_data_t : public base_data_t {
-  std::vector<size_t> index_spaces;
+struct unstructured_mesh_runtime_data_t  {
+  std::vector<base_data_t> entities;
+  std::vector<base_data_t> adjacencies;
+  std::vector<Legion::LogicalPartition> exclusive;
+  std::vector<Legion::LogicalPartition> shared;
+  std::vector<Legion::LogicalPartition> ghost;
+  std::vector<Legion::LogicalPartition> ghost_owners;
 }; // struct unstructured_mesh_runtime_data_t
+
+struct structured_mesh_runtime_data_t : public base_data_t {
+}; // struct structured_mesh_runtime_data_t
 
 } // namespace legion
 } // namespace data

@@ -96,7 +96,7 @@ struct field_interface_u {
       fi.fid = unique_fid_t::instance().next();
       fi.key = utils::hash::field_hash<NAMESPACE, NAME>(version);
 
-      execution::context_t::instance().register_field_info(
+      execution::context_t::instance().add_field_info(
         TOPOLOGY_TYPE::type_identifier_hash, STORAGE_CLASS, fi);
     } // for
 

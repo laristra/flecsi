@@ -206,6 +206,13 @@ struct legion_context_policy_t {
     return index_topology_instances_[instance_identifier];
   } // index_topology_instance
 
+  index_runtime_data_t index_topology_instance(size_t instance_identifier) const {
+    auto ti = index_topology_instances_.find(instance_identifier);
+    flog_assert(ti != index_topology_instances_.end(), "index topology instance does not exists");
+
+    return ti->second;
+  } // index_topology_instance
+
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
   //--------------------------------------------------------------------------//

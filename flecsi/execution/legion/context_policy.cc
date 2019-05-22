@@ -267,14 +267,14 @@ legion_context_policy_t::initialize_global_topology() {
 
   Domain dom(Domain::from_rect<1>(bounds));
 
-  global_topology_instance_.index_space =
+  Legion::IndexSpace index_space =
     legion_runtime_->create_index_space(legion_context_, dom);
 
-  global_topology_instance_.field_space =
+  Legion::FieldSpace field_space =
     legion_runtime_->create_field_space(legion_context_);
 
   FieldAllocator allocator = legion_runtime_->create_field_allocator(
-    legion_context_, global_topology_instance_.field_space);
+    legion_context_, field_space);
 
   /*
     Note: This call to get_field_info_store uses the non-const version
@@ -292,9 +292,8 @@ legion_context_policy_t::initialize_global_topology() {
   } // for
 
   global_topology_instance_.logical_region =
-    legion_runtime_->create_logical_region(legion_context_,
-      global_topology_instance_.index_space,
-      global_topology_instance_.field_space);
+    legion_runtime_->create_logical_region(legion_context_, index_space,
+      field_space);
 } // legion_context_policy_t::initialize_global_topology
 
 //----------------------------------------------------------------------------//

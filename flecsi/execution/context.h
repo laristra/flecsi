@@ -20,7 +20,6 @@
 #else
 #include <flecsi/data/common/field_info.h>
 #include <flecsi/execution/common/launch.h>
-#include <flecsi/execution/common/topology_instance.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/topology/base_topology_types.h>
@@ -77,42 +76,6 @@ struct context_u : public CONTEXT_POLICY {
     std::pair<field_id_t, field_registration_function_t>;
   using field_registration_map_t =
     std::unordered_map<size_t, field_registration_entry_t>;
-
-#if 0
-  /*!
-    Unique id types.
-
-    NOTE: The first template parameter is NOT the counter type. All of the counters use size_t as the counter variable. The first template parameter is used to generate unique counters
-   */
-
-  struct tid_counter_t {};
-  using unique_tid_t =
-    utils::unique_id_u<tid_counter_t, FLECSI_GENERATED_ID_MAX>;
-  struct isid_counter_t {};
-  using unique_isid_t =
-    utils::unique_id_u<isid_counter_t, FLECSI_GENERATED_ID_MAX>;
-#endif
-
-  // FIXME: These can probably go away
-  using index_topology_instance_t = topology_instance_u<index_topology_t>;
-  using index_topology_instance_map_t =
-    std::unordered_map<size_t, index_topology_instance_t>;
-
-  using unstructured_mesh_instance_t =
-    topology_instance_u<unstructured_mesh_topology_base_t>;
-  using unstructured_mesh_instance_map_t =
-    std::unordered_map<size_t, unstructured_mesh_instance_t>;
-
-  using structured_mesh_instance_t =
-    topology_instance_u<structured_mesh_topology_base_t>;
-  using structured_mesh_instance_map_t =
-    std::unordered_map<size_t, structured_mesh_instance_t>;
-
-  using ntree_instance_t = topology_instance_u<ntree_topology_base_t>;
-  using ntree_instance_map_t = std::unordered_map<size_t, ntree_instance_t>;
-
-  using set_instance_t = topology_instance_u<set_topology_base_t>;
-  using set_instance_map_t = std::unordered_map<size_t, set_instance_t>;
 
   /*!
     This type allows the storage of field information per storage class. The
@@ -429,81 +392,6 @@ struct context_u : public CONTEXT_POLICY {
               .second;
   } // topology_fields_registered
 
-  /*!
-    Set the coloring for an index topology instance.
-
-    @tparam TOPOLOGY_IDENTIFIER The identifier of the topology instance for
-                                which to add a coloring.
-
-    @param coloring A index_topology_t::coloring_t instance.
-   */
-
-  template<size_t TOPOLOGY_IDENTIFIER>
-  void set_coloring(index_topology_t::coloring_t & coloring) {
-
-    flog_assert(index_topology_instances_.find(TOPOLOGY_IDENTIFIER) !=
-                  index_topology_instances_.end(),
-      "topology " << TOPOLOGY_IDENTIFIER << " not registered");
-
-    index_topology_instances_[TOPOLOGY_IDENTIFIER].set_coloring(coloring);
-  } // set_coloring
-
-  /*!
-    Set the coloring for an unstructured mesh instance.
-
-    @tparam TOPOLOGY_IDENTIFIER The identifier of the topology instance for
-                                which to add a coloring.
-
-    @param coloring An unstructured_mesh_topology_base_t::coloring_t instance.
-   */
-
-  template<size_t TOPOLOGY_IDENTIFIER>
-  void set_coloring(unstructured_mesh_topology_base_t::coloring_t & coloring) {
-
-    flog_assert(unstructured_mesh_instances_.find(TOPOLOGY_IDENTIFIER) !=
-                  unstructured_mesh_instances_.end(),
-      "topology " << TOPOLOGY_IDENTIFIER << " not registered");
-
-    unstructured_mesh_instances_[TOPOLOGY_IDENTIFIER].set_coloring(coloring);
-  } // set_coloring
-
-  /*!
-    Remove a coloring from the FleCSI runtime.
-
-    @tparam TOPOLOGY_TYPE       The topology type, which must be derived from
-                                one of the FleCSI core topology types, e.g.,
-                                unstructure_mesh_topology_base_t,
-                                structured_topology_base_t,
-                                ntree_topology_base_t, or set_topology_base_t.
-    @tparam TOPOLOGY_IDENTIFIER The namespace of the topology instance for which
-                                to add a coloring.
-    @tparam COLORING_NAME       The name of the coloring to add.
-   */
-
-  template<typename TOPOLOGY_TYPE,
-    size_t TOPOLOGY_IDENTIFIER,
-    size_t COLORING_NAME>
-  void remove_coloring() {
-
-    constexpr bool unstructured_mesh =
-      std::is_base_of<unstructured_mesh_topology_base_t, TOPOLOGY_TYPE>::value;
-    constexpr bool structured_mesh =
-      std::is_base_of<structured_mesh_topology_base_t, TOPOLOGY_TYPE>::value;
-    constexpr bool ntree =
-      std::is_base_of<ntree_topology_base_t, TOPOLOGY_TYPE>::value;
-    constexpr bool set =
-      std::is_base_of<set_topology_base_t, TOPOLOGY_TYPE>::value;
-
-    if constexpr(unstructured_mesh) {
-    }
-    else if(structured_mesh) {
-    }
-    else if(ntree) {
-    }
-    else if(set) {
-    } // if
-  } // add_coloring
-
   /*--------------------------------------------------------------------------*
     Field interface.
    *--------------------------------------------------------------------------*/
@@ -516,7 +404,7 @@ struct context_u : public CONTEXT_POLICY {
     @param field_info               Field information.
    */
 
-  void register_field_info(size_t topology_type_identifier,
+  void add_field_info(size_t topology_type_identifier,
     size_t storage_class,
     const data::field_info_t & field_info) {
     flog(internal) << "Registering field info (context)" << std::endl
@@ -524,8 +412,8 @@ struct context_u : public CONTEXT_POLICY {
                    << std::endl
                    << "storage class: " << storage_class << std::endl;
     topology_field_info_map_[topology_type_identifier][storage_class]
-      .register_field_info(field_info);
-  } // register_field_information
+      .add_field_info(field_info);
+  } // add_field_information
 
   /*!
     Return the stored field info for the given topology type and storage class.
@@ -635,10 +523,6 @@ private:
 
   std::unordered_map<size_t, topology_registration_map_t>
     topology_callback_registry_;
-
-  index_topology_instance_map_t index_topology_instances_;
-  unstructured_mesh_instance_map_t unstructured_mesh_instances_;
-  structured_mesh_instance_map_t structured_mesh_instances_;
 
   // FIXME?
   std::set<std::pair<size_t, size_t>> registered_topology_fields_;

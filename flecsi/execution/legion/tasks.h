@@ -81,7 +81,7 @@ top_level_task(const Legion::Task * task,
     } // for
   } // for
 
-#if 0
+#if 0 // FIXME: We don't need this anymore after the refactor
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the field registry.
   //--------------------------------------------------------------------------//

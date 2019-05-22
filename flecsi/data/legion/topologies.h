@@ -62,11 +62,38 @@ struct topology_instance_u<topology::index_topology_t> {
 
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
+    auto & flecsi_context = execution::context_t::instance();
 
-    auto & data_ = execution::context_t::instance().index_topology_instance(
-      topology_reference.identifier());
+    auto & runtime_data =
+      flecsi_context.index_topology_instance(topology_reference.identifier());
 
-    data_.index_space_id = unique_isid_t::instance().next();
+    runtime_data.colors = coloring.size();
+
+    // Maybe this can go away
+    runtime_data.index_space_id = unique_isid_t::instance().next();
+
+    LegionRuntime::Arrays::Rect<1> bounds(0, coloring.size() - 1);
+    Legion::Domain domain(Legion::Domain::from_rect<1>(bounds));
+
+    Legion::IndexSpace index_space =
+      legion_runtime->create_index_space(legion_context, domain);
+
+    Legion::FieldSpace field_space = legion_runtime->create_field_space(legion_context);
+
+    auto & field_info_store = flecsi_context.get_field_info_store(
+      topology::index_topology_t::type_identifier_hash, index);
+
+    Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(legion_context, field_space);
+
+    for(auto const & fi: field_info_store.data()) {
+      allocator.allocate_field(fi.type_size, fi.fid);
+    } // for
+
+    runtime_data.logical_region = legion_runtime->create_logical_region(legion_context, index_space, field_space);
+
+    LegionRuntime::Arrays::Blockify<1> color_block(1);
+    Legion::IndexPartition index_partition = legion_runtime->create_index_partition(legion_context, index_space, color_block);
+    runtime_data.color_partition = legion_runtime->get_logical_partition(legion_context, runtime_data.logical_region, index_partition);
 
   } // set_coloring
 
