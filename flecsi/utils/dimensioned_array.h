@@ -220,6 +220,14 @@ public:
 
   define_operator_type(/=);
 
+  //--------------------------------------------------------------------------//
+  //! Equality operator
+  //--------------------------------------------------------------------------//
+
+  bool operator==(const dimensioned_array_u & da) {
+    return this->data_ == da.data_;
+  }
+
   //! \brief Division operator involving a constant.
   //! \param[in] val The constant on the right hand side of the operator.
   //! \return A reference to the current object.
