@@ -141,16 +141,25 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     auto & flecsi_context = context_t::instance();
 
     const auto fid =
-      flecsi_context.get_field_info_store(
+      flecsi_context
+        .get_field_info_store(
           index_topology_t::type_identifier_hash, data::storage_label_t::index)
         .get_field_info(accessor.identifier())
         .fid;
 
-    index_runtime_data_t instance_data = flecsi_context.index_topology_instance(accessor.identifier());
+    index_runtime_data_t instance_data =
+      flecsi_context.index_topology_instance(accessor.identifier());
 
-    flog_assert(instance_data.colors = domain_, "attempting to pass index topology reference with size " << instance_data.colors << " into task with launch domain of size " << domain_);
-      
-    Legion::RegionRequirement rr(instance_data.color_partition, 0, privilege_mode(get_privilege<0, PRIVILEGES>()), EXCLUSIVE, instance_data.logical_region);
+    flog_assert(instance_data.colors = domain_,
+      "attempting to pass index topology reference with size "
+        << instance_data.colors << " into task with launch domain of size "
+        << domain_);
+
+    Legion::RegionRequirement rr(instance_data.color_partition,
+      0,
+      privilege_mode(get_privilege<0, PRIVILEGES>()),
+      EXCLUSIVE,
+      instance_data.logical_region);
 
     rr.add_field(fid);
     region_reqs_.push_back(rr);

@@ -78,22 +78,28 @@ struct topology_instance_u<topology::index_topology_t> {
     Legion::IndexSpace index_space =
       legion_runtime->create_index_space(legion_context, domain);
 
-    Legion::FieldSpace field_space = legion_runtime->create_field_space(legion_context);
+    Legion::FieldSpace field_space =
+      legion_runtime->create_field_space(legion_context);
 
     auto & field_info_store = flecsi_context.get_field_info_store(
       topology::index_topology_t::type_identifier_hash, index);
 
-    Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(legion_context, field_space);
+    Legion::FieldAllocator allocator =
+      legion_runtime->create_field_allocator(legion_context, field_space);
 
-    for(auto const & fi: field_info_store.data()) {
+    for(auto const & fi : field_info_store.data()) {
       allocator.allocate_field(fi.type_size, fi.fid);
     } // for
 
-    runtime_data.logical_region = legion_runtime->create_logical_region(legion_context, index_space, field_space);
+    runtime_data.logical_region = legion_runtime->create_logical_region(
+      legion_context, index_space, field_space);
 
     LegionRuntime::Arrays::Blockify<1> color_block(1);
-    Legion::IndexPartition index_partition = legion_runtime->create_index_partition(legion_context, index_space, color_block);
-    runtime_data.color_partition = legion_runtime->get_logical_partition(legion_context, runtime_data.logical_region, index_partition);
+    Legion::IndexPartition index_partition =
+      legion_runtime->create_index_partition(
+        legion_context, index_space, color_block);
+    runtime_data.color_partition = legion_runtime->get_logical_partition(
+      legion_context, runtime_data.logical_region, index_partition);
 
   } // set_coloring
 

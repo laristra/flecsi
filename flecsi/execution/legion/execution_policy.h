@@ -227,9 +227,11 @@ struct legion_execution_policy_t {
 
       size_t domain_size = context_t::instance().get_domain(LAUNCH_DOMAIN);
       size_t domain_size_new = 0;
-      if(domain_size == 0)
+
+      if(domain_size == 0) {
         domain_size = context_t::instance().processes() *
                       context_t::instance().threads_per_process();
+      } // if
 
       LegionRuntime::Arrays::Rect<1> launch_bounds(
         LegionRuntime::Arrays::Point<1>(0),
@@ -241,6 +243,15 @@ struct legion_execution_policy_t {
         launch_domain,
         TaskArgument(&task_args, sizeof(ARG_TUPLE)),
         arg_map);
+
+      for(auto & req : init_args.region_requirements()) {
+        launcher.add_region_requirement(req);
+      } // for
+
+      legion::task_prologue_t prologue(
+        legion_runtime, legion_context, launch_domain);
+      prologue.walk(task_args);
+      prologue.update_state();
 
       switch(processor_type) {
 
