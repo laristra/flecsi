@@ -24,8 +24,8 @@ using mesh_handle_t = data_client_handle_u<mesh_t, PS>;
 
 flecsi_register_data_client(mesh_t, test_mesh, mesh1);
 
-} //test_mesh
-} //flecsi
+} // namespace test_mesh
+} // namespace flecsi
 
 namespace flecsi {
 namespace test_task {
@@ -33,41 +33,43 @@ namespace test_task {
 //----------------------------------------------------------------------------//
 // Task definitions and registration
 //----------------------------------------------------------------------------//
-void traverse_mesh_ro(test_mesh::mesh_handle_t<ro> m) 
-{ 
-  std::cout << "\n\nIn traverse mesh task with read only handle permissions" << std::endl;
+void
+traverse_mesh_ro(test_mesh::mesh_handle_t<ro> m) {
+  std::cout << "\n\nIn traverse mesh task with read only handle permissions"
+            << std::endl;
 
-  //Iterate over the vertices
-  for (auto v: m.vertices())
-   std::cout << "vertex id: " << v->template id<0>() << std::endl; 
+  // Iterate over the vertices
+  for(auto v : m.vertices())
+    std::cout << "vertex id: " << v->template id<0>() << std::endl;
 
-  //Iterate over the cells 
-  for (auto c: m.cells())
-   std::cout << "cell id: " << c->template id<0>() << std::endl;
+  // Iterate over the cells
+  for(auto c : m.cells())
+    std::cout << "cell id: " << c->template id<0>() << std::endl;
 
 } // traverse_mesh
 
-void traverse_mesh_wo(test_mesh::mesh_handle_t<wo> m) 
-{
-  std::cout << "\n\nIn traverse mesh task with write only handle permissions" << std::endl;
+void
+traverse_mesh_wo(test_mesh::mesh_handle_t<wo> m) {
+  std::cout << "\n\nIn traverse mesh task with write only handle permissions"
+            << std::endl;
 
-  //Iterate over the vertices
-  for (auto v: m.vertices())
-   std::cout << "vertex id: " << v->template id<0>() << std::endl; 
+  // Iterate over the vertices
+  for(auto v : m.vertices())
+    std::cout << "vertex id: " << v->template id<0>() << std::endl;
 
-  //Iterate over the cells 
-  for (auto c: m.cells())
-   std::cout << "cell id: " << c->template id<0>() << std::endl;
+  // Iterate over the cells
+  for(auto c : m.cells())
+    std::cout << "cell id: " << c->template id<0>() << std::endl;
 
 } // traverse_mesh
 
 flecsi_register_task(traverse_mesh_ro, flecsi::test_task, loc, single);
 flecsi_register_task(traverse_mesh_wo, flecsi::test_task, loc, single);
 
-} //test_task
-} //flecsi
+} // namespace test_task
+} // namespace flecsi
 
-namespace flecsi { 
+namespace flecsi {
 namespace execution {
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -82,7 +84,8 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   std::cout << "In specialization spmd init" << std::endl;
-  auto mh = flecsi_get_client_handle(flecsi::test_mesh::mesh_t, test_mesh, mesh1);
+  auto mh =
+    flecsi_get_client_handle(flecsi::test_mesh::mesh_t, test_mesh, mesh1);
   flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
 
@@ -93,7 +96,8 @@ specialization_spmd_init(int argc, char ** argv) {
 void
 driver(int argc, char ** argv) {
   std::cout << "In driver" << std::endl;
-  auto mh = flecsi_get_client_handle(flecsi::test_mesh::mesh_t, test_mesh, mesh1);
+  auto mh =
+    flecsi_get_client_handle(flecsi::test_mesh::mesh_t, test_mesh, mesh1);
   flecsi_execute_task(traverse_mesh_ro, flecsi::test_task, single, mh);
   flecsi_execute_task(traverse_mesh_wo, flecsi::test_task, single, mh);
 } // scope
@@ -111,4 +115,3 @@ TEST(test_mpi_wo_permissions, testname) {} // TEST
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~------------------------------------------------------------------------~--*/
-
