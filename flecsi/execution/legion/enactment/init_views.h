@@ -64,29 +64,6 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
     : legion_runtime_(legion_runtime), legion_context_(legion_context),
       regions_(regions), futures_(futures) {}
 
-  /*!
-    Convert the template privileges to proper Legion privileges.
-
-    @param mode privilege
-   */
-
-  static Legion::PrivilegeMode privilege_mode(size_t mode) {
-    switch(mode) {
-      case size_t(nu):
-        return WRITE_DISCARD;
-      case size_t(ro):
-        return READ_ONLY;
-      case size_t(wo):
-        return WRITE_DISCARD;
-      case size_t(rw):
-        return READ_WRITE;
-      default:
-        flog_fatal("invalid privilege mode");
-    } // switch
-
-    return NO_ACCESS;
-  } // privilege_mode
-
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and client
     type, potentially for every permutation thereof.
