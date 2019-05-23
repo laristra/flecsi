@@ -440,7 +440,7 @@ class morton_curve_u : public filling_curve_u<DIM, T, morton_curve_u<DIM, T>>
 
   using filling_curve_u<DIM, T, morton_curve_u>::value_;
   using filling_curve_u<DIM, T, morton_curve_u>::max_depth_;
-  using filling_curve_u<DIM, T, hilbert_curve_u>::max_value_;
+  using filling_curve_u<DIM, T, morton_curve_u>::max_value_;
 
   using filling_curve_u<DIM, T, morton_curve_u>::bits_;
   using filling_curve_u<DIM, T, morton_curve_u>::min_;
@@ -509,7 +509,8 @@ public:
 template<size_t DIM, typename T, class DERIVED>
 double filling_curve_u<DIM,T,DERIVED>::min_ = 0;
 template<size_t DIM, typename T, class DERIVED>
-typename filling_curve_u<DIM,T,DERIVED>::range_t filling_curve_u<DIM,T,DERIVED>::range_ = {};
+typename filling_curve_u<DIM,T,DERIVED>::range_t
+  filling_curve_u<DIM,T,DERIVED>::range_ = {};
 template<size_t DIM, typename T, class DERIVED>
 double filling_curve_u<DIM,T,DERIVED>::scale_ = 0;
 
