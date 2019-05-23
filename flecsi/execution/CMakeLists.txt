@@ -132,3 +132,9 @@ ftest_add_unit(task
   SOURCES
     test/task.cc
 )
+
+ftest_add_unit(gpu_task
+  SOURCES
+    test/gpu_task.cc
+)
+

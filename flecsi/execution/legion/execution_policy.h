@@ -157,6 +157,7 @@ struct legion_execution_policy_t {
 
     legion::init_args_t init_args(legion_runtime, legion_context,
 			LAUNCH_DOMAIN);
+
     init_args.walk(task_args);
 
     //------------------------------------------------------------------------//
@@ -190,15 +191,12 @@ struct legion_execution_policy_t {
 
       switch(processor_type) {
 
+        case processor_type_t::toc:
         case processor_type_t::loc: {
           auto future = legion_runtime->execute_task(legion_context, launcher);
 
           return legion_future_u<RETURN, launch_type_t::single>(future);
         } // case processor_type_t::loc
-
-        case processor_type_t::toc: {
-          flog_fatal("Invalid processor type (toc is un-implemented)");
-        } // case processor_type_t::toc
 
         case processor_type_t::mpi: {
           flog_fatal("Invalid launch type!"
@@ -244,7 +242,8 @@ struct legion_execution_policy_t {
         arg_map);
 
       switch(processor_type) {
-
+        
+        case processor_type_t::toc:
         case processor_type_t::loc: {
           flog(info) << "Executing index launch on loc" << std::endl;
 
@@ -289,10 +288,6 @@ struct legion_execution_policy_t {
           } // else
 
         } // case processor_type_t::loc
-
-        case processor_type_t::toc: {
-          flog_fatal("Invalid processor type (toc is un-implemented)");
-        } // case processor_type_t::toc
 
         case processor_type_t::mpi: {
            launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
