@@ -46,13 +46,13 @@ namespace example {
 // This task is executed in the FleCSI runtime.
 
 void
-initialize_field(mesh<ro> mesh, field<rw> f) {
+initialize_field(mesh<rw> mesh, dense_accessor<double,rw,rw,rw> f) {
   for(auto c : mesh.cells(owned)) {
     f(c) = double(c->id());
   } // for
 } // initialize_field
 
-flecsi_register_task(initialize_field, example, loc, single);
+flecsi_register_task(initialize_field, example, loc, index);
 
 // This task is executed in the MPI runtime.
 
@@ -117,7 +117,7 @@ print(color_accessor<double *, ro> p) {
             << std::endl;
 } // legion_task
 
-flecsi_register_task(print, example, loc, single);
+flecsi_register_task(print, example, loc, index);
 
 } // namespace example
 
@@ -132,7 +132,7 @@ driver(int argc, char ** argv) {
     auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
     auto f = flecsi_get_handle(m, example, field, double, dense, 0);
 
-    flecsi_execute_task(initialize_field, example, single, m, f);
+    flecsi_execute_task(initialize_field, example, index, m, f);
   } // scope
 
   // Access the field data through the MPI runtime.
@@ -151,11 +151,11 @@ driver(int argc, char ** argv) {
   flecsi_execute_task(mpi_use, example, index, color_handle, 3.1415926);
 
   flecsi_execute_task(mpi_print, example, index, color_handle);
-  flecsi_execute_task(print, example, single, color_handle);
+  flecsi_execute_task(print, example, index, color_handle);
 #endif
 
   //  flecsi_execute_task(mpi_use, example, index, color_handle, 6.2831852);
-  //  flecsi_execute_task(print, example, single, color_handle);
+  //  flecsi_execute_task(print, example, index, color_handle);
   //  flecsi_execute_task(mpi_print, example, index, color_handle);
 } // driver
 
