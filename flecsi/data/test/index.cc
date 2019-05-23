@@ -49,10 +49,11 @@ int
 index_topology(int argc, char ** argv) {
 
   FTEST();
+#if 0
 
   flecsi_execute_task(assign, index_test, index, fh);
   flecsi_execute_task(print, index_test, index, fh);
-
+#endif
   return 0;
 } // index
 
