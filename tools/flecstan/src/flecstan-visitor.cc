@@ -112,23 +112,25 @@ match(const clang::CallExpr *& call, // output
 // strarg
 static std::string
 strarg(const clang::CallExpr * const call, const std::size_t n) {
+  static const std::string please = "\nPlease report this warning to us.";
+
   if(!call)
-    return intwarn("strarg(): call == nullptr."), "";
+    return intwarn("strarg(): call == nullptr." + please), "";
   auto expr = call->getArg(n);
   if(!expr)
-    return intwarn("strarg(): expr == nullptr."), "";
+    return intwarn("strarg(): expr == nullptr." + please), "";
   auto bind = clang::dyn_cast<clang::CXXBindTemporaryExpr>(expr);
   if(!bind)
-    return intwarn("strarg(): bind == nullptr."), "";
+    return intwarn("strarg(): bind == nullptr." + please), "";
   auto conx = clang::dyn_cast<clang::CXXConstructExpr>(bind->getSubExpr());
   if(!conx)
-    return intwarn("strarg(): conx == nullptr."), "";
+    return intwarn("strarg(): conx == nullptr." + please), "";
   auto cast = clang::dyn_cast<clang::ImplicitCastExpr>(conx->getArg(0));
   if(!cast)
-    return intwarn("strarg(): cast == nullptr."), "";
+    return intwarn("strarg(): cast == nullptr." + please), "";
   auto strx = clang::dyn_cast<clang::StringLiteral>(cast->getSubExpr());
   if(!strx)
-    return intwarn("strarg(): strx == nullptr."), "";
+    return intwarn("strarg(): strx == nullptr." + please), "";
 
   return strx->getString().str();
 }

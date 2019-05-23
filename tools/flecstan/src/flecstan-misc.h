@@ -267,23 +267,13 @@ warning(const std::ostringstream & oss) {
 }
 
 inline exit_status_t
-intwarn(const std::string & str,
-  // Certain internal warnings can be triggered by compilation errors.
-  // I'll assume where otherwise unspecified that this isn't the case,
-  // but will print a more forgiving-sounding message where it may be.
-  const bool can_be_err_triggered = false) {
-  return warning("Internal warning from the FleCSI Static Analyzer.\n" + str +
-                 "\n" +
-                 (can_be_err_triggered
-                     ? "This warning may be spurious, if your code has errors "
-                       "or certain warnings.\n"
-                       "Otherwise, please report this warning to us."
-                     : "Please report this warning to us.\n"));
+intwarn(const std::string & str) {
+  return warning("Internal warning from the FleCSI Static Analyzer.\n" + str);
 }
 
 inline exit_status_t
-intwarn(const std::ostringstream & oss, const bool err_triggered = false) {
-  return intwarn(oss.str(), err_triggered);
+intwarn(const std::ostringstream & oss) {
+  return intwarn(oss.str());
 }
 
 // ------------------------

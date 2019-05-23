@@ -586,7 +586,7 @@ analyze_flecsi_execute_reduction_task(const flecstan::Yaml & yaml) {
 // -----------------------------------------------------------------------------
 
 /*
-Elsewhere in our analysis, we examined individual FleCSI macros that deal with
+Elsewhere in our analysis, we examined individual FleCSI macros that dealt with
 task registration and execution. Here, we'd like to examine task registration
 and execution as a whole. Registration, for example, can be done with any of
 four macros, all in principle with the same result: a task being associated
@@ -627,7 +627,7 @@ compile time. A secondary goal might be to catch cases in which the same inline
 variable is set up more than once, in the same scope, in one C++ file - which
 isn't allowed by C++, even if the variable is inline. Although the compiler will
 produce an error in this case, we may be able to diagnose the problem ourselves
-and provide a clearer diagnostic than the compiler will.
+and provide a clearer diagnostic than the compiler does.
 
 In *one* C++ file: If the same hash appears multiple times, then either the
 inline variable is repeated same-scope in the file (which isn't allowed by C++),
@@ -650,7 +650,7 @@ SKETCH
 
 For brevity, let register() denote any of FleCSI's task registration macros,
 and say that we have three tasks (really, hash strings): x, y, and z. Consider
-two files, a.cc and b.cc, comprises the total code our analyzer is to evaluate.
+two files, a.cc and b.cc, comprising the total code our analyzer is to evaluate.
 
 a.cc
 
@@ -675,6 +675,10 @@ or vice versa. The only effect of file reordering is that the diagnostics might
 present themselves in a different way - for example, (5) being an error relative
 to (7), rather than the other way around.
 */
+
+static const std::string multiple_caveat =
+  "If some or all of the reported multiples are identical, are you analyzing\n"
+  "files that together form more than one application build? (Don't do that.)";
 
 static bool
 same_scope(const flecsi_base & a, const flecsi_base & b) {
@@ -744,8 +748,8 @@ task_reg_dup(const std::multimap<std::string, treg> & regs) {
       // begin diagnostic
       if(str == "")
         str = "Hash string \"" + tmp[i].hash +
-              "\" was created by multiple "
-              "task registrations\nin one file:\n   " +
+              "\" was created\n"
+              "by multiple task registrations in one file:\n   " +
               uflcs(tmp[i]) + "\n";
 
       // (next) duplicate
@@ -763,7 +767,9 @@ task_reg_dup(const std::multimap<std::string, treg> & regs) {
       status = error(
         str +=
         "This may have caused a (possibly cryptic) compile-time error.\n"
-        "If it didn't, a duplicate hash will still trigger a run-time error.");
+        "If it didn't, a duplicate hash can still trigger a run-time error."
+        "\n" +
+        multiple_caveat);
   }
 
   // ------------------------
@@ -780,8 +786,8 @@ task_reg_dup(const std::multimap<std::string, treg> & regs) {
         // begin diagnostic
         if(str == "")
           str = "Hash string \"" + tmp[i].hash +
-                "\" was created "
-                "by multiple task registrations\n"
+                "\" was created\n"
+                "by multiple task registrations "
                 "in different scopes in different files:\n   " +
                 uflcs(tmp[i]) + "\n";
 
@@ -798,7 +804,8 @@ task_reg_dup(const std::multimap<std::string, treg> & regs) {
 
     if(str != "")
       // finish diagnostic
-      status = error(str += "A duplicate hash will trigger a run-time error.");
+      status = error(str += "A duplicate hash can trigger a run-time error.\n" +
+                            multiple_caveat);
   }
 
   return status;
@@ -840,7 +847,7 @@ task_exe_without_reg(const std::multimap<std::string, treg> & regs,
         "\n"
         "was not registered with any of FleCSI's task registration macros,\n"
         "or was not registered with that hash.\n"
-        "This will trigger a run-time error if this line is reached.");
+        "This can trigger a run-time error if this line is reached.");
       summary_task_exe_without_reg += uflcs(exe.second, false) + "\n";
     }
 
@@ -933,8 +940,8 @@ function_reg_dup(
       // begin diagnostic
       if(str == "")
         str = "Hash string \"" + tmp[i].hash +
-              "\" was created by multiple "
-              "function registrations\nin one file:\n   " +
+              "\" was created\n"
+              "by multiple function registrations in one file:\n   " +
               uflcs(tmp[i]) + "\n";
 
       // (next) duplicate
@@ -952,7 +959,9 @@ function_reg_dup(
       status = error(
         str +=
         "This may have caused a (possibly cryptic) compile-time error.\n"
-        "If it didn't, a duplicate hash will still trigger a run-time error.");
+        "If it didn't, a duplicate hash can still trigger a run-time error."
+        "\n" +
+        multiple_caveat);
   }
 
   // ------------------------
@@ -968,8 +977,8 @@ function_reg_dup(
         // begin diagnostic
         if(str == "")
           str = "Hash string \"" + tmp[i].hash +
-                "\" was created "
-                "by multiple function registrations\n"
+                "\" was created\n"
+                "by multiple function registrations "
                 "in different scopes in different files:\n   " +
                 uflcs(tmp[i]) + "\n";
 
@@ -986,7 +995,8 @@ function_reg_dup(
 
     if(str != "")
       // finish diagnostic
-      status = error(str += "A duplicate hash will trigger a run-time error.");
+      status = error(str += "A duplicate hash can trigger a run-time error.\n" +
+                            multiple_caveat);
   }
 
   return status;
@@ -1030,7 +1040,7 @@ function_hand_without_reg(
         "\n"
         "was not registered with a flecsi_register_function() macro call,\n"
         "or was not registered with that hash.\n"
-        "This will trigger a run-time error if this line is reached.");
+        "This can trigger a run-time error if this line is reached.");
       summary_function_hand_without_reg += uflcs(hand.second, false) + "\n";
     }
 
@@ -1095,7 +1105,7 @@ analysis(const flecstan::Yaml & yaml) {
   // ------------------------
 
   /*
-  // probably not; too much color may become distracting...
+  // probably not; too much color can be distracting...
   const std::string estr = num_error == 0 ? "" :
     (emit_color ? color::error   : "") +
      std::to_string(num_error) + " error"   + (num_error == 1 ? "" : "s") +

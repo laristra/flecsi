@@ -49,18 +49,30 @@ called_matched(const std::vector<MacroCall> & call,
   // Consistent?
   // Remark: I'm not absolutely certain, right now, that inconsistent sizes
   // between preprocessor-macro detections, and AST matches, is necessarily
-  // a problem in all cases. Keep an eye on this.
+  // a problem in all cases. I think it is, but keep an eye on this.
   if(msize != csize)
     status = std::max(status,
-      intwarn(
-        "Re: macro \"" + macname +
-          "\".\n"
-          "Detected call count != "
-          "detected C++ abstract syntax tree count."
-          "\n   Macro Calls: " +
-          std::to_string(csize) + "\n   Syntax Tree: " + std::to_string(msize),
-        true // <== flag: might have been triggered by compilation errors
-        ));
+      intwarn("Re: macro \"" + macname +
+              "\".\n"
+              "Detected call count != "
+              "detected C++ abstract syntax tree count."
+              "\n   Macro Calls: " +
+              std::to_string(csize) +
+              "\n   Syntax Tree: " + std::to_string(msize) +
+              "\n"
+              "This warning may be spurious, if your code "
+              "has errors or certain warnings.\n"
+              "Also, it can occur if the set of C++ files "
+              "you're analyzing together contain\n"
+              "more than one application build (analogy: "
+              "trying to link object files from\n"
+              "multiple C++ sources that have a main() program). "
+              "This can happen, e.g., if\n"
+              "you're reading a cmake-produced .json file from "
+              "a cmake that emits build\n"
+              "rules for multiple target applications. If none "
+              "of the situations described\n"
+              "here is the case, then please report this warning to us."));
 
   return status;
 }
