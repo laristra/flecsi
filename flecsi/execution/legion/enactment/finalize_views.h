@@ -48,7 +48,8 @@ using namespace flecsi::data::legion;
   buffers.
  */
 
-struct finalize_views_t : public flecsi::utils::tuple_walker_u<finalize_views_t> {
+struct finalize_views_t
+  : public flecsi::utils::tuple_walker_u<finalize_views_t> {
 
   /*!
     Construct an finalize_views_t instance.
@@ -61,7 +62,8 @@ struct finalize_views_t : public flecsi::utils::tuple_walker_u<finalize_views_t>
     Legion::Context & context,
     std::vector<Legion::PhysicalRegion> const & regions,
     std::vector<Legion::Future> const & futures)
-    : runtime_(runtime), context_(context), regions_(regions), futures_(futures) {}
+    : runtime_(runtime), context_(context), regions_(regions),
+      futures_(futures) {}
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and client
@@ -74,6 +76,14 @@ struct finalize_views_t : public flecsi::utils::tuple_walker_u<finalize_views_t>
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  } // visit
+
+  /*--------------------------------------------------------------------------*
+    Index Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*

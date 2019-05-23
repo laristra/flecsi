@@ -95,7 +95,7 @@ shift_or() {
     using bit_type_t = typename std::tuple_element<_Idx, _Tuple>::type;
 
     // The bit_type_t::value depends on the fact that the underlying
-    // tuple is created using flecsi::utils::typeify.
+    // tuple is created using flecsi::utils::typeify_u.
     constexpr size_t bits = bit_type_t::value;
 
     constexpr size_t shift = _Width * ((std::tuple_size_v<_Tuple> - 1) - _Idx);

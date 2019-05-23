@@ -72,8 +72,8 @@ struct pure_task_wrapper_u {
 
    @param tid The task id to assign to the task.
    @param processor_type A valid Legion processor type.
-   @param execution  A \ref task_execution_type_t with the task 
-							execution type parameters.
+   @param execution  A \ref task_execution_type_t with the task
+              execution type parameters.
    @param A std::string containing the task name.
    */
 
@@ -150,7 +150,7 @@ struct task_wrapper_u {
    @param tid            The task id to assign to the task.
    @param processor_type A \ref processor_type_t with the processor type.
    @param execution      A \ref task_executin_type_t with the task
-													execution type parameters.
+                          execution type parameters.
    @param name           A std::string containing the task name.
    */
 
@@ -212,9 +212,8 @@ struct task_wrapper_u {
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-    // FIXME: Refactor
-    // init_handles_t init_handles(runtime, context, regions, task->futures);
-    // init_handles.walk(task_args);
+    init_views_t init_views(runtime, context, regions, task->futures);
+    init_views.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));

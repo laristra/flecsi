@@ -41,24 +41,6 @@ struct legion_data_policy_t {
   using topology_u =
     legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>;
 
-#if 0
-  template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-  static decltype(auto) get_topology() {
-    using topology_t =
-      legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>;
-
-    return topology_t::template get_handle<NAMESPACE, NAME>();
-  } // get_client_handle
-#endif
-
-  /*
-    Capture the handle type for the given topology type.
-   */
-
-  template<typename TOPOLOGY_TYPE>
-  using topology_handle_u = typename legion::topology_u<
-    typename TOPOLOGY_TYPE::type_identifier_t>::topology_handle_t;
-
   /*--------------------------------------------------------------------------*
     Storage Class Interface.
    *--------------------------------------------------------------------------*/
@@ -70,6 +52,23 @@ struct legion_data_policy_t {
 
   template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
   using storage_class_u = legion::storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>;
+
+  /*--------------------------------------------------------------------------*
+    Topology Instance.
+   *--------------------------------------------------------------------------*/
+
+  template<typename TOPOLOGY_TYPE>
+  using topology_instance_u = typename legion::topology_instance_u<
+    typename TOPOLOGY_TYPE::type_identifier_t>;
+
+  template<typename TOPOLOGY_TYPE>
+  static void set_coloring(
+    topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
+      topology_reference,
+    typename TOPOLOGY_TYPE::coloring_t const & coloring) {
+    topology_instance_u<typename TOPOLOGY_TYPE::type_identifier_t>::
+      set_coloring(topology_reference, coloring);
+  } // set_coloring
 
   /*--------------------------------------------------------------------------*
     Topology Accessor Interface.
@@ -84,8 +83,8 @@ struct legion_data_policy_t {
     legion::global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using color_accessor_u =
-    legion::color_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+  using index_accessor_u =
+    legion::index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
 }; // struct legion_data_policy_t
 

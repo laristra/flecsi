@@ -69,8 +69,8 @@
   task, nspace, launch, type, datatype, ...)                                   \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::execution::task_interface_t::execute_task<                           \
-    flecsi_internal_hash(nspace::task),                                        \
+  flecsi::execution::task_interface_t::execute_task<flecsi_internal_hash(      \
+                                                      nspace::task),           \
     flecsi::utils::hash::reduction_hash<flecsi_internal_hash(type),            \
       flecsi_internal_hash(datatype)>(),                                       \
     flecsi_internal_return_type(task),                                         \

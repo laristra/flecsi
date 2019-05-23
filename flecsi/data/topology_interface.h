@@ -45,60 +45,29 @@ namespace data {
 template<typename DATA_POLICY>
 struct topology_interface_u {
 
-  template<typename TOPOLOGY_TYPE>
-  using topology_handle_u =
-    typename DATA_POLICY::template topology_handle_u<TOPOLOGY_TYPE>;
-
   /*!
-    Register a topology with the FleCSI runtime.
+    Return a topology reference.
 
     @tparam TOPOLOGY_TYPE The topology type.
     @tparam NAMESPACE     The namespace key. Namespaces allow separation
-                          of attribute names to avoid collisions.
-    @tparam NAME          The attribute name.
+                          of topology instance names to avoid collisions.
+    @tparam NAME          The topology instance name.
    */
 
   template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-  static bool register_topology(std::string const & name) {
+  static decltype(auto) topology_reference(std::string const & name) {
     static_assert(sizeof(TOPOLOGY_TYPE) ==
                     sizeof(typename TOPOLOGY_TYPE::type_identifier_t),
       "Topologies may not add data members");
 
-    using registration_t =
-      topology_registration_u<typename TOPOLOGY_TYPE::type_identifier_t,
-        NAMESPACE,
-        NAME>;
+    using topology_reference_t =
+      topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t>;
 
-    flog(internal)
-      << "Registering topology" << std::endl
-      << "\tname: " << name << std::endl
-      << "\ttype: "
-      << utils::demangle(
-           typeid(typename TOPOLOGY_TYPE::type_identifier_t).name())
-      << std::endl;
-
-    return registration_t::register_fields();
-  } // register_topology
+    return topology_reference_t(utils::hash::topology_hash<NAMESPACE, NAME>());
+  } // reference
 
   /*!
-    Return a handle to a topology.
-
-    @tparam TOPOLOGY_TYPE The topology type.
-    @tparam NAMESPACE     The namespace key. Namespaces allow separation
-                          of attribute names to avoid collisions.
-    @tparam NAME          The attribute name.
-   */
-
-  template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-  static decltype(auto) get_topology() {
-
-    using topology_t = typename DATA_POLICY::template topology_u<TOPOLOGY_TYPE>;
-
-    return topology_t::template get_handle<NAMESPACE, NAME>();
-  } // get_topology
-
-  /*!
-    Add a coloring.
+    Set the coloring for an index topology instance.
 
     @tparam TOPOLOGY_TYPE The topology type, which must be derived from
                           one of the FleCSI core topology types, e.g.,
@@ -109,7 +78,6 @@ struct topology_interface_u {
                           to add a coloring.
     @tparam NAME          The name of the topology instance for which
                           to add a coloring.
-    @tparam COLORING_NAME The name of the coloring to add.
 
     @param name     The unhashed name of the coloring for debugging purposes.
                     In general, this interface is not meant to be called
@@ -117,50 +85,14 @@ struct topology_interface_u {
     @param coloring A valid coloring instance for the given topology type.
    */
 
-  template<typename TOPOLOGY_TYPE,
-    size_t NAMESPACE,
-    size_t NAME,
-    size_t COLORING_NAME>
-  void add_coloring(std::string const & name,
-    typename TOPOLOGY_TYPE::coloring_t & coloring) {
-
-    auto & context_ = execution::context_t::instance();
-
-    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
-
-    context_.add_coloring<TOPOLOGY_TYPE, identifier, COLORING_NAME>(coloring);
-  } // add_coloring
-
-  /*!
-    Remove a coloring.
-
-    @tparam TOPOLOGY_TYPE The topology type, which must be derived from
-                          one of the FleCSI core topology types, e.g.,
-                          unstructure_mesh_topology_base_t,
-                          structured_topology_base_t,
-                          ntree_topology_base_t, or set_topology_base_t.
-    @tparam NAMESPACE     The namespace of the topology instance for which
-                          to add a coloring.
-    @tparam NAME          The name of the topology instance for which
-                          to add a coloring.
-    @tparam COLORING_NAME The name of the coloring to add.
-
-    @param name     The unhashed name of the coloring for debugging purposes.
-                    In general, this interface is not meant to be called
-                    directly.
-   */
-
-  template<typename TOPOLOGY_TYPE,
-    size_t NAMESPACE,
-    size_t NAME,
-    size_t COLORING_NAME>
-  void remove_coloring(std::string const & name) {
-
-    auto & context_ = execution::context_t::instance();
-
-    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
-
-    context_.remove_coloring<TOPOLOGY_TYPE, identifier, COLORING_NAME>();
+  template<typename TOPOLOGY_TYPE>
+  void set_coloring(
+    topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
+      topology_reference,
+    typename TOPOLOGY_TYPE::type_identifier_t::coloring_t const & coloring,
+    std::string const & name) {
+    DATA_POLICY::template set_coloring<TOPOLOGY_TYPE>(
+      topology_reference, coloring);
   } // add_coloring
 
 }; // struct topology_interface_u

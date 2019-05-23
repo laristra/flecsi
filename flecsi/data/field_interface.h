@@ -22,8 +22,9 @@
   policy that is selected at compile time.
  */
 
-#include <flecsi/data/common/storage_class_registration.h>
+#include <flecsi/data/common/data_reference.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 
@@ -42,21 +43,12 @@ namespace data {
 template<typename DATA_POLICY>
 struct field_interface_u {
 
-  /*
-    Capture the topology handle types that are defined in the DATA_POLICY.
-   */
-
-  template<typename TOPOLOGY_TYPE>
-  using topology_handle_u =
-    typename DATA_POLICY::template topology_handle_u<TOPOLOGY_TYPE>;
-
   /*!
-    Register a field with the FleCSI runtime. This method should be thought
-    of as registering a field attribute on the given data client type.
-    All instances of the client type will have this attribute. However,
-    this does not mean that each data client instance will have an
-    an instance of the attribute. Attribute instances will be created
-    only when they are actually mapped into a task.
+    Add a field to the given topology type. This method should be thought of as
+    registering a field attribute on the topology.  All instances of the
+    topology type will have this attribute. However, this does not mean that
+    each topology instance will allocate memory for this attribute.  Attribute
+    instances will be created only when they are actually mapped into a task.
 
     @tparam TOPOLOGY_TYPE The data client type on which the data
                           attribute should be registered.
@@ -83,15 +75,9 @@ struct field_interface_u {
     size_t NAME,
     size_t VERSIONS,
     size_t INDEX_SPACE = 0>
-  static bool register_field(std::string const & name) {
+  static bool add_field(std::string const & name) {
     static_assert(VERSIONS <= utils::hash::field_max_versions,
       "max field versions exceeded");
-
-    using unique_fid_t =
-      utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
-
-    const size_t topology_type_key =
-      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
 
     field_info_t fi;
 
@@ -110,15 +96,16 @@ struct field_interface_u {
       fi.fid = unique_fid_t::instance().next();
       fi.key = utils::hash::field_hash<NAMESPACE, NAME>(version);
 
-      execution::context_t::instance().register_field_info(
-        topology_type_key, STORAGE_CLASS, fi);
+      execution::context_t::instance().add_field_info(
+        TOPOLOGY_TYPE::type_identifier_hash, STORAGE_CLASS, fi);
     } // for
 
     return true;
   } // register_field
 
   /*!
-    Return the handle associated with the given parameters and data client.
+    Return a reference to the field associated with the given parameters and
+    topology instance.
 
     @tparam TOPOLOGY_TYPE The data client type on which the data
                           attribute should be registered.
@@ -141,8 +128,8 @@ struct field_interface_u {
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION = 0>
-  static decltype(auto) get_field(
-    const topology_handle_u<TOPOLOGY_TYPE> & topology) {
+  static decltype(auto) field_instance(
+    topology_reference_u<TOPOLOGY_TYPE> const & topology_reference) {
 
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
@@ -152,8 +139,9 @@ struct field_interface_u {
         TOPOLOGY_TYPE>;
 
     return storage_class_t::
-      template get_handle<DATA_TYPE, NAMESPACE, NAME, VERSION>(topology);
-  } // get_field
+      template get_reference<DATA_TYPE, NAMESPACE, NAME, VERSION>(
+        topology_reference);
+  } // field_instance
 
 #if 0
   /*!
@@ -233,8 +221,8 @@ using global_accessor_u =
  */
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-using color_accessor_u =
-  typename FLECSI_RUNTIME_DATA_POLICY::color_accessor_u<DATA_TYPE, PRIVILEGES>;
+using index_accessor_u =
+  typename FLECSI_RUNTIME_DATA_POLICY::index_accessor_u<DATA_TYPE, PRIVILEGES>;
 
 } // namespace data
 } // namespace flecsi

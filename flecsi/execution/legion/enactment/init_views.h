@@ -53,15 +53,39 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
   /*!
     Construct an init_views_t instance.
 
-    @param runtime The Legion task runtime.
-    @param context The Legion task runtime context.
+    @param legion_runtime The Legion task runtime.
+    @param legion_context The Legion task runtime context.
    */
 
-  init_views_t(Legion::Runtime * runtime,
-    Legion::Context & context,
+  init_views_t(Legion::Runtime * legion_runtime,
+    Legion::Context & legion_context,
     std::vector<Legion::PhysicalRegion> const & regions,
     std::vector<Legion::Future> const & futures)
-    : runtime_(runtime), context_(context), regions_(regions), futures_(futures) {}
+    : legion_runtime_(legion_runtime), legion_context_(legion_context),
+      regions_(regions), futures_(futures) {}
+
+  /*!
+    Convert the template privileges to proper Legion privileges.
+
+    @param mode privilege
+   */
+
+  static Legion::PrivilegeMode privilege_mode(size_t mode) {
+    switch(mode) {
+      case size_t(nu):
+        return WRITE_DISCARD;
+      case size_t(ro):
+        return READ_ONLY;
+      case size_t(wo):
+        return WRITE_DISCARD;
+      case size_t(rw):
+        return READ_WRITE;
+      default:
+        flog_fatal("invalid privilege mode");
+    } // switch
+
+    return NO_ACCESS;
+  } // privilege_mode
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and client
@@ -74,6 +98,62 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+
+    Legion::Domain dom = legion_runtime_->get_index_space_domain(
+      legion_context_, regions_[region].get_logical_region().get_index_space());
+    Legion::Domain::DomainPointIterator itr(dom);
+
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(global_topology_t::type_identifier_hash,
+          data::storage_label_t::global)
+        .get_field_info(accessor.identifier())
+        .fid;
+
+    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
+    const Legion::UnsafeFieldAccessor<DATA_TYPE,
+      1,
+      Legion::coord_t,
+      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
+      ac(regions_[region], fid, sizeof(DATA_TYPE));
+
+    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
+
+    global_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+
+    ++region;
+  } // visit
+
+  /*--------------------------------------------------------------------------*
+    Index Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+
+    Legion::Domain dom = legion_runtime_->get_index_space_domain(
+      legion_context_, regions_[region].get_logical_region().get_index_space());
+    Legion::Domain::DomainPointIterator itr(dom);
+
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(global_topology_t::type_identifier_hash,
+          data::storage_label_t::global)
+        .get_field_info(accessor.identifier())
+        .fid;
+
+    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
+    const Legion::UnsafeFieldAccessor<DATA_TYPE,
+      1,
+      Legion::coord_t,
+      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
+      ac(regions_[region], fid, sizeof(DATA_TYPE));
+
+    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
+
+    index_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+
+    ++region;
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -92,9 +172,11 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
   } // visit
 
 private:
-  Legion::Runtime * runtime_;
-  Legion::Context & context_;
+  Legion::Runtime * legion_runtime_;
+  Legion::Context & legion_context_;
+  size_t region = 0;
   const std::vector<Legion::PhysicalRegion> & regions_;
+  size_t future = 0;
   const std::vector<Legion::Future> & futures_;
 
 }; // struct init_views_t

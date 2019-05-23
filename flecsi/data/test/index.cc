@@ -20,35 +20,40 @@
 
 using namespace flecsi;
 
-flecsi_register_global("test", "global", double, 2);
+flecsi_add_index_field("test", "value", double, 2);
+inline auto fh = flecsi_index_field_instance("test", "value", double, 0);
 
 template<size_t PRIVILEGES>
-using global_accessor_u =
-  flecsi::data::global_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
+using accessor =
+  flecsi::data::index_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
 
-namespace global_test {
+namespace index_test {
 
 void
-global_task(global_accessor_u<rw> ga, double value) {
-  ga = value;
-} // global_task
+assign(accessor<rw> ia) {
+  ia = flecsi_color();
+} // assign
 
-flecsi_register_task(global_task, global_test, loc, single);
+flecsi_register_task(assign, index_test, loc, index);
 
-} // namespace global_test
+void
+print(accessor<ro> ia) {
+  flog(info) << "Value: " << ia << std::endl;
+} // print
+
+flecsi_register_task(print, index_test, loc, index);
+
+} // namespace index_test
 
 int
-global(int argc, char ** argv) {
+index_topology(int argc, char ** argv) {
 
   FTEST();
 
-  auto th = flecsi_get_global("test", "global", double, 0);
-  double value{10.0};
-
-  flecsi_execute_task(global_task, global_test, single, th, value);
-  //flecsi_execute_task(global_task, global_test, index, th, value);
+  flecsi_execute_task(assign, index_test, index, fh);
+  flecsi_execute_task(print, index_test, index, fh);
 
   return 0;
-}
+} // index
 
-ftest_register_test(global);
+ftest_register_test(index_topology);

@@ -27,8 +27,8 @@
 #else
 #include <flecsi/execution/context.h>
 #include <flecsi/runtime/types.h>
-#include <flecsi/topology/internal/color.h>
 #include <flecsi/topology/internal/global.h>
+#include <flecsi/topology/internal/index.h>
 //#include <flecsi/topology/mesh_topology.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/const_string.h>
@@ -322,7 +322,7 @@ struct topology_registration_u<
 
    */
 
-  static void register_callback(field_id_t fid) {
+  static void add_runtime_data(field_id_t fid) {
     using entity_types_t = typename POLICY_TYPE::entity_types;
     using connectivities = typename POLICY_TYPE::connectivities;
     using bindings = typename POLICY_TYPE::bindings;
@@ -351,7 +351,7 @@ struct topology_registration_u<
       index_subspaces_walker.template walk_types<index_subspaces>();
     } // if
 
-  } // register_callback
+  } // add_runtime_data
 
 }; // class topology_registration_u
 
@@ -427,14 +427,14 @@ struct topology_registration_u<
 
    */
 
-  static void register_callback(field_id_t fid) {
+  static void add_runtime_data(field_id_t fid) {
     using entity_types_t = typename POLICY_TYPE::entity_types;
     const size_t type_key =
       typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types_t>();
-  } // register_callback
+  } // add_runtime_data
 
 }; // class topology_registration_u
 #endif
@@ -444,7 +444,8 @@ struct topology_registration_u<
 //----------------------------------------------------------------------------//
 
 /*!
-
+  The global topology doesn't need to register an additional meta data, so this
+  type is essentially empty.
  */
 
 template<size_t NAMESPACE, size_t NAME>
@@ -454,13 +455,9 @@ struct topology_registration_u<flecsi::topology::global_topology_t,
 
   using TOPOLOGY_TYPE = flecsi::topology::global_topology_t;
 
-  static bool register_fields() {
-    const size_t type_key =
-      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
-    const size_t key = utils::hash::topology_hash<NAMESPACE, NAME>();
-
+  static bool add_runtime_data() {
     return true;
-  } // register_fields
+  } // add_runtime_data
 
 }; // class topology_registration_u
 
@@ -473,19 +470,15 @@ struct topology_registration_u<flecsi::topology::global_topology_t,
  */
 
 template<size_t NAMESPACE, size_t NAME>
-struct topology_registration_u<flecsi::topology::color_topology_t,
+struct topology_registration_u<flecsi::topology::index_topology_t,
   NAMESPACE,
   NAME> {
 
-  using TOPOLOGY_TYPE = flecsi::topology::color_topology_t;
+  using TOPOLOGY_TYPE = flecsi::topology::index_topology_t;
 
-  static bool register_fields() {
-    const size_t type_key =
-      typeid(typename TOPOLOGY_TYPE::type_identifier_t).hash_code();
-    const size_t key = utils::hash::topology_hash<NAMESPACE, NAME>();
-
+  static bool add_runtime_data() {
     return true;
-  } // register_fields
+  } // add_runtime_data
 
 }; // class topology_registration_u
 

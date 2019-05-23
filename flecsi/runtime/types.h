@@ -31,18 +31,25 @@
 namespace flecsi {
 
 using field_id_t = Legion::FieldID;
+const field_id_t FIELD_ID_MAX = LEGION_MAX_APPLICATION_FIELD_ID;
+
 using task_id_t = Legion::TaskID;
+const task_id_t TASK_ID_MAX = LEGION_MAX_APPLICATION_TASK_ID;
 
 } // namespace flecsi
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
 #include <cstddef>
+#include <limits>
 
 namespace flecsi {
 
 using field_id_t = size_t;
+const field_id_t FIELD_ID_MAX = std::numeric_limits<size_t>::max();
+
 using task_id_t = size_t;
+const task_id_t TASK_ID_MAX = std::numeric_limits<size_t>::max();
 
 } // namespace flecsi
 
@@ -51,10 +58,49 @@ using task_id_t = size_t;
 namespace flecsi {
 
 #include <cstddef>
+#include <limits>
 
 using field_id_t = size_t;
+const field_id_t FIELD_ID_MAX = std::numeric_limits<size_t>::max();
+
 using task_id_t = size_t;
+const task_id_t TASK_ID_MAX = std::numeric_limits<size_t>::max();
 
 } // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
+
+#include <flecsi/utils/common.h>
+
+namespace flecsi {
+
+/*!
+  Unique counter for field ids.
+ */
+
+struct fid_counter_t {};
+using unique_fid_t = utils::unique_id_u<fid_counter_t, FLECSI_GENERATED_ID_MAX>;
+
+/*!
+  Unique counter for task ids.
+ */
+
+struct tid_counter_t {};
+using unique_tid_t = utils::unique_id_u<tid_counter_t, FLECSI_GENERATED_ID_MAX>;
+
+/*!
+  Unique counter for index space ids.
+ */
+
+struct isid_counter_t {};
+using unique_isid_t =
+  utils::unique_id_u<isid_counter_t, FLECSI_GENERATED_ID_MAX>;
+
+/*!
+  Unique counter for reduction operator ids.
+ */
+
+struct oid_counter_t {};
+using unique_oid_t = utils::unique_id_u<oid_counter_t, FLECSI_GENERATED_ID_MAX>;
+
+} // namespace flecsi

@@ -22,7 +22,6 @@ set(execution_HEADERS
   common/command_line_options.h
   common/launch.h
   common/processor.h
-  common/topology_instance.h
   context.h
   internal.h
   execution.h

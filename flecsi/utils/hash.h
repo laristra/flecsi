@@ -79,6 +79,13 @@ topology_hash() {
   @ingroup utils
  */
 
+template<size_t NAMESPACE, size_t NAME, size_t VERSION>
+inline constexpr size_t
+field_hash() {
+  return ((NAMESPACE ^ NAME) << field_hash_version_bits | VERSION) &
+         ~(1ul << 63);
+} // field_hash
+
 template<size_t NAMESPACE, size_t NAME>
 inline constexpr size_t
 field_hash(size_t version) {

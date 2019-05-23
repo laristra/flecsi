@@ -18,8 +18,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.h>
 #include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/context.h>
 #endif
 
 /*!
@@ -81,7 +81,7 @@ top_level_task(const Legion::Task * task,
     } // for
   } // for
 
-#if 0
+#if 0 // FIXME: We don't need this anymore after the refactor
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the field registry.
   //--------------------------------------------------------------------------//
@@ -96,7 +96,7 @@ top_level_task(const Legion::Task * task,
 #endif
 
   context_.initialize_global_topology();
-  context_.initialize_color_topology();
+  context_.initialize_default_index_topology();
 
   auto args = runtime->get_input_args();
 

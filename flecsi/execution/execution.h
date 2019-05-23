@@ -113,13 +113,13 @@
   @param nspace    The enclosing C++ namespace of the task.
   @param processor The \ref processor_type_t type.
   @param task_execution_type The \ref task_execution_type_t type.
-									 This may be an \em or list of supported task types and
-									 configuration options.
+                   This may be an \em or list of supported task types and
+                   configuration options.
 
   @ingroup execution
  */
 
-#define flecsi_register_task(task, nspace, processor, task_execution_type)           \
+#define flecsi_register_task(task, nspace, processor, task_execution_type)     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Define a delegate function to the user's function that takes a tuple */   \
@@ -138,7 +138,7 @@
       flecsi_internal_return_type(task),                                       \
       flecsi_internal_arguments_type(task),                                    \
       task##_tuple_delegate>(flecsi::processor,                                \
-      flecsi::task_execution_type,                                   \
+      flecsi::task_execution_type,                                             \
       {flecsi_internal_stringify(nspace::task)})
 
 //----------------------------------------------------------------------------//
@@ -151,7 +151,7 @@
   Declare a domain of launch type (single, index) and domain size (for index)
 
   This macro registers a launch domain that can be used when executing
-  FleCSI tasks. 
+  FleCSI tasks.
 
   @param type   The string namespace to use to register the domain.
   @param nspace The launch type (single or index).
@@ -165,8 +165,8 @@
                                                                                \
   /* Call the task interface to register the domain */                         \
   inline bool flecsi_internal_unique_name(domain_registration_) =              \
-    flecsi::execution::task_interface_t::register_domain<                      \
-      flecsi_internal_hash(name), size>()                                      
+    flecsi::execution::task_interface_t::                                      \
+      register_domain<flecsi_internal_hash(name), size>()
 
 /*!
   @def flecsi_execute_task

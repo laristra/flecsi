@@ -63,6 +63,14 @@ struct task_epilogue_t : public flecsi::utils::tuple_walker_u<task_epilogue_t> {
   } // visit
 
   /*--------------------------------------------------------------------------*
+    Index Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  } // visit
+
+  /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
    *--------------------------------------------------------------------------*/
 

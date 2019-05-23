@@ -102,25 +102,67 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(global_topology_t::type_identifier_hash,
+          data::storage_label_t::global)
+        .get_field_info(accessor.identifier())
+        .fid;
+
+    Legion::LogicalRegion region =
+      context_t::instance().global_topology_instance().logical_region;
+
     if constexpr(get_privilege<0, PRIVILEGES>() > partition_privilege_t::ro) {
       flog_assert(flecsi_internal_hash(single) == domain_,
         "global can only be modified from within single launch task");
-
-      Legion::LogicalRegion region =
-        context_t::instance().global_runtime_data().logical_region;
 
       Legion::RegionRequirement rr(region,
         privilege_mode(get_privilege<0, PRIVILEGES>()),
         EXCLUSIVE,
         region);
+
+      rr.add_field(fid);
       region_reqs_.push_back(rr);
     }
     else {
-      Legion::LogicalRegion region =
-        context_t::instance().global_runtime_data().logical_region;
       Legion::RegionRequirement rr(region, READ_ONLY, EXCLUSIVE, region);
+
+      rr.add_field(fid);
       region_reqs_.push_back(rr);
     } // if
+  } // visit
+
+  /*--------------------------------------------------------------------------*
+    Index Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+    auto & flecsi_context = context_t::instance();
+
+    const auto fid =
+      flecsi_context
+        .get_field_info_store(
+          index_topology_t::type_identifier_hash, data::storage_label_t::index)
+        .get_field_info(accessor.identifier())
+        .fid;
+
+    index_runtime_data_t instance_data =
+      flecsi_context.index_topology_instance(accessor.identifier());
+
+    flog_assert(instance_data.colors = domain_,
+      "attempting to pass index topology reference with size "
+        << instance_data.colors << " into task with launch domain of size "
+        << domain_);
+
+    Legion::RegionRequirement rr(instance_data.color_partition,
+      0,
+      privilege_mode(get_privilege<0, PRIVILEGES>()),
+      EXCLUSIVE,
+      instance_data.logical_region);
+
+    rr.add_field(fid);
+    region_reqs_.push_back(rr);
   } // visit
 
   /*--------------------------------------------------------------------------*
