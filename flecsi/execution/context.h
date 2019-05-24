@@ -408,9 +408,9 @@ struct context_u : public CONTEXT_POLICY {
     size_t storage_class,
     const data::field_info_t & field_info) {
     flog(internal) << "Registering field info (context)" << std::endl
-                   << "topology type identifier: " << topology_type_identifier
+                   << "\ttopology type identifier: " << topology_type_identifier
                    << std::endl
-                   << "storage class: " << storage_class << std::endl;
+                   << "\tstorage class: " << storage_class << std::endl;
     topology_field_info_map_[topology_type_identifier][storage_class]
       .add_field_info(field_info);
   } // add_field_information

@@ -18,6 +18,7 @@
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/flog.h>
 
 #define POLICY_NAMESPACE legion
 #include <flecsi/data/common/topology.h>
@@ -28,6 +29,8 @@
 #endif
 
 #include <legion.h>
+
+flog_register_tag(topologies);
 
 namespace flecsi {
 
@@ -59,6 +62,11 @@ struct topology_instance_u<topology::index_topology_t> {
 
   static void set_coloring(topology_reference_t const & topology_reference,
     topology::index_topology_t::coloring_t const & coloring) {
+
+    {
+    flog_tag_guard(topologies);
+    flog(internal) << "Set coloring for " << topology_reference.identifier() << std::endl;
+    }
 
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();

@@ -34,7 +34,9 @@ constexpr size_t index_index_space = 4097;
  */
 
 struct index_topology_t {
+
   using type_identifier_t = index_topology_t;
+
   static constexpr size_t type_identifier_hash =
     flecsi_internal_hash(index_topology_t);
 
