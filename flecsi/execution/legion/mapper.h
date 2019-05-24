@@ -278,7 +278,7 @@ public:
 
   /*!
    THis function will create PhysicalInstance Unstructured mesh data havdle (
-		compacted Exclusive, SHared and Ghost)
+    compacted Exclusive, SHared and Ghost)
   */
   void create_compacted_instance(const Legion::Mapping::MapperContext ctx,
     const Legion::Task & task,
@@ -289,8 +289,8 @@ public:
     using namespace Legion;
     using namespace Legion::Mapping;
 
-    //check if instance was already created and stored in the 
-		// local_instamces_ map
+    // check if instance was already created and stored in the
+    // local_instamces_ map
     const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);
     auto & key2 = task.regions[indx].privilege_fields;
@@ -306,7 +306,6 @@ public:
         return;
       } // if
     } // if
-
 
     Legion::Mapping::PhysicalInstance result;
     std::vector<Legion::LogicalRegion> regions;
@@ -364,7 +363,7 @@ public:
     using namespace Legion;
     using namespace Legion::Mapping;
 
-    //check if instance was already created and stored in the 
+    // check if instance was already created and stored in the
     // local_instamces_ map
     const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);

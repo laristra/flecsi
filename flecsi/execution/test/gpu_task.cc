@@ -33,7 +33,6 @@ gpu_task_single(void) {
 
 flecsi_register_task(gpu_task_single, flecsi::execution, toc, single);
 
-
 void
 gpu_task_index(void) {
   clog(info) << "This is an index gpu task" << std::endl;

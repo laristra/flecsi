@@ -195,7 +195,7 @@ struct legion_execution_policy_t {
 
     if constexpr(LAUNCH == launch_type_t::single) {
 
-      //Creae single Legion Launcher
+      // Creae single Legion Launcher
       TaskLauncher launcher(
         context_.task_id<TASK>(), TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
@@ -295,10 +295,10 @@ struct legion_execution_policy_t {
             arg_map);
 
           launcher.tag = MAPPER_FORCE_RANK_MATCH;
-          if (processor_type == processor_type_t::toc){
+          if(processor_type == processor_type_t::toc) {
             launcher.tag = PREFER_GPU;
           }
-           
+
           // Add region requirements and future dependencies to the
           // task launcher
           for(auto & req : init_args.region_reqs) {
