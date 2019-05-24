@@ -148,7 +148,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
         .fid;
 
     index_runtime_data_t instance_data =
-      flecsi_context.index_topology_instance(accessor.identifier());
+      flecsi_context.index_topology_instance(accessor.topology_identifier());
 
     flog_assert(instance_data.colors = domain_,
       "attempting to pass index topology reference with size "

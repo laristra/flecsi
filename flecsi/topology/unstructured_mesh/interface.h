@@ -151,7 +151,13 @@ class unstructured_mesh_topology_u
   static_assert(verify_mesh::has_member_create_entity<MESH_TYPE>::value,
     "mesh policy missing create_entity()");
 
+  static_assert(verify_mesh::hash_member_type_identifier_hash<MESH_TYPE>::value,
+    "mesh policy missing type_identifier_hash");
+
 public:
+
+  constexpr size_t type_identifier_hash = MESH_TYPE::type_identifier_hash;
+
   // mesh storage type definition
   using storage_t = mesh_storage_u<MESH_TYPE::num_dimensions,
     MESH_TYPE::num_domains,
@@ -181,25 +187,25 @@ public:
 
   // Don't allow the mesh to be copied or copy constructed
 
-  //! don't allow mesh to be assigned
+   don't allow mesh to be assigned
   unstructured_mesh_topology_u & operator=(
     const unstructured_mesh_topology_u &) = delete;
 
-  //! Allow move operations
+   Allow move operations
   unstructured_mesh_topology_u(unstructured_mesh_topology_u && o) = default;
 
-  //! override default move assignement
+   override default move assignement
   unstructured_mesh_topology_u & operator=(
     unstructured_mesh_topology_u && o) = default;
 
-  //! Constructor, takes as input a mesh storage or storage can later be set
+   Constructor, takes as input a mesh storage or storage can later be set
   unstructured_mesh_topology_u(storage_t * ms = nullptr) : base_t(ms) {
     if(ms != nullptr) {
       initialize_storage();
     } // if
   } // unstructured_mesh_topology_u()
 
-  //! Copy constructor: alias another mesh
+   Copy constructor: alias another mesh
   unstructured_mesh_topology_u(const unstructured_mesh_topology_u & m)
     : base_t(m.ms_) {}
 
@@ -437,11 +443,11 @@ public:
   }
 
   /*!
-  //! Return the index space of specified domain and topological dimension.
-  //!
-  //! @tparam DOM domain
-  //!
-  //! @param dim topological dimension
+    Return the index space of specified domain and topological dimension.
+    
+    @tparam DOM domain
+    
+    @param dim topological dimension
    */
 
   template<size_t DOM = 0>
@@ -450,11 +456,11 @@ public:
   } // get_entities_
 
   /*!
-  //! Return the index space of specified domain and topological dimension.
-  //!
-  //! @tparam DOM domain
-  //!
-  //! @param dim topological dimension
+   Return the index space of specified domain and topological dimension.
+  
+   @tparam DOM domain
+  
+   @param dim topological dimension
    */
 
   template<size_t DOM = 0>
@@ -463,14 +469,14 @@ public:
   } // get_entities_
 
   /*!
-  //! Return the index space of specified domain and topological dimension and
-  //! associated partition, e.g. owned, shared, ghost, etc.
-  //!
-  //! @tparam DOM domain
-  //!
-  //! @param dim topological dimension
-  //!
-  //! @param partition e.g. all, owned, shared, etc.
+   Return the index space of specified domain and topological dimension and
+   associated partition, e.g. owned, shared, ghost, etc.
+  
+   @tparam DOM domain
+  
+   @param dim topological dimension
+  
+   @param partition e.g. all, owned, shared, etc.
    */
 
   template<size_t DOM = 0>
@@ -479,27 +485,29 @@ public:
   } // get_entities_
 
   /*!
-  //! Return the index space of specified domain and topological dimension and
-  //! associated partition, e.g. owned, shared, ghost, etc.
-  //!
-  //! @tparam DOM domain
-  //!
-  //! @param dim topological dimension
-  //!
-  //! @param partition e.g. all, owned, shared, etc.
-  //--------------------------------------------------------------------------//
+    Return the index space of specified domain and topological dimension and
+    associated partition, e.g. owned, shared, ghost, etc.
+
+    @tparam DOM domain
+
+    @param dim topological dimension
+
+    @param partition e.g. all, owned, shared, etc.
+   */
+
   template<size_t DOM = 0>
   auto & get_index_space_(size_t dim, partition_t partition) {
     return base_t::ms_->partition_index_spaces[partition][DOM][dim];
   } // get_entities_
 
-  //--------------------------------------------------------------------------//
-  //! Get an entity in domain DOM of topological dimension DIM with specified
-  //! id.
-  //!
-  //! @tparam DOM domain
-  //! @tparam DIM topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   Get an entity in domain DOM of topological dimension DIM with specified
+   id.
+  
+   @tparam DOM domain
+   @tparam DIM topological dimension
+   */
+
   template<size_t DIM, size_t DOM = 0>
   auto get_entity(id_t global_id) const {
     using etype = entity_type<DIM, DOM>;
@@ -507,34 +515,36 @@ public:
       base_t::ms_->index_spaces[DOM][DIM][global_id.entity()]);
   } // get_entity
 
-  //--------------------------------------------------------------------------//
-  //! Get an entity in domain DOM of topological dimension DIM with specified
-  //! id.
-  //!
-  //! @tparam DOM domain
-  //! @tparam DIM topological dimension
-  //!
-  //! @param dim topological dimension
-  //!
-  //! @param global_id entity global id
-  //--------------------------------------------------------------------------//
+  /*!
+   Get an entity in domain DOM of topological dimension DIM with specified
+   id.
+  
+   @tparam DOM domain
+   @tparam DIM topological dimension
+  
+   @param dim topological dimension
+  
+   @param global_id entity global id
+   */
+
   template<size_t DOM = 0>
   auto get_entity(size_t dim, id_t global_id) {
     return base_t::ms_->index_spaces[DOM][dim][global_id.entity()];
   } // get_entity
 
-  //--------------------------------------------------------------------------//
-  //! Get an entity in domain DOM of topological dimension DIM with specified
-  //! id.
-  //!
-  //! @tparam DOM domain
-  //!
-  //! @tparam DIM topological dimension
-  //!
-  //! @param dim topological dimension
-  //!
-  //! @param partition e.g. all, owned, shared, etc.
-  //--------------------------------------------------------------------------//
+  /*!
+   Get an entity in domain DOM of topological dimension DIM with specified
+   id.
+  
+   @tparam DOM domain
+  
+   @tparam DIM topological dimension
+  
+   @param dim topological dimension
+  
+   @param partition e.g. all, owned, shared, etc.
+   */
+
   template<size_t DIM, size_t DOM = 0>
   auto get_entity(id_t global_id, partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
@@ -543,34 +553,36 @@ public:
         ->partition_index_spaces[partition][DOM][DIM][global_id.entity()]);
   } // get_entity
 
-  //--------------------------------------------------------------------------//
-  //! Get an entity in domain DOM of topological dimension DIM with specified
-  //! id.
-  //!
-  //! @tparam DOM domain
-  //! @tparam DIM topological dimension
-  //!
-  //! @param dim topological dimension
-  //!
-  //! @param global_id entity global id
-  //--------------------------------------------------------------------------//
+  /*!
+   Get an entity in domain DOM of topological dimension DIM with specified
+   id.
+  
+   @tparam DOM domain
+   @tparam DIM topological dimension
+  
+   @param dim topological dimension
+  
+   @param global_id entity global id
+   */
+
   template<size_t DOM = 0>
   auto get_entity(size_t dim, id_t global_id, partition_t partition) {
     return base_t::ms_
       ->partition_index_spaces[partition][DOM][dim][global_id.entity()];
   } // get_entity
 
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entities of topological dimension DIM connected to another entity
+   by specified connectivity from domain FROM_DOM and to domain TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity
+   */
+
   template<size_t DIM,
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
@@ -588,17 +600,18 @@ public:
       c.range(e->template id<FROM_DOM>()));
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entities of topological dimension DIM connected to another entity
+   by specified connectivity from domain FROM_DOM and to domain TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity
+   */
+
   template<size_t DIM,
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
@@ -615,17 +628,18 @@ public:
       c.range(e->template id<FROM_DOM>()));
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity with compile-time domain
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entities of topological dimension DIM connected to another entity
+   by specified connectivity from domain FROM_DOM and to domain TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity with compile-time domain
+   */
+
   template<size_t DIM,
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
@@ -634,17 +648,18 @@ public:
     return entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity with compile-time domain
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entities of topological dimension DIM connected to another entity
+   by specified connectivity from domain FROM_DOM and to domain TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity with compile-time domain
+   */
+
   template<size_t DIM,
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
@@ -653,13 +668,14 @@ public:
     return entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the top-level entities of topological dimension DIM of the specified
-  //! domain DOM. e.g: cells of the mesh.
-  //!
-  //! @tparam DOM domain
-  //! @tparam DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the top-level entities of topological dimension DIM of the specified
+   domain DOM. e.g: cells of the mesh.
+  
+   @tparam DOM domain
+   @tparam DIM to topological dimension
+   */
+
   template<size_t DIM, size_t DOM = 0>
   auto entities() const {
     using etype = entity_type<DIM, DOM>;
@@ -667,16 +683,17 @@ public:
     return base_t::ms_->index_spaces[DOM][DIM].template slice<dtype>();
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the top-level entities of topological dimension DIM of the specified
-  //! domain DOM. e.g: cells of the mesh.
-  //!
-  //! @tparam n! n!
-  //! @tparam DOM domain
-  //! @tparam DIM to topological dimension
-  //!
-  //! @param partition e.g. all, owned, shared, etc.
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the top-level entities of topological dimension DIM of the specified
+   domain DOM. e.g: cells of the mesh.
+  
+   @tparam n! n!
+   @tparam DOM domain
+   @tparam DIM to topological dimension
+  
+   @param partition e.g. all, owned, shared, etc.
+   */
+
   template<size_t DIM, size_t DOM = 0>
   auto entities(partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
@@ -685,44 +702,47 @@ public:
       .template slice<dtype>();
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the top-level entity id's of topological dimension DIM of the
-  //! specified domain DOM. e.g: cells of the mesh.
-  //!
-  //! @tparam DOM domain
-  //! @tparam DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the top-level entity id's of topological dimension DIM of the
+   specified domain DOM. e.g: cells of the mesh.
+  
+   @tparam DOM domain
+   @tparam DIM to topological dimension
+   */
+
   template<size_t DIM, size_t DOM = 0>
   auto entity_ids() const {
     return base_t::ms_->index_spaces[DOM][DIM].ids();
   } // entity_ids
 
-  //--------------------------------------------------------------------------//
-  //! Get the top-level entity id's of topological dimension DIM of the
-  //! specified domain DOM. e.g: cells of the mesh.
-  //!
-  //! @tparam DOM domain
-  //! @tparam DIM to topological dimension
-  //!
-  //! @param partition e.g. all, owned, shared, etc.
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the top-level entity id's of topological dimension DIM of the
+   specified domain DOM. e.g: cells of the mesh.
+  
+   @tparam DOM domain
+   @tparam DIM to topological dimension
+  
+   @param partition e.g. all, owned, shared, etc.
+   */
+
   template<size_t DIM, size_t DOM = 0>
   auto entity_ids(partition_t partition) const {
     return base_t::ms_->partition_index_spaces[partition][DOM][DIM].ids();
   } // entity_ids
 
-  //--------------------------------------------------------------------------//
-  //! Get the entity id's of topological dimension DIM connected to another
-  //! entity by specified connectivity from domain FROM_DOM and to domain
-  //! TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity with compile-time domain
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entity id's of topological dimension DIM connected to another
+   entity by specified connectivity from domain FROM_DOM and to domain
+   TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity with compile-time domain
+   */
+
   template<size_t DIM,
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
@@ -731,18 +751,19 @@ public:
     return entity_ids<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the entity id's of topological dimension DIM connected to another
-  //! entity by specified connectivity from domain FROM_DOM and to domain
-  //! TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entity id's of topological dimension DIM connected to another
+   entity by specified connectivity from domain FROM_DOM and to domain
+   TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity
+   */
+
   template<size_t DIM,
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
@@ -754,17 +775,18 @@ public:
     return c.get_index_space().ids(c.range(e->template id<FROM_DOM>()));
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entities of topological dimension DIM connected to another entity
+   by specified connectivity from domain FROM_DOM and to domain TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity
+   */
+
   template<size_t DIM,
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
@@ -775,17 +797,18 @@ public:
     c.reverse_entities(e->template id<FROM_DOM>());
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity with compile-time domain
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entities of topological dimension DIM connected to another entity
+   by specified connectivity from domain FROM_DOM and to domain TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity with compile-time domain
+   */
+
   template<size_t DIM,
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
@@ -794,18 +817,19 @@ public:
     return reverse_entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity
-  //! @param order order specification
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entities of topological dimension DIM connected to another entity
+   by specified connectivity from domain FROM_DOM and to domain TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity
+   @param order order specification
+   */
+
   template<size_t DIM,
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
@@ -817,18 +841,19 @@ public:
     c.reorder_entities(e->template id<FROM_DOM>(), std::forward<U>(order));
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity
-  //! @param order order specification
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the entities of topological dimension DIM connected to another entity
+   by specified connectivity from domain FROM_DOM and to domain TO_DOM.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam DIM to topological dimension
+   @tparam ENT_TYPE entity type
+  
+   @param e from entity
+   @param order order specification
+   */
+
   template<size_t DIM,
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
@@ -839,42 +864,46 @@ public:
       e.entity(), std::forward<U>(order));
   } // entities
 
-  //--------------------------------------------------------------------------//
-  //! Get the subentities of the specified index subspace
-  //!
-  //! @tparam INDEX_SUBSPACE index subspace id
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the subentities of the specified index subspace
+  
+   @tparam INDEX_SUBSPACE index subspace id
+   */
+
   template<size_t INDEX_SUBSPACE>
   auto & subentities() {
     return get_index_subspace<INDEX_SUBSPACE>();
   }
 
-  //--------------------------------------------------------------------------//
-  //! Get the subentities of the specified index subspace
-  //!
-  //! @tparam INDEX_SUBSPACE index subspace id
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the subentities of the specified index subspace
+  
+   @tparam INDEX_SUBSPACE index subspace id
+   */
+
   template<size_t INDEX_SUBSPACE>
   const auto & subentities() const {
     return get_index_subspace<INDEX_SUBSPACE>();
   }
 
-  //--------------------------------------------------------------------------//
-  //! Get the subentities of the specified index subspace
-  //!
-  //! @tparam INDEX_SUBSPACE index subspace id
-  //--------------------------------------------------------------------------//
+  /*!
+   Get the subentities of the specified index subspace
+  
+   @tparam INDEX_SUBSPACE index subspace id
+   */
+
   template<size_t INDEX_SUBSPACE>
   auto num_subentities() const {
     return base_t::ms_->index_subspaces[INDEX_SUBSPACE].size();
   }
 
-  //--------------------------------------------------------------------------//
-  //! Debug method to dump the connectivity of the mesh over all domains and
-  //! topological dimensions.
-  //!
-  //! @param stream output stream
-  //--------------------------------------------------------------------------//
+  /*!
+   Debug method to dump the connectivity of the mesh over all domains and
+   topological dimensions.
+  
+   @param stream output stream
+   */
+
   std::ostream & dump(std::ostream & stream) {
     for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
         ++from_domain) {
@@ -888,17 +917,19 @@ public:
     return stream;
   } // dump
 
-  //--------------------------------------------------------------------------//
-  //! Debug method to dump the connectivity of the mesh over all domains and
-  //! topological dimensions.
-  //--------------------------------------------------------------------------//
+  /*!
+   Debug method to dump the connectivity of the mesh over all domains and
+   topological dimensions.
+   */
+
   void dump() {
     dump(std::cout);
   } // dump
 
-  //--------------------------------------------------------------------------//
-  //! Serialize and save to archive.
-  //--------------------------------------------------------------------------//
+  /*!
+   Serialize and save to archive.
+   */
+
   template<typename A>
   void save(A & archive) const {
     size_t size;
@@ -909,9 +940,10 @@ public:
     delete[] data;
   } // save
 
-  //--------------------------------------------------------------------------//
-  //! Deserialize and load from archive.
-  //--------------------------------------------------------------------------//
+  /*!
+   Deserialize and load from archive.
+   */
+
   template<typename A>
   void load(A & archive) {
     size_t size;
@@ -923,9 +955,10 @@ public:
     delete[] data;
   } // load
 
-  //--------------------------------------------------------------------------//
-  //! Serialize and set size in bytes.
-  //--------------------------------------------------------------------------//
+  /*!
+   Serialize and set size in bytes.
+   */
+
   char * serialize_(uint64_t & size) const {
     const size_t alloc_size = 1048576;
     size = alloc_size;
@@ -1001,9 +1034,10 @@ public:
     return buf;
   }
 
-  //--------------------------------------------------------------------------//
-  //! Deserialize from byte buffer.
-  //--------------------------------------------------------------------------//
+  /*!
+   Deserialize from byte buffer.
+   */
+
   void unserialize_(char * buf) {
     uint64_t pos = 0;
 
@@ -1058,9 +1092,10 @@ public:
     }
   }
 
-  //--------------------------------------------------------------------------//
-  //! Internal method to append entities to an index space.
-  //--------------------------------------------------------------------------//
+  /*!
+   Internal method to append entities to an index space.
+   */
+
   void append_to_index_space_(size_t domain,
     size_t dim,
     std::vector<mesh_entity_base_ *> & ents,
@@ -1191,13 +1226,14 @@ private:
     return base_t::ms_->partition_index_spaces[partition][domain][dim].size();
   } // num_entities_
 
-  //--------------------------------------------------------------------------//
-  //! Build connectivity informaiton and add entities to the mesh for the
-  //! given dimension.
-  //!
-  //! \remark this is the general one that gets instantiated even though
-  //! it may never get called
-  //--------------------------------------------------------------------------//
+  /*!
+   Build connectivity informaiton and add entities to the mesh for the
+   given dimension.
+  
+   \remark this is the general one that gets instantiated even though
+   it may never get called
+   */
+
   template<size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
   typename std::enable_if<(
     UsingDimension <= 1 || UsingDimension > MESH_TYPE::num_dimensions)>::type
@@ -1205,18 +1241,19 @@ private:
     assert(false && "shouldn't be in here");
   }
 
-  //--------------------------------------------------------------------------//
-  //! Build connectivity informaiton and add entities to the mesh for the
-  //! given dimension.
-  //!
-  //! \remark This one is enable_if'd so it never gets instantiated in certain
-  //! cases, otherwise we would need create_entities in wedges
-  //! and vertices
-  //!
-  //! @tparam Domain domain
-  //! @tparam DimensionToBuild topological dimension to build
-  //! @tparam UsingDimension using topological dimension to build
-  //--------------------------------------------------------------------------//
+  /*!
+   Build connectivity informaiton and add entities to the mesh for the
+   given dimension.
+  
+   \remark This one is enable_if'd so it never gets instantiated in certain
+   cases, otherwise we would need create_entities in wedges
+   and vertices
+  
+   @tparam Domain domain
+   @tparam DimensionToBuild topological dimension to build
+   @tparam UsingDimension using topological dimension to build
+   */
+
   template<size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
   typename std::enable_if<(
     UsingDimension > 1 && UsingDimension <= MESH_TYPE::num_dimensions)>::type
@@ -1450,16 +1487,17 @@ private:
     cell_to_entity.init(cell_entity_conn);
   } // build_connectivity
 
-  //--------------------------------------------------------------------------//
-  //! used internally to compute connectivity information for
-  //! topological dimension
-  //! FROM_DIM -> TO_DIM where FROM_DIM < TO_DIM
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam FROM_DIM from topological dimension
-  //! @tparam TO_DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   used internally to compute connectivity information for
+   topological dimension
+   FROM_DIM -> TO_DIM where FROM_DIM < TO_DIM
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam FROM_DIM from topological dimension
+   @tparam TO_DIM to topological dimension
+   */
+
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   void transpose() {
     // std::cout << "transpose: (" << FROM_DOM << ", " <<FROM_DIM
@@ -1533,18 +1571,19 @@ private:
     }
   } // transpose
 
+  /*!
+   Used internally to compute connectivity information for
+   topological dimension
+   FROM_DIM -> TO_DIM using FROM_DIM -> DIM' and DIM' -> TO_DIM
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam FROM_DIM from topological dimension
+   @tparam TO_DIM to topological dimension
+   @tparam DIM intermediate topological dimension DIM'
   //--------------------------------------------------------------------------//
-  //! Used internally to compute connectivity information for
-  //! topological dimension
-  //! FROM_DIM -> TO_DIM using FROM_DIM -> DIM' and DIM' -> TO_DIM
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam FROM_DIM from topological dimension
-  //! @tparam TO_DIM to topological dimension
-  //! @tparam DIM intermediate topological dimension DIM'
-  //--------------------------------------------------------------------------//
-  //--------------------------------------------------------------------------//
+   */
+
   template<size_t FROM_DOM,
     size_t TO_DOM,
     size_t FROM_DIM,
@@ -1659,14 +1698,15 @@ private:
     out_conn.init(conns);
   } // intersect
 
-  //--------------------------------------------------------------------------//
-  //! Used to compute connectivity information for topological dimension
-  //! D1 -> D2
-  //!
-  //! @tparam DOM domain
-  //! @tparam FROM_DIM from topological dimension
-  //! @tparam TO_DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   Used to compute connectivity information for topological dimension
+   D1 -> D2
+  
+   @tparam DOM domain
+   @tparam FROM_DIM from topological dimension
+   @tparam TO_DIM to topological dimension
+   */
+
   template<size_t DOM, size_t FROM_DIM, size_t TO_DIM>
   void compute_connectivity() {
     // std::cerr << "compute: " << FROM_DIM << " -> " << TO_DIM << std::endl;
@@ -1745,15 +1785,16 @@ private:
     } // if
   } // compute_connectivity
 
-  //--------------------------------------------------------------------------//
-  //! if the to-dimension is larger than the from-dimension, build the bindings
-  //! using the create_bound_entities functionality
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam FROM_DIM from topological dimension
-  //! @tparam TO_DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   if the to-dimension is larger than the from-dimension, build the bindings
+   using the create_bound_entities functionality
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam FROM_DIM from topological dimension
+   @tparam TO_DIM to topological dimension
+   */
+
   template<size_t FROM_DOM,
     size_t TO_DOM,
     size_t FROM_DIM,
@@ -1771,15 +1812,16 @@ private:
 
   } // compute_bindings
 
-  //--------------------------------------------------------------------------//
-  //! if the from-dimension is larger than the to-dimension, we want
-  //! to transpose.  So make sure the opposite connectivity exists first
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam FROM_DIM from topological dimension
-  //! @tparam TO_DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   if the from-dimension is larger than the to-dimension, we want
+   to transpose.  So make sure the opposite connectivity exists first
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam FROM_DIM from topological dimension
+   @tparam TO_DIM to topological dimension
+   */
+
   template<size_t FROM_DOM,
     size_t TO_DOM,
     size_t FROM_DIM,
@@ -1795,15 +1837,16 @@ private:
 
   } // compute_bindings
 
-  //--------------------------------------------------------------------------//
-  //! if the from-dimension is larger than the to-dimension, we want
-  //! to transpose.  So make sure the opposite connectivity exists first
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam FROM_DIM from topological dimension
-  //! @tparam TO_DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   if the from-dimension is larger than the to-dimension, we want
+   to transpose.  So make sure the opposite connectivity exists first
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam FROM_DIM from topological dimension
+   @tparam TO_DIM to topological dimension
+   */
+
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   typename std::enable_if<(FROM_DOM == TO_DOM)>::type compute_bindings_() {
 
@@ -1819,14 +1862,15 @@ private:
 
   } // compute_bindings
 
-  //--------------------------------------------------------------------------//
-  //! Main driver for computing bindings
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam FROM_DIM from topological dimension
-  //! @tparam TO_DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   Main driver for computing bindings
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam FROM_DIM from topological dimension
+   @tparam TO_DIM to topological dimension
+   */
+
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   void compute_bindings() {
     // std::cerr << "compute: , dom " << FROM_DOM << " -> " << TO_DOM
@@ -1842,15 +1886,16 @@ private:
     compute_bindings_<FROM_DOM, TO_DOM, FROM_DIM, TO_DIM>();
   }
 
-  //--------------------------------------------------------------------------//
-  //! Build bindings associated with a from/to domain and topological dimension.
-  //! compute_bindings will call this on each binding found in the tuple of
-  //! bindings specified in the mesh type/traits mesh specialization.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam TO_DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   Build bindings associated with a from/to domain and topological dimension.
+   compute_bindings will call this on each binding found in the tuple of
+   bindings specified in the mesh type/traits mesh specialization.
+  
+   @tparam FROM_DOM from domain
+   @tparam TO_DOM to domain
+   @tparam TO_DIM to topological dimension
+   */
+
   template<size_t FROM_DOM, size_t TO_DOM, size_t TO_DIM>
   void build_bindings() {
 
@@ -2127,10 +2172,11 @@ private:
 
   } // build_bindings
 
-  //--------------------------------------------------------------------------//
-  //! Implementation of get_connectivity for various get_connectivity
-  //! convenience methods.
-  //--------------------------------------------------------------------------//
+  /*!
+   Implementation of get_connectivity for various get_connectivity
+   convenience methods.
+   */
+
   const connectivity_t & get_connectivity_(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -2140,10 +2186,11 @@ private:
     return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
-  //--------------------------------------------------------------------------//
-  //! Implementation of get_connectivity for various get_connectivity
-  //! convenience methods.
-  //--------------------------------------------------------------------------//
+  /*!
+   Implementation of get_connectivity for various get_connectivity
+   convenience methods.
+   */
+
   connectivity_t & get_connectivity_(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -2153,48 +2200,52 @@ private:
     return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
-  //--------------------------------------------------------------------------//
-  //! Implementation of get_connectivity for various get_connectivity
-  //! convenience methods.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam FROM_DOM to domain
-  //! @tparam FROM_DIM from topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   Implementation of get_connectivity for various get_connectivity
+   convenience methods.
+  
+   @tparam FROM_DOM from domain
+   @tparam FROM_DOM to domain
+   @tparam FROM_DIM from topological dimension
+   */
+
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM>
   connectivity_t & get_connectivity_(size_t to_dim) {
     return base_t::ms_->topology[FROM_DOM][TO_DOM].template get<FROM_DIM>(
       to_dim);
   } // get_connectivity
 
-  //--------------------------------------------------------------------------//
-  //! Implementation of get_connectivity for various get_connectivity
-  //! convenience methods.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam FROM_DOM to domain
-  //! @tparam FROM_DIM from topological dimension
-  //! @tparam TO_DIM to topological dimension
-  //--------------------------------------------------------------------------//
+  /*!
+   Implementation of get_connectivity for various get_connectivity
+   convenience methods.
+  
+   @tparam FROM_DOM from domain
+   @tparam FROM_DOM to domain
+   @tparam FROM_DIM from topological dimension
+   @tparam TO_DIM to topological dimension
+   */
+
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   connectivity_t & get_connectivity_() {
     return base_t::ms_->topology[FROM_DOM][TO_DOM]
       .template get<FROM_DIM, TO_DIM>();
   } // get_connectivity
 
-  //--------------------------------------------------------------------------//
-  //! Implementation of get_connectivity for various get_connectivity
-  //! convenience methods.
-  //--------------------------------------------------------------------------//
+  /*!
+   Implementation of get_connectivity for various get_connectivity
+   convenience methods.
+   */
+
   const connectivity_t &
   get_connectivity_(size_t domain, size_t from_dim, size_t to_dim) const {
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-  //--------------------------------------------------------------------------//
-  //! Implementation of get_connectivity for various get_connectivity
-  //! convenience methods.
-  //--------------------------------------------------------------------------//
+  /*!
+   Implementation of get_connectivity for various get_connectivity
+   convenience methods.
+   */
+
   connectivity_t &
   get_connectivity_(size_t domain, size_t from_dim, size_t to_dim) {
     return get_connectivity_(domain, domain, from_dim, to_dim);
