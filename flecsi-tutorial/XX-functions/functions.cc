@@ -20,7 +20,7 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-//flecsi_register_data_client(mesh_t, clients, mesh);
+// flecsi_register_data_client(mesh_t, clients, mesh);
 flecsi_register_field(mesh_t, hydro, pressure, double, dense, 1, cells);
 
 namespace example {
@@ -100,7 +100,9 @@ argument_function(double arg) {
 flecsi_register_function(argument_function, example);
 
 int
-argument_task(mesh<rw> m, dense_accessor<double,rw,rw,rw> p, argument_function_t fh) {
+argument_task(mesh<rw> m,
+  dense_accessor<double, rw, rw, rw> p,
+  argument_function_t fh) {
 
   for(auto c : m.cells()) {
     if(flecsi_execute_function(fh, p(c))) {

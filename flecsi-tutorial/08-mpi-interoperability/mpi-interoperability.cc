@@ -46,7 +46,7 @@ namespace example {
 // This task is executed in the FleCSI runtime.
 
 void
-initialize_field(mesh<rw> mesh, dense_accessor<double,rw,rw,rw> f) {
+initialize_field(mesh<rw> mesh, dense_accessor<double, rw, rw, rw> f) {
   for(auto c : mesh.cells(owned)) {
     f(c) = double(c->id());
   } // for

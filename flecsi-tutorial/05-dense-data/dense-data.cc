@@ -67,7 +67,7 @@ print_field(mesh<ro> mesh, struct_field<ro> f) {
 flecsi_register_task(print_field, tutorial, loc, index);
 
 } // namespace tutorial
-} //namespace flecsi
+} // namespace flecsi
 
 namespace flecsi {
 namespace execution {
