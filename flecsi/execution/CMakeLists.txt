@@ -179,6 +179,7 @@ cinch_add_unit(simple_task
 # Test basic task calling gpu_task
 #
 
+if (ENABLE_CUDA)
 cinch_add_unit(gpu_task
   SOURCES
     test/gpu_task.cc
@@ -191,8 +192,12 @@ cinch_add_unit(gpu_task
   LIBRARIES
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
+  ARGUMENTS
+    -ll:gpu 1
+  THREADS 2
   NOCI
 )
+endif()#enable CUDA
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 #
