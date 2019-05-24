@@ -53,7 +53,7 @@ namespace data {
 template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
 struct topology_registration_u {};
 
-#if 0
+#if 1
 /*!
 
  */
@@ -322,7 +322,7 @@ struct topology_registration_u<
 
    */
 
-  static void add_runtime_data(field_id_t fid) {
+  static void register_fields(field_id_t fid) {
     using entity_types_t = typename POLICY_TYPE::entity_types;
     using connectivities = typename POLICY_TYPE::connectivities;
     using bindings = typename POLICY_TYPE::bindings;
@@ -351,7 +351,7 @@ struct topology_registration_u<
       index_subspaces_walker.template walk_types<index_subspaces>();
     } // if
 
-  } // add_runtime_data
+  } // register_fields
 
 }; // class topology_registration_u
 
@@ -427,14 +427,14 @@ struct topology_registration_u<
 
    */
 
-  static void add_runtime_data(field_id_t fid) {
+  static void register_fields(field_id_t fid) {
     using entity_types_t = typename POLICY_TYPE::entity_types;
     const size_t type_key =
       typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types_t>();
-  } // add_runtime_data
+  } // register_fields
 
 }; // class topology_registration_u
 #endif
@@ -455,9 +455,8 @@ struct topology_registration_u<flecsi::topology::global_topology_t,
 
   using TOPOLOGY_TYPE = flecsi::topology::global_topology_t;
 
-  static bool add_runtime_data() {
-    return true;
-  } // add_runtime_data
+  static void register_fields() {
+  } // register_fields
 
 }; // class topology_registration_u
 
@@ -476,9 +475,8 @@ struct topology_registration_u<flecsi::topology::index_topology_t,
 
   using TOPOLOGY_TYPE = flecsi::topology::index_topology_t;
 
-  static bool add_runtime_data() {
-    return true;
-  } // add_runtime_data
+  static void register_fields() {
+  } // register_fields
 
 }; // class topology_registration_u
 
