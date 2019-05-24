@@ -251,7 +251,7 @@ struct legion_execution_policy_t {
       prologue.update_state();
 
       switch(processor_type) {
-        
+
         case processor_type_t::toc:
         case processor_type_t::loc: {
           flog(info) << "Executing index launch on loc" << std::endl;
