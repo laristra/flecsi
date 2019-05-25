@@ -81,9 +81,9 @@ Public Types</h2></td></tr>
 <tr class="memitem:a4bb5248131999ed73cdb74c7191776cc"><td class="memItemLeft" align="right" valign="top"><a id="a4bb5248131999ed73cdb74c7191776cc"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>terminator_t</b> = <a class="el" href="structflecsi_1_1utils_1_1typeify__u.html">utils::typeify_u</a>&lt; size_t, 0x02 &gt;</td></tr>
 <tr class="separator:a4bb5248131999ed73cdb74c7191776cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43c904f65e594ad803aecd8743e429f2"><td class="memItemLeft" align="right" valign="top"><a id="a43c904f65e594ad803aecd8743e429f2"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>tuple_t</b> = std::tuple&lt; <a class="el" href="structflecsi_1_1utils_1_1typeify__u.html">terminator_t</a>, <a class="el" href="structflecsi_1_1utils_1_1typeify__u.html">utils::typeify_u</a>&lt; size_t, PRIVILEGES &gt;... &gt;</td></tr>
-<tr class="separator:a43c904f65e594ad803aecd8743e429f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18f8cf01c17f9bb48dcab1a2a7e58276"><td class="memItemLeft" align="right" valign="top"><a id="a18f8cf01c17f9bb48dcab1a2a7e58276"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>tuple_t</b> = std::tuple&lt; <a class="el" href="structflecsi_1_1utils_1_1typeify__u.html">terminator_t</a>, <a class="el" href="structflecsi_1_1utils_1_1typeify__u.html">utils::typeify_u</a>&lt; size_t, PRIVILEGES &gt; ... &gt;</td></tr>
+<tr class="separator:a18f8cf01c17f9bb48dcab1a2a7e58276"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -92,7 +92,7 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>va
 <tr class="separator:a18f6aa43e439055729a9aff570b1c794"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;size_t... PRIVILEGES&gt;<br />
+<div class="textblock"><h3>template&lt;size_t ... PRIVILEGES&gt;<br />
 struct flecsi::privilege_pack_u&lt; PRIVILEGES &gt;</h3>
 
 <p>Utility type to allow general privilege components that will match the old style of specifying permissions, e.g., &lt;EX, SH, GH&gt; (The old approach was only valid for mesh type topologies, and didn't make sense for all topology types). A terminator with value 0x02 is appended to the privileges provided in the template pararmeter so that a count can be determined.</p>

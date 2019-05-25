@@ -1,9 +1,11 @@
 var searchData=
 [
+  ['save',['save',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#a62f24d6b18edd6c9e3d947f8e50bfa5d',1,'flecsi::topology::unstructured_mesh_topology_u']]],
   ['serial_20data_20backend',['Serial Data Backend',['../group__serial-data.html',1,'']]],
   ['serial_20execution_20backend',['Serial Execution Backend',['../group__serial-execution.html',1,'']]],
+  ['serialize_5f',['serialize_',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#aa87e545036f380bba5f71616470e4d7f',1,'flecsi::topology::unstructured_mesh_topology_u']]],
   ['set_5fall_5fprocesses',['set_all_processes',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#ab6d6edaaf621be53b29e3f8f42e450d1',1,'flecsi::execution::legion_context_policy_t']]],
-  ['set_5fcoloring',['set_coloring',['../structflecsi_1_1data_1_1topology__interface__u.html#a56b3d88eacfaf04caffc9f106d50f50d',1,'flecsi::data::topology_interface_u::set_coloring()'],['../structflecsi_1_1execution_1_1context__u.html#a49d00a184f3b072f8809fc401173aeab',1,'flecsi::execution::context_u::set_coloring(index_topology_t::coloring_t &amp;coloring)'],['../structflecsi_1_1execution_1_1context__u.html#a855cc436ce37df3a2a9c3d96313e459b',1,'flecsi::execution::context_u::set_coloring(unstructured_mesh_topology_base_t::coloring_t &amp;coloring)']]],
+  ['set_5fcoloring',['set_coloring',['../structflecsi_1_1data_1_1topology__interface__u.html#a56b3d88eacfaf04caffc9f106d50f50d',1,'flecsi::data::topology_interface_u']]],
   ['set_5fcount',['set_count',['../classflecsi_1_1utils_1_1offset__u.html#a7d05c9c49ea64ca488a9ed36a44134a1',1,'flecsi::utils::offset_u']]],
   ['set_5fdifference',['set_difference',['../set__utils_8h.html#a6e360c8844c9d20956dba8007461355b',1,'flecsi::utils']]],
   ['set_5fintersection',['set_intersection',['../set__utils_8h.html#a35d052a83a3f9764429d1c1f54d4812c',1,'flecsi::utils']]],
@@ -35,7 +37,9 @@ var searchData=
   ['storage_5flabel_5ft',['storage_label_t',['../storage__class_8h.html#ac662c6859d456a6c33810e5226abbdeb',1,'flecsi::data']]],
   ['stream',['stream',['../structflecsi_1_1utils_1_1flog_1_1log__message__t.html#ab8eb3f5ef0516a49e31a5dcf3e576fda',1,'flecsi::utils::flog::log_message_t::stream()'],['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#a2a30c10be4e8bd10d35cd8b1fe023cea',1,'flecsi::utils::flog::flog_t::stream()']]],
   ['structured_20mesh_20toplogy_20interface',['Structured Mesh Toplogy Interface',['../group__structured-mesh-topology.html',1,'']]],
+  ['structured_5fmesh_5fruntime_5fdata_5ft',['structured_mesh_runtime_data_t',['../structflecsi_1_1data_1_1legion_1_1structured__mesh__runtime__data__t.html',1,'flecsi::data::legion']]],
   ['structured_5fmesh_5ftopology_5fbase_5ft',['structured_mesh_topology_base_t',['../structflecsi_1_1topology_1_1structured__mesh__topology__base__t.html',1,'flecsi::topology']]],
+  ['subentities',['subentities',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#a10af939352ed86de99f54c1c10818582',1,'flecsi::topology::unstructured_mesh_topology_u::subentities()'],['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#a23c2eb79ab3194909a486a5cdc026651',1,'flecsi::topology::unstructured_mesh_topology_u::subentities() const']]],
   ['substr',['substr',['../classflecsi_1_1utils_1_1array__ref.html#af516ee4ce335313f93907ac7c2953cc0',1,'flecsi::utils::array_ref']]],
   ['sum',['sum',['../structflecsi_1_1execution_1_1reduction_1_1sum.html',1,'flecsi::execution::reduction']]],
   ['sync',['sync',['../classflecsi_1_1utils_1_1flog_1_1tee__buffer__t.html#ad963d0924e69760794fb085982e7d9b8',1,'flecsi::utils::flog::tee_buffer_t']]]
