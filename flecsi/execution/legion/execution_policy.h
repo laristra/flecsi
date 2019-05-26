@@ -155,9 +155,9 @@ struct legion_execution_policy_t {
     constexpr size_t ZERO = flecsi_internal_hash(0);
 
     size_t domain_size = flecsi_context.get_domain(LAUNCH_DOMAIN);
-    domain_size = domain_size == 0 ?
-      flecsi_context.processes()*flecsi_context.threads_per_process() :
-      domain_size;
+    domain_size = domain_size == 0 ? flecsi_context.processes() *
+                                       flecsi_context.threads_per_process()
+                                   : domain_size;
 
     legion::init_args_t init_args(legion_runtime, legion_context, domain_size);
     init_args.walk(task_args);
@@ -176,7 +176,8 @@ struct legion_execution_policy_t {
         flog(internal) << "Executing single task" << std::endl;
       }
 
-      TaskLauncher launcher(flecsi_context.task_id<TASK>(), TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+      TaskLauncher launcher(flecsi_context.task_id<TASK>(),
+        TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
       for(auto & req : init_args.region_requirements()) {
         launcher.add_region_requirement(req);
@@ -256,14 +257,17 @@ struct legion_execution_policy_t {
           if constexpr(REDUCTION != ZERO) {
             flog(info) << "executing reduction logic for " << REDUCTION
                        << std::endl;
-            auto reduction_op = flecsi_context.reduction_operations().find(REDUCTION);
+            auto reduction_op =
+              flecsi_context.reduction_operations().find(REDUCTION);
 
-            flog_assert(reduction_op != flecsi_context.reduction_operations().end(),
+            flog_assert(
+              reduction_op != flecsi_context.reduction_operations().end(),
               "invalid reduction operation");
 
             Legion::Future future;
 
-            size_t reduction_id = flecsi_context.reduction_operations()[REDUCTION];
+            size_t reduction_id =
+              flecsi_context.reduction_operations()[REDUCTION];
             future = legion_runtime->execute_index_space(
               legion_context, launcher, reduction_id);
 

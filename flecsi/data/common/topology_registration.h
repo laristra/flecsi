@@ -455,8 +455,7 @@ struct topology_registration_u<flecsi::topology::global_topology_t,
 
   using TOPOLOGY_TYPE = flecsi::topology::global_topology_t;
 
-  static void register_fields() {
-  } // register_fields
+  static void register_fields() {} // register_fields
 
 }; // class topology_registration_u
 
@@ -475,8 +474,7 @@ struct topology_registration_u<flecsi::topology::index_topology_t,
 
   using TOPOLOGY_TYPE = flecsi::topology::index_topology_t;
 
-  static void register_fields() {
-  } // register_fields
+  static void register_fields() {} // register_fields
 
 }; // class topology_registration_u
 

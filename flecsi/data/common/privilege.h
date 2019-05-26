@@ -59,11 +59,11 @@ enum partition_privilege_t : size_t {
   @tparam PRIVILEGES A variadic list of partition_privilege_t elements.
  */
 
-template<size_t ... PRIVILEGES>
+template<size_t... PRIVILEGES>
 struct privilege_pack_u {
   using terminator_t = utils::typeify_u<size_t, 0x02>;
   using tuple_t =
-    std::tuple<terminator_t, utils::typeify_u<size_t, PRIVILEGES> ...>;
+    std::tuple<terminator_t, utils::typeify_u<size_t, PRIVILEGES>...>;
   static constexpr size_t value = utils::shift_or<0, tuple_t, 2>();
 }; // struct privilege_pack_u
 

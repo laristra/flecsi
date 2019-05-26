@@ -310,7 +310,7 @@ legion_context_policy_t::initialize_default_index_topology() {
   {
     flog_tag_guard(context);
     flog(internal) << "Initializing default index topology" << std::endl
-      << "\tidentifier: " << identifier << std::endl;
+                   << "\tidentifier: " << identifier << std::endl;
   }
 
   data::topology_reference_u<topology::index_topology_t> reference(identifier);

@@ -155,7 +155,6 @@ class unstructured_mesh_topology_u
     "mesh policy missing type_identifier_hash");
 
 public:
-
   constexpr size_t type_identifier_hash = MESH_TYPE::type_identifier_hash;
 
   // mesh storage type definition
@@ -187,26 +186,26 @@ public:
 
   // Don't allow the mesh to be copied or copy constructed
 
-   don't allow mesh to be assigned
-  unstructured_mesh_topology_u & operator=(
+  don't allow mesh to be assigned unstructured_mesh_topology_u & operator=(
     const unstructured_mesh_topology_u &) = delete;
 
-   Allow move operations
-  unstructured_mesh_topology_u(unstructured_mesh_topology_u && o) = default;
-
-   override default move assignement
-  unstructured_mesh_topology_u & operator=(
+  Allow move operations unstructured_mesh_topology_u(
     unstructured_mesh_topology_u && o) = default;
 
-   Constructor, takes as input a mesh storage or storage can later be set
-  unstructured_mesh_topology_u(storage_t * ms = nullptr) : base_t(ms) {
+  override default move assignement unstructured_mesh_topology_u & operator=(
+    unstructured_mesh_topology_u && o) = default;
+
+  Constructor, takes as input a mesh storage or
+                 storage can later be set unstructured_mesh_topology_u(
+                   storage_t * ms = nullptr)
+    : base_t(ms) {
     if(ms != nullptr) {
       initialize_storage();
     } // if
   } // unstructured_mesh_topology_u()
 
-   Copy constructor: alias another mesh
-  unstructured_mesh_topology_u(const unstructured_mesh_topology_u & m)
+  Copy constructor : alias another mesh unstructured_mesh_topology_u(
+                       const unstructured_mesh_topology_u & m)
     : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
@@ -444,9 +443,9 @@ public:
 
   /*!
     Return the index space of specified domain and topological dimension.
-    
+
     @tparam DOM domain
-    
+
     @param dim topological dimension
    */
 
@@ -457,9 +456,9 @@ public:
 
   /*!
    Return the index space of specified domain and topological dimension.
-  
+
    @tparam DOM domain
-  
+
    @param dim topological dimension
    */
 
@@ -471,11 +470,11 @@ public:
   /*!
    Return the index space of specified domain and topological dimension and
    associated partition, e.g. owned, shared, ghost, etc.
-  
+
    @tparam DOM domain
-  
+
    @param dim topological dimension
-  
+
    @param partition e.g. all, owned, shared, etc.
    */
 
@@ -503,7 +502,7 @@ public:
   /*!
    Get an entity in domain DOM of topological dimension DIM with specified
    id.
-  
+
    @tparam DOM domain
    @tparam DIM topological dimension
    */
@@ -518,12 +517,12 @@ public:
   /*!
    Get an entity in domain DOM of topological dimension DIM with specified
    id.
-  
+
    @tparam DOM domain
    @tparam DIM topological dimension
-  
+
    @param dim topological dimension
-  
+
    @param global_id entity global id
    */
 
@@ -535,13 +534,13 @@ public:
   /*!
    Get an entity in domain DOM of topological dimension DIM with specified
    id.
-  
+
    @tparam DOM domain
-  
+
    @tparam DIM topological dimension
-  
+
    @param dim topological dimension
-  
+
    @param partition e.g. all, owned, shared, etc.
    */
 
@@ -556,12 +555,12 @@ public:
   /*!
    Get an entity in domain DOM of topological dimension DIM with specified
    id.
-  
+
    @tparam DOM domain
    @tparam DIM topological dimension
-  
+
    @param dim topological dimension
-  
+
    @param global_id entity global id
    */
 
@@ -574,12 +573,12 @@ public:
   /*!
    Get the entities of topological dimension DIM connected to another entity
    by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity
    */
 
@@ -603,12 +602,12 @@ public:
   /*!
    Get the entities of topological dimension DIM connected to another entity
    by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity
    */
 
@@ -631,12 +630,12 @@ public:
   /*!
    Get the entities of topological dimension DIM connected to another entity
    by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity with compile-time domain
    */
 
@@ -651,12 +650,12 @@ public:
   /*!
    Get the entities of topological dimension DIM connected to another entity
    by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity with compile-time domain
    */
 
@@ -671,7 +670,7 @@ public:
   /*!
    Get the top-level entities of topological dimension DIM of the specified
    domain DOM. e.g: cells of the mesh.
-  
+
    @tparam DOM domain
    @tparam DIM to topological dimension
    */
@@ -686,11 +685,11 @@ public:
   /*!
    Get the top-level entities of topological dimension DIM of the specified
    domain DOM. e.g: cells of the mesh.
-  
+
    @tparam n! n!
    @tparam DOM domain
    @tparam DIM to topological dimension
-  
+
    @param partition e.g. all, owned, shared, etc.
    */
 
@@ -705,7 +704,7 @@ public:
   /*!
    Get the top-level entity id's of topological dimension DIM of the
    specified domain DOM. e.g: cells of the mesh.
-  
+
    @tparam DOM domain
    @tparam DIM to topological dimension
    */
@@ -718,10 +717,10 @@ public:
   /*!
    Get the top-level entity id's of topological dimension DIM of the
    specified domain DOM. e.g: cells of the mesh.
-  
+
    @tparam DOM domain
    @tparam DIM to topological dimension
-  
+
    @param partition e.g. all, owned, shared, etc.
    */
 
@@ -734,12 +733,12 @@ public:
    Get the entity id's of topological dimension DIM connected to another
    entity by specified connectivity from domain FROM_DOM and to domain
    TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity with compile-time domain
    */
 
@@ -755,12 +754,12 @@ public:
    Get the entity id's of topological dimension DIM connected to another
    entity by specified connectivity from domain FROM_DOM and to domain
    TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity
    */
 
@@ -778,12 +777,12 @@ public:
   /*!
    Get the entities of topological dimension DIM connected to another entity
    by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity
    */
 
@@ -800,12 +799,12 @@ public:
   /*!
    Get the entities of topological dimension DIM connected to another entity
    by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity with compile-time domain
    */
 
@@ -820,12 +819,12 @@ public:
   /*!
    Get the entities of topological dimension DIM connected to another entity
    by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity
    @param order order specification
    */
@@ -844,12 +843,12 @@ public:
   /*!
    Get the entities of topological dimension DIM connected to another entity
    by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam DIM to topological dimension
    @tparam ENT_TYPE entity type
-  
+
    @param e from entity
    @param order order specification
    */
@@ -866,7 +865,7 @@ public:
 
   /*!
    Get the subentities of the specified index subspace
-  
+
    @tparam INDEX_SUBSPACE index subspace id
    */
 
@@ -877,7 +876,7 @@ public:
 
   /*!
    Get the subentities of the specified index subspace
-  
+
    @tparam INDEX_SUBSPACE index subspace id
    */
 
@@ -888,7 +887,7 @@ public:
 
   /*!
    Get the subentities of the specified index subspace
-  
+
    @tparam INDEX_SUBSPACE index subspace id
    */
 
@@ -900,7 +899,7 @@ public:
   /*!
    Debug method to dump the connectivity of the mesh over all domains and
    topological dimensions.
-  
+
    @param stream output stream
    */
 
@@ -1229,7 +1228,7 @@ private:
   /*!
    Build connectivity informaiton and add entities to the mesh for the
    given dimension.
-  
+
    \remark this is the general one that gets instantiated even though
    it may never get called
    */
@@ -1244,11 +1243,11 @@ private:
   /*!
    Build connectivity informaiton and add entities to the mesh for the
    given dimension.
-  
+
    \remark This one is enable_if'd so it never gets instantiated in certain
    cases, otherwise we would need create_entities in wedges
    and vertices
-  
+
    @tparam Domain domain
    @tparam DimensionToBuild topological dimension to build
    @tparam UsingDimension using topological dimension to build
@@ -1491,7 +1490,7 @@ private:
    used internally to compute connectivity information for
    topological dimension
    FROM_DIM -> TO_DIM where FROM_DIM < TO_DIM
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam FROM_DIM from topological dimension
@@ -1575,7 +1574,7 @@ private:
    Used internally to compute connectivity information for
    topological dimension
    FROM_DIM -> TO_DIM using FROM_DIM -> DIM' and DIM' -> TO_DIM
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam FROM_DIM from topological dimension
@@ -1701,7 +1700,7 @@ private:
   /*!
    Used to compute connectivity information for topological dimension
    D1 -> D2
-  
+
    @tparam DOM domain
    @tparam FROM_DIM from topological dimension
    @tparam TO_DIM to topological dimension
@@ -1788,7 +1787,7 @@ private:
   /*!
    if the to-dimension is larger than the from-dimension, build the bindings
    using the create_bound_entities functionality
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam FROM_DIM from topological dimension
@@ -1815,7 +1814,7 @@ private:
   /*!
    if the from-dimension is larger than the to-dimension, we want
    to transpose.  So make sure the opposite connectivity exists first
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam FROM_DIM from topological dimension
@@ -1840,7 +1839,7 @@ private:
   /*!
    if the from-dimension is larger than the to-dimension, we want
    to transpose.  So make sure the opposite connectivity exists first
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam FROM_DIM from topological dimension
@@ -1864,7 +1863,7 @@ private:
 
   /*!
    Main driver for computing bindings
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam FROM_DIM from topological dimension
@@ -1890,7 +1889,7 @@ private:
    Build bindings associated with a from/to domain and topological dimension.
    compute_bindings will call this on each binding found in the tuple of
    bindings specified in the mesh type/traits mesh specialization.
-  
+
    @tparam FROM_DOM from domain
    @tparam TO_DOM to domain
    @tparam TO_DIM to topological dimension
@@ -2203,7 +2202,7 @@ private:
   /*!
    Implementation of get_connectivity for various get_connectivity
    convenience methods.
-  
+
    @tparam FROM_DOM from domain
    @tparam FROM_DOM to domain
    @tparam FROM_DIM from topological dimension
@@ -2218,7 +2217,7 @@ private:
   /*!
    Implementation of get_connectivity for various get_connectivity
    convenience methods.
-  
+
    @tparam FROM_DOM from domain
    @tparam FROM_DOM to domain
    @tparam FROM_DIM from topological dimension
