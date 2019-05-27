@@ -132,7 +132,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   /// \param args
   ///
   template<launch_type_t launch,
-    size_t TASK,
+    size_t KEY,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
@@ -160,6 +160,19 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
         context_t::instance().get_default_executor(),
         std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_task
+
+  //--------------------------------------------------------------------------//
+  // Reduction interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+    MPI backend reduction registration. For documentation on this
+    method please see task_u::register_reduction_operation.
+   */
+
+  template<size_t NAME, typename OPERATION>
+  static bool register_reduction_operation() {
+  } // register_reduction_operation
 
   //--------------------------------------------------------------------------//
   // Function interface.

@@ -44,6 +44,9 @@ struct data_client_handle_entity_t {
 //! which is then passed the data client handle.
 //----------------------------------------------------------------------------//
 struct data_client_handle_adjacency_t {
+  // FIXME check context
+  using field_id_t = std::size_t;
+
   std::size_t adj_index_space;
   std::size_t from_index_space;
   std::size_t to_index_space;
@@ -60,6 +63,9 @@ struct data_client_handle_adjacency_t {
 };
 
 struct data_client_handle_index_subspace_t {
+  // FIXME check context
+  using field_id_t = std::size_t;
+
   std::size_t index_space;
   std::size_t index_subspace;
   field_id_t index_fid;
