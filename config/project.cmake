@@ -518,7 +518,7 @@ endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
-  hpx_setup_target(FleCSI NONAMEPREFIX)
+  hpx_setup_target(FleCSI NONAMEPREFIX NOTLLKEYWORD)
 
 endif()
 
