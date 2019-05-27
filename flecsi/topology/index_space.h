@@ -815,7 +815,7 @@ public:
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
     auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
-      ID_STORAGE_TYPE2, STORAGE_TYPE2> *>(this);
+      ID_STORAGE_TYPE2, STORAGE_TYPE2> const*>(this);
     assert(res != nullptr && "invalid cast");
     return *res;
   }
@@ -1362,7 +1362,7 @@ public:
     id_storage_t ret;
 
     if(r.sorted_) {
-      ret.resize(std::min(v_->size(), r.v_->size()));
+      ret.resize((std::min)(v_->size(), r.v_->size()));
 
       auto itr = std::set_intersection(
         v_->begin(), v_->end(), r.v_->begin(), r.v_->end(), ret.begin());
@@ -1373,7 +1373,7 @@ public:
       id_storage_t v2(*r.v_);
       std::sort(v2.begin(), v2.end());
 
-      ret.resize(std::min(v_->size(), v2.size()));
+      ret.resize((std::min)(v_->size(), v2.size()));
 
       auto itr = std::set_intersection(
         v_->begin(), v_->end(), v2.begin(), v2.end(), ret.begin());
