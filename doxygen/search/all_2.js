@@ -5,7 +5,7 @@ var searchData=
   ['checksum_2eh',['checksum.h',['../checksum_8h.html',1,'']]],
   ['checksum_5ft',['checksum_t',['../structflecsi_1_1utils_1_1checksum__t.html',1,'flecsi::utils']]],
   ['cleanup',['cleanup',['../structflecsi_1_1execution_1_1global__object__wrapper__u.html#a164eb3aec96d0e821fdd051dce38d189',1,'flecsi::execution::global_object_wrapper_u']]],
-  ['clear',['clear',['../classflecsi_1_1utils_1_1array__ref.html#a03cc486c185e6745abdd67d412de1692',1,'flecsi::utils::array_ref']]],
+  ['clear',['clear',['../classflecsi_1_1utils_1_1array__ref.html#a03cc486c185e6745abdd67d412de1692',1,'flecsi::utils::array_ref::clear()'],['../structflecsi_1_1utils_1_1binary__serializer__t.html#a0c1dab00eaf1041b042c91b958573407',1,'flecsi::utils::binary_serializer_t::clear()']]],
   ['client_5fhandle_5fspecialization_5fu_3c_20topology_3a_3aglobal_5ftopology_5ft_20_3e',['client_handle_specialization_u&lt; topology::global_topology_t &gt;',['../structflecsi_1_1data_1_1mpi_1_1client__handle__specialization__u_3_01topology_1_1global__topology__t_01_4.html',1,'flecsi::data::mpi']]],
   ['client_5fhandle_5fspecialization_5fu_3c_20topology_3a_3aindex_5ftopology_5ft_20_3e',['client_handle_specialization_u&lt; topology::index_topology_t &gt;',['../structflecsi_1_1data_1_1mpi_1_1client__handle__specialization__u_3_01topology_1_1index__topology__t_01_4.html',1,'flecsi::data::mpi']]],
   ['client_5fhandle_5fspecializations_2eh',['client_handle_specializations.h',['../client__handle__specializations_8h.html',1,'']]],
