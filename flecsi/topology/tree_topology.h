@@ -653,7 +653,7 @@ public:
 
     for(size_t d = 0; d < dimension; ++d) {
       scale_[d] = end[d] - start[d];
-      max_scale_ = std::max(max_scale_, scale_[d]);
+      max_scale_ = (std::max)(max_scale_, scale_[d]);
       range_[0][d] = start[d];
       range_[1][d] = end[d];
     }
@@ -740,7 +740,7 @@ public:
 
     for(size_t d = 0; d < dimension; ++d) {
       scale_[d] = end[d] - start[d];
-      max_scale_ = std::max(max_scale_, scale_[d]);
+      max_scale_ = (std::max)(max_scale_, scale_[d]);
       range_[0][d] = start[d];
       range_[1][d] = end[d];
     }
@@ -874,7 +874,7 @@ public:
 
     element_t radius = 0;
     for(size_t d = 0; d < dimension; ++d) {
-      radius = std::max(radius, max[d] - min[d]);
+      radius = (std::max)(radius, max[d] - min[d]);
     }
 
     element_t const c = std::sqrt(element_t(2)) / element_t(2);
@@ -908,7 +908,7 @@ public:
 
     element_t radius = 0;
     for(size_t d = 0; d < dimension; ++d) {
-      radius = std::max(radius, max[d] - min[d]);
+      radius = (std::max)(radius, max[d] - min[d]);
     }
 
     constexpr element_t c = std::sqrt(element_t(2)) / element_t(2);
@@ -1015,7 +1015,7 @@ public:
 
     element_t radius = 0;
     for(size_t d = 0; d < dimension; ++d) {
-      radius = std::max(radius, max[d] - min[d]);
+      radius = (std::max)(radius, max[d] - min[d]);
     }
 
     constexpr element_t c = std::sqrt(element_t(2)) / element_t(2);
@@ -1054,7 +1054,7 @@ public:
 
     element_t radius = 0;
     for(size_t d = 0; d < dimension; ++d) {
-      radius = std::max(radius, max[d] - min[d]);
+      radius = (std::max)(radius, max[d] - min[d]);
     }
 
     constexpr element_t c = std::sqrt(element_t(2)) / element_t(2);
@@ -1336,7 +1336,7 @@ private:
       branch_map_.emplace(ci->id(), ci);
     }
 
-    max_depth_ = std::max(max_depth_, depth);
+    max_depth_ = (std::max)(max_depth_, depth);
 
     for(auto ent : *b) {
       insert(ent, depth);

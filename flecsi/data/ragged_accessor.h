@@ -98,7 +98,7 @@ struct accessor_u<data::ragged,
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
       const offset_t & oi = handle.offsets[index];
-      max_so_far = std::max(max_so_far, oi.count());
+      max_so_far = (std::max)(max_so_far, oi.count());
     }
 
     return max_so_far;

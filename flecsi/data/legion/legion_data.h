@@ -288,7 +288,7 @@ public:
                     << std::endl;
       } // scope
 
-      is.total_num_entities = std::max(is.total_num_entities,
+      is.total_num_entities = (std::max)(is.total_num_entities,
         color_idx.second.exclusive + color_idx.second.shared +
           color_idx.second.ghost);
     } // for color_idx
@@ -324,7 +324,7 @@ public:
       sis.max_shared_ghost = 0;
 
       for(auto color_idx : coloring_info_map) {
-        sis.max_shared_ghost = std::max(sis.max_shared_ghost,
+        sis.max_shared_ghost = (std::max)(sis.max_shared_ghost,
           color_idx.second.shared + color_idx.second.ghost);
       }
 
@@ -730,7 +730,7 @@ public:
           size_t shared_size =
             coloring_info.shared * sis->max_entries_per_index;
 
-          max_shared = std::max(shared_size, max_shared);
+          max_shared = (std::max)(shared_size, max_shared);
         }
 
         for(int color = 0; color < num_colors_; color++) {

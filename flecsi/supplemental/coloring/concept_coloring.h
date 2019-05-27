@@ -223,7 +223,7 @@ generic_coloring(typename COLORING_POLICY::mesh_definition_t & md,
           // off-color. If it is, compare it's rank for
           // the ownership logic below.
           if(remote_info_map.find(c) != remote_info_map.end()) {
-            min_rank = std::min(min_rank, remote_info_map.at(c).rank);
+            min_rank = (std::min)(min_rank, remote_info_map.at(c).rank);
             shared_entities.insert(remote_info_map.at(c).rank);
           }
           else {
@@ -231,7 +231,7 @@ generic_coloring(typename COLORING_POLICY::mesh_definition_t & md,
             // it is a local primary.
 
             // Add our rank to compare for ownership.
-            min_rank = std::min(min_rank, size_t(rank));
+            min_rank = (std::min)(min_rank, size_t(rank));
 
             // If the local primary is shared, we need to add all of
             // the ranks that reference it.

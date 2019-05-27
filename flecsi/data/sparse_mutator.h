@@ -112,7 +112,7 @@ struct mutator_u<data::sparse, T>
         size_t ostart = offset.start();
         size_t n = offset.count();
         size_t nnew = h_.new_count(i);
-        size_t nbase = std::min(n, nnew);
+        size_t nbase = (std::min)(n, nnew);
         std::cout << "  index: " << i << std::endl;
         for(size_t j = 0; j < nbase; ++j) {
           std::cout << "    " << h_.entries_[ostart + j].entry << " = "
@@ -160,7 +160,7 @@ struct mutator_u<data::sparse, T>
     size_t nnew = h_.new_count(index);
 
     entry_value_t * start = h_.entries_ + offset.start();
-    entry_value_t * end = start + std::min(n, nnew);
+    entry_value_t * end = start + (std::min)(n, nnew);
 
     // try to find entry in overflow, if appropriate
     bool use_overflow = (nnew > n && (n == 0 || entry > end[-1].entry));
@@ -200,7 +200,7 @@ struct mutator_u<data::sparse, T>
     size_t nnew = h_.new_count(index);
 
     const entry_value_t * start = h_.entries_ + offset.start();
-    const entry_value_t * end = start + std::min(n, nnew);
+    const entry_value_t * end = start + (std::min)(n, nnew);
 
     // try to find entry in overflow, if appropriate
     bool use_overflow = (nnew > n && (n == 0 || entry > end[-1].entry));
@@ -240,7 +240,7 @@ struct mutator_u<data::sparse, T>
       const offset_t & oi = h_.offsets[index];
       size_t n = oi.count();
       size_t nnew = h_.new_count(index);
-      size_t nbase = std::min(n, nnew);
+      size_t nbase = (std::min)(n, nnew);
 
       entry_value_t * itr = h_.entries + oi.start();
       entry_value_t * end = itr + nbase;
@@ -279,7 +279,7 @@ struct mutator_u<data::sparse, T>
     const offset_t & oi = h_.offsets[index];
     size_t n = oi.count();
     size_t nnew = h_.new_count(index);
-    size_t nbase = std::min(n, nnew);
+    size_t nbase = (std::min)(n, nnew);
 
     entry_value_t * itr = h_.entries + oi.start();
     entry_value_t * end = itr + nbase;

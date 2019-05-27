@@ -96,7 +96,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     size_t max_so_far = 0;
 
     for(size_t index = 0; index < h_.num_total_; ++index) {
-      max_so_far = std::max(max_so_far, h_.new_count(index));
+      max_so_far = (std::max)(max_so_far, h_.new_count(index));
     }
 
     return max_so_far;
@@ -187,7 +187,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
 
     // erase from base area
     auto eptr = h_.entries_ + offset.start();
-    size_t ncopy = std::min(n, nnew);
+    size_t ncopy = (std::min)(n, nnew);
     std::copy(&eptr[ragged_index + 1], &eptr[ncopy], &eptr[ragged_index]);
     if(nnew > n) {
       // shift out of overflow area, if needed
@@ -246,7 +246,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
       auto & overflow = (*h_.overflow_map_)[index];
       overflow.insert(overflow.begin(), eptr[n - 1]);
     }
-    size_t ncopy = std::min(n - 1, nnew);
+    size_t ncopy = (std::min)(n - 1, nnew);
     std::copy_backward(&eptr[ragged_index], &eptr[ncopy], &eptr[ncopy + 1]);
     eptr[ragged_index] = value;
     return &eptr[ragged_index];

@@ -134,7 +134,7 @@ public:
 
       size_t num_existing = coi.count();
       size_t count = new_count(index);
-      size_t base_count = std::min(count, num_existing);
+      size_t base_count = (std::min)(count, num_existing);
 
       std::copy_n(eptr, base_count, cptr);
       cptr += base_count;
