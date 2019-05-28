@@ -55,7 +55,7 @@ initialize_sparse_field(mesh<ro> mesh, sparse_field_mutator f) {
   } // for
 } // initialize_pressure
 
-flecsi_register_task(initialize_sparse_field, example, loc, single);
+flecsi_register_task(initialize_sparse_field, example, loc, index);
 
 // This task prints the non-zero entries of the sparse field.
 
@@ -69,7 +69,7 @@ print_sparse_field(mesh<ro> mesh, sparse_field<ro> f) {
   } // for
 } // print_pressure
 
-flecsi_register_task(print_sparse_field, example, loc, single);
+flecsi_register_task(print_sparse_field, example, loc, index);
 
 } // namespace example
 
@@ -88,7 +88,7 @@ driver(int argc, char ** argv) {
 
     auto f = flecsi_get_mutator(m, example, field, double, sparse, 0, 5);
 
-    flecsi_execute_task(initialize_sparse_field, example, single, m, f);
+    flecsi_execute_task(initialize_sparse_field, example, index, m, f);
   } // scope
 
   {
@@ -96,7 +96,7 @@ driver(int argc, char ** argv) {
 
     auto f = flecsi_get_handle(m, example, field, double, sparse, 0);
 
-    flecsi_execute_task(print_sparse_field, example, single, m, f);
+    flecsi_execute_task(print_sparse_field, example, index, m, f);
   } // scope
 
 } // driver

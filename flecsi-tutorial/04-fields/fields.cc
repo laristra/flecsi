@@ -38,7 +38,7 @@ namespace example {
 // field with the id of the cell on which it is defined.
 
 void
-initialize_field(mesh<ro> mesh, field<rw> f) {
+initialize_field(mesh<rw> mesh, field<rw> f) {
   for(auto c : mesh.cells(owned)) {
     f(c) = double(c->id());
   } // for
@@ -46,7 +46,7 @@ initialize_field(mesh<ro> mesh, field<rw> f) {
 
 // Task registration is as usual...
 
-flecsi_register_task(initialize_field, example, loc, single);
+flecsi_register_task(initialize_field, example, loc, index);
 
 // This task prints the field values.
 
@@ -59,7 +59,7 @@ print_field(mesh<ro> mesh, field<ro> f) {
 
 // Task registration is as usual...
 
-flecsi_register_task(print_field, example, loc, single);
+flecsi_register_task(print_field, example, loc, index);
 
 } // namespace example
 
@@ -76,8 +76,8 @@ driver(int argc, char ** argv) {
 
   // Task execution is as usual...
 
-  flecsi_execute_task(initialize_field, example, single, m, f);
-  flecsi_execute_task(print_field, example, single, m, f);
+  flecsi_execute_task(initialize_field, example, index, m, f);
+  flecsi_execute_task(print_field, example, index, m, f);
 
 } // driver
 

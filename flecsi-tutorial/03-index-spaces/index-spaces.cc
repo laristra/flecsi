@@ -51,7 +51,7 @@ simple(mesh<ro> mesh) {
 
 // Task registration is as usual...
 
-flecsi_register_task(simple, example, loc, single);
+flecsi_register_task(simple, example, loc, index);
 
 } // namespace example
 
@@ -67,7 +67,7 @@ driver(int argc, char ** argv) {
 
   // Task execution is as usual...
 
-  flecsi_execute_task(simple, example, single, m);
+  flecsi_execute_task(simple, example, index, m);
 
 } // driver
 
