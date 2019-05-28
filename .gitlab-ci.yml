@@ -107,6 +107,13 @@ before_script:
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" ]];
       then
+        cd ${CI_PROJECT_DIR}/build/;
+        source /usr/local/bin/flecsi-tutorial.sh;
+        cd ../flecsi-tutorial;
+        cd 00-driver;
+        flecsit compile driver.cc;
+        ./driver;
+        echo 'Done compiling and running driver tutorial.' 
         git clone --recursive https://github.com/laristra/flecsale.git;
         cd flecsale/flecsi;
         git fetch;
