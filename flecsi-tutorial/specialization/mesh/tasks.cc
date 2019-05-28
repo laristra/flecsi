@@ -19,7 +19,7 @@
 namespace flecsi {
 namespace tutorial {
 
-flecsi_register_task(initialize_mesh, flecsi::tutorial, loc, single);
+flecsi_register_task(initialize_mesh, flecsi::tutorial, loc, index);
 
 } // namespace tutorial
 } // namespace flecsi
