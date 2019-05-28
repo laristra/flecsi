@@ -174,6 +174,26 @@ cinch_add_unit(simple_task
     ${CINCH_RUNTIME_LIBRARIES}
 )
 
+
+#
+# Test basic task calling gpu_task
+#
+
+cinch_add_unit(gpu_task
+  SOURCES
+    test/gpu_task.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
+  DEFINES
+    -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    FleCSI
+    ${CINCH_RUNTIME_LIBRARIES}
+  NOCI
+)
+
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 #
 # Test basic task to test future_handle
@@ -612,6 +632,30 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       #   THREADS 2
       #   NOCI
       # )
+
+    cinch_add_unit(test_mpi_wo_permissions
+      SOURCES
+        test/test_mpi_wo_permissions.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 1
+      NOCI
+    )
+
     endif() # mpi
 
   endif() # (ENABLE_PARMETIS)
@@ -648,6 +692,16 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         FleCSI
         ${CINCH_RUNTIME_LIBRARIES}
       THREADS 1
+    )
+
+    cinch_add_unit(serdez
+      SOURCES
+        test/legion/serdez.cc
+      DEFINES
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY
+        ${UNIT_POLICY}
+      THREADS 4
     )
 
     if(ENABLE_PARMETIS)

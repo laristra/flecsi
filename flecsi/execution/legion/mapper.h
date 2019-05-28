@@ -71,6 +71,8 @@ public:
         local,
         "default"),
       machine(machine) {
+    using namespace Legion;
+    using namespace Legion::Mapping;
     using legion_machine = Legion::Machine;
     using legion_proc = Legion::Processor;
 
@@ -99,6 +101,36 @@ public:
           local_sysmem = m;
       } // end for
     } // end for
+
+    // Get our local memories
+    {
+      Machine::MemoryQuery sysmem_query(machine);
+      sysmem_query.local_address_space();
+      sysmem_query.only_kind(Memory::SYSTEM_MEM);
+      local_sysmem = sysmem_query.first();
+      assert(local_sysmem.exists());
+    }
+    if(!local_gpus.empty()) {
+      Machine::MemoryQuery zc_query(machine);
+      zc_query.local_address_space();
+      zc_query.only_kind(Memory::Z_COPY_MEM);
+      local_zerocopy = zc_query.first();
+      assert(local_zerocopy.exists());
+    }
+    else {
+      local_zerocopy = Memory::NO_MEMORY;
+    }
+    if(local_kind == Processor::TOC_PROC) {
+      Machine::MemoryQuery fb_query(machine);
+      fb_query.local_address_space();
+      fb_query.only_kind(Memory::GPU_FB_MEM);
+      fb_query.best_affinity_to(local_proc);
+      local_framebuffer = fb_query.first();
+      assert(local_framebuffer.exists());
+    }
+    else {
+      local_framebuffer = Memory::NO_MEMORY;
+    }
 
     {
       clog_tag_guard(legion_mapper);
@@ -165,10 +197,202 @@ public:
   } // default_policy_select_instance_region
 
   /*!
+   THis function will find a CPU variat for the task
+  */
+  Legion::VariantID find_cpu_variant(const Legion::Mapping::MapperContext ctx,
+    Legion::TaskID task_id) {
+    std::map<Legion::TaskID, Legion::VariantID>::const_iterator finder =
+      cpu_variants.find(task_id);
+    if(finder != cpu_variants.end())
+      return finder->second;
+    std::vector<Legion::VariantID> variants;
+    runtime->find_valid_variants(
+      ctx, task_id, variants, Legion::Processor::LOC_PROC);
+    assert(variants.size() == 1); // should be exactly one for pennant
+    cpu_variants[task_id] = variants[0];
+    return variants[0];
+  }
+
+  Legion::VariantID find_omp_variant(const Legion::Mapping::MapperContext ctx,
+    Legion::TaskID task_id) {
+    using namespace Legion;
+    std::map<TaskID, VariantID>::const_iterator finder =
+      omp_variants.find(task_id);
+    if(finder != omp_variants.end())
+      return finder->second;
+    std::vector<VariantID> variants;
+    runtime->find_valid_variants(ctx, task_id, variants, Processor::OMP_PROC);
+    assert(variants.size() == 1); // should be exactly one for pennant
+    omp_variants[task_id] = variants[0];
+    return variants[0];
+  }
+
+  Legion::VariantID find_gpu_variant(const Legion::Mapping::MapperContext ctx,
+    Legion::TaskID task_id) {
+    using namespace Legion;
+    std::map<TaskID, VariantID>::const_iterator finder =
+      gpu_variants.find(task_id);
+    if(finder != gpu_variants.end())
+      return finder->second;
+    std::vector<VariantID> variants;
+    runtime->find_valid_variants(ctx, task_id, variants, Processor::TOC_PROC);
+    assert(variants.size() == 1); // should be exactly one for pennant
+    gpu_variants[task_id] = variants[0];
+    return variants[0];
+  }
+
+  void creade_reduction_instance(const Legion::Mapping::MapperContext ctx,
+    const Legion::Task & task,
+    Legion::Mapping::Mapper::MapTaskOutput & output,
+    const Legion::Memory & target_mem,
+    const size_t & indx) {
+    // using dummy constraints for REDUCTION
+    std::set<Legion::FieldID> dummy_fields;
+    Legion::TaskLayoutConstraintSet dummy_constraints;
+
+    size_t instance_size = 0;
+    clog_assert(
+      default_create_custom_instances(ctx, task.target_proc, target_mem,
+        task.regions[indx], indx, dummy_fields, dummy_constraints,
+        false /*need check*/, output.chosen_instances[indx], &instance_size),
+      " ERROR: FleCSI mapper failed to allocate reduction instance");
+
+    clog(info) << "task " << task.get_task_name()
+               << " allocates physical instance with size " << instance_size
+               << " for the region requirement #" << indx << std::endl;
+
+    if(instance_size > 1000000000) {
+      clog(error) << "task " << task.get_task_name()
+                  << " is trying to allocate physical instance with \
+           the size > than 1 Gb("
+                  << instance_size << " )"
+                  << " for the region requirement # " << indx << std::endl;
+    } // if
+  } // create reduction instance
+
+  void create_compacted_instance(const Legion::Mapping::MapperContext ctx,
+    const Legion::Task & task,
+    Legion::Mapping::Mapper::MapTaskOutput & output,
+    const Legion::Memory & target_mem,
+    const Legion::LayoutConstraintSet & layout_constraints,
+    const size_t & indx) {
+    using namespace Legion;
+    using namespace Legion::Mapping;
+    const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
+      task.regions[indx].region, target_mem);
+    auto & key2 = task.regions[indx].privilege_fields;
+    instance_map_t::const_iterator finder1 = local_instances_.find(key1);
+    if(finder1 != local_instances_.end()) {
+      const field_instance_map_t & innerMap = finder1->second;
+      field_instance_map_t::const_iterator finder2 = innerMap.find(key2);
+      if(finder2 != innerMap.end()) {
+        for(size_t j = 0; j < 3; j++) {
+          output.chosen_instances[indx + j].clear();
+          output.chosen_instances[indx + j].push_back(finder2->second);
+        } // for
+        return;
+      } // if
+    } // if
+
+    Legion::Mapping::PhysicalInstance result;
+    std::vector<Legion::LogicalRegion> regions;
+    bool created;
+
+    // creating physical instance for the compacted storaged
+
+    clog_assert((task.regions.size() >= (indx + 2)),
+      "ERROR:: wrong number of regions passed to the task wirth \
+               the  tag = MAPPER_COMPACTED_STORAGE");
+
+    clog_assert((task.regions[indx].region.exists()),
+      "ERROR:: pasing not existing REGION to the mapper");
+
+    // compacting region requirements for exclusive, shared and ghost into one
+    // instance
+    regions.push_back(task.regions[indx].region);
+    regions.push_back(task.regions[indx + 1].region);
+    regions.push_back(task.regions[indx + 2].region);
+
+    size_t instance_size = 0;
+    clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
+                  layout_constraints, regions, result, created,
+                  true /*acquire*/, GC_NEVER_PRIORITY, true, &instance_size),
+      "ERROR: FleCSI mapper couldn't create an instance");
+
+    clog(info) << "task " << task.get_task_name()
+               << " allocates physical instance with size " << instance_size
+               << " for the region requirement #" << indx << std::endl;
+
+    if(instance_size > 1000000000) {
+      clog(error) << "task " << task.get_task_name()
+                  << " is trying to allocate physical compacted instance with \
+                the size > than 1 Gb("
+                  << instance_size << " )"
+                  << " for the region requirement # " << indx << std::endl;
+    }
+
+    for(size_t j = 0; j < 3; j++) {
+      output.chosen_instances[indx + j].clear();
+      output.chosen_instances[indx + j].push_back(result);
+    } // for
+    local_instances_[key1][key2] = result;
+  } // create_compacted_instance
+
+  void create_instance(const Legion::Mapping::MapperContext ctx,
+    const Legion::Task & task,
+    Legion::Mapping::Mapper::MapTaskOutput & output,
+    const Legion::Memory & target_mem,
+    const Legion::LayoutConstraintSet & layout_constraints,
+    const size_t & indx) {
+    using namespace Legion;
+    using namespace Legion::Mapping;
+    const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
+      task.regions[indx].region, target_mem);
+    auto key2 = task.regions[indx].privilege_fields;
+    instance_map_t::const_iterator finder1 = local_instances_.find(key1);
+    if(finder1 != local_instances_.end()) {
+      const field_instance_map_t & innerMap = finder1->second;
+      field_instance_map_t::const_iterator finder2 = innerMap.find(key2);
+      if(finder2 != innerMap.end()) {
+        output.chosen_instances[indx].clear();
+        output.chosen_instances[indx].push_back(finder2->second);
+        return;
+      } // if
+    } // if
+
+    Legion::Mapping::PhysicalInstance result;
+    std::vector<Legion::LogicalRegion> regions;
+    bool created;
+
+    regions.push_back(task.regions[indx].region);
+
+    size_t instance_size = 0;
+    clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
+                  layout_constraints, regions, result, created,
+                  true /*acquire*/, GC_NEVER_PRIORITY, true, &instance_size),
+      "FLeCSI mapper failed to allocate instance");
+
+    clog(info) << "task " << task.get_task_name()
+               << " allocates physical instance with size " << instance_size
+               << " for the region requirement #" << indx << std::endl;
+
+    if(instance_size > 1000000000) {
+      clog(error)
+        << "task " << task.get_task_name()
+        << " is trying to allocate physical instance with the size > than 1 Gb("
+        << instance_size << " )"
+        << " for the region requirement # " << indx << std::endl;
+    } // if
+
+    output.chosen_instances[indx].push_back(result);
+    local_instances_[key1][key2] = result;
+  } // create_instance
+
+  /*!
    Specialization of the map_task funtion for FLeCSI
    By default, map_task will execute Legions map_task from DefaultMapper.
    In the case the launcher has been tagged with the
-   "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical
+     "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical
    instance for exclusive, shared and ghost partitions for each data handle
 
     @param ctx Mapper Context
@@ -181,16 +405,39 @@ public:
     const Legion::Task & task,
     const Legion::Mapping::Mapper::MapTaskInput & input,
     Legion::Mapping::Mapper::MapTaskOutput & output) {
-    DefaultMapper::map_task(ctx, task, input, output);
 
 #ifdef MAPPER_COMPACTION
-    if((task.tag == MAPPER_COMPACTED_STORAGE) && (task.regions.size() > 0)) {
+    using namespace Legion;
+    using namespace Legion::Mapping;
 
-      Legion::Memory target_mem =
-        DefaultMapper::default_policy_select_target_memory(
-          ctx, task.target_proc, task.regions[0]);
+    if((task.tag & PREFER_GPU) && !local_gpus.empty()) {
+      output.chosen_variant = find_gpu_variant(ctx, task.task_id);
+      output.target_procs.push_back(task.target_proc);
+    }
+    else if((task.tag & PREFER_OMP) && !local_omps.empty()) {
+      output.chosen_variant = find_omp_variant(ctx, task.task_id);
+      output.target_procs = local_omps;
+    }
+    else {
+      output.chosen_variant = find_cpu_variant(ctx, task.task_id);
+      output.target_procs = local_cpus;
+    }
 
-      // creating ordering constraint
+    output.chosen_instances.resize(task.regions.size());
+
+    if(task.regions.size() > 0) {
+
+      Legion::Memory target_mem;
+      //   =
+      //     DefaultMapper::default_policy_select_target_memory(
+      //       ctx, task.target_proc, task.regions[0]);
+
+      if((task.tag & PREFER_GPU) && !local_gpus.empty())
+        target_mem = local_framebuffer;
+      else
+        target_mem = local_sysmem;
+
+      // creating ordering constraint (SOA )
       std::vector<Legion::DimensionKind> ordering;
       ordering.push_back(Legion::DimensionKind::DIM_Y);
       ordering.push_back(Legion::DimensionKind::DIM_X);
@@ -216,55 +463,27 @@ public:
         layout_constraints.add_constraint(
           Legion::FieldConstraint(all_fields, true));
 
-        Legion::Mapping::PhysicalInstance result;
-        std::vector<Legion::LogicalRegion> regions;
-        bool created;
+        // creating physical instance for the reduction task
+        if(task.regions[indx].privilege == REDUCE) {
+          creade_reduction_instance(ctx, task, output, target_mem, indx);
+        }
+        else if(task.regions[indx].tag == EXCLUSIVE_LR) {
 
-        if(task.regions[indx].tag == EXCLUSIVE_LR) {
-
-          clog_assert((task.regions.size() >= (indx + 2)),
-            "ERROR:: wrong number of regions passed to the task wirth \
-               the  tag = MAPPER_COMPACTED_STORAGE");
-
-          clog_assert((task.regions[indx].region.exists()),
-            "ERROR:: pasing not existing REGION to the mapper");
-          regions.push_back(task.regions[indx].region);
-          regions.push_back(task.regions[indx + 1].region);
-          regions.push_back(task.regions[indx + 2].region);
-
-          //          runtime->find_or_create_physical_instance(ctx, target_mem,
-          //                        layout_constraints, regions, result,
-          //                        created, true /*acquire*/,
-          //                        GC_NEVER_PRIORITY);
-
-          clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
-                        layout_constraints, regions, result, created,
-                        true /*acquire*/, GC_NEVER_PRIORITY),
-            "ERROR: FleCSI mapper couldn't create an instance");
-
-          for(size_t j = 0; j < 3; j++) {
-            output.chosen_instances[indx + j].clear();
-            output.chosen_instances[indx + j].push_back(result);
-
-          } // for
-
+          create_compacted_instance(
+            ctx, task, output, target_mem, layout_constraints, indx);
           indx = indx + 2;
         }
         else {
-
-          regions.push_back(task.regions[indx].region);
-
-          clog_assert(runtime->find_or_create_physical_instance(ctx, target_mem,
-                        layout_constraints, regions, result, created,
-                        true /*acquire*/, GC_NEVER_PRIORITY),
-            "FLeCSI mapper failed to allocate instance");
-
-          output.chosen_instances[indx].push_back(result);
-
+          create_instance(
+            ctx, task, output, target_mem, layout_constraints, indx);
         } // end if
       } // end for
 
     } // end if
+
+    runtime->acquire_instances(ctx, output.chosen_instances);
+#else
+    DefaultMapper::map_task(ctx, task, input, output);
 #endif
 
   } // map_task
@@ -273,8 +492,11 @@ public:
     const Legion::Task & task,
     const Legion::Mapping::Mapper::SliceTaskInput & input,
     Legion::Mapping::Mapper::SliceTaskOutput & output) {
+
     using legion_proc = Legion::Processor;
     context_t & context_ = context_t::instance();
+
+    using namespace Legion;
 
     if(task.tag == MAPPER_SUBRANK_LAUNCH) {
       // expect a 1-D index domain
@@ -317,15 +539,74 @@ public:
       return;
     } // MAPPER_FORCE_RANK_MATCH
 
-    DefaultMapper::slice_task(ctx, task, input, output);
-    // end else
-  }
+    // We've already been control replicated, so just divide our points
+    // over the local processors, depending on which kind we prefer
+    if((task.tag == PREFER_GPU) && !local_gpus.empty()) {
+      unsigned local_gpu_index = 0;
+      for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
+        TaskSlice slice;
+        slice.domain = Domain(itr.p, itr.p);
+        slice.proc = local_gpus[local_gpu_index++];
+        if(local_gpu_index == local_gpus.size())
+          local_gpu_index = 0;
+        slice.recurse = false;
+        slice.stealable = false;
+        output.slices.push_back(slice);
+      }
+    }
+    else if((task.tag == PREFER_OMP) && !local_omps.empty()) {
+      unsigned local_omp_index = 0;
+      for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
+        TaskSlice slice;
+        slice.domain = Domain(itr.p, itr.p);
+        slice.proc = local_omps[local_omp_index++];
+        if(local_omp_index == local_omps.size())
+          local_omp_index = 0;
+        slice.recurse = false;
+        slice.stealable = false;
+        output.slices.push_back(slice);
+      }
+    }
+    else {
+      // Opt for our cpus instead of our openmap processors
+      unsigned local_cpu_index = 0;
+      for(Domain::DomainPointIterator itr(input.domain); itr; itr++) {
+        TaskSlice slice;
+        slice.domain = Domain(itr.p, itr.p);
+        slice.proc = local_cpus[local_cpu_index++];
+        if(local_cpu_index == local_cpus.size())
+          local_cpu_index = 0;
+        slice.recurse = false;
+        slice.stealable = false;
+        output.slices.push_back(slice);
+      }
+    }
+
+  } // slice_task
 
 private:
   std::map<Legion::Processor, std::map<Realm::Memory::Kind, Realm::Memory>>
     proc_mem_map;
-  Realm::Memory local_sysmem;
   Realm::Machine machine;
+
+  // the map of the locac intances that have been already created
+  // the first key is the pair of Logical region and Memory that is
+  // used as an identifier for the instance, second key is fid
+  typedef std::map<std::set<Legion::FieldID>, Legion::Mapping::PhysicalInstance>
+    field_instance_map_t;
+
+  typedef std::map<std::pair<Legion::LogicalRegion, Legion::Memory>,
+    field_instance_map_t>
+    instance_map_t;
+
+  instance_map_t local_instances_;
+
+protected:
+  std::map<Legion::TaskID, Legion::VariantID> cpu_variants;
+  std::map<Legion::TaskID, Legion::VariantID> gpu_variants;
+  std::map<Legion::TaskID, Legion::VariantID> omp_variants;
+
+  Legion::Memory local_sysmem, local_zerocopy, local_framebuffer;
 };
 
 /*!
