@@ -36,22 +36,25 @@ assign(accessor<rw> ia) {
 
 flecsi_register_task(assign, index_test, loc, index);
 
-void
-print(accessor<ro> ia) {
-  flog(info) << "Value: " << ia << std::endl;
+int
+check(accessor<ro> ia) {
+
+  FTEST();
+
+  ASSERT_EQ(ia, flecsi_color());
+
+  return 0;
 } // print
 
-flecsi_register_task(print, index_test, loc, index);
+flecsi_register_task(check, index_test, loc, index);
 
 } // namespace index_test
 
 int
 index_topology(int argc, char ** argv) {
 
-  FTEST();
-
   flecsi_execute_task(assign, index_test, index, fh);
-  flecsi_execute_task(print, index_test, index, fh);
+  flecsi_execute_task(check, index_test, index, fh);
 
   return 0;
 } // index
