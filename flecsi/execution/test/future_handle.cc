@@ -25,7 +25,7 @@ using handle_t =
 void
 future_dump(handle_t<double> x) {
   double tmp = x.get();
-  std::cout << " future = "<< x.get() << std::endl;
+  std::cout << " future = " << x.get() << std::endl;
 }
 
 flecsi_register_task(future_dump, , loc, single);

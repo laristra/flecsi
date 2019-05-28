@@ -39,8 +39,8 @@ hpx_context_policy_t::color() const {
 // Main HPX thread, does nothing but wait for the application to exit
 int
 hpx_context_policy_t::hpx_main(int (*driver)(int, char *[]),
-    int argc,
-    char * argv[]) {
+  int argc,
+  char * argv[]) {
 
   // initialize executors (possible only after runtime is active)
   exec_ = hpx::threads::executors::pool_executor{"default"};
@@ -57,17 +57,17 @@ hpx_context_policy_t::hpx_main(int (*driver)(int, char *[]),
 
 int
 hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
-    int argc,
-    char * argv[]) {
+  int argc,
+  char * argv[]) {
 
   // Create the resource partitioner
   std::vector<std::string> const cfg = {// allocate at least two cores
-      "hpx.force_min_os_threads!=2",
-      // make sure hpx_main is always executed
-      "hpx.run_hpx_main!=1",
-      // allow for unknown command line options
-      "hpx.commandline.allow_unknown!=1",
-      // disable HPX' short options
+    "hpx.force_min_os_threads!=2",
+    // make sure hpx_main is always executed
+    "hpx.run_hpx_main!=1",
+    // allow for unknown command line options
+    "hpx.commandline.allow_unknown!=1",
+    // disable HPX' short options
     "hpx.commandline.aliasing!=0"};
 
   hpx::resource::partitioner rp{

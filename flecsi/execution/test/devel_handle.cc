@@ -35,12 +35,12 @@ using field = dense_accessor<double, EP, SP, GP>;
 
 flecsi_register_data_client(mesh_t, clients, m);
 flecsi_register_field(mesh_t,
-    data,
-    pressure,
-    double,
-    dense,
-    1,
-    index_spaces::cells);
+  data,
+  pressure,
+  double,
+  dense,
+  1,
+  index_spaces::cells);
 
 //----------------------------------------------------------------------------//
 // Initialize pressure
@@ -83,8 +83,8 @@ flecsi_register_task(update_pressure, flecsi::execution, loc, single);
 void
 print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
   {
-  clog_tag_guard(devel_handle);
-  clog(info) << "print_mesh task" << std::endl;
+    clog_tag_guard(devel_handle);
+    clog(info) << "print_mesh task" << std::endl;
   } // scope
 
   auto & context = context_t::instance();
@@ -95,7 +95,7 @@ print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
     const size_t cid = c->template id<0>();
 
     {
-    clog_tag_guard(devel_handle);
+      clog_tag_guard(devel_handle);
       clog(trace) << "color: " << context.color() << " cell id: (" << cid
                   << ", " << cell_map[cid] << ")" << std::endl;
       clog(trace) << "color: " << context.color() << " pressure: " << p(c)
@@ -107,11 +107,11 @@ print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
       const size_t vid = v->template id<0>();
 
       {
-      clog_tag_guard(devel_handle);
+        clog_tag_guard(devel_handle);
         clog(trace) << "color: " << context.color() << " vertex id: (" << vid
                     << ", " << vertex_map[vid] << ") " << vcount << std::endl;
 
-      point_t coord = v->coordinates();
+        point_t coord = v->coordinates();
         clog(trace) << "color: " << context.color() << " coordinates: ("
                     << coord[0] << ", " << coord[1] << ")" << std::endl;
       } // scope
@@ -130,8 +130,8 @@ flecsi_register_task(print_mesh, flecsi::execution, loc, single);
 void
 specialization_tlt_init(int argc, char ** argv) {
   {
-  clog_tag_guard(devel_handle);
-  clog(info) << "specialization_tlt_init function" << std::endl;
+    clog_tag_guard(devel_handle);
+    clog(info) << "specialization_tlt_init function" << std::endl;
   } // scope
 
   supplemental::do_test_mesh_2d_coloring();
@@ -144,8 +144,8 @@ specialization_tlt_init(int argc, char ** argv) {
 void
 specialization_spmd_init(int argc, char ** argv) {
   {
-  clog_tag_guard(devel_handle);
-  clog(info) << "specialization_spmd_init function" << std::endl;
+    clog_tag_guard(devel_handle);
+    clog(info) << "specialization_spmd_init function" << std::endl;
   } // scope
 
   auto mh = flecsi_get_client_handle(mesh_t, clients, m);

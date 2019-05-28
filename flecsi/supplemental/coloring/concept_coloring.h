@@ -134,10 +134,10 @@ generic_coloring(typename COLORING_POLICY::mesh_definition_t & md,
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
   {
-  size_t offset{0};
+    size_t offset{0};
     for(auto i : primary) {
-    primary_indices_map[offset++] = i;
-  } // for
+      primary_indices_map[offset++] = i;
+    } // for
   } // scope
 
   // Create a map version of the remote info for lookups below.
@@ -148,24 +148,24 @@ generic_coloring(typename COLORING_POLICY::mesh_definition_t & md,
 
   // Populate exclusive and shared primary information
   {
-  size_t offset{0};
+    size_t offset{0};
 
     for(auto i : std::get<0>(primary_nn_info)) {
-    if(i.size()) {
+      if(i.size()) {
         primary_coloring.shared.insert(flecsi::coloring::entity_info_t(
           primary_indices_map[offset], rank, offset, i));
 
-      // Collect all colors with whom we require communication
-      // to send shared information.
+        // Collect all colors with whom we require communication
+        // to send shared information.
         primary_coloring_info.shared_users =
           flecsi::utils::set_union(primary_coloring_info.shared_users, i);
-    }
-    else {
+      }
+      else {
         primary_coloring.exclusive.insert(flecsi::coloring::entity_info_t(
           primary_indices_map[offset], rank, offset, i));
-    } // if
+      } // if
 
-    ++offset;
+      ++offset;
     } // for
   } // scope
 
@@ -177,8 +177,8 @@ generic_coloring(typename COLORING_POLICY::mesh_definition_t & md,
     shared_primary_map;
   {
     for(auto i : primary_coloring.shared) {
-    shared_primary_map[i.id] = i;
-  } // for
+      shared_primary_map[i.id] = i;
+    } // for
   } // scope
 
   //--------------------------------------------------------------------------//

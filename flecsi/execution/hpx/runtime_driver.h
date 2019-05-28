@@ -11,7 +11,6 @@
 /// \date Initial file creation: Aug 01, 2016
 ///
 
-
 namespace flecsi {
 namespace execution {
 
@@ -32,7 +31,7 @@ void specialization_tlt_init(int argc, char ** argv);
 #endif
 
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
-void specialization_spmd_init(int argc, char **argv);
+void specialization_spmd_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
 /*! @cond IGNORE */

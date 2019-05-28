@@ -815,7 +815,7 @@ public:
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
     auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
-      ID_STORAGE_TYPE2, STORAGE_TYPE2> const*>(this);
+      ID_STORAGE_TYPE2, STORAGE_TYPE2> const *>(this);
     assert(res != nullptr && "invalid cast");
     return *res;
   }

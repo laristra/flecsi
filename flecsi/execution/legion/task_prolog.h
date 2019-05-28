@@ -56,7 +56,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
    */
 
   task_prolog_t(Legion::Runtime * runtime,
-      Legion::Context & context,
+    Legion::Context & context,
     Legion::Domain & color_domain)
     : runtime(runtime), context(context), color_domain(color_domain) {
   } // task_prolog_t
@@ -78,13 +78,13 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
    */
 
   template<typename T,
-      size_t EXCLUSIVE_PERMISSIONS,
-      size_t SHARED_PERMISSIONS,
-      size_t GHOST_PERMISSIONS>
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
   void handle(dense_accessor_u<T,
-              EXCLUSIVE_PERMISSIONS,
-              SHARED_PERMISSIONS,
-              GHOST_PERMISSIONS> & a) {
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
     if(sparse) {
       return;
     }
@@ -115,12 +115,12 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
           //          owner_subregion_partitions.push_back(h.ghost_owners_subregion_lp);
           ghost_partitions.push_back(h.ghost_lp);
           entire_regions.push_back(h.entire_region);
-            fids.push_back(h.fid);
-            ghost_copy_args local_args;
-            local_args.data_client_hash = h.data_client_hash;
-            local_args.index_space = h.index_space;
+          fids.push_back(h.fid);
+          ghost_copy_args local_args;
+          local_args.data_client_hash = h.data_client_hash;
+          local_args.index_space = h.index_space;
           local_args.sparse = false;
-            args.push_back(local_args);
+          args.push_back(local_args);
 
           *(h.ghost_is_readable) = true;
 
@@ -263,15 +263,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       }
 
       auto ghost_owner_pos_fid =
-          LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+        LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
       rr_ghost.add_field(ghost_owner_pos_fid);
       rr_entries_ghost.add_field(ghost_owner_pos_fid);
 
       // TODO - circular dependency including internal_task.h
       auto constexpr key =
-          flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
-              .hash();
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
+          .hash();
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();
 
@@ -333,9 +333,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     if(read_phase) {
       if(!*(h.ghost_is_readable)) {
-          clog_tag_guard(prolog);
-          clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
-                      << std::endl;
+        clog_tag_guard(prolog);
+        clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
+                    << std::endl;
 
         // offsets
         ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
@@ -357,15 +357,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         //         color_partitions.push_back(h.offsets_color_lp);
         //          color_entries_partitions.push_back(h.entries_color_lp);
 
-          fids.push_back(h.fid);
+        fids.push_back(h.fid);
 
-          ghost_copy_args local_args;
-          local_args.data_client_hash = h.data_client_hash;
-          local_args.index_space = h.index_space;
-          local_args.sparse = true;
-          local_args.reserve = h.reserve;
-          local_args.max_entries_per_index = h.max_entries_per_index;
-          args.push_back(local_args);
+        ghost_copy_args local_args;
+        local_args.data_client_hash = h.data_client_hash;
+        local_args.index_space = h.index_space;
+        local_args.sparse = true;
+        local_args.reserve = h.reserve;
+        local_args.max_entries_per_index = h.max_entries_per_index;
+        args.push_back(local_args);
 
         *(h.ghost_is_readable) = true;
 
@@ -384,8 +384,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
   void handle(sparse_accessor<T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
     using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
@@ -446,7 +446,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     if(*(h.ghost_is_readable)) {
       *(h.ghost_is_readable) = false;
       *(h.write_phase_started) = true;
-  }
+    }
   }
 
   template<typename T>
@@ -476,7 +476,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   template<typename T>
   static
     typename std::enable_if_t<!std::is_base_of<dense_accessor_base_t, T>::value>
-  handle(T &) {} // handle
+    handle(T &) {} // handle
 
   // member variables
   Legion::Runtime * runtime;

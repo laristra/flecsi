@@ -1380,7 +1380,8 @@ private:
           entity_vertex_conn.emplace_back(std::move(ev2));
           entity_ids.emplace_back(entity_id);
 
-          max_cell_entity_conns = (std::max)(max_cell_entity_conns, conns.size());
+          max_cell_entity_conns =
+            (std::max)(max_cell_entity_conns, conns.size());
 
           auto ent =
             MESH_TYPE::template create_entity<Domain, DimensionToBuild>(

@@ -199,10 +199,9 @@ struct parmetis_colorer_t : public colorer_t {
       if(recv_cnts[r]) {
         rbuffers[r].resize(recv_cnts[r]);
         requests.push_back({});
-        MPI_Irecv(
-            &rbuffers[r][0], static_cast<int>(recv_cnts[r]),
-            utils::mpi_typetraits_u<idx_t>::type(), static_cast<int>(r),
-            0, MPI_COMM_WORLD, &requests[requests.size() - 1]);
+        MPI_Irecv(&rbuffers[r][0], static_cast<int>(recv_cnts[r]),
+          utils::mpi_typetraits_u<idx_t>::type(), static_cast<int>(r), 0,
+          MPI_COMM_WORLD, &requests[requests.size() - 1]);
       } // if
     } // for
 
@@ -210,10 +209,9 @@ struct parmetis_colorer_t : public colorer_t {
     for(size_t r(0); r < size; ++r) {
       if(send_cnts[r]) {
         sbuffers[r].resize(send_cnts[r]);
-        MPI_Send(
-            &sbuffers[r][0], static_cast<int>(send_cnts[r]),
-            utils::mpi_typetraits_u<idx_t>::type(), static_cast<int>(r),
-            0, MPI_COMM_WORLD);
+        MPI_Send(&sbuffers[r][0], static_cast<int>(send_cnts[r]),
+          utils::mpi_typetraits_u<idx_t>::type(), static_cast<int>(r), 0,
+          MPI_COMM_WORLD);
       } // if
     } // for
 
@@ -241,8 +239,8 @@ struct parmetis_colorer_t : public colorer_t {
 #endif
 
     clog_assert(primary.size() > 0,
-        "At least one rank has an empty primary coloring. Please either "
-        "increase the problem size or use fewer ranks");
+      "At least one rank has an empty primary coloring. Please either "
+      "increase the problem size or use fewer ranks");
 
     return primary;
   } // color

@@ -73,8 +73,8 @@ public:
   //! \param other  the other list
   template<typename U,
     std::size_t N,
-    typename = std::enable_if_t<(N<MAX_ENTRIES + 1)>> fixed_vector(
-      const fixed_vector<U, N> & other) : length_(other.size()) {
+    typename = std::enable_if_t<(N < MAX_ENTRIES + 1)>>
+  fixed_vector(const fixed_vector<U, N> & other) : length_(other.size()) {
     std::copy_n(other.begin(), length_, begin());
   }
 

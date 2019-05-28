@@ -64,7 +64,7 @@ struct executor_u {
   execute(Exec && exec, T fun, A && targs) {
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(fun));
     return hpx::async(
-        std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
+      std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
   } // execute_task
 }; // struct executor_u
 
@@ -118,8 +118,9 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
-    return context_t::instance().template register_task<
-      KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
+    return context_t::instance()
+      .template register_task<KEY, RETURN, ARG_TUPLE, DELEGATE>(
+        processor, launch, name);
   } // register_task
 
   ///
@@ -144,21 +145,20 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     auto fun = context_.task<KEY>();
 
     auto processor_type = context_.processor_type<KEY>();
-    if (processor_type == processor_type_t::mpi)
-    {
+    if(processor_type == processor_type_t::mpi) {
       {
         clog_tag_guard(execution);
         clog(info) << "Executing MPI task: " << KEY << std::endl;
       }
 
       return executor_u<RETURN, ARG_TUPLE>::execute(
-          context_t::instance().get_mpi_executor(),
-          std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
+        context_t::instance().get_mpi_executor(), std::move(fun),
+        std::make_tuple(std::forward<ARGS>(args)...));
     }
 
     return executor_u<RETURN, ARG_TUPLE>::execute(
-        context_t::instance().get_default_executor(),
-        std::move(fun), std::make_tuple(std::forward<ARGS>(args)...));
+      context_t::instance().get_default_executor(), std::move(fun),
+      std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -171,8 +171,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
    */
 
   template<size_t NAME, typename OPERATION>
-  static bool register_reduction_operation() {
-  } // register_reduction_operation
+  static bool register_reduction_operation() {} // register_reduction_operation
 
   //--------------------------------------------------------------------------//
   // Function interface.
@@ -183,7 +182,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     RETURN (*FUNCTION)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
-        .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
+      .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
   } // register_function
 
   ///
@@ -199,7 +198,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
     ARGS &&... args) {
     return handle(context_t::instance().function(handle.get_key()),
-        std::make_tuple(std::forward<ARGS>(args)...));
+      std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_function
 
 }; // struct hpx_execution_policy_t

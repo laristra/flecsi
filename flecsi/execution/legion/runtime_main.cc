@@ -50,8 +50,8 @@ main(int argc, char ** argv) {
     // cannot use the GASNet MPI conduit
     if(provided < MPI_THREAD_MULTIPLE)
       printf("ERROR: Your implementation of MPI does not support "
-           "MPI_THREAD_MULTIPLE which is required for use of the "
-           "GASNet MPI conduit with the Legion-MPI Interop!\n");
+             "MPI_THREAD_MULTIPLE which is required for use of the "
+             "GASNet MPI conduit with the Legion-MPI Interop!\n");
     assert(provided == MPI_THREAD_MULTIPLE);
   }
   else {
@@ -81,7 +81,7 @@ main(int argc, char ** argv) {
   // Add command-line options
   desc.add_options()("help,h", "Print this message and exit.")("tags,t",
     value(&tags)->implicit_value("0"),
-     "Enable the specified output tags, e.g., --tags=tag1,tag2."
+    "Enable the specified output tags, e.g., --tags=tag1,tag2."
     " Passing --tags by itself will print the available tags.");
   variables_map vm;
   parsed_options parsed =

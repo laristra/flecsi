@@ -13,9 +13,9 @@
                                                                               */
 
 #include <bitset>
-#include <tuple>
-#include <thread>
 #include <chrono>
+#include <thread>
+#include <tuple>
 
 #include <cinchtest.h>
 #include <flecsi/control/control.h>

@@ -37,8 +37,8 @@
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
-#include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/execution/hpx/future.h>
+#include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/export_definitions.h>
 
@@ -89,10 +89,7 @@ struct hpx_context_policy_t {
     Return the number of colors.
    */
 
-  std::size_t
-  colors()
-  const
-  {
+  std::size_t colors() const {
     return colors_;
   } // color
 
@@ -128,7 +125,7 @@ struct hpx_context_policy_t {
   //------------------------------------------------------------------------//
 
   using task_info_t =
-      std::tuple<processor_type_t, launch_t, std::string, void *>;
+    std::tuple<processor_type_t, launch_t, std::string, void *>;
 
   ///
   /// \tparam T The type of the function being registered.
@@ -139,12 +136,12 @@ struct hpx_context_policy_t {
   ///         false otherwise.
   ///
   template<typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE),
-      std::size_t KEY>
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    std::size_t KEY>
   bool register_function() {
     clog_assert(function_registry_.find(KEY) == function_registry_.end(),
-        "function has already been registered");
+      "function has already been registered");
 
     clog(info) << "Registering function: " << FUNCTION << std::endl;
 
@@ -172,25 +169,21 @@ struct hpx_context_policy_t {
   /// \param launch    The task launch type.
   /// \param name      The task name string.
   ///
-  template<
-      std::size_t KEY,
-      typename RETURN,
-      typename ARG_TUPLE,
-      RETURN (*FUNCTION)(ARG_TUPLE)>
-  bool register_task(
-      processor_type_t processor,
-      launch_t launch,
-      std::string const & name)
-  {
+  template<std::size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE)>
+  bool register_task(processor_type_t processor,
+    launch_t launch,
+    std::string const & name) {
     clog(info) << "Registering task " << name << " with key " << KEY
                << std::endl;
 
-    clog_assert(
-        task_registry_.find(KEY) == task_registry_.end(),
-        "task key already exists");
+    clog_assert(task_registry_.find(KEY) == task_registry_.end(),
+      "task key already exists");
 
     task_registry_[KEY] = std::make_tuple(
-        processor, launch, name, reinterpret_cast<void *>(FUNCTION));
+      processor, launch, name, reinterpret_cast<void *>(FUNCTION));
 
     return true;
   } // register_task
@@ -203,26 +196,21 @@ struct hpx_context_policy_t {
   /// \return A pointer to a std::function<void(void)> that may be cast
   ///         back to the original function type using reinterpret_cast.
   ///
-  template <std::size_t KEY>
+  template<std::size_t KEY>
   void * task() const {
 
     auto it = task_registry_.find(KEY);
 
-    clog_assert(
-        it != task_registry_.end(),
-        "task key does not exists");
+    clog_assert(it != task_registry_.end(), "task key does not exists");
 
     return std::get<3>(it->second);
   } // task
 
-  template <std::size_t KEY>
-  processor_type_t processor_type() const
-  {
+  template<std::size_t KEY>
+  processor_type_t processor_type() const {
     auto it = task_registry_.find(KEY);
 
-    clog_assert(
-        it != task_registry_.end(),
-        "task key does not exists");
+    clog_assert(it != task_registry_.end(), "task key does not exists");
 
     return std::get<0>(it->second);
   }
@@ -304,7 +292,7 @@ struct hpx_context_policy_t {
         T local_max = local_future.get();
         MPI_Allreduce(&local_max, &global_max, 1,
           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
-           MPI_COMM_WORLD);
+          MPI_COMM_WORLD);
         return global_max;
       });
     return gloabl_max_f;
@@ -343,7 +331,7 @@ struct hpx_context_policy_t {
         T local_min = local_future.get();
         MPI_Allreduce(&local_min, &global_min, 1,
           flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
-           MPI_COMM_WORLD);
+          MPI_COMM_WORLD);
         return global_min;
       });
     return global_min_f;
@@ -374,7 +362,6 @@ private:
   //--------------------------------------------------------------------------//
 
   int colors_ = 0;
-
 
   // Map to store task registration callback methods.
   std::map<std::size_t, task_info_t> task_registry_;

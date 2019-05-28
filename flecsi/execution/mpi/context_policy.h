@@ -65,8 +65,8 @@ struct mpi_context_policy_t {
       size_t exclusive_reserve)
       : type_size(type_size), num_exclusive(num_exclusive),
         num_shared(num_shared), num_ghost(num_ghost),
-    num_total(num_exclusive + num_shared + num_ghost),
-    max_entries_per_index(max_entries_per_index),
+        num_total(num_exclusive + num_shared + num_ghost),
+        max_entries_per_index(max_entries_per_index),
         exclusive_reserve(exclusive_reserve), reserve(exclusive_reserve),
         offsets(num_total), num_exclusive_entries(0) {
 
@@ -263,15 +263,15 @@ struct mpi_context_policy_t {
       MPI_Datatype target_type;
 
       MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
-                       compact_origin_lengs[ghost_owner].data(),
-                       compact_origin_disps[ghost_owner].data(),
+        compact_origin_lengs[ghost_owner].data(),
+        compact_origin_disps[ghost_owner].data(),
         flecsi::utils::mpi_typetraits_u<T>::type(), &origin_type);
       MPI_Type_commit(&origin_type);
       metadata.origin_types.insert({ghost_owner, origin_type});
 
       MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
-                       compact_target_lengs[ghost_owner].data(),
-                       compact_target_disps[ghost_owner].data(),
+        compact_target_lengs[ghost_owner].data(),
+        compact_target_disps[ghost_owner].data(),
         flecsi::utils::mpi_typetraits_u<T>::type(), &target_type);
       MPI_Type_commit(&target_type);
       metadata.target_types.insert({ghost_owner, target_type});
@@ -311,16 +311,16 @@ struct mpi_context_policy_t {
       MPI_Datatype target_type;
 
       MPI_Type_indexed(metadata.compact_origin_lengs[ghost_owner].size(),
-                       metadata.compact_origin_lengs[ghost_owner].data(),
-                       metadata.compact_origin_disps[ghost_owner].data(),
+        metadata.compact_origin_lengs[ghost_owner].data(),
+        metadata.compact_origin_disps[ghost_owner].data(),
         // flecsi::utils::mpi_typetraits_u<T>::type(),
         shared_ghost_type, &origin_type);
       MPI_Type_commit(&origin_type);
       metadata.origin_types.insert({ghost_owner, origin_type});
 
       MPI_Type_indexed(metadata.compact_target_lengs[ghost_owner].size(),
-                       metadata.compact_target_lengs[ghost_owner].data(),
-                       metadata.compact_target_disps[ghost_owner].data(),
+        metadata.compact_target_lengs[ghost_owner].data(),
+        metadata.compact_target_disps[ghost_owner].data(),
         // flecsi::utils::mpi_typetraits_u<T>::type(),
         shared_ghost_type, &target_type);
       MPI_Type_commit(&target_type);
@@ -442,7 +442,7 @@ struct mpi_context_policy_t {
 
       for(int i = 1; i < origin_disps[ghost_owner].size(); i++) {
         if(origin_disps[ghost_owner][i] - origin_disps[ghost_owner][i - 1] ==
-            1) {
+           1) {
           compact_origin_lengs[ghost_owner].back() =
             compact_origin_lengs[ghost_owner].back() + 1;
         }

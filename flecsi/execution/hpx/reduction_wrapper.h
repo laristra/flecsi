@@ -34,8 +34,7 @@ struct reduction_wrapper_u {
     TODO: Register the user-defined reduction operator with the runtime.
    */
 
-  static void registration_callback() {
-  } // registration_callback
+  static void registration_callback() {} // registration_callback
 
 }; // struct reduction_wrapper_u
 

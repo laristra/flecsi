@@ -59,7 +59,7 @@ main(int argc, char ** argv) {
   // Add command-line options
   desc.add_options()("help,h", "Print this message and exit.")("tags,t",
     value(&tags)->implicit_value("0"),
-     "Enable the specified output tags, e.g., --tags=tag1,tag2."
+    "Enable the specified output tags, e.g., --tags=tag1,tag2."
     " Passing --tags by itself will print the available tags.");
   variables_map vm;
   parsed_options parsed =
@@ -100,9 +100,9 @@ main(int argc, char ** argv) {
   // Initialize the cinchlog runtime
   clog_init(tags);
 
-   //-------------------------------------------------------------------------//
-   // DONE CLOG INIT
-   //-------------------------------------------------------------------------//
+  //-------------------------------------------------------------------------//
+  // DONE CLOG INIT
+  //-------------------------------------------------------------------------//
 
   // Execute the flecsi runtime.
   auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
