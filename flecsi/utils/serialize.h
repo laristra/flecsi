@@ -15,10 +15,10 @@
 
 #include <sstream>
 
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/device/back_inserter.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/iostreams/device/back_inserter.hpp>
+#include <boost/iostreams/stream.hpp>
 
 #include <boost/serialization/array.hpp>
 #include <boost/serialization/map.hpp>
@@ -33,7 +33,8 @@ namespace utils {
   The binary_serializer_t type provides dynamic serialization of arbitrary
   types through an insertion-style operator.
 
-  Attribution: https://stackoverflow.com/questions/3015582/direct-boost-serialization-to-char-array/5604782
+  Attribution:
+  https://stackoverflow.com/questions/3015582/direct-boost-serialization-to-char-array/5604782
  */
 
 struct binary_serializer_t {
@@ -55,13 +56,17 @@ struct binary_serializer_t {
     Synchronize with the underlying storage device.
    */
 
-  void flush() { stream_.flush(); }
-  
+  void flush() {
+    stream_.flush();
+  }
+
   /*!
     Reset the string device.
    */
 
-  void clear() { serial_data_.clear(); }
+  void clear() {
+    serial_data_.clear();
+  }
 
   /*!
     Return the bumber of bytes stored in the string device.
@@ -82,7 +87,8 @@ struct binary_serializer_t {
 private:
   std::string serial_data_;
   boost::iostreams::back_insert_device<std::string> inserter_;
-  boost::iostreams::stream<boost::iostreams::back_insert_device<std::string>> stream_;
+  boost::iostreams::stream<boost::iostreams::back_insert_device<std::string>>
+    stream_;
   boost::archive::binary_oarchive oa_;
 
 }; // struct binary_serializer_t
@@ -91,7 +97,8 @@ private:
   The binary_deserializer_t type provides dynamic de-serialization of arbitrary
   types through an extraction-style operator.
 
-  Attribution: https://stackoverflow.com/questions/3015582/direct-boost-serialization-to-char-array/5604782
+  Attribution:
+  https://stackoverflow.com/questions/3015582/direct-boost-serialization-to-char-array/5604782
  */
 
 struct binary_deserializer_t {
