@@ -38,8 +38,8 @@ before_script:
     GIT_SUBMODULE_STRATEGY: recursive
     CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
     CCACHE_UMASK: 000
-    DISTRO: ""
-    RUNTIME: ""
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
     CC: "gcc"
     CXX: "g++"
     CXXFLAGS: "-Werror -Wno-deprecated-declarations"
@@ -99,8 +99,9 @@ before_script:
         $HOME/.local/bin/gcovr .;
       fi;
     - |
-      if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Format" ]];
+      if [[ ${CI_JOB_STAGE} = "Canary" ]];
       then
+        echo 'Format Checking';
         cd ${CI_PROJECT_DIR}/build/;
         clang-format -version;
         make format && git diff --exit-code --ignore-submodules;
@@ -207,35 +208,41 @@ before_script:
 # Canary Jobs #
 ###############
 
-canary:fedora_mpi:
+canary:ubuntu_mpi:
   extends: .canary
   variables:
-    DISTRO: "fedora"
+    DISTRO: "ubuntu"
     RUNTIME: "mpi"
 
-canary:fedora_legion:
+canary:ubuntu_legion:
   extends: .canary
   variables:
-    DISTRO: "fedora"
+    DISTRO: "ubuntu"
     RUNTIME: "legion"
+
+canary:ubuntu_hpx:
+  extends: .canary
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "hpx"
+  allow_failure: true 
 
 ##############
 # Build Jobs #
 ##############
 
-build:ubuntu_mpi:
+.build:ubuntu_mpi:
   extends: .build
   variables:
     DISTRO: "ubuntu"
-    RUNTIME: "mpi"
 
 build:ubuntu_mpi_release:
-  extends: build:ubuntu_mpi
+  extends: .build:ubuntu_mpi
   variables:
     BUILD_TYPE: "Release"
 
 build:ubuntu_mpi_clang:
-  extends: build:ubuntu_mpi
+  extends: .build:ubuntu_mpi
   #before_script:
   #  - export CC=clang
   #  - export CXX=clang++
@@ -252,7 +259,6 @@ build:ubuntu_mpich_mpi:
   extends: .build
   variables:
     DISTRO: "ubuntu_mpich"
-    RUNTIME: "mpi"
 
 build:ubuntu_mpich_mpi_release:
   extends: build:ubuntu_mpich_mpi
@@ -272,9 +278,6 @@ build:ubuntu_mpich_mpi_clang_release:
 
 build:fedora_mpi:
   extends: .build
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "mpi"
 
 build:fedora_mpi_release:
   extends: build:fedora_mpi
@@ -296,7 +299,6 @@ build:fedora_mpich_mpi:
   extends: .build
   variables:
     DISTRO: "fedora_mpich"
-    RUNTIME: "mpi"
 
 build:fedora_mpich_mpi_release:
   extends: build:fedora_mpich_mpi
@@ -314,19 +316,19 @@ build:fedora_mpich_mpi_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-build:ubuntu_legion:
+.build:ubuntu_legion:
   extends: .build
   variables:
     DISTRO: "ubuntu"
     RUNTIME: "legion"
 
 build:ubuntu_legion_release:
-  extends: build:ubuntu_legion
+  extends: .build:ubuntu_legion
   variables:
     BUILD_TYPE: "Release"
 
 build:ubuntu_legion_clang:
-  extends: build:ubuntu_legion
+  extends: .build:ubuntu_legion
   variables:
     CC: clang
     CXX: clang++
@@ -361,7 +363,6 @@ build:ubuntu_mpich_legion_clang_release:
 build:fedora_legion:
   extends: .build
   variables:
-    DISTRO: "fedora"
     RUNTIME: "legion"
 
 build:fedora_legion_release:
@@ -405,7 +406,6 @@ build:fedora_mpich_legion_clang_release:
 build:fedora_hpx:
   extends: .build
   variables:
-    DISTRO: "fedora"
     RUNTIME: "hpx"
   allow_failure: true
 
@@ -419,21 +419,20 @@ build:fedora_hpx_clang:
 # Test Jobs #
 #############
 
-test:ubuntu_mpi:
+.test:ubuntu_mpi:
   extends: .test
   dependencies:
     - build:ubuntu_mpi
   variables:
     DISTRO: "ubuntu"
-    RUNTIME: "mpi"
 
 test:ubuntu_mpi_release:
-  extends: test:ubuntu_mpi
+  extends: .test:ubuntu_mpi
   dependencies:
     - build:ubuntu_mpi_release
 
 test:ubuntu_mpi_clang:
-  extends: test:ubuntu_mpi
+  extends: .test:ubuntu_mpi
   dependencies:
     - build:ubuntu_mpi_clang
 
@@ -448,7 +447,6 @@ test:ubuntu_mpich_mpi:
     - build:ubuntu_mpich_mpi
   variables:
     DISTRO: "ubuntu_mpich"
-    RUNTIME: "mpi"
 
 test:ubuntu_mpich_mpi_release:
   extends: test:ubuntu_mpich_mpi
@@ -469,9 +467,6 @@ test:fedora_mpi:
   extends: .test
   dependencies:
     - build:fedora_mpi
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "mpi"
 
 test:fedora_mpi_release:
   extends: test:fedora_mpi
@@ -494,7 +489,6 @@ test:fedora_mpich_mpi:
     - build:fedora_mpich_mpi
   variables:
     DISTRO: "fedora_mpich"
-    RUNTIME: "mpi"
 
 test:fedora_mpich_mpi_release:
   extends: test:fedora_mpich_mpi
@@ -511,7 +505,7 @@ test:fedora_mpich_mpi_clang_release:
   dependencies:
     - build:fedora_mpich_mpi_clang_release
 
-test:ubuntu_legion:
+.test:ubuntu_legion:
   extends: .test
   dependencies:
     - build:ubuntu_legion
@@ -520,12 +514,12 @@ test:ubuntu_legion:
     RUNTIME: "legion"
 
 test:ubuntu_legion_release:
-  extends: test:ubuntu_legion
+  extends: .test:ubuntu_legion
   dependencies:
     - build:ubuntu_legion_release
 
 test:ubuntu_legion_clang:
-  extends: test:ubuntu_legion
+  extends: .test:ubuntu_legion
   dependencies:
     - build:ubuntu_legion_clang
 
@@ -562,7 +556,6 @@ test:fedora_legion:
   dependencies:
     - build:fedora_legion
   variables:
-    DISTRO: "fedora"
     RUNTIME: "legion"
 
 test:fedora_legion_release:
@@ -608,7 +601,6 @@ test:fedora_hpx:
   dependencies:
     - build:fedora_hpx
   variables:
-    DISTRO: "fedora"
     RUNTIME: "hpx"
   allow_failure: true
 
@@ -641,35 +633,6 @@ test:fedora_hpx.ignoreNoCI:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
 
-###############
-# Format Jobs #
-###############
-
-format:fedora_mpi:
-  extends: .format
-  dependencies:
-    - build:fedora_mpi
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "mpi"
-
-format:fedora_legion:
-  extends: .format
-  dependencies:
-    - build:fedora_legion
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "legion"
-
-format:fedora_hpx:
-  extends: .format
-  dependencies:
-    - build:fedora_hpx
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "hpx"
-  allow_failure: true
-
 ##################
 # Tutorials Jobs #
 ##################
@@ -678,16 +641,12 @@ tutorials:fedora_mpi:
   extends: .tutorials
   dependencies:
     - build:fedora_mpi
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "mpi"
 
 tutorials:fedora_legion:
   extends: .tutorials
   dependencies:
     - build:fedora_legion
   variables:
-    DISTRO: "fedora"
     RUNTIME: "legion"
 
 #############
@@ -698,16 +657,12 @@ apps:fedora_mpi:
   extends: .apps
   dependencies:
     - build:fedora_mpi
-  variables:
-    DISTRO: "fedora"
-    RUNTIME: "mpi"
 
 apps:fedora_legion:
   extends: .apps
   dependencies:
     - build:fedora_legion
   variables:
-    DISTRO: "fedora"
     RUNTIME: "legion"
 
 ###############
