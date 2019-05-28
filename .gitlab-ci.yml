@@ -7,6 +7,7 @@ stages:
   - Build
   - Test
   - Format
+  - Tutorials
   - Apps
 
 variables:
@@ -51,8 +52,8 @@ before_script:
     - docker
   cache:
     #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
-    #key: ${CI_COMMIT_REF_SLUG}
-    key: ${DISTRO}-${RUNTIME}-${CC}
+    key: ${CI_COMMIT_REF_SLUG}
+    #key: ${DISTRO}-${RUNTIME}-${CC}
     paths:
       - ccache/
   artifacts:
@@ -105,15 +106,24 @@ before_script:
         make format && git diff --exit-code --ignore-submodules;
       fi;
     - |
-      if [[ ${CI_JOB_STAGE} = "Canary" ]];
+      if [[ ${CI_JOB_STAGE} = "Tutorials" ]];
       then
+        echo 'Building and Running Tutorials';
         cd ${CI_PROJECT_DIR}/build/;
         source /usr/local/bin/flecsi-tutorial.sh;
         cd ../flecsi-tutorial;
         cd 00-driver;
         flecsit compile driver.cc;
         ./driver;
-        echo 'Done compiling and running driver tutorial.' 
+        cd ../01-tasks;
+        flecsit compile tasks.cc;
+        ./tasks;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Apps" ]];
+      then
+        echo 'Building and Testing FleCSALE';
+        cd ${CI_PROJECT_DIR}/build/;
         git clone --recursive https://github.com/laristra/flecsale.git;
         cd flecsale/flecsi;
         git fetch;
@@ -148,6 +158,7 @@ before_script:
 .test:
   extends: .canary
   stage: Test
+  artifacts:
   dependencies:
     #- "build:${CI_JOB_NAME#*:}"
     - .build
@@ -159,6 +170,31 @@ before_script:
 .format:
   extends: .canary
   stage: Format
+  artifacts:
+  dependencies:
+    #- build:${CI_JOB_NAME#*:}
+    - .build
+
+###################
+# Tutorials Stage #
+###################
+
+.tutorials:
+  extends: .canary
+  stage: Tutorials
+  artifacts:
+  dependencies:
+    #- build:${CI_JOB_NAME#*:}
+    - .build
+
+##############
+# Apps Stage #
+##############
+
+.apps:
+  extends: .canary
+  stage: Apps
+  artifacts:
   dependencies:
     #- build:${CI_JOB_NAME#*:}
     - .build
@@ -389,6 +425,7 @@ test:ubuntu_mpi:
     - build:ubuntu_mpi
   variables:
     DISTRO: "ubuntu"
+    RUNTIME: "mpi"
 
 test:ubuntu_mpi_release:
   extends: test:ubuntu_mpi
@@ -411,6 +448,7 @@ test:ubuntu_mpich_mpi:
     - build:ubuntu_mpich_mpi
   variables:
     DISTRO: "ubuntu_mpich"
+    RUNTIME: "mpi"
 
 test:ubuntu_mpich_mpi_release:
   extends: test:ubuntu_mpich_mpi
@@ -433,6 +471,7 @@ test:fedora_mpi:
     - build:fedora_mpi
   variables:
     DISTRO: "fedora"
+    RUNTIME: "mpi"
 
 test:fedora_mpi_release:
   extends: test:fedora_mpi
@@ -455,6 +494,7 @@ test:fedora_mpich_mpi:
     - build:fedora_mpich_mpi
   variables:
     DISTRO: "fedora_mpich"
+    RUNTIME: "mpi"
 
 test:fedora_mpich_mpi_release:
   extends: test:fedora_mpich_mpi
@@ -477,6 +517,7 @@ test:ubuntu_legion:
     - build:ubuntu_legion
   variables:
     DISTRO: "ubuntu"
+    RUNTIME: "legion"
 
 test:ubuntu_legion_release:
   extends: test:ubuntu_legion
@@ -499,6 +540,7 @@ test:ubuntu_mpich_legion:
     - build:ubuntu_mpich_legion
   variables:
     DISTRO: "ubuntu_mpich"
+    RUNTIME: "legion"
 
 test:ubuntu_mpich_legion_release:
   extends: test:ubuntu_mpich_legion
@@ -521,6 +563,7 @@ test:fedora_legion:
     - build:fedora_legion
   variables:
     DISTRO: "fedora"
+    RUNTIME: "legion"
 
 test:fedora_legion_release:
   extends: test:fedora_legion
@@ -543,6 +586,7 @@ test:fedora_mpich_legion:
     - build:fedora_mpich_legion
   variables:
     DISTRO: "fedora_mpich"
+    RUNTIME: "legion"
 
 test:fedora_mpich_legion_release:
   extends: test:fedora_mpich_legion
@@ -565,6 +609,7 @@ test:fedora_hpx:
     - build:fedora_hpx
   variables:
     DISTRO: "fedora"
+    RUNTIME: "hpx"
   allow_failure: true
 
 test:fedora_hpx_clang:
@@ -606,6 +651,7 @@ format:fedora_mpi:
     - build:fedora_mpi
   variables:
     DISTRO: "fedora"
+    RUNTIME: "mpi"
 
 format:fedora_legion:
   extends: .format
@@ -613,6 +659,7 @@ format:fedora_legion:
     - build:fedora_legion
   variables:
     DISTRO: "fedora"
+    RUNTIME: "legion"
 
 format:fedora_hpx:
   extends: .format
@@ -620,7 +667,48 @@ format:fedora_hpx:
     - build:fedora_hpx
   variables:
     DISTRO: "fedora"
+    RUNTIME: "hpx"
   allow_failure: true
+
+##################
+# Tutorials Jobs #
+##################
+
+tutorials:fedora_mpi:
+  extends: .tutorials
+  dependencies:
+    - build:fedora_mpi
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
+
+tutorials:fedora_legion:
+  extends: .tutorials
+  dependencies:
+    - build:fedora_legion
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "legion"
+
+#############
+# Apps Jobs #
+#############
+
+apps:fedora_mpi:
+  extends: .apps
+  dependencies:
+    - build:fedora_mpi
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
+
+apps:fedora_legion:
+  extends: .apps
+  dependencies:
+    - build:fedora_legion
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "legion"
 
 ###############
 ###############
