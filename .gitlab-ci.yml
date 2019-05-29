@@ -38,7 +38,7 @@ before_script:
     GIT_SUBMODULE_STRATEGY: recursive
     CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
     CCACHE_UMASK: 000
-    DISTRO: "fedora"
+    DISTRO: "ubuntu"
     RUNTIME: "mpi"
     CC: "gcc"
     CXX: "g++"
@@ -208,22 +208,22 @@ before_script:
 # Canary Jobs #
 ###############
 
-canary:ubuntu_mpi:
+canary:fedora_mpi:
   extends: .canary
   variables:
-    DISTRO: "ubuntu"
+    DISTRO: "fedora"
     RUNTIME: "mpi"
 
-canary:ubuntu_legion:
+canary:fedora_legion:
   extends: .canary
   variables:
-    DISTRO: "ubuntu"
+    DISTRO: "fedora"
     RUNTIME: "legion"
 
-canary:ubuntu_hpx:
+canary:fedora_hpx:
   extends: .canary
   variables:
-    DISTRO: "ubuntu"
+    DISTRO: "fedora"
     RUNTIME: "hpx"
   allow_failure: true 
 
@@ -231,18 +231,19 @@ canary:ubuntu_hpx:
 # Build Jobs #
 ##############
 
-.build:ubuntu_mpi:
+build:ubuntu_mpi:
   extends: .build
   variables:
     DISTRO: "ubuntu"
+    RUNTIME: "mpi"
 
 build:ubuntu_mpi_release:
-  extends: .build:ubuntu_mpi
+  extends: build:ubuntu_mpi
   variables:
     BUILD_TYPE: "Release"
 
 build:ubuntu_mpi_clang:
-  extends: .build:ubuntu_mpi
+  extends: build:ubuntu_mpi
   #before_script:
   #  - export CC=clang
   #  - export CXX=clang++
@@ -259,6 +260,7 @@ build:ubuntu_mpich_mpi:
   extends: .build
   variables:
     DISTRO: "ubuntu_mpich"
+    RUNTIME: "mpi"
 
 build:ubuntu_mpich_mpi_release:
   extends: build:ubuntu_mpich_mpi
@@ -276,16 +278,19 @@ build:ubuntu_mpich_mpi_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-build:fedora_mpi:
+.build:fedora_mpi:
   extends: .build
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
 
 build:fedora_mpi_release:
-  extends: build:fedora_mpi
+  extends: .build:fedora_mpi
   variables:
     BUILD_TYPE: "Release"
 
 build:fedora_mpi_clang:
-  extends: build:fedora_mpi
+  extends: .build:fedora_mpi
   variables:
     CC: clang
     CXX: clang++
@@ -299,6 +304,7 @@ build:fedora_mpich_mpi:
   extends: .build
   variables:
     DISTRO: "fedora_mpich"
+    RUNTIME: "mpi"
 
 build:fedora_mpich_mpi_release:
   extends: build:fedora_mpich_mpi
@@ -316,19 +322,19 @@ build:fedora_mpich_mpi_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-.build:ubuntu_legion:
+build:ubuntu_legion:
   extends: .build
   variables:
     DISTRO: "ubuntu"
     RUNTIME: "legion"
 
 build:ubuntu_legion_release:
-  extends: .build:ubuntu_legion
+  extends: build:ubuntu_legion
   variables:
     BUILD_TYPE: "Release"
 
 build:ubuntu_legion_clang:
-  extends: .build:ubuntu_legion
+  extends: build:ubuntu_legion
   variables:
     CC: clang
     CXX: clang++
@@ -360,18 +366,19 @@ build:ubuntu_mpich_legion_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-build:fedora_legion:
+.build:fedora_legion:
   extends: .build
   variables:
+    DISTRO: "fedora"
     RUNTIME: "legion"
 
 build:fedora_legion_release:
-  extends: build:fedora_legion
+  extends: .build:fedora_legion
   variables:
     BUILD_TYPE: "Release"
 
 build:fedora_legion_clang:
-  extends: build:fedora_legion
+  extends: .build:fedora_legion
   variables:
     CC: clang
     CXX: clang++
@@ -403,14 +410,15 @@ build:fedora_mpich_legion_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-build:fedora_hpx:
+build:ubuntu_hpx:
   extends: .build
   variables:
+    DISTRO: "ubuntu"
     RUNTIME: "hpx"
   allow_failure: true
 
-build:fedora_hpx_clang:
-  extends: build:fedora_hpx
+build:ubuntu_hpx_clang:
+  extends: build:ubuntu_hpx
   variables:
     CC: clang
     CXX: clang++
@@ -419,20 +427,21 @@ build:fedora_hpx_clang:
 # Test Jobs #
 #############
 
-.test:ubuntu_mpi:
+test:ubuntu_mpi:
   extends: .test
   dependencies:
     - build:ubuntu_mpi
   variables:
     DISTRO: "ubuntu"
+    RUNTIME: "mpi"
 
 test:ubuntu_mpi_release:
-  extends: .test:ubuntu_mpi
+  extends: test:ubuntu_mpi
   dependencies:
     - build:ubuntu_mpi_release
 
 test:ubuntu_mpi_clang:
-  extends: .test:ubuntu_mpi
+  extends: test:ubuntu_mpi
   dependencies:
     - build:ubuntu_mpi_clang
 
@@ -447,6 +456,7 @@ test:ubuntu_mpich_mpi:
     - build:ubuntu_mpich_mpi
   variables:
     DISTRO: "ubuntu_mpich"
+    RUNTIME: "mpi"
 
 test:ubuntu_mpich_mpi_release:
   extends: test:ubuntu_mpich_mpi
@@ -463,18 +473,21 @@ test:ubuntu_mpich_mpi_clang_release:
   dependencies:
     - build:ubuntu_mpich_mpi_clang_release
 
-test:fedora_mpi:
+.test:fedora_mpi:
   extends: .test
   dependencies:
     - build:fedora_mpi
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "mpi"
 
 test:fedora_mpi_release:
-  extends: test:fedora_mpi
+  extends: .test:fedora_mpi
   dependencies:
     - build:fedora_mpi_release
 
 test:fedora_mpi_clang:
-  extends: test:fedora_mpi
+  extends: .test:fedora_mpi
   dependencies:
     - build:fedora_mpi_clang
 
@@ -489,6 +502,7 @@ test:fedora_mpich_mpi:
     - build:fedora_mpich_mpi
   variables:
     DISTRO: "fedora_mpich"
+    RUNTIME: "mpi"
 
 test:fedora_mpich_mpi_release:
   extends: test:fedora_mpich_mpi
@@ -505,7 +519,7 @@ test:fedora_mpich_mpi_clang_release:
   dependencies:
     - build:fedora_mpich_mpi_clang_release
 
-.test:ubuntu_legion:
+test:ubuntu_legion:
   extends: .test
   dependencies:
     - build:ubuntu_legion
@@ -514,12 +528,12 @@ test:fedora_mpich_mpi_clang_release:
     RUNTIME: "legion"
 
 test:ubuntu_legion_release:
-  extends: .test:ubuntu_legion
+  extends: test:ubuntu_legion
   dependencies:
     - build:ubuntu_legion_release
 
 test:ubuntu_legion_clang:
-  extends: .test:ubuntu_legion
+  extends: test:ubuntu_legion
   dependencies:
     - build:ubuntu_legion_clang
 
@@ -551,20 +565,21 @@ test:ubuntu_mpich_legion_clang_release:
   dependencies:
     - build:ubuntu_mpich_legion_clang_release
 
-test:fedora_legion:
+.test:fedora_legion:
   extends: .test
   dependencies:
     - build:fedora_legion
   variables:
+    DISTRO: "fedora"
     RUNTIME: "legion"
 
 test:fedora_legion_release:
-  extends: test:fedora_legion
+  extends: .test:fedora_legion
   dependencies:
     - build:fedora_legion_release
 
 test:fedora_legion_clang:
-  extends: test:fedora_legion
+  extends: .test:fedora_legion
   dependencies:
     - build:fedora_legion_clang
 
@@ -596,39 +611,40 @@ test:fedora_mpich_legion_clang_release:
   dependencies:
     - build:fedora_mpich_legion_clang_release
 
-test:fedora_hpx:
+test:ubuntu_hpx:
   extends: .test
   dependencies:
-    - build:fedora_hpx
+    - build:ubuntu_hpx
   variables:
+    DISTRO: "ubuntu"
     RUNTIME: "hpx"
   allow_failure: true
 
-test:fedora_hpx_clang:
-  extends: test:fedora_hpx
+test:ubuntu_hpx_clang:
+  extends: test:ubuntu_hpx
   dependencies:
-    - build:fedora_hpx_clang
+    - build:ubuntu_hpx_clang
 
-test:fedora_mpi.ignoreNoCI:
-  extends: test:fedora_mpi
+test:ubuntu_mpi.ignoreNoCI:
+  extends: test:ubuntu_mpi
   dependencies:
-    - build:fedora_mpi
+    - build:ubuntu_mpi
   variables:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
 
-test:fedora_legion.ignoreNoCI:
-  extends: test:fedora_legion
+test:ubuntu_legion.ignoreNoCI:
+  extends: test:ubuntu_legion
   dependencies:
-    - build:fedora_legion
+    - build:ubuntu_legion
   variables:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
 
-test:fedora_hpx.ignoreNoCI:
-  extends: test:fedora_hpx
+test:ubuntu_hpx.ignoreNoCI:
+  extends: test:ubuntu_hpx
   dependencies:
-    - build:fedora_hpx
+    - build:ubuntu_hpx
   variables:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
@@ -637,32 +653,40 @@ test:fedora_hpx.ignoreNoCI:
 # Tutorials Jobs #
 ##################
 
-tutorials:fedora_mpi:
+tutorials:ubuntu_mpi:
   extends: .tutorials
   dependencies:
-    - build:fedora_mpi
-
-tutorials:fedora_legion:
-  extends: .tutorials
-  dependencies:
-    - build:fedora_legion
+    - build:ubuntu_mpi
   variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+
+tutorials:ubuntu_legion:
+  extends: .tutorials
+  dependencies:
+    - build:ubuntu_legion
+  variables:
+    DISTRO: "ubuntu"
     RUNTIME: "legion"
 
 #############
 # Apps Jobs #
 #############
 
-apps:fedora_mpi:
+apps:ubuntu_mpi:
   extends: .apps
   dependencies:
-    - build:fedora_mpi
-
-apps:fedora_legion:
-  extends: .apps
-  dependencies:
-    - build:fedora_legion
+    - build:ubuntu_mpi
   variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+
+apps:ubuntu_legion:
+  extends: .apps
+  dependencies:
+    - build:ubuntu_legion
+  variables:
+    DISTRO: "ubuntu"
     RUNTIME: "legion"
 
 ###############
