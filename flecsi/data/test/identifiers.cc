@@ -35,4 +35,4 @@ identifiers(int argc, char ** argv) {
   flog(info) << "index topology handle " << ih.identifier() << std::endl;
 }
 
-ftest_register_test(identifiers);
+ftest_register_driver(identifiers);

@@ -78,4 +78,4 @@ global_object(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(global_object);
+ftest_register_driver(global_object);

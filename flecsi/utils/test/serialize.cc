@@ -24,7 +24,7 @@ using namespace flecsi::utils;
 //----------------------------------------------------------------------------//
 
 int
-serialize_sanity(int argc, char ** argv) {
+sanity(int argc, char ** argv) {
 
   FTEST();
 
@@ -89,9 +89,9 @@ serialize_sanity(int argc, char ** argv) {
   delete[] data;
 
   return 0;
-}
+} // sanity
 
-ftest_register_test(serialize_sanity);
+ftest_register_driver(sanity);
 
 //----------------------------------------------------------------------------//
 // Simple user type.
@@ -117,7 +117,7 @@ private:
 }; // struct type_t
 
 int
-serialize_user_type(int argc, char ** argv) {
+user_type(int argc, char ** argv) {
 
   FTEST();
 
@@ -168,9 +168,9 @@ serialize_user_type(int argc, char ** argv) {
   } // scope
 
   return 0;
-} // serialize_user_type
+} // user_type
 
-ftest_register_test(serialize_user_type);
+ftest_register_driver(user_type);
 
 //----------------------------------------------------------------------------//
 // Context test.
@@ -226,7 +226,7 @@ private:
 }; // struct test_context_t
 
 int
-serialize_context(int argc, char ** argv) {
+context(int argc, char ** argv) {
 
   FTEST();
 
@@ -328,6 +328,6 @@ serialize_context(int argc, char ** argv) {
   delete[] data;
 
   return 0;
-} // serialize_context
+} // context
 
-ftest_register_test(serialize_context);
+ftest_register_driver(context);

@@ -98,7 +98,7 @@ flecsi_register_control_options(control_t);
 #define ftest_add_initialize_dependency(to, from)                              \
   ftest_add_dependency(initialize, to, from)
 
-#define ftest_register_test(action, ...)                                       \
+#define ftest_register_driver(action, ...)                                     \
   ftest_register_action(action, test, ##__VA_ARGS__)
 
 #define ftest_add_test_dependency(to, from) ftest_add_dependency(test, to, from)

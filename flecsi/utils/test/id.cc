@@ -302,4 +302,4 @@ id(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(id);
+ftest_register_driver(id);

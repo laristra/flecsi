@@ -59,4 +59,4 @@ index_topology(int argc, char ** argv) {
   return 0;
 } // index
 
-ftest_register_test(index_topology);
+ftest_register_driver(index_topology);

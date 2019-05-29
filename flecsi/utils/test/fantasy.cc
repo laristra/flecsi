@@ -38,7 +38,7 @@ test1(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(test1);
+ftest_register_driver(test1);
 
 int
 test2(int argc, char ** argv) {
@@ -47,7 +47,7 @@ test2(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(test2);
+ftest_register_driver(test2);
 
 int
 finalize(int argc, char ** argv) {

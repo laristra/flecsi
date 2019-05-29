@@ -106,4 +106,4 @@ common(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(common);
+ftest_register_driver(common);

@@ -46,4 +46,4 @@ tuple_function(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(tuple_function);
+ftest_register_driver(tuple_function);

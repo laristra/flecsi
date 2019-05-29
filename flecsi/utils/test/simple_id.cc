@@ -47,4 +47,4 @@ simple_id(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(simple_id);
+ftest_register_driver(simple_id);
