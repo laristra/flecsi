@@ -110,11 +110,11 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>ftest_add_initialize_dependency</b>(to,  from)&#160;&#160;&#160;ftest_add_dependency(initialize, to, from)</td></tr>
 <tr class="separator:a5448cea814dc5fc4de75201865e80e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa14095b59a2cba7d4116ca645950be40"><td class="memItemLeft" align="right" valign="top"><a id="aa14095b59a2cba7d4116ca645950be40"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>ftest_register_driver</b>(action, ...)&#160;&#160;&#160;ftest_register_action(action, test, ##__VA_ARGS__)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>ftest_register_driver</b>(action, ...)&#160;&#160;&#160;ftest_register_action(action, driver, ##__VA_ARGS__)</td></tr>
 <tr class="separator:aa14095b59a2cba7d4116ca645950be40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86d8ff79d30dbd1a8224a1a89f9fa436"><td class="memItemLeft" align="right" valign="top"><a id="a86d8ff79d30dbd1a8224a1a89f9fa436"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>ftest_add_test_dependency</b>(to,  from)&#160;&#160;&#160;ftest_add_dependency(test, to, from)</td></tr>
-<tr class="separator:a86d8ff79d30dbd1a8224a1a89f9fa436"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a354a7b196f074cc52ae54b9eb00641d3"><td class="memItemLeft" align="right" valign="top"><a id="a354a7b196f074cc52ae54b9eb00641d3"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>ftest_add_driver_dependency</b>(to,  from)&#160;&#160;&#160;ftest_add_dependency(driver, to, from)</td></tr>
+<tr class="separator:a354a7b196f074cc52ae54b9eb00641d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad468372cebecfec025b76193e4c01a7b"><td class="memItemLeft" align="right" valign="top"><a id="ad468372cebecfec025b76193e4c01a7b"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>ftest_register_finalize</b>(action, ...)&#160;&#160;&#160;ftest_register_action(action, finalize, ##__VA_ARGS__)</td></tr>
 <tr class="separator:ad468372cebecfec025b76193e4c01a7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,7 +131,7 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::control::con
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:ac740ce153de714a028cc56d27d1ce0b8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ftest_8h.html#ac740ce153de714a028cc56d27d1ce0b8">flecsi::control::simulation_control_points_t</a> : size_t { <b>initialize</b>, 
-<b>test</b>, 
+<b>driver</b>, 
 <b>finalize</b>
  }</td></tr>
 <tr class="separator:ac740ce153de714a028cc56d27d1ce0b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
