@@ -111,6 +111,7 @@ before_script:
       then
         echo 'Building and Running Tutorials';
         cd ${CI_PROJECT_DIR}/build/;
+        sudo make install;
         source /usr/local/bin/flecsi-tutorial.sh;
         cd ../flecsi-tutorial;
         cd 00-driver;
