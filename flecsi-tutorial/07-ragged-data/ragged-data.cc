@@ -50,21 +50,21 @@ initialize_materials(mesh<ro> mesh, ragged_field_mutator d) {
   } // for
 } // initialize_pressure
 
-flecsi_register_task(initialize_materials, hydro, loc, single);
+flecsi_register_task(initialize_materials, hydro, loc, index);
 
 // This task prints the non-zero entries of the ragged field.
 
 void
 print_materials(mesh<ro> mesh, ragged_field<ro> d) {
   for(auto c : mesh.cells()) {
-    for(auto m : d.entries(c)) {
+    for(auto m : d.entries()) {
       std::cout << d(c, m) << " ";
     } // for
     std::cout << std::endl;
   } // for
 } // print_pressure
 
-flecsi_register_task(print_materials, hydro, loc, single);
+flecsi_register_task(print_materials, hydro, loc, index);
 
 } // namespace hydro
 
@@ -81,7 +81,7 @@ driver(int argc, char ** argv) {
 
     auto d = flecsi_get_mutator(m, hydro, densities, double, ragged, 0, 5);
 
-    flecsi_execute_task(initialize_materials, hydro, single, m, d);
+    flecsi_execute_task(initialize_materials, hydro, index, m, d);
   } // scope
 
   {
@@ -89,7 +89,7 @@ driver(int argc, char ** argv) {
 
     auto d = flecsi_get_handle(m, hydro, densities, double, ragged, 0);
 
-    flecsi_execute_task(print_materials, hydro, single, m, d);
+    flecsi_execute_task(print_materials, hydro, index, m, d);
   } // scope
 
 } // driver
