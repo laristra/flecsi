@@ -38,7 +38,7 @@ namespace control {
 
 enum simulation_control_points_t : size_t {
   initialize,
-  test,
+  driver,
   finalize
 }; // enum simulation_control_points_t
 
@@ -56,7 +56,7 @@ struct ftest_control_policy_t {
 #define control_point(name) flecsi::control::control_point_<name>
 
   using control_points = std::tuple<control_point(initialize),
-    control_point(test),
+    control_point(driver),
     control_point(finalize)>;
 
 }; // struct ftest_control_policy_t
@@ -99,9 +99,10 @@ flecsi_register_control_options(control_t);
   ftest_add_dependency(initialize, to, from)
 
 #define ftest_register_driver(action, ...)                                     \
-  ftest_register_action(action, test, ##__VA_ARGS__)
+  ftest_register_action(action, driver, ##__VA_ARGS__)
 
-#define ftest_add_test_dependency(to, from) ftest_add_dependency(test, to, from)
+#define ftest_add_driver_dependency(to, from)                                  \
+  ftest_add_dependency(driver, to, from)
 
 #define ftest_register_finalize(action, ...)                                   \
   ftest_register_action(action, finalize, ##__VA_ARGS__)

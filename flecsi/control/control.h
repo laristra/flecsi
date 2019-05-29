@@ -123,7 +123,7 @@ struct control_u : public CONTROL_POLICY {
     control_point_writer_t pw(gv);
     pw.template walk_types<typename CONTROL_POLICY::control_points>();
   } // write
-#endif
+#endif // FLECSI_ENABLE_GRAPHVIZ
 
   /*!
     Return the control map for the given control point.
