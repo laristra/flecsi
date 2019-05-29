@@ -292,4 +292,4 @@ array_ref(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(array_ref);
+ftest_register_driver(array_ref);

@@ -381,12 +381,11 @@ struct context_u : public CONTEXT_POLICY {
     a data topology has had its internal fields registered with the
     data model.
 
-    @param type_key     The hash key for the topology type.
-    @param instance_key The hash key for the topology instance.
+    @param topology_type_identifier Topology type identifier.
+    @param instance_identifier      Instance identifier.
    */
 
   bool topology_fields_registered(size_t type_key, size_t instance_key) {
-    fixme() << "Do we really need this method?" << std::endl;
     return !registered_topology_fields_
               .insert(std::make_pair(type_key, instance_key))
               .second;
@@ -408,9 +407,9 @@ struct context_u : public CONTEXT_POLICY {
     size_t storage_class,
     const data::field_info_t & field_info) {
     flog(internal) << "Registering field info (context)" << std::endl
-                   << "topology type identifier: " << topology_type_identifier
+                   << "\ttopology type identifier: " << topology_type_identifier
                    << std::endl
-                   << "storage class: " << storage_class << std::endl;
+                   << "\tstorage class: " << storage_class << std::endl;
     topology_field_info_map_[topology_type_identifier][storage_class]
       .add_field_info(field_info);
   } // add_field_information
@@ -524,7 +523,6 @@ private:
   std::unordered_map<size_t, topology_registration_map_t>
     topology_callback_registry_;
 
-  // FIXME?
   std::set<std::pair<size_t, size_t>> registered_topology_fields_;
 
   /*--------------------------------------------------------------------------*

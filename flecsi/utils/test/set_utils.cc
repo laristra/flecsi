@@ -100,4 +100,4 @@ set_utils(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(set_utils);
+ftest_register_driver(set_utils);

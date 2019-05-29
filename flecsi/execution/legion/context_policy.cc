@@ -304,8 +304,14 @@ void
 legion_context_policy_t::initialize_default_index_topology() {
 
   constexpr size_t identifier =
-    utils::hash::topology_hash<flecsi_internal_hash(internal),
-      flecsi_internal_hash(index_topology)>();
+    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
+      flecsi_internal_string_hash("index_topology")>();
+
+  {
+    flog_tag_guard(context);
+    flog(internal) << "Initializing default index topology" << std::endl
+                   << "\tidentifier: " << identifier << std::endl;
+  }
 
   data::topology_reference_u<topology::index_topology_t> reference(identifier);
   topology::index_topology_t::coloring_t coloring(processes_);

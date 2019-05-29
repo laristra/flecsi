@@ -113,7 +113,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
       context_t::instance().global_topology_instance().logical_region;
 
     if constexpr(get_privilege<0, PRIVILEGES>() > partition_privilege_t::ro) {
-      flog_assert(flecsi_internal_hash(single) == domain_,
+      flog_assert(domain_ == 1,
         "global can only be modified from within single launch task");
 
       Legion::RegionRequirement rr(region,
@@ -148,7 +148,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
         .fid;
 
     index_runtime_data_t instance_data =
-      flecsi_context.index_topology_instance(accessor.identifier());
+      flecsi_context.index_topology_instance(accessor.topology_identifier());
 
     flog_assert(instance_data.colors = domain_,
       "attempting to pass index topology reference with size "

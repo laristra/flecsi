@@ -166,4 +166,4 @@ function_traits(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(function_traits);
+ftest_register_driver(function_traits);

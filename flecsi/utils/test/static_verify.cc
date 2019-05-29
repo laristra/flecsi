@@ -109,4 +109,4 @@ static_verify(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(static_verify);
+ftest_register_driver(static_verify);

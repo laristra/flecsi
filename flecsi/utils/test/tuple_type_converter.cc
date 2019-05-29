@@ -80,4 +80,4 @@ tuple_type_converter(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(tuple_type_converter);
+ftest_register_driver(tuple_type_converter);

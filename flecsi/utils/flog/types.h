@@ -346,6 +346,7 @@ public:
 
     \return The singleton instance of this type.
    */
+
   static flog_t & instance() {
     static flog_t c;
     return c;

@@ -92,4 +92,4 @@ dag(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(dag);
+ftest_register_driver(dag);

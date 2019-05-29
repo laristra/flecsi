@@ -58,4 +58,4 @@ global(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(global);
+ftest_register_driver(global);

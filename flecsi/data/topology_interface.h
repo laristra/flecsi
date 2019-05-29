@@ -60,8 +60,15 @@ struct topology_interface_u {
                     sizeof(typename TOPOLOGY_TYPE::type_identifier_t),
       "Topologies may not add data members");
 
+    using registration_t =
+      topology_registration_u<typename TOPOLOGY_TYPE::type_identifier_t,
+        NAMESPACE,
+        NAME>;
+
     using topology_reference_t =
       topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t>;
+
+    registration_t::register_fields();
 
     return topology_reference_t(utils::hash::topology_hash<NAMESPACE, NAME>());
   } // reference

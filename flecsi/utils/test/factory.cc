@@ -217,4 +217,4 @@ factory(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(factory);
+ftest_register_driver(factory);

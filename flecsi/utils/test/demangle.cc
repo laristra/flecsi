@@ -34,4 +34,4 @@ demangle(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(demangle);
+ftest_register_driver(demangle);

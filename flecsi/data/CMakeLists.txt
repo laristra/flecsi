@@ -96,6 +96,11 @@ ftest_add_unit(global
     test/global.cc
 )
 
+ftest_add_unit(identifiers
+  SOURCES
+    test/identifiers.cc
+)
+
 ftest_add_unit(index
   SOURCES
     test/index.cc

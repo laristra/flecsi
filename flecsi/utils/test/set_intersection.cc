@@ -56,4 +56,4 @@ set_intersection(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(set_intersection);
+ftest_register_driver(set_intersection);

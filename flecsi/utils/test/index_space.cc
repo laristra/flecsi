@@ -54,4 +54,4 @@ index_space(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(index_space);
+ftest_register_driver(index_space);
