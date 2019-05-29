@@ -43,7 +43,7 @@ struct data_t {
 // Define an accessor type to use as the task argument.
 
 template<size_t SHARED_PRIVILEGES>
-using cell_data = dense_accessor<data_t, rw, SHARED_PRIVILEGES, ro>;
+using cell_data = dense_accessor<data_t, rw, SHARED_PRIVILEGES, rw>;
 
 // This is a simple base type with one pure virtual method that we will
 // use to demonstrate the global object interface.
@@ -94,7 +94,7 @@ update(mesh<ro> m, cell_data<rw> cd) {
   } // for
 } // update
 
-flecsi_register_task(update, example, loc, single);
+flecsi_register_task(update, example, loc, index);
 
 // Print the results of executing the "compute" method.
 
@@ -111,7 +111,7 @@ print(mesh<ro> m, cell_data<ro> cd) {
   } // for
 } // print
 
-flecsi_register_task(print, example, loc, single);
+flecsi_register_task(print, example, loc, index);
 
 } // namespace example
 
@@ -147,8 +147,8 @@ driver(int argc, char ** argv) {
 
   // Execute the tasks.
 
-  flecsi_execute_task(update, example, single, m, cd);
-  flecsi_execute_task(print, example, single, m, cd);
+  flecsi_execute_task(update, example, index, m, cd);
+  flecsi_execute_task(print, example, index, m, cd);
 
 } // driver
 
