@@ -93,7 +93,6 @@ using id_vector_map_t =
 // The second topology vector holds the offsets into to from dimension
 
 using index_vector_t = std::vector<size_t>;
-
 //-----------------------------------------------------------------//
 //! \class entity_base_u types.h
 //! \brief entity_base_u defines a base class that stores the raw info that
@@ -167,6 +166,14 @@ private:
   std::array<id_t, NUM_DOMAINS> ids_;
 
 }; // class entity_base_u
+
+//-----------------------------------------------------------------//
+//! Define the vector type for storing entities.
+//!
+//! \tparam NUM_DOMAINS The number of domains.
+//-----------------------------------------------------------------//
+template<size_t NUM_DOMAINS>
+using entity_vector_t = std::vector<entity_base_u<NUM_DOMAINS> *>;
 
 } // namespace topology
 } // namespace flecsi
