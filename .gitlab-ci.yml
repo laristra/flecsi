@@ -80,6 +80,7 @@ before_script:
           -DENABLE_PARMETIS=ON \
           -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=ON \
+          -DENABLE_FLECSTAN=ON \
           -DENABLE_DOCUMENTATION=OFF \
           -DENABLE_COVERAGE_BUILD=ON \
           ..;
