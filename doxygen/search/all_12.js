@@ -11,7 +11,6 @@ var searchData=
   ['unserialize_5fdomains_5f_3c_20storage_5ftype_2c_20mesh_5ftype_2c_20num_5fdomains_2c_20num_5fdims_2c_20num_5fdomains_20_3e',['unserialize_domains_&lt; STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, NUM_DOMAINS &gt;',['../structflecsi_1_1topology_1_1unserialize__domains___3_01STORAGE__TYPE_00_01MESH__TYPE_00_01NUM__D46548a8c3ac10c13b57ad76fbe9269d0.html',1,'flecsi::topology']]],
   ['unset_5fcall_5fmpi',['unset_call_mpi',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a03ab2a465050bb032af45095121395d5',1,'flecsi::execution::legion_context_policy_t']]],
   ['unset_5fcall_5fmpi_5ftask',['unset_call_mpi_task',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#aa4430a9fd39c03df1cba2d4ef4a3cd27',1,'flecsi::execution::legion_context_policy_t::unset_call_mpi_task()'],['../group__legion-execution.html#ga308971ffd990f8315edde5d49580009c',1,'flecsi::execution::unset_call_mpi_task()']]],
-  ['unstructured_5fmesh_5fruntime_5fdata_5ft',['unstructured_mesh_runtime_data_t',['../structflecsi_1_1data_1_1legion_1_1unstructured__mesh__runtime__data__t.html',1,'flecsi::data::legion']]],
   ['unstructured_5fmesh_5ftopology_5fbase_5ft',['unstructured_mesh_topology_base_t',['../structflecsi_1_1topology_1_1unstructured__mesh__topology__base__t.html',1,'flecsi::topology']]],
   ['unstructured_5fmesh_5ftopology_5fu',['unstructured_mesh_topology_u',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html',1,'flecsi::topology']]],
   ['utility_5ftypes_2eh',['utility_types.h',['../utility__types_8h.html',1,'']]],
