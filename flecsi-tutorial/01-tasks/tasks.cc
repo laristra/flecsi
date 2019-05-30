@@ -39,7 +39,7 @@ simple_task() {
 // NOTE: The task must be registered using the actual C++
 // namespace in which it is defined, i.e., "example".
 
-flecsi_register_task(simple_task, example, loc, single);
+flecsi_register_task(simple_task, example, loc, index);
 
 } // namespace example
 
@@ -51,7 +51,7 @@ driver(int argc, char ** argv) {
 
   // This time, the driver executes a task to do the output
 
-  flecsi_execute_task(simple_task, example, single);
+  flecsi_execute_task(simple_task, example, index);
 
 } // driver
 
