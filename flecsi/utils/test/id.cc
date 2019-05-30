@@ -56,8 +56,6 @@ binary(const T value, const std::size_t nbit = sizeof(T) * CHAR_BIT) {
 
 // identical
 // Check that the two id_s have identical content.
-// This isn't equivalent to id_'s operator==, which at the time of this
-// writing does the comparison by using local_id() and FLAGS_UNMASK.
 template<std::size_t PBITS,
   std::size_t EBITS,
   std::size_t FBITS,
@@ -95,11 +93,7 @@ TEST(id, all) {
   // local_id_t
   print_type<flecsi::utils::local_id_t>();
   CINCH_CAPTURE() << "sizeof(flecsi::utils::local_id_t) == "
-                  << sizeof(flecsi::utils::local_id_t) << std::endl;
-
-  // id::FLAGS_UNMASK
-  CINCH_CAPTURE() << "FLAGS_UNMASK == " << id::FLAGS_UNMASK << '\n';
-  CINCH_CAPTURE() << "FLAGS_UNMASK == " << binary(id::FLAGS_UNMASK) << '\n';
+                  << sizeof(flecsi::utils::local_id_t) << "\n";
   CINCH_CAPTURE() << std::endl;
 
   // These here just exercise my binary() function...
@@ -143,6 +137,7 @@ TEST(id, all) {
     print(c);
     print(d);
 
+    /*
     // make<DOMAIN>
     // Arguments: (dimension, local_id [,partition_id [,flags [,global]]])
     const id e = id::make<2>(1, 3);
@@ -158,11 +153,11 @@ TEST(id, all) {
     EXPECT_TRUE(identical(b, f));
     EXPECT_TRUE(identical(c, g));
     EXPECT_TRUE(identical(d, h));
+    */
   }
 
   // ------------------------
   // local_id
-  // global_id
   // ------------------------
 
   {
@@ -181,7 +176,6 @@ TEST(id, all) {
 
     CINCH_CAPTURE() << std::endl;
     CINCH_CAPTURE() << "local_id()  == " << a.local_id() << std::endl;
-    CINCH_CAPTURE() << "global_id() == " << a.global_id() << std::endl;
     CINCH_CAPTURE() << std::endl;
   }
 
@@ -236,11 +230,10 @@ TEST(id, all) {
     //    this->local_id() < id.local_id()
     //
     // == returns:
-    //    (this->local_id() & FLAGS_UNMASK) ==
-    //    (   id.local_id() & FLAGS_UNMASK)
+    //    this->local_id() == id.local_id()
     //
     // != returns:
-    //    !(this->local_id() == id.local_id())
+    //    !(==)
     //
     // Where:
     //    local_id() == bits from: [entity partition domain dimension]
@@ -260,29 +253,17 @@ TEST(id, all) {
 
     // ==
     // The present operator== returns true iff the LHS and RHS have the same
-    // [entity partition domain dimension] bits when &ed with FLAGS_UNMASK.
-    // Note: my (Martin's) analysis suggests that large values of entity have
-    // high-order bits that would run into the FBITS 0s in FLAGS_UNMASK. So,
-    // I should clarify if the definition is really as it was intended.
+    // [entity partition domain dimension] bits.
     CINCH_CAPTURE() << binary(a.local_id()) << std::endl;
-    CINCH_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
-    CINCH_CAPTURE() << binary(a.local_id() & id::FLAGS_UNMASK) << std::endl;
     CINCH_CAPTURE() << std::endl;
 
     CINCH_CAPTURE() << binary(b.local_id()) << std::endl;
-    CINCH_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
-    CINCH_CAPTURE() << binary(b.local_id() & id::FLAGS_UNMASK) << std::endl;
     CINCH_CAPTURE() << std::endl;
 
-    // Not really fully testing the operator here...
     EXPECT_FALSE(a == b);
     EXPECT_TRUE(b == c);
 
     // !=
-    // At the moment, this isn't quite the same as !(==). I'm unsure
-    // as to why it's defined the way it is. -Martin
-
-    // Not really fully testing the operator here...
     EXPECT_TRUE(a != b);
     EXPECT_FALSE(b != c);
   }
