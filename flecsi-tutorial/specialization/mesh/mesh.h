@@ -76,15 +76,15 @@ template<size_t PRIVILEGES>
 using mesh = data_client_handle_u<mesh_t, PRIVILEGES>;
 
 template<size_t SHARED_PRIVILEGES>
-using field = dense_accessor<double, rw, SHARED_PRIVILEGES, ro>;
+using field = dense_accessor<double, rw, SHARED_PRIVILEGES, rw>;
 
 template<size_t SHARED_PRIVILEGES>
-using ragged_field = ragged_accessor<double, rw, SHARED_PRIVILEGES, ro>;
+using ragged_field = ragged_accessor<double, rw, SHARED_PRIVILEGES, rw>;
 
 using ragged_field_mutator = ragged_mutator<double>;
 
 template<size_t SHARED_PRIVILEGES>
-using sparse_field = sparse_accessor<double, rw, SHARED_PRIVILEGES, ro>;
+using sparse_field = sparse_accessor<double, rw, SHARED_PRIVILEGES, rw>;
 
 using sparse_field_mutator = sparse_mutator<double>;
 
