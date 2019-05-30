@@ -20,7 +20,8 @@
 
 using namespace flecsi;
 
-flecsi_register_global("test", "global", double, 2);
+flecsi_add_global_field("test", "global", double, 2);
+inline auto th = flecsi_global_field_instance("test", "global", double, 0);
 
 template<size_t PRIVILEGES>
 using global_accessor_u =
@@ -35,6 +36,13 @@ global_task(global_accessor_u<rw> ga, double value) {
 
 flecsi_register_task(global_task, global_test, loc, single);
 
+void
+print(global_accessor_u<ro> ga) {
+  flog(info) << "Value: " << ga << std::endl;
+} // print
+
+flecsi_register_task(print, global_test, loc, single);
+
 } // namespace global_test
 
 int
@@ -42,13 +50,12 @@ global(int argc, char ** argv) {
 
   FTEST();
 
-  auto th = flecsi_get_global("test", "global", double, 0);
   double value{10.0};
 
   flecsi_execute_task(global_task, global_test, single, th, value);
-  // flecsi_execute_task(global_task, global_test, index, th, value);
+  flecsi_execute_task(print, global_test, single, th);
 
   return 0;
 }
 
-ftest_register_test(global);
+ftest_register_driver(global);

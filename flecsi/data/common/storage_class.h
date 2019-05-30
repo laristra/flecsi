@@ -17,7 +17,7 @@
   @file
 
   This file defines the base \em storage_class_u type that can be
-  specialized by storage class, and by data client type.
+  specialized by storage class, and by topology type.
 
   This file also defines the storage classes for the internal \em global
   and \em color client types.
@@ -41,7 +41,7 @@ namespace data {
 
 enum storage_label_t : size_t {
   global,
-  color,
+  index,
   dense,
   sparse,
   ragged,
@@ -51,12 +51,25 @@ enum storage_label_t : size_t {
 namespace POLICY_NAMESPACE {
 
 /*!
-  Base storage class type for client-specific specializations. Specializations
-  of this type must implement a get_handle method that takes a client handle.
+  Base storage class type for topology-specific specializations.
+  Specializations of this type must implement a get_reference method that takes
+  a topology reference.
  */
 
-template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
-struct storage_class_u {};
+template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
+struct storage_class_u {
+
+  using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
+
+  template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
+  static field_reference_t get_reference(
+    topology_reference_t const & topology) {
+    constexpr size_t identifier =
+      utils::hash::field_hash<NAMESPACE, NAME, VERSION>();
+    return {identifier, topology.identifier()};
+  } // get_reference
+
+}; // struct storage_class_u
 
 } // namespace POLICY_NAMESPACE
 } // namespace data

@@ -65,11 +65,11 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
   } // visit
 
   /*--------------------------------------------------------------------------*
-    Color Topology
+    Index Topology
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(color_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*

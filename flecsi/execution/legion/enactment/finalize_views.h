@@ -25,7 +25,7 @@
 #include <flecsi/utils/tuple_walker.h>
 #endif
 
-#include <flecsi-config.h>
+//#include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -76,6 +76,14 @@ struct finalize_views_t
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  } // visit
+
+  /*--------------------------------------------------------------------------*
+    Index Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*

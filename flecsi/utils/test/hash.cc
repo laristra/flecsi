@@ -347,4 +347,4 @@ hash(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(hash);
+ftest_register_driver(hash);

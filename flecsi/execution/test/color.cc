@@ -49,7 +49,7 @@ color_raw(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(color_raw);
+ftest_register_driver(color_raw);
 
 #if 0
 /*
@@ -77,5 +77,5 @@ color_ui(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(color_ui);
+ftest_register_driver(color_ui);
 #endif

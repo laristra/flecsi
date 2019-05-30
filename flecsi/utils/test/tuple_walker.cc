@@ -52,4 +52,4 @@ tuple_walker(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(tuple_walker);
+ftest_register_driver(tuple_walker);

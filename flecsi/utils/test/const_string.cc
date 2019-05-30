@@ -82,4 +82,4 @@ const_string(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(const_string);
+ftest_register_driver(const_string);

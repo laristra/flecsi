@@ -97,7 +97,7 @@ struct packet_t {
     return data_;
   } // data
 
-  size_t bytes() const {
+  static constexpr size_t bytes() {
     return sec_bytes + usec_bytes + FLOG_MAX_MESSAGE_SIZE;
   } // bytes
 
@@ -116,6 +116,7 @@ void flush_packets();
 
 #if defined(FLOG_ENABLE_MPI)
 struct mpi_state_t {
+
   static mpi_state_t & instance() {
     static mpi_state_t s;
     return s;

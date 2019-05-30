@@ -212,9 +212,8 @@ struct task_wrapper_u {
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-    // FIXME: Refactor
-    // init_handles_t init_handles(runtime, context, regions, task->futures);
-    // init_handles.walk(task_args);
+    init_views_t init_views(runtime, context, regions, task->futures);
+    init_views.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));

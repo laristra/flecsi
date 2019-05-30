@@ -41,4 +41,4 @@ debruijn(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(debruijn);
+ftest_register_driver(debruijn);

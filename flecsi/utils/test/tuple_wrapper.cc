@@ -36,4 +36,4 @@ tuple_wrapper(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(tuple_wrapper);
+ftest_register_driver(tuple_wrapper);

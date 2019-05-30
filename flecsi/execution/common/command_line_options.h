@@ -40,7 +40,7 @@ inline std::string __flecsi_tags = "all";
 
 #define FLECSI_TPP_OPTION_STRING "tpp"
 
-#define FLECSI_THREADS_PER_SHARD_OPTION                                        \
+#define FLECSI_THREADS_PER_PROCESS_OPTION                                      \
   (FLECSI_TPP_OPTION_STRING,                                                   \
     value<size_t>()->default_value(1),                                         \
     "Specify the number of threads per process.")

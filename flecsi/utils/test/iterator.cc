@@ -95,4 +95,4 @@ iterator(int argc, char ** argv) {
   return 0;
 } // TEST
 
-ftest_register_test(iterator);
+ftest_register_driver(iterator);

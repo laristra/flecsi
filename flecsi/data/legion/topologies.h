@@ -15,9 +15,22 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_reference.h>
+#include <flecsi/execution/context.h>
+#include <flecsi/runtime/types.h>
+#include <flecsi/utils/flog.h>
+
 #define POLICY_NAMESPACE legion
 #include <flecsi/data/common/topology.h>
 #undef POLICY_NAMESPACE
+
+#if !defined(FLECSI_ENABLE_LEGION)
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#endif
+
+#include <legion.h>
+
+flog_register_tag(topologies);
 
 namespace flecsi {
 
@@ -28,7 +41,7 @@ namespace flecsi {
 namespace topology {
 
 struct global_topology_t;
-struct color_topology_t;
+struct index_topology_t;
 
 template<typename>
 class mesh_topology_u;
@@ -39,69 +52,79 @@ namespace data {
 namespace legion {
 
 /*----------------------------------------------------------------------------*
-  Global Topology.
+  Index Topology.
  *----------------------------------------------------------------------------*/
 
-namespace global_topology {
-
-struct topology_handle_t {
-
-  using topology_type_t = topology::global_topology_t;
-
-}; // struct topology_handle_t
-
-template<size_t PRIVILEGES>
-struct topology_accessor_t {
-  topology_accessor_t(topology_handle_t & handle) : handle_(handle) {}
-
-private:
-  topology_handle_t & handle_;
-
-}; // struct topology_accessor_t
-
-} // namespace global_topology
-
 template<>
-struct topology_u<topology::global_topology_t> {
+struct topology_instance_u<topology::index_topology_t> {
 
-  using topology_handle_t = global_topology::topology_handle_t;
+  using topology_reference_t = topology_reference_u<topology::index_topology_t>;
 
-  template<size_t NAMESPACE, size_t NAME>
-  static topology_handle_t get_handle() {
-    topology_handle_t h;
-    return h;
-  } // get_handle
+  static void set_coloring(topology_reference_t const & topology_reference,
+    topology::index_topology_t::coloring_t const & coloring) {
 
-}; // topology_u<topology::global_topology_t>
+    {
+      flog_tag_guard(topologies);
+      flog(internal) << "Set coloring for " << topology_reference.identifier()
+                     << std::endl;
+    }
 
-/*----------------------------------------------------------------------------*
-  Color Topology.
- *----------------------------------------------------------------------------*/
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
+    auto & flecsi_context = execution::context_t::instance();
 
-namespace color_topology {
+    auto & runtime_data =
+      flecsi_context.index_topology_instance(topology_reference.identifier());
 
-struct topology_handle_t {
-  using topology_type_t = topology::color_topology_t;
-}; // struct topology_handle_t
+    runtime_data.colors = coloring.size();
 
-} // namespace color_topology
+    // Maybe this can go away
+    runtime_data.index_space_id = unique_isid_t::instance().next();
 
-template<>
-struct topology_u<topology::color_topology_t> {
+    LegionRuntime::Arrays::Rect<1> bounds(0, coloring.size() - 1);
+    Legion::Domain domain(Legion::Domain::from_rect<1>(bounds));
 
-  using topology_handle_t = color_topology::topology_handle_t;
+    Legion::IndexSpace index_space =
+      legion_runtime->create_index_space(legion_context, domain);
 
-  template<size_t NAMESPACE, size_t NAME>
-  static topology_handle_t get_handle() {
-    topology_handle_t h;
-    return h;
-  } // get_handle
+    Legion::FieldSpace field_space =
+      legion_runtime->create_field_space(legion_context);
 
-}; // topology_u<topology::color_topology_t>
+    auto & field_info_store = flecsi_context.get_field_info_store(
+      topology::index_topology_t::type_identifier_hash, index);
+
+    Legion::FieldAllocator allocator =
+      legion_runtime->create_field_allocator(legion_context, field_space);
+
+    for(auto const & fi : field_info_store.data()) {
+      allocator.allocate_field(fi.type_size, fi.fid);
+    } // for
+
+    runtime_data.logical_region = legion_runtime->create_logical_region(
+      legion_context, index_space, field_space);
+
+    LegionRuntime::Arrays::Blockify<1> color_block(1);
+    Legion::IndexPartition index_partition =
+      legion_runtime->create_index_partition(
+        legion_context, index_space, color_block);
+    runtime_data.color_partition = legion_runtime->get_logical_partition(
+      legion_context, runtime_data.logical_region, index_partition);
+
+  } // set_coloring
+
+}; // struct topology_instance_u<topology::index_topology_t>
 
 /*----------------------------------------------------------------------------*
   Mesh Topology.
  *----------------------------------------------------------------------------*/
+
+template<typename POLICY_TYPE>
+struct topology_instance_u<topology::mesh_topology_u<POLICY_TYPE>> {
+
+  using topology_reference_t =
+    topology_reference_u<topology::mesh_topology_u<POLICY_TYPE>>;
+
+}; // struct topology_instance_u<topology::mesh_topology_u<POLICY_TYPE>>
 
 // NOTE THAT THE HANDLE TYPE FOR THIS TYPE WILL NEED TO CAPTURE THE
 // UNDERLYING TOPOLOGY TYPE, i.e., topology::mesh_topology_t<MESH_POLICY>

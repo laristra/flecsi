@@ -22,8 +22,8 @@ set(data_HEADERS
   common/field_info.h
   common/privilege.h
   common/storage_class.h
-  common/storage_class_registration.h
   common/topology.h
+  common/topology_accessor.h
   common/topology_registration.h
   data.h
   field_interface.h
@@ -39,7 +39,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/data_policy.h
     legion/runtime_data_types.h
     legion/storage_classes.h
-    legion/topologies.h
     ${data_HEADERS}
   )
 
@@ -52,7 +51,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(data_HEADERS
     mpi/data_policy.h
     mpi/storage_classes.h
-    mpi/topologies.h
     ${data_HEADERS}
   )
 
@@ -93,9 +91,19 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(client
+ftest_add_unit(global
   SOURCES
-    test/client.cc
+    test/global.cc
+)
+
+ftest_add_unit(identifiers
+  SOURCES
+    test/identifiers.cc
+)
+
+ftest_add_unit(index
+  SOURCES
+    test/index.cc
 )
 
 ftest_add_unit(privilege

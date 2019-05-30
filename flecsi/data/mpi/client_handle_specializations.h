@@ -29,7 +29,7 @@ namespace flecsi {
 
 namespace topology {
 struct global_topology_t;
-struct color_topology_t;
+struct index_topology_t;
 template<typename>
 class mesh_topology_u;
 } // namespace topology
@@ -59,9 +59,9 @@ struct client_handle_specialization_u<topology::global_topology_t> {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct client_handle_specialization_u<topology::color_topology_t> {
+struct client_handle_specialization_u<topology::index_topology_t> {
 
-  using client_t = topology::color_topology_t;
+  using client_t = topology::index_topology_t;
 
   template<size_t NAMESPACE, size_t NAME>
   static client_handle_u<client_t, 0> get_client_handle() {
@@ -69,7 +69,7 @@ struct client_handle_specialization_u<topology::color_topology_t> {
     return h;
   } // get_client_handle
 
-}; // client_handle_specialization_u<topology::color_topology_t>
+}; // client_handle_specialization_u<topology::index_topology_t>
 
 /*----------------------------------------------------------------------------*
   Mesh Topology.

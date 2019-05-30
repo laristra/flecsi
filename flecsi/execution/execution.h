@@ -160,13 +160,13 @@
   @ingroup execution
  */
 
-#define flecsi_register_launch_domain(name, launch_type, size)                 \
+#define flecsi_register_launch_domain(name, size)                              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the task interface to register the domain */                         \
   inline bool flecsi_internal_unique_name(domain_registration_) =              \
     flecsi::execution::task_interface_t::                                      \
-      register_domain<flecsi_internal_hash(name), launch_type, size>()
+      register_domain<flecsi_internal_hash(name), size>()
 
 /*!
   @def flecsi_execute_task

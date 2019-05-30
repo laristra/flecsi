@@ -22,7 +22,6 @@ set(execution_HEADERS
   common/command_line_options.h
   common/launch.h
   common/processor.h
-  common/topology_instance.h
   context.h
   internal.h
   execution.h
@@ -52,6 +51,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/mapper.h
     legion/reduction_wrapper.h
     legion/runtime.h
+    legion/enactment/task_wrapper.h
+    legion/enactment/finalize_views.h
+    legion/enactment/init_views.h
     legion/tasks.h
   )
 

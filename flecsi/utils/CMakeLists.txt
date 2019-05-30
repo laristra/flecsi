@@ -49,6 +49,7 @@ set(utils_HEADERS
   macros.h
   mpi_type_traits.h
   offset.h
+  serialize.h
   set_intersection.h
   set_utils.h
   simple_id.h
@@ -232,6 +233,15 @@ ftest_add_unit(index_space
 ftest_add_unit(hash
   SOURCES
     test/hash.cc
+)
+
+#------------------------------------------------------------------------------#
+# serialize
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(serialize
+  SOURCES
+    test/serialize.cc
 )
 
 #------------------------------------------------------------------------------#

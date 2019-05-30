@@ -20,7 +20,7 @@
 set(topology_HEADERS
   base_topology_types.h
   common/utility_types.h
-  internal/color.h
+  internal/index.h
   internal/global.h
 )
 

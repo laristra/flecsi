@@ -72,13 +72,12 @@ struct task_interface_u {
     Register a launch domain with the FleCSI runtime.
 
     @tparam KEY       A hash key identifying the domain.
-    @tparam LAUNCH    The launch type (single, index).
     @tparam SIZE      A domain size
    */
 
-  template<size_t KEY, launch_type_t LAUNCH, size_t SIZE>
+  template<size_t KEY, size_t SIZE>
   static decltype(auto) register_domain() {
-    execution::context_t::instance().register_domain(KEY, LAUNCH, SIZE);
+    execution::context_t::instance().register_index_domain(KEY, SIZE);
     return true;
   } // register_domain
 
@@ -97,14 +96,15 @@ struct task_interface_u {
    */
 
   template<size_t TASK,
+    size_t LAUNCH_DOMAIN,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(size_t domain_key, ARGS &&... args) {
+  static decltype(auto) execute_task(ARGS &&... args) {
     return EXECUTION_POLICY::
-      template execute_task<TASK, REDUCTION, RETURN, ARG_TUPLE>(
-        domain_key, std::forward<ARGS>(args)...);
+      template execute_task<TASK, LAUNCH_DOMAIN, REDUCTION, RETURN, ARG_TUPLE>(
+        std::forward<ARGS>(args)...);
   } // execute_task
 
   /*!

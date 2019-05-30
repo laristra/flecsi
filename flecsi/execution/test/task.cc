@@ -57,4 +57,4 @@ test_driver(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(test_driver);
+ftest_register_driver(test_driver);

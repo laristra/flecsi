@@ -76,4 +76,4 @@ privilege(int argc, char ** argv) {
   return 0;
 }
 
-ftest_register_test(privilege);
+ftest_register_driver(privilege);
