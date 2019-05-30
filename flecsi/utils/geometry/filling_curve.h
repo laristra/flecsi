@@ -36,7 +36,7 @@ class filling_curve_u
   static constexpr size_t dimension = DIM;
   using int_t = T;
   using point_t = point_u<double, dimension>;
-  using range_t = std::array<point_t,2>;
+  using range_t = std::array<point_t, 2>;
 
 protected:
   static constexpr size_t bits_ = sizeof(int_t) * 8; //! Maximum number of bits
@@ -44,7 +44,7 @@ protected:
     (bits_ - 1) /
     dimension; //! Maximum
                //! depth reachable regarding the size of the memory word used
-  static constexpr size_t max_value_ = int_t(1)<<(max_depth_-1);
+  static constexpr size_t max_value_ = int_t(1) << (max_depth_ - 1);
 
   static double min_, scale_;
   static range_t range_;
@@ -54,9 +54,13 @@ protected:
 public:
   filling_curve_u() : value_(0) {}
   filling_curve_u(const filling_curve_u & key) : value_(key) {}
-  ~filling_curve_u() { value_ = 0; }
+  ~filling_curve_u() {
+    value_ = 0;
+  }
 
-  static size_t max_depth() { return max_depth_; }
+  static size_t max_depth() {
+    return max_depth_;
+  }
 
   //! Smallest value possible at max_depth considering the root
   static constexpr DERIVED min() {
@@ -149,7 +153,7 @@ public:
   }
   //! Output a key using oct in 3d and poping values for 2 and 1D
   void output_(std::ostream & ostr) const {
-    if constexpr (dimension == 3) {
+    if constexpr(dimension == 3) {
       ostr << std::oct << value_ << std::dec;
     }
     else {
@@ -227,7 +231,7 @@ class hilbert_curve_u : public filling_curve_u<DIM, T, hilbert_curve_u<DIM, T>>
   static constexpr size_t dimension = DIM;
   using coord_t = std::array<int_t, dimension>;
   using point_t = point_u<double, dimension>;
-  using range_t = std::array<point_t,2>;
+  using range_t = std::array<point_t, 2>;
 
   using filling_curve_u<DIM, T, hilbert_curve_u>::value_;
   using filling_curve_u<DIM, T, hilbert_curve_u>::max_depth_;
@@ -244,13 +248,12 @@ public:
   hilbert_curve_u(const hilbert_curve_u & bid)
     : filling_curve_u<DIM, T, hilbert_curve_u>(bid.value_) {}
   hilbert_curve_u(const point_t & p)
-    : hilbert_curve_u(p,
-        filling_curve_u<DIM, T, hilbert_curve_u>::max_depth_) {}
+    : hilbert_curve_u(p, filling_curve_u<DIM, T, hilbert_curve_u>::max_depth_) {
+  }
 
   //! Hilbert key is always generated to the max_depth_ and then truncated
   //! otherwise the keys will not be the same
-  hilbert_curve_u(const point_t & p,const size_t depth)
-  {
+  hilbert_curve_u(const point_t & p, const size_t depth) {
     *this = filling_curve_u<DIM, T, hilbert_curve_u>::min();
     assert(depth <= max_depth_);
     std::array<int_t, dimension> coords;
@@ -265,29 +268,28 @@ public:
       value_ >>= (max_depth_ - depth);
       return;
     }
-    int shift = max_depth_-1;
-    for(int_t mask = max_value_ >> 1 ; mask > 0 ; mask >>= 1, --shift) {
+    int shift = max_depth_ - 1;
+    for(int_t mask = max_value_ >> 1; mask > 0; mask >>= 1, --shift) {
       std::array<bool, dimension> r;
-      if constexpr (dimension == 2) {
-        r = {!!(mask & coords[0]),!!(mask & coords[1])};
+      if constexpr(dimension == 2) {
+        r = {!!(mask & coords[0]), !!(mask & coords[1])};
         int_t bits = ((3 * r[0]) ^ r[1]);
-        value_ |= bits<<(shift*2);
+        value_ |= bits << (shift * 2);
         rotation2d(mask, coords, r);
       }
-      if constexpr (dimension == 3) {
-        r = {!!(mask & coords[0]),!!(mask & coords[1]),!!(mask & coords[2])};
+      if constexpr(dimension == 3) {
+        r = {!!(mask & coords[0]), !!(mask & coords[1]), !!(mask & coords[2])};
         int_t bits = (7 * r[0]) ^ (3 * r[1]) ^ r[2];
-        value_ |= bits<<(shift*3);
+        value_ |= bits << (shift * 3);
         unrotation3d(mask, coords, r);
       }
     }
-    assert(value_ & int_t(1)<<(max_depth_*dimension));
+    assert(value_ & int_t(1) << (max_depth_ * dimension));
     // Then truncate the key to the depth
     value_ >>= (max_depth_ - depth) * dimension;
   }
 
-  static void set_range(const range_t& range)
-  {
+  static void set_range(const range_t & range) {
     range_ = range;
     for(int i = 0; i < dimension; ++i) {
       min_ = range_[0][i];
@@ -300,9 +302,9 @@ public:
     int_t key = value_;
     std::array<int_t, dimension> coords = {};
     int i = 0;
-    for(int_t mask = int_t(1); mask <= max_value_ ; mask <<= 1) {
+    for(int_t mask = int_t(1); mask <= max_value_; mask <<= 1) {
       std::array<bool, dimension> r = {};
-      if constexpr (dimension == 3) {
+      if constexpr(dimension == 3) {
         r[0] = (!!(key & 4));
         r[1] = (!!(key & 2)) ^ r[0];
         r[2] = (!!(key & 1)) ^ r[0] ^ r[1];
@@ -311,10 +313,10 @@ public:
         coords[1] += r[1] * mask;
         coords[2] += r[2] * mask;
       }
-      if constexpr (dimension == 2) {
+      if constexpr(dimension == 2) {
         r[0] = (!!(key & 2));
         r[1] = (!!(key & 1)) ^ r[0];
-        //r[0] = r[0] ^ r[1];
+        // r[0] = r[0] ^ r[1];
         rotation2d(mask, coords, r);
         coords[0] += r[0] * mask;
         coords[1] += r[1] * mask;
@@ -324,8 +326,7 @@ public:
 
     assert(key == int_t(1));
     for(int j = 0; j < dimension; ++j) {
-      p[j] =
-        min_ + scale_ * static_cast<double>(coords[j]) / max_value_/2;
+      p[j] = min_ + scale_ * static_cast<double>(coords[j]) / max_value_ / 2;
     } // for
   }
 
@@ -339,37 +340,37 @@ private:
         coords[1] = n - 1 - coords[1];
       }
       // Swap X-Y or Z
-      std::swap(coords[0],coords[1]);
+      std::swap(coords[0], coords[1]);
     }
   }
 
   void rotate_90_x(const int_t & n, coord_t & coords) {
     coord_t tmp = coords;
-    coords = {tmp[0],n-tmp[2]-1,tmp[1]};
+    coords = {tmp[0], n - tmp[2] - 1, tmp[1]};
   }
   void rotate_90_y(const int_t & n, coord_t & coords) {
     coord_t tmp = coords;
-    coords = {tmp[2],tmp[1],n-tmp[0]-1};
+    coords = {tmp[2], tmp[1], n - tmp[0] - 1};
   }
   void rotate_90_z(const int_t & n, coord_t & coords) {
     coord_t tmp = coords;
-    coords = {n-tmp[1]-1,tmp[0],tmp[2]};
+    coords = {n - tmp[1] - 1, tmp[0], tmp[2]};
   }
   void rotate_180_x(const int_t & n, coord_t & coords) {
     coord_t tmp = coords;
-    coords = {tmp[0],n-tmp[1]-1,n-tmp[2]-1};
+    coords = {tmp[0], n - tmp[1] - 1, n - tmp[2] - 1};
   }
   void rotate_270_x(const int_t & n, coord_t & coords) {
     coord_t tmp = coords;
-    coords = {tmp[0],tmp[2],n-tmp[1]-1};
+    coords = {tmp[0], tmp[2], n - tmp[1] - 1};
   }
   void rotate_270_y(const int_t & n, coord_t & coords) {
     coord_t tmp = coords;
-    coords = {n-tmp[2]-1,tmp[1],tmp[0]};
+    coords = {n - tmp[2] - 1, tmp[1], tmp[0]};
   }
   void rotate_270_z(const int_t & n, coord_t & coords) {
     coord_t tmp = coords;
-    coords = {tmp[1],n-tmp[0]-1,tmp[2]};
+    coords = {tmp[1], n - tmp[0] - 1, tmp[2]};
   }
 
   void rotation3d(const int_t & n,
@@ -379,18 +380,22 @@ private:
       // Left front bottom
       rotate_270_z(n, coords);
       rotate_270_x(n, coords);
-    }else if(!r[0] && r[2]) {
+    }
+    else if(!r[0] && r[2]) {
       // Left top
       rotate_90_z(n, coords);
       rotate_90_y(n, coords);
-    }else if(r[1] && !r[2]) {
+    }
+    else if(r[1] && !r[2]) {
       // Back bottom
       rotate_180_x(n, coords);
-    }else if(r[0] && r[2]) {
+    }
+    else if(r[0] && r[2]) {
       // Right top
       rotate_270_z(n, coords);
       rotate_270_y(n, coords);
-    }else if(r[0] && !r[2] && !r[1]) {
+    }
+    else if(r[0] && !r[2] && !r[1]) {
       // Right front bottom
       rotate_90_y(n, coords);
       rotate_90_z(n, coords);
@@ -404,18 +409,22 @@ private:
       // Left front bottom
       rotate_90_x(n, coords);
       rotate_90_z(n, coords);
-    }else if(!r[0] && r[2]) {
+    }
+    else if(!r[0] && r[2]) {
       // Left top
       rotate_270_y(n, coords);
       rotate_270_z(n, coords);
-    }else if(r[1] && !r[2]) {
+    }
+    else if(r[1] && !r[2]) {
       // Back bottom
       rotate_180_x(n, coords);
-    }else if(r[0] && r[2]) {
+    }
+    else if(r[0] && r[2]) {
       // Right top
       rotate_90_y(n, coords);
       rotate_90_z(n, coords);
-    }else if(r[0] && !r[2] && !r[1]) {
+    }
+    else if(r[0] && !r[2] && !r[1]) {
       // Right front bottom
       rotate_270_z(n, coords);
       rotate_270_y(n, coords);
@@ -435,8 +444,7 @@ class morton_curve_u : public filling_curve_u<DIM, T, morton_curve_u<DIM, T>>
   static constexpr size_t dimension = DIM;
   using coord_t = std::array<int_t, dimension>;
   using point_t = point_u<double, dimension>;
-  using range_t = std::array<point_t,2>;
-
+  using range_t = std::array<point_t, 2>;
 
   using filling_curve_u<DIM, T, morton_curve_u>::value_;
   using filling_curve_u<DIM, T, morton_curve_u>::max_depth_;
@@ -454,17 +462,16 @@ public:
   morton_curve_u(const morton_curve_u & bid)
     : filling_curve_u<DIM, T, morton_curve_u>(bid.value_) {}
   morton_curve_u(const point_t & p)
-    : morton_curve_u(p,
-        filling_curve_u<DIM, T, morton_curve_u>::max_depth_) {}
+    : morton_curve_u(p, filling_curve_u<DIM, T, morton_curve_u>::max_depth_) {}
 
   //! Morton key can be generated directly up to the right depth
-  morton_curve_u(const point_t & p,
-    const size_t depth) {
+  morton_curve_u(const point_t & p, const size_t depth) {
     *this = filling_curve_u<DIM, T, morton_curve_u>::min();
     assert(depth <= max_depth_);
     std::array<int_t, dimension> coords;
     for(size_t i = 0; i < dimension; ++i) {
-      coords[i] = (p[i] - min_) / scale_ * (int_t(1) << (bits_ - 1) / dimension);
+      coords[i] =
+        (p[i] - min_) / scale_ * (int_t(1) << (bits_ - 1) / dimension);
     }
     size_t k = 0;
     for(size_t i = max_depth_ - depth; i < max_depth_; ++i) {
@@ -476,8 +483,7 @@ public:
     } // for
   } // morton_curve_u
 
-  static void set_range(const range_t& range)
-  {
+  static void set_range(const range_t & range) {
     range_ = range;
     for(int i = 0; i < dimension; ++i) {
       min_ = range_[0][i];
@@ -507,11 +513,11 @@ public:
 }; // class morton
 
 template<size_t DIM, typename T, class DERIVED>
-double filling_curve_u<DIM,T,DERIVED>::min_ = 0;
+double filling_curve_u<DIM, T, DERIVED>::min_ = 0;
 template<size_t DIM, typename T, class DERIVED>
-typename filling_curve_u<DIM,T,DERIVED>::range_t
-  filling_curve_u<DIM,T,DERIVED>::range_ = {};
+typename filling_curve_u<DIM, T, DERIVED>::range_t
+  filling_curve_u<DIM, T, DERIVED>::range_ = {};
 template<size_t DIM, typename T, class DERIVED>
-double filling_curve_u<DIM,T,DERIVED>::scale_ = 0;
+double filling_curve_u<DIM, T, DERIVED>::scale_ = 0;
 
 } // namespace flecsi

@@ -24,5 +24,5 @@ using point_3d_t = point_u<double, 3>;
 int
 ntree_sanity(int argc, char ** argv) {
   FTEST();
-  
+
 } // TEST

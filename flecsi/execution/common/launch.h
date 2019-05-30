@@ -25,7 +25,6 @@
 
 namespace flecsi {
 
-
 /*!
   Bitmasks for task types.
 
@@ -47,7 +46,7 @@ enum execution_type_t : size_t {
   leaf,
   inner,
   ldempotent
-}; 
+};
 #endif
 
 /*!
@@ -56,12 +55,7 @@ enum execution_type_t : size_t {
   \note This enumeration difines 2 different lounch types for the task:
         single and index
  */
-enum launch_type_t : size_t {
-  single,
-  index 
-}; // enum launch_type_t
-
-
+enum launch_type_t : size_t { single, index }; // enum launch_type_t
 
 namespace execution {
 
@@ -81,22 +75,17 @@ constexpr size_t task_execution_type_bits = 3;
 
 using task_execution_type_t = std::bitset<task_execution_type_bits>;
 
-enum execution_type_t : size_t {
-  leaf,
-  inner,
-  idempotent
-};
+enum execution_type_t : size_t { leaf, inner, idempotent };
 
 /*!
     launch_domain type is used in flecsi_execute_task to specify a
-    launch type of the task (single or index) and # of index points 
+    launch type of the task (single or index) and # of index points
     for index launch
  */
 
-struct launch_domain_t
-{
+struct launch_domain_t {
   launch_type_t launch_type_;
-  size_t domain_size_=1;
+  size_t domain_size_ = 1;
 };
 
 #if 1
@@ -115,8 +104,8 @@ mask_to_type(execution_type_t m) {
 #endif
 
 #define test_boolean_interface(name)                                           \
-  inline bool task_##name(const task_execution_type_t & l) {                              \
-    return l.test(static_cast<size_t>(execution_type_t::name));                   \
+  inline bool task_##name(const task_execution_type_t & l) {                   \
+    return l.test(static_cast<size_t>(execution_type_t::name));                \
   }
 
 // clang-format off

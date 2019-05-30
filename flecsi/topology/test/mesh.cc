@@ -18,9 +18,7 @@
 #include <iostream>
 #include <vector>
 
-#include "flecsi/utils/geometry/point.h"
 #include "flecsi/topology/unstructured_mesh/interface.h"
+#include "flecsi/utils/geometry/point.h"
 
-namespace flecsi {
-
-} // namespace flecsi
+namespace flecsi {} // namespace flecsi

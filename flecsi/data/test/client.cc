@@ -46,7 +46,7 @@ global(int argc, char ** argv) {
   double value{10.0};
 
   flecsi_execute_task(global_task, global_test, single, th, value);
-  //flecsi_execute_task(global_task, global_test, index, th, value);
+  // flecsi_execute_task(global_task, global_test, index, th, value);
 
   return 0;
 }

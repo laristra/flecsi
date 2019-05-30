@@ -15,8 +15,8 @@
 #include <flecsi/utils/ftest.h>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.h>
 #include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/execution.h>
 
 using namespace flecsi::execution;
 

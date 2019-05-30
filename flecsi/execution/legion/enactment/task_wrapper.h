@@ -72,8 +72,8 @@ struct pure_task_wrapper_u {
 
    @param tid The task id to assign to the task.
    @param processor_type A valid Legion processor type.
-   @param execution  A \ref task_execution_type_t with the task 
-							execution type parameters.
+   @param execution  A \ref task_execution_type_t with the task
+              execution type parameters.
    @param A std::string containing the task name.
    */
 
@@ -150,7 +150,7 @@ struct task_wrapper_u {
    @param tid            The task id to assign to the task.
    @param processor_type A \ref processor_type_t with the processor type.
    @param execution      A \ref task_executin_type_t with the task
-													execution type parameters.
+                          execution type parameters.
    @param name           A std::string containing the task name.
    */
 

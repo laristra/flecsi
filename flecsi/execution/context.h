@@ -559,24 +559,22 @@ struct context_u : public CONTEXT_POLICY {
     Task Launch iterface.
    *--------------------------------------------------------------------------*/
 
-	/*!
+  /*!
     Register launch domains
 
     @param key      Domain key
     @param launch   Launch type (single, index)
     @param size     Launch domain size
    */
-  void register_domain(size_t key, launch_type_t launch, size_t size)
-  {
+  void register_domain(size_t key, launch_type_t launch, size_t size) {
     launch_domain_map_[key] = {launch, size};
   }
 
   /*!
     Returns domain information from the domain key
    */
-  launch_domain_t & get_domain(size_t key)
-  {
-    return launch_domain_map_[key]; 
+  launch_domain_t & get_domain(size_t key) {
+    return launch_domain_map_[key];
   }
 
 private:
@@ -598,7 +596,7 @@ private:
    *--------------------------------------------------------------------------*/
 
   int exit_status_ = 0;
-  top_level_action_t top_level_action_ = {};  
+  top_level_action_t top_level_action_ = {};
 
   /*--------------------------------------------------------------------------*
     Reduction data members.
