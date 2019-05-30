@@ -75,39 +75,38 @@ template<typename T>
 class identity_storage_u
 {
 public:
-
   class iterator
   {
-  /*
-  // The content of this class appears to be unnecessary; FleCSI builds
-  // without it. However, the class name itself is used here and there.
-  //
-  // I'll comment out the content, for now, in case it does prove to be
-  // needed somewhere. -MFS, 2019-04-19.
-  //
-  public:
-    iterator(simple_id i) : i_(i) {}
+    /*
+    // The content of this class appears to be unnecessary; FleCSI builds
+    // without it. However, the class name itself is used here and there.
+    //
+    // I'll comment out the content, for now, in case it does prove to be
+    // needed somewhere. -MFS, 2019-04-19.
+    //
+    public:
+      iterator(simple_id i) : i_(i) {}
 
-    bool operator==(const iterator & itr) const {
-      return i_ == itr.i_;
-    }
+      bool operator==(const iterator & itr) const {
+        return i_ == itr.i_;
+      }
 
-    bool operator!=(const iterator & itr) const {
-      return i_ != itr.i_;
-    }
+      bool operator!=(const iterator & itr) const {
+        return i_ != itr.i_;
+      }
 
-    simple_id operator*() {
-      return i_;
-    }
+      simple_id operator*() {
+        return i_;
+      }
 
-    iterator & operator++() {
-      ++i_;
-      return *this;
-    }
+      iterator & operator++() {
+        ++i_;
+        return *this;
+      }
 
-  private:
-    size_t i_;
-  */
+    private:
+      size_t i_;
+    */
   };
 
   simple_id operator[](size_t i) const {
