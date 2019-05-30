@@ -126,7 +126,7 @@ after_success:
         git status;
         git diff --cached --no-color | head -n 500;
       fi;
-fi
+    fi
 
 notifications:
   branches:
