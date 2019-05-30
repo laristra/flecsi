@@ -127,14 +127,16 @@ struct context_u : public CONTEXT_POLICY {
     return CONTEXT_POLICY::start(argc, argv, vm);
   } // start
 
-  // FIXME
+  /*!
+    Return the current process id.
+   */
 
   size_t process() const {
     return CONTEXT_POLICY::process();
   }
 
   /*!
-
+    Return the number of processes.
    */
 
   size_t processes() const {
@@ -142,7 +144,7 @@ struct context_u : public CONTEXT_POLICY {
   }
 
   /*!
-
+    Return the number of threads per process.
    */
 
   size_t threads_per_process() const {
@@ -488,6 +490,16 @@ private:
     } // for
   } // ~context_u
 
+  /*
+    Clear the runtime state of the context.
+
+    Notes:
+      - This does not clear objects that cannot be serialized, e.g.,
+        std::function objects.
+   */
+
+  void clear();
+
   /*--------------------------------------------------------------------------*
     Basic runtime data members.
    *--------------------------------------------------------------------------*/
@@ -520,6 +532,7 @@ private:
     Topology data members.
    *--------------------------------------------------------------------------*/
 
+  // FIXME: I don't think this is necessary anymore.
   std::unordered_map<size_t, topology_registration_map_t>
     topology_callback_registry_;
 
@@ -550,6 +563,13 @@ private:
   std::unordered_map<std::pair<size_t, size_t>, std::unordered_map<std::pair<size_t, size_t>, data_reference_state_t>>;
 #endif
 }; // struct context_u
+
+template<class CONTEXT_POLICY>
+void context_u<CONTEXT_POLICY>::clear() {
+
+  
+  CONTEXT_POLICY::clear();
+} // clear
 
 } // namespace execution
 } // namespace flecsi

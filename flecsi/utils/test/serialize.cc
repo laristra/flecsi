@@ -12,6 +12,8 @@
    All rights reserved.
                                                                               */
 
+#define __FLECSI_PRIVATE__
+#include <flecsi/execution/context.h>
 #include <flecsi/utils/ftest.h>
 #include <flecsi/utils/serialize.h>
 
@@ -173,10 +175,10 @@ user_type(int argc, char ** argv) {
 ftest_register_driver(user_type);
 
 //----------------------------------------------------------------------------//
-// Context test.
+// Simple context test.
 //----------------------------------------------------------------------------//
 
-struct test_context_t {
+struct simple_context_t {
 
   struct element_info_t {
     size_t id;
@@ -190,8 +192,8 @@ struct test_context_t {
 
   using map_element_t = std::unordered_map<size_t, element_info_t>;
 
-  static test_context_t & instance() {
-    static test_context_t tc;
+  static simple_context_t & instance() {
+    static simple_context_t tc;
     return tc;
   } // instance
 
@@ -223,20 +225,20 @@ private:
 
   std::unordered_map<size_t, map_element_t> element_map_;
 
-}; // struct test_context_t
+}; // struct simple_context_t
 
 int
-context(int argc, char ** argv) {
+simple_context(int argc, char ** argv) {
 
   FTEST();
 
   char * data{nullptr};
   size_t size{0};
 
-  test_context_t & context = test_context_t::instance();
+  simple_context_t & context = simple_context_t::instance();
 
   {
-    test_context_t::element_info_t info;
+    simple_context_t::element_info_t info;
 
     info.id = 10;
     context.add_map_element_info(0, 0, info);
@@ -328,6 +330,17 @@ context(int argc, char ** argv) {
   delete[] data;
 
   return 0;
-} // context
+} // simple_context
 
-ftest_register_driver(context);
+ftest_register_driver(simple_context);
+
+//----------------------------------------------------------------------------//
+// FleCSI context test.
+//----------------------------------------------------------------------------//
+
+int
+flecsi_context(int argc, char ** argv) {
+  return 0;
+} // simple_context
+
+ftest_register_driver(flecsi_context);
