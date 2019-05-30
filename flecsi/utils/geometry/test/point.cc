@@ -38,6 +38,7 @@ point_sanity(int argc, char ** argv) {
   ASSERT_EQ(-1.0, a3[utils::axis::z]);
 
 } // TEST
+ftest_register_driver(point_sanity);
 
 int
 point_distance(int argc, char ** argv) {
@@ -57,6 +58,7 @@ point_distance(int argc, char ** argv) {
   d = distance(a3, b3);
   ASSERT_EQ(6.0, d) << "Distance calculation failed";
 } // TEST
+ftest_register_driver(point_distance);
 
 int
 point_midpoint(int argc, char ** argv) {
@@ -79,6 +81,7 @@ point_midpoint(int argc, char ** argv) {
   ASSERT_EQ(4.0, c3[1]) << "Midpoint calculation failed";
   ASSERT_EQ(-2.5, c3[2]) << "Midpoint calculation failed";
 } // TEST
+ftest_register_driver(point_midpoint);
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

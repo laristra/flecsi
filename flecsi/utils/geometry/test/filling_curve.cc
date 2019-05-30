@@ -59,7 +59,7 @@ hilbert_sanity(int argc, char ** argv) {
   }
   ASSERT_TRUE(hc5 == hc4);
 }
-ftest_register_test(hilbert_sanity);
+ftest_register_driver(hilbert_sanity);
 
 int
 hilbert_2d_rnd(int argc, char ** argv) {
@@ -83,7 +83,7 @@ hilbert_2d_rnd(int argc, char ** argv) {
     ASSERT_TRUE(dist < 1.0e-4);
   }
 }
-ftest_register_test(hilbert_2d_rnd);
+ftest_register_driver(hilbert_2d_rnd);
 
 int
 hilbert_3d_rnd(int argc, char ** argv) {
@@ -127,7 +127,7 @@ hilbert_3d_rnd(int argc, char ** argv) {
     ASSERT_TRUE(dist < 1.0e-4);
   }
 } // TEST
-ftest_register_test(hilbert_3d_rnd);
+ftest_register_driver(hilbert_3d_rnd);
 
 int
 morton_sanity(int argc, char ** argv) {
@@ -159,6 +159,7 @@ morton_sanity(int argc, char ** argv) {
   }
   ASSERT_TRUE(hc5 == hc4);
 }
+ftest_register_driver(morton_sanity);
 
 int
 morton_2d_rnd(int argc, char ** argv) {
@@ -195,7 +196,7 @@ morton_2d_rnd(int argc, char ** argv) {
   }
 }
 
-ftest_register_test(morton_2d_rnd);
+ftest_register_driver(morton_2d_rnd);
 
 int
 morton_3d_rnd(int argc, char ** argv) {
@@ -239,7 +240,7 @@ morton_3d_rnd(int argc, char ** argv) {
     ASSERT_TRUE(dist < 1.0e-4);
   }
 }
-ftest_register_test(morton_3d_rnd);
+ftest_register_driver(morton_3d_rnd);
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

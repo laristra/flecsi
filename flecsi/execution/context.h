@@ -565,8 +565,8 @@ private:
 }; // struct context_u
 
 template<class CONTEXT_POLICY>
-void context_u<CONTEXT_POLICY>::clear() {
-
+void
+context_u<CONTEXT_POLICY>::clear() {
 
   CONTEXT_POLICY::clear();
 } // clear
