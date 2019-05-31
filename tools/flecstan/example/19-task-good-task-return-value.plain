@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 19-task-good-task-return-value.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   19-task-good-task-return-value.json
+
+File:
+   19-task-good-task-return-value.json: 19-task-good-task-return-value.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, A, loc, single
+   File: 19-task-good-task-return-value.cc
+   Line: 12
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, A, single, 
+   File: 19-task-good-task-return-value.cc
+   Line: 20
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 19-task-good-task-return-value.cc, line 12)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 19-task-good-task-return-value.cc, line 20)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Synopsis:
+   No errors or warnings were detected.
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Note:
+   FleCSI static analysis completed.

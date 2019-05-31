@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 06-task-warning-register-execute-warn.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   06-task-warning-register-execute-warn.json
+
+File:
+   06-task-warning-register-execute-warn.json: 06-task-warning-register-execute-warn.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, , loc, single
+   File: 06-task-warning-register-execute-warn.cc
+   Line: 17
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, , single, 
+   File: 06-task-warning-register-execute-warn.cc
+   Line: 26
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 06-task-warning-register-execute-warn.cc, line 17)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 06-task-warning-register-execute-warn.cc, line 26)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Synopsis:
+   No errors or warnings were detected.
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Note:
+   FleCSI static analysis completed.

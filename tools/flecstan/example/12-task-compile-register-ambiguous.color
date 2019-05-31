@@ -1,0 +1,242 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file 12-task-compile-register-ambiguous.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21m12-task-compile-register-ambiguous.json[0m
+
+[35;21mFile:[0m
+   [35;21m12-task-compile-register-ambiguous.json: 12-task-compile-register-ambiguous.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: foo, ns, loc, single[0m
+   [36;1mFile: 12-task-compile-register-ambiguous.cc[0m
+   [36;1mLine: 13[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   reference to overloaded function could not be resolved; did you mean to call it with no arguments?[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_return_type" (file 12-task-compile-register-ambiguous.cc, line 13)[0m
+   [31;21m   from macro "flecsi_register_task" (file 12-task-compile-register-ambiguous.cc, line 13)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   possible target for call[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 10[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   possible target for call[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 8[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   type 'void' cannot be used prior to '::' because it has no members[0m
+   [31;21mFile: /home/staley/flecsi/flecsi/utils/function_traits.h[0m
+   [31;21mLine: 22[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   in instantiation of template class 'flecsi::utils::function_traits_u<void>' requested here[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 13[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   reference to overloaded function could not be resolved; did you mean to call it with no arguments?[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_arguments_type" (file 12-task-compile-register-ambiguous.cc, line 13)[0m
+   [31;21m   from macro "flecsi_register_task" (file 12-task-compile-register-ambiguous.cc, line 13)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   possible target for call[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 10[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   possible target for call[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 8[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   no type named 'arguments_type' in 'flecsi::utils::function_traits_u<void>'[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_arguments_type" (file /home/staley/flecsi/flecsi/execution/execution.h, line 76)[0m
+   [31;21m   from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 277)[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   reference to overloaded function could not be resolved; did you mean to call it with no arguments?[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_return_type" (file 12-task-compile-register-ambiguous.cc, line 13)[0m
+   [31;21m   from macro "flecsi_register_task" (file 12-task-compile-register-ambiguous.cc, line 13)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   possible target for call[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 10[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   possible target for call[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 8[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   no type named 'return_type' in 'flecsi::utils::function_traits_u<void>'[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_return_type" (file /home/staley/flecsi/flecsi/execution/execution.h, line 63)[0m
+   [31;21m   from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 284)[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   redefinition of 'foo_tuple_delegate' as different kind of symbol[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from (file <scratch space>, line 96)[0m
+   [31;21m   from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 285)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   previous definition is here[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 13[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   expected ';' after top level declarator[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 285)[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_task[0m
+   [36;1mArgs: foo, ns, single, [0m
+   [36;1mFile: 12-task-compile-register-ambiguous.cc[0m
+   [36;1mLine: 23[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   reference to overloaded function could not be resolved; did you mean to call it with no arguments?[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 23[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_return_type" (file 12-task-compile-register-ambiguous.cc, line 23)[0m
+   [31;21m   from macro "flecsi_internal_execute_task" (file 12-task-compile-register-ambiguous.cc, line 23)[0m
+   [31;21m   from macro "flecsi_execute_task" (file 12-task-compile-register-ambiguous.cc, line 23)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   possible target for call[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 8[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   possible target for call[0m
+   [32;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [32;21mLine: 10[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   no type named 'return_type' in 'flecsi::utils::function_traits_u<void>'[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 23[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_return_type" (file /home/staley/flecsi/flecsi/execution/execution.h, line 63)[0m
+   [31;21m   from macro "flecsi_internal_execute_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 360)[0m
+   [31;21m   from macro "flecsi_execute_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 397)[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   no type named 'arguments_type' in the global namespace[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 23[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_arguments_type" (file /home/staley/flecsi/flecsi/execution/execution.h, line 76)[0m
+   [31;21m   from macro "flecsi_internal_execute_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 361)[0m
+   [31;21m   from macro "flecsi_execute_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 397)[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   expected unqualified-id[0m
+   [31;21mFile: 12-task-compile-register-ambiguous.cc[0m
+   [31;21mLine: 23[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_execute_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 361)[0m
+   [31;21m   from macro "flecsi_execute_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 397)[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[33;1mWarning:[0m
+   [33;1mInternal warning from the FleCSI Static Analyzer.[0m
+   [33;1mRe: macro "flecsi_register_task".[0m
+   [33;1mDetected call count != detected C++ abstract syntax tree count.[0m
+   [33;1m   Macro Calls: 1[0m
+   [33;1m   Syntax Tree: 0[0m
+   [33;1mThis warning may be spurious, if your code has errors or certain warnings.[0m
+   [33;1mAlso, it can occur if the set of C++ files you're analyzing together contain[0m
+   [33;1mmore than one application build (analogy: trying to link object files from[0m
+   [33;1mmultiple C++ sources that have a main() program). This can happen, e.g., if[0m
+   [33;1myou're reading a cmake-produced .json file from a cmake that emits build[0m
+   [33;1mrules for multiple target applications. If none of the situations described[0m
+   [33;1mhere is the case, then please report this warning to us.[0m
+
+[33;1mWarning:[0m
+   [33;1mInternal warning from the FleCSI Static Analyzer.[0m
+   [33;1mRe: macro "flecsi_execute_task".[0m
+   [33;1mDetected call count != detected C++ abstract syntax tree count.[0m
+   [33;1m   Macro Calls: 1[0m
+   [33;1m   Syntax Tree: 0[0m
+   [33;1mThis warning may be spurious, if your code has errors or certain warnings.[0m
+   [33;1mAlso, it can occur if the set of C++ files you're analyzing together contain[0m
+   [33;1mmore than one application build (analogy: trying to link object files from[0m
+   [33;1mmultiple C++ sources that have a main() program). This can happen, e.g., if[0m
+   [33;1myou're reading a cmake-produced .json file from a cmake that emits build[0m
+   [33;1mrules for multiple target applications. If none of the situations described[0m
+   [33;1mhere is the case, then please report this warning to us.[0m
+
+[34;1mSynopsis:[0m
+   [36;1m12 errors[0m
+   [36;1m2 warnings[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[33;1mWarning:[0m
+   [33;1mFleCSI static analysis may be incomplete; errors occurred.[0m

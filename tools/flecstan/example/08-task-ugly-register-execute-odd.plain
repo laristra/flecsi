@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 08-task-ugly-register-execute-odd.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   08-task-ugly-register-execute-odd.json
+
+File:
+   08-task-ugly-register-execute-odd.json: 08-task-ugly-register-execute-odd.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, ::ns, loc, single
+   File: 08-task-ugly-register-execute-odd.cc
+   Line: 11
+
+Macro:
+   Name: flecsi_execute_task
+   Args: ns::foo, , single, 
+   File: 08-task-ugly-register-execute-odd.cc
+   Line: 19
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 08-task-ugly-register-execute-odd.cc, line 11)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 08-task-ugly-register-execute-odd.cc, line 19)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Synopsis:
+   No errors or warnings were detected.
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Note:
+   FleCSI static analysis completed.

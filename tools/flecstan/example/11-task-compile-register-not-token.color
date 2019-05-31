@@ -1,0 +1,93 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file 11-task-compile-register-not-token.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21m11-task-compile-register-not-token.json[0m
+
+[35;21mFile:[0m
+   [35;21m11-task-compile-register-not-token.json: 11-task-compile-register-not-token.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: ns::foo, , loc, single[0m
+   [36;1mFile: 11-task-compile-register-not-token.cc[0m
+   [36;1mLine: 16[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   out-of-line definition of 'foo_tuple_delegate' does not match any declaration in namespace 'ns'[0m
+   [31;21mFile: 11-task-compile-register-not-token.cc[0m
+   [31;21mLine: 16[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from (file <scratch space>, line 93)[0m
+   [31;21m   from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 277)[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   no member named 'foo_task_registered' in namespace 'ns'[0m
+   [31;21mFile: 11-task-compile-register-not-token.cc[0m
+   [31;21mLine: 16[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from (file <scratch space>, line 94)[0m
+   [31;21m   from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 282)[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_task[0m
+   [36;1mArgs: foo, ns, single, [0m
+   [36;1mFile: 11-task-compile-register-not-token.cc[0m
+   [36;1mLine: 22[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::execute_task[0m
+   [36;1mMatches macro: flecsi_execute_task (file 11-task-compile-register-not-token.cc, line 22)[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[33;1mWarning:[0m
+   [33;1mInternal warning from the FleCSI Static Analyzer.[0m
+   [33;1mRe: macro "flecsi_register_task".[0m
+   [33;1mDetected call count != detected C++ abstract syntax tree count.[0m
+   [33;1m   Macro Calls: 1[0m
+   [33;1m   Syntax Tree: 0[0m
+   [33;1mThis warning may be spurious, if your code has errors or certain warnings.[0m
+   [33;1mAlso, it can occur if the set of C++ files you're analyzing together contain[0m
+   [33;1mmore than one application build (analogy: trying to link object files from[0m
+   [33;1mmultiple C++ sources that have a main() program). This can happen, e.g., if[0m
+   [33;1myou're reading a cmake-produced .json file from a cmake that emits build[0m
+   [33;1mrules for multiple target applications. If none of the situations described[0m
+   [33;1mhere is the case, then please report this warning to us.[0m
+
+[31;21mError:[0m
+   [31;21mThe task executed with hash "ns::foo" here:[0m
+   [31;21m   11-task-compile-register-not-token.cc: file 11-task-compile-register-not-token.cc, line 22[0m
+   [31;21mwas not registered with any of FleCSI's task registration macros,[0m
+   [31;21mor was not registered with that hash.[0m
+   [31;21mThis can trigger a run-time error if this line is reached.[0m
+
+[34;1mSynopsis:[0m
+   [36;1m3 errors[0m
+   [36;1m1 warning[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[34;1mTask executions without registrations:[0m
+   [36;1m11-task-compile-register-not-token.cc: file 11-task-compile-register-not-token.cc, line 22
+[0m
+[33;1mWarning:[0m
+   [33;1mFleCSI static analysis may be incomplete; errors occurred.[0m
