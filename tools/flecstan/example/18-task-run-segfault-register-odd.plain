@@ -1,0 +1,74 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 18-task-run-segfault-register-odd.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   18-task-run-segfault-register-odd.json
+
+File:
+   18-task-run-segfault-register-odd.json: 18-task-run-segfault-register-odd.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, , loc, single
+   File: 18-task-run-segfault-register-odd.cc
+   Line: 16
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, ns, single, 
+   File: 18-task-run-segfault-register-odd.cc
+   Line: 24
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 18-task-run-segfault-register-odd.cc, line 16)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 18-task-run-segfault-register-odd.cc, line 24)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Warning:
+   The task registered with hash "::foo" here:
+      18-task-run-segfault-register-odd.cc: file 18-task-run-segfault-register-odd.cc, line 16, scope ::ns
+   is never invoked with any of FleCSI's task execution macros.
+   Is this intentional?
+
+Error:
+   The task executed with hash "ns::foo" here:
+      18-task-run-segfault-register-odd.cc: file 18-task-run-segfault-register-odd.cc, line 24
+   was not registered with any of FleCSI's task registration macros,
+   or was not registered with that hash.
+   This can trigger a run-time error if this line is reached.
+
+Synopsis:
+   1 error
+   1 warning
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Task registrations without executions:
+   18-task-run-segfault-register-odd.cc: file 18-task-run-segfault-register-odd.cc, line 16
+
+Task executions without registrations:
+   18-task-run-segfault-register-odd.cc: file 18-task-run-segfault-register-odd.cc, line 24
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

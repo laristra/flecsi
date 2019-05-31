@@ -1,0 +1,128 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 22-task-compile-argument-too-many.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   22-task-compile-argument-too-many.json
+
+File:
+   22-task-compile-argument-too-many.json: 22-task-compile-argument-too-many.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, A, loc, single
+   File: 22-task-compile-argument-too-many.cc
+   Line: 10
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, A, single, 1,2.34
+   File: 22-task-compile-argument-too-many.cc
+   Line: 25
+
+Error:
+   Clang++ reports an error:
+      no viable conversion from 'tuple<[...], typename __decay_and_strip<double>::__type>' to 'tuple<[...], (no argument)>'
+   File: /home/staley/flecsi/flecsi/execution/mpi/execution_policy.h
+   Line: 148
+
+Note:
+   Clang++ reports a note:
+      in instantiation of function template specialization 'flecsi::execution::mpi_execution_policy_t::execute_task<flecsi::execution::launch_type_t::single, 13403595139865779998, 351273959, void, std::tuple<int>, int, double>' requested here
+   File: /home/staley/flecsi/flecsi/execution/task.h
+   Line: 98
+
+Note:
+   Clang++ reports a note:
+      in instantiation of function template specialization 'flecsi::execution::task_interface_u<flecsi::execution::mpi_execution_policy_t>::execute_task<flecsi::execution::launch_type_t::single, 13403595139865779998, 351273959, void, std::tuple<int>, int, double>' requested here
+   File: 22-task-compile-argument-too-many.cc
+   Line: 25
+
+Note:
+   Clang++ reports a note:
+      candidate constructor template not viable: no known conversion from 'tuple<typename __decay_and_strip<int>::__type, typename __decay_and_strip<double>::__type>' (aka 'tuple<int, double>') to 'const int &' for 1st argument
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 608
+
+Note:
+   Clang++ reports a note:
+      candidate constructor not viable: no known conversion from 'tuple<typename __decay_and_strip<int>::__type, typename __decay_and_strip<double>::__type>' (aka 'tuple<int, double>') to 'const std::tuple<int> &' for 1st argument
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 660
+
+Note:
+   Clang++ reports a note:
+      candidate constructor not viable: no known conversion from 'tuple<typename __decay_and_strip<int>::__type, typename __decay_and_strip<double>::__type>' (aka 'tuple<int, double>') to 'std::tuple<int> &&' for 1st argument
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 662
+
+Note:
+   Clang++ reports a note:
+      candidate template ignored: requirement '_TC<true, int>::_MoveConstructibleTuple()' was not satisfied [with _UElements = <std::tuple<int, double>>]
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 646
+
+Note:
+   Clang++ reports a note:
+      candidate template ignored: requirement '_TC<false, int>::_ConstructibleTuple()' was not satisfied [with _UElements = <int, double>, _Dummy = void]
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 678
+
+Note:
+   Clang++ reports a note:
+      candidate template ignored: requirement '_TC<false, int>::_MoveConstructibleTuple()' was not satisfied [with _UElements = <int, double>, _Dummy = void]
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 702
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 22-task-compile-argument-too-many.cc, line 10)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Warning:
+   Internal warning from the FleCSI Static Analyzer.
+   Re: macro "flecsi_execute_task".
+   Detected call count != detected C++ abstract syntax tree count.
+      Macro Calls: 1
+      Syntax Tree: 0
+   This warning may be spurious, if your code has errors or certain warnings.
+   Also, it can occur if the set of C++ files you're analyzing together contain
+   more than one application build (analogy: trying to link object files from
+   multiple C++ sources that have a main() program). This can happen, e.g., if
+   you're reading a cmake-produced .json file from a cmake that emits build
+   rules for multiple target applications. If none of the situations described
+   here is the case, then please report this warning to us.
+
+Warning:
+   The task registered with hash "A::foo" here:
+      22-task-compile-argument-too-many.cc: file 22-task-compile-argument-too-many.cc, line 10, scope ::A
+   is never invoked with any of FleCSI's task execution macros.
+   Is this intentional?
+
+Synopsis:
+   1 error
+   2 warnings
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Task registrations without executions:
+   22-task-compile-argument-too-many.cc: file 22-task-compile-argument-too-many.cc, line 10
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

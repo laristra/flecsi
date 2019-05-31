@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 23-task-good-argument-int2double.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   23-task-good-argument-int2double.json
+
+File:
+   23-task-good-argument-int2double.json: 23-task-good-argument-int2double.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, A, loc, single
+   File: 23-task-good-argument-int2double.cc
+   Line: 10
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, A, single, 1
+   File: 23-task-good-argument-int2double.cc
+   Line: 20
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 23-task-good-argument-int2double.cc, line 10)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 23-task-good-argument-int2double.cc, line 20)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Synopsis:
+   No errors or warnings were detected.
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Note:
+   FleCSI static analysis completed.
