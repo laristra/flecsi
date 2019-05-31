@@ -1,0 +1,130 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 09-task-compile-register-not-scope.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   09-task-compile-register-not-scope.json
+
+File:
+   09-task-compile-register-not-scope.json: 09-task-compile-register-not-scope.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, ns, loc, single
+   File: 09-task-compile-register-not-scope.cc
+   Line: 13
+
+Error:
+   Clang++ reports an error:
+      use of undeclared identifier 'foo'; did you mean 'ns::foo'?
+   File: 09-task-compile-register-not-scope.cc
+   Line: 13
+   Expansion trace:
+      from macro "flecsi_internal_return_type" (file 09-task-compile-register-not-scope.cc, line 13)
+      from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)
+
+Note:
+   Clang++ reports a note:
+      'ns::foo' declared here
+   File: 09-task-compile-register-not-scope.cc
+   Line: 8
+
+Error:
+   Clang++ reports an error:
+      use of undeclared identifier 'foo'; did you mean 'ns::foo'?
+   File: 09-task-compile-register-not-scope.cc
+   Line: 13
+   Expansion trace:
+      from macro "flecsi_internal_arguments_type" (file 09-task-compile-register-not-scope.cc, line 13)
+      from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)
+
+Note:
+   Clang++ reports a note:
+      'ns::foo' declared here
+   File: 09-task-compile-register-not-scope.cc
+   Line: 8
+
+Error:
+   Clang++ reports an error:
+      use of undeclared identifier 'foo'; did you mean 'for'?
+   File: 09-task-compile-register-not-scope.cc
+   Line: 13
+   Expansion trace:
+      from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)
+
+Error:
+   Clang++ reports an error:
+      expected expression
+   File: 09-task-compile-register-not-scope.cc
+   Line: 13
+   Expansion trace:
+      from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)
+
+Error:
+   Clang++ reports an error:
+      use of undeclared identifier 'foo'; did you mean 'ns::foo'?
+   File: 09-task-compile-register-not-scope.cc
+   Line: 13
+   Expansion trace:
+      from macro "flecsi_internal_return_type" (file 09-task-compile-register-not-scope.cc, line 13)
+      from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)
+
+Note:
+   Clang++ reports a note:
+      'ns::foo' declared here
+   File: 09-task-compile-register-not-scope.cc
+   Line: 8
+
+Error:
+   Clang++ reports an error:
+      use of undeclared identifier 'foo'; did you mean 'ns::foo'?
+   File: 09-task-compile-register-not-scope.cc
+   Line: 13
+   Expansion trace:
+      from macro "flecsi_internal_arguments_type" (file 09-task-compile-register-not-scope.cc, line 13)
+      from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)
+
+Note:
+   Clang++ reports a note:
+      'ns::foo' declared here
+   File: 09-task-compile-register-not-scope.cc
+   Line: 8
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, ns, single, 
+   File: 09-task-compile-register-not-scope.cc
+   Line: 20
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 09-task-compile-register-not-scope.cc, line 13)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 09-task-compile-register-not-scope.cc, line 20)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Synopsis:
+   6 errors
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

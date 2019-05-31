@@ -1,0 +1,30 @@
+[
+  {
+    "directory" :
+      "/home/staley/flecstan/example",
+
+    "command" :
+      "/usr/local/bin/clang++ \
+      -DDEBUG \
+      -DOMPI_SKIP_MPICXX \
+      -DMPICH_SKIP_MPICXX \
+      -I/home/staley/flecsi \
+      -I/home/staley/flecsi/build \
+      -I/home/staley/code/mpich-install/include \
+      -I/home/staley/flecsi/cinch/logging \
+      -I/home/staley/flecsi-third-party-debug/include \
+      -I/home/staley/flecsi/flecsi \
+      -I/home/staley/flecsi/build/flecsi \
+      -I/home/staley/flecsi/flecsi/.. \
+      -I/home/staley/flecsi/build/flecsi/.. \
+      -I/home/staley/flecsi/flecsi-tutorial/specialization \
+      -I/home/staley/flecsi/build/flecsi-tutorial/specialization \
+      -I/home/staley/flecsi/flecsi-tutorial/specialization/.. \
+      -I/home/staley/flecsi/build/flecsi-tutorial/specialization/.. \
+      -std=c++17 \
+      -c 09-task-compile-register-not-scope.cc",
+
+    "file" :
+      "09-task-compile-register-not-scope.cc"
+  }
+]
