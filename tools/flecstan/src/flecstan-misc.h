@@ -1,13 +1,32 @@
 /* -*- C++ -*- */
 
-#ifndef flecstan_misc
-#define flecstan_misc
+/* -----------------------------------------------------------------------------
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2019, Triad National Security, LLC
+   All rights reserved.
+----------------------------------------------------------------------------- */
+
+#pragma once
+
+#include "flecstan-config.h"
 #include "clang/Sema/Sema.h"
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/YAMLTraits.h"
 #include <iostream>
+#include <set>
 #include <sstream>
+
+// -----------------------------------------------------------------------------
+// Miscellaneous
+// -----------------------------------------------------------------------------
 
 // Perform assertions?
 #define FLECSTAN_ASSERT
@@ -28,9 +47,20 @@ inline const exit_status_t exit_fatal = 2;
 #define flecstan_assert(x)
 #endif
 
+// stringify
+#define _stringify(macro) #macro
+#define stringify(macro) _stringify(macro)
+
 // version
 namespace flecstan {
-inline const std::string version = "0.0.0";
+inline const std::string version =
+  stringify(flecstan_VERSION_MAJOR) "." stringify(
+    flecstan_VERSION_MINOR) "." stringify(flecstan_VERSION_PATCH);
+}
+
+// unnamed namespace
+namespace flecstan {
+inline const std::string unnamed_namespace = "<namespace>";
 }
 
 // -----------------------------------------------------------------------------
@@ -151,9 +181,9 @@ debug(const std::ostringstream & oss) {
 
 template<class T>
 inline void
-debug(const std::string & name, const T & value) {
+debug(const std::string & varname, const T & value) {
   std::ostringstream oss;
-  oss << name << " == " << value;
+  oss << varname << " == " << value;
   debug(oss);
 }
 
@@ -221,8 +251,11 @@ note(const std::ostringstream & oss) {
 // warning
 // ------------------------
 
+inline std::size_t num_warn = 0;
+
 inline exit_status_t
 warning(const std::string & str) {
+  num_warn++;
   if(section_on && emit_warning)
     diagnostic("Warning", str, color::warning);
   return exit_clean;
@@ -234,34 +267,27 @@ warning(const std::ostringstream & oss) {
 }
 
 inline exit_status_t
-intwarn(const std::string & str,
-  // Certain internal warnings can be triggered by compilation errors.
-  // I'll assume where otherwise unspecified that this isn't the case,
-  // but will print a more forgiving-sounding message where it may be.
-  const bool can_be_err_triggered = false) {
-  return warning("Internal warning from the FleCSI Static Analyzer.\n" + str +
-                 "\n" +
-                 (can_be_err_triggered
-                     ? "This warning may be spurious, if your code has errors "
-                       "or certain warnings.\n"
-                       "Otherwise, please report this warning to us."
-                     : "Please report this warning to us.\n"));
+intwarn(const std::string & str) {
+  return warning("Internal warning from the FleCSI Static Analyzer.\n" + str);
 }
 
 inline exit_status_t
-intwarn(const std::ostringstream & oss, const bool err_triggered = false) {
-  return intwarn(oss.str(), err_triggered);
+intwarn(const std::ostringstream & oss) {
+  return intwarn(oss.str());
 }
 
 // ------------------------
 // error
 // ------------------------
 
+inline std::size_t num_error = 0;
+
 inline exit_status_t
 error(const std::string & str) {
   // section_on is not required here, as it was with headings, files,
   // reports, notes, and warnings. We always print errors, unless the
   // user has explicitly shut them off
+  num_error++;
   if(emit_error)
     diagnostic("Error", str, color::error);
   return exit_error;
@@ -280,6 +306,7 @@ error(const std::ostringstream & oss) {
 inline exit_status_t
 fatal(const std::string & str) {
   // these always print, regardless of either section_on or emit_error
+  num_error++;
   diagnostic("ERROR (Terminal)", str, color::fatal);
   return exit_fatal;
 }
@@ -405,6 +432,10 @@ public:
     const std::string & l,
     const std::string & c)
     : file(f), line(l), column(c) {}
+
+  bool operator==(const FileLineColumn & rhs) const {
+    return file == rhs.file && line == rhs.line && column == rhs.column;
+  }
 };
 
 // print_flc
@@ -483,38 +514,39 @@ public:
 } // namespace llvm
 
 // -----------------------------------------------------------------------------
-// MacroInvocation
-// Contains information regarding an invocation of any of the various FleCSI
-// macros we'll be looking for.
+// MacroCall
+// Contains information regarding one call to any of the various FleCSI macros
+// we'll be looking for.
 // -----------------------------------------------------------------------------
 
 namespace flecstan {
 
-class MacroInvocation
+class MacroCall
 {
 public:
   // ------------------------
   // Data
   // ------------------------
 
-  std::string name;
-  FileLineColumn location;
-  FileLineColumn spelling;
+  std::string unit; // file we're compiling
+  std::string macname; // name of macro
+  FileLineColumn location; // nominal location
+  FileLineColumn spelling; // spelling location
   mutable bool ast; // AST matched?
 
   // Arguments
-  // Each argument consists of some number of tokens
-  std::vector<std::vector<clang::Token>> arguments;
+  std::vector<std::vector<clang::Token>> argstok; // as vectors of tokens
+  std::vector<std::string> argsraw; // in raw form
 
   // ------------------------
   // Constructor
   // ------------------------
 
-  MacroInvocation(const clang::Token & token,
-    const clang::SourceRange & range,
+  MacroCall(const std::string & _unit,
+    const clang::Token & token,
     const clang::SourceManager & sman,
-    const std::string & _name)
-    : name(_name), ast(false) {
+    const std::string & _macname)
+    : unit(_unit), macname(_macname), ast(false) {
     const clang::SourceLocation tloc = token.getLocation();
     getFileLineColumn(&sman, tloc, location);
     getFileLineColumn(&sman, sman.getSpellingLoc(tloc), spelling);
@@ -526,67 +558,58 @@ public:
 
   // Number of arguments to the macro
   std::size_t size() const {
-    return arguments.size();
+    return argstok.size();
   }
 
   // Location of argument [a], token [t]
   clang::SourceLocation loc(const std::size_t a, const std::size_t t) const {
-    flecstan_assert(a < arguments.size());
-    flecstan_assert(t < arguments[a].size());
-    return arguments[a][t].getLocation();
+    flecstan_assert(a < argstok.size());
+    flecstan_assert(t < argstok[a].size());
+    return argstok[a][t].getLocation();
   }
 
   // String representation of argument [a], token [t]
   std::string str(const clang::Sema & sema,
     const std::size_t a,
     const std::size_t t) const {
-    flecstan_assert(a < arguments.size());
-    flecstan_assert(t < arguments[a].size());
-    return TokenName(arguments[a][t], sema);
+    flecstan_assert(a < argstok.size());
+    flecstan_assert(t < argstok[a].size());
+    return TokenName(argstok[a][t], sema);
   }
 
   // String representation of argument [a], with all tokens put together,
   // separated by spaces.
   // 2018-02-08: For now let's change this, and NOT separate by spaces.
   std::string str(const clang::Sema & sema, const std::size_t a) const {
-    flecstan_assert(a < arguments.size());
+    flecstan_assert(a < argstok.size());
     std::string s;
-    for(std::size_t t = 0; t < arguments[a].size(); ++t)
+    for(std::size_t t = 0; t < argstok[a].size(); ++t)
       s += /* (t ? " " : "") + */ str(sema, a, t);
     return s;
   }
+
+  // ------------------------
+  // Printing
+  // ------------------------
 
   // flc
   // print file, line, column
   std::string flc() const {
     return print_flc("file ", ", line ", ", column ", location, spelling);
   }
-};
 
-} // namespace flecstan
-
-// -----------------------------------------------------------------------------
-// InvocationInfo
-// -----------------------------------------------------------------------------
-
-namespace flecstan {
-
-class InvocationInfo
-{
-public:
-  // data
-  FileLineColumn location;
-  FileLineColumn spelling;
-
-  // ctor: Sema, MacroInvocation
-  InvocationInfo(const clang::Sema & sema, const MacroInvocation & mi)
-    : location(mi.location), spelling(mi.spelling) {
+  // report
+  // print report regarding this macro call
+  void report(const clang::Sema & sema) const {
     std::ostringstream oss;
-    oss << "Name: " << mi.name << "\nArgs:";
-    for(std::size_t arg = 0; arg < mi.size(); ++arg)
-      oss << (arg ? ", " : " ") << mi.str(sema, arg);
+    oss << "Name: " << macname
+        << "\n"
+           // "Unit: " << unit << "\n" // might be confusing here
+           "Args:";
+    for(std::size_t arg = 0; arg < size(); ++arg)
+      oss << (arg ? ", " : " ") << str(sema, arg);
 
-    report("Macro",
+    flecstan::report("Macro",
       oss.str() +
         print_flc("\nFile: ", "\nLine: ", "\nColumn: ", location, spelling));
   }
@@ -597,14 +620,21 @@ public:
 namespace llvm {
 namespace yaml {
 
-// MappingTraits<InvocationInfo>
+// MappingTraits<MacroCall>
 template<>
-class MappingTraits<flecstan::InvocationInfo>
+class MappingTraits<flecstan::MacroCall>
 {
 public:
-  static void mapping(IO & io, flecstan::InvocationInfo & c) {
+  static void mapping(IO & io, flecstan::MacroCall & c) {
+    // Don't map c.macname. The containers of MacroCall objects are given
+    // the same names as the macros, and so c.macname would be redundant.
+    // Don't map c.argstok either, as clang::Token isn't really agreeable
+    // with doing so. Essentially the same information is in argsraw.
+    io.mapRequired("unit", c.unit);
     io.mapRequired("location", c.location);
     io.mapRequired("spelling", c.spelling);
+    io.mapRequired("matched", c.ast);
+    io.mapRequired("arguments", c.argsraw);
   }
 };
 
@@ -612,16 +642,16 @@ public:
 } // namespace llvm
 
 // -----------------------------------------------------------------------------
-// InvokedMatched
+// CalledMatched
 // -----------------------------------------------------------------------------
 
 namespace flecstan {
 
 template<class T>
-class InvokedMatched
+class CalledMatched
 {
 public:
-  std::vector<InvocationInfo> invoked;
+  std::vector<MacroCall> called;
   std::vector<T> matched;
 };
 
@@ -631,16 +661,14 @@ namespace llvm {
 namespace yaml {
 
 template<class T>
-class MappingTraits<flecstan::InvokedMatched<T>>
+class MappingTraits<flecstan::CalledMatched<T>>
 {
 public:
-  static void mapping(IO & io, flecstan::InvokedMatched<T> & c) {
-    io.mapRequired("invoked", c.invoked);
+  static void mapping(IO & io, flecstan::CalledMatched<T> & c) {
+    io.mapRequired("called", c.called);
     io.mapRequired("matched", c.matched);
   }
 };
 
 } // namespace yaml
 } // namespace llvm
-
-#endif

@@ -1,45 +1,95 @@
 /* -*- C++ -*- */
 
-#ifndef flecstan_macro
-#define flecstan_macro
+/* -----------------------------------------------------------------------------
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2019, Triad National Security, LLC
+   All rights reserved.
+----------------------------------------------------------------------------- */
+
+#pragma once
 
 #include "flecstan-yaml.h"
 
 // -----------------------------------------------------------------------------
-// macrobase
+// flecsi_base
 // All of our classes for representing FleCSI's macros with YAML will have this
-// class as a base. It contains information that's common to all: macro name,
+// class as a base. It contains information that's common to all: macro's name,
 // relevant file, and position (line and column).
 // -----------------------------------------------------------------------------
 
 namespace flecstan {
 
-class macrobase
+class flecsi_base
 {
 public:
   // data
+  std::string unit;
   FileLineColumn location;
   FileLineColumn spelling;
-  std::vector<std::string> context; // file/namespace context
+  std::vector<std::string> scope; // namespace scope
 
   // ctor: default
-  // File, line, and column are defaulted
-  macrobase() : location("", "0", "0"), spelling("", "0", "0") {}
+  flecsi_base() : unit(""), location("", "0", "0"), spelling("", "0", "0") {}
 
-  // ctor: MacroInvocation
-  // File, line, and column are extracted from the MacroInvocation
-  macrobase(const MacroInvocation & mi)
-    : location(mi.location), spelling(mi.spelling) {}
+  // ctor: MacroCall
+  // Various values are extracted from the MacroCall
+  flecsi_base(const MacroCall & mc)
+    : unit(mc.unit), location(mc.location), spelling(mc.spelling) {}
 
   // map
-  // Stipulate mapRequired for all of macrobase's data. This will be called
+  // Stipulate mapRequired for all of flecsi_base's data. This will be called
   // from within MappingTraits<class>::mapping for our various classes that
-  // derive from macrobase.
+  // derive from flecsi_base.
   void map(llvm::yaml::IO & io) {
+    io.mapRequired("unit", unit);
     io.mapRequired("location", location);
     io.mapRequired("spelling", spelling);
-    io.mapRequired("context", context);
+    io.mapRequired("scope", scope);
   }
+
+  /*
+  // operator==
+  // Say that they're equal if the location and spelling location are equal.
+  // I think that this will be a sufficient test to which we can defer by the
+  // operator==s in each derived, macro-specific class, in order to determine
+  // if a newly found macro call is identical to a macro call that
+  // was already recorded. We don't want flecstan to get false positives about
+  // duplicate macro calls, if a macro that's called once, in one header file,
+  // is seen multiple times due to the one header file being #included in
+  // multiple source files. So, the derived-class operator==s will defer to
+  // this one, in order to see if the macro is already recorded, based on its
+  // location and spelling location. If it's already recorded, then we won't
+  // record it again. Note: earlier in flecstan's development, we didn't worry
+  // so much about getting *false* positives due to the header/source file
+  // situation as described above, because earlier FleCSI versions didn't use
+  // inline variables in the macros. That, in turn, would ultimately have led
+  // to compilation errors - so that such duplicates reflected a real problem.
+  // With inline variables, our hypothetical situation no longer implies C++
+  // errors, so we need to avoid reporting (no-longer-problematic) duplicates!
+  bool operator==(const flecsi_base &rhs) const
+  {
+     std::cout << "operator==\n";
+     std::cout << "   location.file   = \"" << location.file   << "\"\n";
+     std::cout << "   location.line   = \"" << location.line   << "\"\n";
+     std::cout << "   location.column = \"" << location.column << "\"\n";
+     std::cout << "   spelling.file   = \"" << spelling.file   << "\"\n";
+     std::cout << "   spelling.line   = \"" << spelling.line   << "\"\n";
+     std::cout << "   spelling.column = \"" << spelling.column << "\"\n";
+     std::cout << std::flush;
+
+     return
+        location == rhs.location &&
+        spelling == rhs.spelling;
+  }
+  */
 };
 
 } // namespace flecstan
@@ -63,13 +113,13 @@ public:
 //    flecstan_class_done
 // Purpose: make class containing YAML data, for a particular FleCSI macro.
 
-#define flecstan_class(name)                                                   \
+#define flecstan_class(macname)                                                \
   namespace flecstan {                                                         \
-  class name : public macrobase                                                \
+  class macname : public flecsi_base                                           \
   {                                                                            \
   public:                                                                      \
-    name() {}                                                                  \
-    name(const MacroInvocation & mi) : macrobase(mi) {}
+    macname() {}                                                               \
+    macname(const MacroCall & mc) : flecsi_base(mc) {}
 
 #define flecstan_class_done                                                    \
   }                                                                            \
@@ -82,15 +132,15 @@ public:
 //    flecstan_maptraits_done
 // Purpose: make YAML mappings for classes as defined with the above macros.
 
-#define flecstan_maptraits(name)                                               \
+#define flecstan_maptraits(macname)                                            \
   namespace llvm {                                                             \
   namespace yaml {                                                             \
   template<>                                                                   \
-  class MappingTraits<flecstan::name>                                          \
+  class MappingTraits<flecstan::macname>                                       \
   {                                                                            \
   public:                                                                      \
-    static void mapping(IO & io, flecstan::name & c) {                         \
-      c.map(io); /* see class macrobase, above */
+    static void mapping(IO & io, flecstan::macname & c) {                      \
+      c.map(io); /* see class flecsi_base, above */
 
 #define flecstan_map(field) io.mapRequired(#field, c.field)
 
@@ -389,13 +439,13 @@ flecstan_maptraits_done
   // Reduction Interface
   // -----------------------------------------------------------------------------
 
-  // flecsi_register_reduction_operation ( name, operation_type )
-  flecstan_class(flecsi_register_reduction_operation) std::string name;
-std::string operation_type;
+  // flecsi_register_reduction_operation ( type, datatype )
+  flecstan_class(flecsi_register_reduction_operation) std::string type;
+std::string datatype;
 flecstan_class_done
 
-  flecstan_maptraits(flecsi_register_reduction_operation) flecstan_map(name);
-flecstan_map(operation_type);
+  flecstan_maptraits(flecsi_register_reduction_operation) flecstan_map(type);
+flecstan_map(datatype);
 flecstan_maptraits_done
 
   // -----------------------------------------------------------------------------
@@ -470,7 +520,7 @@ flecstan_maptraits_done
   // 0" as its last template argument. So, the macro's ##__VA_ARGS__, which is
   // the last template argument it sends to register_field(), is an (optional)
   // index space.
-  flecstan_class(flecsi_register_field) std::string client_type;
+    flecstan_class(flecsi_register_field) std::string client_type;
 std::string nspace;
 std::string name;
 std::string data_type;
@@ -550,7 +600,7 @@ flecstan_maptraits_done
 
   // flecsi_get_handles ( client, nspace, data_type, storage_class, version, ...
   // )
-  flecstan_class(flecsi_get_handles) std::string client;
+    flecstan_class(flecsi_get_handles) std::string client;
 std::string nspace;
 std::string data_type;
 std::string storage_class;
@@ -615,7 +665,7 @@ flecstan_maptraits_done
   // flecsi_get_mutator
   //    ( client_handle, nspace, name, data_type, storage_class, version, slots
   //    )
-  flecstan_class(flecsi_get_mutator) std::string client_handle;
+    flecstan_class(flecsi_get_mutator) std::string client_handle;
 std::string nspace;
 std::string name;
 std::string data_type;
@@ -667,14 +717,16 @@ flecstan_maptraits_done
   class Yaml
   {
   public:
-#define flecstan_vectors(name)                                                 \
-  InvokedMatched<flecstan::name> name;                                         \
-  void push(const flecstan::name & value) {                                    \
-    name.matched.push_back(value);                                             \
+#define flecstan_vectors(macname)                                              \
+  CalledMatched<flecstan::macname> macname;                                    \
+                                                                               \
+  void push(const flecstan::macname & value) {                                 \
+    macname.matched.push_back(value);                                          \
   }                                                                            \
-  void push(flecstan::name & value, const std::vector<std::string> & ctx) {    \
-    value.context = ctx;                                                       \
-    name.matched.push_back(value);                                             \
+                                                                               \
+  void push(flecstan::macname & value, const std::vector<std::string> & scp) { \
+    value.scope = scp;                                                         \
+    push(value);                                                               \
   }
 
     flecstan_expand(flecstan_vectors, )
@@ -709,5 +761,3 @@ public:
 #undef flecstan_maptraits
 #undef flecstan_map
 #undef flecstan_maptraits_done
-
-#endif

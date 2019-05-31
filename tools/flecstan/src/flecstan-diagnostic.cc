@@ -1,7 +1,20 @@
 /* -*- C++ -*- */
 
+/* -----------------------------------------------------------------------------
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2019, Triad National Security, LLC
+   All rights reserved.
+----------------------------------------------------------------------------- */
+
 #include "flecstan-diagnostic.h"
-#include "flecstan-misc.h"
 
 // -----------------------------------------------------------------------------
 // Diagnostic::HandleDiagnostic
@@ -11,7 +24,7 @@ namespace flecstan {
 
 void
 Diagnostic::HandleDiagnostic(clang::DiagnosticsEngine::Level level,
-  const clang::Diagnostic & diag) {
+  const clang::Diagnostic & diag) /* override */ {
   // Construct our own message about Clang++ finding something...
 
   // ------------------------

@@ -1,13 +1,27 @@
 /* -*- C++ -*- */
 
+/* -----------------------------------------------------------------------------
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+
+   Copyright (c) 2019, Triad National Security, LLC
+   All rights reserved.
+----------------------------------------------------------------------------- */
+
 #include "flecstan-arg.h"
 
 namespace flecstan {
 
-// FIXME
+// fixme
 // This file arguably has some redundancies and maintenance headaches, with
-// regards to the bookkeeping and such that's involved in handling command-
-// line arguments. Think about how to improve the situation. There are various
+// regards to the bookkeeping and such that's involved in handling command
+// arguments. Think about how to improve the situation. There are various
 // ways that this could be done, e.g. string to function-pointer map to deal
 // with the various command arguments.
 
@@ -31,9 +45,9 @@ fixdir(const std::string & in) {
   int b = 0;
   int e = in.size();
 
-  while(b < e && in[b] == ' ')
+  while(b < e && isspace(in[b]))
     b++; // remove beginning spaces
-  while(e > b && in[e - 1] == ' ')
+  while(e > b && isspace(in[e - 1]))
     e--; // remove ending spaces
   while(e > b && in[e - 1] == '/')
     e--; // remove ending /s
@@ -221,6 +235,11 @@ option_json(const std::string & opt) {
 }
 
 inline bool
+option_make(const std::string & opt) {
+  flecstan_setnfind("-make", "--make");
+}
+
+inline bool
 option_cc(const std::string & opt) {
   flecstan_setnfind("-cc", "--cc", "-cpp", "--cpp", "-cxx", "--cxx", "-c++",
     "--c++", "-C", "--C");
@@ -245,7 +264,7 @@ option_yout(const std::string & opt) {
 // Any of the above
 // ------------------------
 
-// FIXME
+// fixme
 // This is part of the aforementioned maintenance headache.
 inline bool
 option_any(const std::string & opt) {
@@ -269,8 +288,8 @@ option_any(const std::string & opt) {
          option_no_summary(opt) ||
 
          option_clang(opt) || option_flags(opt) || option_dir(opt) ||
-         option_json(opt) || option_cc(opt) || option_yaml(opt) ||
-         option_yout(opt);
+         option_json(opt) || option_make(opt) || option_cc(opt) ||
+         option_yaml(opt) || option_yout(opt);
 }
 
 // -----------------------------------------------------------------------------
@@ -280,6 +299,13 @@ option_any(const std::string & opt) {
 inline bool
 endsin_json(const std::string & str) {
   return endsin(str, ".json");
+}
+
+inline bool
+endsin_make(const std::string & str) {
+  // Interpret .txt as our make-output files. :-/ I may or may not
+  // wish to stick with this scheme, but it's serviceable for now.
+  return endsin(str, ".txt");
 }
 
 inline bool
@@ -307,7 +333,7 @@ process_clang(const int argc,
 
   // Argument?
   if(int(++i) == argc || option_any(argv[i]) || endsin_json(argv[i]) ||
-     endsin_cc(argv[i]) || endsin_yaml(argv[i])) {
+     endsin_make(argv[i]) || endsin_cc(argv[i]) || endsin_yaml(argv[i])) {
     i--;
     return error("The " + opt +
                  " option (clang++ compiler) "
@@ -337,6 +363,8 @@ process_flags(const int argc,
   CmdArgs & com) {
   debug("process_flags()");
 
+  (void)opt;
+
   // Bookkeeping
   const bool already = com.flags.set(); // previously set?
   com.flags.value().clear(); // clear
@@ -346,7 +374,7 @@ process_flags(const int argc,
   bool arguments = false;
   while(true) {
     if(int(++i) == argc || option_any(argv[i]) || endsin_json(argv[i]) ||
-       endsin_cc(argv[i]) || endsin_yaml(argv[i])) {
+       endsin_make(argv[i]) || endsin_cc(argv[i]) || endsin_yaml(argv[i])) {
       // No more arguments to the current option, so we're done
       i--;
       if(arguments) {
@@ -389,10 +417,10 @@ process_dir(const int argc,
 
   // Argument?
   if(int(++i) == argc || option_any(argv[i]) || endsin_json(argv[i]) ||
-     endsin_cc(argv[i]) || endsin_yaml(argv[i])) {
+     endsin_make(argv[i]) || endsin_cc(argv[i]) || endsin_yaml(argv[i])) {
     i--;
     return error("The " + opt +
-                 " option (JSON/C++ file directory) "
+                 " option (input file directory) "
                  "expects an argument.\n"
                  "Example: " +
                  opt +
@@ -420,44 +448,57 @@ process_dir(const int argc,
 exit_status_t
 one_json(const char * const * const argv, const std::size_t i, CmdArgs & com) {
   debug("one_json()");
+  std::string full;
+  bool found;
+  bool stdin = false;
 
-  // Full, path-prefixed file name
-  // File extension == .json?
-  std::string full = fullfile(com.dir.value(), argv[i]);
-  const bool json = endsin(full, ".json");
-
-  // Look for the file as-is (file extension or not)
-  std::ifstream ifs(full.c_str());
-  bool found = bool(ifs);
-
-  if(found) {
-    // File found; just print a note if it doesn't end in .json
-    if(!json)
-      note("File name " + quote(full) +
-           " doesn't end "
-           "in .json, but we'll use it.");
+  if(argv[i] == std::string("-")) {
+    full = "<standard input>";
+    found = true;
+    stdin = true;
   }
-  else
-    // File not found; try to be smart...
-    if(json)
-    // Name ends in .json; there's nothing more to try
-    warning("Could not find JSON file " + quote(full) + ".");
   else {
-    // Name doesn't end in .json; try appending
-    std::ifstream ifs((full + ".json").c_str());
-    if((found = bool(ifs))) // =, not ==
-      // OK, that works, make it permanent
-      full += ".json";
-    else
-      // Still not found; oh well
-      warning("Could not find JSON file " + quote(full) + " or " +
-              quote(full + ".json") + ".");
+    // Plain file name
+    // Full, path-prefixed file name
+    // File extension == .json?
+    const std::string plain = argv[i];
+    full = fullfile(com.dir.value(), plain);
+    const bool json = endsin(full, ".json");
+
+    // Look for the file as-is (file extension or not)
+    std::ifstream ifs(full.c_str());
+    found = bool(ifs);
+
+    if(found) {
+      // File found; just print a note if it doesn't end in .json
+      if(!json)
+        note("File name " + quote(plain) +
+             " doesn't end "
+             "in .json, but we'll use it.");
+    }
+    else {
+      // File not found; try to be smart...
+      if(json)
+        // Name ends in .json; there's nothing more to try
+        warning("Could not find JSON file " + quote(full) + ".");
+      else {
+        // Name doesn't end in .json; try appending
+        std::ifstream ifs((full + ".json").c_str());
+        if((found = bool(ifs))) // =, not ==
+          // OK, that works, make it permanent
+          full += ".json";
+        else
+          // Still not found; oh well
+          warning("Could not find JSON file " + quote(full) + " or " +
+                  quote(full + ".json") + ".");
+      }
+    }
   }
 
   // Save
-  note("Queueing database " + quote(full) + ".");
-  com.database.push_back(std::make_pair(full, found));
-  com.isdb.push_back(true);
+  note("Queueing JSON file " + quote(full) + ".");
+  com.jsonfile.push_back(std::make_pair(stdin ? "-" : full, found));
+  com.type.push_back(CmdArgs::file_t::json_t);
 
   return exit_clean;
 }
@@ -476,6 +517,7 @@ process_json(const int argc,
   while(true) {
     if(int(++i) == argc || // no more arguments, or...
        option_any(argv[i]) || // looks like another flag
+       endsin_make(argv[i]) || // looks like a make-output text file
        endsin_cc(argv[i]) || // looks like a C++ file
        endsin_yaml(argv[i]) // looks like a YAML file
     ) {
@@ -486,7 +528,8 @@ process_json(const int argc,
                ? status
                // Had no arguments
                : error("The " + opt +
-                       " option (JSON compilation database(s)) "
+                       " option "
+                       "(JSON compilation database file(s)) "
                        "expects one or more arguments.\n"
                        "Example: " +
                        opt + " foo.json bar.json");
@@ -496,6 +539,118 @@ process_json(const int argc,
     arguments = true;
 
     status = std::max(status, one_json(argv, i, com));
+    if(status == exit_fatal)
+      return status;
+  }
+
+  return status;
+}
+
+// -----------------------------------------------------------------------------
+// one_make
+// process_make
+// -----------------------------------------------------------------------------
+
+exit_status_t
+one_make(const char * const * const argv, const std::size_t i, CmdArgs & com) {
+  debug("one_make()");
+  std::string full;
+  bool found;
+  bool stdin = false;
+
+  if(argv[i] == std::string("-")) {
+    full = "<standard input>";
+    found = true;
+    stdin = true;
+  }
+  else {
+    // Plain file name
+    // Full, path-prefixed file name
+    // File extension == .txt?
+    const std::string plain = argv[i];
+    full = fullfile(com.dir.value(), plain);
+    const bool txt = endsin(full, ".txt");
+
+    // Look for the file as-is (file extension or not)
+    std::ifstream ifs(full.c_str());
+    found = bool(ifs);
+
+    if(found) {
+      /*
+      // Let's probably not nag the user about this here. At the moment,
+      // it's sort of a hack that we'll interpret ".txt" (which could mean
+      // something completely different to someone else) as being input as
+      // from make --dry-run VERBOSE=1. So, someone might well use no file
+      // extension, or use something other than ".txt".
+
+      // File found; just print a note if it doesn't end in .txt
+      if (!txt)
+         note("File name " + quote(plain) + " doesn't end "
+              "in .txt, but we'll use it.");
+      */
+    }
+    else {
+      // File not found; try to be smart...
+      if(txt)
+        // Name ends in .txt; there's nothing more to try
+        warning("Could not find make-output text file " + quote(full) + ".");
+      else {
+        // Name doesn't end in .txt; try appending
+        std::ifstream ifs((full + ".txt").c_str());
+        if((found = bool(ifs))) // =, not ==
+          // OK, that works, make it permanent
+          full += ".txt";
+        else
+          // Still not found; oh well
+          warning("Could not find make-output text file " + quote(full) +
+                  " or " + quote(full + ".txt") + ".");
+      }
+    }
+  }
+
+  // Save
+  note("Queueing make-output text file " + quote(full) + ".");
+  com.makeinfo.push_back(std::make_pair(stdin ? "-" : full, found));
+  com.type.push_back(CmdArgs::file_t::make_t);
+
+  return exit_clean;
+}
+
+exit_status_t
+process_make(const int argc,
+  const char * const * const argv,
+  std::size_t & i,
+  const std::string & opt,
+  CmdArgs & com) {
+  debug("process_make()");
+  exit_status_t status = exit_clean;
+
+  // Argument[s]?
+  bool arguments = false;
+  while(true) {
+    if(int(++i) == argc || // no more arguments, or...
+       option_any(argv[i]) || // looks like another flag
+       endsin_json(argv[i]) || // looks like a JSON file
+       endsin_cc(argv[i]) || // looks like a C++ file
+       endsin_yaml(argv[i]) // looks like a YAML file
+    ) {
+      // No more arguments to the current option, so we're done
+      i--;
+      return arguments
+               // Had at least one argument
+               ? status
+               // Had no arguments
+               : error("The " + opt +
+                       " option (make-output text file(s)) "
+                       "expects one or more arguments.\n"
+                       "Example: " +
+                       opt + " foo.txt bar.txt");
+    }
+
+    // Have an[other] argument
+    arguments = true;
+
+    status = std::max(status, one_make(argv, i, com));
     if(status == exit_fatal)
       return status;
   }
@@ -566,11 +721,11 @@ one_cc(const char * const * const argv, const std::size_t i, CmdArgs & com) {
     ctcc.CommandLine.push_back(com.flags.value()[s]);
   // ...command file
   ctcc.CommandLine.push_back(plain);
-  // ...filename
+  // ...file name
   ctcc.Filename = plain;
 
   com.commands.push_back(std::make_pair(ctcc, found));
-  com.isdb.push_back(false);
+  com.type.push_back(CmdArgs::file_t::cpp_t);
 
   // Note
   std::ostringstream oss;
@@ -606,6 +761,7 @@ process_cc(const int argc,
     if(int(++i) == argc || // no more arguments, or...
        option_any(argv[i]) || // looks like another flag
        endsin_json(argv[i]) || // looks like a JSON file
+       endsin_make(argv[i]) || // looks like a make-output text file
        endsin_yaml(argv[i]) // looks like a YAML file
     ) {
       // No more arguments to the current option, so we're done
@@ -642,6 +798,11 @@ process_yaml(const int argc,
   std::size_t & i,
   const std::string & opt,
   CmdArgs & com) {
+  (void)argc;
+  (void)argv;
+  (void)i;
+  (void)com;
+
   debug("process_yaml()");
   error("Unfortunately, " + opt + " isn't implemented yet. Sorry.");
   return exit_fatal;
@@ -684,7 +845,7 @@ process_yout(const int argc,
 
   // Argument?
   if(int(++i) == argc || option_any(argv[i]) || endsin_json(argv[i]) ||
-     endsin_cc(argv[i])) {
+     endsin_make(argv[i]) || endsin_cc(argv[i])) {
     i--;
     return error("The " + opt +
                  " option (YAML output file) "
@@ -733,13 +894,13 @@ default_json(CmdArgs & com) {
   }
 
   // Still not found
-  if(!ifs) // not the same test as before; look carefully!
+  if(!ifs) // not necessarily the same test as above; notice the ifs.open()
     return false;
 
   // Save
-  note("Queueing database " + quote(full) + ".");
-  com.database.push_back(std::make_pair(full, true));
-  com.isdb.push_back(true);
+  note("Queueing JSON file " + quote(full) + ".");
+  com.jsonfile.push_back(std::make_pair(full, true));
+  com.type.push_back(CmdArgs::file_t::json_t);
   return true;
 }
 
@@ -747,7 +908,7 @@ default_json(CmdArgs & com) {
 // option_toggle - helper
 // -----------------------------------------------------------------------------
 
-// FIXME
+// fixme
 // Another part of the maintenance headache.
 bool
 option_toggle(const std::string & opt) {
@@ -932,7 +1093,7 @@ initial(
   if(argv == nullptr)
     return interr("argv == nullptr. This shouldn't happen.");
 
-  // Program name
+  // Executable name
   com.exe = argv[0];
 
   // Arguments
@@ -980,6 +1141,11 @@ arguments(
         return bail();
     }
 
+    else if(option_make(opt)) {
+      if(process_make(ARGS) == exit_fatal)
+        return bail();
+    }
+
     else if(option_cc(opt)) {
       if(process_cc(ARGS) == exit_fatal)
         return bail();
@@ -1006,9 +1172,13 @@ arguments(
     }
 #undef ARGS
 
-    // Direct-specified JSON or C++ file?
+    // Direct-specified JSON, make-output, or C++ file?
     else if(endsin_json(opt)) {
       if(one_json(argv, i, com) == exit_fatal)
+        return bail();
+    }
+    else if(endsin_make(opt)) {
+      if(one_make(argv, i, com) == exit_fatal)
         return bail();
     }
     else if(endsin_cc(opt)) {
@@ -1018,7 +1188,7 @@ arguments(
 
     // Direct-specified YAML file? This is an error, actually, because
     // we wouldn't know if it's an input or output YAML file. (Contrast
-    // this with JSON and C++ files, which can only be input.)
+    // this with JSON, make-output, and C++ files, which can only be input.)
     else if(endsin_yaml(opt)) {
       error("Ambiguous command-line argument: " + quote(opt) +
             "."
@@ -1038,6 +1208,8 @@ arguments(
               : error("Ambiguous command-line argument: " + quote(opt) +
                       "."
                       "\nIf a JSON file, use -json or suffix file with .json."
+                      "\nIf a make-output text file, use -make "
+                      "or suffix file with .txt."
                       "\nIf a C++ file, use -cc "
                       "or suffix file with .cc, .cpp, .cxx, or .C."
                       "\nIf a YAML input file, use -yaml."
@@ -1050,13 +1222,14 @@ arguments(
     return status;
 
   // Implicit problem (no input files were given, or found!)
-  if(!(com.database.size() || // no given JSON
+  if(!(com.jsonfile.size() || // no given JSON
+       com.makeinfo.size() || // no given make-output
        com.commands.size() || // no given C++
        default_json(com))) // no default JSON
-    return error("No input file(s) specified, and default (" +
-                 default_json_file +
-                 ") not found.\n"
-                 "You can provide JSON and/or C++ input files.");
+    return error(
+      "No input file(s) specified, and default (" + default_json_file +
+      ") not found.\n"
+      "You can provide JSON, make-output text, and C++ input files.");
 
   // No problem
   return exit_clean;
