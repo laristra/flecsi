@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 07-task-warning-execute-wrong-function.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   07-task-warning-execute-wrong-function.json
+
+File:
+   07-task-warning-execute-wrong-function.json: 07-task-warning-execute-wrong-function.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, A, loc, single
+   File: 07-task-warning-execute-wrong-function.cc
+   Line: 15
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, A, single, 
+   File: 07-task-warning-execute-wrong-function.cc
+   Line: 23
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 07-task-warning-execute-wrong-function.cc, line 15)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 07-task-warning-execute-wrong-function.cc, line 23)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Synopsis:
+   No errors or warnings were detected.
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Note:
+   FleCSI static analysis completed.

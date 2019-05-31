@@ -1,0 +1,106 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 10-task-compile-execute-not-scope.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   10-task-compile-execute-not-scope.json
+
+File:
+   10-task-compile-execute-not-scope.json: 10-task-compile-execute-not-scope.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, B, loc, single
+   File: 10-task-compile-execute-not-scope.cc
+   Line: 11
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, A, single, 
+   File: 10-task-compile-execute-not-scope.cc
+   Line: 21
+
+Error:
+   Clang++ reports an error:
+      no member named 'foo' in namespace 'A'; did you mean 'B::foo'?
+   File: 10-task-compile-execute-not-scope.cc
+   Line: 21
+   Expansion trace:
+      from macro "flecsi_internal_return_type" (file 10-task-compile-execute-not-scope.cc, line 21)
+      from macro "flecsi_internal_execute_task" (file 10-task-compile-execute-not-scope.cc, line 21)
+      from macro "flecsi_execute_task" (file 10-task-compile-execute-not-scope.cc, line 21)
+
+Note:
+   Clang++ reports a note:
+      'B::foo' declared here
+   File: 10-task-compile-execute-not-scope.cc
+   Line: 10
+
+Error:
+   Clang++ reports an error:
+      no member named 'foo' in namespace 'A'; did you mean 'B::foo'?
+   File: 10-task-compile-execute-not-scope.cc
+   Line: 21
+   Expansion trace:
+      from macro "flecsi_internal_arguments_type" (file 10-task-compile-execute-not-scope.cc, line 21)
+      from macro "flecsi_internal_execute_task" (file 10-task-compile-execute-not-scope.cc, line 21)
+      from macro "flecsi_execute_task" (file 10-task-compile-execute-not-scope.cc, line 21)
+
+Note:
+   Clang++ reports a note:
+      'B::foo' declared here
+   File: 10-task-compile-execute-not-scope.cc
+   Line: 10
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 10-task-compile-execute-not-scope.cc, line 11)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 10-task-compile-execute-not-scope.cc, line 21)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Warning:
+   The task registered with hash "B::foo" here:
+      10-task-compile-execute-not-scope.cc: file 10-task-compile-execute-not-scope.cc, line 11, scope ::B
+   is never invoked with any of FleCSI's task execution macros.
+   Is this intentional?
+
+Error:
+   The task executed with hash "A::foo" here:
+      10-task-compile-execute-not-scope.cc: file 10-task-compile-execute-not-scope.cc, line 21
+   was not registered with any of FleCSI's task registration macros,
+   or was not registered with that hash.
+   This can trigger a run-time error if this line is reached.
+
+Synopsis:
+   3 errors
+   1 warning
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Task registrations without executions:
+   10-task-compile-execute-not-scope.cc: file 10-task-compile-execute-not-scope.cc, line 11
+
+Task executions without registrations:
+   10-task-compile-execute-not-scope.cc: file 10-task-compile-execute-not-scope.cc, line 21
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

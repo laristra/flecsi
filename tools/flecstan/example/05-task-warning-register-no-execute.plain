@@ -1,0 +1,53 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 05-task-warning-register-no-execute.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   05-task-warning-register-no-execute.json
+
+File:
+   05-task-warning-register-no-execute.json: 05-task-warning-register-no-execute.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, ns, loc, single
+   File: 05-task-warning-register-no-execute.cc
+   Line: 9
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 05-task-warning-register-no-execute.cc, line 9)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Warning:
+   The task registered with hash "ns::foo" here:
+      05-task-warning-register-no-execute.cc: file 05-task-warning-register-no-execute.cc, line 9, scope ::ns
+   is never invoked with any of FleCSI's task execution macros.
+   Is this intentional?
+
+Synopsis:
+   1 warning
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Task registrations without executions:
+   05-task-warning-register-no-execute.cc: file 05-task-warning-register-no-execute.cc, line 9
+
+Note:
+   FleCSI static analysis completed.

@@ -1,0 +1,54 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file 06-task-warning-register-execute-warn.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21m06-task-warning-register-execute-warn.json[0m
+
+[35;21mFile:[0m
+   [35;21m06-task-warning-register-execute-warn.json: 06-task-warning-register-execute-warn.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: foo, , loc, single[0m
+   [36;1mFile: 06-task-warning-register-execute-warn.cc[0m
+   [36;1mLine: 17[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_task[0m
+   [36;1mArgs: foo, , single, [0m
+   [36;1mFile: 06-task-warning-register-execute-warn.cc[0m
+   [36;1mLine: 26[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_task (file 06-task-warning-register-execute-warn.cc, line 17)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::execute_task[0m
+   [36;1mMatches macro: flecsi_execute_task (file 06-task-warning-register-execute-warn.cc, line 26)[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[34;1mSynopsis:[0m
+   [36;1mNo errors or warnings were detected.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mFleCSI static analysis completed.[0m

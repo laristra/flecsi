@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 02-task-good-register-execute-outside.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   02-task-good-register-execute-outside.json
+
+File:
+   02-task-good-register-execute-outside.json: 02-task-good-register-execute-outside.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, ns, loc, single
+   File: 02-task-good-register-execute-outside.cc
+   Line: 13
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, ns, single, 
+   File: 02-task-good-register-execute-outside.cc
+   Line: 20
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 02-task-good-register-execute-outside.cc, line 13)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 02-task-good-register-execute-outside.cc, line 20)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Synopsis:
+   No errors or warnings were detected.
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Note:
+   FleCSI static analysis completed.
