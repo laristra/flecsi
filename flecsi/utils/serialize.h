@@ -69,7 +69,7 @@ struct binary_serializer_t {
   }
 
   /*!
-    Return the bumber of bytes stored in the string device.
+    Return the number of bytes stored in the string device.
    */
 
   size_t size() {
