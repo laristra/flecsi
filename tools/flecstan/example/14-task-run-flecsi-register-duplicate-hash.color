@@ -1,0 +1,77 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file 14-task-run-flecsi-register-duplicate-hash.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21m14-task-run-flecsi-register-duplicate-hash.json[0m
+
+[35;21mFile:[0m
+   [35;21m14-task-run-flecsi-register-duplicate-hash.json: 14-task-run-flecsi-register-duplicate-hash.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: foo, A, loc, single[0m
+   [36;1mFile: 14-task-run-flecsi-register-duplicate-hash.cc[0m
+   [36;1mLine: 10[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: foo, A, loc, single[0m
+   [36;1mFile: 14-task-run-flecsi-register-duplicate-hash.cc[0m
+   [36;1mLine: 20[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_task[0m
+   [36;1mArgs: foo, A, single, [0m
+   [36;1mFile: 14-task-run-flecsi-register-duplicate-hash.cc[0m
+   [36;1mLine: 28[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_task (file 14-task-run-flecsi-register-duplicate-hash.cc, line 10)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_task (file 14-task-run-flecsi-register-duplicate-hash.cc, line 20)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::execute_task[0m
+   [36;1mMatches macro: flecsi_execute_task (file 14-task-run-flecsi-register-duplicate-hash.cc, line 28)[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[31;21mError:[0m
+   [31;21mHash string "A::foo" was created[0m
+   [31;21mby multiple task registrations in one file:[0m
+   [31;21m   14-task-run-flecsi-register-duplicate-hash.cc: file 14-task-run-flecsi-register-duplicate-hash.cc, line 10, scope ::A[0m
+   [31;21m   14-task-run-flecsi-register-duplicate-hash.cc: file 14-task-run-flecsi-register-duplicate-hash.cc, line 20, scope ::B[0m
+   [31;21mThis may have caused a (possibly cryptic) compile-time error.[0m
+   [31;21mIf it didn't, a duplicate hash can still trigger a run-time error.[0m
+   [31;21mIf some or all of the reported multiples are identical, are you analyzing[0m
+   [31;21mfiles that together form more than one application build? (Don't do that.)[0m
+
+[34;1mSynopsis:[0m
+   [36;1m1 error[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[34;1mTask registration duplicates:[0m
+   [36;1m(14-task-run-flecsi-register-duplicate-hash.cc: file 14-task-run-flecsi-register-duplicate-hash.cc, line 20) dups (14-task-run-flecsi-register-duplicate-hash.cc: file 14-task-run-flecsi-register-duplicate-hash.cc, line 10)
+[0m
+[33;1mWarning:[0m
+   [33;1mFleCSI static analysis may be incomplete; errors occurred.[0m

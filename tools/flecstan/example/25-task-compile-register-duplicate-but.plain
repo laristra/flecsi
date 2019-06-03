@@ -1,0 +1,186 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 25-task-compile-register-duplicate-but.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   25-task-compile-register-duplicate-but.json
+
+File:
+   25-task-compile-register-duplicate-but.json: 25-task-compile-register-duplicate-but.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, A, loc, single
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 20
+
+Error:
+   Clang++ reports an error:
+      reference to overloaded function could not be resolved; did you mean to call it?
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 20
+   Expansion trace:
+      from macro "flecsi_internal_return_type" (file 25-task-compile-register-duplicate-but.cc, line 20)
+      from macro "flecsi_register_task" (file 25-task-compile-register-duplicate-but.cc, line 20)
+
+Note:
+   Clang++ reports a note:
+      possible target for call
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 12
+
+Note:
+   Clang++ reports a note:
+      possible target for call
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 8
+
+Warning:
+   Clang++ reports a warning:
+      extra qualification on member 'return_type'
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 20
+   Expansion trace:
+      from macro "flecsi_internal_return_type" (file /home/staley/flecsi/flecsi/execution/execution.h, line 63)
+      from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 276)
+
+Error:
+   Clang++ reports an error:
+      no member named 'return_type' in the global namespace
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 20
+   Expansion trace:
+      from macro "flecsi_internal_return_type" (file /home/staley/flecsi/flecsi/execution/execution.h, line 63)
+      from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 276)
+
+Error:
+   Clang++ reports an error:
+      expected ';' after top level declarator
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 20
+   Expansion trace:
+      from (file <scratch space>, line 93)
+      from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 277)
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, B, loc, single
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 21
+
+Error:
+   Clang++ reports an error:
+      reference to overloaded function could not be resolved; did you mean to call it?
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 21
+   Expansion trace:
+      from macro "flecsi_internal_return_type" (file 25-task-compile-register-duplicate-but.cc, line 21)
+      from macro "flecsi_register_task" (file 25-task-compile-register-duplicate-but.cc, line 21)
+
+Note:
+   Clang++ reports a note:
+      possible target for call
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 12
+
+Note:
+   Clang++ reports a note:
+      possible target for call
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 8
+
+Warning:
+   Clang++ reports a warning:
+      extra qualification on member 'return_type'
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 21
+   Expansion trace:
+      from macro "flecsi_internal_return_type" (file /home/staley/flecsi/flecsi/execution/execution.h, line 63)
+      from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 276)
+
+Error:
+   Clang++ reports an error:
+      expected ';' after top level declarator
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 21
+   Expansion trace:
+      from (file <scratch space>, line 98)
+      from macro "flecsi_register_task" (file /home/staley/flecsi/flecsi/execution/execution.h, line 277)
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, A, single, 
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 27
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, B, single, 
+   File: 25-task-compile-register-duplicate-but.cc
+   Line: 28
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 25-task-compile-register-duplicate-but.cc, line 27)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 25-task-compile-register-duplicate-but.cc, line 28)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Warning:
+   Internal warning from the FleCSI Static Analyzer.
+   Re: macro "flecsi_register_task".
+   Detected call count != detected C++ abstract syntax tree count.
+      Macro Calls: 2
+      Syntax Tree: 0
+   This warning may be spurious, if your code has errors or certain warnings.
+   Also, it can occur if the set of C++ files you're analyzing together contain
+   more than one application build (analogy: trying to link object files from
+   multiple C++ sources that have a main() program). This can happen, e.g., if
+   you're reading a cmake-produced .json file from a cmake that emits build
+   rules for multiple target applications. If none of the situations described
+   here is the case, then please report this warning to us.
+
+Error:
+   The task executed with hash "A::foo" here:
+      25-task-compile-register-duplicate-but.cc: file 25-task-compile-register-duplicate-but.cc, line 27
+   was not registered with any of FleCSI's task registration macros,
+   or was not registered with that hash.
+   This can trigger a run-time error if this line is reached.
+
+Error:
+   The task executed with hash "B::foo" here:
+      25-task-compile-register-duplicate-but.cc: file 25-task-compile-register-duplicate-but.cc, line 28
+   was not registered with any of FleCSI's task registration macros,
+   or was not registered with that hash.
+   This can trigger a run-time error if this line is reached.
+
+Synopsis:
+   7 errors
+   3 warnings
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Task executions without registrations:
+   25-task-compile-register-duplicate-but.cc: file 25-task-compile-register-duplicate-but.cc, line 27
+   25-task-compile-register-duplicate-but.cc: file 25-task-compile-register-duplicate-but.cc, line 28
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

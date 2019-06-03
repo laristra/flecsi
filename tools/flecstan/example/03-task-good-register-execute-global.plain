@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 03-task-good-register-execute-global.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   03-task-good-register-execute-global.json
+
+File:
+   03-task-good-register-execute-global.json: 03-task-good-register-execute-global.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, , loc, single
+   File: 03-task-good-register-execute-global.cc
+   Line: 11
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, , single, 
+   File: 03-task-good-register-execute-global.cc
+   Line: 18
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 03-task-good-register-execute-global.cc, line 11)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 03-task-good-register-execute-global.cc, line 18)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Synopsis:
+   No errors or warnings were detected.
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Note:
+   FleCSI static analysis completed.
