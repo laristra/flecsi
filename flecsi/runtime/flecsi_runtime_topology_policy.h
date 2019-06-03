@@ -65,6 +65,8 @@ using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = topology::
 
 } // namespace flecsi
 
+// Is there a reason the following was left here? Seems like it was supposed
+// to be replaced by the above. -MFS, 2019-04-09.
 // HPX Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
 
