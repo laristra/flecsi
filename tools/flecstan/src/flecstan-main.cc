@@ -30,6 +30,21 @@ namespace flecstan {
 static flecstan::CmdArgs com;
 static flecstan::Yaml yaml;
 
+// stripws
+std::string
+stripws(const std::string & in) {
+  // begin, end
+  int b = 0;
+  int e = in.size();
+
+  while(b < e && isspace(in[b]))
+    b++; // remove beginning spaces
+  while(e > b && isspace(in[e - 1]))
+    e--; // remove ending spaces
+
+  return in.substr(b, e - b);
+}
+
 } // namespace flecstan
 
 // -----------------------------------------------------------------------------
@@ -90,10 +105,9 @@ class Action : public clang::ASTFrontendAction
   exit_status_t & status;
 
 public:
-  const std::string json_name;
+  const std::string outer_name;
 
-  Action(exit_status_t & s, const std::string & jname)
-    : status(s), json_name(jname) {
+  Action(exit_status_t & s, const std::string & n) : status(s), outer_name(n) {
     debug("ctor: Action");
   }
   ~Action() {
@@ -111,8 +125,9 @@ public:
     flecstan_debug(file.str());
     debug("}");
 
-    if(json_name != "")
-      filename(json_name + ": " + file.str());
+    if(outer_name != "")
+      filename((outer_name == "-" ? "<standard input>" : outer_name) + ": " +
+               file.str());
 
     report("", "Scanning for FleCSI macros...");
     if(!ci.hasPreprocessor()) {
@@ -147,9 +162,9 @@ class Factory : public clang::tooling::FrontendActionFactory
   exit_status_t & status;
 
 public:
-  std::string json_name;
+  std::string outer_name;
 
-  Factory(exit_status_t & s) : status(s), json_name("") {
+  Factory(exit_status_t & s) : status(s), outer_name("") {
     debug("ctor: Factory");
   }
   ~Factory() {
@@ -160,36 +175,39 @@ public:
   // override w.r.t. FrontendActionFactory
   Action * create() override {
     debug("Factory::create()");
-    return new Action(status, json_name);
+    return new Action(status, outer_name);
   }
 };
 
 } // namespace flecstan
 
 // -----------------------------------------------------------------------------
-// Database
+// IndividualCompileCommands
 // -----------------------------------------------------------------------------
 
 namespace flecstan {
 
-class Database : public clang::tooling::CompilationDatabase
+class IndividualCompileCommands : public clang::tooling::CompilationDatabase
 {
   const clang::tooling::CompileCommand cc;
 
 public:
-  Database(const clang::tooling::CompileCommand & _cc) : cc(_cc) {
-    debug("ctor: Database");
+  // constructor: one compile command
+  IndividualCompileCommands(const clang::tooling::CompileCommand & _cc)
+    : cc(_cc) {
+    debug("ctor: IndividualCompileCommands");
   }
-  ~Database() {
-    debug("dtor: Database");
+
+  // destructor
+  ~IndividualCompileCommands() {
+    debug("dtor: IndividualCompileCommands");
   }
 
   // getCompileCommands
   // override w.r.t. CompilationDatabase
   std::vector<clang::tooling::CompileCommand> getCompileCommands(
-    const llvm::StringRef file) const override {
-    debug("Database::getCompileCommands()");
-    (void)file;
+    const llvm::StringRef) const override {
+    debug("IndividualCompileCommands::getCompileCommands()");
     return std::vector<clang::tooling::CompileCommand>(1, cc);
   }
 };
@@ -197,39 +215,133 @@ public:
 } // namespace flecstan
 
 // -----------------------------------------------------------------------------
-// read_json
+// Helper functions
+//    try_json
+//    try_make
+//    try_cc
 // -----------------------------------------------------------------------------
 
 namespace flecstan {
 
+// try_json
 std::unique_ptr<clang::tooling::CompilationDatabase>
-read_json(const std::pair<std::string, bool> & pair) {
-  debug("read_json()");
-  filename(pair.first);
+try_json(const std::pair<std::string, bool> & pair) {
+  debug("try_json()");
+  const std::string name = pair.first;
+  filename(name != "-" ? name : "<standard input>");
+
+  std::string ErrorMessage;
+  std::unique_ptr<clang::tooling::CompilationDatabase> ptr;
+
+  if(name == "-") {
+    // looks like we'll need to read standard input into a buffer,
+    // then send the buffer on to clang...
+    // static, because it goes to an llvm::StringRef later
+    static std::string buf = static_cast<const std::stringstream &>(
+      std::stringstream() << std::cin.rdbuf())
+                               .str();
+    ptr = clang::tooling::JSONCompilationDatabase::loadFromBuffer(
+      buf, // <== why buf needed to be static
+      ErrorMessage, clang::tooling::JSONCommandLineSyntax::AutoDetect);
+    if(!ptr)
+      error("Clang's CompilationDatabase::loadFromBuffer() "
+            "reports an error:\n" +
+            ErrorMessage);
+  }
+  else {
+    // read from an actual file...
+    ptr = clang::tooling::JSONCompilationDatabase::loadFromFile(
+      llvm::StringRef(pair.first), ErrorMessage,
+      clang::tooling::JSONCommandLineSyntax::AutoDetect);
+    if(!ptr)
+      error("Clang's CompilationDatabase::loadFromFile() "
+            "reports an error:\n" +
+            ErrorMessage);
+  }
+
+  return ptr;
+}
+
+// try_make
+std::unique_ptr<clang::tooling::CompilationDatabase>
+try_make(const std::pair<std::string, bool> & pair) {
+  debug("try_make()");
+  const std::string name = pair.first;
+  filename(name != "-" ? name : "<standard input>");
+
+  std::ifstream ifs;
+  if(name != "-")
+    ifs.open(name.c_str());
+  std::istream & in = name != "-" ? ifs : std::cin;
+
+  const bool found = bool(in);
+  if(!found) {
+    error("Could not find make-commands file " + quote(name) + ".");
+    return nullptr;
+  }
+
+  // static, because it goes to an llvm::StringRef later
+  static std::string dbstr;
+
+  // json begin
+  dbstr = "[\n";
+
+  // Scan for lines like this:
+  //    cd /foo/bar/etc && /a/b/etc/clang++ -some -flags -c x/y/etc/file.cc
+  //    ^               ^           ^                      ^
+  //    pos_cd          pos_and     pos_clang              pos_file
+  // fixme This function is simple-minded right now!!! It won't handle, for
+  // instance, spaces in the file name. Right now, my goal is to get something
+  // that works most of the time. -Martin
+  bool first = true;
+  for(std::string line; std::getline(in, line);) {
+    size_t pos_cd;
+    size_t pos_and;
+    size_t pos_clang = std::string::npos;
+    size_t pos_g = std::string::npos;
+    size_t pos_file;
+
+    // Note that "cd " and "[clan]g++ ", below, intentionally end with spaces.
+    // fixme Needs more work in order to be really robust. Think, for example,
+    // general white space rather than spaces.
+    if((pos_cd = line.find("cd ")) == 0 &&
+       (pos_and = line.find("&&")) != std::string::npos &&
+       ((pos_clang = line.find("clang++ ")) != std::string::npos ||
+         (pos_g = line.find("g++ ")) != std::string::npos) &&
+       (pos_file = line.rfind(" ")) != std::string::npos) {
+      dbstr += (first ? "   {" : ",\n   {");
+      const std::string dir =
+                          stripws(line.substr(3, pos_and - 3)), // start,length
+        com = stripws(line.substr(pos_and + 2)), // to end
+        file = stripws(line.substr(pos_file + 1));
+      dbstr += "\n      \"directory\" : \"" + dir + "\",";
+      dbstr += "\n      \"command\"   : \"" + com + "\",";
+      dbstr += "\n      \"file\"      : \"" + file + "\"\n   }";
+      first = false;
+    }
+  }
+
+  // json end
+  dbstr += "\n]";
 
   std::string ErrorMessage;
   std::unique_ptr<clang::tooling::CompilationDatabase> ptr =
-    clang::tooling::JSONCompilationDatabase::loadFromFile(
-      llvm::StringRef(pair.first), ErrorMessage,
-      clang::tooling::JSONCommandLineSyntax::AutoDetect);
+    clang::tooling::JSONCompilationDatabase::loadFromBuffer(
+      dbstr, // <== why dbstr needed to be static
+      ErrorMessage, clang::tooling::JSONCommandLineSyntax::AutoDetect);
 
   if(!ptr)
-    error("Clang's CompilationDatabase::loadFromFile() "
+    error("Clang's CompilationDatabase::loadFromBuffer() "
           "reports an error:\n" +
           ErrorMessage);
   return ptr;
 }
 
-} // namespace flecstan
-
-// -----------------------------------------------------------------------------
-// try_file: helper
-// -----------------------------------------------------------------------------
-
-namespace flecstan {
-
+// try_cc
 bool
-try_file(const clang::tooling::CompileCommand & cc) {
+try_cc(const clang::tooling::CompileCommand & cc) {
+  debug("try_cc()");
+
   // directory, file
   const std::string & dir = cc.Directory;
   const std::string & file = cc.Filename;
@@ -267,37 +379,54 @@ compilation() {
   exit_status_t status = exit_clean; // status for overall analysis
   Factory factory(status);
 
-  // Number of JSON/C++ files; and total
-  const std::size_t jsize = com.database.size();
-  const std::size_t csize = com.commands.size(), size = jsize + csize;
-  if(com.isdb.size() != size)
+  // Number of JSON/make-output/C++ files; and total
+  const std::size_t jsize = com.jsonfile.size();
+  const std::size_t msize = com.makeinfo.size();
+  const std::size_t csize = com.commands.size(), size = jsize + msize + csize;
+  if(com.type.size() != size)
     return interr("Vector size mismatch. Contact us.");
 
-  for(std::size_t j = 0, c = 0, n = 0; n < size && status != exit_fatal; ++n) {
-    exit_status_t stat = exit_clean; // status for this JSON or C++
+  for(std::size_t j = 0, m = 0, c = 0, n = 0; n < size && status != exit_fatal;
+      ++n) {
+    exit_status_t stat = exit_clean; // status for this iteration
     int run = 0; // will get return value from ClangTool::run()...
 
-    if(com.isdb[n]) {
-      // JSON database file
+    // JSON file
+    if(com.type[n] == CmdArgs::file_t::json_t) {
       std::unique_ptr<clang::tooling::CompilationDatabase> ptr =
-        read_json(com.database[j]);
+        try_json(com.jsonfile[j]);
       if(ptr) {
         clang::tooling::ClangTool ctool(*ptr, ptr->getAllFiles());
-        factory.json_name = com.database[j].first;
+        factory.outer_name = com.jsonfile[j].first;
         run = ctool.run(&factory);
       }
       else
         stat = exit_error;
       j++;
     }
-    else {
-      // C++ file
+
+    // Text make-output file
+    if(com.type[n] == CmdArgs::file_t::make_t) {
+      std::unique_ptr<clang::tooling::CompilationDatabase> ptr =
+        try_make(com.makeinfo[m]);
+      if(ptr) {
+        clang::tooling::ClangTool ctool(*ptr, ptr->getAllFiles());
+        factory.outer_name = com.makeinfo[m].first;
+        run = ctool.run(&factory);
+      }
+      else
+        stat = exit_error;
+      m++;
+    }
+
+    // C++ file
+    if(com.type[n] == CmdArgs::file_t::cpp_t) {
       clang::tooling::CompileCommand & cc = com.commands[c].first;
-      Database database(cc);
-      std::vector<std::string> files(1, cc.Filename);
-      clang::tooling::ClangTool ctool(database, files);
-      factory.json_name = "";
-      if(try_file(cc))
+      IndividualCompileCommands compiles(cc); // just 1 command
+      std::vector<std::string> files(1, cc.Filename); // just 1 file
+      clang::tooling::ClangTool ctool(compiles, files);
+      factory.outer_name = "";
+      if(try_cc(cc))
         run = ctool.run(&factory);
       else
         stat = exit_error;
@@ -348,7 +477,8 @@ yamlout(bool & written, bool & already) {
   // A YAML output file was specified. Let's be intelligent, so that we're
   // unlikely to clobber an existing non-YAML file. Specifically, we'll ensure
   // that the file name ends with ".yaml" - a reasonable action, and one that
-  // disallows someone from, say, accidentally overwriting a .cc or .json file!
+  // disallows someone from, say, accidentally overwriting a .json, .txt,
+  // or .cc file.
   // And, as elsewhere, we'll emit appropriate diagnostics.
 
   // Ensure .yaml extension

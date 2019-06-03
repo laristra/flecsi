@@ -48,6 +48,9 @@ fullfile(const std::string & dir, const std::string & file) {
 class CmdArgs
 {
 public:
+  // Input type; see below
+  enum class file_t { json_t, make_t, cpp_t };
+
   // Analyzer's executable file name
   std::string exe;
 
@@ -63,22 +66,25 @@ public:
   //    flags
   // dir
   //    json
+  //    make
   //    cc
   //    yaml (yaml, as input)
   // yout (yaml, as output)
   //
-  // database = f(dir,json)
+  // jsonfile = f(dir,json)
+  // makeinfo = f(dir,make) (parses info from make --dry-run VERBOSE=1)
   // commands = f(clang,flags,dir,cc)
 
   // Results
-  // In the first two vectors, the bools indicate whether or not the files in
-  // question (JSON or C++, respectively) were found at the time of command-
-  // line parsing. The third vector is a simple but presently sufficient way
-  // to indicate whether the next queued file is a JSON in database, or a C++
-  // in commands: true == the former, false == the latter.
-  std::vector<std::pair<std::string, bool>> database;
+  // In the first three vectors, the bools indicate whether or not the files
+  // in question (JSON, make-output, or C++) were found at the time of command
+  // line parsing. The last vector is a simple way to indicate whether the
+  // next queued file is a JSON, make-output, or C++ file.
+  std::vector<std::pair<std::string, bool>> jsonfile;
+  std::vector<std::pair<std::string, bool>> makeinfo;
   std::vector<std::pair<clang::tooling::CompileCommand, bool>> commands;
-  std::vector<bool> isdb;
+
+  std::vector<file_t> type;
 };
 
 // Re: command-line arguments

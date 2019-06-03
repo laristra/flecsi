@@ -179,19 +179,23 @@ public:
   };
 
   //------------------------------------------------------------------//
-  //! Iterator base, const be parameterized with 'T' or 'const T'
+  //! Iterator base, can be parameterized with 'T' or 'const T'
   //------------------------------------------------------------------//
   template<class S>
   class iterator_base_
   {
   public:
-    using MS = typename std::remove_const<S>::type;
+    // Seems be be unused anywhere in FleCSI... -MFS, 2019-04-19
+    // using MS = typename std::remove_const<S>::type;
 
+    /*
+    // Is the default
     //-----------------------------------------------------------------//
     //! Copy constructor
     //-----------------------------------------------------------------//
     iterator_base_(const iterator_base_ & itr)
       : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_) {}
+    */
 
     //-----------------------------------------------------------------//
     //! Initialize iterator from items and range
@@ -212,6 +216,8 @@ public:
       : items_(&items), index_(index), end_(end),
         s_(const_cast<storage_t *>(s)) {}
 
+    /*
+    // Is the default
     //-----------------------------------------------------------------//
     //! Assignment operator
     //-----------------------------------------------------------------//
@@ -222,6 +228,7 @@ public:
       s_ = itr.s_;
       return *this;
     }
+    */
 
     //-----------------------------------------------------------------//
     //! Equality operator
@@ -275,10 +282,12 @@ public:
     //-----------------------------------------------------------------//
     //! Helper method. Get item at index
     //-----------------------------------------------------------------//
-    auto get_(size_t index) {
+  protected:
+    auto get_(size_t index) const {
       return static_cast<cast_t>((*s_)[(*items_)[index].index_space_index()]);
     }
 
+  public:
     //-----------------------------------------------------------------//
     //! Get item at index
     //-----------------------------------------------------------------//
@@ -307,10 +316,13 @@ public:
   public:
     using B = iterator_base_<S>;
 
+    /*
+    // Is the default
     //-----------------------------------------------------------------//
     //! Copy constructors
     //-----------------------------------------------------------------//
     iterator_(const iterator_ & itr) : B(itr) {}
+    */
 
     //-----------------------------------------------------------------//
     //! Initialize iterator from item storage and index range
@@ -467,12 +479,16 @@ public:
   public:
     using B = iterator_base_<S>;
 
-    using ref_t = index_space_ref_type_u<S>;
+    // Seems be be unused anywhere in FleCSI... -MFS, 2019-04-19
+    // using ref_t = index_space_ref_type_u<S>;
 
+    /*
+    // Is the default
     //-----------------------------------------------------------------//
     //! Copy constructor
     //-----------------------------------------------------------------//
     iterator_(const iterator_ & itr) : B(itr) {}
+    */
 
     //-----------------------------------------------------------------//
     //! Initialize iterator from items and range
