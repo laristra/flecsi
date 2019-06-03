@@ -63,7 +63,6 @@ var searchData=
   ['topology_5fregistration_5fu',['topology_registration_u',['../structflecsi_1_1data_1_1topology__registration__u.html',1,'flecsi::data']]],
   ['topology_5fregistration_5fu_3c_20flecsi_3a_3atopology_3a_3aglobal_5ftopology_5ft_2c_20namespace_2c_20name_20_3e',['topology_registration_u&lt; flecsi::topology::global_topology_t, NAMESPACE, NAME &gt;',['../structflecsi_1_1data_1_1topology__registration__u_3_01flecsi_1_1topology_1_1global__topology__t_00_01NAMESPACE_00_01NAME_01_4.html',1,'flecsi::data']]],
   ['topology_5fregistration_5fu_3c_20flecsi_3a_3atopology_3a_3aindex_5ftopology_5ft_2c_20namespace_2c_20name_20_3e',['topology_registration_u&lt; flecsi::topology::index_topology_t, NAMESPACE, NAME &gt;',['../structflecsi_1_1data_1_1topology__registration__u_3_01flecsi_1_1topology_1_1index__topology__t_00_01NAMESPACE_00_01NAME_01_4.html',1,'flecsi::data']]],
-  ['topology_5fregistry',['topology_registry',['../structflecsi_1_1execution_1_1context__u.html#a7d85e14354574168024bab644b8505a7',1,'flecsi::execution::context_u']]],
   ['topology_5fu',['topology_u',['../structflecsi_1_1data_1_1POLICY__NAMESPACE_1_1topology__u.html',1,'flecsi::data::POLICY_NAMESPACE']]],
   ['tree_20toplogy_20interface',['Tree Toplogy Interface',['../group__tree-topology.html',1,'']]],
   ['true_5fstate',['true_state',['../message_8h.html#aa4552b1c213b2363ef5527cbcb41a85c',1,'flecsi::utils::flog']]],

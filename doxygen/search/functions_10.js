@@ -26,7 +26,6 @@ var searchData=
   ['topology_5finternal_5ffield_5fhash',['topology_internal_field_hash',['../group__utils.html#gadef29ea4515850d291de08d56eea1cc2',1,'flecsi::utils::hash::topology_internal_field_hash()'],['../group__utils.html#ga8d5c49f83304fef0f004f26a1ca4b13a',1,'flecsi::utils::hash::topology_internal_field_hash(size_t label, size_t nspace, size_t name, size_t index_space)']]],
   ['topology_5finternal_5ffield_5findex_5fspace',['topology_internal_field_index_space',['../group__utils.html#gab076f72f86858d8f6c76e0c6378f8b22',1,'flecsi::utils::hash']]],
   ['topology_5freference',['topology_reference',['../structflecsi_1_1data_1_1topology__interface__u.html#a075fd4ddcc4da2b2d8f93e7b1cf79582',1,'flecsi::data::topology_interface_u']]],
-  ['topology_5fregistry',['topology_registry',['../structflecsi_1_1execution_1_1context__u.html#a7d85e14354574168024bab644b8505a7',1,'flecsi::execution::context_u']]],
   ['true_5fstate',['true_state',['../message_8h.html#aa4552b1c213b2363ef5527cbcb41a85c',1,'flecsi::utils::flog']]],
   ['tuple_5fvisitor',['tuple_visitor',['../tuple__visitor_8h.html#abb73774f7fec514dd589c7f50f863652',1,'flecsi::utils::tuple_visitor(_Tuple &amp;&amp;t, _Fn &amp;&amp;f)'],['../tuple__visitor_8h.html#a572184309657a73dbf9a5e0fda14cf7f',1,'flecsi::utils::tuple_visitor(_Fn &amp;&amp;f)']]],
   ['type',['type',['../group__utils.html#ga772d97c8cb5af2fc0f815a1b2449c6e6',1,'flecsi::utils::type()'],['../group__utils.html#gabd2ac87675d6a5655a9df03d8d76ef14',1,'flecsi::utils::type(const std::type_info &amp;type_info)']]]
