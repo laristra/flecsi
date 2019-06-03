@@ -1,6 +1,0 @@
-class std::vector<int,class std::allocator<int> >
-int
-class std::array<double,5>
-double
-The second prime is: 3
-The fourth prime is: 7

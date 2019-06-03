@@ -35,8 +35,6 @@ set(utils_HEADERS
   hash.h
   humble.h
   id.h
-  index_space.h
-  iterator.h
   logging.h
   macros.h
   mpi_type_traits.h
@@ -157,21 +155,6 @@ cinch_add_unit(humble
     test/humble.cc
 )
 
-set(iterator_blessed_input test/iterator.blessed.gnug)
-
-if(MSVC)
-  set(iterator_blessed_input test/iterator.blessed.msvc)
-endif()
-
-cinch_add_unit(utils_iterator
-  SOURCES
-    demangle.cc
-    test/iterator.cc
-  INPUTS
-    test/iterator.blessed
-    ${iterator_blessed_input}
-)
-
 cinch_add_unit(logging
   SOURCES
     test/logging.cc
@@ -230,20 +213,6 @@ cinch_add_unit(tuple_wrapper
 cinch_add_unit(tuple_function
   SOURCES
     test/tuple_function.cc
-)
-
-set(index_space_blessed_input test/index_space.blessed.gnug)
-
-if(MSVC)
-  set(index_space_blessed_input test/index_space.blessed.msvc)
-endif()
-
-cinch_add_unit(index_space
-  SOURCES
-    demangle.cc
-    test/index_space.cc
-  INPUTS
-    test/index_space.blessed ${index_space_blessed_input}
 )
 
 set(array_ref_blessed_input test/array_ref.blessed.gnug)
