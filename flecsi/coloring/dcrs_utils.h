@@ -21,6 +21,10 @@
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
+#ifdef ENABLE_CALIPER
+#include <caliper/cali.h>
+#endif
+
 #include <mpi.h>
 
 #include <map>
@@ -108,6 +112,8 @@ template<std::size_t DIMENSION,
   std::size_t THRU_DIMENSION = DIMENSION - 1>
 inline dcrs_t
 make_dcrs(const typename topology::mesh_definition_u<DIMENSION> & md) {
+
+  CALI_CXX_MARK_FUNCTION;
   int size;
   int rank;
 

@@ -21,6 +21,10 @@
 #include <memory>
 #include <type_traits>
 
+#ifdef ENABLE_CALIPER
+#include <caliper/cali.h>
+#endif
+
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/mpi/finalize_handles.h>
@@ -139,7 +143,7 @@ struct mpi_execution_policy_t {
     typename ARG_TUPLE,
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
-
+    CALI_CXX_MARK_FUNCTION;
     context_t & context_ = context_t::instance();
 
     auto function = context_.function(TASK);
@@ -148,13 +152,19 @@ struct mpi_execution_policy_t {
     ARG_TUPLE task_args = std::make_tuple(std::forward<ARGS>(args)...);
 
     // run task_prolog to copy ghost cells.
+    CALI_MARK_BEGIN("task prolog");
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
+    CALI_MARK_END("task prolog");
 
+    CALI_MARK_BEGIN("execute");
     auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
+    CALI_MARK_END("execute");
 
+    CALI_MARK_BEGIN("epilog");
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
+    CALI_MARK_END("epilog");
 
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);

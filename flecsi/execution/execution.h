@@ -17,6 +17,10 @@
 
 #include <functional>
 
+#ifdef ENABLE_CALIPER
+#include <caliper/cali.h>
+#endif
+
 #include <flecsi/execution/common/function_handle.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
@@ -428,7 +432,9 @@ clog_register_tag(execution);
 #define flecsi_execute_mpi_task(task, nspace, ...)                             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi_execute_task(task, nspace, index, ##__VA_ARGS__)
+     CALI_MARK_BEGIN("mpi_task"); \
+  flecsi_execute_task(task, nspace, index, ##__VA_ARGS__); \
+  CALI_MARK_END("mpi_task");
 
 //----------------------------------------------------------------------------//
 // Reduction Interface

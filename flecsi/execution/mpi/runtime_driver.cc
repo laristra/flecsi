@@ -16,6 +16,10 @@
 #include <cstddef>
 #include <cstdint>
 
+#ifdef ENABLE_CALIPER
+#include <caliper/cali.h>
+#endif
+
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/data.h>
 
@@ -196,7 +200,10 @@ runtime_driver(int argc, char ** argv) {
   }
 
   // Execute the specialization driver.
+  CALI_MARK_BEGIN("tlt_init");
   specialization_tlt_init(argc, argv);
+  CALI_MARK_END("tlt_init");
+
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   remap_shared_entities();
@@ -238,7 +245,9 @@ runtime_driver(int argc, char ** argv) {
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+  CALI_MARK_BEGIN("spmd_init");
   specialization_spmd_init(argc, argv);
+  CALI_MARK_END("spmd_innit");
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
