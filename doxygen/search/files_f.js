@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['set_5fintersection_2eh',['set_intersection.h',['../set__intersection_8h.html',1,'']]],
-  ['set_5futils_2eh',['set_utils.h',['../set__utils_8h.html',1,'']]],
-  ['simple_5fid_2eh',['simple_id.h',['../simple__id_8h.html',1,'']]],
-  ['static_5fverify_2eh',['static_verify.h',['../static__verify_8h.html',1,'']]],
-  ['storage_2eh',['storage.h',['../storage_8h.html',1,'']]],
-  ['storage_5fclass_2eh',['storage_class.h',['../storage__class_8h.html',1,'']]],
-  ['storage_5fclasses_2eh',['storage_classes.h',['../legion_2storage__classes_8h.html',1,'(Global Namespace)'],['../mpi_2storage__classes_8h.html',1,'(Global Namespace)']]]
+  ['reduction_2eh',['reduction.h',['../reduction_8h.html',1,'']]],
+  ['reduction_5fwrapper_2eh',['reduction_wrapper.h',['../legion_2reduction__wrapper_8h.html',1,'(Global Namespace)'],['../mpi_2reduction__wrapper_8h.html',1,'(Global Namespace)']]],
+  ['runtime_2ecc',['runtime.cc',['../legion_2runtime_8cc.html',1,'(Global Namespace)'],['../mpi_2runtime_8cc.html',1,'(Global Namespace)']]],
+  ['runtime_2eh',['runtime.h',['../legion_2runtime_8h.html',1,'(Global Namespace)'],['../mpi_2runtime_8h.html',1,'(Global Namespace)']]],
+  ['runtime_5fdata_5ftypes_2eh',['runtime_data_types.h',['../runtime__data__types_8h.html',1,'']]]
 ];

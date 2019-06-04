@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['reduction_2eh',['reduction.h',['../reduction_8h.html',1,'']]],
-  ['reduction_5fwrapper_2eh',['reduction_wrapper.h',['../legion_2reduction__wrapper_8h.html',1,'(Global Namespace)'],['../mpi_2reduction__wrapper_8h.html',1,'(Global Namespace)']]],
-  ['runtime_2ecc',['runtime.cc',['../legion_2runtime_8cc.html',1,'(Global Namespace)'],['../mpi_2runtime_8cc.html',1,'(Global Namespace)']]],
-  ['runtime_2eh',['runtime.h',['../legion_2runtime_8h.html',1,'(Global Namespace)'],['../mpi_2runtime_8h.html',1,'(Global Namespace)']]],
-  ['runtime_5fdata_5ftypes_2eh',['runtime_data_types.h',['../runtime__data__types_8h.html',1,'']]]
+  ['packet_2eh',['packet.h',['../packet_8h.html',1,'']]],
+  ['partition_2eh',['partition.h',['../partition_8h.html',1,'']]],
+  ['privilege_2eh',['privilege.h',['../privilege_8h.html',1,'']]],
+  ['processor_2eh',['processor.h',['../processor_8h.html',1,'']]]
 ];
