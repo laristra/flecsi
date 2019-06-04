@@ -65,6 +65,7 @@ top_level_task(const Legion::Task * task,
   context_.connect_with_mpi(ctx, runtime);
   context_.wait_on_mpi(ctx, runtime);
 
+#if 0
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the topology registry.
   //
@@ -80,6 +81,7 @@ top_level_task(const Legion::Task * task,
       d.second.second(d.second.first);
     } // for
   } // for
+#endif
 
 #if 0 // FIXME: We don't need this anymore after the refactor
   //--------------------------------------------------------------------------//
