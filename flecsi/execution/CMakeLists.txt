@@ -195,6 +195,9 @@ cinch_add_unit(gpu_task
   LIBRARIES
     FleCSI
     ${CINCH_RUNTIME_LIBRARIES}
+  ARGUMENTS
+    -ll:gpu 1
+  THREADS 2
   NOCI
 )
 

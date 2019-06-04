@@ -245,11 +245,13 @@ public:
     std::vector<Legion::VariantID> variants;
     runtime->find_valid_variants(
       ctx, task_id, variants, Legion::Processor::LOC_PROC);
-    assert(variants.size() == 1); // should be exactly one for pennant
     cpu_variants[task_id] = variants[0];
     return variants[0];
   }
 
+  /*!
+   THis function will find a OpenMP variat for the task
+  */
   Legion::VariantID find_omp_variant(const Legion::Mapping::MapperContext ctx,
     Legion::TaskID task_id) {
     using namespace Legion;
@@ -259,11 +261,13 @@ public:
       return finder->second;
     std::vector<VariantID> variants;
     runtime->find_valid_variants(ctx, task_id, variants, Processor::OMP_PROC);
-    assert(variants.size() == 1); // should be exactly one for pennant
     omp_variants[task_id] = variants[0];
     return variants[0];
   }
 
+  /*!
+   THis function will find a GPU variat for the task
+  */
   Legion::VariantID find_gpu_variant(const Legion::Mapping::MapperContext ctx,
     Legion::TaskID task_id) {
     using namespace Legion;
@@ -273,11 +277,13 @@ public:
       return finder->second;
     std::vector<VariantID> variants;
     runtime->find_valid_variants(ctx, task_id, variants, Processor::TOC_PROC);
-    assert(variants.size() == 1); // should be exactly one for pennant
     gpu_variants[task_id] = variants[0];
     return variants[0];
   }
 
+  /*!
+   THis function will create PhysicalInstance for Reduction task
+  */
   void creade_reduction_instance(const Legion::Mapping::MapperContext ctx,
     const Legion::Task & task,
     Legion::Mapping::Mapper::MapTaskOutput & output,
@@ -307,6 +313,10 @@ public:
     } // if
   } // create reduction instance
 
+  /*!
+   THis function will create PhysicalInstance Unstructured mesh data havdle (
+    compacted Exclusive, SHared and Ghost)
+  */
   void create_compacted_instance(const Legion::Mapping::MapperContext ctx,
     const Legion::Task & task,
     Legion::Mapping::Mapper::MapTaskOutput & output,
@@ -315,6 +325,9 @@ public:
     const size_t & indx) {
     using namespace Legion;
     using namespace Legion::Mapping;
+
+    // check if instance was already created and stored in the
+    // local_instamces_ map
     const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);
     auto & key2 = task.regions[indx].privilege_fields;
@@ -375,6 +388,9 @@ public:
     local_instances_[key1][key2] = result;
   } // create_compacted_instance
 
+  /*!
+   THis function will create PhysicalInstance for a task
+  */
   void create_instance(const Legion::Mapping::MapperContext ctx,
     const Legion::Task & task,
     Legion::Mapping::Mapper::MapTaskOutput & output,
@@ -383,6 +399,9 @@ public:
     const size_t & indx) {
     using namespace Legion;
     using namespace Legion::Mapping;
+
+    // check if instance was already created and stored in the
+    // local_instamces_ map
     const std::pair<Legion::LogicalRegion, Legion::Memory> key1(
       task.regions[indx].region, target_mem);
     auto key2 = task.regions[indx].privilege_fields;
