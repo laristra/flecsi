@@ -76,9 +76,9 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
 
-    Legion::PhysicalRegion pr = regions_[region];
-    Legion::LogicalRegion lr = pr.get_logical_region();
-    Legion::IndexSpace is = lr.get_index_space();
+    Legion::Domain dom = legion_runtime_->get_index_space_domain(
+      legion_context_, regions_[region].get_logical_region().get_index_space());
+    Legion::Domain::DomainPointIterator itr(dom);
 
     const auto fid =
       context_t::instance()
@@ -87,16 +87,16 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
         .get_field_info(accessor.identifier())
         .fid;
 
-    auto ac = pr.get_field_accessor(fid).template typeify<DATA_TYPE>();
+    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
+    const Legion::UnsafeFieldAccessor<DATA_TYPE,
+      1,
+      Legion::coord_t,
+      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
+      ac(regions_[region], fid, sizeof(DATA_TYPE));
 
-    Legion::Domain domain =
-      legion_runtime_->get_index_space_domain(legion_context_, is);
-    LegionRuntime::Arrays::Rect<1> dr = domain.get_rect<1>();
-    LegionRuntime::Arrays::Rect<1> sr;
-    LegionRuntime::Accessor::ByteOffset bo[2];
+    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
 
-    global_topology::bind<DATA_TYPE, PRIVILEGES>(
-      accessor, ac.template raw_rect_ptr<1>(dr, sr, bo));
+    global_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
 
     ++region;
   } // visit
@@ -108,27 +108,27 @@ struct init_views_t : public flecsi::utils::tuple_walker_u<init_views_t> {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
 
-    Legion::PhysicalRegion pr = regions_[region];
-    Legion::LogicalRegion lr = pr.get_logical_region();
-    Legion::IndexSpace is = lr.get_index_space();
+    Legion::Domain dom = legion_runtime_->get_index_space_domain(
+      legion_context_, regions_[region].get_logical_region().get_index_space());
+    Legion::Domain::DomainPointIterator itr(dom);
 
     const auto fid =
       context_t::instance()
-        .get_field_info_store(
-          index_topology_t::type_identifier_hash, data::storage_label_t::index)
+        .get_field_info_store(global_topology_t::type_identifier_hash,
+          data::storage_label_t::global)
         .get_field_info(accessor.identifier())
         .fid;
 
-    auto ac = pr.get_field_accessor(fid).template typeify<DATA_TYPE>();
+    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
+    const Legion::UnsafeFieldAccessor<DATA_TYPE,
+      1,
+      Legion::coord_t,
+      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
+      ac(regions_[region], fid, sizeof(DATA_TYPE));
 
-    Legion::Domain domain =
-      legion_runtime_->get_index_space_domain(legion_context_, is);
-    LegionRuntime::Arrays::Rect<1> dr = domain.get_rect<1>();
-    LegionRuntime::Arrays::Rect<1> sr;
-    LegionRuntime::Accessor::ByteOffset bo[2];
+    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
 
-    index_topology::bind<DATA_TYPE, PRIVILEGES>(
-      accessor, ac.template raw_rect_ptr<1>(dr, sr, bo));
+    index_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
 
     ++region;
   } // visit
