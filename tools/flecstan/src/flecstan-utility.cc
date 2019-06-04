@@ -72,7 +72,7 @@ getTemplateArgs(
 
 // -----------------------------------------------------------------------------
 // get*Arg
-// Parameters: clang::TemplateArgumentList *, size_t
+// Parameters: clang::TemplateArgumentList *, std::size_t
 // -----------------------------------------------------------------------------
 
 // getTypeArg
