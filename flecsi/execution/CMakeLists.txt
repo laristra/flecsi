@@ -26,8 +26,9 @@ set(execution_HEADERS
   internal.h
   execution.h
   global_object_wrapper.h
+  kernel_interface.h
   reduction.h
-  task.h
+  task_interface.h
 )
 
 set(execution_SOURCES
