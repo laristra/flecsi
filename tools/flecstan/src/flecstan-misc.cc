@@ -125,13 +125,13 @@ debug(const std::string & text) {
 }
 
 // -----------------------------------------------------------------------------
-// heading
+// title
 // -----------------------------------------------------------------------------
 
 bool first_print = true;
 
 void
-heading(const std::string & text, const bool emit_section) {
+title(const std::string & text, const bool emit_section) {
   section_on = emit_section;
   if(!section_on)
     return;
@@ -142,11 +142,11 @@ heading(const std::string & text, const bool emit_section) {
   else if(emit_formfeed)
     std::cout << "\f";
 
-  const std::string & color = emit_color ? color::heading : "";
+  const std::string & color = emit_color ? color::title : "";
   const std::string & reset = emit_color ? color::reset : "";
   static const std::string line(80, '-');
 
-  if(emit_heading) {
+  if(emit_title) {
     std::cout << (first_print ? "" : "\n");
     first_print = false;
 
