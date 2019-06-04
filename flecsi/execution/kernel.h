@@ -28,7 +28,6 @@
 #include <string>
 
 namespace flecsi {
-namespace execution {
 
 /*!
   This function is a wrapper for Kokkos::parallel_for that has been adapted to
@@ -60,5 +59,4 @@ parallel_for(ITERATOR const & iterator, LAMBDA const & lambda,
 
 } // parallel_for
 
-} // namespace execution
 } // namespace flecsi
