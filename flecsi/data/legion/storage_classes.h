@@ -128,7 +128,7 @@ struct accessor_u : public field_reference_t {
     return *data_;
   } // value
 
-  operator DATA_TYPE const &() const {
+  operator DATA_TYPE const & () const {
     return *data_;
   } // value
 
