@@ -29,6 +29,10 @@ namespace flecstan {
 // Helpers
 // -----------------------------------------------------------------------------
 
+// ------------------------
+// functions
+// ------------------------
+
 // bail
 inline exit_status_t
 bail() {
@@ -60,10 +64,26 @@ fixdir(const std::string & in) {
   return in.substr(b, e - b);
 }
 
+// ------------------------
 // macros
+// ------------------------
+
+// flecstan_paste
 #define flecstan_paste(a, b) a##b
 
+// flecstan_toggle (singular): -[-][no-]flag
 #define flecstan_toggle(flag)                                                  \
+  inline bool flecstan_paste(option_, flag)(const std::string & opt) {         \
+    static const std::set<std::string> set{"-" #flag, "--" #flag};             \
+    return set.find(opt) != set.end();                                         \
+  }                                                                            \
+  inline bool flecstan_paste(option_no_, flag)(const std::string & opt) {      \
+    static const std::set<std::string> set{"-no-" #flag, "--no-" #flag};       \
+    return set.find(opt) != set.end();                                         \
+  }
+
+// flecstan_toggles (plural): -[-][no-]flag[s]
+#define flecstan_toggles(flag)                                                 \
   inline bool flecstan_paste(option_, flag)(const std::string & opt) {         \
     static const std::set<std::string> set{                                    \
       "-" #flag, "--" #flag, "-" #flag "s", "--" #flag "s"};                   \
@@ -75,6 +95,7 @@ fixdir(const std::string & in) {
     return set.find(opt) != set.end();                                         \
   }
 
+// flecstan_setnfind
 #define flecstan_setnfind(...)                                                 \
   static const std::set<std::string> set{__VA_ARGS__};                         \
   return set.find(opt) != set.end()
@@ -88,7 +109,7 @@ fixdir(const std::string & in) {
 // -----------------------------------------------------------------------------
 
 // ------------------------
-// Simple flags
+// Misc. simple flags
 // ------------------------
 
 // version
@@ -104,114 +125,116 @@ option_help(const std::string & opt) {
 }
 
 // quiet
-inline bool
+bool
 option_quiet(const std::string & opt) {
   flecstan_setnfind("-quiet", "--quiet");
 }
 
 // verbose
-inline bool
+bool
 option_verbose(const std::string & opt) {
   flecstan_setnfind("-verbose", "--verbose");
 }
 
 // short
-inline bool
+bool
 option_short(const std::string & opt) {
   flecstan_setnfind("-short", "--short");
 }
 
 // long
-inline bool
+bool
 option_long(const std::string & opt) {
   flecstan_setnfind("-long", "--long");
 }
 
 // print
-inline bool
+bool
 option_print(const std::string & opt) {
   flecstan_setnfind("-print", "--print");
 }
 
 // debug
-inline bool
+bool
 option_debug(const std::string & opt) {
   flecstan_setnfind("-debug", "--debug");
 }
-inline bool
-option_no_debug(const std::string & opt) {
-  flecstan_setnfind("-no-debug", "--no-debug");
+
+// re: file printing
+bool
+option_file_long(const std::string & opt) {
+  flecstan_setnfind("-file-long", "--file-long");
+}
+bool
+option_file_short(const std::string & opt) {
+  flecstan_setnfind("-file-short", "--file-short");
+}
+bool
+option_file_shorter(const std::string & opt) {
+  flecstan_setnfind("-file-shorter", "--file-shorter");
 }
 
-// heading
-inline bool
-option_heading(const std::string & opt) {
-  flecstan_setnfind("-heading", "--heading", "-headings", "--headings",
-    "-header", "--header", "-headers", "--headers");
+bool
+option_file_full(const std::string & opt) {
+  flecstan_setnfind("-file-full", "--file-full");
 }
-
-inline bool
-option_no_heading(const std::string & opt) {
-  flecstan_setnfind("-no-heading", "--no-heading", "-no-headings",
-    "--no-headings", "-no-header", "--no-header", "-no-headers",
-    "--no-headers");
-}
-
-// various
-flecstan_toggle(file) flecstan_toggle(report) flecstan_toggle(note)
-  flecstan_toggle(warning) flecstan_toggle(error) flecstan_toggle(column)
-    flecstan_toggle(color) flecstan_toggle(trace)
-
-  // compilation command line
-  inline bool option_ccline(const std::string & opt) {
-  flecstan_setnfind("-cc-line", "--cc-line", "-cc-lines", "--cc-lines");
-}
-
-inline bool
-option_no_ccline(const std::string & opt) {
-  flecstan_setnfind(
-    "-no-cc-line", "--no-cc-line", "-no-cc-lines", "--no-cc-lines");
-}
-
-// sections
-inline bool
-option_command(const std::string & opt) {
-  flecstan_setnfind("-command", "--command");
-}
-inline bool
-option_no_command(const std::string & opt) {
-  flecstan_setnfind("-no-command", "--no-command");
-}
-
-inline bool
-option_compile(const std::string & opt) {
-  flecstan_setnfind("-compilation", "--compilation");
-}
-inline bool
-option_no_compile(const std::string & opt) {
-  flecstan_setnfind("-no-compilation", "--no-compilation");
-}
-
-inline bool
-option_analysis(const std::string & opt) {
-  flecstan_setnfind("-analysis", "--analysis");
-}
-inline bool
-option_no_analysis(const std::string & opt) {
-  flecstan_setnfind("-no-analysis", "--no-analysis");
-}
-
-inline bool
-option_summary(const std::string & opt) {
-  flecstan_setnfind("-summary", "--summary");
-}
-inline bool
-option_no_summary(const std::string & opt) {
-  flecstan_setnfind("-no-summary", "--no-summary");
+bool
+option_file_strip(const std::string & opt) {
+  flecstan_setnfind("-file-strip", "--file-strip");
 }
 
 // ------------------------
-// General options
+// Toggles
+// ------------------------
+
+flecstan_toggles(title) flecstan_toggles(file) flecstan_toggles(report)
+  flecstan_toggles(note) flecstan_toggles(warning) flecstan_toggles(error)
+    flecstan_toggles(column) flecstan_toggles(color) flecstan_toggles(trace)
+      flecstan_toggles(ccdetail) flecstan_toggles(macro) flecstan_toggles(link)
+        flecstan_toggle(scan) flecstan_toggle(scanning) flecstan_toggle(visit)
+          flecstan_toggle(visiting)
+
+  // ------------------------
+  // Re: sections
+  // ------------------------
+
+  bool option_command(const std::string & opt) {
+  flecstan_setnfind("-section-command", "--section-command");
+}
+bool
+option_no_command(const std::string & opt) {
+  flecstan_setnfind("-no-section-command", "--no-section-command");
+}
+
+bool
+option_compilation(const std::string & opt) {
+  flecstan_setnfind("-section-compilation", "--section-compilation");
+}
+bool
+option_no_compilation(const std::string & opt) {
+  flecstan_setnfind("-no-section-compilation", "--no-section-compilation");
+}
+
+bool
+option_analysis(const std::string & opt) {
+  flecstan_setnfind("-section-analysis", "--section-analysis");
+}
+bool
+option_no_analysis(const std::string & opt) {
+  flecstan_setnfind("-no-section-analysis", "--no-section-analysis");
+}
+
+bool
+option_summary(const std::string & opt) {
+  flecstan_setnfind("-section-summary", "--section-summary");
+}
+bool
+option_no_summary(const std::string & opt) {
+  flecstan_setnfind("-no-section-summary", "--no-section-summary");
+}
+
+// ------------------------
+// Re: compilation
 // ------------------------
 
 inline bool
@@ -228,6 +251,10 @@ inline bool
 option_dir(const std::string & opt) {
   flecstan_setnfind("-dir", "--dir", "-directory", "--directory");
 }
+
+// ------------------------
+// Re: files (input)
+// ------------------------
 
 inline bool
 option_json(const std::string & opt) {
@@ -250,18 +277,26 @@ option_yaml(const std::string & opt) {
   flecstan_setnfind("-yaml", "--yaml");
 }
 
+// ------------------------
+// Re: files (output)
+// ------------------------
+
 inline bool
 option_yout(const std::string & opt) {
   flecstan_setnfind("-yout", "--yout");
 }
 
-// cleanup
+// ------------------------
+// Macro cleanup
+// ------------------------
+
 #undef flecstan_paste
 #undef flecstan_toggle
+#undef flecstan_toggles
 #undef flecstan_setnfind
 
 // ------------------------
-// Any of the above
+// Any of the above flags
 // ------------------------
 
 // fixme
@@ -270,26 +305,35 @@ inline bool
 option_any(const std::string & opt) {
   return option_version(opt) || option_help(opt) || option_quiet(opt) ||
          option_verbose(opt) || option_short(opt) || option_long(opt) ||
-         option_print(opt) ||
+         option_print(opt) || option_debug(opt) ||
 
-         option_debug(opt) || option_no_debug(opt) || option_heading(opt) ||
-         option_no_heading(opt) || option_file(opt) || option_no_file(opt) ||
-         option_report(opt) || option_no_report(opt) || option_note(opt) ||
-         option_no_note(opt) || option_warning(opt) || option_no_warning(opt) ||
-         option_error(opt) || option_no_error(opt) || option_color(opt) ||
+         option_file_long(opt) || option_file_short(opt) ||
+         option_file_shorter(opt) || option_file_full(opt) ||
+         option_file_strip(opt) ||
+
+         option_title(opt) || option_no_title(opt) || option_file(opt) ||
+         option_no_file(opt) || option_report(opt) || option_no_report(opt) ||
+         option_note(opt) || option_no_note(opt) || option_warning(opt) ||
+         option_no_warning(opt) || option_error(opt) || option_no_error(opt) ||
+         option_column(opt) || option_no_column(opt) || option_color(opt) ||
          option_no_color(opt) || option_trace(opt) || option_no_trace(opt) ||
+         option_ccdetail(opt) || option_no_ccdetail(opt) || option_macro(opt) ||
+         option_no_macro(opt) || option_link(opt) || option_no_link(opt) ||
+         option_scan(opt) || option_no_scan(opt) || option_scanning(opt) ||
+         option_no_scanning(opt) || option_visit(opt) || option_no_visit(opt) ||
+         option_visiting(opt) || option_no_visiting(opt) ||
 
-         option_ccline(opt) || option_no_ccline(opt) || option_column(opt) ||
-         option_no_column(opt) ||
-
-         option_command(opt) || option_no_command(opt) || option_compile(opt) ||
-         option_no_compile(opt) || option_analysis(opt) ||
-         option_no_analysis(opt) || option_summary(opt) ||
-         option_no_summary(opt) ||
+         option_command(opt) || option_no_command(opt) ||
+         option_compilation(opt) || option_no_compilation(opt) ||
+         option_analysis(opt) || option_no_analysis(opt) ||
+         option_summary(opt) || option_no_summary(opt) ||
 
          option_clang(opt) || option_flags(opt) || option_dir(opt) ||
+
          option_json(opt) || option_make(opt) || option_cc(opt) ||
-         option_yaml(opt) || option_yout(opt);
+         option_yaml(opt) ||
+
+         option_yout(opt);
 }
 
 // -----------------------------------------------------------------------------
@@ -453,7 +497,7 @@ one_json(const char * const * const argv, const std::size_t i, CmdArgs & com) {
   bool stdin = false;
 
   if(argv[i] == std::string("-")) {
-    full = "<standard input>";
+    full = "-";
     found = true;
     stdin = true;
   }
@@ -559,7 +603,7 @@ one_make(const char * const * const argv, const std::size_t i, CmdArgs & com) {
   bool stdin = false;
 
   if(argv[i] == std::string("-")) {
-    full = "<standard input>";
+    full = "-";
     found = true;
     stdin = true;
   }
@@ -729,8 +773,8 @@ one_cc(const char * const * const argv, const std::size_t i, CmdArgs & com) {
 
   // Note
   std::ostringstream oss;
-  oss << "Queueing C++ file " << full;
-  if(emit_ccline) {
+  oss << "Queueing C++ file " << quote(full) << ".";
+  if(emit_ccdetail) {
     std::string str;
     for(std::size_t s = 0; s < ctcc.CommandLine.size(); ++s)
       str += "   " + ctcc.CommandLine[s] + "\n";
@@ -923,11 +967,11 @@ option_toggle(const std::string & opt) {
   // quiet?
   else if(option_quiet(opt)) {
     emit_debug = false;
-    emit_heading = false;
+    emit_title = false;
     emit_note = false;
     emit_warning = false;
     emit_section_command = false;
-    emit_section_compile = false;
+    emit_section_compilation = false;
     emit_section_summary = false;
     // Make no changes, yea or nay, regarding:
     //    - printing of the analysis section
@@ -940,14 +984,14 @@ option_toggle(const std::string & opt) {
 
   // verbose?
   else if(option_verbose(opt)) {
-    emit_heading = true;
+    emit_title = true;
     emit_file = true;
     emit_report = true;
     emit_note = true;
     emit_warning = true;
     emit_error = true;
     emit_section_command = true;
-    emit_section_compile = true;
+    emit_section_compilation = true;
     emit_section_analysis = true;
     emit_section_summary = true;
   }
@@ -966,17 +1010,33 @@ option_toggle(const std::string & opt) {
     emit_formfeed = true;
   }
 
+  // debug?
   else if(option_debug(opt)) {
     emit_debug = true;
   }
-  else if(option_no_debug(opt)) {
-    emit_debug = false;
+
+  // re: file printing
+  else if(option_file_long(opt)) {
+    file_short = file_shorter = false;
   }
-  else if(option_heading(opt)) {
-    emit_heading = true;
+  else if(option_file_short(opt)) {
+    file_short = true;
   }
-  else if(option_no_heading(opt)) {
-    emit_heading = false;
+  else if(option_file_shorter(opt)) {
+    file_shorter = true;
+  }
+  else if(option_file_full(opt)) {
+    file_strip = false;
+  }
+  else if(option_file_strip(opt)) {
+    file_strip = true;
+  }
+
+  else if(option_title(opt)) {
+    emit_title = true;
+  }
+  else if(option_no_title(opt)) {
+    emit_title = false;
   }
   else if(option_file(opt)) {
     emit_file = true;
@@ -1015,11 +1075,11 @@ option_toggle(const std::string & opt) {
   else if(option_no_command(opt)) {
     emit_section_command = false;
   }
-  else if(option_compile(opt)) {
-    emit_section_compile = true;
+  else if(option_compilation(opt)) {
+    emit_section_compilation = true;
   }
-  else if(option_no_compile(opt)) {
-    emit_section_compile = false;
+  else if(option_no_compilation(opt)) {
+    emit_section_compilation = false;
   }
   else if(option_analysis(opt)) {
     emit_section_analysis = true;
@@ -1040,11 +1100,11 @@ option_toggle(const std::string & opt) {
   else if(option_no_column(opt)) {
     emit_column = false;
   }
-  else if(option_ccline(opt)) {
-    emit_ccline = true;
+  else if(option_ccdetail(opt)) {
+    emit_ccdetail = true;
   }
-  else if(option_no_ccline(opt)) {
-    emit_ccline = false;
+  else if(option_no_ccdetail(opt)) {
+    emit_ccdetail = false;
   }
 
   else if(option_color(opt)) {
@@ -1058,6 +1118,43 @@ option_toggle(const std::string & opt) {
   }
   else if(option_no_trace(opt)) {
     emit_trace = false;
+  }
+
+  else if(option_macro(opt)) {
+    emit_macro = true;
+  }
+  else if(option_no_macro(opt)) {
+    emit_macro = false;
+  }
+  else if(option_link(opt)) {
+    emit_link = true;
+  }
+  else if(option_no_link(opt)) {
+    emit_link = false;
+  }
+  else if(option_scan(opt)) {
+    emit_scan = true;
+  }
+  else if(option_no_scan(opt)) {
+    emit_scan = false;
+  }
+  else if(option_scanning(opt)) {
+    emit_scan = true;
+  }
+  else if(option_no_scanning(opt)) {
+    emit_scan = false;
+  }
+  else if(option_visit(opt)) {
+    emit_visit = true;
+  }
+  else if(option_no_visit(opt)) {
+    emit_visit = false;
+  }
+  else if(option_visiting(opt)) {
+    emit_visit = true;
+  }
+  else if(option_no_visiting(opt)) {
+    emit_visit = false;
   }
 
   else

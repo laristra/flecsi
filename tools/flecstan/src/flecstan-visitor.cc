@@ -101,10 +101,11 @@ match(const clang::CallExpr *& call, // output
   call = getClassCall(expr, theclass, thefunction, min, max);
   if(call) {
     mc.ast = true;
-    report("Link", "Function call: " + theclass + "::" + thefunction +
-                     "\n"
-                     "Matches macro: " +
-                     mc.macname + " (" + mc.flc() + ")");
+    if(emit_link)
+      report("Link", "Function call: " + theclass + "::" + thefunction +
+                       "\n"
+                       "Matches macro: " +
+                       mc.macname + " (" + mc.flc() + ")");
   }
   return call;
 }
@@ -733,11 +734,12 @@ Visitor::VisitTypeAliasDecl(const clang::TypeAliasDecl * const tad) {
     getVarArgsTemplate(tad, c.varargs, thetype);
     yaml.push(c, scp);
 
-    report("Link", "Function type: " + tad->getNameAsString() + " = " +
-                     thetype +
-                     "\n"
-                     "Matches macro: " +
-                     mc.macname + " (" + mc.flc() + ")");
+    if(emit_link)
+      report("Link", "Function type: " + tad->getNameAsString() + " = " +
+                       thetype +
+                       "\n"
+                       "Matches macro: " +
+                       mc.macname + " (" + mc.flc() + ")");
   }
 
   return true;

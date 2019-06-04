@@ -58,10 +58,19 @@ inline const std::string version =
     flecstan_VERSION_MINOR) "." stringify(flecstan_VERSION_PATCH);
 }
 
-// unnamed namespace
+// unnamed_namespace
 namespace flecstan {
 inline const std::string unnamed_namespace = "<namespace>";
 }
+
+// stripdir
+namespace flecstan {
+inline std::string
+stripdir(const std::string & in) {
+  const std::size_t pos = in.rfind("/");
+  return pos == std::string::npos ? in : in.substr(pos + 1);
+}
+} // namespace flecstan
 
 // -----------------------------------------------------------------------------
 // Colors, for text
@@ -99,7 +108,7 @@ inline const std::string white = "\033[37;21m";
 
 // for output
 inline const std::string debug = bold::white;
-inline const std::string heading = bold::black;
+inline const std::string title = bold::black;
 inline const std::string file = lite::magenta;
 inline const std::string report1 = bold::blue;
 inline const std::string report2 = bold::cyan;
@@ -110,7 +119,7 @@ inline const std::string fatal = lite::red;
 inline const std::string reset = "\033[0m";
 /*
 inline const std::string debug   = "`textWhite ";
-inline const std::string heading = "`textGray ";
+inline const std::string title   = "`textGray ";
 inline const std::string file    = "`textMagenta ";
 inline const std::string report1 = "`textBlueViolet ";
 inline const std::string report2 = "`textCyan ";
@@ -144,13 +153,13 @@ void diagnostic(const std::string &, // label
 
 // re: sections
 inline bool emit_section_command = true;
-inline bool emit_section_compile = true;
+inline bool emit_section_compilation = true;
 inline bool emit_section_analysis = true;
 inline bool emit_section_summary = true;
 
 // re: types of printing
 inline bool emit_debug = false;
-inline bool emit_heading = true;
+inline bool emit_title = true;
 inline bool emit_file = true;
 inline bool emit_report = true;
 inline bool emit_note = true;
@@ -161,10 +170,19 @@ inline bool emit_error = true;
 inline bool emit_color = true;
 inline bool emit_trace = true;
 inline bool emit_column = false;
-inline bool emit_ccline = false;
+inline bool emit_ccdetail = false;
 inline bool emit_formfeed = false;
+inline bool emit_macro = true;
+inline bool emit_link = true;
+inline bool emit_scan = true;
+inline bool emit_visit = true;
 
-// bookkeeping
+// re: file name printing
+inline bool file_short = false;
+inline bool file_shorter = false;
+inline bool file_strip = false;
+
+// other
 inline bool section_on = true;
 inline bool short_form = false;
 
@@ -190,14 +208,14 @@ debug(const std::string & varname, const T & value) {
 #define flecstan_debug(var) ::flecstan::debug(#var, (var))
 
 // ------------------------
-// heading
+// title
 // ------------------------
 
-void heading(const std::string &, const bool);
+void title(const std::string &, const bool);
 
 inline void
-heading(const std::ostringstream & oss, const bool emit_section) {
-  heading(oss.str(), emit_section);
+title(const std::ostringstream & oss, const bool emit_section) {
+  title(oss.str(), emit_section);
 }
 
 // ------------------------
@@ -205,15 +223,59 @@ heading(const std::ostringstream & oss, const bool emit_section) {
 // ------------------------
 
 inline void
-filename(const std::string & str) {
-  if(section_on && emit_file)
-    diagnostic("File", str, color::file);
+filename(std::string outer, std::string inner) {
+  // -file-long
+  //    File:
+  //       a/b/c/foo.json
+  //    File:
+  //       a/b/c/foo.json: d/e/f/g/bar.cc
+
+  // -file-short
+  //    File:
+  //       d/e/f/g/bar.cc
+
+  // -file-shorter
+  //    d/e/f/g/bar.cc
+
+  // -file-long -file-strip
+  //    File:
+  //       foo.json
+  //    File:
+  //       foo.json: bar.cc
+
+  // -file-short -file-strip
+  //    File:
+  //       bar.cc
+
+  // -file-shorter -file-strip
+  //    bar.cc
+
+  if(section_on && emit_file) {
+    static const std::string stdin = "<standard input>";
+
+    if(outer == "-")
+      outer = stdin;
+    if(inner == "-")
+      inner = stdin;
+
+    const std::string o =
+      file_short || file_shorter ? "" : file_strip ? stripdir(outer) : outer;
+
+    const std::string i = file_strip ? stripdir(inner) : inner;
+
+    const std::string name = o == "" ? i : i == "" ? o : o + ": " + i;
+
+    if(name != "")
+      diagnostic(file_shorter ? "" : "File", name, color::file);
+  }
 }
 
-inline void
-filename(const std::ostringstream & oss) {
-  filename(oss.str());
+/*
+inline void filename(const std::ostringstream &oss)
+{
+   filename(oss.str());
 }
+*/
 
 // ------------------------
 // report
@@ -284,8 +346,8 @@ inline std::size_t num_error = 0;
 
 inline exit_status_t
 error(const std::string & str) {
-  // section_on is not required here, as it was with headings, files,
-  // reports, notes, and warnings. We always print errors, unless the
+  // section_on is not required here, as it was with titles, files,
+  // reports notes, and warnings. We always print errors, unless the
   // user has explicitly shut them off
   num_error++;
   if(emit_error)
@@ -609,9 +671,10 @@ public:
     for(std::size_t arg = 0; arg < size(); ++arg)
       oss << (arg ? ", " : " ") << str(sema, arg);
 
-    flecstan::report("Macro",
-      oss.str() +
-        print_flc("\nFile: ", "\nLine: ", "\nColumn: ", location, spelling));
+    if(emit_macro)
+      flecstan::report("Macro",
+        oss.str() +
+          print_flc("\nFile: ", "\nLine: ", "\nColumn: ", location, spelling));
   }
 };
 

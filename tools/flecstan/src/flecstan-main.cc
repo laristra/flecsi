@@ -79,7 +79,9 @@ public:
     flecstan_debug(ci.hasSema()); // true
     debug("}");
 
-    report("", "Visiting the C++ abstract syntax tree...");
+    if(emit_visit)
+      report("", "Visiting the C++ abstract syntax tree...");
+
     if(!ci.hasSema()) {
       status = std::max(status, error("Could not get the Semantic Analyzer "
                                       "for this Compiler Instance."));
@@ -126,10 +128,11 @@ public:
     debug("}");
 
     if(outer_name != "")
-      filename((outer_name == "-" ? "<standard input>" : outer_name) + ": " +
-               file.str());
+      filename(outer_name, file.str());
 
-    report("", "Scanning for FleCSI macros...");
+    if(emit_scan)
+      report("", "Scanning for FleCSI macros...");
+
     if(!ci.hasPreprocessor()) {
       status = std::max(status, error("Could not get the Preprocessor "
                                       "for this Compiler Instance."));
@@ -228,7 +231,7 @@ std::unique_ptr<clang::tooling::CompilationDatabase>
 try_json(const std::pair<std::string, bool> & pair) {
   debug("try_json()");
   const std::string name = pair.first;
-  filename(name != "-" ? name : "<standard input>");
+  filename(name, "");
 
   std::string ErrorMessage;
   std::unique_ptr<clang::tooling::CompilationDatabase> ptr;
@@ -267,7 +270,7 @@ std::unique_ptr<clang::tooling::CompilationDatabase>
 try_make(const std::pair<std::string, bool> & pair) {
   debug("try_make()");
   const std::string name = pair.first;
-  filename(name != "-" ? name : "<standard input>");
+  filename(name, "");
 
   std::ifstream ifs;
   if(name != "-")
@@ -295,11 +298,11 @@ try_make(const std::pair<std::string, bool> & pair) {
   // that works most of the time. -Martin
   bool first = true;
   for(std::string line; std::getline(in, line);) {
-    size_t pos_cd;
-    size_t pos_and;
-    size_t pos_clang = std::string::npos;
-    size_t pos_g = std::string::npos;
-    size_t pos_file;
+    std::size_t pos_cd;
+    std::size_t pos_and;
+    std::size_t pos_clang = std::string::npos;
+    std::size_t pos_g = std::string::npos;
+    std::size_t pos_file;
 
     // Note that "cd " and "[clan]g++ ", below, intentionally end with spaces.
     // fixme Needs more work in order to be really robust. Think, for example,
@@ -350,7 +353,7 @@ try_cc(const clang::tooling::CompileCommand & cc) {
   const std::string full = fullfile(dir, file);
 
   // print
-  filename(full);
+  filename("", full);
 
   // try to open
   std::ifstream ifs(full.c_str());
@@ -618,22 +621,22 @@ main(const int argc, const char * const * const argv) {
   // ------------------------
 
   // Command
-  heading("Command", emit_section_command);
+  title("Command", emit_section_command);
   if((status = std::max(status, arguments(arg, argc, argv, com))) == exit_fatal)
     return exit_fatal;
 
   // Compilation
-  heading("Compilation", emit_section_compile);
+  title("Compilation", emit_section_compilation);
   if((status = std::max(status, compilation())) == exit_fatal)
     return exit_fatal;
 
   // Analysis
-  heading("Analysis", emit_section_analysis);
+  title("Analysis", emit_section_analysis);
   if((status = std::max(status, analysis(yaml))) == exit_fatal)
     return exit_fatal;
 
   // Summary
-  heading("Summary", emit_section_summary);
+  title("Summary", emit_section_summary);
   if((status = std::max(status, summary())) == exit_fatal)
     return exit_fatal;
 
