@@ -128,6 +128,13 @@ ftest_add_unit(global-object
     test/global-object.cc
 )
 
+if(ENABLE_KOKKOS)
+  ftest_add_unit(kokkos
+    SOURCES
+      test/kokkos.cc
+  )
+endif()
+
 ftest_add_unit(task
   SOURCES
     test/task.cc
@@ -137,4 +144,3 @@ ftest_add_unit(gpu_task
   SOURCES
     test/gpu_task.cc
 )
-
