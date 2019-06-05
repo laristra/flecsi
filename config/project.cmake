@@ -94,34 +94,6 @@ endif()
 mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 
 #------------------------------------------------------------------------------#
-# Add options for platform selection
-#------------------------------------------------------------------------------#
-
-set(FLECSI_NODE_PLATFORMS serial nvidia amd intel)
-
-if(NOT FLECSI_NODE_PLATFORM)
-  list(GET FLECSI_NODE_PLATFORMS 0 FLECSI_NODE_PLATFORM)
-endif()
-
-set(FLECSI_NODE_PLATFORM "${FLECSI_NODE_PLATFORM}" CACHE STRING
-  "Select the node platform")
-set_property(CACHE FLECSI_NODE_PLATFORM
-  PROPERTY STRINGS ${FLECSI_NODE_PLATFORMS})
-
-if(FLECSI_NODE_PLATFORM STREQUAL "nvidia")
-  set(ENABLE_KOKKOS ON CACHE BOOL "Enable Kokkos" FORCE)
-elseif(FLECSI_NODE_PLATFORM STREQUAL "amd")
-  set(ENABLE_KOKKOS ON CACHE BOOL "Enable Kokkos" FORCE)
-elseif(FLECSI_NODE_PLATFORM STREQUAL "intel")
-  set(ENABLE_KOKKOS ON CACHE BOOL "Enable Kokkos" FORCE)
-elseif(FLECSI_NODE_PLATFORM STREQUAL "openmp")
-  set(ENABLE_KOKKOS ON CACHE BOOL "Enable Kokkos" FORCE)
-  set(ENABLE_OPENMP ON CACHE BOOL "Enable OpenMP" FORCE)
-else()
-  set(ENABLE_KOKKOS OFF CACHE BOOL "Enable Kokkos" FORCE)
-endif()
-
-#------------------------------------------------------------------------------#
 # Load the cinch extras
 #------------------------------------------------------------------------------#
 
