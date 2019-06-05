@@ -27,9 +27,9 @@ kokkos_sanity(int argc, char ** argv) {
 
   FTEST();
 
-  Kokkos::initialize(argc, argv);
+  //Kokkos::initialize(argc, argv);
   Kokkos::print_configuration(std::cerr);
-  Kokkos::finalize();
+  //Kokkos::finalize();
 
   return 0;
 }
