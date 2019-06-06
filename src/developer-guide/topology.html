@@ -105,6 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="execution.html#task-execution">Task Execution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">Data Model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Topology Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#topology-initialization-workflow">Topology Initialization Workflow</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen">FleCSI API Reference</a></li>
@@ -185,6 +186,20 @@ octree, or kd-tree, the user should follow these steps:</p>
 <li><p>Specialize topology registration</p></li>
 <li><p>Specialize storage class implementations</p></li>
 </ul>
+</div>
+<div class="section" id="topology-initialization-workflow">
+<h1>Topology Initialization Workflow<a class="headerlink" href="#topology-initialization-workflow" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p>User defines specialization policy</p></li>
+<li><p>User defines topology type with policy</p></li>
+<li><p>Register meta data fields for specialized topology type</p></li>
+<li><p>User adds fields to topology-defined index spaces</p></li>
+<li><p>User gets topology instance</p></li>
+<li><p>User generates coloring and calls set_coloring on instance</p></li>
+<li><p>FleCSI creates index spaces and index partitions</p></li>
+<li><p>FleCSI invokes task to initialize topology meta data</p></li>
+<li><p>User invokes task to initialize field state</p></li>
+</ol>
 </div>
 
 
