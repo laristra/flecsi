@@ -247,7 +247,7 @@ runtime_driver(int argc, char ** argv) {
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
   CALI_MARK_BEGIN("spmd_init");
   specialization_spmd_init(argc, argv);
-  CALI_MARK_END("spmd_innit");
+  CALI_MARK_END("spmd_init");
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
