@@ -102,11 +102,11 @@ struct topology_instance_u<topology::index_topology_t> {
 
     runtime_data.logical_region = legion_runtime->create_logical_region(
       legion_context, index_space, field_space);
-
-    LegionRuntime::Arrays::Blockify<1> color_block(1);
+ 
     Legion::IndexPartition index_partition =
-      legion_runtime->create_index_partition(
-        legion_context, index_space, color_block);
+      legion_runtime->create_equal_partition(legion_context,
+        index_space, index_space);
+
     runtime_data.color_partition = legion_runtime->get_logical_partition(
       legion_context, runtime_data.logical_region, index_partition);
 
