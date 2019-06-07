@@ -15,6 +15,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <iostream>
 
 namespace flecsi {
 namespace tutorial {
