@@ -236,6 +236,7 @@ if(ENABLE_PARMETIS)
   cinch_add_unit(client_registration
     SOURCES
       test/client_registration.cc
+      ../utils/demangle.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES
