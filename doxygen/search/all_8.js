@@ -24,7 +24,7 @@ var searchData=
   ['init_5fviews_5ft',['init_views_t',['../structflecsi_1_1execution_1_1legion_1_1init__views__t.html',1,'flecsi::execution::legion::init_views_t'],['../structflecsi_1_1execution_1_1legion_1_1init__views__t.html#a374727b3757e840dfc92102b7156133e',1,'flecsi::execution::legion::init_views_t::init_views_t()']]],
   ['initialize',['initialize',['../structflecsi_1_1utils_1_1dag__node__u.html#a49a29e183293674c218aa0b8ee0fae2c',1,'flecsi::utils::dag_node_u']]],
   ['instance',['instance',['../structflecsi_1_1control_1_1control__u.html#a936cb5a9e6b47e02dfa4e8aa166ebb62',1,'flecsi::control::control_u::instance()'],['../structflecsi_1_1execution_1_1context__u.html#ad7e9b5256cdfaf272fff345c1a1ffcde',1,'flecsi::execution::context_u::instance()'],['../classflecsi_1_1utils_1_1Factory__.html#a35e2f5038bdfb495d9bd4e53c07ba23f',1,'flecsi::utils::Factory_::instance()'],['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f',1,'flecsi::utils::flog::flog_t::instance()']]],
-  ['interface_2eh',['interface.h',['../interface_8h.html',1,'']]],
+  ['interface_2eh',['interface.h',['../structured__mesh_2interface_8h.html',1,'(Global Namespace)'],['../unstructured__mesh_2interface_8h.html',1,'(Global Namespace)']]],
   ['intermediate_5fhash',['intermediate_hash',['../group__utils.html#ga8e0feaf3e88cb778f03665548a6a50e4',1,'flecsi::utils::hash::intermediate_hash()'],['../group__utils.html#ga468cd97557ee3a381b31530362e86e74',1,'flecsi::utils::hash::intermediate_hash(size_t dimension, size_t domain)']]],
   ['internal_2eh',['internal.h',['../internal_8h.html',1,'']]],
   ['internal_5ftask_2eh',['internal_task.h',['../internal__task_8h.html',1,'']]],

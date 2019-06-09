@@ -86,5 +86,5 @@ var searchData=
   ['typeify',['typeify',['../structflecsi_1_1utils_1_1typeify.html',1,'flecsi::utils']]],
   ['typeify_2eh',['typeify.h',['../typeify_8h.html',1,'']]],
   ['typeify_5fu',['typeify_u',['../structflecsi_1_1utils_1_1typeify__u.html',1,'flecsi::utils']]],
-  ['types_2eh',['types.h',['../runtime_2types_8h.html',1,'(Global Namespace)'],['../topology_2unstructured__mesh_2types_8h.html',1,'(Global Namespace)'],['../utils_2flog_2types_8h.html',1,'(Global Namespace)']]]
+  ['types_2eh',['types.h',['../runtime_2types_8h.html',1,'(Global Namespace)'],['../topology_2structured__mesh_2types_8h.html',1,'(Global Namespace)'],['../topology_2unstructured__mesh_2types_8h.html',1,'(Global Namespace)'],['../utils_2flog_2types_8h.html',1,'(Global Namespace)']]]
 ];

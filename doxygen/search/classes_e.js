@@ -6,6 +6,7 @@ var searchData=
   ['state_5ft',['state_t',['../structflecsi_1_1utils_1_1ftest_1_1state__t.html',1,'flecsi::utils::ftest']]],
   ['storage_5fclass_5fu',['storage_class_u',['../structflecsi_1_1data_1_1POLICY__NAMESPACE_1_1storage__class__u.html',1,'flecsi::data::POLICY_NAMESPACE']]],
   ['structured_5fmesh_5fruntime_5fdata_5ft',['structured_mesh_runtime_data_t',['../structflecsi_1_1data_1_1legion_1_1structured__mesh__runtime__data__t.html',1,'flecsi::data::legion']]],
-  ['structured_5fmesh_5ftopology_5fbase_5ft',['structured_mesh_topology_base_t',['../structflecsi_1_1topology_1_1structured__mesh__topology__base__t.html',1,'flecsi::topology']]],
+  ['structured_5fmesh_5ftopology_5fbase_5ft',['structured_mesh_topology_base_t',['../structstructured__mesh__topology__base__t.html',1,'structured_mesh_topology_base_t'],['../structflecsi_1_1topology_1_1structured__mesh__topology__base__t.html',1,'flecsi::topology::structured_mesh_topology_base_t']]],
+  ['structured_5fmesh_5ftopology_5fu',['structured_mesh_topology_u',['../structstructured__mesh__topology__u.html',1,'']]],
   ['sum',['sum',['../structflecsi_1_1execution_1_1reduction_1_1sum.html',1,'flecsi::execution::reduction']]]
 ];
