@@ -18,6 +18,5 @@ var searchData=
   ['less_5fthan',['less_than',['../simple__id_8h.html#a6091f614969876662d071a02c5e0f8f2',1,'flecsi::utils::detail']]],
   ['lexical_5fcomparison',['lexical_comparison',['../structflecsi_1_1utils_1_1lexical__comparison.html',1,'flecsi::utils']]],
   ['lexical_5fcomparison_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e',['lexical_comparison&lt; std::tuple&lt; Args... &gt; &gt;',['../structflecsi_1_1utils_1_1lexical__comparison_3_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'flecsi::utils']]],
-  ['load',['load',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#ad3b042ed443ada7596810d073960aa77',1,'flecsi::topology::unstructured_mesh_topology_u']]],
   ['log_5fmessage_5ft',['log_message_t',['../structflecsi_1_1utils_1_1flog_1_1log__message__t.html',1,'flecsi::utils::flog::log_message_t&lt; P &gt;'],['../structflecsi_1_1utils_1_1flog_1_1log__message__t.html#a3df449c5c409ec0dca43b91a6f9af1c8',1,'flecsi::utils::flog::log_message_t::log_message_t()']]]
 ];

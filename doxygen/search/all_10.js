@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['save',['save',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#a62f24d6b18edd6c9e3d947f8e50bfa5d',1,'flecsi::topology::unstructured_mesh_topology_u']]],
   ['serial_20data_20backend',['Serial Data Backend',['../group__serial-data.html',1,'']]],
   ['serial_20execution_20backend',['Serial Execution Backend',['../group__serial-execution.html',1,'']]],
-  ['serialize_5f',['serialize_',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#aa87e545036f380bba5f71616470e4d7f',1,'flecsi::topology::unstructured_mesh_topology_u']]],
   ['set_5fall_5fprocesses',['set_all_processes',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#ab6d6edaaf621be53b29e3f8f42e450d1',1,'flecsi::execution::legion_context_policy_t']]],
   ['set_5fcoloring',['set_coloring',['../structflecsi_1_1data_1_1topology__interface__u.html#a56b3d88eacfaf04caffc9f106d50f50d',1,'flecsi::data::topology_interface_u']]],
   ['set_5fcount',['set_count',['../classflecsi_1_1utils_1_1offset__u.html#a7d05c9c49ea64ca488a9ed36a44134a1',1,'flecsi::utils::offset_u']]],
@@ -15,6 +13,7 @@ var searchData=
   ['set_5fmpi_5ftask',['set_mpi_task',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a9b91a3c955cd1572cdee39b1339d7563',1,'flecsi::execution::legion_context_policy_t']]],
   ['set_5foffset',['set_offset',['../classflecsi_1_1utils_1_1offset__u.html#a3ba74093989694c58743776c4ba76669',1,'flecsi::utils::offset_u']]],
   ['set_5ftopology_5fbase_5ft',['set_topology_base_t',['../structflecsi_1_1topology_1_1set__topology__base__t.html',1,'flecsi::topology']]],
+  ['set_5ftopology_5fu',['set_topology_u',['../classflecsi_1_1topology_1_1set__topology__u.html',1,'flecsi::topology']]],
   ['set_5funion',['set_union',['../set__utils_8h.html#a70012eba2aef6c7467357a29b8c673aa',1,'flecsi::utils']]],
   ['set_5futils_2eh',['set_utils.h',['../set__utils_8h.html',1,'']]],
   ['severity_5fstream',['severity_stream',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#a397e529841ea6fe42abacc9f604154ab',1,'flecsi::utils::flog::flog_t']]],
@@ -38,9 +37,8 @@ var searchData=
   ['stream',['stream',['../structflecsi_1_1utils_1_1flog_1_1log__message__t.html#ab8eb3f5ef0516a49e31a5dcf3e576fda',1,'flecsi::utils::flog::log_message_t::stream()'],['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#a2a30c10be4e8bd10d35cd8b1fe023cea',1,'flecsi::utils::flog::flog_t::stream()']]],
   ['structured_20mesh_20toplogy_20interface',['Structured Mesh Toplogy Interface',['../group__structured-mesh-topology.html',1,'']]],
   ['structured_5fmesh_5fruntime_5fdata_5ft',['structured_mesh_runtime_data_t',['../structflecsi_1_1data_1_1legion_1_1structured__mesh__runtime__data__t.html',1,'flecsi::data::legion']]],
-  ['structured_5fmesh_5ftopology_5fbase_5ft',['structured_mesh_topology_base_t',['../structstructured__mesh__topology__base__t.html',1,'structured_mesh_topology_base_t'],['../structflecsi_1_1topology_1_1structured__mesh__topology__base__t.html',1,'flecsi::topology::structured_mesh_topology_base_t']]],
-  ['structured_5fmesh_5ftopology_5fu',['structured_mesh_topology_u',['../structstructured__mesh__topology__u.html',1,'']]],
-  ['subentities',['subentities',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#a10af939352ed86de99f54c1c10818582',1,'flecsi::topology::unstructured_mesh_topology_u::subentities()'],['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#a23c2eb79ab3194909a486a5cdc026651',1,'flecsi::topology::unstructured_mesh_topology_u::subentities() const']]],
+  ['structured_5fmesh_5ftopology_5fbase_5ft',['structured_mesh_topology_base_t',['../structflecsi_1_1topology_1_1structured__mesh__topology__base__t.html',1,'flecsi::topology']]],
+  ['structured_5fmesh_5ftopology_5fu',['structured_mesh_topology_u',['../classflecsi_1_1topology_1_1structured__mesh__topology__u.html',1,'flecsi::topology']]],
   ['substr',['substr',['../classflecsi_1_1utils_1_1array__ref.html#af516ee4ce335313f93907ac7c2953cc0',1,'flecsi::utils::array_ref']]],
   ['sum',['sum',['../structflecsi_1_1execution_1_1reduction_1_1sum.html',1,'flecsi::execution::reduction']]],
   ['sync',['sync',['../classflecsi_1_1utils_1_1flog_1_1tee__buffer__t.html#ad963d0924e69760794fb085982e7d9b8',1,'flecsi::utils::flog::tee_buffer_t']]]

@@ -4,7 +4,6 @@ var searchData=
   ['uint128_2eh',['uint128.h',['../uint128_8h.html',1,'']]],
   ['unique_5fid_5fu',['unique_id_u',['../structflecsi_1_1utils_1_1unique__id__u.html',1,'flecsi::utils']]],
   ['unique_5fname',['unique_name',['../common_8h.html#a411e5061d525b8938d5ae2bac085d3d3',1,'flecsi::utils']]],
-  ['unserialize_5f',['unserialize_',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html#addb63e1d03e52ad06a29ec40029fe97e',1,'flecsi::topology::unstructured_mesh_topology_u']]],
   ['unserialize_5fdimensions_5f',['unserialize_dimensions_',['../structflecsi_1_1topology_1_1unserialize__dimensions__.html',1,'flecsi::topology']]],
   ['unserialize_5fdimensions_5f_3c_20storage_5ftype_2c_20mesh_5ftype_2c_20num_5fdomains_2c_20num_5fdims_2c_20dom_2c_20num_5fdims_20_3e',['unserialize_dimensions_&lt; STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, NUM_DIMS, DOM, NUM_DIMS &gt;',['../structflecsi_1_1topology_1_1unserialize__dimensions___3_01STORAGE__TYPE_00_01MESH__TYPE_00_01NUMc4d1f7df9df56eeadee2c82c8d1bc976.html',1,'flecsi::topology']]],
   ['unserialize_5fdomains_5f',['unserialize_domains_',['../structflecsi_1_1topology_1_1unserialize__domains__.html',1,'flecsi::topology']]],

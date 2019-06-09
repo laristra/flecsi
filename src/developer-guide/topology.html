@@ -105,6 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="execution.html#task-execution">Task Execution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">Data Model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Topology Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-new-topologies">Adding New Topologies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#topology-initialization-workflow">Topology Initialization Workflow</a></li>
 </ul>
 </li>
@@ -186,6 +187,79 @@ octree, or kd-tree, the user should follow these steps:</p>
 <li><p>Specialize topology registration</p></li>
 <li><p>Specialize storage class implementations</p></li>
 </ul>
+</div>
+<div class="section" id="adding-new-topologies">
+<h1>Adding New Topologies<a class="headerlink" href="#adding-new-topologies" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic">
+<li><p><strong>Topology Type</strong>: Add a new subdirectory to the <em>flecsi/topology</em> directory named for
+the new topology type, e.g., <em>ntree</em>.</p>
+<p>This subdirectory should include:</p>
+<ul>
+<li><p>interface.h: This file defines the topology interface, e.g.,</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span> <span class="n">flecsi</span> <span class="p">{</span>
+<span class="k">namespace</span> <span class="n">topology</span> <span class="p">{</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">POLICY_TYPE</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="nl">ntree_topology_u</span> <span class="p">:</span> <span class="k">public</span> <span class="n">ntree_topology_base_t</span> <span class="p">{</span>
+
+  <span class="c1">// interface ...</span>
+
+<span class="p">};</span> <span class="c1">// struct ntree_topology_u</span>
+
+<span class="p">}</span> <span class="c1">// namespace flecsi</span>
+<span class="p">}</span> <span class="c1">// namespace topology</span>
+</pre></div>
+</div>
+</li>
+<li><p>types.h: This file defines types that are used by FleCSI, and by
+the new topology type. At a minimum, this file should define a base
+type from which the new topology type shall inherit, and a <em>coloring_t</em>
+type. The base class will be used to identify specializations of
+the new type in explicit specializations and template function
+overloads. The coloring type should include whatever interface and
+data members are required to form a distributed-memory
+representation of the new topology:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ntree_topology_base_t</span> <span class="p">{</span>
+
+<span class="k">using</span> <span class="n">coloring_t</span> <span class="o">=</span> <span class="n">ntree_topology_coloring_t</span><span class="p">;</span>
+
+  <span class="c1">// interface ...</span>
+
+<span class="p">};</span> <span class="c1">// struct ntree_topology_u</span>
+</pre></div>
+</div>
+<p>The base type should be named consistently with the new topology
+type name, and should follow FleCSI naming conventions. The base
+type must define the public <em>coloring_t</em> type.</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Topology Registration</strong>: Define an partial specialization of the <em>topology_registration_u</em>
+type in <em>flecsi/data/common/topology_registration.h</em>. This type must
+implement a <em>register_fields</em> method that adds the fields required to
+represent the meta data associated with an instance of the new
+topology type.</p></li>
+<li><p><strong>Topology Instance</strong>: Define runtime-specific topology instance types in
+<em>data/runtime/topologies.h</em>, where <em>runtime</em> is implemented for each
+supported backend runtime type, e.g., Legion, MPI, and HPX
+(currently).</p>
+<p>The new type must define a <em>set_coloring</em> method that takes the
+<em>coloring_t</em> type defined in assocaited <em>types.h</em> file:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">POLICY_TYPE</span><span class="o">&gt;</span>
+<span class="k">struct</span>  <span class="n">topology_instance_u</span><span class="o">&lt;</span><span class="n">ntree_topology_u</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+
+  <span class="k">using</span> <span class="n">topology_reference_t</span> <span class="o">=</span>
+    <span class="n">topology_reference_u</span><span class="o">&lt;</span><span class="n">ntree_topology_u</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+
+  <span class="k">static</span> <span class="kt">void</span> <span class="nf">set_coloring</span><span class="p">(</span><span class="n">topology_reference_t</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">topology_reference</span><span class="p">,</span>
+    <span class="n">ntree_topology_u</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;::</span><span class="n">coloring_t</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">colorint</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span> <span class="c1">// set_coloring</span>
+
+<span class="p">};</span> <span class="c1">// topology_instance_u&lt;ntree_topology_u&lt;POLICY_TYPE&gt;&gt;</span>
+</pre></div>
+</div>
+</li>
+</ol>
 </div>
 <div class="section" id="topology-initialization-workflow">
 <h1>Topology Initialization Workflow<a class="headerlink" href="#topology-initialization-workflow" title="Permalink to this headline">¶</a></h1>

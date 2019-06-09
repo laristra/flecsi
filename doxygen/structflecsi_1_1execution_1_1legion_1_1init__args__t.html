@@ -66,6 +66,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="structflecsi_1_1execution_1_1legion_1_1init__args__t-members.html">List of all members</a>  </div>
@@ -85,6 +86,21 @@ Inheritance diagram for flecsi::execution::legion::init_args_t:</div>
 </map>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:aa52792dae4adc11b22cd7a75ce203bd6"><td class="memTemplParams" colspan="2"><a id="aa52792dae4adc11b22cd7a75ce203bd6"></a>
+template&lt;typename POLICY_TYPE , size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:aa52792dae4adc11b22cd7a75ce203bd6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ntree_accessor_u</b> = <a class="el" href="structflecsi_1_1data_1_1topology__accessor__u.html">topology_accessor_u</a>&lt; <a class="el" href="classflecsi_1_1topology_1_1ntree__topology__u.html">ntree_topology_u</a>&lt; POLICY_TYPE &gt;, PRIVILEGES &gt;</td></tr>
+<tr class="separator:aa52792dae4adc11b22cd7a75ce203bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab49bc303d465e007cc9a0db848527598"><td class="memTemplParams" colspan="2"><a id="ab49bc303d465e007cc9a0db848527598"></a>
+template&lt;typename POLICY_TYPE , size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:ab49bc303d465e007cc9a0db848527598"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_accessor_u</b> = <a class="el" href="structflecsi_1_1data_1_1topology__accessor__u.html">topology_accessor_u</a>&lt; <a class="el" href="classflecsi_1_1topology_1_1set__topology__u.html">set_topology_u</a>&lt; POLICY_TYPE &gt;, PRIVILEGES &gt;</td></tr>
+<tr class="separator:ab49bc303d465e007cc9a0db848527598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0726409d8df5428965ec3c5008e8f2f1"><td class="memTemplParams" colspan="2"><a id="a0726409d8df5428965ec3c5008e8f2f1"></a>
+template&lt;typename POLICY_TYPE , size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:a0726409d8df5428965ec3c5008e8f2f1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>structured_mesh_accessor_u</b> = <a class="el" href="structflecsi_1_1data_1_1topology__accessor__u.html">topology_accessor_u</a>&lt; <a class="el" href="classflecsi_1_1topology_1_1structured__mesh__topology__u.html">structured_mesh_topology_u</a>&lt; POLICY_TYPE &gt;, PRIVILEGES &gt;</td></tr>
+<tr class="separator:a0726409d8df5428965ec3c5008e8f2f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a5c8cd368745e1490c6e936bc6b56dfb3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1init__args__t.html#a5c8cd368745e1490c6e936bc6b56dfb3">init_args_t</a> (Legion::Runtime *runtime, Legion::Context &amp;context, const size_t &amp;domain)</td></tr>
@@ -100,6 +116,18 @@ template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 <tr class="memitem:a4622636bc248f0b5ae12782bbef53a2c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1legion_1_1index__topology_1_1accessor__u.html">index_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
 <tr class="separator:a4622636bc248f0b5ae12782bbef53a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5497eaf5d08c673414a200b033c07a27"><td class="memTemplParams" colspan="2"><a id="a5497eaf5d08c673414a200b033c07a27"></a>
+template&lt;typename POLICY_TYPE , size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:a5497eaf5d08c673414a200b033c07a27"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1topology__accessor__u.html">ntree_accessor_u</a>&lt; POLICY_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
+<tr class="separator:a5497eaf5d08c673414a200b033c07a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa235dca82daf3e5b17fb6de569872e3a"><td class="memTemplParams" colspan="2"><a id="aa235dca82daf3e5b17fb6de569872e3a"></a>
+template&lt;typename POLICY_TYPE , size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:aa235dca82daf3e5b17fb6de569872e3a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1topology__accessor__u.html">set_accessor_u</a>&lt; POLICY_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
+<tr class="separator:aa235dca82daf3e5b17fb6de569872e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7df267ef007ec849e84d2d2ce3bb975"><td class="memTemplParams" colspan="2"><a id="ae7df267ef007ec849e84d2d2ce3bb975"></a>
+template&lt;typename POLICY_TYPE , size_t PRIVILEGES&gt; </td></tr>
+<tr class="memitem:ae7df267ef007ec849e84d2d2ce3bb975"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1topology__accessor__u.html">structured_mesh_accessor_u</a>&lt; POLICY_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
+<tr class="separator:ae7df267ef007ec849e84d2d2ce3bb975"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structflecsi_1_1utils_1_1tuple__walker__u"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1utils_1_1tuple__walker__u')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1utils_1_1tuple__walker__u.html">flecsi::utils::tuple_walker_u&lt; init_args_t &gt;</a></td></tr>
 <tr class="memitem:gacb8e677f65f90eebfee34a909aa05977 inherit pub_methods_structflecsi_1_1utils_1_1tuple__walker__u"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gacb8e677f65f90eebfee34a909aa05977">walk</a> (TUPLE_TYPE &amp;t)</td></tr>
 <tr class="separator:gacb8e677f65f90eebfee34a909aa05977 inherit pub_methods_structflecsi_1_1utils_1_1tuple__walker__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
