@@ -21,6 +21,9 @@
 //#include <flecsi/data/common/data_reference.h>
 #endif
 
+namespace flecsi {
+namespace topology {
+
 //----------------------------------------------------------------------------//
 // Mesh topology.
 //----------------------------------------------------------------------------//
