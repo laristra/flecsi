@@ -128,8 +128,7 @@ struct legion_context_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  void clear() {
-  } // clear
+  void clear() {} // clear
 
   /*
     Documentation for this interface is in the top-level context type.

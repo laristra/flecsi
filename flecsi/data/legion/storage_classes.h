@@ -129,7 +129,7 @@ struct accessor_u : public field_reference_t {
     return *data_;
   } // value
 
-  operator DATA_TYPE const & () const {
+  operator DATA_TYPE const &() const {
     return *data_;
   } // value
 
@@ -153,22 +153,19 @@ private:
   NTree Topology.
  *----------------------------------------------------------------------------*/
 
-namespace ntree_topology {
-} // namespace ntree_topology
+namespace ntree_topology {} // namespace ntree_topology
 
 /*----------------------------------------------------------------------------*
   Set Topology.
  *----------------------------------------------------------------------------*/
 
-namespace set_topology {
-} // namespace set_topology
+namespace set_topology {} // namespace set_topology
 
 /*----------------------------------------------------------------------------*
   Structured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
-namespace structured_mesh_topology {
-} // namespace structured_mesh_topology
+namespace structured_mesh_topology {} // namespace structured_mesh_topology
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.

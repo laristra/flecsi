@@ -178,8 +178,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     topology_accessor_u<ntree_topology_u<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(ntree_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {
-  } // visit
+  void visit(ntree_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Set Topology
@@ -190,8 +189,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     topology_accessor_u<set_topology_u<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(set_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {
-  } // visit
+  void visit(set_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Structured Mesh Topology

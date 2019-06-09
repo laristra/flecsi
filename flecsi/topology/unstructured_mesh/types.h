@@ -290,7 +290,8 @@ private:
 //-----------------------------------------------------------------//
 
 /*!
-  The unstructured_mesh_topology_base_t type allows identification of unstructured meshes.
+  The unstructured_mesh_topology_base_t type allows identification of
+  unstructured meshes.
  */
 
 struct unstructured_mesh_topology_base_t {

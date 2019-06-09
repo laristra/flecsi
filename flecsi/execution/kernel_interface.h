@@ -37,8 +37,9 @@ namespace flecsi {
  */
 
 template<typename ITERATOR, typename LAMBDA>
-parallel_for(ITERATOR const & iterator, LAMBDA const & lambda,
-             std::string const & name = "") {
+parallel_for(ITERATOR const & iterator,
+  LAMBDA const & lambda,
+  std::string const & name = "") {
 
   struct functor_t {
 

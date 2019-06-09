@@ -48,12 +48,12 @@ namespace flecsi {
 namespace topology {
 namespace verify_mesh {
 
-//FLECSI_MEMBER_CHECKER(num_dimensions);
-//FLECSI_MEMBER_CHECKER(num_domains);
-//FLECSI_MEMBER_CHECKER(entity_types);
-//FLECSI_MEMBER_CHECKER(connectivities);
-//FLECSI_MEMBER_CHECKER(bindings);
-//FLECSI_MEMBER_CHECKER(create_entity);
+// FLECSI_MEMBER_CHECKER(num_dimensions);
+// FLECSI_MEMBER_CHECKER(num_domains);
+// FLECSI_MEMBER_CHECKER(entity_types);
+// FLECSI_MEMBER_CHECKER(connectivities);
+// FLECSI_MEMBER_CHECKER(bindings);
+// FLECSI_MEMBER_CHECKER(create_entity);
 
 } // namespace verify_mesh
 
@@ -104,15 +104,15 @@ namespace verify_mesh {
   such as intersection, union, etc. and functional operations like apply, map,
   reduce, etc. to apply a custom function to the set.
 
-  @tparam POLICY_TYPE mesh policy type by which the mesh is statically configured.
+  @tparam POLICY_TYPE mesh policy type by which the mesh is statically
+  configured.
 
   @ingroup mesh-topology
  */
 
 template<typename POLICY_TYPE>
-struct unstructured_mesh_topology_u
-  : public unstructured_mesh_topology_base_t,
-    public data::data_reference_base_t {
+struct unstructured_mesh_topology_u : public unstructured_mesh_topology_base_t,
+                                      public data::data_reference_base_t {
 }; // struct unstructured_mesh_topology_u
 
 #if 0

@@ -34,9 +34,8 @@ namespace topology {
  */
 
 template<typename POLICY_TYPE>
-struct set_topology_u
-  : public set_topology_base_t,
-    public data::data_reference_base_t {
+struct set_topology_u : public set_topology_base_t,
+                        public data::data_reference_base_t {
 }; // struct set_topology_u
 
 } // namespace topology
