@@ -4,7 +4,6 @@ var searchData=
   ['index_2eh',['index.h',['../index_8h.html',1,'']]],
   ['index_5fspace_2eh',['index_space.h',['../index__space_8h.html',1,'']]],
   ['init_5fargs_2eh',['init_args.h',['../init__args_8h.html',1,'']]],
-  ['init_5fviews_2eh',['init_views.h',['../init__views_8h.html',1,'']]],
   ['interface_2eh',['interface.h',['../ntree_2interface_8h.html',1,'(Global Namespace)'],['../set_2interface_8h.html',1,'(Global Namespace)'],['../structured__mesh_2interface_8h.html',1,'(Global Namespace)'],['../unstructured__mesh_2interface_8h.html',1,'(Global Namespace)']]],
   ['internal_2eh',['internal.h',['../internal_8h.html',1,'']]],
   ['internal_5ftask_2eh',['internal_task.h',['../internal__task_8h.html',1,'']]],

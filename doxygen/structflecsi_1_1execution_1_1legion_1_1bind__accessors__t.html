@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: flecsi::execution::legion::finalize_views_t Struct Reference</title>
+<title>Interface Documentation: flecsi::execution::legion::bind_accessors_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,43 +61,43 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><b>legion</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1finalize__views__t.html">finalize_views_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><b>legion</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1bind__accessors__t.html">bind_accessors_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="structflecsi_1_1execution_1_1legion_1_1finalize__views__t-members.html">List of all members</a>  </div>
+<a href="structflecsi_1_1execution_1_1legion_1_1bind__accessors__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::legion::finalize_views_t Struct Reference</div>  </div>
+<div class="title">flecsi::execution::legion::bind_accessors_t Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="finalize__views_8h_source.html">finalize_views.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="bind__accessors_8h_source.html">bind_accessors.h</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for flecsi::execution::legion::finalize_views_t:</div>
+Inheritance diagram for flecsi::execution::legion::bind_accessors_t:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="structflecsi_1_1execution_1_1legion_1_1finalize__views__t.png" usemap="#flecsi::execution::legion::finalize_5Fviews_5Ft_map" alt=""/>
-  <map id="flecsi::execution::legion::finalize_5Fviews_5Ft_map" name="flecsi::execution::legion::finalize_5Fviews_5Ft_map">
-<area href="structflecsi_1_1utils_1_1tuple__walker__u.html" alt="flecsi::utils::tuple_walker_u&lt; finalize_views_t &gt;" shape="rect" coords="0,0,274,24"/>
+  <img src="structflecsi_1_1execution_1_1legion_1_1bind__accessors__t.png" usemap="#flecsi::execution::legion::bind_5Faccessors_5Ft_map" alt=""/>
+  <map id="flecsi::execution::legion::bind_5Faccessors_5Ft_map" name="flecsi::execution::legion::bind_5Faccessors_5Ft_map">
+<area href="structflecsi_1_1utils_1_1tuple__walker__u.html" alt="flecsi::utils::tuple_walker_u&lt; bind_accessors_t &gt;" shape="rect" coords="0,0,284,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2dbf9be764d9c1179ca2540fa4f299e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1finalize__views__t.html#a2dbf9be764d9c1179ca2540fa4f299e0">finalize_views_t</a> (Legion::Runtime *runtime, Legion::Context &amp;context, std::vector&lt; Legion::PhysicalRegion &gt; const &amp;regions, std::vector&lt; Legion::Future &gt; const &amp;futures)</td></tr>
-<tr class="separator:a2dbf9be764d9c1179ca2540fa4f299e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a455fcc424b6de168e8406920e8c0831f"><td class="memTemplParams" colspan="2"><a id="a455fcc424b6de168e8406920e8c0831f"></a>
+<tr class="memitem:a280407fe4dd0c2f2ca4ddf9129242732"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1bind__accessors__t.html#a280407fe4dd0c2f2ca4ddf9129242732">bind_accessors_t</a> (Legion::Runtime *legion_runtime, Legion::Context &amp;legion_context, std::vector&lt; Legion::PhysicalRegion &gt; const &amp;regions, std::vector&lt; Legion::Future &gt; const &amp;futures)</td></tr>
+<tr class="separator:a280407fe4dd0c2f2ca4ddf9129242732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cf8c2507af0315c1e35e577b10009d6"><td class="memTemplParams" colspan="2"><a id="a7cf8c2507af0315c1e35e577b10009d6"></a>
 template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
-<tr class="memitem:a455fcc424b6de168e8406920e8c0831f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html">global_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
-<tr class="separator:a455fcc424b6de168e8406920e8c0831f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ff4ba255d48e45f59fc91b3c6ad397f"><td class="memTemplParams" colspan="2"><a id="a7ff4ba255d48e45f59fc91b3c6ad397f"></a>
+<tr class="memitem:a7cf8c2507af0315c1e35e577b10009d6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1legion_1_1global__topology_1_1accessor__u.html">global_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
+<tr class="separator:a7cf8c2507af0315c1e35e577b10009d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca3dc808f9dfba5e03a1243d8c6a5c18"><td class="memTemplParams" colspan="2"><a id="aca3dc808f9dfba5e03a1243d8c6a5c18"></a>
 template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
-<tr class="memitem:a7ff4ba255d48e45f59fc91b3c6ad397f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1legion_1_1index__topology_1_1accessor__u.html">index_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
-<tr class="separator:a7ff4ba255d48e45f59fc91b3c6ad397f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_structflecsi_1_1utils_1_1tuple__walker__u"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1utils_1_1tuple__walker__u')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1utils_1_1tuple__walker__u.html">flecsi::utils::tuple_walker_u&lt; finalize_views_t &gt;</a></td></tr>
+<tr class="memitem:aca3dc808f9dfba5e03a1243d8c6a5c18"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="structflecsi_1_1data_1_1legion_1_1index__topology_1_1accessor__u.html">index_topology::accessor_u</a>&lt; DATA_TYPE, PRIVILEGES &gt; &amp;accessor)</td></tr>
+<tr class="separator:aca3dc808f9dfba5e03a1243d8c6a5c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_structflecsi_1_1utils_1_1tuple__walker__u"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1utils_1_1tuple__walker__u')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1utils_1_1tuple__walker__u.html">flecsi::utils::tuple_walker_u&lt; bind_accessors_t &gt;</a></td></tr>
 <tr class="memitem:gacb8e677f65f90eebfee34a909aa05977 inherit pub_methods_structflecsi_1_1utils_1_1tuple__walker__u"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gacb8e677f65f90eebfee34a909aa05977">walk</a> (TUPLE_TYPE &amp;t)</td></tr>
 <tr class="separator:gacb8e677f65f90eebfee34a909aa05977 inherit pub_methods_structflecsi_1_1utils_1_1tuple__walker__u"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga870ae6a173fffc031a59c811d5eba823 inherit pub_methods_structflecsi_1_1utils_1_1tuple__walker__u"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga870ae6a173fffc031a59c811d5eba823">walk_types</a> ()</td></tr>
@@ -105,16 +105,16 @@ template&lt;typename DATA_TYPE , size_t PRIVILEGES&gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a07cc2a3ddcaeb2dc4de9deacd6e60f0b"><td class="memTemplParams" colspan="2"><a id="a07cc2a3ddcaeb2dc4de9deacd6e60f0b"></a>
+<tr class="memitem:aff1920bfb492693c32035c798bb26c29"><td class="memTemplParams" colspan="2"><a id="aff1920bfb492693c32035c798bb26c29"></a>
 template&lt;typename DATA_TYPE &gt; </td></tr>
-<tr class="memitem:a07cc2a3ddcaeb2dc4de9deacd6e60f0b"><td class="memTemplItemLeft" align="right" valign="top">static std::enable_if_t&lt; !std::is_base_of_v&lt; <a class="el" href="structflecsi_1_1data_1_1data__reference__base__t.html">data::data_reference_base_t</a>, DATA_TYPE &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (DATA_TYPE &amp;)</td></tr>
-<tr class="separator:a07cc2a3ddcaeb2dc4de9deacd6e60f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff1920bfb492693c32035c798bb26c29"><td class="memTemplItemLeft" align="right" valign="top">static std::enable_if_t&lt; !std::is_base_of_v&lt; <a class="el" href="structflecsi_1_1data_1_1data__reference__base__t.html">data::data_reference_base_t</a>, DATA_TYPE &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (DATA_TYPE &amp;)</td></tr>
+<tr class="separator:aff1920bfb492693c32035c798bb26c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1legion_1_1finalize__views__t.html">finalize_views_t</a> type is called to walk the user task arguments inside of an executing legion task to properly complete the users accessors, i.e., by pointing the accessor <em>view</em> instances to the appropriate legion-mapped buffers. </p>
+<div class="textblock"><p>The <a class="el" href="structflecsi_1_1execution_1_1legion_1_1bind__accessors__t.html">bind_accessors_t</a> type is called to walk the user task arguments inside of an executing legion task to properly complete the users accessors, i.e., by pointing the accessor <em>view</em> instances to the appropriate legion-mapped buffers. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a2dbf9be764d9c1179ca2540fa4f299e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2dbf9be764d9c1179ca2540fa4f299e0">&#9670;&nbsp;</a></span>finalize_views_t()</h2>
+<a id="a280407fe4dd0c2f2ca4ddf9129242732"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a280407fe4dd0c2f2ca4ddf9129242732">&#9670;&nbsp;</a></span>bind_accessors_t()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -123,16 +123,16 @@ template&lt;typename DATA_TYPE &gt; </td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">flecsi::execution::legion::finalize_views_t::finalize_views_t </td>
+          <td class="memname">flecsi::execution::legion::bind_accessors_t::bind_accessors_t </td>
           <td>(</td>
           <td class="paramtype">Legion::Runtime *&#160;</td>
-          <td class="paramname"><em>runtime</em>, </td>
+          <td class="paramname"><em>legion_runtime</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Legion::Context &amp;&#160;</td>
-          <td class="paramname"><em>context</em>, </td>
+          <td class="paramname"><em>legion_context</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -158,11 +158,11 @@ template&lt;typename DATA_TYPE &gt; </td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Construct an <a class="el" href="structflecsi_1_1execution_1_1legion_1_1finalize__views__t.html">finalize_views_t</a> instance.</p>
+<p>Construct an <a class="el" href="structflecsi_1_1execution_1_1legion_1_1bind__accessors__t.html">bind_accessors_t</a> instance.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">runtime</td><td>The Legion task runtime. </td></tr>
-    <tr><td class="paramname">context</td><td>The Legion task runtime context. </td></tr>
+    <tr><td class="paramname">legion_runtime</td><td>The Legion task runtime. </td></tr>
+    <tr><td class="paramname">legion_context</td><td>The Legion task runtime context. </td></tr>
   </table>
   </dd>
 </dl>
@@ -170,7 +170,7 @@ template&lt;typename DATA_TYPE &gt; </td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/flecsi/flecsi/flecsi/execution/legion/enactment/<a class="el" href="finalize__views_8h_source.html">finalize_views.h</a></li>
+<li>/home/flecsi/flecsi/flecsi/execution/legion/enactment/<a class="el" href="bind__accessors_8h_source.html">bind_accessors.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

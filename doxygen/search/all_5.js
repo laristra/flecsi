@@ -12,8 +12,6 @@ var searchData=
   ['field_5finterface_5ft',['field_interface_t',['../group__data.html#ga842863e536ac977206bea61dab25e974',1,'flecsi::data']]],
   ['field_5finterface_5fu',['field_interface_u',['../structflecsi_1_1data_1_1field__interface__u.html',1,'flecsi::data']]],
   ['field_5freference_5ft',['field_reference_t',['../structflecsi_1_1data_1_1field__reference__t.html',1,'flecsi::data']]],
-  ['finalize_5fviews_2eh',['finalize_views.h',['../finalize__views_8h.html',1,'']]],
-  ['finalize_5fviews_5ft',['finalize_views_t',['../structflecsi_1_1execution_1_1legion_1_1finalize__views__t.html',1,'flecsi::execution::legion::finalize_views_t'],['../structflecsi_1_1execution_1_1legion_1_1finalize__views__t.html#a2dbf9be764d9c1179ca2540fa4f299e0',1,'flecsi::execution::legion::finalize_views_t::finalize_views_t()']]],
   ['fixme',['fixme',['../group__flog.html#gac4b562b7ae199e04d81aeb0c61553cc3',1,'flog.h']]],
   ['flecsi_5fadd_5ffield',['flecsi_add_field',['../group__data.html#ga684b0c018ee9030c142185649ecc567a',1,'data.h']]],
   ['flecsi_5fadd_5fglobal_5ffield',['flecsi_add_global_field',['../group__data.html#ga9b37ac03589a63c9f7b79957ee870c0e',1,'data.h']]],

@@ -6,7 +6,6 @@ var searchData=
   ['field_5finfo_5ft',['field_info_t',['../structflecsi_1_1data_1_1field__info__t.html',1,'flecsi::data']]],
   ['field_5finterface_5fu',['field_interface_u',['../structflecsi_1_1data_1_1field__interface__u.html',1,'flecsi::data']]],
   ['field_5freference_5ft',['field_reference_t',['../structflecsi_1_1data_1_1field__reference__t.html',1,'flecsi::data']]],
-  ['finalize_5fviews_5ft',['finalize_views_t',['../structflecsi_1_1execution_1_1legion_1_1finalize__views__t.html',1,'flecsi::execution::legion']]],
   ['flog_5ft',['flog_t',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html',1,'flecsi::utils::flog']]],
   ['flog_5ftag_5fscope_5ft',['flog_tag_scope_t',['../structflecsi_1_1utils_1_1flog_1_1flog__tag__scope__t.html',1,'flecsi::utils::flog']]],
   ['ftest_5fcontrol_5fpolicy_5ft',['ftest_control_policy_t',['../structflecsi_1_1control_1_1ftest__control__policy__t.html',1,'flecsi::control']]],
