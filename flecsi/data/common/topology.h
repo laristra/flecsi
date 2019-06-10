@@ -32,6 +32,7 @@ namespace flecsi {
 namespace data {
 namespace POLICY_NAMESPACE {
 
+#if 0 // FIXME: Remove this
 /*!
   Base topology type for topology-specific specializations. Specializations of
   this type must implement a get_reference method.
@@ -48,6 +49,7 @@ struct topology_u {
     return {identifier};
   } // get_reference
 };
+#endif
 
 template<typename TOPOLOGY_TYPE>
 struct topology_instance_u {};

@@ -18,27 +18,28 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.h>
-#include <flecsi/topology/unstructured_mesh/partition.h>
-#include <flecsi/topology/unstructured_mesh/storage.h>
+#include <flecsi/data/common/data_reference.h>
+//#include <flecsi/execution/context.h>
+//#include <flecsi/topology/unstructured_mesh/partition.h>
+//#include <flecsi/topology/unstructured_mesh/storage.h>
 #include <flecsi/topology/unstructured_mesh/types.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/set_intersection.h>
-#include <flecsi/utils/static_verify.h>
+//#include <flecsi/utils/common.h>
+//#include <flecsi/utils/set_intersection.h>
+//#include <flecsi/utils/static_verify.h>
 #endif
 
-#include <algorithm>
-#include <array>
-#include <cassert>
-#include <cstddef>
-#include <cstring>
-#include <functional>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <type_traits>
-#include <unordered_map>
-#include <vector>
+//#include <algorithm>
+//#include <array>
+//#include <cassert>
+//#include <cstddef>
+//#include <cstring>
+//#include <functional>
+//#include <iostream>
+//#include <map>
+//#include <memory>
+//#include <type_traits>
+//#include <unordered_map>
+//#include <vector>
 
 // static verification for required mesh type members such as entity types
 // tuple, connectivities, bindings, etc.
@@ -47,12 +48,12 @@ namespace flecsi {
 namespace topology {
 namespace verify_mesh {
 
-FLECSI_MEMBER_CHECKER(num_dimensions);
-FLECSI_MEMBER_CHECKER(num_domains);
-FLECSI_MEMBER_CHECKER(entity_types);
-FLECSI_MEMBER_CHECKER(connectivities);
-FLECSI_MEMBER_CHECKER(bindings);
-FLECSI_MEMBER_CHECKER(create_entity);
+// FLECSI_MEMBER_CHECKER(num_dimensions);
+// FLECSI_MEMBER_CHECKER(num_domains);
+// FLECSI_MEMBER_CHECKER(entity_types);
+// FLECSI_MEMBER_CHECKER(connectivities);
+// FLECSI_MEMBER_CHECKER(bindings);
+// FLECSI_MEMBER_CHECKER(create_entity);
 
 } // namespace verify_mesh
 
@@ -61,7 +62,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 
 /*!
-  unstructured_mesh_topology_u is parameterized on a class (MESH_TYPE) which
+  unstructured_mesh_topology_u is parameterized on a class (POLICY_TYPE) which
   gives information about its entity types, connectivities and more. the mesh
   topology is responsibly for computing connectivity info between entities of
   different topological dimension, e.g: vertex -> cell, cell -> edge, etc. and
@@ -103,64 +104,71 @@ FLECSI_MEMBER_CHECKER(create_entity);
   such as intersection, union, etc. and functional operations like apply, map,
   reduce, etc. to apply a custom function to the set.
 
-  @tparam MESH_TYPE mesh policy type by which the mesh is statically configured.
+  @tparam POLICY_TYPE mesh policy type by which the mesh is statically
+  configured.
 
   @ingroup mesh-topology
  */
 
-template<class MESH_TYPE>
+template<typename POLICY_TYPE>
+struct unstructured_mesh_topology_u : public unstructured_mesh_topology_base_t,
+                                      public data::data_reference_base_t {
+}; // struct unstructured_mesh_topology_u
+
+#if 0
+template<class POLICY_TYPE>
 class unstructured_mesh_topology_u
-  : public mesh_topology_base_u<mesh_storage_u<MESH_TYPE::num_dimensions,
-      MESH_TYPE::num_domains,
-      num_index_subspaces_u<MESH_TYPE>::value>>
+  : public mesh_topology_base_u<mesh_storage_u<POLICY_TYPE::num_dimensions,
+      POLICY_TYPE::num_domains,
+      num_index_subspaces_u<POLICY_TYPE>::value>>
 {
   // static verification of mesh policy
 
-  static_assert(verify_mesh::has_member_num_dimensions<MESH_TYPE>::value,
+  static_assert(verify_mesh::has_member_num_dimensions<POLICY_TYPE>::value,
     "mesh policy missing num_dimensions size_t");
 
   static_assert(
-    std::is_convertible<decltype(MESH_TYPE::num_dimensions), size_t>::value,
+    std::is_convertible<decltype(POLICY_TYPE::num_dimensions), size_t>::value,
     "mesh policy num_dimensions must be size_t");
 
-  static_assert(verify_mesh::has_member_num_domains<MESH_TYPE>::value,
+  static_assert(verify_mesh::has_member_num_domains<POLICY_TYPE>::value,
     "mesh policy missing num_domains size_t");
 
   static_assert(
-    std::is_convertible<decltype(MESH_TYPE::num_domains), size_t>::value,
+    std::is_convertible<decltype(POLICY_TYPE::num_domains), size_t>::value,
     "mesh policy num_domains must be size_t");
 
-  static_assert(verify_mesh::has_member_entity_types<MESH_TYPE>::value,
+  static_assert(verify_mesh::has_member_entity_types<POLICY_TYPE>::value,
     "mesh policy missing entity_types tuple");
 
-  static_assert(utils::is_tuple<typename MESH_TYPE::entity_types>::value,
+  static_assert(utils::is_tuple<typename POLICY_TYPE::entity_types>::value,
     "mesh policy entity_types is not a tuple");
 
-  static_assert(verify_mesh::has_member_connectivities<MESH_TYPE>::value,
+  static_assert(verify_mesh::has_member_connectivities<POLICY_TYPE>::value,
     "mesh policy missing connectivities tuple");
 
-  static_assert(utils::is_tuple<typename MESH_TYPE::connectivities>::value,
+  static_assert(utils::is_tuple<typename POLICY_TYPE::connectivities>::value,
     "mesh policy connectivities is not a tuple");
 
-  static_assert(verify_mesh::has_member_bindings<MESH_TYPE>::value,
+  static_assert(verify_mesh::has_member_bindings<POLICY_TYPE>::value,
     "mesh policy missing bindings tuple");
 
-  static_assert(utils::is_tuple<typename MESH_TYPE::bindings>::value,
+  static_assert(utils::is_tuple<typename POLICY_TYPE::bindings>::value,
     "mesh policy bindings is not a tuple");
 
-  static_assert(verify_mesh::has_member_create_entity<MESH_TYPE>::value,
+  static_assert(verify_mesh::has_member_create_entity<POLICY_TYPE>::value,
     "mesh policy missing create_entity()");
 
-  static_assert(verify_mesh::hash_member_type_identifier_hash<MESH_TYPE>::value,
+  static_assert(verify_mesh::hash_member_type_identifier_hash<POLICY_TYPE>::value,
     "mesh policy missing type_identifier_hash");
 
 public:
-  constexpr size_t type_identifier_hash = MESH_TYPE::type_identifier_hash;
+  constexpr size_t type_identifier_hash = POLICY_TYPE::type_identifier_hash;
 
   // mesh storage type definition
-  using storage_t = mesh_storage_u<MESH_TYPE::num_dimensions,
-    MESH_TYPE::num_domains,
-    num_index_subspaces_u<MESH_TYPE>::value>;
+  using storage_t = mesh_storage_u<POLICY_TYPE::num_dimensions,
+    POLICY_TYPE::num_domains,
+    num_index_subspaces_u<POLICY_TYPE>::value>;
 
   // mesh topology base definition
   using base_t = mesh_topology_base_u<storage_t>;
@@ -173,7 +181,7 @@ public:
 
   // used to find the entity type of topological dimension DIM and domain DOM
   template<size_t DIM, size_t DOM = 0>
-  using entity_type = typename find_entity_<MESH_TYPE, DIM, DOM>::type;
+  using entity_type = typename find_entity_<POLICY_TYPE, DIM, DOM>::type;
 
   /*
     This type definition is needed so that data client handles can be
@@ -219,22 +227,22 @@ public:
 
   void initialize_storage() {
 
-    for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+    for(size_t from_domain = 0; from_domain < POLICY_TYPE::num_domains;
         ++from_domain) {
-      for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
+      for(size_t to_domain = 0; to_domain < POLICY_TYPE::num_domains;
           ++to_domain) {
         base_t::ms_->topology[from_domain][to_domain].init_(
           from_domain, to_domain);
       } // for
     } // for
 
-    for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains; ++to_domain) {
-      for(size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions; ++to_dim) {
+    for(size_t to_domain = 0; to_domain < POLICY_TYPE::num_domains; ++to_domain) {
+      for(size_t to_dim = 0; to_dim <= POLICY_TYPE::num_dimensions; ++to_dim) {
         auto & master = base_t::ms_->index_spaces[to_domain][to_dim];
 
-        for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+        for(size_t from_domain = 0; from_domain < POLICY_TYPE::num_domains;
             ++from_domain) {
-          for(size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
+          for(size_t from_dim = 0; from_dim <= POLICY_TYPE::num_dimensions;
               ++from_dim) {
             get_connectivity_(from_domain, to_domain, from_dim, to_dim)
               .get_index_space()
@@ -339,10 +347,10 @@ public:
   template<size_t DOM = 0>
   void init() {
     // Compute mesh connectivity
-    using TP = typename MESH_TYPE::connectivities;
+    using TP = typename POLICY_TYPE::connectivities;
     compute_connectivity_u<DOM, std::tuple_size<TP>::value, TP>::compute(*this);
 
-    using BT = typename MESH_TYPE::bindings;
+    using BT = typename POLICY_TYPE::bindings;
     compute_bindings_u<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
@@ -356,7 +364,7 @@ public:
 
   template<size_t DOM = 0>
   void init_bindings() {
-    using BT = typename MESH_TYPE::bindings;
+    using BT = typename POLICY_TYPE::bindings;
     compute_bindings_u<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
@@ -438,7 +446,7 @@ public:
    */
 
   size_t topological_dimension() const override {
-    return MESH_TYPE::num_dimensions;
+    return POLICY_TYPE::num_dimensions;
   }
 
   /*!
@@ -904,10 +912,10 @@ public:
    */
 
   std::ostream & dump(std::ostream & stream) {
-    for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+    for(size_t from_domain = 0; from_domain < POLICY_TYPE::num_domains;
         ++from_domain) {
       stream << "=================== from domain: " << from_domain << std::endl;
-      for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
+      for(size_t to_domain = 0; to_domain < POLICY_TYPE::num_domains;
           ++to_domain) {
         stream << "========== to domain: " << to_domain << std::endl;
         base_t::ms_->topology[from_domain][to_domain].dump(stream);
@@ -965,16 +973,16 @@ public:
     char * buf = new char[alloc_size];
     uint64_t pos = 0;
 
-    uint32_t num_domains = MESH_TYPE::num_domains;
+    uint32_t num_domains = POLICY_TYPE::num_domains;
     std::memcpy(buf + pos, &num_domains, sizeof(num_domains));
     pos += sizeof(num_domains);
 
-    uint32_t num_dimensions = MESH_TYPE::num_dimensions;
+    uint32_t num_dimensions = POLICY_TYPE::num_dimensions;
     std::memcpy(buf + pos, &num_dimensions, sizeof(num_dimensions));
     pos += sizeof(num_dimensions);
 
-    for(size_t domain = 0; domain < MESH_TYPE::num_domains; ++domain) {
-      for(size_t dimension = 0; dimension <= MESH_TYPE::num_dimensions;
+    for(size_t domain = 0; domain < POLICY_TYPE::num_domains; ++domain) {
+      for(size_t dimension = 0; dimension <= POLICY_TYPE::num_dimensions;
           ++dimension) {
         uint64_t num_entities = base_t::ms_->entities[domain][dimension].size();
         std::memcpy(buf + pos, &num_entities, sizeof(num_entities));
@@ -982,16 +990,16 @@ public:
       }
     }
 
-    for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+    for(size_t from_domain = 0; from_domain < POLICY_TYPE::num_domains;
         ++from_domain) {
-      for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
+      for(size_t to_domain = 0; to_domain < POLICY_TYPE::num_domains;
           ++to_domain) {
 
         auto & dc = base_t::ms_->topology[from_domain][to_domain];
 
-        for(size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
+        for(size_t from_dim = 0; from_dim <= POLICY_TYPE::num_dimensions;
             ++from_dim) {
-          for(size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions;
+          for(size_t to_dim = 0; to_dim <= POLICY_TYPE::num_dimensions;
               ++to_dim) {
             const connectivity_t & c = dc.get(from_dim, to_dim);
 
@@ -1043,30 +1051,30 @@ public:
     uint32_t num_domains;
     std::memcpy(&num_domains, buf + pos, sizeof(num_domains));
     pos += sizeof(num_domains);
-    assert(num_domains == MESH_TYPE::num_domains && "domain size mismatch");
+    assert(num_domains == POLICY_TYPE::num_domains && "domain size mismatch");
 
     uint32_t num_dimensions;
     std::memcpy(&num_dimensions, buf + pos, sizeof(num_dimensions));
     pos += sizeof(num_dimensions);
     assert(
-      num_dimensions == MESH_TYPE::num_dimensions && "dimension size mismatch");
+      num_dimensions == POLICY_TYPE::num_dimensions && "dimension size mismatch");
 
     unserialize_domains_<storage_t,
-      MESH_TYPE,
-      MESH_TYPE::num_domains,
-      MESH_TYPE::num_dimensions,
+      POLICY_TYPE,
+      POLICY_TYPE::num_domains,
+      POLICY_TYPE::num_dimensions,
       0>::unserialize(*this, buf, pos);
 
-    for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
+    for(size_t from_domain = 0; from_domain < POLICY_TYPE::num_domains;
         ++from_domain) {
-      for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
+      for(size_t to_domain = 0; to_domain < POLICY_TYPE::num_domains;
           ++to_domain) {
 
         auto & dc = base_t::ms_->topology[from_domain][to_domain];
 
-        for(size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
+        for(size_t from_dim = 0; from_dim <= POLICY_TYPE::num_dimensions;
             ++from_dim) {
-          for(size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions;
+          for(size_t to_dim = 0; to_dim <= POLICY_TYPE::num_dimensions;
               ++to_dim) {
             connectivity_t & c = dc.get(from_dim, to_dim);
 
@@ -1105,9 +1113,9 @@ public:
 
   template<size_t INDEX_SUBSPACE>
   auto & get_index_subspace() {
-    using entity_types_t = typename MESH_TYPE::entity_types;
+    using entity_types_t = typename POLICY_TYPE::entity_types;
 
-    using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
+    using index_subspaces = typename get_index_subspaces_u<POLICY_TYPE>::type;
 
     constexpr size_t subspace_index =
       find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
@@ -1142,9 +1150,9 @@ public:
 
   template<size_t INDEX_SUBSPACE>
   const auto & get_index_subspace() const {
-    using entity_types_t = typename MESH_TYPE::entity_types;
+    using entity_types_t = typename POLICY_TYPE::entity_types;
 
-    using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
+    using index_subspaces = typename get_index_subspaces_u<POLICY_TYPE>::type;
 
     constexpr size_t subspace_index =
       find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
@@ -1189,9 +1197,9 @@ private:
   friend struct compute_bindings_u;
 
   template<size_t DOM, typename VERT_TYPE>
-  void init_cell_(entity_type<MESH_TYPE::num_dimensions, DOM> * cell,
+  void init_cell_(entity_type<POLICY_TYPE::num_dimensions, DOM> * cell,
     VERT_TYPE && verts) {
-    auto & c = get_connectivity_(DOM, MESH_TYPE::num_dimensions, 0);
+    auto & c = get_connectivity_(DOM, POLICY_TYPE::num_dimensions, 0);
 
     assert(cell->template id<DOM>() == c.from_size() && "id mismatch");
 
@@ -1235,7 +1243,7 @@ private:
 
   template<size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
   typename std::enable_if<(
-    UsingDimension <= 1 || UsingDimension > MESH_TYPE::num_dimensions)>::type
+    UsingDimension <= 1 || UsingDimension > POLICY_TYPE::num_dimensions)>::type
   build_connectivity() {
     assert(false && "shouldn't be in here");
   }
@@ -1255,17 +1263,17 @@ private:
 
   template<size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
   typename std::enable_if<(
-    UsingDimension > 1 && UsingDimension <= MESH_TYPE::num_dimensions)>::type
+    UsingDimension > 1 && UsingDimension <= POLICY_TYPE::num_dimensions)>::type
   build_connectivity() {
     // std::cerr << "build: " << DimensionToBuild
     // << " using " << UsingDimension << std::endl;
 
     // Sanity check
-    static_assert(DimensionToBuild <= MESH_TYPE::num_dimensions,
+    static_assert(DimensionToBuild <= POLICY_TYPE::num_dimensions,
       "DimensionToBuild must be <= total number of dimensions");
-    static_assert(UsingDimension <= MESH_TYPE::num_dimensions,
+    static_assert(UsingDimension <= POLICY_TYPE::num_dimensions,
       "UsingDimension must be <= total number of dimensions");
-    static_assert(Domain < MESH_TYPE::num_domains,
+    static_assert(Domain < POLICY_TYPE::num_domains,
       "Domain must be < total number of domains");
 
     // Reference to storage from cells to the entity (to be created here).
@@ -1281,7 +1289,7 @@ private:
     // keep track of the local ids, since they may be added out of order
     std::vector<size_t> entity_ids;
 
-    domain_connectivity_u<MESH_TYPE::num_dimensions> & dc =
+    domain_connectivity_u<POLICY_TYPE::num_dimensions> & dc =
       base_t::ms_->topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
@@ -1314,23 +1322,23 @@ private:
 
     // Lookup the index space for the entity type being created.
     constexpr size_t cell_index_space = find_index_space_from_dimension_u<
-      std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types,
+      std::tuple_size<typename POLICY_TYPE::entity_types>::value,
+      typename POLICY_TYPE::entity_types,
       UsingDimension,
       Domain>::find();
 
     // Lookup the index space for the vertices from the mesh
     // specialization.
     constexpr size_t vertex_index_space = find_index_space_from_dimension_u<
-      std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types,
+      std::tuple_size<typename POLICY_TYPE::entity_types>::value,
+      typename POLICY_TYPE::entity_types,
       0,
       Domain>::find();
 
     // Lookup the index space for the entity type being created.
     constexpr size_t entity_index_space = find_index_space_from_dimension_u<
-      std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types,
+      std::tuple_size<typename POLICY_TYPE::entity_types>::value,
+      typename POLICY_TYPE::entity_types,
       DimensionToBuild,
       Domain>::find();
 
@@ -1459,7 +1467,7 @@ private:
           max_cell_entity_conns = std::max(max_cell_entity_conns, conns.size());
 
           auto ent =
-            MESH_TYPE::template create_entity<Domain, DimensionToBuild>(
+            POLICY_TYPE::template create_entity<Domain, DimensionToBuild>(
               this, m, id);
 
           ++entity_counter;
@@ -1542,8 +1550,8 @@ private:
 
     // find the from index space and get the mapping from global to local
     constexpr size_t to_index_space = find_index_space_from_dimension_u<
-      std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types,
+      std::tuple_size<typename POLICY_TYPE::entity_types>::value,
+      typename POLICY_TYPE::entity_types,
       TO_DIM,
       TO_DOM>::find();
 
@@ -1721,39 +1729,39 @@ private:
     // if we don't have cell -> vertex connectivities, then
     // try building cell -> vertex connectivity through the
     // faces (3d) or edges(2d)
-    static_assert(MESH_TYPE::num_dimensions <= 3,
+    static_assert(POLICY_TYPE::num_dimensions <= 3,
       "this needs to be re-thought for higher dimensions");
 
-    if(get_connectivity_(DOM, MESH_TYPE::num_dimensions, 0).empty()) {
+    if(get_connectivity_(DOM, POLICY_TYPE::num_dimensions, 0).empty()) {
       assert(
-        !get_connectivity_(DOM, MESH_TYPE::num_dimensions - 1, 0).empty() &&
+        !get_connectivity_(DOM, POLICY_TYPE::num_dimensions - 1, 0).empty() &&
         " need at least edges(2d)/faces(3) -> vertex connectivity");
       // assume we have cell -> faces, so invert it to get faces -> cells
       transpose<DOM,
         DOM,
-        MESH_TYPE::num_dimensions - 1,
-        MESH_TYPE::num_dimensions>();
+        POLICY_TYPE::num_dimensions - 1,
+        POLICY_TYPE::num_dimensions>();
       // invert faces -> vertices to get vertices -> faces
-      transpose<DOM, DOM, 0, MESH_TYPE::num_dimensions - 1>();
+      transpose<DOM, DOM, 0, POLICY_TYPE::num_dimensions - 1>();
       // build cells -> vertices via intersections with faces
       intersect<DOM,
         DOM,
-        MESH_TYPE::num_dimensions,
+        POLICY_TYPE::num_dimensions,
         0,
-        MESH_TYPE::num_dimensions - 1>();
+        POLICY_TYPE::num_dimensions - 1>();
     }
 
     // Check if we need to build entities, e.g: edges or faces
     if(num_entities_(FROM_DIM, DOM) == 0) {
       if(get_connectivity_(DOM, FROM_DIM + 1, 0).empty())
-        build_connectivity<DOM, FROM_DIM, MESH_TYPE::num_dimensions>();
+        build_connectivity<DOM, FROM_DIM, POLICY_TYPE::num_dimensions>();
       else
         build_connectivity<DOM, FROM_DIM, FROM_DIM + 1>();
     } // if
 
     if(num_entities_(TO_DIM, DOM) == 0) {
       if(get_connectivity_(DOM, TO_DIM + 1, 0).empty())
-        build_connectivity<DOM, TO_DIM, MESH_TYPE::num_dimensions>();
+        build_connectivity<DOM, TO_DIM, POLICY_TYPE::num_dimensions>();
       else
         build_connectivity<DOM, TO_DIM, TO_DIM + 1>();
     } // if
@@ -1771,9 +1779,9 @@ private:
     else {
       if(FROM_DIM == 0 && TO_DIM == 0) {
         // compute vertex to vertex connectivities through shared cells.
-        compute_connectivity<DOM, FROM_DIM, MESH_TYPE::num_dimensions>();
-        compute_connectivity<DOM, MESH_TYPE::num_dimensions, TO_DIM>();
-        intersect<DOM, DOM, FROM_DIM, TO_DIM, MESH_TYPE::num_dimensions>();
+        compute_connectivity<DOM, FROM_DIM, POLICY_TYPE::num_dimensions>();
+        compute_connectivity<DOM, POLICY_TYPE::num_dimensions, TO_DIM>();
+        intersect<DOM, DOM, FROM_DIM, TO_DIM, POLICY_TYPE::num_dimensions>();
       }
       else {
         // computer connectivities through shared vertices.
@@ -1902,10 +1910,10 @@ private:
     //           << " dim " << TO_DIM << std::endl;
 
     // Sanity check
-    static_assert(TO_DIM <= MESH_TYPE::num_dimensions, "invalid dimension");
+    static_assert(TO_DIM <= POLICY_TYPE::num_dimensions, "invalid dimension");
 
-    constexpr auto num_dims = MESH_TYPE::num_dimensions;
-    constexpr auto cell_dim = MESH_TYPE::num_dimensions;
+    constexpr auto num_dims = POLICY_TYPE::num_dimensions;
+    constexpr auto cell_dim = POLICY_TYPE::num_dimensions;
 
     // Get cell definitions from domain 0
     using cell_type = entity_type<cell_dim, FROM_DOM>;
@@ -1924,19 +1932,19 @@ private:
 
     // Lookup the index space for the cell type.
     constexpr auto cell_index_space = find_index_space_from_dimension_u<
-      std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types,
+      std::tuple_size<typename POLICY_TYPE::entity_types>::value,
+      typename POLICY_TYPE::entity_types,
       cell_dim,
       FROM_DOM>::find();
 
     // lookup all primal index spaces in the FROM_DOM
     auto entity_index_spaces =
-      find_all_index_spaces_in_domain_u<MESH_TYPE, FROM_DOM>();
+      find_all_index_spaces_in_domain_u<POLICY_TYPE, FROM_DOM>();
 
     // Lookup the index space for the entity type being created.
     constexpr auto binding_index_space = find_index_space_from_dimension_u<
-      std::tuple_size<typename MESH_TYPE::entity_types>::value,
-      typename MESH_TYPE::entity_types,
+      std::tuple_size<typename POLICY_TYPE::entity_types>::value,
+      typename POLICY_TYPE::entity_types,
       TO_DIM,
       TO_DOM>::find();
 
@@ -1982,7 +1990,7 @@ private:
     std::map<size_t, connection_vector_t> binding_to_entity_conn;
     // make a hashing function to get a unique key
     auto key = [](auto dom, auto dim) {
-      return MESH_TYPE::num_dimensions * dom + dim;
+      return POLICY_TYPE::num_dimensions * dom + dim;
     };
 
     // we know we need cell to entity connectivity
@@ -2110,7 +2118,7 @@ private:
         this_cell_to_binding_conn.push_back(new_binding_id);
 
         // now buid the new entity
-        auto ent = MESH_TYPE::template create_entity<TO_DOM, TO_DIM>(
+        auto ent = POLICY_TYPE::template create_entity<TO_DOM, TO_DIM>(
           this, num_new_binding_vertices, new_binding_id);
 
         //---------------------------------------------------------------------
@@ -2180,8 +2188,8 @@ private:
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) const {
-    assert(from_domain < MESH_TYPE::num_domains && "invalid from domain");
-    assert(to_domain < MESH_TYPE::num_domains && "invalid to domain");
+    assert(from_domain < POLICY_TYPE::num_domains && "invalid from domain");
+    assert(to_domain < POLICY_TYPE::num_domains && "invalid to domain");
     return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
@@ -2194,8 +2202,8 @@ private:
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) {
-    assert(from_domain < MESH_TYPE::num_domains && "invalid from domain");
-    assert(to_domain < MESH_TYPE::num_domains && "invalid to domain");
+    assert(from_domain < POLICY_TYPE::num_domains && "invalid from domain");
+    assert(to_domain < POLICY_TYPE::num_domains && "invalid to domain");
     return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
@@ -2251,6 +2259,7 @@ private:
   } // get_connectivity
 
 }; // class unstructured_mesh_topology_u
+#endif
 
 } // namespace topology
 } // namespace flecsi

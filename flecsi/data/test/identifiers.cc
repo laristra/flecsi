@@ -33,6 +33,8 @@ identifiers(int argc, char ** argv) {
   auto ih = flecsi_topology_reference(
     flecsi::topology::global_topology_t, "internal", "global_topology");
   flog(info) << "index topology handle " << ih.identifier() << std::endl;
+
+  return 0;
 }
 
 ftest_register_driver(identifiers);

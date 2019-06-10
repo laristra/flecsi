@@ -15,26 +15,32 @@
 
 /*! @file */
 
+#include <flecsi-config.h>
+
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
-//#include <flecsi/data/common/data_reference.h>
 #endif
 
-namespace flecsi {
-namespace topology {
-
 //----------------------------------------------------------------------------//
-// Mesh topology.
+// Pickup Kokkos defines if enabled.
 //----------------------------------------------------------------------------//
 
-/*!
-  @ingroup topology
- */
+#if defined(FLECSI_ENABLE_KOKKOS)
+#include <Kokkos.hpp>
 
-struct ntree_topology_base_t {
-  using coloring_t = size_t;
-}; // ntree_topology_base_t
+#define FLECSI_TARGET KOKKOS_FUNCTION
+#define FLECSI_INLINE_TARGET KOKKOS_INLINE_FUNCTION
 
-} // namespace topology
-} // namespace flecsi
+#endif // FLECSI_ENABLE_KOKKOS
+
+//----------------------------------------------------------------------------//
+// Defaults.
+//----------------------------------------------------------------------------//
+
+#if !defined(FLECSI_TARGET)
+#define FLECSI_TARGET
+#endif
+
+#if !defined(FLECSI_INLINE_TARGET)
+#define FLECSI_INLINE_TARGET inline
+#endif

@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/task.h>
+#include <flecsi/execution/task_interface.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/function_traits.h>
 #endif

@@ -370,15 +370,6 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   /*!
-    Return the topology registry.
-   */
-
-  std::unordered_map<size_t, topology_registration_map_t> &
-  topology_registry() {
-    return topology_callback_registry_;
-  } // topology_registry
-
-  /*!
     Return a boolean indicating whether or not the given instance of
     a data topology has had its internal fields registered with the
     data model.
@@ -531,10 +522,6 @@ private:
   /*--------------------------------------------------------------------------*
     Topology data members.
    *--------------------------------------------------------------------------*/
-
-  // FIXME: I don't think this is necessary anymore.
-  std::unordered_map<size_t, topology_registration_map_t>
-    topology_callback_registry_;
 
   std::set<std::pair<size_t, size_t>> registered_topology_fields_;
 

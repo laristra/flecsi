@@ -36,6 +36,10 @@
 
 #include <mpi.h>
 
+#if defined(FLECSI_ENABLE_KOKKOS)
+#include <Kokkos_Core.hpp>
+#endif
+
 #include <cstdlib>
 #include <iostream>
 
@@ -97,11 +101,19 @@ flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
   flog_initialize(__flecsi_tags);
 #endif
 
+#if defined(FLECSI_ENABLE_KOKKOS)
+  Kokkos::initialize(argc, argv);
+#endif
+
   return 0;
 } // initialize
 
 inline int
 flecsi_legion_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
+
+#if defined(FLECSI_ENABLE_KOKKOS)
+  Kokkos::finalize();
+#endif
 
 #if defined(FLECSI_ENABLE_FLOG)
   flog_finalize();

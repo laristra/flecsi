@@ -16,7 +16,7 @@
 /*! @file */
 
 #include <flecsi/topology/common/array_buffer.h>
-#include <flecsi/topology/index_space.h>
+#include <flecsi/topology/common/index_space.h>
 #include <flecsi/utils/offset.h>
 
 namespace flecsi {
@@ -155,7 +155,7 @@ public:
 
 private:
   size_t size_;
-};
+}; // struct identity_storage_u
 
 } // namespace topology
 } // namespace flecsi

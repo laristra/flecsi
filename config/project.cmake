@@ -22,13 +22,7 @@ cinch_minimum_required(VERSION v1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-option(ENABLE_CUDA "Enable support for CUDA" OFF)
-
-if(ENABLE_CUDA)
-  project(FleCSI LANGUAGES CXX C CUDA)
-else()
-  project(FleCSI LANGUAGES CXX C)
-endif()
+project(FleCSI LANGUAGES CXX C)
 
 #------------------------------------------------------------------------------#
 # Boost
@@ -614,7 +608,8 @@ summary_option("ENABLE_UNIT_TESTS" ${ENABLE_UNIT_TESTS} "")
 summary_option("ENABLE_FLECSI_TUTORIAL" ${ENABLE_FLECSI_TUTORIAL} "")
 summary_option("ENABLE_FLECSIT" ${ENABLE_FLECSIT} "")
 string(APPEND _summary "\n")
-summary_option("ENABLE_CUDA" ${ENABLE_CUDA} "")
+summary_option("ENABLE_KOKKOS" ${ENABLE_KOKKOS}
+  " (${FLECSI_NODE_PLATFORM} platform)")
 summary_option("ENABLE_DOXYGEN" ${ENABLE_DOXYGEN} "")
 summary_option("ENABLE_GRAPHVIZ" ${ENABLE_GRAPHVIZ} "")
 summary_option("ENABLE_OPENMP" ${ENABLE_OPENMP} "")

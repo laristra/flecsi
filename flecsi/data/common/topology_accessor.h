@@ -34,8 +34,11 @@ namespace data {
 
 template<typename TOPOLOGY_TYPE, size_t PRIVILEGES>
 struct topology_accessor_u : public TOPOLOGY_TYPE,
-                             public data_reference_base_t {
-  static constexpr size_t privileges = PRIVILEGES;
+                             public topology_reference_u<TOPOLOGY_TYPE> {
+
+  topology_accessor_u(topology_reference_u<TOPOLOGY_TYPE> const & reference)
+    : topology_reference_u<TOPOLOGY_TYPE>(reference) {}
+
 }; // struct topology_accessor_u
 
 } // namespace data

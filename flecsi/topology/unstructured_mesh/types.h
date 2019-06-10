@@ -289,13 +289,18 @@ private:
 //! on type parameterization, e.g: entity types, domains, etc.
 //-----------------------------------------------------------------//
 
-class mesh_topology_base_t
-{
+/*!
+  The unstructured_mesh_topology_base_t type allows identification of
+  unstructured meshes.
+ */
+
+struct unstructured_mesh_topology_base_t {
+  using coloring_t = size_t;
 };
 
 template<class STORAGE_TYPE>
 class mesh_topology_base_u : public data::data_client_t,
-                             public mesh_topology_base_t
+                             public unstructured_mesh_topology_base_t
 {
 public:
   using id_t = utils::id_t;
