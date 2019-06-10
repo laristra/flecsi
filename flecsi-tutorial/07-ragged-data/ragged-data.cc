@@ -57,7 +57,7 @@ flecsi_register_task(initialize_materials, hydro, loc, index);
 void
 print_materials(mesh<ro> mesh, ragged_field<ro> d) {
   for(auto c : mesh.cells()) {
-    //for(auto m : d.entries()) {
+    // for(auto m : d.entries()) {
     // fixme Put the range-based for() back in,
     // if and when ragged gets entries() back.
     for(size_t m = 0; m < d.size(c); ++m) {
