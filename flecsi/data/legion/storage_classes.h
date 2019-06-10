@@ -22,7 +22,7 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/internal/global.h>
 #include <flecsi/topology/internal/index.h>
-//#include <flecsi/topology/unstructured_mesh/interface.h>
+#include <flecsi/topology/unstructured_mesh/interface.h>
 #endif
 
 #define POLICY_NAMESPACE legion

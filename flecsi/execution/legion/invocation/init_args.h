@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/privilege.h>
+#include <flecsi/data/common/topology_accessor.h>
 #include <flecsi/data/legion/storage_classes.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/demangle.h>
@@ -163,6 +164,14 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
     rr.add_field(fid);
     region_reqs_.push_back(rr);
+  } // visit
+
+  /*--------------------------------------------------------------------------*
+    Unstructured Mesh Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename MESH_POLICY, size_t PRIVILEGES>
+  void visit(topology_accessor_u<unstructured_mesh_topology_u<MESH_POLICY>, PRIVILEGES> const & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*

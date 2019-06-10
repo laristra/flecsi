@@ -46,7 +46,7 @@ parallel_for(ITERATOR const & iterator, LAMBDA const & lambda,
       : iterator_(iterator), lambda_(lambda) {}
 
     KOKKOS_INLINE_FUNCTION void operator()(int i) const {
-      lambda(iterator(i));
+      lambda(iterator[i]);
     } // operator()
 
   private:
@@ -58,5 +58,11 @@ parallel_for(ITERATOR const & iterator, LAMBDA const & lambda,
   Kokkos::parallel_for(name, iterator.size(), functor_t{iterator, lambda});
 
 } // parallel_for
+
+#if 0
+[=](auto & c){
+  f(c) = ...
+}
+#endif
 
 } // namespace flecsi
