@@ -1,11 +1,13 @@
 var searchData=
 [
   ['c_5fstr',['c_str',['../classflecsi_1_1utils_1_1const__string__t.html#a853fb71c4efcb7f6165eb57052942d8f',1,'flecsi::utils::const_string_t']]],
+  ['cast',['cast',['../classflecsi_1_1topology_1_1index__space__u.html#a9a05b7813b3f24550616d665d436a260',1,'flecsi::topology::index_space_u::cast()'],['../classflecsi_1_1topology_1_1index__space__u.html#a33bfd7d57e8720266bc52e5f5871e879',1,'flecsi::topology::index_space_u::cast() const']]],
+  ['cast_5ft',['cast_t',['../classflecsi_1_1topology_1_1index__space__u.html#afddd44aafb12f69c3d5b1876d73a2edb',1,'flecsi::topology::index_space_u']]],
   ['checksum',['checksum',['../group__utils.html#gab2a7b452e19b5f67a27d9a129f44b805',1,'flecsi::utils']]],
   ['checksum_2eh',['checksum.h',['../checksum_8h.html',1,'']]],
   ['checksum_5ft',['checksum_t',['../structflecsi_1_1utils_1_1checksum__t.html',1,'flecsi::utils']]],
   ['cleanup',['cleanup',['../structflecsi_1_1execution_1_1global__object__wrapper__u.html#a164eb3aec96d0e821fdd051dce38d189',1,'flecsi::execution::global_object_wrapper_u']]],
-  ['clear',['clear',['../classflecsi_1_1utils_1_1array__ref.html#a03cc486c185e6745abdd67d412de1692',1,'flecsi::utils::array_ref::clear()'],['../structflecsi_1_1utils_1_1binary__serializer__t.html#a0c1dab00eaf1041b042c91b958573407',1,'flecsi::utils::binary_serializer_t::clear()']]],
+  ['clear',['clear',['../classflecsi_1_1topology_1_1index__space__u.html#aa1b5940e30536873afef541195186499',1,'flecsi::topology::index_space_u::clear()'],['../classflecsi_1_1utils_1_1array__ref.html#a03cc486c185e6745abdd67d412de1692',1,'flecsi::utils::array_ref::clear()'],['../structflecsi_1_1utils_1_1binary__serializer__t.html#a0c1dab00eaf1041b042c91b958573407',1,'flecsi::utils::binary_serializer_t::clear()']]],
   ['client_5fhandle_5fspecialization_5fu_3c_20topology_3a_3aglobal_5ftopology_5ft_20_3e',['client_handle_specialization_u&lt; topology::global_topology_t &gt;',['../structflecsi_1_1data_1_1mpi_1_1client__handle__specialization__u_3_01topology_1_1global__topology__t_01_4.html',1,'flecsi::data::mpi']]],
   ['client_5fhandle_5fspecialization_5fu_3c_20topology_3a_3aindex_5ftopology_5ft_20_3e',['client_handle_specialization_u&lt; topology::index_topology_t &gt;',['../structflecsi_1_1data_1_1mpi_1_1client__handle__specialization__u_3_01topology_1_1index__topology__t_01_4.html',1,'flecsi::data::mpi']]],
   ['client_5fhandle_5fspecializations_2eh',['client_handle_specializations.h',['../client__handle__specializations_8h.html',1,'']]],

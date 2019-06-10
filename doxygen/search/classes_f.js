@@ -20,7 +20,6 @@ var searchData=
   ['topology_5fregistration_5fu',['topology_registration_u',['../structflecsi_1_1data_1_1topology__registration__u.html',1,'flecsi::data']]],
   ['topology_5fregistration_5fu_3c_20flecsi_3a_3atopology_3a_3aglobal_5ftopology_5ft_2c_20namespace_2c_20name_20_3e',['topology_registration_u&lt; flecsi::topology::global_topology_t, NAMESPACE, NAME &gt;',['../structflecsi_1_1data_1_1topology__registration__u_3_01flecsi_1_1topology_1_1global__topology__t_00_01NAMESPACE_00_01NAME_01_4.html',1,'flecsi::data']]],
   ['topology_5fregistration_5fu_3c_20flecsi_3a_3atopology_3a_3aindex_5ftopology_5ft_2c_20namespace_2c_20name_20_3e',['topology_registration_u&lt; flecsi::topology::index_topology_t, NAMESPACE, NAME &gt;',['../structflecsi_1_1data_1_1topology__registration__u_3_01flecsi_1_1topology_1_1index__topology__t_00_01NAMESPACE_00_01NAME_01_4.html',1,'flecsi::data']]],
-  ['topology_5fu',['topology_u',['../structflecsi_1_1data_1_1POLICY__NAMESPACE_1_1topology__u.html',1,'flecsi::data::POLICY_NAMESPACE']]],
   ['tuple_5fwalker_5fu',['tuple_walker_u',['../structflecsi_1_1utils_1_1tuple__walker__u.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5fu_3c_20bind_5faccessors_5ft_20_3e',['tuple_walker_u&lt; bind_accessors_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker__u.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5fu_3c_20control_5fpoint_5fwalker_5fu_3c_20control_5fpolicy_20_3e_20_3e',['tuple_walker_u&lt; control_point_walker_u&lt; CONTROL_POLICY &gt; &gt;',['../structflecsi_1_1utils_1_1tuple__walker__u.html',1,'flecsi::utils']]],

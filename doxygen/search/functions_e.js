@@ -1,6 +1,7 @@
 var searchData=
 [
   ['range',['range',['../classflecsi_1_1utils_1_1offset__u.html#a6ceffa2c2f28251d7a729a4e8a908859',1,'flecsi::utils::offset_u']]],
+  ['reduce',['reduce',['../classflecsi_1_1topology_1_1index__space__u.html#a8fbccf28fe42820fb7aadf53d2293913',1,'flecsi::topology::index_space_u']]],
   ['reduction_5foperations',['reduction_operations',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a3a24d0a55e18a453f8a01e1195abc1ad',1,'flecsi::execution::legion_context_policy_t::reduction_operations()'],['../structflecsi_1_1execution_1_1mpi__context__policy__t.html#a00fe84f1c41b181789518d4cd8a622bc',1,'flecsi::execution::mpi_context_policy_t::reduction_operations()']]],
   ['reduction_5ftypes',['reduction_types',['../structflecsi_1_1execution_1_1mpi__context__policy__t.html#ae2469955b98d9afa2340e65189e71db1',1,'flecsi::execution::mpi_context_policy_t']]],
   ['register_5fdomain',['register_domain',['../structflecsi_1_1execution_1_1task__interface__u.html#a4a770f9e1cfcc311acd902f3f82229bd',1,'flecsi::execution::task_interface_u']]],

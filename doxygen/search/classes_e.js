@@ -2,6 +2,8 @@ var searchData=
 [
   ['set_5ftopology_5fbase_5ft',['set_topology_base_t',['../structflecsi_1_1topology_1_1set__topology__base__t.html',1,'flecsi::topology']]],
   ['set_5ftopology_5fu',['set_topology_u',['../classflecsi_1_1topology_1_1set__topology__u.html',1,'flecsi::topology']]],
+  ['simple_5fentry_5fu',['simple_entry_u',['../classflecsi_1_1topology_1_1simple__entry__u.html',1,'flecsi::topology']]],
+  ['simple_5fid',['simple_id',['../classflecsi_1_1topology_1_1simple__id.html',1,'flecsi::topology']]],
   ['simple_5fid_5ft',['simple_id_t',['../classflecsi_1_1utils_1_1simple__id__t.html',1,'flecsi::utils']]],
   ['simple_5fid_5ft_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_2c_20compare_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e_20_3e',['simple_id_t&lt; std::tuple&lt; Args... &gt;, Compare&lt; std::tuple&lt; Args... &gt; &gt; &gt;',['../classflecsi_1_1utils_1_1simple__id__t_3_01std_1_1tuple_3_01Args_8_8_8_01_4_00_01Compare_3_01std_b03df2438bfd7f96f35eba217ad1e6e2.html',1,'flecsi::utils']]],
   ['state_5ft',['state_t',['../structflecsi_1_1utils_1_1ftest_1_1state__t.html',1,'flecsi::utils::ftest']]],

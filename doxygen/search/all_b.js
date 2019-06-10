@@ -2,6 +2,8 @@ var searchData=
 [
   ['macros_2eh',['macros.h',['../macros_8h.html',1,'']]],
   ['make',['make',['../classflecsi_1_1topology_1_1mesh__topology__base__u.html#a6872b155c333eb782c7c352dbaaf8037',1,'flecsi::topology::mesh_topology_base_u']]],
+  ['map',['map',['../classflecsi_1_1topology_1_1index__space__u.html#af9a40a922f472264cf39eb192ce8f480',1,'flecsi::topology::index_space_u']]],
+  ['map_5ffunction',['map_function',['../classflecsi_1_1topology_1_1index__space__u.html#aa38a9daa95da38e3875bc233cf4af8bb',1,'flecsi::topology::index_space_u']]],
   ['map_5ft',['map_t',['../classflecsi_1_1utils_1_1Factory__.html#aadf94a479609186310959cc5347d3525',1,'flecsi::utils::Factory_']]],
   ['map_5ftask',['map_task',['../classflecsi_1_1execution_1_1mpi__mapper__t.html#af60668f8dabfea988b8a47ee1c2f1e9b',1,'flecsi::execution::mpi_mapper_t']]],
   ['mapper_2eh',['mapper.h',['../mapper_8h.html',1,'']]],
@@ -10,7 +12,7 @@ var searchData=
   ['max',['max',['../structflecsi_1_1execution_1_1reduction_1_1max.html',1,'flecsi::execution::reduction']]],
   ['mesh_20toplogy_20interface',['Mesh Toplogy Interface',['../group__mesh-topology.html',1,'']]],
   ['mesh_5fentity_5fu',['mesh_entity_u',['../classflecsi_1_1topology_1_1mesh__entity__u.html',1,'flecsi::topology']]],
-  ['mesh_5fstorage_5fu',['mesh_storage_u',['../classflecsi_1_1topology_1_1mesh__storage__u.html',1,'flecsi::topology']]],
+  ['mesh_5fstorage_5fu',['mesh_storage_u',['../structflecsi_1_1topology_1_1mesh__storage__u.html',1,'flecsi::topology']]],
   ['mesh_5ftopology_5fbase_5fu',['mesh_topology_base_u',['../classflecsi_1_1topology_1_1mesh__topology__base__u.html',1,'flecsi::topology::mesh_topology_base_u&lt; STORAGE_TYPE &gt;'],['../classflecsi_1_1topology_1_1mesh__topology__base__u.html#a5f80fb17002f205f7005d7e6a25084e8',1,'flecsi::topology::mesh_topology_base_u::mesh_topology_base_u()']]],
   ['mesh_5ftopology_5fu',['mesh_topology_u',['../classflecsi_1_1topology_1_1mesh__topology__u.html',1,'flecsi::topology']]],
   ['message_2eh',['message.h',['../message_8h.html',1,'']]],

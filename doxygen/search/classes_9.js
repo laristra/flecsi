@@ -2,7 +2,7 @@ var searchData=
 [
   ['max',['max',['../structflecsi_1_1execution_1_1reduction_1_1max.html',1,'flecsi::execution::reduction']]],
   ['mesh_5fentity_5fu',['mesh_entity_u',['../classflecsi_1_1topology_1_1mesh__entity__u.html',1,'flecsi::topology']]],
-  ['mesh_5fstorage_5fu',['mesh_storage_u',['../classflecsi_1_1topology_1_1mesh__storage__u.html',1,'flecsi::topology']]],
+  ['mesh_5fstorage_5fu',['mesh_storage_u',['../structflecsi_1_1topology_1_1mesh__storage__u.html',1,'flecsi::topology']]],
   ['mesh_5ftopology_5fbase_5fu',['mesh_topology_base_u',['../classflecsi_1_1topology_1_1mesh__topology__base__u.html',1,'flecsi::topology']]],
   ['mesh_5ftopology_5fu',['mesh_topology_u',['../classflecsi_1_1topology_1_1mesh__topology__u.html',1,'flecsi::topology']]],
   ['min',['min',['../structflecsi_1_1execution_1_1reduction_1_1min.html',1,'flecsi::execution::reduction']]],
