@@ -22,6 +22,10 @@
 #include <flecsi/data/common/topology_accessor.h>
 #include <flecsi/data/legion/storage_classes.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/topology/ntree/interface.h>
+#include <flecsi/topology/set/interface.h>
+#include <flecsi/topology/structured_mesh/interface.h>
+//#include <flecsi/topology/unstructured_mesh/interface.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/tuple_walker.h>
 #endif
@@ -40,6 +44,7 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
+using namespace flecsi::data;
 using namespace flecsi::data::legion;
 
 /*!
@@ -167,11 +172,37 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   } // visit
 
   /*--------------------------------------------------------------------------*
-    Unstructured Mesh Topology
+    NTree Topology
    *--------------------------------------------------------------------------*/
 
-  template<typename MESH_POLICY, size_t PRIVILEGES>
-  void visit(topology_accessor_u<unstructured_mesh_topology_u<MESH_POLICY>, PRIVILEGES> const & accessor) {
+  template<typename POLICY_TYPE, size_t PRIVILEGES>
+  using ntree_accessor_u =
+    topology_accessor_u<ntree_topology_u<POLICY_TYPE>, PRIVILEGES>;
+
+  template<typename POLICY_TYPE, size_t PRIVILEGES>
+  void visit(ntree_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
+
+  /*--------------------------------------------------------------------------*
+    Set Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename POLICY_TYPE, size_t PRIVILEGES>
+  using set_accessor_u =
+    topology_accessor_u<set_topology_u<POLICY_TYPE>, PRIVILEGES>;
+
+  template<typename POLICY_TYPE, size_t PRIVILEGES>
+  void visit(set_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
+
+  /*--------------------------------------------------------------------------*
+    Structured Mesh Topology
+   *--------------------------------------------------------------------------*/
+
+  template<typename POLICY_TYPE, size_t PRIVILEGES>
+  using structured_mesh_accessor_u =
+    topology_accessor_u<structured_mesh_topology_u<POLICY_TYPE>, PRIVILEGES>;
+
+  template<typename POLICY_TYPE, size_t PRIVILEGES>
+  void visit(structured_mesh_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*

@@ -22,7 +22,8 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/internal/global.h>
 #include <flecsi/topology/internal/index.h>
-#include <flecsi/topology/unstructured_mesh/interface.h>
+#include <flecsi/topology/structured_mesh/interface.h>
+//#include <flecsi/topology/unstructured_mesh/interface.h>
 #endif
 
 #define POLICY_NAMESPACE legion
@@ -128,7 +129,7 @@ struct accessor_u : public field_reference_t {
     return *data_;
   } // value
 
-  operator DATA_TYPE const & () const {
+  operator DATA_TYPE const &() const {
     return *data_;
   } // value
 
@@ -147,6 +148,24 @@ private:
 }; // struct accessor_u
 
 } // namespace index_topology
+
+/*----------------------------------------------------------------------------*
+  NTree Topology.
+ *----------------------------------------------------------------------------*/
+
+namespace ntree_topology {} // namespace ntree_topology
+
+/*----------------------------------------------------------------------------*
+  Set Topology.
+ *----------------------------------------------------------------------------*/
+
+namespace set_topology {} // namespace set_topology
+
+/*----------------------------------------------------------------------------*
+  Structured Mesh Topology.
+ *----------------------------------------------------------------------------*/
+
+namespace structured_mesh_topology {} // namespace structured_mesh_topology
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.

@@ -25,7 +25,7 @@
 #include <flecsi/utils/tuple_walker.h>
 #endif
 
-//#include <flecsi-config.h>
+#include <flecsi-config.h>
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -33,7 +33,7 @@
 
 #include <legion.h>
 
-flog_register_tag(finalize_views);
+flog_register_tag(bind_accessors);
 
 namespace flecsi {
 namespace execution {
@@ -42,28 +42,28 @@ namespace legion {
 using namespace flecsi::data::legion;
 
 /*!
-  The finalize_views_t type is called to walk the user task arguments inside of
+  The bind_accessors_t type is called to walk the user task arguments inside of
   an executing legion task to properly complete the users accessors, i.e., by
   pointing the accessor \em view instances to the appropriate legion-mapped
   buffers.
  */
 
-struct finalize_views_t
-  : public flecsi::utils::tuple_walker_u<finalize_views_t> {
+struct bind_accessors_t
+  : public flecsi::utils::tuple_walker_u<bind_accessors_t> {
 
   /*!
-    Construct an finalize_views_t instance.
+    Construct an bind_accessors_t instance.
 
-    @param runtime The Legion task runtime.
-    @param context The Legion task runtime context.
+    @param legion_runtime The Legion task runtime.
+    @param legion_context The Legion task runtime context.
    */
 
-  finalize_views_t(Legion::Runtime * runtime,
-    Legion::Context & context,
+  bind_accessors_t(Legion::Runtime * legion_runtime,
+    Legion::Context & legion_context,
     std::vector<Legion::PhysicalRegion> const & regions,
     std::vector<Legion::Future> const & futures)
-    : runtime_(runtime), context_(context), regions_(regions),
-      futures_(futures) {}
+    : legion_runtime_(legion_runtime), legion_context_(legion_context),
+      regions_(regions), futures_(futures) {}
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and client
@@ -76,6 +76,30 @@ struct finalize_views_t
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+
+    Legion::Domain dom = legion_runtime_->get_index_space_domain(
+      legion_context_, regions_[region].get_logical_region().get_index_space());
+    Legion::Domain::DomainPointIterator itr(dom);
+
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(global_topology_t::type_identifier_hash,
+          data::storage_label_t::global)
+        .get_field_info(accessor.identifier())
+        .fid;
+
+    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
+    const Legion::UnsafeFieldAccessor<DATA_TYPE,
+      1,
+      Legion::coord_t,
+      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
+      ac(regions_[region], fid, sizeof(DATA_TYPE));
+
+    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
+
+    global_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+
+    ++region;
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -84,6 +108,30 @@ struct finalize_views_t
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+
+    Legion::Domain dom = legion_runtime_->get_index_space_domain(
+      legion_context_, regions_[region].get_logical_region().get_index_space());
+    Legion::Domain::DomainPointIterator itr(dom);
+
+    const auto fid =
+      context_t::instance()
+        .get_field_info_store(
+          index_topology_t::type_identifier_hash, data::storage_label_t::index)
+        .get_field_info(accessor.identifier())
+        .fid;
+
+    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
+    const Legion::UnsafeFieldAccessor<DATA_TYPE,
+      1,
+      Legion::coord_t,
+      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
+      ac(regions_[region], fid, sizeof(DATA_TYPE));
+
+    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
+
+    index_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+
+    ++region;
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -95,19 +143,21 @@ struct finalize_views_t
     !std::is_base_of_v<data::data_reference_base_t, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
-      flog_tag_guard(finalize_views);
+      flog_tag_guard(bind_accessors);
       flog(internal) << "Skipping argument with type "
                      << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }
   } // visit
 
 private:
-  Legion::Runtime * runtime_;
-  Legion::Context & context_;
+  Legion::Runtime * legion_runtime_;
+  Legion::Context & legion_context_;
+  size_t region = 0;
   const std::vector<Legion::PhysicalRegion> & regions_;
+  size_t future = 0;
   const std::vector<Legion::Future> & futures_;
 
-}; // struct finalize_views_t
+}; // struct bind_accessors_t
 
 } // namespace legion
 } // namespace execution

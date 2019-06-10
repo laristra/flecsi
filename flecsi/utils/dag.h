@@ -283,7 +283,7 @@ struct dag_u {
         gv.add_edge(node_map[e], node_map[n.first]);
       } // for
     } // for
-  } // add_to_graphviz
+  } // add
 
 #endif // FLECSI_ENABLE_GRAPHVIZ
 

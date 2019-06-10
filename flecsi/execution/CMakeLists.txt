@@ -18,14 +18,14 @@
 #------------------------------------------------------------------------------#
 
 set(execution_HEADERS
-  common/function_handle.h
   common/command_line_options.h
+  common/function_handle.h
   common/launch.h
   common/processor.h
   context.h
-  internal.h
   execution.h
   global_object_wrapper.h
+  internal.h
   kernel_interface.h
   reduction.h
   task_interface.h
@@ -40,9 +40,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_HEADERS
     ${execution_HEADERS}
     legion/context_policy.h
-    legion/enactment/finalize_views.h
-    legion/enactment/init_views.h
+    legion/enactment/bind_accessors.h
     legion/enactment/task_wrapper.h
+    legion/enactment/unbind_accessors.h
     legion/execution_policy.h
     legion/future.h
     legion/internal_task.h
@@ -52,9 +52,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/mapper.h
     legion/reduction_wrapper.h
     legion/runtime.h
-    legion/enactment/task_wrapper.h
-    legion/enactment/finalize_views.h
-    legion/enactment/init_views.h
     legion/tasks.h
   )
 

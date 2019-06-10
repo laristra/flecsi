@@ -28,6 +28,7 @@ namespace data {
 
 struct legion_data_policy_t {
 
+#if 0
   /*--------------------------------------------------------------------------*
     Topology Interface.
    *--------------------------------------------------------------------------*/
@@ -40,6 +41,7 @@ struct legion_data_policy_t {
   template<typename TOPOLOGY_TYPE>
   using topology_u =
     legion::topology_u<typename TOPOLOGY_TYPE::type_identifier_t>;
+#endif
 
   /*--------------------------------------------------------------------------*
     Storage Class Interface.

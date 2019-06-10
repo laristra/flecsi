@@ -15,11 +15,11 @@
 #include <flecsi/utils/ftest.h>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.h>
 #include <flecsi/execution/common/launch.h>
+#include <flecsi/execution/execution.h>
 
-#define THREADS_PER_BLOCK   128
-#define MIN_CTAS_PER_SM     4
+#define THREADS_PER_BLOCK 128
+#define MIN_CTAS_PER_SM 4
 
 #if 0
 using namespace flecsi::execution;

@@ -44,24 +44,35 @@ struct global_topology_t;
 struct index_topology_t;
 
 template<typename>
-class mesh_topology_u;
+class ntree_topology_u;
+
+template<typename>
+class set_topology_u;
+
+template<typename>
+class structured_mesh_topology_u;
+
+template<typename>
+class unstructured_mesh_topology_u;
 
 } // namespace topology
 
 namespace data {
 namespace legion {
 
+using namespace topology;
+
 /*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_instance_u<topology::index_topology_t> {
+struct topology_instance_u<index_topology_t> {
 
-  using topology_reference_t = topology_reference_u<topology::index_topology_t>;
+  using topology_reference_t = topology_reference_u<index_topology_t>;
 
   static void set_coloring(topology_reference_t const & topology_reference,
-    topology::index_topology_t::coloring_t const & coloring) {
+    index_topology_t::coloring_t const & coloring) {
 
     {
       flog_tag_guard(topologies);
@@ -91,7 +102,7 @@ struct topology_instance_u<topology::index_topology_t> {
       legion_runtime->create_field_space(legion_context);
 
     auto & field_info_store = flecsi_context.get_field_info_store(
-      topology::index_topology_t::type_identifier_hash, index);
+      index_topology_t::type_identifier_hash, index);
 
     Legion::FieldAllocator allocator =
       legion_runtime->create_field_allocator(legion_context, field_space);
@@ -102,29 +113,65 @@ struct topology_instance_u<topology::index_topology_t> {
 
     runtime_data.logical_region = legion_runtime->create_logical_region(
       legion_context, index_space, field_space);
- 
+
     Legion::IndexPartition index_partition =
-      legion_runtime->create_equal_partition(legion_context,
-        index_space, index_space);
+      legion_runtime->create_equal_partition(
+        legion_context, index_space, index_space);
 
     runtime_data.color_partition = legion_runtime->get_logical_partition(
       legion_context, runtime_data.logical_region, index_partition);
 
   } // set_coloring
 
-}; // struct topology_instance_u<topology::index_topology_t>
+}; // index_topology_t specialization
 
 /*----------------------------------------------------------------------------*
-  Mesh Topology.
+  NTree Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<topology::mesh_topology_u<POLICY_TYPE>> {
+struct topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
 
   using topology_reference_t =
-    topology_reference_u<topology::mesh_topology_u<POLICY_TYPE>>;
+    topology_reference_u<ntree_topology_u<POLICY_TYPE>>;
 
-}; // struct topology_instance_u<topology::mesh_topology_u<POLICY_TYPE>>
+}; // ntree_topology_u specialization
+
+/*----------------------------------------------------------------------------*
+  Set Topology.
+ *----------------------------------------------------------------------------*/
+
+template<typename POLICY_TYPE>
+struct topology_instance_u<set_topology_u<POLICY_TYPE>> {
+
+  using topology_reference_t =
+    topology_reference_u<set_topology_u<POLICY_TYPE>>;
+
+}; // set_topology_u specialization
+
+/*----------------------------------------------------------------------------*
+  Structured Mesh Topology.
+ *----------------------------------------------------------------------------*/
+
+template<typename POLICY_TYPE>
+struct topology_instance_u<structured_mesh_topology_u<POLICY_TYPE>> {
+
+  using topology_reference_t =
+    topology_reference_u<structured_mesh_topology_u<POLICY_TYPE>>;
+
+}; // structured_mesh_topology_u specialization
+
+/*----------------------------------------------------------------------------*
+  Unstructured Mesh Topology.
+ *----------------------------------------------------------------------------*/
+
+template<typename POLICY_TYPE>
+struct topology_instance_u<unstructured_mesh_topology_u<POLICY_TYPE>> {
+
+  using topology_reference_t =
+    topology_reference_u<unstructured_mesh_topology_u<POLICY_TYPE>>;
+
+}; // unstructured_mesh_topology_u specialization
 
 // NOTE THAT THE HANDLE TYPE FOR THIS TYPE WILL NEED TO CAPTURE THE
 // UNDERLYING TOPOLOGY TYPE, i.e., topology::mesh_topology_t<MESH_POLICY>
