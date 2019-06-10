@@ -24,6 +24,8 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/ntree/interface.h>
 #include <flecsi/topology/set/interface.h>
+#include <flecsi/topology/structured_mesh/interface.h>
+//#include <flecsi/topology/unstructured_mesh/interface.h>
 #include <flecsi/utils/demangle.h>
 #include <flecsi/utils/tuple_walker.h>
 #endif

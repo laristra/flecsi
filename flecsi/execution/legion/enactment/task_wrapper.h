@@ -21,8 +21,8 @@
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/enactment/finalize_views.h>
-#include <flecsi/execution/legion/enactment/init_views.h>
+#include <flecsi/execution/legion/enactment/bind_accessors.h>
+#include <flecsi/execution/legion/enactment/unbind_accessors.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/flog.h>
 #include <flecsi/utils/tuple_function.h>
@@ -212,8 +212,8 @@ struct task_wrapper_u {
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-    init_views_t init_views(runtime, context, regions, task->futures);
-    init_views.walk(task_args);
+    bind_accessors_t bind_accessors(runtime, context, regions, task->futures);
+    bind_accessors.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));

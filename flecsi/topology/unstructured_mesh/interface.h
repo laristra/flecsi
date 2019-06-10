@@ -22,7 +22,7 @@
 //#include <flecsi/execution/context.h>
 //#include <flecsi/topology/unstructured_mesh/partition.h>
 //#include <flecsi/topology/unstructured_mesh/storage.h>
-//#include <flecsi/topology/unstructured_mesh/types.h>
+#include <flecsi/topology/unstructured_mesh/types.h>
 //#include <flecsi/utils/common.h>
 //#include <flecsi/utils/set_intersection.h>
 //#include <flecsi/utils/static_verify.h>
