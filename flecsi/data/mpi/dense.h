@@ -32,7 +32,6 @@
 #include <flecsi/data/data_client.h>
 #include <flecsi/data/dense_data_handle.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/utils/index_space.h>
 
 #include <flecsi/utils/const_string.h>
 

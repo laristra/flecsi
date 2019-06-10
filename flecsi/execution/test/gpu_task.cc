@@ -27,12 +27,18 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 void
-gpu_task(void) {
-  clog(info) << "This is a gpu task" << std::endl;
+gpu_task_single(void) {
+  clog(info) << "This is a single gpu task" << std::endl;
 }
 
-flecsi_register_task(gpu_task, flecsi::execution, toc, single);
+flecsi_register_task(gpu_task_single, flecsi::execution, toc, single);
 
+void
+gpu_task_index(void) {
+  clog(info) << "This is an index gpu task" << std::endl;
+}
+
+flecsi_register_task(gpu_task_index, flecsi::execution, toc, index);
 //----------------------------------------------------------------------------//
 // Driver.
 //----------------------------------------------------------------------------//
@@ -42,9 +48,13 @@ driver(int argc, char ** argv) {
 
   clog(info) << "Inside user driver" << std::endl;
 
-  auto f = flecsi_execute_task(gpu_task, flecsi::execution, single);
+  auto f1 = flecsi_execute_task(gpu_task_single, flecsi::execution, single);
 
-  f.wait();
+  f1.wait();
+
+  auto f2 = flecsi_execute_task(gpu_task_index, flecsi::execution, index);
+
+  f2.wait();
 
 } // driver
 

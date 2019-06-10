@@ -1,0 +1,77 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 14-task-run-flecsi-register-duplicate-hash.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   14-task-run-flecsi-register-duplicate-hash.json
+
+File:
+   14-task-run-flecsi-register-duplicate-hash.json: 14-task-run-flecsi-register-duplicate-hash.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, A, loc, single
+   File: 14-task-run-flecsi-register-duplicate-hash.cc
+   Line: 10
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, A, loc, single
+   File: 14-task-run-flecsi-register-duplicate-hash.cc
+   Line: 20
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, A, single, 
+   File: 14-task-run-flecsi-register-duplicate-hash.cc
+   Line: 28
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 14-task-run-flecsi-register-duplicate-hash.cc, line 10)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 14-task-run-flecsi-register-duplicate-hash.cc, line 20)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 14-task-run-flecsi-register-duplicate-hash.cc, line 28)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Error:
+   Hash string "A::foo" was created
+   by multiple task registrations in one file:
+      14-task-run-flecsi-register-duplicate-hash.cc: file 14-task-run-flecsi-register-duplicate-hash.cc, line 10, scope ::A
+      14-task-run-flecsi-register-duplicate-hash.cc: file 14-task-run-flecsi-register-duplicate-hash.cc, line 20, scope ::B
+   This may have caused a (possibly cryptic) compile-time error.
+   If it didn't, a duplicate hash can still trigger a run-time error.
+   If some or all of the reported multiples are identical, are you analyzing
+   files that together form more than one application build? (Don't do that.)
+
+Synopsis:
+   1 error
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Task registration duplicates:
+   (14-task-run-flecsi-register-duplicate-hash.cc: file 14-task-run-flecsi-register-duplicate-hash.cc, line 20) dups (14-task-run-flecsi-register-duplicate-hash.cc: file 14-task-run-flecsi-register-duplicate-hash.cc, line 10)
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

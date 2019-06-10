@@ -1,0 +1,54 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file 15-task-run-segfault-register-forgot.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21m15-task-run-segfault-register-forgot.json[0m
+
+[35;21mFile:[0m
+   [35;21m15-task-run-segfault-register-forgot.json: 15-task-run-segfault-register-forgot.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_task[0m
+   [36;1mArgs: foo, ns, single, [0m
+   [36;1mFile: 15-task-run-segfault-register-forgot.cc[0m
+   [36;1mLine: 17[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::execute_task[0m
+   [36;1mMatches macro: flecsi_execute_task (file 15-task-run-segfault-register-forgot.cc, line 17)[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[31;21mError:[0m
+   [31;21mThe task executed with hash "ns::foo" here:[0m
+   [31;21m   15-task-run-segfault-register-forgot.cc: file 15-task-run-segfault-register-forgot.cc, line 17[0m
+   [31;21mwas not registered with any of FleCSI's task registration macros,[0m
+   [31;21mor was not registered with that hash.[0m
+   [31;21mThis can trigger a run-time error if this line is reached.[0m
+
+[34;1mSynopsis:[0m
+   [36;1m1 error[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[34;1mTask executions without registrations:[0m
+   [36;1m15-task-run-segfault-register-forgot.cc: file 15-task-run-segfault-register-forgot.cc, line 17
+[0m
+[33;1mWarning:[0m
+   [33;1mFleCSI static analysis may be incomplete; errors occurred.[0m

@@ -1,0 +1,74 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file 16-task-run-segfault-execute-odd.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21m16-task-run-segfault-execute-odd.json[0m
+
+[35;21mFile:[0m
+   [35;21m16-task-run-segfault-execute-odd.json: 16-task-run-segfault-execute-odd.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: foo, ns, loc, single[0m
+   [36;1mFile: 16-task-run-segfault-execute-odd.cc[0m
+   [36;1mLine: 11[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_task[0m
+   [36;1mArgs: ns::foo, , single, [0m
+   [36;1mFile: 16-task-run-segfault-execute-odd.cc[0m
+   [36;1mLine: 22[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_task (file 16-task-run-segfault-execute-odd.cc, line 11)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::execute_task[0m
+   [36;1mMatches macro: flecsi_execute_task (file 16-task-run-segfault-execute-odd.cc, line 22)[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[33;1mWarning:[0m
+   [33;1mThe task registered with hash "ns::foo" here:[0m
+   [33;1m   16-task-run-segfault-execute-odd.cc: file 16-task-run-segfault-execute-odd.cc, line 11, scope ::ns[0m
+   [33;1mis never invoked with any of FleCSI's task execution macros.[0m
+   [33;1mIs this intentional?[0m
+
+[31;21mError:[0m
+   [31;21mThe task executed with hash "::ns::foo" here:[0m
+   [31;21m   16-task-run-segfault-execute-odd.cc: file 16-task-run-segfault-execute-odd.cc, line 22[0m
+   [31;21mwas not registered with any of FleCSI's task registration macros,[0m
+   [31;21mor was not registered with that hash.[0m
+   [31;21mThis can trigger a run-time error if this line is reached.[0m
+
+[34;1mSynopsis:[0m
+   [36;1m1 error[0m
+   [36;1m1 warning[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[34;1mTask registrations without executions:[0m
+   [36;1m16-task-run-segfault-execute-odd.cc: file 16-task-run-segfault-execute-odd.cc, line 11
+[0m
+[34;1mTask executions without registrations:[0m
+   [36;1m16-task-run-segfault-execute-odd.cc: file 16-task-run-segfault-execute-odd.cc, line 22
+[0m
+[33;1mWarning:[0m
+   [33;1mFleCSI static analysis may be incomplete; errors occurred.[0m
