@@ -2,7 +2,6 @@ var searchData=
 [
   ['launch_5fdomain_5ft',['launch_domain_t',['../structflecsi_1_1execution_1_1launch__domain__t.html',1,'flecsi::execution']]],
   ['legion_5fcontext_5fpolicy_5ft',['legion_context_policy_t',['../structflecsi_1_1execution_1_1legion__context__policy__t.html',1,'flecsi::execution']]],
-  ['legion_5fdata_5fhandle_5fpolicy_5ft',['legion_data_handle_policy_t',['../classlegion__data__handle__policy__t.html',1,'']]],
   ['legion_5fdata_5fpolicy_5ft',['legion_data_policy_t',['../structflecsi_1_1data_1_1legion__data__policy__t.html',1,'flecsi::data']]],
   ['legion_5fexecution_5fpolicy_5ft',['legion_execution_policy_t',['../structflecsi_1_1execution_1_1legion__execution__policy__t.html',1,'flecsi::execution']]],
   ['legion_5ffuture_5fu',['legion_future_u',['../structflecsi_1_1execution_1_1legion__future__u.html',1,'flecsi::execution']]],

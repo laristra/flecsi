@@ -16,5 +16,10 @@ var searchData=
   ['registration_5fcallback',['registration_callback',['../structflecsi_1_1execution_1_1legion_1_1pure__task__wrapper__u.html#a406f8c5d4a20355155295951cec769ae',1,'flecsi::execution::legion::pure_task_wrapper_u::registration_callback()'],['../structflecsi_1_1execution_1_1legion_1_1task__wrapper__u.html#ada5350ead6e33084979e702cf5ac2aa3',1,'flecsi::execution::legion::task_wrapper_u::registration_callback()'],['../structflecsi_1_1execution_1_1legion_1_1reduction__wrapper__u.html#aac0a8ca7f26e732fd95adaad03ace9b4',1,'flecsi::execution::legion::reduction_wrapper_u::registration_callback()'],['../structflecsi_1_1execution_1_1mpi_1_1reduction__wrapper__u.html#a3020dbec309522df839c90773b993621',1,'flecsi::execution::mpi::reduction_wrapper_u::registration_callback()']]],
   ['remove_5fprefix',['remove_prefix',['../classflecsi_1_1utils_1_1array__ref.html#a0f658eaa6fa81d550ed1bccd556ae232',1,'flecsi::utils::array_ref']]],
   ['remove_5fsuffix',['remove_suffix',['../classflecsi_1_1utils_1_1array__ref.html#afffcdd4341c9aa512f7924dcfa615037',1,'flecsi::utils::array_ref']]],
-  ['rstrip',['rstrip',['../utils_8h.html#a48d4542fd73523e0c98b60bfcc717117',1,'flecsi::utils::flog']]]
+  ['reorder',['reorder',['../reorder_8h.html#ac2c9b40ce67c0aaac6f3a8eb234cb7ab',1,'flecsi::utils']]],
+  ['reorder_5fdestructive',['reorder_destructive',['../reorder_8h.html#a130b7695ff0529213f77ff927ac77e67',1,'flecsi::utils']]],
+  ['reorder_5fentities',['reorder_entities',['../classflecsi_1_1topology_1_1connectivity__t.html#afd140d5a347c2d5e7832f6d95db005ac',1,'flecsi::topology::connectivity_t']]],
+  ['resize',['resize',['../classflecsi_1_1topology_1_1connectivity__t.html#a702826349a4265ed6a89f24c9365e01c',1,'flecsi::topology::connectivity_t']]],
+  ['reverse_5fentities',['reverse_entities',['../classflecsi_1_1topology_1_1connectivity__t.html#ae8f8cfa808c8edc6a612b6e5e5ebc059',1,'flecsi::topology::connectivity_t']]],
+  ['rstrip',['rstrip',['../utils_2flog_2utils_8h.html#a48d4542fd73523e0c98b60bfcc717117',1,'flecsi::utils::flog']]]
 ];

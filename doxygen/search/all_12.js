@@ -16,5 +16,5 @@ var searchData=
   ['unstructured_5fmesh_5ftopology_5fu',['unstructured_mesh_topology_u',['../classflecsi_1_1topology_1_1unstructured__mesh__topology__u.html',1,'flecsi::topology']]],
   ['utility_5ftypes_2eh',['utility_types.h',['../utility__types_8h.html',1,'']]],
   ['utilities_20interface',['Utilities Interface',['../group__utils.html',1,'']]],
-  ['utils_2eh',['utils.h',['../utils_8h.html',1,'']]]
+  ['utils_2eh',['utils.h',['../topology_2unstructured__mesh_2utils_8h.html',1,'(Global Namespace)'],['../utils_2flog_2utils_8h.html',1,'(Global Namespace)']]]
 ];

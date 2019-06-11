@@ -79,6 +79,11 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1id__vector__hash__t.html">flecsi::topology::id_vector_hash_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1entity__base__.html">flecsi::topology::entity_base_</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1entity__base__u.html">flecsi::topology::entity_base_u&lt; NUM_DOMAINS &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classflecsi_1_1topology_1_1entity__base__u.html" title="entity_base_u defines a base class that stores the raw info that a topology needs, i.e: id and rank data ">entity_base_u</a> defines a base class that stores the raw info that a topology needs, i.e: id and rank data  <a href="classflecsi_1_1topology_1_1entity__base__u.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -106,8 +111,34 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::id
 <tr class="memitem:a2ed16abb457a43ba8639ef55fd632176"><td class="memItemLeft" align="right" valign="top"><a id="a2ed16abb457a43ba8639ef55fd632176"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::index_vector_t</b> = std::vector&lt; size_t &gt;</td></tr>
 <tr class="separator:a2ed16abb457a43ba8639ef55fd632176"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83ec50db8fa91f673f0ec349a649937b"><td class="memTemplParams" colspan="2">template&lt;size_t NUM_DOMAINS&gt; </td></tr>
+<tr class="memitem:a83ec50db8fa91f673f0ec349a649937b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="utility__types_8h.html#a83ec50db8fa91f673f0ec349a649937b">flecsi::topology::entity_vector_t</a> = std::vector&lt; entity_base_u&lt; NUM_DOMAINS &gt; * &gt;</td></tr>
+<tr class="separator:a83ec50db8fa91f673f0ec349a649937b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
+<a id="file_a83ec50db8fa91f673f0ec349a649937b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a83ec50db8fa91f673f0ec349a649937b">&#9670;&nbsp;</a></span>entity_vector_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t NUM_DOMAINS&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="utility__types_8h.html#a83ec50db8fa91f673f0ec349a649937b">flecsi::topology::entity_vector_t</a> = typedef std::vector&lt;entity_base_u&lt;NUM_DOMAINS&gt; *&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Define the vector type for storing entities.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">NUM_DOMAINS</td><td>The number of domains. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="file_a2c436e84ae6f485fd2a04334896dabc2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#file_a2c436e84ae6f485fd2a04334896dabc2">&#9670;&nbsp;</a></span>index_space</h2>
 
