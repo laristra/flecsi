@@ -20,9 +20,9 @@
 #else
 #include <flecsi/execution/context.h>
 #include <flecsi/topology/common/connectivity.h>
+#include <flecsi/topology/common/utility_types.h>
 #include <flecsi/topology/unstructured_mesh/partition.h>
 #include <flecsi/topology/unstructured_mesh/utils.h>
-#include <flecsi/topology/common/utility_types.h>
 #endif
 
 #include <array>

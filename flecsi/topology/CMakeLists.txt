@@ -20,6 +20,7 @@
 set(topology_HEADERS
   base_topology_types.h
   common/array_buffer.h
+  common/connectivity.h
   common/entity_storage.h
   common/index_space.h
   common/utility_types.h
@@ -35,6 +36,7 @@ set(topology_HEADERS
   unstructured_mesh/partition.h
   unstructured_mesh/storage.h
   unstructured_mesh/types.h
+  unstructured_mesh/utils.h
 )
 
 set(topology_SOURCES

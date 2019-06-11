@@ -16,8 +16,7 @@
 /*!  @file */
 
 template<typename IO_POLICY>
-struct io_interface_u {
-}; // struct io_interface_u
+struct io_interface_u {}; // struct io_interface_u
 
 //----------------------------------------------------------------------------//
 // This include file defines the FLECSI_RUNTIME_IO_POLICY used below.

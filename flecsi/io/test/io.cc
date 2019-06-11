@@ -21,7 +21,8 @@ using namespace flecsi;
 
 namespace io_test {
 
-void check() {
+void
+check() {
 
   FTEST();
 
@@ -31,7 +32,7 @@ flecsi_register_task(check, io_test, loc, index);
 
 } // namespace io_test
 
-int io_sanity(int argc, char ** argv) {
-} // io_sanity
+int
+io_sanity(int argc, char ** argv) {} // io_sanity
 
 ftest_register_driver(io_sanity);

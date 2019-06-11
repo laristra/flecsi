@@ -154,9 +154,10 @@ struct unstructured_mesh_topology_u : public unstructured_mesh_topology_base_t,
     "mesh policy missing create_entity()");
 
 private:
-
-  mesh_storage_u<POLICY_TYPE::num_dimensions, POLICY_TYPE::num_domains,
-      num_index_subspaces_u<POLICY_TYPE>::value> ms_;
+  mesh_storage_u<POLICY_TYPE::num_dimensions,
+    POLICY_TYPE::num_domains,
+    num_index_subspaces_u<POLICY_TYPE>::value>
+    ms_;
 
 }; // struct unstructured_mesh_topology_u
 

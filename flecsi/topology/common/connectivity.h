@@ -19,9 +19,9 @@
 #include <cstdint>
 #include <iostream>
 
-#include <flecsi/topology/common/utility_types.h>
 #include <flecsi/topology/common/entity_storage.h>
 #include <flecsi/topology/common/index_space.h>
+#include <flecsi/topology/common/utility_types.h>
 #include <flecsi/utils/array_ref.h>
 #include <flecsi/utils/reorder.h>
 
