@@ -117,7 +117,8 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     size_t id = 0;
     index_space_t is;
 
-    for(size_t entry = 0; entry < size(); ++entry) {
+    const size_t max_size = size();
+    for(size_t entry = 0; entry < max_size; ++entry) {
       is.push_back({id++, entry});
     }
 
@@ -131,7 +132,8 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     size_t id = 0;
     index_space_t is;
 
-    for(size_t entry = 0; entry < size(index); ++entry) {
+    const size_t my_size = size(index);
+    for(size_t entry = 0; entry < my_size; ++entry) {
       is.push_back({id++, entry});
     }
 

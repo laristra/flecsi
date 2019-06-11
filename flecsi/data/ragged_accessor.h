@@ -122,7 +122,8 @@ struct accessor_u<data::ragged,
     size_t id = 0;
     index_space_t is;
 
-    for(size_t entry = 0; entry < size(); ++entry) {
+    const size_t max_size = size();
+    for(size_t entry = 0; entry < max_size; ++entry) {
       is.push_back({id++, entry});
     }
 
@@ -136,7 +137,8 @@ struct accessor_u<data::ragged,
     size_t id = 0;
     index_space_t is;
 
-    for(size_t entry = 0; entry < size(index); ++entry) {
+    const size_t my_size = size(index);
+    for(size_t entry = 0; entry < my_size; ++entry) {
       is.push_back({id++, entry});
     }
 
