@@ -21,7 +21,7 @@
 #include <flecsi/data/common/data_reference.h>
 //#include <flecsi/execution/context.h>
 //#include <flecsi/topology/unstructured_mesh/partition.h>
-//#include <flecsi/topology/unstructured_mesh/storage.h>
+#include <flecsi/topology/unstructured_mesh/storage.h>
 #include <flecsi/topology/unstructured_mesh/types.h>
 //#include <flecsi/utils/common.h>
 //#include <flecsi/utils/set_intersection.h>
@@ -48,12 +48,12 @@ namespace flecsi {
 namespace topology {
 namespace verify_mesh {
 
-// FLECSI_MEMBER_CHECKER(num_dimensions);
-// FLECSI_MEMBER_CHECKER(num_domains);
-// FLECSI_MEMBER_CHECKER(entity_types);
-// FLECSI_MEMBER_CHECKER(connectivities);
-// FLECSI_MEMBER_CHECKER(bindings);
-// FLECSI_MEMBER_CHECKER(create_entity);
+FLECSI_MEMBER_CHECKER(num_dimensions);
+FLECSI_MEMBER_CHECKER(num_domains);
+FLECSI_MEMBER_CHECKER(entity_types);
+FLECSI_MEMBER_CHECKER(connectivities);
+FLECSI_MEMBER_CHECKER(bindings);
+FLECSI_MEMBER_CHECKER(create_entity);
 
 } // namespace verify_mesh
 
@@ -113,16 +113,10 @@ namespace verify_mesh {
 template<typename POLICY_TYPE>
 struct unstructured_mesh_topology_u : public unstructured_mesh_topology_base_t,
                                       public data::data_reference_base_t {
-}; // struct unstructured_mesh_topology_u
 
-#if 0
-template<class POLICY_TYPE>
-class unstructured_mesh_topology_u
-  : public mesh_topology_base_u<mesh_storage_u<POLICY_TYPE::num_dimensions,
-      POLICY_TYPE::num_domains,
-      num_index_subspaces_u<POLICY_TYPE>::value>>
-{
+  //--------------------------------------------------------------------------//
   // static verification of mesh policy
+  //--------------------------------------------------------------------------//
 
   static_assert(verify_mesh::has_member_num_dimensions<POLICY_TYPE>::value,
     "mesh policy missing num_dimensions size_t");
@@ -159,9 +153,21 @@ class unstructured_mesh_topology_u
   static_assert(verify_mesh::has_member_create_entity<POLICY_TYPE>::value,
     "mesh policy missing create_entity()");
 
-  static_assert(verify_mesh::hash_member_type_identifier_hash<POLICY_TYPE>::value,
-    "mesh policy missing type_identifier_hash");
+private:
+  mesh_storage_u<POLICY_TYPE::num_dimensions,
+    POLICY_TYPE::num_domains,
+    num_index_subspaces_u<POLICY_TYPE>::value>
+    ms_;
 
+}; // struct unstructured_mesh_topology_u
+
+#if 0
+template<class POLICY_TYPE>
+class unstructured_mesh_topology_u
+  : public mesh_topology_base_u<mesh_storage_u<POLICY_TYPE::num_dimensions,
+      POLICY_TYPE::num_domains,
+      num_index_subspaces_u<POLICY_TYPE>::value>>
+{
 public:
   constexpr size_t type_identifier_hash = POLICY_TYPE::type_identifier_hash;
 

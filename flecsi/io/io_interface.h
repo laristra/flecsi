@@ -13,31 +13,21 @@
                                                                               */
 #pragma once
 
-/*!
-  @file
+/*!  @file */
 
- */
+template<typename IO_POLICY>
+struct io_interface_u {}; // struct io_interface_u
 
-/*----------------------------------------------------------------------------*
+//----------------------------------------------------------------------------//
+// This include file defines the FLECSI_RUNTIME_IO_POLICY used below.
+//----------------------------------------------------------------------------//
 
- *----------------------------------------------------------------------------*/
+#include <flecsi/runtime/io_policy.h>
 
-#define flecsi_register_simulation(name)
+namespace flecsi {
+namespace io {
 
-/*!
-  @def flecsi_register_output_group
+using io_interface_t = io_interface_u<FLECSI_RUNTIME_IO_POLICY>;
 
-  @ingroup data
- */
-
-#define flecsi_register_output_group(name, ...) /* MACRO IMPLEMENTATION */
-
-/*!
-  @def flecsi_write_output_group
-
-  @ingroup data
- */
-
-#define flecsi_write_output_group(name, stamp) /* MACRO IMPLEMENTATION */
-
-#define flecsi_write_output(name, stamp, ...)
+} // namespace io
+} // namespace flecsi

@@ -34,10 +34,8 @@ namespace topology {
 template<size_t, size_t>
 class mesh_entity_u;
 
-///
-/// \class legion_data_handle_policy_t data_handle_policy.h
-/// \brief legion_data_handle_policy_t provides...
-///
+/*!
+ */
 
 template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
 struct mesh_storage_u {

@@ -12,64 +12,41 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------#
-# Add header files. Note that these will be "exported" to the parent
-# scope below.
-#------------------------------------------------------------------------------#
-
-set(topology_HEADERS
-  base_topology_types.h
-  common/array_buffer.h
-  common/connectivity.h
-  common/entity_storage.h
-  common/index_space.h
-  common/utility_types.h
-  internal/global.h
-  internal/index.h
-  ntree/interface.h
-  ntree/types.h
-  set/interface.h
-  set/types.h
-  structured_mesh/interface.h
-  structured_mesh/types.h
-  unstructured_mesh/interface.h
-  unstructured_mesh/partition.h
-  unstructured_mesh/storage.h
-  unstructured_mesh/types.h
-  unstructured_mesh/utils.h
+set(io_HEADERS
+  io_interface.h
 )
 
-set(topology_SOURCES
+set(io_SOURCES
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  set(topology_HEADERS
-    ${topology_HEADERS}
+  set(io_HEADERS
+    legion/io_policy.h
+    ${io_HEADERS}
   )
 
-  set(topology_SOURCES
-    ${topology_SOURCES}
+  set(io_SOURCES
+    ${io_SOURCES}
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-  set(topology_HEADERS
-    ${topology_HEADERS}
+  set(io_HEADERS
+    ${io_HEADERS}
   )
 
-  set(topology_SOURCES
-    ${topology_SOURCES}
+  set(io_SOURCES
+    ${io_SOURCES}
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
-  set(topology_HEADERS
-    ${topology_HEADERS}
+  set(io_HEADERS ${io_HEADERS}
   )
 
-  set(topology_SOURCES
-    ${topology_SOURCES}
+  set(io_SOURCES
+    ${io_SOURCES}
   )
 
 endif()
@@ -78,8 +55,8 @@ endif()
 # Export header list to parent scope.
 #------------------------------------------------------------------------------#
 
-set(topology_HEADERS
-  ${topology_HEADERS}
+set(io_HEADERS
+  ${io_HEADERS}
   PARENT_SCOPE
 )
 
@@ -87,8 +64,8 @@ set(topology_HEADERS
 # Export source list to parent scope.
 #------------------------------------------------------------------------------#
 
-set(topology_SOURCES
-  ${topology_SOURCES}
+set(io_SOURCES
+  ${io_SOURCES}
   PARENT_SCOPE
 )
 
@@ -96,10 +73,7 @@ set(topology_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-#ftest_add_unit(mesh
-#  SOURCES test/mesh.cc
-#)
-
-ftest_add_unit(ntree
-  SOURCES test/ntree.cc
+ftest_add_unit(io
+  SOURCES
+    test/io.cc
 )

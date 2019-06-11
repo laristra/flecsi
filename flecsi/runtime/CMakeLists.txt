@@ -16,6 +16,7 @@ set(runtime_HEADERS
   context_policy.h
   data_policy.h
   execution_policy.h
+  io_policy.h
   types.h
   PARENT_SCOPE
 )

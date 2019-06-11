@@ -19,9 +19,9 @@
 #include <cstdint>
 #include <iostream>
 
-#include <flecsi/topology/entity_storage.h>
-#include <flecsi/topology/index_space.h>
-#include <flecsi/topology/types.h>
+#include <flecsi/topology/common/entity_storage.h>
+#include <flecsi/topology/common/index_space.h>
+#include <flecsi/topology/common/utility_types.h>
 #include <flecsi/utils/array_ref.h>
 #include <flecsi/utils/reorder.h>
 
@@ -312,7 +312,7 @@ public:
     offsets_.add_end(index_space_.size());
   } // end_from
 
-  index_space_u<entity_base_ *, false, true, false, void, entity_storage_t>
+  index_space_u<entity_base_ *, false, true, false, void, array_buffer_u>
     index_space_;
 
   offset_storage_t offsets_;
