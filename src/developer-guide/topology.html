@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Topology Requirements &mdash; FleCSI  documentation</title>
+  <title>Topology Design Idioms &mdash; FleCSI  documentation</title>
   
 
   
@@ -104,7 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="execution.html">Task Invocation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="execution.html#task-execution">Task Execution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">Data Model</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Topology Requirements</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Topology Design Idioms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-new-topologies">Adding New Topologies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#topology-initialization-workflow">Topology Initialization Workflow</a></li>
 </ul>
@@ -158,7 +158,7 @@
         
           <li><a href="../developer-guide.html">FleCSI Developer Guide</a> &raquo;</li>
         
-      <li>Topology Requirements</li>
+      <li>Topology Design Idioms</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -177,22 +177,99 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="topology-requirements">
-<h1>Topology Requirements<a class="headerlink" href="#topology-requirements" title="Permalink to this headline">¶</a></h1>
-<p>To develop a new topology type from an existing type, e.g., mesh,
-octree, or kd-tree, the user should follow these steps:</p>
-<ul class="simple">
-<li><p>Split Interface &amp; Storage</p></li>
-<li><p>Define a topology handle type</p></li>
-<li><p>Specialize topology registration</p></li>
-<li><p>Specialize storage class implementations</p></li>
+  <div class="section" id="topology-design-idioms">
+<h1>Topology Design Idioms<a class="headerlink" href="#topology-design-idioms" title="Permalink to this headline">¶</a></h1>
+<p>FleCSI uses three C++ idioms to implement topology types:
+template specialization, template function overload, and tuple walkers.</p>
+<ul>
+<li><p><strong>Template Specialization</strong> <br />
+Explicit or partial template specializations use C++ type inference to
+match a template type parameter to a specific implementation, thus
+allowing users to customize the behavior of a class or struct
+depending on the type of the parameter that is passed:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Unspecialized (default) behavior.</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPE</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">type_u</span> <span class="p">{};</span>
+
+<span class="k">template</span><span class="o">&lt;&gt;</span>
+<span class="k">struct</span> <span class="n">type_u</span><span class="o">&lt;</span><span class="n">match_type_one_t</span><span class="o">&gt;</span> <span class="p">{</span>
+
+  <span class="k">static</span> <span class="kt">void</span> <span class="n">method</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Implementation for type one.</span>
+  <span class="p">}</span> <span class="c1">// method</span>
+
+<span class="p">};</span> <span class="c1">// struct type_u</span>
+
+<span class="k">template</span><span class="o">&lt;&gt;</span>
+<span class="k">struct</span> <span class="n">type_u</span><span class="o">&lt;</span><span class="n">match_type_two_t</span><span class="o">&gt;</span> <span class="p">{</span>
+
+  <span class="k">static</span> <span class="kt">void</span> <span class="n">method</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Implementation for type two.</span>
+  <span class="p">}</span> <span class="c1">// method</span>
+
+<span class="p">};</span> <span class="c1">// struct type_u</span>
+</pre></div>
+</div>
+<p>The distinction between <em>explicit</em> and <em>partial</em> specialization is
+whether or not the specialized type is fully (explicit) or partially
+qualified, i.e., partially specialized types leave some template
+parameters unspecified.</p>
+</li>
+<li><p><strong>Template Function Overload</strong> <br />
+Template function overloads are similar to template specialization,
+but allow specialization of a method or function:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">enclosing_type_t</span> <span class="p">{</span>
+
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPE</span><span class="o">&gt;</span>
+  <span class="kt">void</span> <span class="n">method</span><span class="p">(</span><span class="n">type_one_u</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Implementation for type one.</span>
+  <span class="p">}</span> <span class="c1">// method</span>
+
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPE</span><span class="o">&gt;</span>
+  <span class="kt">void</span> <span class="n">method</span><span class="p">(</span><span class="n">type_two_u</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Implementation for type two.</span>
+  <span class="p">}</span> <span class="c1">// method</span>
+
+<span class="p">};</span> <span class="c1">// struct enclosing_type_t</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Tuple Walker</strong> <br />
+The tuple walker idiom is really a calling technique used in
+conjunction with template function overload that applies a <em>visit</em>
+method, defined via the function template overload, to each
+<em>type</em> or <em>value</em> of a
+<a class="reference external" href="https://en.cppreference.com/w/cpp/utility/tuple">std::tuple</a>. The
+distinction between tuple types and values is an important one, as it
+distinguishes between static (type information, available at compile
+time) and dynamic (variable information, available at runtime) state.</p>
+<p>An example of FleCSI’s use of the tuple walker idiom, applied to
+dynamic tuple values, is the <em>init_args</em> type, used to add region
+requirements for the Legion implementation of <em>flecsi_execute_task</em>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nl">init_args_t</span> <span class="p">:</span> <span class="k">public</span>
+<span class="n">flecsi</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">tuple_walker_u</span><span class="o">&lt;</span><span class="n">init_args_t</span><span class="o">&gt;</span> <span class="p">{</span>
+
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">DATA_TYPE</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">PRIVILEGES</span><span class="o">&gt;</span>
+  <span class="kt">void</span> <span class="n">visit</span><span class="p">(</span><span class="n">index_topology</span><span class="o">::</span><span class="n">accessor_u</span><span class="o">&lt;</span><span class="n">DATA_TYPE</span><span class="p">,</span> <span class="n">PRIVILEGES</span><span class="o">&gt;</span> <span class="o">&amp;</span>
+  <span class="n">accessor</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Implmentation for type</span>
+    <span class="c1">// index_topology::accessor_u&lt;DATA_TYPE, PRIVILEGES&gt;.</span>
+  <span class="p">}</span> <span class="c1">// visit</span>
+
+<span class="p">};</span> <span class="c1">// struct init_args_t</span>
+</pre></div>
+</div>
+<p>You may notice that I lied to you before about there only being three
+idioms: Our tuple walker type also uses the CRTP idiom documented
+<a class="reference external" href="http://laristra.github.io/flecsi/src/developer-guide/patterns/CRTP.html">here</a>.</p>
+</li>
 </ul>
 </div>
 <div class="section" id="adding-new-topologies">
 <h1>Adding New Topologies<a class="headerlink" href="#adding-new-topologies" title="Permalink to this headline">¶</a></h1>
 <ol class="arabic">
-<li><p><strong>Topology Type</strong>: Add a new subdirectory to the <em>flecsi/topology</em> directory named for
-the new topology type, e.g., <em>ntree</em>.</p>
+<li><p><strong>Topology Type</strong>: Add a new subdirectory to the <em>flecsi/topology</em>
+directory named for the new topology type, e.g., <em>ntree</em>.</p>
 <p>This subdirectory should include:</p>
 <ul>
 <li><p>interface.h: This file defines the topology interface, e.g.,</p>
@@ -213,12 +290,12 @@ the new topology type, e.g., <em>ntree</em>.</p>
 </li>
 <li><p>types.h: This file defines types that are used by FleCSI, and by
 the new topology type. At a minimum, this file should define a base
-type from which the new topology type shall inherit, and a <em>coloring_t</em>
-type. The base class will be used to identify specializations of
-the new type in explicit specializations and template function
-overloads. The coloring type should include whatever interface and
-data members are required to form a distributed-memory
-representation of the new topology:</p>
+type from which the new topology type shall inherit, and a
+<em>coloring_t</em> type. The base class will be used to identify
+specializations of the new type in explicit/partial specializations
+and template function overloads. The coloring type should include
+whatever interface and data members are required to form a
+distributed-memory representation of the new topology:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ntree_topology_base_t</span> <span class="p">{</span>
 
 <span class="k">using</span> <span class="n">coloring_t</span> <span class="o">=</span> <span class="n">ntree_topology_coloring_t</span><span class="p">;</span>
@@ -234,8 +311,9 @@ type must define the public <em>coloring_t</em> type.</p>
 </li>
 </ul>
 </li>
-<li><p><strong>Topology Registration</strong>: Define an partial specialization of the <em>topology_registration_u</em>
-type in <em>flecsi/data/common/topology_registration.h</em>. This type must
+<li><p><strong>Topology Registration</strong>: Define a partial specialization of the
+<em>topology_registration_u</em> type in
+<em>flecsi/data/common/topology_registration.h</em>. This type must
 implement a <em>register_fields</em> method that adds the fields required to
 represent the meta data associated with an instance of the new
 topology type.</p></li>
@@ -259,6 +337,35 @@ supported backend runtime type, e.g., Legion, MPI, and HPX
 </pre></div>
 </div>
 </li>
+<li><p><strong>Initialize Arguments</strong> (Legion Only): Define a template function
+overload of the <em>init_args_t</em> type in
+<em>flecsi/execution/legion/incovation/init_args.h</em> that adds the region
+requirements for the given type instance.</p></li>
+<li><p><strong>Task Prologue</strong>: Define a template function overload of the
+<em>task_prologue_t</em> type in
+<em>flecsi/execution/runtime/incovation/task_prologue.h</em>, where
+<em>runtime</em> is implemented for each backend runtime. This function
+updates distributed-memory data dependencies.</p></li>
+<li><p><strong>Task Epilogue</strong>: Define a template function overload of the
+<em>task_epilogue_t</em> type in
+<em>flecsi/execution/runtime/incovation/task_epilogue.h</em>, where
+<em>runtime</em> is implemented for each backend runtime. This function
+sets a dirty (modified) bit for any fields or topologies that were
+accessed with write privileges (write-only, or read-write).</p></li>
+<li><p><strong>Bind Accessors</strong>: Define a template function overload of the
+<em>bind_accessors_t</em> type in
+<em>flecsi/execution/runtime/enactment/bind_accessors.h</em>, where
+<em>runtime</em> is implmented for each backend runtime. This function binds
+backend data buffers into the topology accesor instance. The accessor
+is defined as part of the topology type, and implements a
+<em>proxy</em> <a class="reference external" href="https://en.wikipedia.org/wiki/Proxy_pattern">pattern</a>.</p></li>
+<li><p><strong>Unbind Accessors</strong>: Define a template function overload of the
+<em>unbind_accessors_t</em> type in
+<em>flecsi/execution/runtime/enactment/unbind_accessors.h</em>, where
+<em>runtime</em> is implmented for each backend runtime. This function unbinds
+backend data buffers, and does any cleanup operations that are
+necessary to complete task execution, e.g., committing changes to
+sparse or dynamic storage class fields.</p></li>
 </ol>
 </div>
 <div class="section" id="topology-initialization-workflow">
