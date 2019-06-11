@@ -22,7 +22,6 @@
 #include <flecsi/coloring/dcrs_utils.h>
 #include <flecsi/coloring/mpi_communicator.h>
 #include <flecsi/coloring/parmetis_colorer.h>
-#include <flecsi/execution/execution.h>
 #include <flecsi/io/simple_definition.h>
 #include <flecsi/supplemental/coloring/coloring_functions.h>
 #include <flecsi/supplemental/coloring/tikz.h>
@@ -457,8 +456,6 @@ add_colorings(coloring_map_t map) {
     shared_vertices_map, ghost_vertices_map);
 
 } // add_colorings
-
-flecsi_register_mpi_task(add_colorings, flecsi::tutorial);
 
 } // namespace tutorial
 } // namespace flecsi
