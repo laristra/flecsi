@@ -102,12 +102,12 @@ struct topology_instance_u<index_topology_t> {
       legion_runtime->create_field_space(legion_context);
 
     auto & field_info_store = flecsi_context.get_field_info_store(
-      index_topology_t::type_identifier_hash, index);
+      index_topology_t::type_identifier_hash, storage_label_t::index);
 
     Legion::FieldAllocator allocator =
       legion_runtime->create_field_allocator(legion_context, field_space);
 
-    for(auto const & fi : field_info_store.data()) {
+    for(auto const & fi : field_info_store.field_info()) {
       allocator.allocate_field(fi.type_size, fi.fid);
     } // for
 

@@ -614,5 +614,6 @@ summary_option("ENABLE_DOXYGEN" ${ENABLE_DOXYGEN} "")
 summary_option("ENABLE_GRAPHVIZ" ${ENABLE_GRAPHVIZ} "")
 summary_option("ENABLE_OPENMP" ${ENABLE_OPENMP} "")
 summary_option("ENABLE_SPHINX" ${ENABLE_SPHINX} "")
+summary_option("ENABLE_HDF5" ${ENABLE_HDF5} "")
 
 message(STATUS ${_summary})
