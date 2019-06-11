@@ -47,6 +47,7 @@ set(utils_HEADERS
   macros.h
   mpi_type_traits.h
   offset.h
+  reorder.h
   serialize.h
   set_intersection.h
   set_utils.h

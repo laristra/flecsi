@@ -134,6 +134,11 @@ struct topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
 
   using topology_reference_t =
     topology_reference_u<ntree_topology_u<POLICY_TYPE>>;
+  using coloring_t = typename ntree_topology_u<POLICY_TYPE>::coloring_t;
+
+  static void set_coloring(topology_reference_t const & topology_reference,
+    coloring_t const & coloring) {
+  } // set_coloring
 
 }; // ntree_topology_u specialization
 

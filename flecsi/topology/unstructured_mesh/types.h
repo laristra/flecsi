@@ -18,12 +18,11 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/data/data_client.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/topology/connectivity.h>
-#include <flecsi/topology/mesh_utils.h>
-#include <flecsi/topology/partition.h>
-#include <flecsi/topology/types.h>
+#include <flecsi/topology/common/connectivity.h>
+#include <flecsi/topology/unstructured_mesh/partition.h>
+#include <flecsi/topology/unstructured_mesh/utils.h>
+#include <flecsi/topology/common/utility_types.h>
 #endif
 
 #include <array>
@@ -298,6 +297,7 @@ struct unstructured_mesh_topology_base_t {
   using coloring_t = size_t;
 };
 
+#if 0
 template<class STORAGE_TYPE>
 class mesh_topology_base_u : public data::data_client_t,
                              public unstructured_mesh_topology_base_t
@@ -398,6 +398,7 @@ protected:
   STORAGE_TYPE * ms_ = nullptr;
 
 }; // mesh_topology_base_u
+#endif
 
 template<class MESH_TYPE, size_t DIM, size_t DOM>
 using entity_type_ = typename find_entity_<MESH_TYPE, DIM, DOM>::type;

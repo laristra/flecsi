@@ -2,6 +2,21 @@
 
    <br />
 
+   NOTES:
+
+   registration
+   topology_registration: add fields for topology meta data
+
+   invocation
+   init_args: add region requirement
+   prologue: updates data dependencies
+   epilogue: set dirty (modified) bit
+
+   enactment
+   bind_accessors: binds data buffers to accessors
+   unbind_accessors: unbinds data buffers to accessors
+
+
 Topology Requirements
 =====================
 

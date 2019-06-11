@@ -25,7 +25,7 @@ namespace topology {
 template<typename T>
 using topology_storage_u = array_buffer_u<T>;
 
-class offset_storage_
+class offset_storage_t
 {
 public:
   using offset_t = utils::offset_t;
@@ -69,7 +69,7 @@ public:
 private:
   topology_storage_u<offset_t> s_;
   size_t start_ = 0;
-};
+}; // class offset_storage_t
 
 template<typename T>
 class identity_storage_u
