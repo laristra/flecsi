@@ -2,40 +2,104 @@
 
    <br />
 
-   NOTES:
+Topology Design Idioms
+======================
 
-   registration
-   topology_registration: add fields for topology meta data
+FleCSI uses three C++ idioms to implement topology types:
+template specialization, template function overload, and tuple walkers.
 
-   invocation
-   init_args: add region requirement
-   prologue: updates data dependencies
-   epilogue: set dirty (modified) bit
+* **Template Specialization** |br|
+  Explicit or partial template specializations use C++ type inference to
+  match a template type parameter to a specific implementation, thus
+  allowing users to customize the behavior of a class or struct
+  depending on the type of the parameter that is passed:
 
-   enactment
-   bind_accessors: binds data buffers to accessors
-   unbind_accessors: unbinds data buffers to accessors
+  .. code-block:: cpp
 
+    // Unspecialized (default) behavior.
+    template<typename TYPE>
+    struct type_u {};
 
-Topology Requirements
-=====================
+    template<>
+    struct type_u<match_type_one_t> {
 
-To develop a new topology type from an existing type, e.g., mesh,
-octree, or kd-tree, the user should follow these steps:
+      static void method() {
+        // Implementation for type one.
+      } // method
 
-* Split Interface & Storage
+    }; // struct type_u
 
-* Define a topology handle type
+    template<>
+    struct type_u<match_type_two_t> {
 
-* Specialize topology registration
+      static void method() {
+        // Implementation for type two.
+      } // method
 
-* Specialize storage class implementations
+    }; // struct type_u
+
+  The distinction between *explicit* and *partial* specialization is
+  whether or not the specialized type is fully (explicit) or partially
+  qualified, i.e., partially specialized types leave some template
+  parameters unspecified.
+
+* **Template Function Overload** |br|
+  Template function overloads are similar to template specialization,
+  but allow specialization of a method or function:
+
+  .. code-block:: cpp
+
+    struct enclosing_type_t {
+
+      template<typename TYPE>
+      void method(type_one_u<TYPE> & arg) {
+        // Implementation for type one.
+      } // method
+
+      template<typename TYPE>
+      void method(type_two_u<TYPE> & arg) {
+        // Implementation for type two.
+      } // method
+
+    }; // struct enclosing_type_t
+
+* **Tuple Walker** |br|
+  The tuple walker idiom is really a calling technique used in
+  conjunction with template function overload that applies a *visit*
+  method, defined via the function template overload, to each
+  *type* or *value* of a
+  `std::tuple <https://en.cppreference.com/w/cpp/utility/tuple>`_. The
+  distinction between tuple types and values is an important one, as it
+  distinguishes between static (type information, available at compile
+  time) and dynamic (variable information, available at runtime) state.
+
+  An example of FleCSI's use of the tuple walker idiom, applied to
+  dynamic tuple values, is the *init_args* type, used to add region
+  requirements for the Legion implementation of *flecsi_execute_task*:
+
+  .. code-block:: cpp
+
+    struct init_args_t : public
+    flecsi::utils::tuple_walker_u<init_args_t> {
+
+      template<typename DATA_TYPE, size_t PRIVILEGES>
+      void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> &
+      accessor) {
+        // Implmentation for type
+        // index_topology::accessor_u<DATA_TYPE, PRIVILEGES>.
+      } // visit
+
+    }; // struct init_args_t
+
+  You may notice that I lied to you before about there only being three
+  idioms: Our tuple walker type also uses the CRTP idiom documented
+  `here <http://laristra.github.io/flecsi/src/developer-guide/patterns/CRTP.html>`_.
 
 Adding New Topologies
 =====================
 
-1. **Topology Type**: Add a new subdirectory to the *flecsi/topology* directory named for
-   the new topology type, e.g., *ntree*.
+1. **Topology Type**: Add a new subdirectory to the *flecsi/topology*
+   directory named for the new topology type, e.g., *ntree*.
    
    This subdirectory should include:
 
@@ -58,12 +122,12 @@ Adding New Topologies
 
    * types.h: This file defines types that are used by FleCSI, and by
      the new topology type. At a minimum, this file should define a base
-     type from which the new topology type shall inherit, and a *coloring_t*
-     type. The base class will be used to identify specializations of
-     the new type in explicit specializations and template function
-     overloads. The coloring type should include whatever interface and
-     data members are required to form a distributed-memory
-     representation of the new topology:
+     type from which the new topology type shall inherit, and a
+     *coloring_t* type. The base class will be used to identify
+     specializations of the new type in explicit/partial specializations
+     and template function overloads. The coloring type should include
+     whatever interface and data members are required to form a
+     distributed-memory representation of the new topology:
 
      .. code-block:: cpp
 
@@ -79,8 +143,9 @@ Adding New Topologies
      type name, and should follow FleCSI naming conventions. The base
      type must define the public *coloring_t* type.
 
-2. **Topology Registration**: Define an partial specialization of the *topology_registration_u*
-   type in *flecsi/data/common/topology_registration.h*. This type must
+2. **Topology Registration**: Define a partial specialization of the
+   *topology_registration_u* type in
+   *flecsi/data/common/topology_registration.h*. This type must
    implement a *register_fields* method that adds the fields required to
    represent the meta data associated with an instance of the new
    topology type.
@@ -106,6 +171,40 @@ Adding New Topologies
        } // set_coloring
 
      }; // topology_instance_u<ntree_topology_u<POLICY_TYPE>>
+
+4. **Initialize Arguments** (Legion Only): Define a template function
+   overload of the *init_args_t* type in
+   *flecsi/execution/legion/incovation/init_args.h* that adds the region
+   requirements for the given type instance.
+
+5. **Task Prologue**: Define a template function overload of the
+   *task_prologue_t* type in
+   *flecsi/execution/runtime/incovation/task_prologue.h*, where
+   *runtime* is implemented for each backend runtime. This function
+   updates distributed-memory data dependencies.
+
+6. **Task Epilogue**: Define a template function overload of the
+   *task_epilogue_t* type in
+   *flecsi/execution/runtime/incovation/task_epilogue.h*, where
+   *runtime* is implemented for each backend runtime. This function
+   sets a dirty (modified) bit for any fields or topologies that were
+   accessed with write privileges (write-only, or read-write).
+
+7. **Bind Accessors**: Define a template function overload of the
+   *bind_accessors_t* type in
+   *flecsi/execution/runtime/enactment/bind_accessors.h*, where
+   *runtime* is implmented for each backend runtime. This function binds
+   backend data buffers into the topology accesor instance. The accessor
+   is defined as part of the topology type, and implements a
+   *proxy* `pattern <https://en.wikipedia.org/wiki/Proxy_pattern>`_.
+
+8. **Unbind Accessors**: Define a template function overload of the
+   *unbind_accessors_t* type in
+   *flecsi/execution/runtime/enactment/unbind_accessors.h*, where
+   *runtime* is implmented for each backend runtime. This function unbinds
+   backend data buffers, and does any cleanup operations that are
+   necessary to complete task execution, e.g., committing changes to
+   sparse or dynamic storage class fields.
 
 Topology Initialization Workflow
 ================================
