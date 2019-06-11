@@ -32,6 +32,10 @@ flecsi_register_task(check, io_test, loc, index);
 } // namespace io_test
 
 int io_sanity(int argc, char ** argv) {
+
+  flecsi_execute_task(check, io_test, index);
+
+  return 0;
 } // io_sanity
 
 ftest_register_driver(io_sanity);
