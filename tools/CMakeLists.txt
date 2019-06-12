@@ -134,13 +134,12 @@ if(ENABLE_FLECSIT)
     # FleCSIT dependencies
     #--------------------------------------------------------------------------#
 
-    set(PythonInterp_FIND_VERSION TRUE) # unknown hack to search for versions
-    find_package(PythonInterp 2.7 REQUIRED)
+    find_package(Python REQUIRED COMPONENTS Interpreter)
 
-    if(${PYTHON_VERSION_MAJOR} LESS 3)
-      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(${Python_VERSION_MAJOR} LESS 3)
+      execute_process(COMMAND ${Python_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
     else()
-      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+      execute_process(COMMAND ${Python_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
     endif()
 
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/tools/flecsit/flecsit
