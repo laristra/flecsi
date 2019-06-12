@@ -284,6 +284,28 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     }
   }
 
+  /* begin (zojdberg edit)
+   * Handle tuple of items
+   */
+
+  template<typename ... Ts, size_t ... I>
+  void handle_tuple_items( std::tuple<Ts...> & items,
+                           std::index_sequence<I...>
+                         )
+  {
+      ( handle(std::get<I>(items)), ... );
+  }
+
+  template<typename ... Ts>
+  void handle(std::tuple<Ts ...> & items) {
+    handle_tuple_items
+    (
+      items,
+      std::make_index_sequence<sizeof...(Ts)>{}
+    );
+  }
+  /* end (zojdberg edit) */
+
   template<typename T>
   void handle(T &) {} // handle
 
