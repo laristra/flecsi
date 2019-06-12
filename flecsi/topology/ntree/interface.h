@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/data_reference.h>
+#include <flecsi/topology/ntree/storage.h>
 #include <flecsi/topology/ntree/types.h>
 #endif
 
