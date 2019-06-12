@@ -65,17 +65,15 @@ struct ntree_geometry_u<T, 1> {
     const point_t & center,
     element_t r1,
     element_t r2) {
-    element_t x2 = (origin[0] - center[0]) * (origin[0] - center[0]);
-    element_t dist_2 = x2;
-    return dist_2 <= (r1 + r2) * (r1 + r2) * 0.25;
+    element_t dist_2 = (origin[0] - center[0]) * (origin[0] - center[0]);
+    return distance(origin,center) <= std::max(r1,r2);
   }
 
   //! Return true if point origin lies within the box specified by
   //! min/max point.
   static bool within_box(const point_t & min,
     const point_t & max,
-    const point_t & origin,
-    const element_t & r) {
+    const point_t & origin) {
     return origin[0] <= max[0] && origin[0] >= min[0];
   }
 
@@ -138,8 +136,7 @@ struct ntree_geometry_u<T, 2> {
   //! center with radius.
   static bool within(const point_t & origin,
     const point_t & center,
-    element_t r1,
-    element_t r2 = 0) {
+    element_t r1) {
     return distance(origin, center) - r1 <= tol;
   }
 
@@ -148,18 +145,14 @@ struct ntree_geometry_u<T, 2> {
     const point_t & center,
     element_t r1,
     element_t r2) {
-    element_t x2 = (origin[0] - center[0]) * (origin[0] - center[0]);
-    element_t y2 = (origin[1] - center[1]) * (origin[1] - center[1]);
-    element_t dist_2 = x2 + y2;
-    return dist_2 - (r1 + r2) * (r1 + r2) * 0.25 <= tol;
+    return distance(origin,center) <= std::max(r1,r2);
   }
 
   //! Return true if point origin lies within the box specified by
   //! min/max point.
   static bool within_box(const point_t & min,
     const point_t & max,
-    const point_t & origin,
-    const element_t & r) {
+    const point_t & origin) {
     return origin[0] <= max[0] && origin[0] > min[0] && origin[1] <= max[1] &&
            origin[1] > min[1];
   }
@@ -178,7 +171,7 @@ struct ntree_geometry_u<T, 2> {
     const element_t r1,
     const point_t & c2,
     const element_t r2) {
-    return distance(c1, c2) - r1 + r2 <= tol;
+    return distance(c1, c2) - (r1 + r2) <= tol;
   }
 
   //! Intersection of sphere and box; Compute the closest point from the
@@ -224,8 +217,7 @@ struct ntree_geometry_u<T, 3> {
   //! center with radius.
   static bool within(const point_t & origin,
     const point_t & center,
-    element_t r1,
-    element_t r2 = 0) {
+    element_t r1) {
     return distance(origin, center) - r1 <= tol;
   }
 
@@ -234,20 +226,14 @@ struct ntree_geometry_u<T, 3> {
     const point_t & center,
     const element_t & r1,
     const element_t & r2) {
-    element_t x2 = (origin[0] - center[0]) * (origin[0] - center[0]);
-    element_t y2 = (origin[1] - center[1]) * (origin[1] - center[1]);
-    element_t z2 = (origin[2] - center[2]) * (origin[2] - center[2]);
-    element_t dist_2 = x2 + y2 + z2;
-    element_t rp2 = (r1 + r2) * (r1 + r2) * 0.25;
-    return dist_2 <= rp2;
+    return distance(origin,center) <= std::max(r1,r2);
   }
 
   //! Return true if point origin lies within the box specified by
   //! min/max point.
   static bool within_box(const point_t & min,
     const point_t & max,
-    const point_t & origin,
-    const element_t & r) {
+    const point_t & origin) {
     return origin[0] <= max[0] && origin[0] > min[0] && origin[1] <= max[1] &&
            origin[1] > min[1] && origin[2] <= max[2] && origin[2] > min[2];
   }

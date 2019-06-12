@@ -79,7 +79,7 @@ public:
 
   template<typename... ARGS,
     typename = typename std::enable_if<sizeof...(ARGS) == DIMENSION &&
-                                       are_type_u<TYPE, ARGS...>::value>::type>
+                                       are_type_u<TYPE, ARGS...>::value>>
   dimensioned_array_u(ARGS... args) {
     data_ = {args...};
   } // dimensioned_array_u

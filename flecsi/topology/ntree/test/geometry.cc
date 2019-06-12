@@ -33,94 +33,289 @@ int geometry_1d_sanity(int argc, char ** argv) {
 
   FTEST();
   using namespace flecsi;
+  const int num_tests = 100;
 
   // --------------------- Point inside/outside sphere -----------------------//
-  p1d center(0);
-  double radius = 1.5;
-  // inside
-  for(int i = 0 ; i < 100; ++i){
-    p1d origin(rnd(center[0]-radius,center[0]+radius));
-    ASSERT_TRUE(geo1d::within(origin,center,radius));
-  }
-  //outside
-  for(int i = 0 ; i < 100; ++i){
-    p1d origin(rnd(center[0]-radius*10,center[0]-radius));
-    ASSERT_TRUE(!geo1d::within(origin,center,radius));
-  }
-  for(int i = 0 ; i < 100; ++i){
-    p1d origin(rnd(center[0]+radius,center[0]+radius*10));
-    ASSERT_TRUE(!geo1d::within(origin,center,radius));
+  {
+    p1d center(0.);
+    double radius = 1.5;
+    // inside
+    for(int i = 0 ; i < num_tests; ++i){
+      p1d origin(rnd(center[0]-radius,center[0]+radius));
+      ASSERT_TRUE(geo1d::within(origin,center,radius));
+    }
+    //outside
+    for(int i = 0 ; i < num_tests; ++i){
+      p1d origin(rnd(center[0]-radius*10,center[0]-radius));
+      ASSERT_TRUE(!geo1d::within(origin,center,radius));
+    }
+    for(int i = 0 ; i < num_tests; ++i){
+      p1d origin(rnd(center[0]+radius,center[0]+radius*10));
+      ASSERT_TRUE(!geo1d::within(origin,center,radius));
+    }
   }
 
   // ------------------------- Sphere interaction ----------------------------//
-
-
-
-
-#if 0
-
-    //! Return true if dist^2 < radius^2
-    static bool within_square(const point_t & origin,
-      const point_t & center,
-      element_t r1,
-      element_t r2) {
-      element_t x2 = (origin[0] - center[0]) * (origin[0] - center[0]);
-      element_t dist_2 = x2;
-      return dist_2 <= (r1 + r2) * (r1 + r2) * 0.25;
+  {
+    p1d c1(0.);
+    double r1 = 1.0;
+    for(int i = 0; i < num_tests; ++i){
+      p1d c2(rnd(c1[0],c1[0]+1*4));
+      double r2 = rnd(0,c1[0]+r1*5);
+      bool res = std::max(r1,r2) >= distance(c1,c2);
+      ASSERT_EQ(res,geo1d::within_square(c1,c2,r1,r2));
     }
+  }
 
-    //! Return true if point origin lies within the box specified by
-    //! min/max point.
-    static bool within_box(const point_t & min,
-      const point_t & max,
-      const point_t & origin,
-      const element_t & r) {
-      return origin[0] <= max[0] && origin[0] >= min[0];
+  // -------------------------- Particle in box  -----------------------------//
+  {
+    p1d bmin(-1.);
+    p1d bmax(1.);
+    // inside
+    for(int i = 0 ; i < num_tests; ++i){
+      p1d center(rnd(bmin[0],bmax[0]));
+      ASSERT_TRUE(geo1d::within_box(bmin,bmax,center));
     }
-
-    //! Intersection between two boxes defined by there min and max bound
-    static bool intersects_box_box(const point_t & min_b1,
-      const point_t & max_b1,
-      const point_t & min_b2,
-      const point_t & max_b2) {
-      return !((max_b1[0] < min_b2[0]) || (max_b2[0] < min_b1[0]));
+    // outside
+    for(int i = 0 ; i < num_tests; ++i){
+      p1d center(rnd(bmin[0]-10,bmin[0]));
+      ASSERT_TRUE(!geo1d::within_box(bmin,bmax,center));
     }
-
-    //! Intersection of two spheres based on center and radius
-    static bool intersects_sphere_sphere(const point_t & c1,
-      const element_t r1,
-      const point_t & c2,
-      const element_t r2) {
-      return distance(c1, c2) - (r1 + r2) <= tol;
+    for(int i = 0 ; i < num_tests; ++i){
+      p1d center(rnd(bmax[0],bmax[0]+10));
+      ASSERT_TRUE(!geo1d::within_box(bmin,bmax,center));
     }
+  }
 
-    //! Intersection of sphere and box; Compute the closest point from the
-    //! rectangle to the sphere and this distance less than sphere radius
-    static bool intersects_sphere_box(const point_t & min,
-      const point_t & max,
-      const point_t & c,
-      const element_t r) {
-      point_t x = point_t(std::max(min[0], std::min(c[0], max[0])));
-      element_t dist = distance(x, c);
-      return dist - r <= tol;
+  // ------------------------ box box intersection  --------------------------//
+  {
+    p1d bmin(-1.);
+    p1d bmax(1.);
+    p1d bmin_test[4] = {{-2},{2},{1},{-3}};
+    p1d bmax_test[4] = {{2},{3},{3},{0}};
+    bool res_test[4] = {1,0,1,1};
+    for(int i = 0 ; i < 4; ++i){
+      ASSERT_EQ(res_test[i],geo1d::intersects_box_box(bmin,bmax,bmin_test[i],bmax_test[i]));
     }
+  }
 
-    /**
-     * Multipole method acceptance based on MAC.
-     * The angle === l/r < MAC (l source box width, r distance sink -> source)
-     * Barnes & Hut 1986
-     */
-    bool box_MAC(const point_t & position_source,
-      const point_t & position_sink,
-      const point_t & box_source_min,
-      const point_t & box_source_max,
-      double macangle) {
-      double dmax = flecsi::distance(box_source_min, box_source_max);
-      double disttoc = flecsi::distance(position_sink, position_source);
-      return dmax / disttoc - macangle <= tol;
+  // --------------------- sphere sphere intersection  -----------------------//
+  {
+    p1d center(0.);
+    double radius = 1;
+    for(int i = 0; i < num_tests; ++i){
+      p1d c = p1d(rnd(center[0]-radius,center[0]+radius));
+      double r =  rnd(radius/100.,radius);
+      ASSERT_TRUE(geo1d::intersects_sphere_sphere(center,radius,c,r));
     }
+    for(int i = 0; i < num_tests; ++i){
+      p1d c = p1d(rnd(center[0]+radius*10,center[0]+radius*20));
+      double r =  rnd(radius,radius*10-1);
+      ASSERT_TRUE(!geo1d::intersects_sphere_sphere(center,radius,c,r));
+    }
+    for(int i = 0; i < num_tests; ++i){
+      p1d c = p1d(rnd(center[0]-radius*20,center[0]-radius*10));
+      double r =  rnd(radius,radius*10-1);
+      ASSERT_TRUE(!geo1d::intersects_sphere_sphere(center,radius,c,r));
+    }
+  }
 
-    #endif
-
+  // ----------------------- sphere box intersection  ------------------------//
+  {
+    p1d bmin(-1.);
+    p1d bmax(1.);
+    p1d center_test[5] = {{0},{2},{3},{-2},{4}};
+    double radius_test[5] = {1,1,1,1,5};
+    bool res_test[5] = {1,1,0,1,1};
+    for(int i = 0 ; i < 5; ++i){
+      ASSERT_EQ(res_test[i],geo1d::intersects_sphere_box(bmin,bmax,center_test[i],radius_test[i]));
+    }
+  }
 }
 ftest_register_driver(geometry_1d_sanity);
+
+
+using geo2d = flecsi::topology::ntree_geometry_u<double,2>;
+using p2d = point_u<double,2>;
+
+int geometry_2d_sanity(int argc, char ** argv) {
+
+  FTEST();
+  using namespace flecsi;
+  const int num_tests = 100;
+
+  // --------------------- Point inside/outside sphere -----------------------//
+  {
+    p2d center(0.,0.);
+    double radius = 1.5;
+    // inside
+    for(int i = 0 ; i < num_tests; ++i){
+      p2d origin(rnd(center[0]-radius,center[0]+radius),
+                 rnd(center[1]-radius,center[1]+radius));
+      bool res = distance(center,origin) <= radius;
+      ASSERT_EQ(res,geo2d::within(origin,center,radius));
+    }
+  }
+
+  // ------------------------- Sphere interaction ----------------------------//
+  {
+    p2d c1(0.,0.);
+    double r1 = 1.0;
+    for(int i = 0; i < num_tests; ++i){
+      p2d c2(rnd(c1[0],c1[0]+1*4),rnd(c1[1],c1[1]+1*4));
+      double r2 = rnd(0,c1[0]+r1*5);
+      bool res = std::max(r1,r2) >= distance(c1,c2);
+      ASSERT_EQ(res,geo2d::within_square(c1,c2,r1,r2));
+    }
+  }
+
+  // -------------------------- Particle in box  -----------------------------//
+  {
+    p2d bmin(-1.,-1.);
+    p2d bmax(1.,1.);
+    // inside
+    for(int i = 0 ; i < num_tests; ++i){
+      p2d center(rnd(bmin[0],bmax[0]),rnd(bmin[1],bmax[1]));
+      ASSERT_TRUE(geo2d::within_box(bmin,bmax,center));
+    }
+    // outside
+    for(int i = 0 ; i < num_tests; ++i){
+      p2d center(rnd(bmin[0]-10,bmin[0]),rnd(bmin[1]-10,bmin[1]));
+      ASSERT_TRUE(!geo2d::within_box(bmin,bmax,center));
+    }
+    for(int i = 0 ; i < num_tests; ++i){
+      p2d center(rnd(bmax[0],bmax[0]+10),rnd(bmax[1],bmax[1]+10));
+      ASSERT_TRUE(!geo2d::within_box(bmin,bmax,center));
+    }
+  }
+
+  // ------------------------ box box intersection  --------------------------//
+  {
+    p2d bmin(-1.,-1.);
+    p2d bmax(1.,1.);
+    p2d bmin_test[4] = {{-2,-2},{2,2},{1,1},{-3,-3}};
+    p2d bmax_test[4] = {{2,2},{3,3},{3,3},{0,0}};
+    bool res_test[4] = {1,0,1,1};
+    for(int i = 0 ; i < 4; ++i){
+      ASSERT_EQ(res_test[i],geo2d::intersects_box_box(bmin,bmax,bmin_test[i],bmax_test[i]));
+    }
+  }
+
+  // --------------------- sphere sphere intersection  -----------------------//
+  {
+    p2d center(0.,0.);
+    double radius = 1;
+    for(int i = 0; i < num_tests; ++i){
+      p2d c = p2d(rnd(center[0]-radius,center[0]+radius),rnd(center[0]-radius,center[0]+radius));
+      double r =  rnd(radius/100.,radius);
+      bool res = distance(center,c) <= radius+r;
+      ASSERT_EQ(res,geo2d::intersects_sphere_sphere(center,radius,c,r));
+    }
+  }
+
+  // ----------------------- sphere box intersection  ------------------------//
+  {
+    p2d bmin(-1.,-1.);
+    p2d bmax(1.,1.);
+    p2d center_test[5] = {{0,0},{2,2},{3,3},{-2,-2},{4,4}};
+    double radius_test[5] = {1,1,1,1,5};
+    bool res_test[5] = {1,0,0,0,1};
+    for(int i = 0 ; i < 5; ++i){
+      ASSERT_EQ(res_test[i],geo2d::intersects_sphere_box(bmin,bmax,center_test[i],radius_test[i]));
+    }
+  }
+}
+ftest_register_driver(geometry_2d_sanity);
+
+using geo3d = flecsi::topology::ntree_geometry_u<double,3>;
+using p3d = point_u<double,3>;
+
+int geometry_3d_sanity(int argc, char ** argv) {
+
+  FTEST();
+  using namespace flecsi;
+  const int num_tests = 100;
+
+  // --------------------- Point inside/outside sphere -----------------------//
+  {
+    p3d center(0.,0.,0.);
+    double radius = 1.5;
+    // inside
+    for(int i = 0 ; i < num_tests; ++i){
+      p3d origin(rnd(center[0]-radius,center[0]+radius),
+                 rnd(center[1]-radius,center[1]+radius),
+                 rnd(center[2]-radius,center[2]+radius));
+      bool res = distance(center,origin) <= radius;
+      ASSERT_EQ(res,geo3d::within(origin,center,radius));
+    }
+  }
+
+  // ------------------------- Sphere interaction ----------------------------//
+  {
+    p3d c1(0.,0.,0.);
+    double r1 = 1.0;
+    for(int i = 0; i < num_tests; ++i){
+      p3d c2(rnd(c1[0],c1[0]+1*4),rnd(c1[1],c1[1]+1*4),rnd(c1[2],c1[2]+1*4));
+      double r2 = rnd(0,c1[0]+r1*5);
+      bool res = std::max(r1,r2) >= distance(c1,c2);
+      ASSERT_EQ(res,geo3d::within_square(c1,c2,r1,r2));
+    }
+  }
+
+  // -------------------------- Particle in box  -----------------------------//
+  {
+    p3d bmin(-1.,-1.,-1.);
+    p3d bmax(1.,1.,1.);
+    // inside
+    for(int i = 0 ; i < num_tests; ++i){
+      p3d center(rnd(bmin[0],bmax[0]),rnd(bmin[1],bmax[1]),rnd(bmin[2],bmax[2]));
+      ASSERT_TRUE(geo3d::within_box(bmin,bmax,center));
+    }
+    // outside
+    for(int i = 0 ; i < num_tests; ++i){
+      p3d center(rnd(bmin[0]-10,bmin[0]),rnd(bmin[1]-10,bmin[1]),rnd(bmin[2]-10,bmin[2]));
+      ASSERT_TRUE(!geo3d::within_box(bmin,bmax,center));
+    }
+    for(int i = 0 ; i < num_tests; ++i){
+      p3d center(rnd(bmax[0],bmax[0]+10),rnd(bmax[1],bmax[1]+10),rnd(bmax[2],bmax[2]+10));
+      ASSERT_TRUE(!geo3d::within_box(bmin,bmax,center));
+    }
+  }
+
+  // ------------------------ box box intersection  --------------------------//
+  {
+    p3d bmin(-1.,-1.,-1.);
+    p3d bmax(1.,1.,1.);
+    p3d bmin_test[4] = {{-2,-2,-2},{2,2,2},{1,1,1},{-3,-3,-3}};
+    p3d bmax_test[4] = {{2,2,2},{3,3,3},{3,3,3},{0,0,0}};
+    bool res_test[4] = {1,0,1,1};
+    for(int i = 0 ; i < 4; ++i){
+      ASSERT_EQ(res_test[i],geo3d::intersects_box_box(bmin,bmax,bmin_test[i],bmax_test[i]));
+    }
+  }
+
+  // --------------------- sphere sphere intersection  -----------------------//
+  {
+    p3d center(0.,0.,0.);
+    double radius = 1;
+    for(int i = 0; i < num_tests; ++i){
+      p3d c = p3d(rnd(center[0]-radius,center[0]+radius),rnd(center[0]-radius,center[0]+radius),rnd(center[2]-radius,center[2]+radius));
+      double r =  rnd(radius/100.,radius);
+      bool res = distance(center,c) <= radius+r;
+      ASSERT_EQ(res,geo3d::intersects_sphere_sphere(center,radius,c,r));
+    }
+  }
+
+  // ----------------------- sphere box intersection  ------------------------//
+  {
+    p3d bmin(-1.,-1.,-1.);
+    p3d bmax(1.,1.,1.);
+    p3d center_test[5] = {{0,0,0},{2,2,2},{3,3,3},{-2,-2,-2},{2,2,2}};
+    double radius_test[5] = {1,1,1,1,5};
+    bool res_test[5] = {1,0,0,0,1};
+    for(int i = 0 ; i < 5; ++i){
+      ASSERT_EQ(res_test[i],geo3d::intersects_sphere_box(bmin,bmax,center_test[i],radius_test[i]));
+    }
+  }
+}
+ftest_register_driver(geometry_3d_sanity);
