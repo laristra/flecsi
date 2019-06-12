@@ -113,7 +113,7 @@ CODE is one of the following:
       - Has constructs that ideally should elicit warnings.
 
    - compile
-      - Code has (a) compile-time error(s).
+      - Code has one or more compile-time errors.
         Expect lots of output from flecstan in these cases!
 
    - run-flecsi
