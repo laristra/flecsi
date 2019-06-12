@@ -140,10 +140,7 @@ before_script:
           -DENABLE_UNIT_TESTS=ON \
           ..;
         make -j2 || make VERBOSE=1;
-        if [[ ${RUNTIME} = "mpi" ]];
-        then
-          make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";
-        fi;
+        make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";
       fi;
 
 ###############
