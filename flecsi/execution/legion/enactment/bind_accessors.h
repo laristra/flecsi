@@ -120,7 +120,6 @@ struct bind_accessors_t
         .get_field_info(accessor.identifier())
         .fid;
 
-    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
     const Legion::UnsafeFieldAccessor<DATA_TYPE,
       1,
       Legion::coord_t,

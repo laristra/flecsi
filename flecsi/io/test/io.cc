@@ -32,7 +32,8 @@ flecsi_register_task(check, io_test, loc, index);
 
 } // namespace io_test
 
-int io_sanity(int argc, char ** argv) {
+int
+io_sanity(int argc, char ** argv) {
 
   flecsi_execute_task(check, io_test, index);
 

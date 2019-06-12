@@ -125,7 +125,7 @@ struct field_info_store_t {
     Return the vector of registered fields.
    */
 
-  std::vector<field_info_t> const & data() const {
+  std::vector<field_info_t> const & field_info() const {
     return data_;
   } // data
 

@@ -283,11 +283,11 @@ legion_context_policy_t::initialize_global_topology() {
     should be used.
    */
 
-  auto & field_store = context_t::instance().get_field_info_store(
+  auto & field_info_store = context_t::instance().get_field_info_store(
     global_topology_t::type_identifier_hash,
     flecsi::data::storage_label_t::global);
 
-  for(auto const & fi : field_store.data()) {
+  for(auto const & fi : field_info_store.field_info()) {
     allocator.allocate_field(fi.type_size, fi.fid);
   } // for
 
