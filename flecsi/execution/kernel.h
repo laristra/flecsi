@@ -19,8 +19,45 @@
 
 #include <flecsi/topology/index_space.h>
 
+#ifdef FLECSI_ENABLE_KOKKOS
+
+#include <Kokkos_Core.hpp>
+
 namespace flecsi {
-namespace execution {
+
+/*!
+  This function is a wrapper for Kokkos::parallel_for that has been adapted to
+  work with FleCSI's topology iterator types. In particular, this function
+  invokes a map from the normal kernel index space to the FleCSI index space,
+  which may require indirection.
+ */
+
+template<typename ITERATOR, typename LAMBDA>
+void parallel_for(ITERATOR iterator, LAMBDA lambda,
+             std::string  const& name = "") {
+
+  struct functor_t {
+
+    functor_t(ITERATOR & iterator, LAMBDA & lambda)
+      : iterator_(iterator), lambda_(lambda) {}
+
+    KOKKOS_INLINE_FUNCTION void operator()(int i) const {
+      lambda_(iterator_[i]);
+    } // operator()
+
+  private:
+    ITERATOR & iterator_;
+    LAMBDA & lambda_;
+
+  }; // struct functor_t
+
+  Kokkos::parallel_for(name, iterator.size(), functor_t{iterator, lambda});
+
+} // parallel_for
+}//end namespace
+#endif
+
+namespace flecsi{
 
 //----------------------------------------------------------------------------//
 //! Abstraction function for fine-grained, data-parallel interface.
@@ -103,5 +140,4 @@ reduce_each_u(
   } // for
 } // reduce_each_u
 
-} // namespace execution
 } // namespace flecsi

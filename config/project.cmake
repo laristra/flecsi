@@ -22,13 +22,7 @@ cinch_minimum_required(VERSION v1.0)
 # Set the project name
 #------------------------------------------------------------------------------#
 
-option(ENABLE_CUDA "Enable support for CUDA" OFF)
-
-if(ENABLE_CUDA)
-  project(FleCSI LANGUAGES CXX C CUDA)
-else()
-  project(FleCSI LANGUAGES CXX C)
-endif()
+project(FleCSI LANGUAGES CXX C)
 
 #------------------------------------------------------------------------------#
 # Automatic version creation.
@@ -291,6 +285,16 @@ if(ENABLE_CLOG)
   if(CLOG_ENABLE_MPI)
     list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${CMAKE_THREAD_LIBS_INIT})
   endif()
+endif()
+
+#------------------------------------------------------------------------------#
+# Add option for Kokkos
+#------------------------------------------------------------------------------#
+
+if (ENABLE_KOKKOS)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Kokkos_LIBRARIES})
+  add_definitions(-DFLECSI_ENABLE_KOKKOS)
+  set (FLECSI_ENABLE_KOKKOS TRUE)
 endif()
 
 #------------------------------------------------------------------------------#

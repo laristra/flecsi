@@ -21,6 +21,11 @@
 
 #include <mpi.h>
 
+#if defined(FLECSI_ENABLE_KOKKOS)
+#include <Kokkos_Core.hpp>
+#endif
+
+
 #include <flecsi/execution/context.h>
 
 // Boost command-line options
@@ -67,6 +72,10 @@ main(int argc, char ** argv) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 #endif // FLECSI_ENABLE_MPI
+
+#if defined(FLECSI_ENABLE_KOKKOS)
+  Kokkos::initialize(argc, argv);
+#endif
 
   //--------------------------------------------------------------------------//
   // INIT CLOG
@@ -121,6 +130,10 @@ main(int argc, char ** argv) {
     result = flecsi::execution::context_t::instance().initialize(argc, argv);
 
   } // if
+
+#if defined(FLECSI_ENABLE_KOKKOS)
+  Kokkos::finalize();
+#endif
 
 #if defined(FLECSI_ENABLE_MPI)
   // Shutdown the MPI runtime
