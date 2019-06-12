@@ -27,6 +27,10 @@
 #include <legion.h>
 #include <legion/arrays.h>
 
+#ifdef ENABLE_CALIPER
+#include <caliper/cali.h>
+#endif
+
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
@@ -83,7 +87,9 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     h.context = context;
     h.runtime = runtime;
-
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN(" FleCSI init_handles");
+#endif 
     Legion::PhysicalRegion prs[num_regions];
     T * data[num_regions];
     size_t sizes[num_regions];
@@ -118,7 +124,9 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
         h.combined_size += sizes[r];
       } // if
     } // for
-
+#ifdef ENABLE_CALIPER
+CALI_MARK_END(" FleCSI init_handles");
+#endif
     // region += num_regions;
 
 #ifndef MAPPER_COMPACTION
@@ -180,6 +188,9 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
 #else
     {
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("FleCSI_init_handles LogicalRegion");
+#endif
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
@@ -196,8 +207,14 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       auto ac = prs[0].get_field_accessor(h.fid).template typeify<T>();
       h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
     } // scope
-
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_init_handles LogicalRegion");
+#endif
     size_t pos{0};
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("FleCSI_init_handles LogicalRegion loop");
+#endif
+
     for(size_t r{0}; r < num_regions; ++r) {
       switch(r) {
         case 0: // Exclusive
@@ -227,6 +244,10 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       pos += sizes[r];
     } // for
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_init_handles LogicalRegion loop");
+#endif
+
 #endif
 
     region += num_regions;

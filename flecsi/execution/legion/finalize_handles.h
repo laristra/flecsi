@@ -18,6 +18,9 @@
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/utils/tuple_walker.h>
 
+#ifdef ENABLE_CALIPER
+#include <caliper/cali.h>
+#endif
 namespace flecsi {
 namespace execution {
 

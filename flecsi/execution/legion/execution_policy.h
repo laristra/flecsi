@@ -323,7 +323,13 @@ struct legion_execution_policy_t {
               legion_runtime, legion_context, launch_domain);
             task_prolog.sparse = false;
             task_prolog.walk(task_args);
-            task_prolog.launch_copies();
+#ifdef ENABLE_CALIPER
+        CALI_MARK_BEGIN("task_prolog launch_copies");
+#endif
+	    task_prolog.launch_copies();
+#ifdef ENABLE_CALIPER
+	CALI_MARK_END("task_prolog launch_copies");
+#endif
           } // scope
 
 #ifdef ENABLE_CALIPER
@@ -336,7 +342,13 @@ struct legion_execution_policy_t {
               legion_runtime, legion_context, launch_domain);
             task_prolog.sparse = true;
             task_prolog.walk(task_args);
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("task_prolog_sparse launch_copies");
+#endif
             task_prolog.launch_copies();
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("task_prolog_sparse launch_copies");
+#endif
           } // scope
 
 #ifdef ENABLE_CALIPER
