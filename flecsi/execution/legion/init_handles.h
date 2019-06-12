@@ -83,10 +83,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     h.context = context;
     h.runtime = runtime;
-
-    Legion::PhysicalRegion prs[num_regions];
-    T * data[num_regions];
-    size_t sizes[num_regions];
     h.combined_size = 0;
 
     const int my_color = runtime->find_local_MPI_rank();
@@ -94,81 +90,48 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     size_t permissions[] = {
       EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS};
 
-    // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
-    for(size_t r = 0; r < num_regions; ++r) {
-      if(permissions[r] == size_t(reserved)) {
-        clog(error) << "reserved permissions mode used on region " << r
-                    << std::endl;
-      }
-      else {
-        prs[r] = regions[region + r];
-        Legion::LogicalRegion lr = prs[r].get_logical_region();
-        Legion::IndexSpace is = lr.get_index_space();
+    Legion::LogicalRegion lr = regions[region].get_logical_region();
+    Legion::IndexSpace is = lr.get_index_space();
 
-        auto ac = prs[r].get_field_accessor(h.fid).template typeify<T>();
+    // we need to get Rect for the parent index space in purpose to loop
+    // over  compacted physical instance
 
-        Legion::Domain domain = runtime->get_index_space_domain(context, is);
+    Legion::Domain dom = runtime->get_index_space_domain(context, is);
+    LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
 
-        LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
-        LegionRuntime::Arrays::Rect<2> sr;
-        LegionRuntime::Accessor::ByteOffset bo[2];
-        data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
-        // data[r] += bo[1];
-        sizes[r] = sr.hi[1] - sr.lo[1] + 1;
-        h.combined_size += sizes[r];
-      } // if
-    } // for
+    LegionRuntime::Arrays::Rect<2> sr;
+    LegionRuntime::Accessor::ByteOffset bo[2];
 
-    // region += num_regions;
+    // get an accessor to the first element in exclusive LR:
+    auto ac = regions[region].get_field_accessor(h.fid).template typeify<T>();
+    h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
 
-    {
-      Legion::LogicalRegion lr = regions[region].get_logical_region();
-      Legion::IndexSpace is = lr.get_index_space();
+    // Exclusive
+    h.exclusive_size = rect.hi[1] - rect.lo[1] + 1;
+    h.exclusive_data = h.exclusive_size == 0 ? nullptr : h.combined_data;
+    // Shared
+    LegionRuntime::Arrays::Rect<2> rect_sh =
+      runtime
+        ->get_index_space_domain(
+          context, regions[region + 1].get_logical_region().get_index_space())
+        .get_rect<2>();
+    h.shared_size = rect_sh.hi[1] - rect_sh.lo[1] + 1;
+    h.shared_data =
+      h.shared_size == 0 ? nullptr : h.combined_data + h.exclusive_size;
+    // Ghost
+    LegionRuntime::Arrays::Rect<2> rect_gh =
+      runtime
+        ->get_index_space_domain(
+          context, regions[region + 2].get_logical_region().get_index_space())
+        .get_rect<2>();
+    h.ghost_size = rect_gh.hi[1] - rect_gh.lo[1] + 1;
+    h.ghost_data = h.ghost_size == 0
+                     ? nullptr
+                     : h.combined_data + h.exclusive_size + h.shared_size;
 
-      // we need to get Rect for the parent index space in purpose to loop
-      // over  compacted physical instance
-
-      Legion::Domain dom = runtime->get_index_space_domain(context, is);
-      LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
-
-      LegionRuntime::Arrays::Rect<2> sr;
-      LegionRuntime::Accessor::ByteOffset bo[2];
-
-      // get an accessor to the first element in exclusive LR:
-      auto ac = prs[0].get_field_accessor(h.fid).template typeify<T>();
-      h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
-    } // scope
-
-    size_t pos{0};
-    for(size_t r{0}; r < num_regions; ++r) {
-      switch(r) {
-        case 0: // Exclusive
-          h.exclusive_size = sizes[r];
-          h.exclusive_pr = prs[r];
-          h.exclusive_data = h.exclusive_size == 0 ? nullptr : h.combined_data;
-          h.exclusive_buf = data[r];
-          break;
-        case 1: // Shared
-          h.shared_size = sizes[r];
-          h.shared_pr = prs[r];
-          h.shared_data = h.shared_size == 0 ? nullptr : h.combined_data + pos;
-          h.shared_buf = data[r];
-          break;
-        case 2: // Ghost
-          h.ghost_size = sizes[r];
-          h.ghost_pr = prs[r];
-          h.ghost_data = h.ghost_size == 0 ? nullptr : h.combined_data + pos;
-          h.ghost_buf = data[r];
-          break;
-        default:
-          clog_fatal("invalid permissions case");
-      } // switch
-
-      pos += sizes[r];
-    } // for
+    h.combined_size = h.exclusive_size + h.shared_size + h.ghost_size;
 
     region += num_regions;
-
   } // handle
 
   template<typename T, size_t PERMISSIONS>
