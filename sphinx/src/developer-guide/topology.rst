@@ -137,7 +137,7 @@ Adding New Topologies
 
          // interface ...
 
-       }; // struct ntree_topology_u
+       }; // struct ntree_topology_base_t
 
      The base type should be named consistently with the new topology
      type name, and should follow FleCSI naming conventions. The base
