@@ -29,6 +29,6 @@ endif()
 set(FleCSI_LIBRARY FleCSI)
 # Normal cmake convention includes the main library plus all of its
 # dependancies in <LIBRARY>_LIBRARIES
-set(FleCSI_LIBRARIES ${FLECSI_LIBRARY_DEPENDENCIES} ${FleCSI_LIBRARY})
+set(FleCSI_LIBRARIES ${FleCSI_LIBRARY} ${FLECSI_LIBRARY_DEPENDENCIES})
 
 set(FleCSI_Tut_LIBRARIES FleCSI-Tut)
