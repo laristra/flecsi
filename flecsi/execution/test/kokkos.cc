@@ -39,12 +39,10 @@ task1(client_handle_t<test_mesh_t, ro> mesh,
   }
 
   auto comp = [=](auto c){
-  //  pressure(c) = 1.0;
-	  std::cout <<"inside of the kokkos parallel_for, "<< pressure(c)<<std::endl;
+    pressure(c) = 1.0;
   };
 
   const std::string task_name = "task1";
-
   flecsi::parallel_for(mesh.cells(), comp, task_name);
 
 }

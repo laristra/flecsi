@@ -107,7 +107,7 @@ struct accessor_u<data::dense,
    \param index The index of the data variable to return.
    */
 
-  const T & operator()(size_t index) const {
+  T & operator()(size_t index) const {
     return const_cast<accessor_u &>(*this)(index);
   }
 
