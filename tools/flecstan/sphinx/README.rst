@@ -19,16 +19,16 @@ Blah blah. Write something not too stupid here.
 .. toctree::
   :caption: Contents:
 
-   src/01-overview
-   src/02-input
-   src/03-examples-basic
-   src/04-flecsi-tutorial
-   src/05-flecsale-mm
-   src/06-output-formatting
-   src/07-output-content
-   src/08-examples-in-depth
-   src/09-advanced-topics
-   src/10-appendix
+  src/01-overview
+  src/02-input
+  src/03-examples-basic
+  src/04-flecsi-tutorial
+  src/05-flecsale-mm
+  src/06-output-formatting
+  src/07-output-content
+  src/08-examples-in-depth
+  src/09-advanced-topics
+  src/10-appendix
 
 
 
