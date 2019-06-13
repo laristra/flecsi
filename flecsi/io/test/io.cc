@@ -21,6 +21,9 @@
 #include <assert.h>
 #include <legion.h>
 
+#include <sys/types.h>
+#include <unistd.h>
+
 using namespace Legion;
 
 using namespace flecsi;
@@ -48,7 +51,7 @@ io_sanity(int argc, char ** argv) {
   
   int num_elements = 64; 
   int num_subregions = 4;
-  int num_files = 2;
+  int num_files = 4;
   char file_name[256];
   strcpy(file_name, "checkpoint.dat");
   
@@ -68,7 +71,7 @@ io_sanity(int argc, char ** argv) {
     }
   }
   
-  printf("Running for %d elements...\n", num_elements);
+  printf("Running for %d elements, pid %ld\n", num_elements, getpid());
   
   Runtime *runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
