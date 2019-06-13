@@ -37,6 +37,8 @@ point_sanity(int argc, char ** argv) {
   ASSERT_EQ(0.0, a3[utils::axis::y]);
   ASSERT_EQ(-1.0, a3[utils::axis::z]);
 
+  return 0;
+
 } // TEST
 ftest_register_driver(point_sanity);
 
@@ -57,6 +59,8 @@ point_distance(int argc, char ** argv) {
   point_3d_t b3{4.0, 6.0, -1.0 - std::sqrt(11.0)};
   d = distance(a3, b3);
   ASSERT_EQ(6.0, d) << "Distance calculation failed";
+
+  return 0;
 } // TEST
 ftest_register_driver(point_distance);
 
@@ -80,6 +84,8 @@ point_midpoint(int argc, char ** argv) {
   ASSERT_EQ(2.5, c3[0]) << "Midpoint calculation failed";
   ASSERT_EQ(4.0, c3[1]) << "Midpoint calculation failed";
   ASSERT_EQ(-2.5, c3[2]) << "Midpoint calculation failed";
+
+  return 0; 
 } // TEST
 ftest_register_driver(point_midpoint);
 

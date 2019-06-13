@@ -131,6 +131,8 @@ int geometry_1d_sanity(int argc, char ** argv) {
       ASSERT_EQ(res_test[i],geo1d::intersects_sphere_box(bmin,bmax,center_test[i],radius_test[i]));
     }
   }
+
+  return 0;
 }
 ftest_register_driver(geometry_1d_sanity);
 
@@ -224,6 +226,7 @@ int geometry_2d_sanity(int argc, char ** argv) {
       ASSERT_EQ(res_test[i],geo2d::intersects_sphere_box(bmin,bmax,center_test[i],radius_test[i]));
     }
   }
+  return 0;
 }
 ftest_register_driver(geometry_2d_sanity);
 
@@ -317,5 +320,6 @@ int geometry_3d_sanity(int argc, char ** argv) {
       ASSERT_EQ(res_test[i],geo3d::intersects_sphere_box(bmin,bmax,center_test[i],radius_test[i]));
     }
   }
+  return 0; 
 }
 ftest_register_driver(geometry_3d_sanity);

@@ -32,7 +32,7 @@ namespace flecsi {
 namespace topology {
 
 template<class TREE_TYPE>
-struct mpi_tree_topology_storage_policy_u {
+struct ntree_storage_u {
 
   using id_t = utils::id_t;
   static constexpr size_t num_partitions = 5;
@@ -88,7 +88,7 @@ struct mpi_tree_topology_storage_policy_u {
   std::array<branch_partition_index_spaces_t, num_partitions>
     branch_partition_index_spaces;
 
-  mpi_tree_topology_storage_policy_u() {
+  ntree_storage_u() {
     auto & context_ = flecsi::execution::context_t::instance();
   }
 

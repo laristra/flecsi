@@ -58,6 +58,7 @@ hilbert_sanity(int argc, char ** argv) {
     hc4.pop();
   }
   ASSERT_TRUE(hc5 == hc4);
+  return 0;
 }
 ftest_register_driver(hilbert_sanity);
 
@@ -82,6 +83,7 @@ hilbert_2d_rnd(int argc, char ** argv) {
     flog(info) << pts[i] << " " << hcs_2d[i] << " = " << inv << std::endl;
     ASSERT_TRUE(dist < 1.0e-4);
   }
+  return 0;
 }
 ftest_register_driver(hilbert_2d_rnd);
 
@@ -126,6 +128,7 @@ hilbert_3d_rnd(int argc, char ** argv) {
     flog(info) << pt << " = " << h << " = " << inv << std::endl;
     ASSERT_TRUE(dist < 1.0e-4);
   }
+  return 0;
 } // TEST
 ftest_register_driver(hilbert_3d_rnd);
 
@@ -158,6 +161,7 @@ morton_sanity(int argc, char ** argv) {
     hc4.pop();
   }
   ASSERT_TRUE(hc5 == hc4);
+  return 0;
 }
 ftest_register_driver(morton_sanity);
 
@@ -194,6 +198,7 @@ morton_2d_rnd(int argc, char ** argv) {
     flog(info) << pt << " = " << h << " = " << inv << std::endl;
     ASSERT_TRUE(dist < 1.0e-4);
   }
+  return 0;
 }
 
 ftest_register_driver(morton_2d_rnd);
@@ -239,6 +244,7 @@ morton_3d_rnd(int argc, char ** argv) {
     flog(info) << pt << " = " << h << " = " << inv << std::endl;
     ASSERT_TRUE(dist < 1.0e-4);
   }
+  return 0; 
 }
 ftest_register_driver(morton_3d_rnd);
 
