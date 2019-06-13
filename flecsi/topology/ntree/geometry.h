@@ -54,9 +54,8 @@ struct ntree_geometry_u<T, 1> {
 
   //! Return true if point origin lies within the spheroid centered at
   //! center with radius.
-  static bool within(const point_t & origin,
-    const point_t & center,
-    element_t r1) {
+  static bool
+  within(const point_t & origin, const point_t & center, element_t r1) {
     return distance(origin, center) - r1 <= tol;
   }
 
@@ -66,14 +65,13 @@ struct ntree_geometry_u<T, 1> {
     element_t r1,
     element_t r2) {
     element_t dist_2 = (origin[0] - center[0]) * (origin[0] - center[0]);
-    return distance(origin,center) <= std::max(r1,r2);
+    return distance(origin, center) <= std::max(r1, r2);
   }
 
   //! Return true if point origin lies within the box specified by
   //! min/max point.
-  static bool within_box(const point_t & min,
-    const point_t & max,
-    const point_t & origin) {
+  static bool
+  within_box(const point_t & min, const point_t & max, const point_t & origin) {
     return origin[0] <= max[0] && origin[0] >= min[0];
   }
 
@@ -134,9 +132,8 @@ struct ntree_geometry_u<T, 2> {
 
   //! Return true if point origin lies within the spheroid centered at
   //! center with radius.
-  static bool within(const point_t & origin,
-    const point_t & center,
-    element_t r1) {
+  static bool
+  within(const point_t & origin, const point_t & center, element_t r1) {
     return distance(origin, center) - r1 <= tol;
   }
 
@@ -145,14 +142,13 @@ struct ntree_geometry_u<T, 2> {
     const point_t & center,
     element_t r1,
     element_t r2) {
-    return distance(origin,center) <= std::max(r1,r2);
+    return distance(origin, center) <= std::max(r1, r2);
   }
 
   //! Return true if point origin lies within the box specified by
   //! min/max point.
-  static bool within_box(const point_t & min,
-    const point_t & max,
-    const point_t & origin) {
+  static bool
+  within_box(const point_t & min, const point_t & max, const point_t & origin) {
     return origin[0] <= max[0] && origin[0] > min[0] && origin[1] <= max[1] &&
            origin[1] > min[1];
   }
@@ -215,9 +211,8 @@ struct ntree_geometry_u<T, 3> {
 
   //! Return true if point origin lies within the spheroid centered at
   //! center with radius.
-  static bool within(const point_t & origin,
-    const point_t & center,
-    element_t r1) {
+  static bool
+  within(const point_t & origin, const point_t & center, element_t r1) {
     return distance(origin, center) - r1 <= tol;
   }
 
@@ -226,14 +221,13 @@ struct ntree_geometry_u<T, 3> {
     const point_t & center,
     const element_t & r1,
     const element_t & r2) {
-    return distance(origin,center) <= std::max(r1,r2);
+    return distance(origin, center) <= std::max(r1, r2);
   }
 
   //! Return true if point origin lies within the box specified by
   //! min/max point.
-  static bool within_box(const point_t & min,
-    const point_t & max,
-    const point_t & origin) {
+  static bool
+  within_box(const point_t & min, const point_t & max, const point_t & origin) {
     return origin[0] <= max[0] && origin[0] > min[0] && origin[1] <= max[1] &&
            origin[1] > min[1] && origin[2] <= max[2] && origin[2] > min[2];
   }
@@ -267,8 +261,10 @@ struct ntree_geometry_u<T, 3> {
     const point_t & c,
     const element_t & r) {
     point_t x = point_t(c[0] < max[0] ? c[0] : max[0],
-      c[1] < max[1] ? c[1] : max[1], c[2] < max[2] ? c[2] : max[2]);
-    x = {x[0] < min[0] ? min[0] : x[0], x[1] < min[1] ? min[1] : x[1],
+      c[1] < max[1] ? c[1] : max[1],
+      c[2] < max[2] ? c[2] : max[2]);
+    x = {x[0] < min[0] ? min[0] : x[0],
+      x[1] < min[1] ? min[1] : x[1],
       x[2] < min[2] ? min[2] : x[2]};
     element_t dist = (x[0] - c[0]) * (x[0] - c[0]) +
                      (x[1] - c[1]) * (x[1] - c[1]) +

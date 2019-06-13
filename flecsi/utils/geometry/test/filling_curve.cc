@@ -244,7 +244,7 @@ morton_3d_rnd(int argc, char ** argv) {
     flog(info) << pt << " = " << h << " = " << inv << std::endl;
     ASSERT_TRUE(dist < 1.0e-4);
   }
-  return 0; 
+  return 0;
 }
 ftest_register_driver(morton_3d_rnd);
 

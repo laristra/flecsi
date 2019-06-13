@@ -85,7 +85,7 @@ point_midpoint(int argc, char ** argv) {
   ASSERT_EQ(4.0, c3[1]) << "Midpoint calculation failed";
   ASSERT_EQ(-2.5, c3[2]) << "Midpoint calculation failed";
 
-  return 0; 
+  return 0;
 } // TEST
 ftest_register_driver(point_midpoint);
 

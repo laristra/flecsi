@@ -18,16 +18,16 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <stack>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <stack>
 
 #include <flecsi/utils/flog/utils.h>
 
 #include <flecsi/data/common/data_reference.h>
+#include <flecsi/topology/ntree/geometry.h>
 #include <flecsi/topology/ntree/storage.h>
 #include <flecsi/topology/ntree/types.h>
-#include <flecsi/topology/ntree/geometry.h>
 #include <flecsi/utils/flog.h>
 
 #endif
@@ -43,10 +43,10 @@ namespace topology {
   @ingroup topology
  */
 
- //-----------------------------------------------------------------//
- //! The tree topology is parameterized on a policy P which defines its branch
- //! and entity types.
- //-----------------------------------------------------------------//
+//-----------------------------------------------------------------//
+//! The tree topology is parameterized on a policy P which defines its branch
+//! and entity types.
+//-----------------------------------------------------------------//
 template<typename POLICY_TYPE>
 struct ntree_topology_u : public ntree_topology_base_t,
                           public data::data_reference_base_t {
