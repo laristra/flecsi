@@ -444,7 +444,7 @@ endif()
 # Set application directory
 #------------------------------------------------------------------------------#
 
-#cinch_add_application_directory("tools")
+add_subdirectory("tools")
 
 #------------------------------------------------------------------------------#
 # Prepare variables for FleCSIConfig file.
