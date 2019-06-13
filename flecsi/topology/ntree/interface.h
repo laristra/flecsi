@@ -28,6 +28,8 @@
 #include <flecsi/topology/ntree/storage.h>
 #include <flecsi/topology/ntree/types.h>
 #include <flecsi/topology/ntree/geometry.h>
+#include <flecsi/utils/flog.h>
+
 #endif
 
 namespace flecsi {
@@ -365,7 +367,7 @@ public:
    * dot -Tpng file.gv > file.png
    */
   void graphviz(int num) {
-    //clog(trace) << " outputing tree file #" << num << std::endl;
+    flog(trace) << " outputing tree file #" << num << std::endl;
 
     char fname[64];
     sprintf(fname, "output_graphviz_%02d.gv", num);
