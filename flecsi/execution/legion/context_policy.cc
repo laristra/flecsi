@@ -42,7 +42,7 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
     Legion::TaskVariantRegistrar registrar(
       FLECSI_TOP_LEVEL_TASK_ID, "runtime_driver");
     registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
-    registrar.set_inner();
+//    registrar.set_inner();
     registrar.set_replicable();
     Runtime::preregister_task_variant<top_level_task>(
       registrar, "runtime_driver");

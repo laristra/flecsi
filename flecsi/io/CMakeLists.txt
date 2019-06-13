@@ -27,6 +27,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   )
 
   set(io_SOURCES
+    legion/io_policy.cc
     ${io_SOURCES}
   )
 
