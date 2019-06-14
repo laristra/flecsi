@@ -50,8 +50,7 @@ int
 io_sanity(int argc, char ** argv) {
   
   int num_elements = 63; 
-  int num_subregions = 4;
-  int num_files = 4;
+  int num_files = 2;
   char file_name[256];
   strcpy(file_name, "checkpoint.dat");
   
@@ -60,8 +59,6 @@ io_sanity(int argc, char ** argv) {
     const InputArgs &command_args = Runtime::get_input_args();
     for (int i = 1; i < command_args.argc; i++)
     {
-      if (!strcmp(command_args.argv[i],"-n"))
-        num_subregions = atoi(command_args.argv[++i]);
       if (!strcmp(command_args.argv[i],"-s"))
         num_elements = atoi(command_args.argv[++i]);
       if (!strcmp(command_args.argv[i],"-m"))
