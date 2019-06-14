@@ -134,11 +134,14 @@ void legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file, legion_cp_te
   Runtime *runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
   
+  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
+  field_string_map_vector.push_back(cp_test_data.field_string_map);
+  
   struct checkpoint_task_args_s task_argument;
   strcpy(task_argument.file_name, file_name.c_str());
   
   Realm::Serialization::DynamicBufferSerializer dbs(0);
-  dbs << cp_test_data.field_string_map;
+  dbs << field_string_map_vector;
   task_argument.field_map_size = dbs.bytes_used();
   memcpy(task_argument.field_map_serial, dbs.detach_buffer(), task_argument.field_map_size);
   
@@ -172,11 +175,14 @@ void legion_io_policy_t::recover_data(legion_hdf5_t & hdf5_file, legion_cp_test_
   Runtime *runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
   
+  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
+  field_string_map_vector.push_back(cp_test_data.field_string_map);
+  
   struct checkpoint_task_args_s task_argument;
   strcpy(task_argument.file_name, file_name.c_str());
   
   Realm::Serialization::DynamicBufferSerializer dbs(0);
-  dbs << cp_test_data.field_string_map;
+  dbs << field_string_map_vector;
   task_argument.field_map_size = dbs.bytes_used();
   memcpy(task_argument.field_map_serial, dbs.detach_buffer(), task_argument.field_map_size);
   
@@ -205,16 +211,14 @@ void checkpoint_with_attach_task(const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions,                       
     Legion::Context ctx,                                                       
     Legion::Runtime * runtime)
-{
-  using namespace Legion;
-  
+{  
   struct checkpoint_task_args_s task_arg = *(struct checkpoint_task_args_s *) task->args;
   
   const int point = task->index_point.point_data[0];
   
-  std::map<FieldID, std::string> field_string_map;
+  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
   Realm::Serialization::FixedBufferDeserializer fdb(task_arg.field_map_serial, task_arg.field_map_size);
-  bool ok  = fdb >> field_string_map;
+  bool ok  = fdb >> field_string_map_vector;
   if(!ok) {
     printf("task args deserializer error\n");
   }
@@ -234,14 +238,14 @@ void checkpoint_with_attach_task(const Legion::Task * task,
     std::set<FieldID> field_set = task->regions[rid].privilege_fields;  
     std::map<FieldID, std::string>::iterator map_it;
     for (std::set<FieldID>::iterator it = field_set.begin() ; it != field_set.end(); ++it) {
-      map_it = field_string_map.find(*it);
-      if (map_it != field_string_map.end()) {
+      map_it = field_string_map_vector[rid].find(*it);
+      if (map_it != field_string_map_vector[rid].end()) {
         field_map.insert(std::make_pair(*it, (map_it->second).c_str()));
       } else {
         assert(0);
       }
     }
-    printf("Checkpointing data to HDF5 file attach '%s' region %d, (datasets='%ld'), pid %ld\n", file_name, rid, field_map.size(), getpid());
+    printf("Checkpointing data to HDF5 file attach '%s' region %d, (datasets='%ld'), vector size %ld\n", file_name, rid, field_map.size(), field_string_map_vector.size());
     hdf5_attach_launcher.attach_hdf5(file_name, field_map, LEGION_FILE_READ_WRITE);
     cp_pr = runtime->attach_external_resource(ctx, hdf5_attach_launcher);
    // cp_pr.wait_until_valid();
@@ -268,15 +272,13 @@ void checkpoint_without_attach_task(const Legion::Task * task,
     Legion::Context ctx,                                                       
     Legion::Runtime * runtime)
 {
-  using namespace Legion;
-  
   struct checkpoint_task_args_s task_arg = *(struct checkpoint_task_args_s *) task->args;
   
   const int point = task->index_point.point_data[0];
   
-  std::map<FieldID, std::string> field_string_map;
+  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
   Realm::Serialization::FixedBufferDeserializer fdb(task_arg.field_map_serial, task_arg.field_map_size);
-  bool ok  = fdb >> field_string_map;
+  bool ok  = fdb >> field_string_map_vector;
   if(!ok) {
     printf("task args deserializer error\n");
   }
@@ -298,8 +300,8 @@ void checkpoint_without_attach_task(const Legion::Task * task,
     std::set<FieldID> field_set = task->regions[rid].privilege_fields;  
     std::map<FieldID, std::string>::iterator map_it;
     for (std::set<FieldID>::iterator it = field_set.begin() ; it != field_set.end(); ++it) {
-      map_it = field_string_map.find(*it);
-      if (map_it != field_string_map.end()) {
+      map_it = field_string_map_vector[rid].find(*it);
+      if (map_it != field_string_map_vector[rid].end()) {
         const FieldAccessor<READ_ONLY,double,1,coord_t, Realm::AffineAccessor<double,1,coord_t> > acc_fid(regions[rid], *it);
         Rect<1> rect = runtime->get_index_space_domain(ctx, task->regions[rid].region.get_index_space());
         const double *dset_data = acc_fid.ptr(rect.lo);
@@ -315,7 +317,7 @@ void checkpoint_without_attach_task(const Legion::Task * task,
         assert(0);
       }
     }
-    printf("Checkpointing data to HDF5 file no attach '%s' region %d, (datasets='%ld'), pid %ld\n", file_name, rid, field_set.size(), getpid());
+    printf("Checkpointing data to HDF5 file no attach '%s' region %d, (datasets='%ld'), vector size %ld\n", file_name, rid, field_set.size(), field_string_map_vector.size());
   }
   
   H5Fflush(file_id, H5F_SCOPE_LOCAL);
@@ -330,9 +332,9 @@ void recover_with_attach_task(const Legion::Task * task,
   const int point = task->index_point.point_data[0];
   
   struct checkpoint_task_args_s task_arg = *(struct checkpoint_task_args_s *) task->args;
-  std::map<FieldID, std::string> field_string_map;
+  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
   Realm::Serialization::FixedBufferDeserializer fdb(task_arg.field_map_serial, task_arg.field_map_size);
-  bool ok  = fdb >> field_string_map;
+  bool ok  = fdb >> field_string_map_vector;
   if(!ok) {
     printf("task args deserializer error\n");
   }
@@ -351,14 +353,14 @@ void recover_with_attach_task(const Legion::Task * task,
     std::set<FieldID> field_set = task->regions[rid].privilege_fields;  
     std::map<FieldID, std::string>::iterator map_it;
     for (std::set<FieldID>::iterator it = field_set.begin() ; it != field_set.end(); ++it) {
-      map_it = field_string_map.find(*it);
-      if (map_it != field_string_map.end()) {
+      map_it = field_string_map_vector[rid].find(*it);
+      if (map_it != field_string_map_vector[rid].end()) {
         field_map.insert(std::make_pair(*it, (map_it->second).c_str()));
       } else {
         assert(0);
       }
     }
-    printf("Recoverring data to HDF5 file attach '%s' region %d, (datasets='%ld')\n", file_name, rid, field_map.size());
+    printf("Recoverring data to HDF5 file attach '%s' region %d, (datasets='%ld'), vector size %ld\n", file_name, rid, field_map.size(), field_string_map_vector.size());
     hdf5_attach_launcher.attach_hdf5(file_name, field_map, LEGION_FILE_READ_WRITE);
     restart_pr = runtime->attach_external_resource(ctx, hdf5_attach_launcher);
 
@@ -386,9 +388,9 @@ void recover_without_attach_task(const Legion::Task * task,
   const int point = task->index_point.point_data[0];
   
   struct checkpoint_task_args_s task_arg = *(struct checkpoint_task_args_s *) task->args;
-  std::map<FieldID, std::string> field_string_map;
+  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
   Realm::Serialization::FixedBufferDeserializer fdb(task_arg.field_map_serial, task_arg.field_map_size);
-  bool ok  = fdb >> field_string_map;
+  bool ok  = fdb >> field_string_map_vector;
   if(!ok) {
     printf("task args deserializer error\n");
   }
@@ -410,8 +412,8 @@ void recover_without_attach_task(const Legion::Task * task,
     std::set<FieldID> field_set = task->regions[rid].privilege_fields;  
     std::map<FieldID, std::string>::iterator map_it;
     for (std::set<FieldID>::iterator it = field_set.begin() ; it != field_set.end(); ++it) {
-      map_it = field_string_map.find(*it);
-      if (map_it != field_string_map.end()) {
+      map_it = field_string_map_vector[rid].find(*it);
+      if (map_it != field_string_map_vector[rid].end()) {
         const FieldAccessor<WRITE_DISCARD,double,1,coord_t, Realm::AffineAccessor<double,1,coord_t> > acc_fid(regions[rid], *it);
         Rect<1> rect = runtime->get_index_space_domain(ctx, task->regions[rid].region.get_index_space());
         double *dset_data = acc_fid.ptr(rect.lo);
@@ -427,7 +429,7 @@ void recover_without_attach_task(const Legion::Task * task,
         assert(0);
       }
     }
-    printf("Recoverring data to HDF5 file no attach '%s' region %d, (datasets='%ld')\n", file_name, rid, field_set.size());
+    printf("Recoverring data to HDF5 file no attach '%s' region %d, (datasets='%ld'), vector size %ld\n", file_name, rid, field_set.size(), field_string_map_vector.size());
   }
 } // recover_without_attach_task
 
