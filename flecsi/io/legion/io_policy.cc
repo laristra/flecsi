@@ -25,9 +25,11 @@
 namespace flecsi {
 namespace io {
   
+#define SERIALIZATION_BUFFER_SIZE 4096  
+  
 struct checkpoint_task_args_s{
  size_t field_map_size;
- char field_map_serial[4096];
+ char field_map_serial[SERIALIZATION_BUFFER_SIZE];
  char file_name[32];
 };
 
@@ -161,6 +163,9 @@ void legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file, std::vector<
   Realm::Serialization::DynamicBufferSerializer dbs(0);
   dbs << field_string_map_vector;
   task_argument.field_map_size = dbs.bytes_used();
+  if (task_argument.field_map_size > SERIALIZATION_BUFFER_SIZE) {
+    assert(0);
+  }
   memcpy(task_argument.field_map_serial, dbs.detach_buffer(), task_argument.field_map_size);
   
   execution::context_t & context_ = execution::context_t::instance();
@@ -211,6 +216,9 @@ void legion_io_policy_t::recover_data(legion_hdf5_t & hdf5_file, std::vector<leg
   Realm::Serialization::DynamicBufferSerializer dbs(0);
   dbs << field_string_map_vector;
   task_argument.field_map_size = dbs.bytes_used();
+  if (task_argument.field_map_size > SERIALIZATION_BUFFER_SIZE) {
+    assert(0);
+  }
   memcpy(task_argument.field_map_serial, dbs.detach_buffer(), task_argument.field_map_size);
   
   execution::context_t & context_ = execution::context_t::instance();
