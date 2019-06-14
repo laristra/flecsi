@@ -23,8 +23,6 @@ Good info: ``http://docutils.sourceforge.net/docs/user/rst/quickstart.html``
 Introduction
 ================================================================================
 
-zzz
-
 --------------------
 Overview
 --------------------
@@ -36,27 +34,15 @@ we can use our knowledge of FleCSI constructs, in particular their proper uses
 versus possible misuses, to immediately detect certain problems that might not
 normally arise until run-time.
 
-``Flecstan`` itself is a C++ application, built using the Clang and LLVM APIs.
-As such, it is, in some sense, a compiler. When you use ``flecstan`` to analyze
-a C++ code, however, it doesn't "compile" your code in the usual sense of the
-term. Specifically, it doesn't take your C++ and produce either object files,
-or an executable. While we could have designed ``flecstan`` to do this - in
-effect, to act as a modified compiler - we decided that it was cleaner and more
-flexible to design it as a separate, standalone analysis tool. You may, after
-all, want to fully compile your code using a C++ compiler other than Clang
-(``g++``, say, or the Intel compiler). Or, you may wish to run our analysis
-tool periodically, while building your app, without incurring the extra overhead
-of having it fully compile.
-
-At present, for our initial version of ``flecstan``, we have focused in
-particular on various uses and misuses of *FleCSI's macro interface*. As FleCSI
-users know, FleCSI provides a rich set of macros for performing various tasks.
-For example, FleCSI at present defines four macros (regular, simplified, MPI,
-and MPI simplified) for task registration, and another four macros for task
-execution. An easy user mistake is to execute a function that hasn't been
-registered. This could happen due to the simple oversight of never having
-invoked the registration macro; or, perhaps, to invoking it, but with a typo
-in the task name or the namespace.
+At present, for our initial version of the tool, we have focused in particular
+on various uses and misuses of FleCSI's *macro interface*. As FleCSI users know,
+FleCSI provides a rich set of macros for performing various tasks. For example,
+FleCSI at present defines four macros (regular, simplified, MPI, and MPI
+simplified) for task registration, and another four macros for task execution.
+An easy user mistake is to execute a function that hasn't been registered.
+This could happen due to the simple oversight of never having invoked the
+registration macro; or, perhaps, to invoking it, but with a typo in the task
+name or the namespace.
 
 For technical reasons that we won't detail here, such a mistake won't generally
 be detected by the C++ compiler itself. The error, therefore, will appear only
@@ -75,6 +61,68 @@ be possible and beneficial for us to include.
 --------------------
 Design
 --------------------
+
+**Basic Use** |br|
+``Flecstan`` is a command-line tool. You invoke it on the command line,
+
+.. code-block:: console
+
+   $ flecstan *flags, input, etc.*
+
+with any of various command-line flags, and, most importantly, with input that
+describes *precisely* how your FleCSI-based code must be compiled. ``Flecstan``
+then prints the results of its analysis to standard output - to your terminal
+window.
+
+**Flags** |br|
+Numerous options allow you to control, in detail, the content and formatting
+of ``flecstan``'s output.
+
+**Input** |br|
+There are three basic methods for describing a FleCSI code's compilation:
+
+   - Json-format "compilation databases"
+
+   - Pulling information from a *make* process
+
+   - Direct specification of compiler flags and C++ file
+
+Each of these is described in detail in the *Input* chapter.
+
+We wish to emphasize the *fundamental importance* of ``flecstan`` being told
+*precisely* how a FleCSI code is compiled. Consider, for example, one of the
+FleCSALE-MM applications; say, ``hydro_2d``. Building ``hydro_2d`` requires
+the compilation of several C++ source files that are spread out across several
+directories. Each such compilation involves the use of many compilation flags,
+in order to stipulate such things as ``#include`` directories (as with ``-I``)
+and ``#defines`` (as with ``-D``). The compilations of an individual C++ source
+file can, and often does, depend on context: a build system will enter into
+a specific directory before compiling a file, and the directory context will,
+or at least can, affect relative ``#include`` paths.
+
+In short, the proper static analysis of a code requires a precise knowledge
+of how the code is to be built, and thus necessarily requires equal complexity.
+Build-system complexity is often hidden from end users, for simplicity's sake,
+and when possible our intention is to similarly hide analysis-system complexity.
+Just be aware that the concepts of *building* a code, and of *analyzing* it,
+go hand-in-hand. So, with codes like those in FleCSALE-MM, or even those in
+FleCSI's tutorial examples, just be aware that you can't simply feed the
+relevant ``.cc`` files into ``flecstan`` and hope to get any meaningful
+analysis. The analyzer must know about compilation context, ``#include``
+directories, ``#define``s, compiler flags, etc., just as the build system does.
+
+**Remark** |br|
+``Flecstan`` itself is a C++ application, built using the Clang and
+LLVM APIs. As such, it is, in some sense, a compiler. When you use ``flecstan``
+to analyze a C++ code, however, it doesn't "compile" your code in the usual
+sense of the term. Specifically, it doesn't take your C++ and produce either
+object files, or an executable. While we could have designed ``flecstan`` to do
+this - in effect, to act as a modified compiler - we decided that it was cleaner
+and more flexible to design it as a separate, standalone analysis tool. You may,
+after all, want to fully compile your code using a C++ compiler other than Clang
+(``g++``, say, or the Intel compiler). Or, you may wish to run our analysis tool
+periodically, while building your app, without incurring the extra overhead of
+having it fully compile.
 
 
 
@@ -203,10 +251,6 @@ Advanced Topics
 ================================================================================
 
 --------------------
-Input: Direct C++ Source
---------------------
-
---------------------
 YAML
 --------------------
 
@@ -243,6 +287,74 @@ Variants
 --------------------
 Categorized
 --------------------
+
+   * **Informational**
+      * ``-[-]version``
+      * ``-[-]help``
+
+   * **Format: general**
+      * ``-[-]long``
+      * ``-[-]short``
+
+   * **Format: visual**
+      * ``-[-]print``
+      * ``-[-][no-]color[s]``
+      * ``-[-][no-]formfeed[s]``
+
+   * **Format: files**
+      * ``-[-]file-long``
+      * ``-[-]file-short``
+      * ``-[-]file-shorter``
+      * ``-[-]file-full``
+      * ``-[-]file-strip``
+
+   * **Content: combos**
+      * ``-[-]quiet``
+      * ``-[-]verbose``
+
+   * **Content: sections**
+      * ``-[-][no-]section-command``
+      * ``-[-][no-]section-compilation``
+      * ``-[-][no-]section-analysis``
+      * ``-[-][no-]section-summary``
+
+   * **Content: general**
+      * ``-[-][no-]title[s]``
+      * ``-[-][no-]file[s]``
+      * ``-[-][no-]report[s]``
+      * ``-[-][no-]scan[ning]``
+      * ``-[-][no-]macro[s]``
+      * ``-[-][no-]visit[ing]``
+      * ``-[-][no-]link[s]``
+      * ``-[-][no-]column[s]``
+
+   * **Content: diagnostics**
+      * ``-[-][no-]note[s]``
+      * ``-[-][no-]warning[s]``
+      * ``-[-][no-]error[s]``
+
+   * **Content: auxiliary**
+      * ``-[-][no-]trace[s]``
+      * ``-[-][no-]ccdetail[s]``
+
+   * **Content: debugging**
+      * ``-[-]debug``
+
+   * **Files: input**
+      * ``-[-]json``
+      * ``-[-]make``
+      * ``-[-]yaml``
+
+   * **Direct compilation**
+      * ``-[-]dir[ectory], -[-]folder``
+      * ``-[-]clang[++]``
+      * ``-[-]flag[s]``
+      * ``-[-]cc, -[-]cpp, -[-]cxx, -[-]c++, -[-]C``
+
+   * **Files: output**
+      * ``-[-]yout``
+
+
 
 --------------------
 Alphabetical
