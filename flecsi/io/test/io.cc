@@ -141,7 +141,7 @@ io_sanity(int argc, char ** argv) {
   cp_test_data.launch_space = file_is;
   
   io::io_interface_t cp_io;
-  cp_io.checkpoint_data(checkpoint_file, cp_test_data, false);
+  cp_io.checkpoint_data(checkpoint_file, cp_test_data, true);
   
   
   io::cp_test_data_t re_test_data;
@@ -154,7 +154,7 @@ io_sanity(int argc, char ** argv) {
   re_test_data.field_id_vector.push_back(FID_Y);
   
   re_test_data.launch_space = file_is;
-  cp_io.recover_data(checkpoint_file, re_test_data, false);
+  cp_io.recover_data(checkpoint_file, re_test_data, true);
   
   {
     RegionRequirement req(output_lr_1, READ_WRITE, EXCLUSIVE, output_lr_1);
