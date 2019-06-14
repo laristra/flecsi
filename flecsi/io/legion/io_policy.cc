@@ -63,6 +63,8 @@ void legion_hdf5_t::add_logical_region(LogicalRegion lr, LogicalPartition lp, st
 
 bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
   hid_t file_id;
+  
+  assert(logical_region_vector.size() > 0);
 
   std::string fname = file_name + std::to_string(file_idx);
   file_id = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 

@@ -49,8 +49,8 @@ enum FieldIDs {
 int
 io_sanity(int argc, char ** argv) {
   
-  int num_elements = 63; 
-  int num_files = 2;
+  int num_elements = 1023; 
+  int num_files = 16;
   char file_name[256];
   strcpy(file_name, "checkpoint.dat");
   
@@ -126,6 +126,7 @@ io_sanity(int argc, char ** argv) {
   }
   
   MPI_Barrier(MPI_COMM_WORLD);
+  int ct = 0;
   
   {
     RegionRequirement req(input_lr_1, READ_WRITE, EXCLUSIVE, input_lr_1);
@@ -138,13 +139,15 @@ io_sanity(int argc, char ** argv) {
     const FieldAccessor<READ_WRITE,double,1> acc_x(input_region, FID_X);
     const FieldAccessor<READ_WRITE,double,1> acc_y(input_region, FID_Y);
     for (PointInRectIterator<1> pir(elem_rect); pir(); pir++) {
-      acc_x[*pir] = 0.29;
-      acc_y[*pir] = 0.29;
+      acc_x[*pir] = 0.29 + ct;
+      acc_y[*pir] = 0.29 + ct;
+      ct ++;
     }
     runtime->unmap_region(ctx, input_region);
   }
   
   {
+    ct = 0;
     RegionRequirement req(input_lr_2, READ_WRITE, EXCLUSIVE, input_lr_2);
     req.add_field(FID_X);
     req.add_field(FID_Y);
@@ -155,8 +158,9 @@ io_sanity(int argc, char ** argv) {
     const FieldAccessor<READ_WRITE,double,1> acc_x(input_region, FID_X);
     const FieldAccessor<READ_WRITE,double,1> acc_y(input_region, FID_Y);
     for (PointInRectIterator<1> pir(elem_rect); pir(); pir++) {
-      acc_x[*pir] = 0.29;
-      acc_y[*pir] = 0.29;
+      acc_x[*pir] = 0.29 + ct;
+      acc_y[*pir] = 0.29 + ct;
+      ct ++;
     }
     runtime->unmap_region(ctx, input_region);
   }
@@ -179,6 +183,7 @@ io_sanity(int argc, char ** argv) {
   cp_io.recover_data(checkpoint_file, re_test_data_vector, true);
   
   {
+    ct = 0;
     RegionRequirement req(output_lr_1, READ_WRITE, EXCLUSIVE, output_lr_1);
     req.add_field(FID_X);
     req.add_field(FID_Y);
@@ -191,8 +196,9 @@ io_sanity(int argc, char ** argv) {
     for (PointInRectIterator<1> pir(elem_rect); pir(); pir++) {
       double x = acc_x[*pir];
       double y = acc_y[*pir];
-      assert(x == 0.29);
-      assert(y == 0.29);
+      assert(x == 0.29 + ct);
+      assert(y == 0.29 + ct);
+      ct ++;
     }
     runtime->unmap_region(ctx, input_region);
   }
