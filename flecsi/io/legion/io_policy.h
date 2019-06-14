@@ -53,9 +53,8 @@ struct legion_hdf5_t {
 struct legion_cp_test_data_t {
   IndexSpace launch_space;
   std::map<FieldID, std::string> field_string_map;
-  std::vector<FieldID> field_id_vector;
-  std::vector<LogicalRegion> logical_region_vector;
-  std::vector<LogicalPartition> logical_partition_vector;
+  LogicalRegion logical_region;
+  LogicalPartition logical_partition;
 };
 
 struct legion_io_policy_t {
@@ -64,9 +63,9 @@ struct legion_io_policy_t {
   
   legion_io_policy_t() {}
   
-  void checkpoint_data(legion_hdf5_t &hdf5_file, legion_cp_test_data_t & cp_test_data, bool attach_flag);
+  void checkpoint_data(legion_hdf5_t &hdf5_file, std::vector<legion_cp_test_data_t> &cp_test_data_vector, bool attach_flag);
   
-  void recover_data(legion_hdf5_t &hdf5_file, legion_cp_test_data_t & cp_test_data, bool attach_flag);
+  void recover_data(legion_hdf5_t &hdf5_file, std::vector<legion_cp_test_data_t> &cp_test_data_vector, bool attach_flag);
 }; // struct legion_io_policy_t
 
 } // namespace io

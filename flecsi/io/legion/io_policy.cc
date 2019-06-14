@@ -125,17 +125,19 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
   return true;
 }
 
-void legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file, legion_cp_test_data_t & cp_test_data, bool attach_flag)
+void legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file, std::vector<legion_cp_test_data_t> & cp_test_data_vector, bool attach_flag)
 {
   std::string file_name = hdf5_file.file_name;
-  printf("Start checkpoint without attach, %s\n", file_name.c_str());
+  printf("Start checkpoint, %s\n", file_name.c_str());
  
 #if 1 
   Runtime *runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
   
   std::vector<std::map<FieldID, std::string>> field_string_map_vector;
-  field_string_map_vector.push_back(cp_test_data.field_string_map);
+  for(std::vector<legion_cp_test_data_t>::iterator it = cp_test_data_vector.begin() ; it != cp_test_data_vector.end(); ++it) {
+    field_string_map_vector.push_back((*it).field_string_map);
+  }
   
   struct checkpoint_task_args_s task_argument;
   strcpy(task_argument.file_name, file_name.c_str());
@@ -153,30 +155,39 @@ void legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file, legion_cp_te
     task_id = context_.task_id<flecsi_internal_hash(checkpoint_without_attach_task)>();
   }
   
-  IndexLauncher checkpoint_launcher(task_id, cp_test_data.launch_space, TaskArgument(&task_argument, sizeof(task_argument)), ArgumentMap());
-  checkpoint_launcher.add_region_requirement(
-        RegionRequirement(cp_test_data.logical_partition_vector[0], 0/*projection ID*/, 
-                          READ_ONLY, EXCLUSIVE, cp_test_data.logical_region_vector[0]));
-  checkpoint_launcher.region_requirements[0].add_field(cp_test_data.field_id_vector[0]);
-  checkpoint_launcher.region_requirements[0].add_field(cp_test_data.field_id_vector[1]);
+  IndexLauncher checkpoint_launcher(task_id, cp_test_data_vector[0].launch_space, TaskArgument(&task_argument, sizeof(task_argument)), ArgumentMap());
   
+  int idx = 0;
+  for(std::vector<legion_cp_test_data_t>::iterator it = cp_test_data_vector.begin() ; it != cp_test_data_vector.end(); ++it) {
+    checkpoint_launcher.add_region_requirement(
+          RegionRequirement((*it).logical_partition, 0/*projection ID*/, 
+                            READ_ONLY, EXCLUSIVE, (*it).logical_region));
+    
+    std::map<FieldID, std::string> &field_string_map = (*it).field_string_map;
+    for (std::map<FieldID, std::string>::iterator it = field_string_map.begin() ; it != field_string_map.end(); ++it) {
+      checkpoint_launcher.region_requirements[idx].add_field(it->first);
+    }
+    idx ++;
+  }
   FutureMap fumap = runtime->execute_index_space(ctx, checkpoint_launcher);
   fumap.wait_all_results();
 #endif
   
 }
 
-void legion_io_policy_t::recover_data(legion_hdf5_t & hdf5_file, legion_cp_test_data_t & cp_test_data, bool attach_flag)
+void legion_io_policy_t::recover_data(legion_hdf5_t & hdf5_file, std::vector<legion_cp_test_data_t> & cp_test_data_vector, bool attach_flag)
 {
   std::string file_name = hdf5_file.file_name;
-  printf("Start recover without attach, %s\n", file_name.c_str());
+  printf("Start recover, %s\n", file_name.c_str());
  
 #if 1 
   Runtime *runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
   
   std::vector<std::map<FieldID, std::string>> field_string_map_vector;
-  field_string_map_vector.push_back(cp_test_data.field_string_map);
+  for(std::vector<legion_cp_test_data_t>::iterator it = cp_test_data_vector.begin() ; it != cp_test_data_vector.end(); ++it) {
+    field_string_map_vector.push_back((*it).field_string_map);
+  }
   
   struct checkpoint_task_args_s task_argument;
   strcpy(task_argument.file_name, file_name.c_str());
@@ -194,12 +205,19 @@ void legion_io_policy_t::recover_data(legion_hdf5_t & hdf5_file, legion_cp_test_
     task_id = context_.task_id<flecsi_internal_hash(recover_without_attach_task)>();
   }
   
-  IndexLauncher recover_launcher(task_id, cp_test_data.launch_space, TaskArgument(&task_argument, sizeof(task_argument)), ArgumentMap());
-  recover_launcher.add_region_requirement(
-        RegionRequirement(cp_test_data.logical_partition_vector[0], 0/*projection ID*/, 
-                          WRITE_DISCARD, EXCLUSIVE, cp_test_data.logical_region_vector[0]));
-  recover_launcher.region_requirements[0].add_field(cp_test_data.field_id_vector[0]);
-  recover_launcher.region_requirements[0].add_field(cp_test_data.field_id_vector[1]);
+  IndexLauncher recover_launcher(task_id, cp_test_data_vector[0].launch_space, TaskArgument(&task_argument, sizeof(task_argument)), ArgumentMap());
+  int idx = 0;
+  for(std::vector<legion_cp_test_data_t>::iterator it = cp_test_data_vector.begin() ; it != cp_test_data_vector.end(); ++it) {
+    recover_launcher.add_region_requirement(
+          RegionRequirement((*it).logical_partition, 0/*projection ID*/, 
+                            WRITE_DISCARD, EXCLUSIVE, (*it).logical_region));
+    
+    std::map<FieldID, std::string> &field_string_map = (*it).field_string_map;
+    for (std::map<FieldID, std::string>::iterator it = field_string_map.begin() ; it != field_string_map.end(); ++it) {
+      recover_launcher.region_requirements[idx].add_field(it->first);
+    }
+    idx ++;
+  }
   
   FutureMap fumap = runtime->execute_index_space(ctx, recover_launcher);
   fumap.wait_all_results();
@@ -245,7 +263,7 @@ void checkpoint_with_attach_task(const Legion::Task * task,
         assert(0);
       }
     }
-    printf("Checkpointing data to HDF5 file attach '%s' region %d, (datasets='%ld'), vector size %ld\n", file_name, rid, field_map.size(), field_string_map_vector.size());
+    printf("Checkpointing data to HDF5 file attach '%s' region %d, (datasets='%ld'), vector size %ld, pid %ld\n", file_name, rid, field_map.size(), field_string_map_vector.size(), getpid());
     hdf5_attach_launcher.attach_hdf5(file_name, field_map, LEGION_FILE_READ_WRITE);
     cp_pr = runtime->attach_external_resource(ctx, hdf5_attach_launcher);
    // cp_pr.wait_until_valid();
@@ -317,7 +335,7 @@ void checkpoint_without_attach_task(const Legion::Task * task,
         assert(0);
       }
     }
-    printf("Checkpointing data to HDF5 file no attach '%s' region %d, (datasets='%ld'), vector size %ld\n", file_name, rid, field_set.size(), field_string_map_vector.size());
+    printf("Checkpointing data to HDF5 file no attach '%s' region %d, (datasets='%ld'), vector size %ld, pid %ld\n", file_name, rid, field_set.size(), field_string_map_vector.size(), getpid());
   }
   
   H5Fflush(file_id, H5F_SCOPE_LOCAL);
@@ -360,7 +378,7 @@ void recover_with_attach_task(const Legion::Task * task,
         assert(0);
       }
     }
-    printf("Recoverring data to HDF5 file attach '%s' region %d, (datasets='%ld'), vector size %ld\n", file_name, rid, field_map.size(), field_string_map_vector.size());
+    printf("Recoverring data to HDF5 file attach '%s' region %d, (datasets='%ld'), vector size %ld, pid %ld\n", file_name, rid, field_map.size(), field_string_map_vector.size(), getpid());
     hdf5_attach_launcher.attach_hdf5(file_name, field_map, LEGION_FILE_READ_WRITE);
     restart_pr = runtime->attach_external_resource(ctx, hdf5_attach_launcher);
 
@@ -429,7 +447,7 @@ void recover_without_attach_task(const Legion::Task * task,
         assert(0);
       }
     }
-    printf("Recoverring data to HDF5 file no attach '%s' region %d, (datasets='%ld'), vector size %ld\n", file_name, rid, field_set.size(), field_string_map_vector.size());
+    printf("Recoverring data to HDF5 file no attach '%s' region %d, (datasets='%ld'), vector size %ld, pid %ld\n", file_name, rid, field_set.size(), field_string_map_vector.size(), getpid());
   }
 } // recover_without_attach_task
 
