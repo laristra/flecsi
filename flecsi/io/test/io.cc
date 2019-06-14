@@ -96,22 +96,33 @@ io_sanity(int argc, char ** argv) {
     
   LogicalPartition file_recover_lp_output_1 = runtime->get_logical_partition(ctx, output_lr_1, file_ip);
   
-  std::map<FieldID, std::string> field_string_map_1;
-  field_string_map_1[FID_X] = "A_FID_X";
-  field_string_map_1[FID_Y] = "A_FID_Y";
-  std::map<FieldID, std::string> field_string_map_2;
-  field_string_map_2[FID_X] = "B_FID_X";
-  field_string_map_2[FID_Y] = "B_FID_Y";
+  io::cp_test_data_t cp_test_data_1;
+  cp_test_data_1.logical_region = input_lr_1;
+  cp_test_data_1.logical_partition = file_checkpoint_lp_input_1;
+  cp_test_data_1.logical_region_name = "input_lr_1";
+  cp_test_data_1.field_string_map[FID_X] = "A_FID_X";
+  cp_test_data_1.field_string_map[FID_Y] = "A_FID_Y";
+  cp_test_data_1.launch_space = file_is;
+  
+  io::cp_test_data_t cp_test_data_2;
+  cp_test_data_2.logical_region = input_lr_2;
+  cp_test_data_2.logical_partition = file_checkpoint_lp_input_2;
+  cp_test_data_2.logical_region_name = "input_lr_2";
+  cp_test_data_2.field_string_map[FID_X] = "B_FID_X";
+  cp_test_data_2.field_string_map[FID_Y] = "B_FID_Y";
+  cp_test_data_2.launch_space = file_is;
+  
+  std::vector<io::cp_test_data_t> cp_test_data_vector;
+  cp_test_data_vector.push_back(cp_test_data_1);
+  cp_test_data_vector.push_back(cp_test_data_2);
   
   int my_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   io::hdf5_t checkpoint_file(file_name, num_files);
+  io::io_interface_t cp_io;
   if (my_rank == 0) { 
-    checkpoint_file.add_logical_region(input_lr_1, file_checkpoint_lp_input_1, "input_lr_1", field_string_map_1);
-    checkpoint_file.add_logical_region(input_lr_2, file_checkpoint_lp_input_2, "input_lr_2", field_string_map_2);
-    for (int i = 0; i < num_files; i++) {
-      checkpoint_file.generate_hdf5_file(i);
-    }
+    cp_io.add_regions(checkpoint_file, cp_test_data_vector);
+    cp_io.generate_hdf5_files(checkpoint_file);
   }
   
   MPI_Barrier(MPI_COMM_WORLD);
@@ -150,25 +161,6 @@ io_sanity(int argc, char ** argv) {
     runtime->unmap_region(ctx, input_region);
   }
   
-  io::cp_test_data_t cp_test_data_1;
-  cp_test_data_1.logical_region = input_lr_1;
-  cp_test_data_1.logical_partition = file_checkpoint_lp_input_1;
-  cp_test_data_1.field_string_map[FID_X] = "A_FID_X";
-  cp_test_data_1.field_string_map[FID_Y] = "A_FID_Y";
-  cp_test_data_1.launch_space = file_is;
-  
-  io::cp_test_data_t cp_test_data_2;
-  cp_test_data_2.logical_region = input_lr_2;
-  cp_test_data_2.logical_partition = file_checkpoint_lp_input_2;
-  cp_test_data_2.field_string_map[FID_X] = "B_FID_X";
-  cp_test_data_2.field_string_map[FID_Y] = "B_FID_Y";
-  cp_test_data_2.launch_space = file_is;
-  
-  std::vector<io::cp_test_data_t> cp_test_data_vector;
-  cp_test_data_vector.push_back(cp_test_data_1);
-  cp_test_data_vector.push_back(cp_test_data_2);
-  
-  io::io_interface_t cp_io;
   cp_io.checkpoint_data(checkpoint_file, cp_test_data_vector, true);
   
   

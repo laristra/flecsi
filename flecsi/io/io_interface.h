@@ -20,6 +20,16 @@ struct io_interface_u : public IO_POLICY{
   using hdf5_t = typename IO_POLICY::hdf5_t;
   using cp_test_data_t = typename IO_POLICY::cp_test_data_t;
   
+  void add_regions(hdf5_t &hdf5_file, std::vector<cp_test_data_t> &cp_test_data_vector)
+  {
+    return IO_POLICY::add_regions(hdf5_file, cp_test_data_vector);
+  }
+  
+  void generate_hdf5_files(hdf5_t &hdf5_file)
+  {
+    return IO_POLICY::generate_hdf5_files(hdf5_file);
+  }
+  
   void checkpoint_data(hdf5_t &hdf5_file, std::vector<cp_test_data_t> &cp_test_data_vector, bool attach_flag)
   {
     return IO_POLICY::checkpoint_data(hdf5_file, cp_test_data_vector, attach_flag);

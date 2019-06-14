@@ -125,6 +125,20 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
   return true;
 }
 
+void legion_io_policy_t::add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_cp_test_data_t> & cp_test_data_vector)
+{
+  for(std::vector<legion_cp_test_data_t>::iterator it = cp_test_data_vector.begin() ; it != cp_test_data_vector.end(); ++it) {
+    hdf5_file.add_logical_region((*it).logical_region, (*it).logical_partition, (*it).logical_region_name, (*it).field_string_map);
+  }
+}
+
+void legion_io_policy_t::generate_hdf5_files(legion_hdf5_t &hdf5_file)
+{
+  for (int i = 0; i < hdf5_file.num_files; i++) {
+    hdf5_file.generate_hdf5_file(i);
+  }
+}
+
 void legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file, std::vector<legion_cp_test_data_t> & cp_test_data_vector, bool attach_flag)
 {
   std::string file_name = hdf5_file.file_name;

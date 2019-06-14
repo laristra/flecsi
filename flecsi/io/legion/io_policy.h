@@ -55,6 +55,7 @@ struct legion_cp_test_data_t {
   std::map<FieldID, std::string> field_string_map;
   LogicalRegion logical_region;
   LogicalPartition logical_partition;
+  std::string logical_region_name;
 };
 
 struct legion_io_policy_t {
@@ -62,6 +63,10 @@ struct legion_io_policy_t {
   using cp_test_data_t = legion_cp_test_data_t;
   
   legion_io_policy_t() {}
+  
+  void add_regions(legion_hdf5_t &hdf5_file, std::vector<legion_cp_test_data_t> &cp_test_data_vector);
+  
+  void generate_hdf5_files(legion_hdf5_t &hdf5_file);
   
   void checkpoint_data(legion_hdf5_t &hdf5_file, std::vector<legion_cp_test_data_t> &cp_test_data_vector, bool attach_flag);
   
