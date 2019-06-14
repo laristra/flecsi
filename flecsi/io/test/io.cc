@@ -49,7 +49,7 @@ enum FieldIDs {
 int
 io_sanity(int argc, char ** argv) {
   
-  int num_elements = 64; 
+  int num_elements = 63; 
   int num_subregions = 4;
   int num_files = 4;
   char file_name[256];
