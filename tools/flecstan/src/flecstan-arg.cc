@@ -189,10 +189,10 @@ option_file_strip(const std::string & opt) {
 
 flecstan_toggles(title) flecstan_toggles(file) flecstan_toggles(report)
   flecstan_toggles(note) flecstan_toggles(warning) flecstan_toggles(error)
-    flecstan_toggles(column) flecstan_toggles(color) flecstan_toggles(trace)
-      flecstan_toggles(ccdetail) flecstan_toggles(macro) flecstan_toggles(link)
-        flecstan_toggle(scan) flecstan_toggle(scanning) flecstan_toggle(visit)
-          flecstan_toggle(visiting)
+    flecstan_toggles(column) flecstan_toggles(color) flecstan_toggles(formfeed)
+      flecstan_toggles(trace) flecstan_toggles(ccdetail) flecstan_toggles(macro)
+        flecstan_toggles(link) flecstan_toggle(scan) flecstan_toggle(scanning)
+          flecstan_toggle(visit) flecstan_toggle(visiting)
 
   // ------------------------
   // Re: sections
@@ -238,6 +238,14 @@ option_no_summary(const std::string & opt) {
 // ------------------------
 
 inline bool
+option_dir(const std::string & opt) {
+  flecstan_setnfind("-dir", "--dir", "-directory",
+    "--directory"
+    "-folder",
+    "--folder");
+}
+
+inline bool
 option_clang(const std::string & opt) {
   flecstan_setnfind("-clang", "--clang", "-clang++", "--clang++");
 }
@@ -245,11 +253,6 @@ option_clang(const std::string & opt) {
 inline bool
 option_flags(const std::string & opt) {
   flecstan_setnfind("-flag", "--flag", "-flags", "--flags");
-}
-
-inline bool
-option_dir(const std::string & opt) {
-  flecstan_setnfind("-dir", "--dir", "-directory", "--directory");
 }
 
 // ------------------------
@@ -316,7 +319,8 @@ option_any(const std::string & opt) {
          option_note(opt) || option_no_note(opt) || option_warning(opt) ||
          option_no_warning(opt) || option_error(opt) || option_no_error(opt) ||
          option_column(opt) || option_no_column(opt) || option_color(opt) ||
-         option_no_color(opt) || option_trace(opt) || option_no_trace(opt) ||
+         option_no_color(opt) || option_formfeed(opt) ||
+         option_no_formfeed(opt) || option_trace(opt) || option_no_trace(opt) ||
          option_ccdetail(opt) || option_no_ccdetail(opt) || option_macro(opt) ||
          option_no_macro(opt) || option_link(opt) || option_no_link(opt) ||
          option_scan(opt) || option_no_scan(opt) || option_scanning(opt) ||
@@ -328,7 +332,7 @@ option_any(const std::string & opt) {
          option_analysis(opt) || option_no_analysis(opt) ||
          option_summary(opt) || option_no_summary(opt) ||
 
-         option_clang(opt) || option_flags(opt) || option_dir(opt) ||
+         option_dir(opt) || option_clang(opt) || option_flags(opt) ||
 
          option_json(opt) || option_make(opt) || option_cc(opt) ||
          option_yaml(opt) ||
@@ -361,6 +365,43 @@ endsin_cc(const std::string & str) {
 inline bool
 endsin_yaml(const std::string & str) {
   return endsin(str, ".yaml");
+}
+
+// -----------------------------------------------------------------------------
+// process_dir
+// -----------------------------------------------------------------------------
+
+exit_status_t
+process_dir(const int argc,
+  const char * const * const argv,
+  std::size_t & i,
+  const std::string & opt,
+  CmdArgs & com) {
+  debug("process_dir()");
+
+  // Argument?
+  if(int(++i) == argc || option_any(argv[i]) || endsin_json(argv[i]) ||
+     endsin_make(argv[i]) || endsin_cc(argv[i]) || endsin_yaml(argv[i])) {
+    i--;
+    return error("The " + opt +
+                 " option (input file directory) "
+                 "expects an argument.\n"
+                 "Example: " +
+                 opt +
+                 " /some/directory/\n"
+                 "The trailing / is optional.");
+  }
+
+  // Remove trailing /s (helps with later diagnostics/printing)
+  const std::string dir = fixdir(argv[i]);
+
+  // Note (before Save, so com.dir.set() is correct)
+  note(std::string(com.dir.set() ? "Changing " : "Setting ") + "directory to " +
+       quote(dir) + ".");
+
+  // Save
+  com.dir = dir;
+  return exit_clean;
 }
 
 // -----------------------------------------------------------------------------
@@ -444,43 +485,6 @@ process_flags(const int argc,
     }
   }
 
-  return exit_clean;
-}
-
-// -----------------------------------------------------------------------------
-// process_dir
-// -----------------------------------------------------------------------------
-
-exit_status_t
-process_dir(const int argc,
-  const char * const * const argv,
-  std::size_t & i,
-  const std::string & opt,
-  CmdArgs & com) {
-  debug("process_dir()");
-
-  // Argument?
-  if(int(++i) == argc || option_any(argv[i]) || endsin_json(argv[i]) ||
-     endsin_make(argv[i]) || endsin_cc(argv[i]) || endsin_yaml(argv[i])) {
-    i--;
-    return error("The " + opt +
-                 " option (input file directory) "
-                 "expects an argument.\n"
-                 "Example: " +
-                 opt +
-                 " /some/directory/\n"
-                 "The trailing / is optional.");
-  }
-
-  // Remove trailing /s (helps with later diagnostics/printing)
-  const std::string dir = fixdir(argv[i]);
-
-  // Note (before Save, so com.dir.set() is correct)
-  note(std::string(com.dir.set() ? "Changing " : "Setting ") + "directory to " +
-       quote(dir) + ".");
-
-  // Save
-  com.dir = dir;
   return exit_clean;
 }
 
@@ -1112,6 +1116,12 @@ option_toggle(const std::string & opt) {
   }
   else if(option_no_color(opt)) {
     emit_color = false;
+  }
+  else if(option_formfeed(opt)) {
+    emit_formfeed = true;
+  }
+  else if(option_no_formfeed(opt)) {
+    emit_formfeed = false;
   }
   else if(option_trace(opt)) {
     emit_trace = true;
