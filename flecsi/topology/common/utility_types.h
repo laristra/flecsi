@@ -93,7 +93,6 @@ using id_vector_map_t =
 // The second topology vector holds the offsets into to from dimension
 
 using index_vector_t = std::vector<size_t>;
-
 //-----------------------------------------------------------------//
 //! \class entity_base_u types.h
 //! \brief entity_base_u defines a base class that stores the raw info that

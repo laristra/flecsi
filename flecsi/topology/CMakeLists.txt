@@ -95,3 +95,11 @@ set(topology_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+
+#--------------------------------  NTREE  -------------------------------------#
+ftest_add_unit(ntree
+  SOURCES ntree/test/ntree.cc
+)
+ftest_add_unit(ntree_geometry
+  SOURCES ntree/test/geometry.cc
+)
