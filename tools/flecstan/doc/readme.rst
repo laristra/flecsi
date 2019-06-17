@@ -28,33 +28,55 @@ Overview
 --------------------
 
 The FleCSI Static Analyzer, or ``Flecstan``, is a code analysis tool that
-provides FleCSI users with additional analysis of their codes, above and beyond
-what a C++ compiler provides. Our basic underlying design philosophy is that
-we can use our knowledge of FleCSI constructs, in particular their proper uses
-versus possible misuses, to immediately detect certain problems that might not
+provides FleCSI users with additional analysis of their codes, above and
+beyond what a C++ compiler provides.
+
+Our basic underlying design philosophy is that we can use our knowledge of
+FleCSI constructs, in particular their proper uses versus possible misuses,
+to immediately detect certain problems that might not
 normally arise until run-time.
 
-At present, for our initial version of the tool, we have focused in particular
-on various uses and misuses of FleCSI's *macro interface*. As FleCSI users know,
-FleCSI provides a rich set of macros for performing various tasks. For example,
+At present, for our initial version of the tool, we have focused on various
+uses and misuses of FleCSI's *macro interface*. As FleCSI users know, FleCSI
+provides a rich set of macros for performing various activities. For example,
 FleCSI at present defines four macros (regular, simplified, MPI, and MPI
-simplified) for task registration, and another four macros for task execution.
-An easy user mistake is to execute a function that hasn't been registered.
-This could happen due to the simple oversight of never having invoked the
-registration macro; or, perhaps, to invoking it, but with a typo in the task
+simplified) for task registration, and four similar macros for task execution.
+An easy mistake is to execute a function that hasn't been registered. This
+could happen due to the simple oversight of never having invoked the necessary
+registration macro - or perhaps to invoking it, but with a typo in the task
 name or the namespace.
 
 For technical reasons that we won't detail here, such a mistake won't generally
-be detected by the C++ compiler itself. The error, therefore, will appear only
-at run-time, possibly, in a particularly unfortunate scenario, only after much
-work has already been done, and the error is triggered when the code takes a
-different path than it has before.
+be detected by the C++ compiler, and the error will therefore appear only at
+run-time. In a particularly unfortunate scenario, the error may be triggered,
+and cause program failure, only after much work has already been done, and
+after the code takes a different path than it has before.
 
-While FleCSI's macro interface has so far been our primary focus for analysis,
+While FleCSI's macro interface has thus far been our primary focus for analysis,
 ``flecstan`` is designed and written to be somewhat open-ended, so that it can
 grow and evolve as FleCSI does. As more people use FleCSI and report on their
 experiences, we can consider what additional static analysis capabilities might
 be possible and beneficial for us to include.
+
+Perhaps of particular interest to some potential users:
+
+   - Analysis can be done on *any* C++ code - it doesn't *need* to be based on
+     FleCSI. Naturally, however, if invoked on a non-FleCSI code, the analyzer
+     won't find any FleCSI constructs to evaluate.
+
+   - ``Flecstan`` intercepts the diagnostics (warnings, errors, etc.) that the
+     underlying ``clang++`` compiler produces, and emits them in its own format.
+     C++ compilers are notorious for generating confusing and visually messy
+     diagnostics. While automatically interpreting and rewriting such cryptic
+     content would involve some form of magic that we don't possess, we can
+     (and do) re-format and report the compiler's diagnostics in a manner that
+     some users may find to be clearer.
+
+The second point above may lead to some users actually running our analyzer
+on non-FleCSI codes - the first point above - if only to get diagnostics that,
+arguably, are presented more clearly than the compiler's. We'd like to hear
+about it if you do choose to use ``flecstan`` this way, especially if you have
+additional ideas on how we can, in effect, improve the compiler's reporting.
 
 
 
@@ -102,14 +124,14 @@ or at least can, affect relative ``#include`` paths.
 
 In short, the proper static analysis of a code requires a precise knowledge
 of how the code is to be built, and thus necessarily requires equal complexity.
-Build-system complexity is often hidden from end users, for simplicity's sake,
-and when possible our intention is to similarly hide analysis-system complexity.
+Build-system complexity is often hidden from end users, for simplicity's sake.
+Our intention is to similarly hide analysis-system complexity, when possible.
 Just be aware that the concepts of *building* a code, and of *analyzing* it,
-go hand-in-hand. So, with codes like those in FleCSALE-MM, or even those in
-FleCSI's tutorial examples, just be aware that you can't simply feed the
-relevant ``.cc`` files into ``flecstan`` and hope to get any meaningful
-analysis. The analyzer must know about compilation context, ``#include``
-directories, ``#define``s, compiler flags, etc., just as the build system does.
+go hand-in-hand. With codes like those in FleCSALE-MM, therefore, or even those
+in FleCSI's tutorial examples, you can't simply feed the relevant ``.cc`` files
+into ``flecstan`` and hope to get meaningful analysis. The analyzer must know
+about compilation context, ``#include`` directories, ``#define``s, compiler
+flags, etc., just as the build system does.
 
 **Remark** |br|
 ``Flecstan`` itself is a C++ application, built using the Clang and
@@ -129,6 +151,61 @@ having it fully compile.
 --------------------
 Quick Tour
 --------------------
+
+Let's begin with a simple, do-nothing C++ code:
+
+.. code-block: cpp
+
+   // File: stub.cc
+   int main()
+   {
+   }
+
+The following ``flecstan`` command performs a simple analysis (not that there's
+much, yet, to analyze):
+
+.. code-block:: console
+
+   $ flecstan stub.cc
+
+Output is as follows:
+
+.. code-block:: console
+
+   [30;1m--------------------------------------------------------------------------------[0m
+   [30;1mCommand[0m
+   [30;1m--------------------------------------------------------------------------------[0m
+
+   [32;21mNote:[0m
+      [32;21mQueueing C++ file stub.cc.[0m
+
+   [30;1m--------------------------------------------------------------------------------[0m
+   [30;1mCompilation[0m
+   [30;1m--------------------------------------------------------------------------------[0m
+
+   [35;21mFile:[0m
+      [35;21mstub.cc[0m
+
+   [34;1mScanning for FleCSI macros...[0m
+
+   [34;1mVisiting the C++ abstract syntax tree...[0m
+
+   [30;1m--------------------------------------------------------------------------------[0m
+   [30;1mAnalysis[0m
+   [30;1m--------------------------------------------------------------------------------[0m
+
+   [34;1mSynopsis:[0m
+      [36;1mNo errors or warnings were detected.[0m
+
+   [30;1m--------------------------------------------------------------------------------[0m
+   [30;1mSummary[0m
+   [30;1m--------------------------------------------------------------------------------[0m
+
+   [32;21mNote:[0m
+      [32;21mFleCSI static analysis completed.[0m
+
+Martin, good luck with that. See what the damage is, especially with regards
+to the ANSI color escape sequences.
 
 
 
@@ -377,13 +454,13 @@ Some headings...
       - subheading B
       - subheading C
 
-A code block...
+A console code block...
 
 .. code-block:: console
 
-     flecstan 01-task-good-register-execute-inside.json
+   $ flecstan 01-task-good-register-execute-inside.json
 
-This ``filename`` is in fixed-width font.
+This ``filename`` is in a fixed-width font.
 
 *This is italics*
 
