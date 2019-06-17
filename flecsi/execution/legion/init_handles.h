@@ -41,6 +41,7 @@
 #include <flecsi/topology/set_topology.h>
 
 #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/type_traits.h>
 
 namespace flecsi {
 namespace execution {
@@ -859,6 +860,23 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
   void handle(Container<T, N> & list) {
     for(auto & item : list)
       handle(item);
+  }
+
+  /*!
+   * Handle tuple of items
+   */
+
+  template<typename... Ts, size_t... I>
+  void handle_tuple_items(std::tuple<Ts...> & items,
+    std::index_sequence<I...>) {
+    (handle(std::get<I>(items)), ...);
+  }
+
+  template<typename... Ts,
+    typename = std::enable_if_t<
+      utils::are_base_of_t<data::data_reference_base_t, Ts...>>>
+  void handle(std::tuple<Ts...> & items) {
+    handle_tuple_items(items, std::make_index_sequence<sizeof...(Ts)>{});
   }
 
   Legion::Runtime * runtime;
