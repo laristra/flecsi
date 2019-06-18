@@ -104,11 +104,11 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<size_t TASK,
+  template<
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(processor_type_t processor,
+  static bool register_task(std::size_t TASK,processor_type_t processor,
     task_execution_type_t execution,
     std::string name) {
 
@@ -126,13 +126,13 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<size_t TASK,
+  template<
     size_t LAUNCH_DOMAIN,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(ARGS &&... args) {
+  static decltype(auto) execute_task(std::size_t TASK,ARGS &&... args) {
 
     using namespace Legion;
 
@@ -146,7 +146,7 @@ struct legion_execution_policy_t {
     context_t & flecsi_context = context_t::instance();
 
     // Get the processor type.
-    auto processor_type = flecsi_context.processor_type<TASK>();
+    auto processor_type = flecsi_context.processor_type(TASK);
 
     // Get the Legion runtime and context from the current task.
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -176,7 +176,7 @@ struct legion_execution_policy_t {
         flog(internal) << "Executing single task" << std::endl;
       }
 
-      TaskLauncher launcher(flecsi_context.task_id<TASK>(),
+      TaskLauncher launcher(flecsi_context.task_id(TASK),
         TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
       for(auto & req : init_args.region_requirements()) {
@@ -232,7 +232,7 @@ struct legion_execution_policy_t {
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
       Legion::ArgumentMap arg_map;
-      Legion::IndexLauncher launcher(flecsi_context.task_id<TASK>(),
+      Legion::IndexLauncher launcher(flecsi_context.task_id(TASK),
         launch_domain,
         TaskArgument(&task_args, sizeof(ARG_TUPLE)),
         arg_map);
