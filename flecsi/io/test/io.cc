@@ -96,23 +96,15 @@ io_sanity(int argc, char ** argv) {
     
   LogicalPartition file_recover_lp_output_1 = runtime->get_logical_partition(ctx, output_lr_1, file_ip);
   
-  io::cp_test_data_t cp_test_data_1;
-  cp_test_data_1.logical_region = input_lr_1;
-  cp_test_data_1.logical_partition = file_checkpoint_lp_input_1;
-  cp_test_data_1.logical_region_name = "input_lr_1";
+  io::checkpoint_internal_data_t cp_test_data_1(input_lr_1, file_checkpoint_lp_input_1, "input_lr_1");
   cp_test_data_1.field_string_map[FID_X] = "A_FID_X";
   cp_test_data_1.field_string_map[FID_Y] = "A_FID_Y";
-  cp_test_data_1.launch_space = file_is;
   
-  io::cp_test_data_t cp_test_data_2;
-  cp_test_data_2.logical_region = input_lr_2;
-  cp_test_data_2.logical_partition = file_checkpoint_lp_input_2;
-  cp_test_data_2.logical_region_name = "input_lr_2";
+  io::checkpoint_internal_data_t cp_test_data_2(input_lr_2, file_checkpoint_lp_input_2, "input_lr_2");
   cp_test_data_2.field_string_map[FID_X] = "B_FID_X";
   cp_test_data_2.field_string_map[FID_Y] = "B_FID_Y";
-  cp_test_data_2.launch_space = file_is;
   
-  std::vector<io::cp_test_data_t> cp_test_data_vector;
+  std::vector<io::checkpoint_internal_data_t> cp_test_data_vector;
   cp_test_data_vector.push_back(cp_test_data_1);
   cp_test_data_vector.push_back(cp_test_data_2);
   
@@ -165,22 +157,17 @@ io_sanity(int argc, char ** argv) {
     runtime->unmap_region(ctx, input_region);
   }
   
-  cp_io.checkpoint_data(checkpoint_file, cp_test_data_vector, true);
+  cp_io.checkpoint_data(checkpoint_file, file_is, cp_test_data_vector, true);
   
   
-  io::cp_test_data_t re_test_data;
-  re_test_data.logical_region = output_lr_1;
-  re_test_data.logical_partition = file_recover_lp_output_1;
-  
+  io::checkpoint_internal_data_t re_test_data(output_lr_1, file_recover_lp_output_1, "output_lr_1");
   re_test_data.field_string_map[FID_X] = "A_FID_X";
   re_test_data.field_string_map[FID_Y] = "A_FID_Y";
   
-  re_test_data.launch_space = file_is;
-  
-  std::vector<io::cp_test_data_t> re_test_data_vector;
+  std::vector<io::checkpoint_internal_data_t> re_test_data_vector;
   re_test_data_vector.push_back(re_test_data);
   
-  cp_io.recover_data(checkpoint_file, re_test_data_vector, false);
+  cp_io.recover_data(checkpoint_file, file_is, re_test_data_vector, false);
   
   {
     ct = 0;

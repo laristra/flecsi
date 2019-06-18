@@ -50,31 +50,35 @@ struct legion_hdf5_t {
   std::vector<legion_hdf5_logical_region_t> logical_region_vector;
 };
 
-struct legion_cp_test_data_t {
-  IndexSpace launch_space;
-  std::map<FieldID, std::string> field_string_map;
+struct legion_checkpoint_internal_data_t {
+  legion_checkpoint_internal_data_t(LogicalRegion lr, LogicalPartition lp, std::string lr_name);
+    
   LogicalRegion logical_region;
   LogicalPartition logical_partition;
   std::string logical_region_name;
+  std::map<FieldID, std::string> field_string_map;
 };
 
 struct legion_io_policy_t {
   using hdf5_t = legion_hdf5_t;
-  using cp_test_data_t = legion_cp_test_data_t;
+  using checkpoint_internal_data_t = legion_checkpoint_internal_data_t;
+  using launch_space_t = IndexSpace;
   
   legion_io_policy_t() {}
   
   ~legion_io_policy_t();
   
-  void add_regions(legion_hdf5_t &hdf5_file, std::vector<legion_cp_test_data_t> &cp_test_data_vector);
+  void add_regions(legion_hdf5_t &hdf5_file, std::vector<legion_checkpoint_internal_data_t> &cp_test_data_vector);
   
-  void add_default_index_topology(hdf5_t &hdf5_file, std::map<FieldID, std::string> &field_string_map);
+  void add_default_index_topology(hdf5_t &hdf5_file, std::vector<std::string> &field_string_vector);
   
   void generate_hdf5_files(legion_hdf5_t &hdf5_file);
   
-  void checkpoint_data(legion_hdf5_t &hdf5_file, std::vector<legion_cp_test_data_t> &cp_test_data_vector, bool attach_flag);
+  void checkpoint_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_checkpoint_internal_data_t> &cp_test_data_vector, bool attach_flag);
   
-  void recover_data(legion_hdf5_t &hdf5_file, std::vector<legion_cp_test_data_t> &cp_test_data_vector, bool attach_flag);
+  void checkpoint_index_topology_field(hdf5_t &hdf5_file, auto fh);
+  
+  void recover_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_checkpoint_internal_data_t> &cp_test_data_vector, bool attach_flag);
   
 private:
   IndexSpace default_index_topology_file_is;
