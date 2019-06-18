@@ -12,10 +12,10 @@
  Subtitle?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-See if there's a way to make the above appear as a centered title, and larger
-than paragraph headings as we have below.
+.. See if there's a way to make the above appear as a centered title, and larger
+.. than paragraph headings as we have below.
 
-Good info: ``http://docutils.sourceforge.net/docs/user/rst/quickstart.html``
+.. Good info: ``http://docutils.sourceforge.net/docs/user/rst/quickstart.html``
 
 
 
@@ -23,9 +23,9 @@ Good info: ``http://docutils.sourceforge.net/docs/user/rst/quickstart.html``
 Introduction
 ================================================================================
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Overview
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
 The FleCSI Static Analyzer, or ``Flecstan``, is a code analysis tool that
 provides FleCSI users with additional analysis of their codes, above and
@@ -76,31 +76,40 @@ The second point above may lead to some users actually running our analyzer
 on non-FleCSI codes - the first point above - if only to get diagnostics that,
 arguably, are presented more clearly than the compiler's. We'd like to hear
 about it if you do choose to use ``flecstan`` this way, especially if you have
-additional ideas on how we can, in effect, improve the compiler's reporting.
+additional ideas on how we can improve on the compiler's reporting.
 
 
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Design
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
-**Basic Use** |br|
+----------------------------------------
+Basic Use
+----------------------------------------
+
 ``Flecstan`` is a command-line tool. You invoke it on the command line,
 
 .. code-block:: console
 
-   $ flecstan *flags, input, etc.*
+   flecstan [flags] [input file(s)] ...
 
 with any of various command-line flags, and, most importantly, with input that
 describes *precisely* how your FleCSI-based code must be compiled. ``Flecstan``
-then prints the results of its analysis to standard output - to your terminal
-window.
+then prints the results of its analysis to standard output, i.e. to your
+terminal window.
 
-**Flags** |br|
+----------------------------------------
+Flags
+----------------------------------------
+
 Numerous options allow you to control, in detail, the content and formatting
 of ``flecstan``'s output.
 
-**Input** |br|
+----------------------------------------
+Input
+----------------------------------------
+
 There are three basic methods for describing a FleCSI code's compilation:
 
    - Json-format "compilation databases"
@@ -111,7 +120,7 @@ There are three basic methods for describing a FleCSI code's compilation:
 
 Each of these is described in detail in the *Input* chapter.
 
-We wish to emphasize the *fundamental importance* of ``flecstan`` being told
+We wish to emphasize the importance of ``flecstan`` being told
 *precisely* how a FleCSI code is compiled. Consider, for example, one of the
 FleCSALE-MM applications; say, ``hydro_2d``. Building ``hydro_2d`` requires
 the compilation of several C++ source files that are spread out across several
@@ -130,10 +139,14 @@ Just be aware that the concepts of *building* a code, and of *analyzing* it,
 go hand-in-hand. With codes like those in FleCSALE-MM, therefore, or even those
 in FleCSI's tutorial examples, you can't simply feed the relevant ``.cc`` files
 into ``flecstan`` and hope to get meaningful analysis. The analyzer must know
-about compilation context, ``#include`` directories, ``#define``s, compiler
-flags, etc., just as the build system does.
+about compilation context, ``#include`` and ``#define`` specifications as might
+be given by ``-I`` and ``-D`` on the command line, compiler flags, etc., just
+as the build system does.
 
-**Remark** |br|
+----------------------------------------
+Remark
+----------------------------------------
+
 ``Flecstan`` itself is a C++ application, built using the Clang and
 LLVM APIs. As such, it is, in some sense, a compiler. When you use ``flecstan``
 to analyze a C++ code, however, it doesn't "compile" your code in the usual
@@ -148,64 +161,86 @@ having it fully compile.
 
 
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Quick Tour
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
-Let's begin with a simple, do-nothing C++ code:
+----------------------------------------
+Example: C++ File
+----------------------------------------
 
-.. code-block: cpp
+Let's begin with a simple, stub C++ code:
 
-   // File: stub.cc
-   int main()
-   {
-   }
+.. include:: stub.cc
+   :code: cpp
+   :number-lines:
 
 The following ``flecstan`` command performs a simple analysis (not that there's
-much, yet, to analyze):
+much here to analyze):
 
 .. code-block:: console
 
-   $ flecstan stub.cc
+   flecstan stub.cc
 
 Output is as follows:
 
-.. code-block:: console
+.. include:: stub.rst
 
-   [30;1m--------------------------------------------------------------------------------[0m
-   [30;1mCommand[0m
-   [30;1m--------------------------------------------------------------------------------[0m
+The output in this simple scenario is, as you can see, disproportionately
+spectacular, or shall we just say verbose, in relation to the rather mundane
+input. Later in this document, we'll describe how various elements of the
+analyzer's output can be compressed, or removed entirely. For now, during
+this quick tour, just note the following about ``flecstan``'s default output,
+which we'll call a *report*:
 
-   [32;21mNote:[0m
-      [32;21mQueueing C++ file stub.cc.[0m
+   * Output is divided into four sections: Command, Compilation, Analysis,
+     and Summary.
 
-   [30;1m--------------------------------------------------------------------------------[0m
-   [30;1mCompilation[0m
-   [30;1m--------------------------------------------------------------------------------[0m
+   * **Command**. Prints information about what ``flecstan`` finds on the
+     command line. This began as our own debugging aid, but we decided to
+     keep it. The messages may reassure you that ``flecstan`` is doing what
+     you intend. If it's just mindless chatter, you can switch it off:|br|
+     ``flecstan -no-section-command stub.cc``
 
-   [35;21mFile:[0m
-      [35;21mstub.cc[0m
+   * **Compilation**. For every C++ code involved in the analysis, three
+     actions take place:
 
-   [34;1mScanning for FleCSI macros...[0m
+      * The file name is printed. (This part isn't too exciting yet.)
 
-   [34;1mVisiting the C++ abstract syntax tree...[0m
+      * **Preprocessing**. ``Flecstan`` hooks into the C++ macro preprocessor
+        and collects information about your use of FleCSI's macros.
 
-   [30;1m--------------------------------------------------------------------------------[0m
-   [30;1mAnalysis[0m
-   [30;1m--------------------------------------------------------------------------------[0m
+      * **AST Traversal**. ``Flecstan`` traverses the C++ Abstract Syntax
+        Tree (AST), identifies C++ constructs that were inserted by macro
+        calls, and collates the new information with what it found in the
+        preprocessing stage.
 
-   [34;1mSynopsis:[0m
-      [36;1mNo errors or warnings were detected.[0m
+   * **Analysis**. The information collected as described above, across all
+     files, is combined and examined as a whole.  This process is analogous
+     to the link stage of a build. If ``flecstan`` detects any instances of
+     the problematic constructs knows about (say, the execution in any file
+     of a task that was defined in no file), here is where the problem will
+     be reported.
 
-   [30;1m--------------------------------------------------------------------------------[0m
-   [30;1mSummary[0m
-   [30;1m--------------------------------------------------------------------------------[0m
+   * **Summary**. Here, ``flecstan`` makes some closing remarks.
 
-   [32;21mNote:[0m
-      [32;21mFleCSI static analysis completed.[0m
+The above simple invocation of ``flecstan`` works great if the input is, well,
+simple. When you're analyzing a typical FleCSI-based code, however, realize
+that the code's underlying build process probably involves several C++ source
+files, and probably some complicated compiler invocations. When things get more
+complicated, you may want to use Json files, as explained next.
 
-Martin, good luck with that. See what the damage is, especially with regards
-to the ANSI color escape sequences.
+----------------------------------------
+Example: flecsale-mm
+----------------------------------------
+
+.. zzz write this
+
+----------------------------------------
+Example: FleCSI Tutorial
+----------------------------------------
+
+.. zzz write this
 
 
 
@@ -213,21 +248,27 @@ to the ANSI color escape sequences.
 Input
 ================================================================================
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Compilation Databases
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Json Files
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Make Output
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Direct C++ Source
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -235,17 +276,21 @@ Direct C++ Source
 Basic Examples
 ================================================================================
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Example 01
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Example 02
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Example 03
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -265,25 +310,33 @@ Analyzing FleCSALE-MM Codes
 Report Content
 ================================================================================
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Quiet, Verbose
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 General
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Sections
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Diagnostics
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Auxiliary
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -291,17 +344,21 @@ Auxiliary
 Report Formatting
 ================================================================================
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 General
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Visual Candy
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 File printing
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -309,17 +366,21 @@ File printing
 In-Depth Examples
 ================================================================================
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Example 01
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Example 02
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Example 03
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -327,25 +388,33 @@ Example 03
 Advanced Topics
 ================================================================================
 
---------------------
-YAML
---------------------
+++++++++++++++++++++++++++++++++++++++++
+YAML Input
+++++++++++++++++++++++++++++++++++++++++
 
-**Input** |br|
 
-**Output** |br|
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
+YAML Output
+++++++++++++++++++++++++++++++++++++++++
+
+
+
+++++++++++++++++++++++++++++++++++++++++
 Diagnostic Traces
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Echoing Compilation Commands
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Debug Mode
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -353,17 +422,21 @@ Debug Mode
 Appendices
 ================================================================================
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Command-Line Options
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Variants
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
---------------------
+
+
+++++++++++++++++++++++++++++++++++++++++
 Categorized
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
    * **Informational**
       * ``-[-]version``
@@ -384,6 +457,12 @@ Categorized
       * ``-[-]file-shorter``
       * ``-[-]file-full``
       * ``-[-]file-strip``
+
+   * **Format: markup**
+      * ``-[-]markup-ansi``
+      * ``-[-]markup-html``
+      * ``-[-]markup-rst``
+      * ``-[-]markup-tex``
 
    * **Content: combos**
       * ``-[-]quiet``
@@ -433,14 +512,14 @@ Categorized
 
 
 
---------------------
+++++++++++++++++++++++++++++++++++++++++
 Alphabetical
---------------------
+++++++++++++++++++++++++++++++++++++++++
 
 
 
 ================================================================================
-Remove This Later
+Remove the following later...
 ================================================================================
 
 Some headings...
@@ -458,7 +537,7 @@ A console code block...
 
 .. code-block:: console
 
-   $ flecstan 01-task-good-register-execute-inside.json
+   flecstan 01-task-good-register-execute-inside.json
 
 This ``filename`` is in a fixed-width font.
 
