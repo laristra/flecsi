@@ -18,6 +18,7 @@
 #include <flecsi/utils/const_string.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_task.h>
+#include <flecsi/data/legion/runtime_data_types.h>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -129,11 +130,50 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
   return true;
 }
 
+legion_io_policy_t::~legion_io_policy_t() {
+  Runtime *runtime = Runtime::get_runtime();
+  Context ctx = Runtime::get_context();
+  printf("clean up\n");
+  if (default_index_topology_file_is != IndexSpace::NO_SPACE) {
+    runtime->destroy_index_space(ctx, default_index_topology_file_is);
+  }
+}
+
 void legion_io_policy_t::add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_cp_test_data_t> & cp_test_data_vector)
 {
   for(std::vector<legion_cp_test_data_t>::iterator it = cp_test_data_vector.begin() ; it != cp_test_data_vector.end(); ++it) {
     hdf5_file.add_logical_region((*it).logical_region, (*it).logical_partition, (*it).logical_region_name, (*it).field_string_map);
   }
+}
+
+void legion_io_policy_t::add_default_index_topology(hdf5_t &hdf5_file, std::map<FieldID, std::string> &field_string_map) {
+  constexpr size_t identifier =
+    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
+      flecsi_internal_string_hash("index_topology")>();
+  
+  auto & flecsi_context = execution::context_t::instance();    
+  data::legion::index_runtime_data_t & index_runtime_data =
+    flecsi_context.index_topology_instance(identifier);
+#if 0 
+  Runtime *runtime = Runtime::get_runtime();
+  Context ctx = Runtime::get_context();
+  Rect<1> file_color_bounds(0, hdf5_file.num_files-1);
+  default_index_topology_file_is = runtime->create_index_space(ctx, file_color_bounds);
+  default_index_topology_file_ip = runtime->create_pending_partition(ctx, index_runtime_data.index_space, default_index_topology_file_is);
+  int idx = 0; 
+  int num_subregions = index_runtime_data.colors;
+  for (int point = 0; point < hdf5_file.num_files; point++) {
+    std::vector<IndexSpace> subspaces;
+    for (int i = 0; i < num_subregions/hdf5_file.num_files; i++) {
+      subspaces.push_back(runtime->get_index_subspace(ctx, index_runtime_data.color_partition.get_index_partition(), idx));
+      idx ++;
+    }
+    runtime->create_index_space_union(ctx, default_index_topology_file_ip, point, subspaces);
+  }
+  
+  default_index_topology_file_lp = runtime->get_logical_partition(ctx, index_runtime_data.logical_region, default_index_topology_file_ip);
+#endif  
+  hdf5_file.add_logical_region(index_runtime_data.logical_region, index_runtime_data.color_partition, "null", field_string_map);
 }
 
 void legion_io_policy_t::generate_hdf5_files(legion_hdf5_t &hdf5_file)

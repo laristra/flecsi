@@ -120,8 +120,8 @@ io_sanity(int argc, char ** argv) {
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
   io::hdf5_t checkpoint_file(file_name, num_files);
   io::io_interface_t cp_io;
+  cp_io.add_regions(checkpoint_file, cp_test_data_vector);
   if (my_rank == 0) { 
-    cp_io.add_regions(checkpoint_file, cp_test_data_vector);
     cp_io.generate_hdf5_files(checkpoint_file);
   }
   
@@ -180,7 +180,7 @@ io_sanity(int argc, char ** argv) {
   std::vector<io::cp_test_data_t> re_test_data_vector;
   re_test_data_vector.push_back(re_test_data);
   
-  cp_io.recover_data(checkpoint_file, re_test_data_vector, true);
+  cp_io.recover_data(checkpoint_file, re_test_data_vector, false);
   
   {
     ct = 0;

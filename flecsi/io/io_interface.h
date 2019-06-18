@@ -25,6 +25,11 @@ struct io_interface_u : public IO_POLICY{
     return IO_POLICY::add_regions(hdf5_file, cp_test_data_vector);
   }
   
+  void add_default_index_topology(hdf5_t &hdf5_file, std::map<unsigned int, std::string> &field_string_map)
+  {
+    return IO_POLICY::add_default_index_topology(hdf5_file, field_string_map);
+  }
+  
   void generate_hdf5_files(hdf5_t &hdf5_file)
   {
     return IO_POLICY::generate_hdf5_files(hdf5_file);

@@ -49,6 +49,8 @@ struct global_runtime_data_t {
 struct index_runtime_data_t {
   size_t colors;
   size_t index_space_id;
+  Legion::IndexSpace index_space;
+  Legion::FieldSpace field_space;
   Legion::LogicalRegion logical_region;
   Legion::LogicalPartition color_partition;
 }; // struct index_runtime_data_t
