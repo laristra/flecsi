@@ -217,7 +217,6 @@ struct task_wrapper_u {
 #if defined(ENABLE_CALIPER)
     // [Caliper] Mark this function
     CALI_CXX_MARK_FUNCTION;
-
     CALI_MARK_BEGIN("FleCSI_Execution init_handles");
 #endif // ENABLE_CALIPER
 
@@ -238,16 +237,42 @@ struct task_wrapper_u {
 #endif // ENABLE_CALIPER
 
     if constexpr(std::is_same_v<RETURN, void>) {
+
+#ifdef ENABLE_CALIPER
+    CALI_MARK_BEGIN("FleCSI_Execution finalize_handles_execute task_if");
+#endif // ENABLE_CALIPER
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-      finalize_handles_t finalize_handles;
-      finalize_handles.walk(task_args);
-    }
-    else {
-      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+#ifdef ENABLE_CALIPER
+    CALI_MARK_END("FleCSI_Execution finalize_handles_execute task_if");
+    CALI_MARK_BEGIN("FleCSI_Execution finalize_handles_walk_if");
+#endif // ENABLE_CALIPER
 
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
+
+#ifdef ENABLE_CALIPER
+    CALI_MARK_END("FleCSI_Execution finalize_handles_walk_if");
+#endif // ENABLE_CALIPER
+    }
+    else {
+
+#ifdef ENABLE_CALIPER
+    CALI_MARK_BEGIN("FleCSI_Execution finalize_handles_execute task_else");
+#endif // ENABLE_CALIPER
+      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+
+#ifdef ENABLE_CALIPER
+    CALI_MARK_END("FleCSI_Execution finalize_handles_execute task_else");
+    CALI_MARK_BEGIN("FleCSI_Execution finalize_handles_walk_else");
+#endif // ENABLE_CALIPER
+
+      finalize_handles_t finalize_handles;
+      finalize_handles.walk(task_args);
+
+#ifdef ENABLE_CALIPER
+    CALI_MARK_END("FleCSI_Execution finalize_handles_walk_else");
+#endif // ENABLE_CALIPER
 
       return result;
     } // if

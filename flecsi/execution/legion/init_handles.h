@@ -88,7 +88,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     h.context = context;
     h.runtime = runtime;
 #ifdef ENABLE_CALIPER
-CALI_MARK_BEGIN(" FleCSI init_handles");
+CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
 #endif 
     h.combined_size = 0;
 
@@ -108,7 +108,13 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
 
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
+//#ifdef ENABLE_CALIPER
+//CALI_MARK_END("FleCSI_Execution dense_accessor_instance");
+//#endif
 
+//#ifdef ENABLE_CALIPER
+//CALI_MARK_BEGIN("FleCSI_Execution dense_accessor_get_index");
+//#endif
     // get an accessor to the first element in exclusive LR:
     auto ac = regions[region].get_field_accessor(h.fid).template typeify<T>();
     h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
@@ -131,6 +137,9 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
      h.combined_size = h.exclusive_size + h.shared_size + h.ghost_size;
 
     region += num_regions;
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_Execution dense_accessor");
+#endif
 } // handle
 
   template<typename T, size_t PERMISSIONS>
@@ -142,6 +151,9 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
     h.context = context;
     h.runtime = runtime;
 
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("FleCSI_Execution global_accesor");
+#endif
     Legion::PhysicalRegion prs[num_regions];
     T * data[num_regions];
     size_t sizes[num_regions];
@@ -179,6 +191,9 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
       } // if
     } // for
     region += num_regions;
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_Execution global_accesor");
+#endif
   } // global_handle
 
   template<typename T, size_t PERMISSIONS>
@@ -190,6 +205,9 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
     h.context = context;
     h.runtime = runtime;
 
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("FleCSI_Execution color_accesor");
+#endif
     Legion::PhysicalRegion prs[num_regions];
     T * data[num_regions];
     size_t sizes[num_regions];
@@ -227,6 +245,10 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
       } // if
     } // for
     region += num_regions;
+
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_Execution color_accesor");
+#endif
   } // color_handle
 
   /*!
@@ -257,8 +279,15 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
     LegionRuntime::Arrays::Rect<2> dr;
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
+#ifdef ENABLE_CALIPER
+//CALI_MARK_BEGIN("FleCSI_Execution data_client_handle_entity_t");
+CALI_CXX_MARK_LOOP_BEGIN(mainloop, "FleCSI data handle");
+#endif
 
     for(size_t i{0}; i < h.num_handle_entities; ++i) {
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("data_client_handle_mapping_entity");
+#endif
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
       region_map[ent.index_space] = region;
@@ -282,8 +311,14 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
                    .get_field_accessor(ent.id_fid)
                    .template typeify<utils::id_t>();
       auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
-
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("data_client_handle_mapping_entity");
+#endif
       // calculating exclusive, shared and ghost sizes fro the entity
+      //
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("data_client_handle_calculating_entity");
+#endif
       auto coloring = context_.coloring(ent.index_space);
       ent.num_exclusive = coloring.exclusive.size();
       ent.num_shared = coloring.shared.size();
@@ -293,12 +328,20 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
         ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("data_client_handle_calculating_entity");
+#endif
     } // for
-
+#ifdef ENABLE_CALIPER
+CALI_CXX_MARK_LOOP_END(mainloop);
+CALI_MARK_BEGIN("FleCSI_Execution data_client_handle_adjacency_t");
+#endif
     //------------------------------------------------------------------------//
     // Mapping adjacency data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//
-
+//#ifdef ENABLE_CALIPER
+//CALI_MARK_BEGIN("FleCSI_Execution data_client_handle_adjacency_t");
+//#endif
     for(size_t i{0}; i < h.num_handle_adjacencies; ++i) {
       data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
@@ -344,6 +387,10 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
 
       ++region;
     } // for
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_Execution data_client_handle_adjacency_t");
+CALI_MARK_BEGIN("FleCSI_Execution data_client_handle_index_subspace_t");
+#endif
 
     for(size_t i{0}; i < h.num_index_subspaces; ++i) {
       data_client_handle_index_subspace_t & iss = h.handle_index_subspaces[i];
@@ -373,6 +420,10 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
     if(!_read) {
       h.initialize_storage();
     }
+
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_Execution data_client_handle_index_subspace_t");
+#endif
   }
 
   template<typename T, size_t PERMISSIONS>
@@ -388,6 +439,9 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
     //------------------------------------------------------------------------//
 
     bool _read{PERMISSIONS == ro || PERMISSIONS == rw};
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("FleCSI_Execution data_client_handle1");
+#endif
 
     for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
@@ -412,6 +466,9 @@ CALI_MARK_BEGIN(" FleCSI init_handles");
 
       ++region;
     } // for
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_Execution data_client_handle1");
+#endif
   } // handle
 
   //-----------------------------------------------------------------------//

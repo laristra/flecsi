@@ -46,7 +46,9 @@ struct finalize_handles_t
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
 #ifndef MAPPER_COMPACTION
-
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("dense_accessor");
+#endif
     auto & h = a.handle;
 
     if((EXCLUSIVE_PERMISSIONS == rw) || (EXCLUSIVE_PERMISSIONS == wo))
@@ -55,7 +57,9 @@ struct finalize_handles_t
 
     if((SHARED_PERMISSIONS == rw) || (SHARED_PERMISSIONS == wo))
       std::memcpy(h.shared_buf, h.shared_data, h.shared_size * sizeof(T));
-
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("dense_accessor");
+#endif
 #endif
   } // handle
 
@@ -67,6 +71,9 @@ struct finalize_handles_t
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("ragged_accessor");
+#endif
     using value_t = T;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
@@ -80,6 +87,9 @@ struct finalize_handles_t
     std::memcpy(h.entries_data[1], h.entries + md->reserve,
       md->num_shared * sizeof(value_t) * md->max_entries_per_index);
 #endif
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("ragged_accessor");
+#endif
   } // handle
 
   template<typename T,
@@ -90,13 +100,23 @@ struct finalize_handles_t
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("sparse_accessor");
+#endif
     using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
       SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
     handle(static_cast<base_t &>(a));
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("sparse_accessor");
+#endif
   } // handle
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
+
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("ragged_mutator");
+#endif
     using value_t = T;
     using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
     using offset_t = data::sparse_data_offset_t;
@@ -137,12 +157,21 @@ struct finalize_handles_t
 #endif
 
     md->initialized = true;
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("ragged_mutator");
+#endif
   } // handle
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("sparse_mutator");
+#endif
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("sparse_mutator");
+#endif
   }
 
   /*!
@@ -156,6 +185,10 @@ struct finalize_handles_t
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle_u<T, PERMISSIONS> & h) {
+
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("data_client_handle_u");
+#endif
 
     if(PERMISSIONS == wo || PERMISSIONS == rw) {
       auto & context_ = context_t::instance();
@@ -174,13 +207,22 @@ struct finalize_handles_t
     }
 
     h.delete_storage();
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("data_client_handle_u");
+#endif
   } // handle
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     !std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle_u<T, PERMISSIONS> & h) {
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("data_client_handle_delete_storage");
+#endif
     h.delete_storage();
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("data_client_handle_delete_storage");
+#endif
   } // handle
 
   /*!
@@ -193,8 +235,14 @@ struct finalize_handles_t
     typename =
       std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
   void handle(Container<T, N> & list) {
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("container");
+#endif
     for(auto & item : list)
       handle(item);
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("container");
+#endif
   }
 
   /*!
