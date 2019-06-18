@@ -714,6 +714,23 @@ struct context_u : public CONTEXT_POLICY {
     return adjacencies_;
   }
 
+  auto local_index_map(size_t index_space) const {
+    const auto & is = coloring_map().at(index_space);
+
+    std::vector< std::pair<size_t, size_t> > _map;
+    _map.reserve( is.exclusive.size() + is.shared.size() );
+
+    for(auto index : is.exclusive) {
+      _map.emplace_back( std::make_pair(_map.size(), index.offset) );
+    } // for
+
+    for(auto index : is.shared) {
+      _map.emplace_back( std::make_pair(_map.size(), index.offset) );
+    } // for
+
+    return _map;
+  } // for
+
   /*!
     Put field info for index space and field id.
 

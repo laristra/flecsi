@@ -40,7 +40,7 @@ struct colorer_t {
            instance.
    */
 
-  virtual std::set<size_t> color(const dcrs_t & dcrs) = 0;
+  virtual std::vector<size_t> color(const dcrs_t & dcrs) = 0;
 
 }; // class colorer_t
 
