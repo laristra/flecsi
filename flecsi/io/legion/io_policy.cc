@@ -71,7 +71,7 @@ void legion_hdf5_t::add_logical_region(LogicalRegion lr, LogicalPartition lp, st
   hdf5_region_vector.push_back(h5_lr);
 }
 
-void legion_hdf5_t::add_hdf5_region(legion_hdf5_region_t hdf5_region) {
+void legion_hdf5_t::add_hdf5_region(const legion_hdf5_region_t &hdf5_region) {
   hdf5_region_vector.push_back(hdf5_region);
 }
 
@@ -144,8 +144,8 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
 legion_io_policy_t::~legion_io_policy_t() {
   Runtime *runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
-  printf("clean up\n");
   if (default_index_topology_file_is != IndexSpace::NO_SPACE) {
+    printf("clean up default_index_topology_file_is\n");
     runtime->destroy_index_space(ctx, default_index_topology_file_is);
   }
 }

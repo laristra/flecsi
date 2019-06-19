@@ -44,7 +44,7 @@ struct legion_hdf5_t {
   legion_hdf5_t(const char* file_name, int num_files);
   legion_hdf5_t(std::string file_name, int num_files);
   void add_logical_region(LogicalRegion lr, LogicalPartition lp, std::string lr_name, std::map<FieldID, std::string> field_string_map);
-  void add_hdf5_region(legion_hdf5_region_t hdf5_region);
+  void add_hdf5_region(const legion_hdf5_region_t &hdf5_region);
   bool generate_hdf5_file(int file_idx);
   
   std::string file_name;
