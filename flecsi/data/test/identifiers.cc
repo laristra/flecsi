@@ -34,7 +34,7 @@ identifiers(int argc, char ** argv) {
     flecsi::topology::global_topology_t, "internal", "global_topology");
   flog(info) << "index topology handle " << ih.identifier() << std::endl;
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(identifiers);

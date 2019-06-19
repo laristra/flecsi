@@ -48,6 +48,7 @@ enum storage_label_t : size_t {
   subspace
 }; // enum storage_label_t
 
+#if 1
 namespace POLICY_NAMESPACE {
 
 /*!
@@ -72,5 +73,6 @@ struct storage_class_u {
 }; // struct storage_class_u
 
 } // namespace POLICY_NAMESPACE
+#endif
 } // namespace data
 } // namespace flecsi

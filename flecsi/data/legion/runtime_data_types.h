@@ -69,6 +69,18 @@ struct unstructured_mesh_runtime_data_t {
 }; // struct unstructured_mesh_runtime_data_t
 #endif
 
+struct unstructured_mesh_dense_runtime_data_t {
+}; // struct unstructured_mesh_dense_runtime_data_t
+
+struct unstructured_mesh_ragged_runtime_data_t {
+}; // struct unstructured_mesh_ragged_runtime_data_t
+
+struct unstructured_mesh_sparse_runtime_data_t {
+}; // struct unstructured_mesh_sparse_runtime_data_t
+
+struct unstructured_mesh_subspace_runtime_data_t {
+}; // struct unstructured_mesh_subspace_runtime_data_t
+
 struct structured_mesh_runtime_data_t {
 }; // struct structured_mesh_runtime_data_t
 

@@ -69,8 +69,7 @@ struct mesh_storage_u {
 
   // array of array of domain_connectivity_u
   std::array<std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMAINS>,
-    NUM_DOMAINS>
-    topology;
+    NUM_DOMAINS> topology;
 
   std::array<index_spaces_t, NUM_DOMAINS> index_spaces;
 

@@ -28,6 +28,7 @@
 #include <string>
 
 namespace flecsi {
+namespace execution {
 
 /*!
   This function is a wrapper for Kokkos::parallel_for that has been adapted to
@@ -37,8 +38,7 @@ namespace flecsi {
  */
 
 template<typename ITERATOR, typename LAMBDA>
-parallel_for(ITERATOR const & iterator,
-  LAMBDA const & lambda,
+parallel_for(ITERATOR const iterator, LAMBDA const lambda,
   std::string const & name = "") {
 
   struct functor_t {
@@ -60,10 +60,68 @@ parallel_for(ITERATOR const & iterator,
 
 } // parallel_for
 
-#if 0
-[=](auto & c){
-  f(c) = ...
-}
-#endif
+/*!
+  The forall_u type provides a pretty interface for invoking data-parallel
+  execution.
+ */
 
+// We will need this when/if we begin to customize behavior based on
+// ITERATOR type.
+//template<typename ITERATOR> struct forall_u {};
+
+template<typename ITERATOR> struct forall_u {
+
+  /*!
+    Construct a forall_u instance.
+
+    @param iterator A valid C++ RandomAccess iterator.
+    @param name     An optional name that can be used for debugging.
+   */
+
+  forall_u(ITERATOR iterator, std::string const & name = "")
+    : iterator_(iterator), name_(name) {}
+
+  /*!
+    The functor_u type wraps FleCSI iterators that have indirection.
+
+    @tparam LAMBDA The user-defined lambda function.
+   */
+
+  template<typename LAMBDA>
+  struct functor_u {
+
+    functor_u(ITERATOR iterator, LAMBDA lambda, std::string const & name)
+      : iterator_(iterator), lambda_(lambda), name_(name) {}
+
+    void operator() (int64_t i) const {
+      lambda_(iterator_[i]);
+    } // operator()
+
+  private:
+    ITERATOR iterator_;
+    LAMBDA lambda_;
+    std::string & const name_;
+
+  }; // struct functor_t
+
+  /*!
+    This overload of the insertion operator allows pretty syntax when invoking
+    forall.
+
+    Attribution: Nick Moss
+   */
+
+  template<typename CALLABLE>
+  void operator<< (CALLABLE l) {
+    Kokkos::parallel_for(name_, iterator_.size(),
+      functor_t{iterator_, lambda_});
+  } // operator<<
+
+private:
+  ITERATOR iterator_;
+  std::string & const name_;
+
+}; // struct forall_u
+
+} // namespace execution
 } // namespace flecsi

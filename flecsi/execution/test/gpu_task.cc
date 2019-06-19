@@ -65,7 +65,7 @@ gpu_task(int argc, char ** argv) {
 
   flecsi_execute_task(simple, task, index, 8);
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_test(gpu_task);

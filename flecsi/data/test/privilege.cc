@@ -73,7 +73,7 @@ privilege(int argc, char ** argv) {
     ASSERT_EQ(p3, rw);
   } // scope
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(privilege);

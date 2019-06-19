@@ -42,8 +42,9 @@ check(accessor<ro> ia) {
   FTEST();
 
   ASSERT_EQ(ia, flecsi_color());
+  ASSERT_EQ(ia, 100);
 
-  return 0;
+  return FTEST_RESULT();
 } // print
 
 flecsi_register_task(check, index_test, loc, index);

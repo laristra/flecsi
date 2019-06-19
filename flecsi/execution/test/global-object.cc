@@ -75,7 +75,7 @@ global_object(int argc, char ** argv) {
   ASSERT_EQ((*go_a)(), 10);
   ASSERT_EQ((*go_b)(), 100);
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(global_object);

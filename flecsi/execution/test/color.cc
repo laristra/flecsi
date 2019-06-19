@@ -46,7 +46,7 @@ color_raw(int argc, char ** argv) {
   ASSERT_EQ(processes, 4);
   ASSERT_LT(process, processes);
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(color_raw);

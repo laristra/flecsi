@@ -31,7 +31,7 @@ kokkos_sanity(int argc, char ** argv) {
   Kokkos::print_configuration(std::cerr);
   // Kokkos::finalize();
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(kokkos_sanity);

@@ -55,7 +55,7 @@ global(int argc, char ** argv) {
   flecsi_execute_task(global_task, global_test, single, th, value);
   flecsi_execute_task(print, global_test, single, th);
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(global);
