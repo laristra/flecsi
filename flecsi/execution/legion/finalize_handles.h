@@ -207,7 +207,7 @@ struct finalize_handles_t
 
   template<typename... Ts,
     typename = std::enable_if_t<
-      utils::are_base_of_t<data::data_reference_base_t, Ts...>>>
+      utils::are_base_of_t<data::data_reference_base_t, Ts...>::value>>
   void handle(std::tuple<Ts...> & items) {
     handle_tuple_items(items, std::make_index_sequence<sizeof...(Ts)>{});
   }
