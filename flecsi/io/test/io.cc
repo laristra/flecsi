@@ -13,9 +13,9 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.h>
-#include <flecsi/io/io_interface.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/execution/execution.hh>
+#include <flecsi/io/io_interface.hh>
+#include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 

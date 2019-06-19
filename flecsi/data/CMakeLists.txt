@@ -18,16 +18,16 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
-  common/data_reference.h
-  common/field_info.h
-  common/privilege.h
-  common/storage_class.h
-  common/topology.h
-  common/topology_accessor.h
-  common/topology_registration.h
-  data.h
-  field_interface.h
-  topology_interface.h
+  common/data_reference.hh
+  common/field_info.hh
+  common/privilege.hh
+  common/storage_class.hh
+  common/topology.hh
+  common/topology_accessor.hh
+  common/topology_registration.hh
+  data.hh
+  field_interface.hh
+  topology_interface.hh
 )
 
 set(data_SOURCES
@@ -36,10 +36,10 @@ set(data_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
-    legion/data_policy.h
-    legion/runtime_data_types.h
-    legion/storage_classes.h
-    legion/topologies.h
+    legion/data_policy.hh
+    legion/runtime_data_types.hh
+    legion/storage_classes.hh
+    legion/topologies.hh
     ${data_HEADERS}
   )
 
@@ -50,8 +50,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(data_HEADERS
-    mpi/data_policy.h
-    mpi/storage_classes.h
+    mpi/data_policy.hh
+    mpi/storage_classes.hh
     ${data_HEADERS}
   )
 

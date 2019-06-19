@@ -12,8 +12,8 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/static_verify.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/static_verify.hh>
 
 #include <iostream>
 

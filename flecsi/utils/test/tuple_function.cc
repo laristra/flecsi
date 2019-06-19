@@ -1,5 +1,5 @@
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/tuple_function.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/tuple_function.hh>
 
 // struct foo
 struct foo {

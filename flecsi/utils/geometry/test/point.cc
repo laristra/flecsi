@@ -13,8 +13,8 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/geometry/point.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/geometry/point.hh>
 
 using namespace flecsi;
 

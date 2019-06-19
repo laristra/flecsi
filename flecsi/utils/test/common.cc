@@ -12,8 +12,8 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/ftest.hh>
 
 struct MyClass {
   int operator()(float, double, long double) const {

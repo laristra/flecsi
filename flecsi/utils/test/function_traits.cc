@@ -1,6 +1,6 @@
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/function_traits.h>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/function_traits.hh>
 
 struct type_t {
   int operator()(float, double, long double) const {

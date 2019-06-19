@@ -13,7 +13,7 @@
 #------------------------------------------------------------------------------#
 
 set(io_HEADERS
-  io_interface.h
+  io_interface.hh
 )
 
 set(io_SOURCES
@@ -22,7 +22,7 @@ set(io_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(io_HEADERS
-    legion/io_policy.h
+    legion/io_policy.hh
     ${io_HEADERS}
   )
 

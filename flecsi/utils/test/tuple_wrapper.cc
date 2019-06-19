@@ -1,5 +1,5 @@
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/tuple_wrapper.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/tuple_wrapper.hh>
 
 int
 tuple_wrapper(int argc, char ** argv) {

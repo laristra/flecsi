@@ -1,4 +1,4 @@
-#include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/tuple_walker.hh>
 
 // struct once
 struct once : public flecsi::utils::tuple_walker_u<once> {

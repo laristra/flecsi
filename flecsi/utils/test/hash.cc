@@ -12,8 +12,8 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/hash.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/hash.hh>
 
 int
 hash(int argc, char ** argv) {

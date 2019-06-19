@@ -12,9 +12,9 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/iterator.h>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/iterator.hh>
 
 #include <array>
 #include <iostream>

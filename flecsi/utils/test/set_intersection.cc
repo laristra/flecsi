@@ -12,8 +12,8 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/set_intersection.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/set_intersection.hh>
 
 template<class CONTAINER>
 inline bool

@@ -12,10 +12,10 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/ftest.hh>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.h>
+#include <flecsi/execution/execution.hh>
 
 using namespace flecsi::execution;
 

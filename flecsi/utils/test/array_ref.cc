@@ -1,6 +1,6 @@
-#include <flecsi/utils/array_ref.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/array_ref.hh>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/ftest.hh>
 
 #include <iostream>
 

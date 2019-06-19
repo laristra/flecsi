@@ -1,7 +1,7 @@
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/const_string.h>
-#include <flecsi/utils/dag.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/const_string.hh>
+#include <flecsi/utils/dag.hh>
+#include <flecsi/utils/ftest.hh>
 
 #include <bitset>
 

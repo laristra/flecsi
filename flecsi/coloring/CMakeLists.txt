@@ -13,7 +13,7 @@
 #------------------------------------------------------------------------------#
 
 set(coloring_HEADERS
-  coloring_map.h
+  coloring_map.hh
   PARENT_SCOPE
 )
 

@@ -13,9 +13,9 @@
 #------------------------------------------------------------------------------#
 
 set(control_HEADERS
-  control.h
-  control_point_walker.h
-  default_node.h
+  control.hh
+  control_point_walker.hh
+  default_node.hh
 )
 
 set(control_SOURCES

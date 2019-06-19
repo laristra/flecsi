@@ -1,5 +1,5 @@
-#include <flecsi/utils/debruijn.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/debruijn.hh>
+#include <flecsi/utils/ftest.hh>
 
 #include <random>
 

@@ -17,4 +17,4 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include <flecsi/execution/mpi/runtime.h>
+#include <flecsi/execution/mpi/runtime.hh>

@@ -12,8 +12,8 @@
    All rights reserved.
                                                                               */
 #define __FLECSI_PRIVATE__
-#include <flecsi/topology/ntree/geometry.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/topology/ntree/geometry.hh>
+#include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 

@@ -1,6 +1,6 @@
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/tuple_type_converter.h>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/tuple_type_converter.hh>
 
 class base
 {

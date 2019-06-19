@@ -11,7 +11,7 @@
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
-#include <flecsi/execution/execution.h>
+#include <flecsi/execution/execution.hh>
 
 // Registering some default launch domains
 

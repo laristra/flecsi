@@ -17,4 +17,4 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include <flecsi/execution/legion/runtime.h>
+#include <flecsi/execution/legion/runtime.hh>

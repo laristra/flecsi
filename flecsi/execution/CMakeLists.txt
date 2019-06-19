@@ -18,17 +18,17 @@
 #------------------------------------------------------------------------------#
 
 set(execution_HEADERS
-  common/command_line_options.h
-  common/function_handle.h
-  common/launch.h
-  common/processor.h
-  context.h
-  execution.h
-  global_object_wrapper.h
-  internal.h
-  kernel_interface.h
-  reduction.h
-  task_interface.h
+  common/command_line_options.hh
+  common/function_handle.hh
+  common/launch.hh
+  common/processor.hh
+  context.hh
+  execution.hh
+  global_object_wrapper.hh
+  internal.hh
+  kernel_interface.hh
+  reduction.hh
+  task_interface.hh
 )
 
 set(execution_SOURCES
@@ -39,20 +39,20 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(execution_HEADERS
     ${execution_HEADERS}
-    legion/context_policy.h
-    legion/enactment/bind_accessors.h
-    legion/enactment/task_wrapper.h
-    legion/enactment/unbind_accessors.h
-    legion/execution_policy.h
-    legion/future.h
-    legion/internal_task.h
-    legion/invocation/init_args.h
-    legion/invocation/task_epilogue.h
-    legion/invocation/task_prologue.h
-    legion/mapper.h
-    legion/reduction_wrapper.h
-    legion/runtime.h
-    legion/tasks.h
+    legion/context_policy.hh
+    legion/enactment/bind_accessors.hh
+    legion/enactment/task_wrapper.hh
+    legion/enactment/unbind_accessors.hh
+    legion/execution_policy.hh
+    legion/future.hh
+    legion/internal_task.hh
+    legion/invocation/init_args.hh
+    legion/invocation/task_epilogue.hh
+    legion/invocation/task_prologue.hh
+    legion/mapper.hh
+    legion/reduction_wrapper.hh
+    legion/runtime.hh
+    legion/tasks.hh
   )
 
   set(execution_SOURCES
@@ -65,10 +65,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
     ${execution_HEADERS}
-    mpi/context_policy.h
-    mpi/execution_policy.h
-    mpi/reduction_wrapper.h
-    mpi/runtime.h
+    mpi/context_policy.hh
+    mpi/execution_policy.hh
+    mpi/reduction_wrapper.hh
+    mpi/runtime.hh
   )
 
   set(execution_SOURCES
@@ -81,7 +81,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   set(execution_HEADERS
     ${execution_HEADERS}
-    hpx/runtime.h
+    hpx/runtime.hh
   )
 
   set(execution_SOURCES
