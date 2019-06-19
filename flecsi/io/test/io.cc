@@ -96,15 +96,15 @@ io_sanity(int argc, char ** argv) {
     
   LogicalPartition file_recover_lp_output_1 = runtime->get_logical_partition(ctx, output_lr_1, file_ip);
   
-  io::checkpoint_internal_data_t cp_test_data_1(input_lr_1, file_checkpoint_lp_input_1, "input_lr_1");
+  io::hdf5_region_t cp_test_data_1(input_lr_1, file_checkpoint_lp_input_1, "input_lr_1");
   cp_test_data_1.field_string_map[FID_X] = "A_FID_X";
   cp_test_data_1.field_string_map[FID_Y] = "A_FID_Y";
   
-  io::checkpoint_internal_data_t cp_test_data_2(input_lr_2, file_checkpoint_lp_input_2, "input_lr_2");
+  io::hdf5_region_t cp_test_data_2(input_lr_2, file_checkpoint_lp_input_2, "input_lr_2");
   cp_test_data_2.field_string_map[FID_X] = "B_FID_X";
   cp_test_data_2.field_string_map[FID_Y] = "B_FID_Y";
   
-  std::vector<io::checkpoint_internal_data_t> cp_test_data_vector;
+  std::vector<io::hdf5_region_t> cp_test_data_vector;
   cp_test_data_vector.push_back(cp_test_data_1);
   cp_test_data_vector.push_back(cp_test_data_2);
   
@@ -160,11 +160,11 @@ io_sanity(int argc, char ** argv) {
   cp_io.checkpoint_data(checkpoint_file, file_is, cp_test_data_vector, true);
   
   
-  io::checkpoint_internal_data_t re_test_data(output_lr_1, file_recover_lp_output_1, "output_lr_1");
+  io::hdf5_region_t re_test_data(output_lr_1, file_recover_lp_output_1, "output_lr_1");
   re_test_data.field_string_map[FID_X] = "A_FID_X";
   re_test_data.field_string_map[FID_Y] = "A_FID_Y";
   
-  std::vector<io::checkpoint_internal_data_t> re_test_data_vector;
+  std::vector<io::hdf5_region_t> re_test_data_vector;
   re_test_data_vector.push_back(re_test_data);
   
   cp_io.recover_data(checkpoint_file, file_is, re_test_data_vector, false);
