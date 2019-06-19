@@ -103,11 +103,11 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
     // we need to get Rect for the parent index space in purpose to loop
     // over  compacted physical instance
 
-    Legion::Domain dom = runtime->get_index_space_domain(context, is);
-    LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
+   Legion::Domain dom = runtime->get_index_space_domain(context, is);
+   LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
 
-    LegionRuntime::Arrays::Rect<2> sr;
-    LegionRuntime::Accessor::ByteOffset bo[2];
+   LegionRuntime::Arrays::Rect<2> sr;
+   LegionRuntime::Accessor::ByteOffset bo[2];
 //#ifdef ENABLE_CALIPER
 //CALI_MARK_END("FleCSI_Execution dense_accessor_instance");
 //#endif
@@ -118,11 +118,11 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
     // get an accessor to the first element in exclusive LR:
     auto ac = regions[region].get_field_accessor(h.fid).template typeify<T>();
     h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
-    
+   
     //Exclusive
     h.exclusive_size = rect.hi[1]-rect.lo[1]+1;
     h.exclusive_data = h.exclusive_size == 0 ? nullptr : h.combined_data;
-     h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
+    h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
     // Shared
     LegionRuntime::Arrays::Rect<2> rect_sh = runtime->get_index_space_domain(context, regions[region+1].get_logical_region().get_index_space()).get_rect<2>();
     h.shared_size = rect_sh.hi[1]-rect_sh.lo[1]+1;
@@ -132,9 +132,9 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
     LegionRuntime::Arrays::Rect<2> rect_gh = runtime->get_index_space_domain(context, regions[region+2].get_logical_region().get_index_space()).get_rect<2>();
     h.ghost_size = rect_gh.hi[1]-rect_gh.lo[1]+1;
     h.ghost_data = h.ghost_size == 0 ? nullptr : h.combined_data + h.exclusive_size + h.shared_size;
-     h.ghost_priv = GHOST_PERMISSIONS;
+    h.ghost_priv = GHOST_PERMISSIONS;
 
-     h.combined_size = h.exclusive_size + h.shared_size + h.ghost_size;
+    h.combined_size = h.exclusive_size + h.shared_size + h.ghost_size;
 
     region += num_regions;
 #ifdef ENABLE_CALIPER
@@ -168,20 +168,31 @@ CALI_MARK_BEGIN("FleCSI_Execution global_accesor");
                     << std::endl;
       }
       else {
-        prs[r] = regions[region + r];
-        Legion::LogicalRegion lr = prs[r].get_logical_region();
-        Legion::IndexSpace is = lr.get_index_space();
+	Legion::Domain dom = runtime-> get_index_space_domain(context, regions[region+r].get_logical_region().get_index_space());
+	Legion::Domain::DomainPointIterator itr(dom);
+        LegionRuntime::Arrays::Rect<1> dr = dom.get_rect<1>();
+	const Legion::UnsafeFieldAccessor<T,1,
+        Legion::coord_t,
+        Realm::AffineAccessor<T, 1, Legion::coord_t>>
+        ac(regions[r], h.fid, sizeof(T));
 
-        auto ac = prs[r].get_field_accessor(h.fid).template typeify<T>();
+        T * ac_ptr = (T *)(ac.ptr(itr.p));
+        //prs[r] = regions[region + r];
+        //Legion::LogicalRegion lr = prs[r].get_logical_region();
+        //Legion::IndexSpace is = lr.get_index_space();
 
-        Legion::Domain domain = runtime->get_index_space_domain(context, is);
+        //auto ac = prs[r].get_field_accessor(h.fid).template typeify<T>();
 
-        LegionRuntime::Arrays::Rect<1> dr = domain.get_rect<1>();
-        LegionRuntime::Arrays::Rect<1> sr;
-        LegionRuntime::Accessor::ByteOffset bo[2];
-        data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
+        //Legion::Domain domain = runtime->get_index_space_domain(context, is);
+
+        //LegionRuntime::Arrays::Rect<1> dr = dom.get_rect<1>();
+        //LegionRuntime::Arrays::Rect<1> sr;
+        //LegionRuntime::Accessor::ByteOffset bo[2];
+        
+	//data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
         // data[r] += bo[1];
-        sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+        data[r] = ac_ptr;
+        sizes[r] = dr.hi[1] - dr.lo[1] + 1;
         h.combined_size += sizes[r];
         h.combined_data = data[r];
         h.color_priv = PERMISSIONS;
@@ -266,8 +277,13 @@ CALI_MARK_END("FleCSI_Execution color_accesor");
   handle(data_client_handle_u<T, PERMISSIONS> & h) {
     auto & context_ = context_t::instance();
 
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("FleCSI_Execution data_client_storage");
+#endif
     auto storage = h.set_storage(new typename T::storage_t);
-
+#ifdef ENABLE_CALIPER
+CALI_MARK_END("FleCSI_Execution data_client_storage");
+#endif
     //------------------------------------------------------------------------//
     // Mapping entity data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//

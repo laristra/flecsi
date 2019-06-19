@@ -205,9 +205,12 @@ CALI_MARK_BEGIN("data_client_handle_u");
         si.size = h.get_index_subspace_size_(iss.index_subspace);
       }
     }
-
+#ifdef ENABLE_CALIPER
+CALI_MARK_BEGIN("data_client_handle_u_delete_storage");
+#endif
     h.delete_storage();
 #ifdef ENABLE_CALIPER
+CALI_MARK_END("data_client_handle_u_delete_storage");
 CALI_MARK_END("data_client_handle_u");
 #endif
   } // handle
