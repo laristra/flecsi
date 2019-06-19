@@ -40,7 +40,7 @@ before_script:
     RUNTIME: ""
     CC: "gcc"
     CXX: "g++"
-    CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+    CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
     BUILD_TYPE: "Debug"
     IGNORE_NOCI: "FALSE"
   image:
@@ -103,21 +103,21 @@ before_script:
       if [[ ${CI_JOB_STAGE} = "Apps" ]];
       then
         cd ${CI_PROJECT_DIR}/build/;
-        git clone --recursive https://github.com/laristra/flecsale.git;             
-        cd flecsale/flecsi;             
-        git checkout ${CI_COMMIT_REF_NAME}; 
-        git submodule update --init --recursive;                
-        cd ../;         
-        mkdir build;            
-        cd build;               
-        cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \                
-          -DFLECSI_RUNTIME_MODEL=mpi \          
-          -DENABLE_UNIT_TESTS=ON \              
-          ..;           
-        make -j2 || make VERBOSE=1;             
-        if [[ ${RUNTIME} = "mpi" ]];            
-        then            
-          make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";           
+        git clone --recursive https://github.com/laristra/flecsale.git;
+        cd flecsale/flecsi;
+        git checkout ${CI_COMMIT_REF_NAME};
+        git submodule update --init --recursive;
+        cd ../;
+        mkdir build;
+        cd build;
+        cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DFLECSI_RUNTIME_MODEL=mpi \
+          -DENABLE_UNIT_TESTS=ON \
+          ..;
+        make -j2 || make VERBOSE=1;
+        if [[ ${RUNTIME} = "mpi" ]];
+        then
+          make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";
         fi;
       fi;
 
@@ -615,4 +615,3 @@ format:fedora_legion:
 ###############
 ###############
 ###############
-

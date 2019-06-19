@@ -627,6 +627,13 @@ private:
 } // namespace utils
 } // namespace flecsi
 
+#define buffer_message(message)                                                \
+                                                                               \
+  if(mpi_state_t::instance().initialized()) {                                  \
+    packet_t pkt(message);                                                     \
+    mpi_state_t::instance().packets().push_back(pkt);                          \
+  } /* if */
+
 #define send_to_one(message)                                                   \
                                                                                \
   if(mpi_state_t::instance().initialized()) {                                  \

@@ -39,6 +39,8 @@ set(utils_HEADERS
   ftest/output.h
   ftest/types.h
   function_traits.h
+  geometry/filling_curve.h
+  geometry/point.h
   graphviz.h
   hash.h
   id.h
@@ -316,4 +318,16 @@ ftest_add_unit(utils_iterator
   INPUTS
     test/iterator.blessed
     ${iterator_blessed_input}
+)
+
+#------------------------------------------------------------------------------#
+# geometry
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(point
+  SOURCES geometry/test/point.cc
+)
+
+ftest_add_unit(filling_curve
+  SOURCES geometry/test/filling_curve.cc
 )
