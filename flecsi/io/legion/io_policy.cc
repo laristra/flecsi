@@ -13,8 +13,9 @@
                                                                               */
 #include <fstream>
 #include <hdf5.h>
-#include <flecsi/io/legion/io_policy.h>
 #define __FLECSI_PRIVATE__
+#include <flecsi/data/common/data_reference.h>
+#include <flecsi/io/legion/io_policy.h>
 #include <flecsi/utils/const_string.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/internal_task.h>
@@ -263,7 +264,7 @@ void legion_io_policy_t::checkpoint_default_index_topology(legion_hdf5_t &hdf5_f
 {
   auto & flecsi_context = execution::context_t::instance();
   std::vector<data::field_info_t> const & fid_vector = flecsi_context.get_field_info_store(topology::index_topology_t::type_identifier_hash, data::storage_label_t::index).field_info();
-  printf("fid vector size %ld\n", fid_vector.size());
+  printf("checkpoint fid vector size %ld\n", fid_vector.size());
   
   constexpr size_t identifier =
     utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
@@ -283,11 +284,32 @@ void legion_io_policy_t::checkpoint_default_index_topology(legion_hdf5_t &hdf5_f
   checkpoint_data(hdf5_file, default_index_topology_file_is, hdf5_region_vector, true);
 }
 
+void legion_io_policy_t::checkpoint_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh)
+{
+  auto & flecsi_context = execution::context_t::instance();
+  const data::field_info_t & fid = flecsi_context.get_field_info_store(topology::index_topology_t::type_identifier_hash, data::storage_label_t::index).get_field_info(fh.identifier());
+  printf("checkpoint fid %ld\n", fid.fid);
+  
+  constexpr size_t identifier =
+    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
+      flecsi_internal_string_hash("index_topology")>();
+   
+  data::legion::index_runtime_data_t & index_runtime_data =
+    flecsi_context.index_topology_instance(identifier);
+  
+  legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region, default_index_topology_file_lp, "input_lr_1");
+  cp_test_data.field_string_map[fid.fid] = std::to_string(fid.fid);
+  
+  std::vector<legion_hdf5_region_t> hdf5_region_vector;
+  hdf5_region_vector.push_back(cp_test_data);
+  checkpoint_data(hdf5_file, default_index_topology_file_is, hdf5_region_vector, true);
+}
+
 void legion_io_policy_t::recover_default_index_topology(legion_hdf5_t &hdf5_file)
 {
   auto & flecsi_context = execution::context_t::instance();
   std::vector<data::field_info_t> const & fid_vector = flecsi_context.get_field_info_store(topology::index_topology_t::type_identifier_hash, data::storage_label_t::index).field_info();
-  printf("fid vector size %ld\n", fid_vector.size());
+  printf("recover fid vector size %ld\n", fid_vector.size());
   
   constexpr size_t identifier =
     utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
@@ -301,6 +323,27 @@ void legion_io_policy_t::recover_default_index_topology(legion_hdf5_t &hdf5_file
     cp_test_data.field_string_map[(*it).fid] = std::to_string((*it).fid);
     printf("fid %ld\n", (*it).fid);
   }
+  
+  std::vector<legion_hdf5_region_t> hdf5_region_vector;
+  hdf5_region_vector.push_back(cp_test_data);
+  recover_data(hdf5_file, default_index_topology_file_is, hdf5_region_vector, true);
+}
+
+void legion_io_policy_t::recover_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh)
+{
+  auto & flecsi_context = execution::context_t::instance();
+  const data::field_info_t & fid = flecsi_context.get_field_info_store(topology::index_topology_t::type_identifier_hash, data::storage_label_t::index).get_field_info(fh.identifier());
+  printf("recover fid %ld\n", fid.fid);
+  
+  constexpr size_t identifier =
+    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
+      flecsi_internal_string_hash("index_topology")>();
+   
+  data::legion::index_runtime_data_t & index_runtime_data =
+    flecsi_context.index_topology_instance(identifier);
+  
+  legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region, default_index_topology_file_lp, "input_lr_1");
+  cp_test_data.field_string_map[fid.fid] = std::to_string(fid.fid);
   
   std::vector<legion_hdf5_region_t> hdf5_region_vector;
   hdf5_region_vector.push_back(cp_test_data);

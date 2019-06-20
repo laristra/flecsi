@@ -84,6 +84,9 @@ index_topology(int argc, char ** argv) {
   MPI_Barrier(MPI_COMM_WORLD);
   
   cp_io.checkpoint_default_index_topology(checkpoint_file);
+  //cp_io.checkpoint_index_topology_field(checkpoint_file, fh1);
+  //cp_io.checkpoint_index_topology_field(checkpoint_file, fh2);
+  
 
   flecsi_execute_task(reset_zero, index_test, index, fh1);
   flecsi_execute_task(reset_zero, index_test, index, fh2);
@@ -92,7 +95,9 @@ index_topology(int argc, char ** argv) {
   //flecsi_execute_task(check, index_test, index, fh2);
 
   cp_io.recover_default_index_topology(checkpoint_file);
-  
+  //cp_io.recover_index_topology_field(checkpoint_file, fh1);
+  //cp_io.recover_index_topology_field(checkpoint_file, fh2);
+
   flecsi_execute_task(check, index_test, index, fh1);
   flecsi_execute_task(check, index_test, index, fh2);
   return 0;

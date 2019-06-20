@@ -56,6 +56,7 @@ struct legion_io_policy_t {
   using hdf5_t = legion_hdf5_t;
   using hdf5_region_t = legion_hdf5_region_t;
   using launch_space_t = IndexSpace;
+  using field_reference_t = data::field_reference_t;
   
   legion_io_policy_t() {}
   
@@ -70,10 +71,14 @@ struct legion_io_policy_t {
   void checkpoint_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
   
   void checkpoint_default_index_topology(legion_hdf5_t &hdf5_file);
+
+  void checkpoint_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
   
   void recover_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
   
   void recover_default_index_topology(legion_hdf5_t &hdf5_file);
+
+  void recover_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
   
 private:
   IndexSpace default_index_topology_file_is;
