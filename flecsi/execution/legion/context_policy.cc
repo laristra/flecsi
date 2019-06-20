@@ -267,14 +267,14 @@ legion_context_policy_t::initialize_global_topology() {
 
   Domain dom(Domain::from_rect<1>(bounds));
 
-  Legion::IndexSpace index_space =
+  global_topology_instance_.index_space =
     legion_runtime_->create_index_space(legion_context_, dom);
 
-  Legion::FieldSpace field_space =
+  global_topology_instance_.field_space =
     legion_runtime_->create_field_space(legion_context_);
 
   FieldAllocator allocator =
-    legion_runtime_->create_field_allocator(legion_context_, field_space);
+    legion_runtime_->create_field_allocator(legion_context_, global_topology_instance_.field_space);
 
   /*
     Note: This call to get_field_info_store uses the non-const version
@@ -293,8 +293,28 @@ legion_context_policy_t::initialize_global_topology() {
 
   global_topology_instance_.logical_region =
     legion_runtime_->create_logical_region(
-      legion_context_, index_space, field_space);
+      legion_context_, global_topology_instance_.index_space, global_topology_instance_.field_space);
 } // legion_context_policy_t::initialize_global_topology
+
+//----------------------------------------------------------------------------//
+// Implementation of finalize_global_topology.
+//----------------------------------------------------------------------------//
+
+void
+legion_context_policy_t::finalize_global_topology() {
+  using namespace Legion;
+
+  global_topology_instance_.index_space_id = unique_isid_t::instance().next();
+
+  auto legion_runtime_ = Legion::Runtime::get_runtime();
+  auto legion_context_ = Legion::Runtime::get_context();
+
+  legion_runtime_->destroy_logical_region(legion_context_, global_topology_instance_.logical_region);
+
+  legion_runtime_->destroy_field_space(legion_context_, global_topology_instance_.field_space);
+
+  legion_runtime_->destroy_index_space(legion_context_, global_topology_instance_.index_space);
+} // legion_context_policy_t::finalize_global_topology
 
 //----------------------------------------------------------------------------//
 // Implementation of initialize_default_index_topology.
@@ -319,6 +339,30 @@ legion_context_policy_t::initialize_default_index_topology() {
   data::legion_data_policy_t::template set_coloring<topology::index_topology_t>(
     reference, coloring);
 } // legion_context_policy_t::initialize_default_index_topology
+
+//----------------------------------------------------------------------------//
+// Implementation of initialize_default_index_topology.
+//----------------------------------------------------------------------------//
+
+void
+legion_context_policy_t::finalize_default_index_topology() {
+
+  constexpr size_t identifier =
+    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
+      flecsi_internal_string_hash("index_topology")>();
+
+  {
+    flog_tag_guard(context);
+    flog(internal) << "Finalizing default index topology" << std::endl
+                   << "\tidentifier: " << identifier << std::endl;
+  }
+
+  data::topology_reference_u<topology::index_topology_t> reference(identifier);
+  topology::index_topology_t::coloring_t coloring(processes_);
+
+  data::legion_data_policy_t::template destroy_coloring<topology::index_topology_t>(
+    reference, coloring);
+} // legion_context_policy_t::finalize_default_index_topology
 
 } // namespace execution
 } // namespace flecsi

@@ -108,6 +108,9 @@ top_level_task(const Legion::Task * task,
 
   context_.exit_status() = context_.top_level_action()(args.argc, args.argv);
 
+  context_.finalize_global_topology();
+  context_.finalize_default_index_topology();
+
   /*
     Finish up Legion runtime and fall back out to MPI.
    */
