@@ -39,6 +39,8 @@ namespace legion {
 
 struct global_runtime_data_t {
   size_t index_space_id;
+  Legion::IndexSpace index_space;
+  Legion::FieldSpace field_space;
   Legion::LogicalRegion logical_region;
 }; // struct global_runtime_data_t
 

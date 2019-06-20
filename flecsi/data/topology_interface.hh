@@ -102,6 +102,16 @@ struct topology_interface_u {
       topology_reference, coloring);
   } // add_coloring
 
+  template<typename TOPOLOGY_TYPE>
+  void destroy_coloring(
+    topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
+      topology_reference,
+    typename TOPOLOGY_TYPE::type_identifier_t::coloring_t const & coloring,
+    std::string const & name) {
+    DATA_POLICY::template destroy_coloring<TOPOLOGY_TYPE>(
+      topology_reference, coloring);
+  } // destroy_coloring
+
 }; // struct topology_interface_u
 
 } // namespace data
