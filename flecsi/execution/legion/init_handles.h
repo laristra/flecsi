@@ -97,17 +97,28 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
     size_t permissions[] = {
       EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS};
 
-    Legion::LogicalRegion lr = regions[region].get_logical_region();
-    Legion::IndexSpace is = lr.get_index_space();
-
+     Legion::LogicalRegion lr = regions[region].get_logical_region();
+     Legion::IndexSpace is = lr.get_index_space();
+     Legion::Domain dom = runtime->get_index_space_domain(context, is); 
     // we need to get Rect for the parent index space in purpose to loop
     // over  compacted physical instance
 
-   Legion::Domain dom = runtime->get_index_space_domain(context, is);
-   LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
+	// Legion::Domain dom = runtime-> get_index_space_domain(context, regions[region].get_logical_region().get_index_space());
+        Legion::Domain::DomainPointIterator itr(dom);
+	LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
+        const Legion::UnsafeFieldAccessor<T,2,
+        Legion::coord_t,
+        Realm::AffineAccessor<T, 2, Legion::coord_t>>
+        ac(regions[region], h.fid, sizeof(T));
 
-   LegionRuntime::Arrays::Rect<2> sr;
-   LegionRuntime::Accessor::ByteOffset bo[2];
+        T * ac_ptr = (T *)(ac.ptr(itr.p));
+
+
+ //  Legion::Domain dom = runtime->get_index_space_domain(context, is);
+  // LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
+
+  // LegionRuntime::Arrays::Rect<2> sr;
+  // LegionRuntime::Accessor::ByteOffset bo[2];
 //#ifdef ENABLE_CALIPER
 //CALI_MARK_END("FleCSI_Execution dense_accessor_instance");
 //#endif
@@ -116,9 +127,9 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
 //CALI_MARK_BEGIN("FleCSI_Execution dense_accessor_get_index");
 //#endif
     // get an accessor to the first element in exclusive LR:
-    auto ac = regions[region].get_field_accessor(h.fid).template typeify<T>();
-    h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
-   
+    // auto ac = regions[region].get_field_accessor(h.fid).template typeify<T>();
+    // h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
+     h.combined_data = ac_ptr;
     //Exclusive
     h.exclusive_size = rect.hi[1]-rect.lo[1]+1;
     h.exclusive_data = h.exclusive_size == 0 ? nullptr : h.combined_data;
@@ -133,6 +144,10 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
     h.ghost_size = rect_gh.hi[1]-rect_gh.lo[1]+1;
     h.ghost_data = h.ghost_size == 0 ? nullptr : h.combined_data + h.exclusive_size + h.shared_size;
     h.ghost_priv = GHOST_PERMISSIONS;
+
+
+    printf("Exclusive size is %d",h.exclusive_size);
+    printf("Exclusive size is %d",h.shared_size);
 
     h.combined_size = h.exclusive_size + h.shared_size + h.ghost_size;
 
@@ -190,7 +205,7 @@ CALI_MARK_BEGIN("FleCSI_Execution global_accesor");
         //LegionRuntime::Accessor::ByteOffset bo[2];
         
 	//data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
-        // data[r] += bo[1];
+
         data[r] = ac_ptr;
         sizes[r] = dr.hi[1] - dr.lo[1] + 1;
         h.combined_size += sizes[r];
