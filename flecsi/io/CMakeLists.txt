@@ -83,3 +83,8 @@ ftest_add_unit(io_index
   SOURCES
     test/io_index.cc
 )
+
+ftest_add_unit(io_metadata
+  SOURCES
+    test/io_metadata.cc
+)

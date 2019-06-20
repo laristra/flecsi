@@ -12,7 +12,6 @@
    All rights reserved.
                                                                               */
 #include <fstream>
-#include <hdf5.h>
 #define __FLECSI_PRIVATE__
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/io/legion/io_policy.hh>
@@ -63,8 +62,72 @@ legion_hdf5_t::legion_hdf5_t(const char* file_name, int num_files)
 }
 
 legion_hdf5_t::legion_hdf5_t(std::string file_name, int num_files)
-  :file_name(file_name), num_files(num_files) {
+  :hdf5_file_id(-1), file_name(file_name), num_files(num_files) {
   hdf5_region_vector.clear();  
+}
+
+bool legion_hdf5_t::open_hdf5_file(int file_idx)
+{
+  std::string fname = file_name + std::to_string(file_idx);
+  if (true) {
+    hdf5_file_id = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
+  } else {
+    hdf5_file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+  }
+  if(hdf5_file_id < 0) {
+    printf("H5Fcreate failed: %lld\n", (long long)hdf5_file_id);
+    return false;
+  }
+}
+
+bool legion_hdf5_t::close_hdf5_file(int file_idx)
+{
+  H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
+  H5Fclose(hdf5_file_id);
+  return true;
+}
+
+bool legion_hdf5_t::write_string_to_hdf5_file(int file_idx, const char* group_name, const char* dataset_name, const char* str, size_t size)
+{
+  std::string fname = file_name + std::to_string(file_idx);
+  assert(hdf5_file_id >= 0);
+
+  herr_t status;
+  //status = H5Eset_auto(NULL, NULL);
+  status = H5Gget_objinfo (hdf5_file_id, group_name, 0, NULL);
+  hid_t group_id;
+  if (status == 0) {
+    printf ("The group exists.\n");
+    group_id = H5Gopen2(hdf5_file_id, group_name, H5P_DEFAULT);
+  } else {
+    group_id = H5Gcreate2(hdf5_file_id, group_name, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  }
+  if (group_id < 0) {
+    printf("H5Gcreate2 failed: %lld\n", (long long)group_id);
+    H5Fclose(hdf5_file_id);
+    return false;
+  }
+
+  hid_t filetype = H5Tcopy (H5T_C_S1);
+  status = H5Tset_size (filetype, H5T_VARIABLE);
+  hid_t memtype = H5Tcopy (H5T_C_S1);
+  status = H5Tset_size (memtype, H5T_VARIABLE);
+  
+  hsize_t dims[1];
+  dims[0] = 1;
+  hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
+
+  const char *data[1];
+  data[0] = str;
+  hid_t dset = H5Dcreate2(group_id, dataset_name, filetype, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  status = H5Dwrite (dset, memtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+
+  status = H5Dclose (dset);
+  status = H5Sclose (dataspace_id);
+  status = H5Tclose (filetype);
+  status = H5Tclose (memtype);
+  status = H5Gclose(group_id);
+
 }
 
 void legion_hdf5_t::add_logical_region(LogicalRegion lr, LogicalPartition lp, std::string lr_name, std::map<FieldID, std::string> field_string_map) {
@@ -77,14 +140,17 @@ void legion_hdf5_t::add_hdf5_region(const legion_hdf5_region_t &hdf5_region) {
 }
 
 bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
-  hid_t file_id;
   
   assert(hdf5_region_vector.size() > 0);
 
   std::string fname = file_name + std::to_string(file_idx);
-  file_id = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
-  if(file_id < 0) {
-    printf("H5Fcreate failed: %lld\n", (long long)file_id);
+#if 0
+  hdf5_file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+#else
+  hdf5_file_id = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
+#endif  
+  if(hdf5_file_id < 0) {
+    printf("H5Fcreate failed: %lld\n", (long long)hdf5_file_id);
     return false;
   }
   
@@ -108,7 +174,7 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
     }
     if(dataspace_id < 0) {
       printf("H5Screate_simple failed: %lld\n", (long long)dataspace_id);
-      H5Fclose(file_id);
+      H5Fclose(hdf5_file_id);
       return false;
     }
 #if 0
@@ -116,20 +182,20 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
     if (group_id < 0) {
       printf("H5Gcreate2 failed: %lld\n", (long long)group_id);
       H5Sclose(dataspace_id);
-      H5Fclose(file_id);
+      H5Fclose(hdf5_file_id);
       return false;
     }
 #endif
     for (std::map<FieldID, std::string>::iterator it = (*lr_it).field_string_map.begin() ; it != (*lr_it).field_string_map.end(); ++it) {
       const char* dataset_name = (it->second).c_str();
-      hid_t dataset = H5Dcreate2(file_id, dataset_name,
+      hid_t dataset = H5Dcreate2(hdf5_file_id, dataset_name,
     			     H5T_IEEE_F64LE, dataspace_id,
     			     H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
       if(dataset < 0) {
         printf("H5Dcreate2 failed: %lld\n", (long long)dataset);
     //    H5Gclose(group_id);
         H5Sclose(dataspace_id);
-        H5Fclose(file_id);
+        H5Fclose(hdf5_file_id);
         return false;
       }
       H5Dclose(dataset);
@@ -137,8 +203,8 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
  //   H5Gclose(group_id);
     H5Sclose(dataspace_id);
   }
-  H5Fflush(file_id, H5F_SCOPE_LOCAL);
-  H5Fclose(file_id);
+  H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
+  H5Fclose(hdf5_file_id);
   return true;
 }
 
@@ -154,6 +220,21 @@ legion_io_policy_t::~legion_io_policy_t() {
 legion_hdf5_t legion_io_policy_t::init_hdf5_file(const char* file_name, int num_files)
 {
   return legion_hdf5_t(file_name, num_files);
+}
+
+bool legion_io_policy_t::open_hdf5_file(legion_hdf5_t &hdf5_file, int file_idx)
+{
+  return hdf5_file.open_hdf5_file(file_idx);
+}
+
+bool legion_io_policy_t::close_hdf5_file(legion_hdf5_t &hdf5_file, int file_idx)
+{
+  return hdf5_file.close_hdf5_file(file_idx);
+}
+
+bool legion_io_policy_t::write_string_to_hdf5_file(legion_hdf5_t &hdf5_file, int file_idx, const char* group_name, const char* dataset_name, const char* str, size_t size)
+{
+  return hdf5_file.write_string_to_hdf5_file(file_idx, group_name, dataset_name, str, size);
 }
 
 void legion_io_policy_t::add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector)

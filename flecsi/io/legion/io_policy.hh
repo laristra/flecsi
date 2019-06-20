@@ -22,6 +22,7 @@
 #endif
 
 #include <legion.h>
+#include <hdf5.h>
 
 using namespace Legion;
 
@@ -43,10 +44,14 @@ struct legion_hdf5_region_t
 struct legion_hdf5_t {
   legion_hdf5_t(const char* file_name, int num_files);
   legion_hdf5_t(std::string file_name, int num_files);
+  bool open_hdf5_file(int file_idx);
+  bool close_hdf5_file(int file_idx);
+  bool write_string_to_hdf5_file(int file_idx, const char* group_name, const char* dataset_name, const char* str, size_t size);
   void add_logical_region(LogicalRegion lr, LogicalPartition lp, std::string lr_name, std::map<FieldID, std::string> field_string_map);
   void add_hdf5_region(const legion_hdf5_region_t &hdf5_region);
   bool generate_hdf5_file(int file_idx);
   
+  hid_t hdf5_file_id;
   std::string file_name;
   int num_files;
   std::vector<legion_hdf5_region_t> hdf5_region_vector;
@@ -63,6 +68,12 @@ struct legion_io_policy_t {
   ~legion_io_policy_t();
 
   legion_hdf5_t init_hdf5_file(const char* file_name, int num_files);
+
+  bool open_hdf5_file(legion_hdf5_t &hdf5_file, int file_idx);
+
+  bool close_hdf5_file(legion_hdf5_t &hdf5_file, int file_idx);
+
+  bool write_string_to_hdf5_file(legion_hdf5_t &hdf5_file, int rank_id, const char* group_name, const char* dataset_name, const char* str, size_t size);
   
   void add_regions(legion_hdf5_t &hdf5_file, std::vector<legion_hdf5_region_t> &hdf5_region_vector);
   

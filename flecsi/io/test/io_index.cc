@@ -79,6 +79,11 @@ index_topology(int argc, char ** argv) {
   
   cp_io.add_default_index_topology(checkpoint_file);
   if (my_rank == 0) { 
+#if 0
+    for (int i = 0; i < num_files; i++) {
+      cp_io.open_hdf5_file(checkpoint_file, i);
+    }
+#endif
     cp_io.generate_hdf5_files(checkpoint_file);
   }
   MPI_Barrier(MPI_COMM_WORLD);
