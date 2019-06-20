@@ -14,14 +14,14 @@
 #include <fstream>
 #include <hdf5.h>
 #define __FLECSI_PRIVATE__
-#include <flecsi/data/common/data_reference.h>
-#include <flecsi/io/legion/io_policy.h>
-#include <flecsi/utils/const_string.h>
-#include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/internal_task.h>
-#include <flecsi/data/legion/runtime_data_types.h>
-#include <flecsi/data/common/field_info.h>
-#include <flecsi/data/data.h>
+#include <flecsi/data/common/data_reference.hh>
+#include <flecsi/io/legion/io_policy.hh>
+#include <flecsi/utils/const_string.hh>
+#include <flecsi/execution/context.hh>
+#include <flecsi/execution/legion/internal_task.hh>
+#include <flecsi/data/legion/runtime_data_types.hh>
+#include <flecsi/data/common/field_info.hh>
+#include <flecsi/data/data.hh>
 
 #include <sys/types.h>
 #include <unistd.h>

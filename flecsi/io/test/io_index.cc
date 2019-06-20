@@ -13,11 +13,11 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/data/data.h>
-#include <flecsi/execution/execution.h>
-#include <flecsi/utils/demangle.h>
-#include <flecsi/utils/ftest.h>
-#include <flecsi/io/io_interface.h>
+#include <flecsi/data/data.hh>
+#include <flecsi/execution/execution.hh>
+#include <flecsi/utils/demangle.hh>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/io/io_interface.hh>
 
 #include <mpi.h>
 #include <assert.h>
@@ -55,7 +55,7 @@ check(accessor<ro> ia) {
 
   ASSERT_EQ(ia, flecsi_color());
 
-  return 0;
+  return FTEST_RESULT();
 } // print
 
 flecsi_register_task(check, index_test, loc, index);
