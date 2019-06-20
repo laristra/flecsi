@@ -15,7 +15,7 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include <flecsi/execution/context.h>
+#include <flecsi/execution/context.hh>
 
 namespace flecsi {
 namespace execution {

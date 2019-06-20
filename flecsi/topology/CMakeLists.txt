@@ -18,25 +18,25 @@
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
-  base_topology_types.h
-  common/array_buffer.h
-  common/connectivity.h
-  common/entity_storage.h
-  common/index_space.h
-  common/utility_types.h
-  internal/global.h
-  internal/index.h
-  ntree/interface.h
-  ntree/types.h
-  set/interface.h
-  set/types.h
-  structured_mesh/interface.h
-  structured_mesh/types.h
-  unstructured_mesh/interface.h
-  unstructured_mesh/partition.h
-  unstructured_mesh/storage.h
-  unstructured_mesh/types.h
-  unstructured_mesh/utils.h
+  base_topology_types.hh
+  common/array_buffer.hh
+  common/connectivity.hh
+  common/entity_storage.hh
+  common/index_space.hh
+  common/utility_types.hh
+  internal/global.hh
+  internal/index.hh
+  ntree/interface.hh
+  ntree/types.hh
+  set/interface.hh
+  set/types.hh
+  structured_mesh/interface.hh
+  structured_mesh/types.hh
+  unstructured_mesh/interface.hh
+  unstructured_mesh/partition.hh
+  unstructured_mesh/storage.hh
+  unstructured_mesh/types.hh
+  unstructured_mesh/utils.hh
 )
 
 set(topology_SOURCES

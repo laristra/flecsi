@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/ftest.hh>
 
 int
 init_a(int argc, char ** argv) {

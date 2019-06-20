@@ -13,11 +13,11 @@
 #------------------------------------------------------------------------------#
 
 set(runtime_HEADERS
-  context_policy.h
-  data_policy.h
-  execution_policy.h
-  io_policy.h
-  types.h
+  context_policy.hh
+  data_policy.hh
+  execution_policy.hh
+  io_policy.hh
+  types.hh
   PARENT_SCOPE
 )
 

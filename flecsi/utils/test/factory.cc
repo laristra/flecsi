@@ -1,6 +1,6 @@
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/factory.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/factory.hh>
+#include <flecsi/utils/ftest.hh>
 
 class io_base_t
 {

@@ -16,14 +16,14 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include <flecsi/data/legion/data_policy.h>
-#include <flecsi/execution/common/command_line_options.h>
-#include <flecsi/execution/context.h>
-#include <flecsi/execution/legion/internal_task.h>
-#include <flecsi/execution/legion/mapper.h>
-#include <flecsi/execution/legion/tasks.h>
-#include <flecsi/runtime/types.h>
-#include <flecsi/utils/const_string.h>
+#include <flecsi/data/legion/data_policy.hh>
+#include <flecsi/execution/common/command_line_options.hh>
+#include <flecsi/execution/context.hh>
+#include <flecsi/execution/legion/internal_task.hh>
+#include <flecsi/execution/legion/mapper.hh>
+#include <flecsi/execution/legion/tasks.hh>
+#include <flecsi/runtime/types.hh>
+#include <flecsi/utils/const_string.hh>
 
 namespace flecsi {
 namespace execution {

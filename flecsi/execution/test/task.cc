@@ -12,11 +12,11 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/ftest.hh>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/common/launch.h>
-#include <flecsi/execution/execution.h>
+#include <flecsi/execution/common/launch.hh>
+#include <flecsi/execution/execution.hh>
 
 using namespace flecsi::execution;
 
@@ -54,7 +54,7 @@ test_driver(int argc, char ** argv) {
 
   flecsi_execute_task(simple, task, index, 8);
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(test_driver);

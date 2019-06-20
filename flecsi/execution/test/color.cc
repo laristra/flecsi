@@ -12,10 +12,10 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/ftest.hh>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.h>
+#include <flecsi/execution/execution.hh>
 
 using namespace flecsi::execution;
 
@@ -46,7 +46,7 @@ color_raw(int argc, char ** argv) {
   ASSERT_EQ(processes, 4);
   ASSERT_LT(process, processes);
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(color_raw);

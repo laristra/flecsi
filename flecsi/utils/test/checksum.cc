@@ -1,5 +1,5 @@
-#include <flecsi/utils/checksum.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/checksum.hh>
+#include <flecsi/utils/ftest.hh>
 
 const std::size_t N = 100;
 

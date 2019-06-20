@@ -13,10 +13,10 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/data/data.h>
-#include <flecsi/topology/internal/global.h>
-#include <flecsi/topology/internal/index.h>
-#include <flecsi/utils/ftest.h>
+#include <flecsi/data/data.hh>
+#include <flecsi/topology/internal/global.hh>
+#include <flecsi/topology/internal/index.hh>
+#include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 
@@ -34,7 +34,7 @@ identifiers(int argc, char ** argv) {
     flecsi::topology::global_topology_t, "internal", "global_topology");
   flog(info) << "index topology handle " << ih.identifier() << std::endl;
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(identifiers);

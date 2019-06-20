@@ -11,8 +11,8 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#include "packet.h"
-#include "types.h"
+#include "packet.hh"
+#include "types.hh"
 
 #if defined(FLECSI_ENABLE_FLOG)
 

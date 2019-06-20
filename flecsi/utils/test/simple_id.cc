@@ -12,8 +12,8 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/simple_id.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/simple_id.hh>
 
 using namespace flecsi::utils;
 

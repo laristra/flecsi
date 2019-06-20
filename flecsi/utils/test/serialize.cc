@@ -13,9 +13,9 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/context.h>
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/serialize.h>
+#include <flecsi/execution/context.hh>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/serialize.hh>
 
 #include <limits>
 

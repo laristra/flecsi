@@ -11,7 +11,7 @@
 
 /*! @file */
 
-#include "debruijn.h"
+#include "debruijn.hh"
 
 namespace flecsi {
 namespace utils {

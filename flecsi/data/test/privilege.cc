@@ -13,9 +13,9 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/data/common/privilege.h>
-#include <flecsi/utils/ftest.h>
-#include <flecsi/utils/typeify.h>
+#include <flecsi/data/common/privilege.hh>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/typeify.hh>
 
 using namespace flecsi;
 
@@ -73,7 +73,7 @@ privilege(int argc, char ** argv) {
     ASSERT_EQ(p3, rw);
   } // scope
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(privilege);

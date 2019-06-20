@@ -12,10 +12,10 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.h>
+#include <flecsi/utils/ftest.hh>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.h>
+#include <flecsi/execution/execution.hh>
 
 using namespace flecsi::execution;
 
@@ -75,7 +75,7 @@ global_object(int argc, char ** argv) {
   ASSERT_EQ((*go_a)(), 10);
   ASSERT_EQ((*go_b)(), 100);
 
-  return 0;
+  return FTEST_RESULT();
 }
 
 ftest_register_driver(global_object);
