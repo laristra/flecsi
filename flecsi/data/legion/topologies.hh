@@ -95,28 +95,28 @@ struct topology_instance_u<index_topology_t> {
     LegionRuntime::Arrays::Rect<1> bounds(0, coloring.size() - 1);
     Legion::Domain domain(Legion::Domain::from_rect<1>(bounds));
 
-    Legion::IndexSpace index_space =
+    runtime_data.index_space =
       legion_runtime->create_index_space(legion_context, domain);
 
-    Legion::FieldSpace field_space =
+    runtime_data.field_space =
       legion_runtime->create_field_space(legion_context);
 
     auto & field_info_store = flecsi_context.get_field_info_store(
       index_topology_t::type_identifier_hash, storage_label_t::index);
 
     Legion::FieldAllocator allocator =
-      legion_runtime->create_field_allocator(legion_context, field_space);
+      legion_runtime->create_field_allocator(legion_context, runtime_data.field_space);
 
     for(auto const & fi : field_info_store.field_info()) {
       allocator.allocate_field(fi.type_size, fi.fid);
     } // for
 
     runtime_data.logical_region = legion_runtime->create_logical_region(
-      legion_context, index_space, field_space);
+      legion_context, runtime_data.index_space, runtime_data.field_space);
 
     Legion::IndexPartition index_partition =
       legion_runtime->create_equal_partition(
-        legion_context, index_space, index_space);
+        legion_context, runtime_data.index_space, runtime_data.index_space);
 
     runtime_data.color_partition = legion_runtime->get_logical_partition(
       legion_context, runtime_data.logical_region, index_partition);
