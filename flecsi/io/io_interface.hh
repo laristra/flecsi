@@ -41,6 +41,11 @@ struct io_interface_u : public IO_POLICY{
   {
     return IO_POLICY::write_string_to_hdf5_file(hdf5_file, file_idx, group_name, dataset_name, str, size);
   }
+
+  bool read_string_from_hdf5_file(hdf5_t &hdf5_file, int file_idx, const char* group_name, const char* dataset_name, std::string &str)
+  {
+    return IO_POLICY::read_string_from_hdf5_file(hdf5_file, file_idx, group_name, dataset_name, str);
+  }
   
   void add_regions(hdf5_t &hdf5_file, std::vector<hdf5_region_t> &hdf5_region_vector)
   {

@@ -19,7 +19,6 @@
 #include <flecsi/utils/ftest.hh>
 #include <flecsi/io/io_interface.hh>
 
-#include <mpi.h>
 #include <assert.h>
 
 using namespace flecsi;
@@ -30,9 +29,10 @@ index_topology(int argc, char ** argv) {
   char file_name[256];
   strcpy(file_name, "checkpoint.dat");
   
-  int my_rank;
-  int num_files = 1;
-  MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+  auto & flecsi_context = execution::context_t::instance();
+
+  int my_rank = flecsi_context.process();
+  int num_files = flecsi_context.processes();
   io::io_interface_t cp_io;
   io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
   
@@ -43,9 +43,18 @@ index_topology(int argc, char ** argv) {
 
   std::string str2("test string 2");
   cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank, "control", "ds2", str2.c_str(), str2.size());
+
+  std::string str3("");
+  cp_io.read_string_from_hdf5_file(checkpoint_file, my_rank, "control", "ds1", str3);
+
+  printf("str 3 %s\n", str3.c_str());
+
+  std::string str4("");
+  cp_io.read_string_from_hdf5_file(checkpoint_file, my_rank, "control", "ds2", str4);
+
+  printf("str 4 %s\n", str4.c_str());
   
   cp_io.close_hdf5_file(checkpoint_file, my_rank);
-  MPI_Barrier(MPI_COMM_WORLD);
   
   return 0;
 } // index
