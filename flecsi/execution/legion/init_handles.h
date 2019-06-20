@@ -92,20 +92,25 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     Legion::LogicalRegion lr = regions[region].get_logical_region();
     Legion::IndexSpace is = lr.get_index_space();
-
+    Legion::Domain dom = runtime->get_index_space_domain(context, is);
     // we need to get Rect for the parent index space in purpose to loop
     // over  compacted physical instance
 
-    Legion::Domain dom = runtime->get_index_space_domain(context, is);
+    // Legion::Domain dom = runtime-> get_index_space_domain(context,
+    // regions[region].get_logical_region().get_index_space());
+    Legion::Domain::DomainPointIterator itr(dom);
     LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
+    const Legion::UnsafeFieldAccessor<T, 2, Legion::coord_t,
+      Realm::AffineAccessor<T, 2, Legion::coord_t>>
+      ac(regions[region], h.fid, sizeof(T));
 
-    LegionRuntime::Arrays::Rect<2> sr;
-    LegionRuntime::Accessor::ByteOffset bo[2];
+    T * ac_ptr = (T *)(ac.ptr(itr.p));
 
     // get an accessor to the first element in exclusive LR:
-    auto ac = regions[region].get_field_accessor(h.fid).template typeify<T>();
-    h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
-
+    // auto ac = regions[region].get_field_accessor(h.fid).template
+    // typeify<T>(); h.combined_data = ac.template raw_rect_ptr<2>(rect, sr,
+    // bo);
+    h.combined_data = ac_ptr;
     // Exclusive
     h.exclusive_size = rect.hi[1] - rect.lo[1] + 1;
     h.exclusive_data = h.exclusive_size == 0 ? nullptr : h.combined_data;
