@@ -42,7 +42,6 @@ check(accessor<ro> ia) {
   FTEST();
 
   ASSERT_EQ(ia, flecsi_color());
-  ASSERT_EQ(ia, 100);
 
   return FTEST_RESULT();
 } // print
