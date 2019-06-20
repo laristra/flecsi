@@ -72,10 +72,10 @@ index_topology(int argc, char ** argv) {
   flecsi_execute_task(assign, index_test, index, fh2);
   
   int my_rank;
-  int num_files = 2;
+  int num_files = 4;
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  io::hdf5_t checkpoint_file(file_name, num_files);
   io::io_interface_t cp_io;
+  io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
   
   cp_io.add_default_index_topology(checkpoint_file);
   if (my_rank == 0) { 
@@ -83,9 +83,10 @@ index_topology(int argc, char ** argv) {
   }
   MPI_Barrier(MPI_COMM_WORLD);
   
-  cp_io.checkpoint_default_index_topology(checkpoint_file);
-  //cp_io.checkpoint_index_topology_field(checkpoint_file, fh1);
-  //cp_io.checkpoint_index_topology_field(checkpoint_file, fh2);
+  #if 1
+  //cp_io.checkpoint_default_index_topology(checkpoint_file);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh1);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh2);
   
 
   flecsi_execute_task(reset_zero, index_test, index, fh1);
@@ -100,6 +101,7 @@ index_topology(int argc, char ** argv) {
 
   flecsi_execute_task(check, index_test, index, fh1);
   flecsi_execute_task(check, index_test, index, fh2);
+#endif
   return 0;
 } // index
 

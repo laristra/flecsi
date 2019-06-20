@@ -61,6 +61,8 @@ struct legion_io_policy_t {
   legion_io_policy_t() {}
   
   ~legion_io_policy_t();
+
+  legion_hdf5_t init_hdf5_file(const char* file_name, int num_files);
   
   void add_regions(legion_hdf5_t &hdf5_file, std::vector<legion_hdf5_region_t> &hdf5_region_vector);
   

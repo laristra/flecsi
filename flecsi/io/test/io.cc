@@ -110,8 +110,8 @@ io_sanity(int argc, char ** argv) {
   
   int my_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  io::hdf5_t checkpoint_file(file_name, num_files);
   io::io_interface_t cp_io;
+  io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
   cp_io.add_regions(checkpoint_file, cp_test_data_vector);
   if (my_rank == 0) { 
     cp_io.generate_hdf5_files(checkpoint_file);

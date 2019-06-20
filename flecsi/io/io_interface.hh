@@ -21,6 +21,11 @@ struct io_interface_u : public IO_POLICY{
   using hdf5_region_t = typename IO_POLICY::hdf5_region_t;
   using launch_space_t = typename IO_POLICY::launch_space_t;
   using field_reference_t = typename IO_POLICY::field_reference_t;
+
+  hdf5_t init_hdf5_file(const char* file_name, int num_files)
+  {
+    return IO_POLICY::init_hdf5_file(file_name, num_files);
+  }
   
   void add_regions(hdf5_t &hdf5_file, std::vector<hdf5_region_t> &hdf5_region_vector)
   {

@@ -151,6 +151,11 @@ legion_io_policy_t::~legion_io_policy_t() {
   }
 }
 
+legion_hdf5_t legion_io_policy_t::init_hdf5_file(const char* file_name, int num_files)
+{
+  return legion_hdf5_t(file_name, num_files);
+}
+
 void legion_io_policy_t::add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector)
 {
   for(std::vector<legion_hdf5_region_t>::iterator it = hdf5_region_vector.begin(); it != hdf5_region_vector.end(); ++it) {
