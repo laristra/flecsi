@@ -81,10 +81,7 @@ struct field_interface_u {
 
     field_info_t fi;
 
-    fi.namespace_hash = NAMESPACE;
-    fi.name_hash = NAME;
     fi.type_size = sizeof(DATA_TYPE);
-    fi.versions = VERSIONS;
     fi.index_space = INDEX_SPACE;
 
     flog(internal) << "Registering field" << std::endl
