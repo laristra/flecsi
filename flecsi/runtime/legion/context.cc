@@ -109,15 +109,16 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
     Handle command-line arguments.
    */
 
+  std::string tpp; // lives past start() (which is hopefully enough)
   std::vector<char *> largv;
   largv.push_back(argv[0]);
 
   threads_per_process_ = vm[FLECSI_TPP_OPTION_STRING].as<size_t>();
 
   if(threads_per_process_ > 1) {
-    largv.push_back(const_cast<char *>(std::string("-ll:cpu").c_str()));
-    largv.push_back(
-      const_cast<char *>(std::to_string(threads_per_process_).c_str()));
+    largv.push_back(const_cast<char *>("-ll:cpu"));
+    tpp = std::to_string(threads_per_process_);
+    largv.push_back(tpp.data());
   } // if
 
   threads_ = processes_ * threads_per_process_;
