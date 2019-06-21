@@ -37,7 +37,6 @@ namespace data {
  */
 
 struct field_info_t {
-  size_t key = std::numeric_limits<size_t>::max();
   field_id_t fid = FIELD_ID_MAX;
   size_t type_size = std::numeric_limits<size_t>::max();
 }; // struct field_info_t
@@ -53,14 +52,14 @@ struct field_info_t {
 
 struct field_info_store_t {
 
-  void add_field_info(field_info_t const & fi) {
+  void add_field_info(field_info_t const & fi,std::size_t key) {
     flog(internal) << "Registering field info" << std::endl
-                   << "\tkey: " << fi.key << std::endl
+                   << "\tkey: " << key << std::endl
                    << "\tfid: " << fi.fid << std::endl
                    << "\ttype_size: " << fi.type_size << std::endl;
     data_.emplace_back(fi);
     const size_t offset = data_.size() - 1;
-    key_lookup_[fi.key] = offset;
+    key_lookup_[key] = offset;
   } // add_field_info
 
   /*!
