@@ -100,7 +100,7 @@
  */
 
 #define flecsi_add_field(                                                      \
-  topology_type, nspace, name, data_type, storage_class, versions, ...)        \
+  topology_type, nspace, name, data_type, storage_class, versions)             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
@@ -110,8 +110,7 @@
       data_type,                                                               \
       flecsi_internal_string_hash(nspace),                                     \
       flecsi_internal_string_hash(name),                                       \
-      versions,                                                                \
-      ##__VA_ARGS__>({flecsi_internal_stringify(name)})
+      versions>({flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_field_instance
@@ -171,7 +170,7 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi_add_field(::flecsi::topology::global_topology_t,nspace,name,          \
-    data_type,global,versions,::flecsi::topology::global_index_space)
+    data_type,global,versions)
 
 /*!
   @def flecsi_global_field_instance
@@ -228,7 +227,7 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   flecsi_add_field(::flecsi::topology::index_topology_t,nspace,name,           \
-    data_type,index,versions,::flecsi::topology::index_index_space)
+    data_type,index,versions)
 
 /*!
   @def flecsi_index_field_instance

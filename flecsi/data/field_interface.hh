@@ -61,7 +61,6 @@ struct field_interface_u {
     @tparam NAME          The attribute name.
     @tparam VERSIONS      The number of versions that shall be associated
                           with this attribute.
-    @tparam INDEX_SPACE   The index space identifier.
 
     @param name The string version of the field name.
 
@@ -73,8 +72,7 @@ struct field_interface_u {
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
-    size_t VERSIONS,
-    size_t INDEX_SPACE = 0>
+    size_t VERSIONS>
   static bool add_field(std::string const & name) {
     static_assert(VERSIONS <= utils::hash::field_max_versions,
       "max field versions exceeded");
@@ -82,7 +80,6 @@ struct field_interface_u {
     field_info_t fi;
 
     fi.type_size = sizeof(DATA_TYPE);
-    fi.index_space = INDEX_SPACE;
 
     flog(internal) << "Registering field" << std::endl
                    << "\tname: " << name << std::endl
@@ -113,7 +110,6 @@ struct field_interface_u {
     @tparam NAMESPACE     The namespace key. Namespaces allow separation
                           of attribute names to avoid collisions.
     @tparam NAME          The attribute name.
-    @tparam INDEX_SPACE   The index space identifier.
     @tparam VERSION       The data version.
 
     @ingroup data
@@ -153,7 +149,6 @@ struct field_interface_u {
     @tparam NAMESPACE     The namespace key. Namespaces allow separation
                           of attribute names to avoid collisions.
     @tparam NAME          The attribute name.
-    @tparam INDEX_SPACE   The index space identifier.
     @tparam VERSION       The data version.
 
     @ingroup data
