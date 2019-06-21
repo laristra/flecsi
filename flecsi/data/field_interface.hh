@@ -117,7 +117,6 @@ struct field_interface_u {
 
   template<typename TOPOLOGY_TYPE,
     size_t STORAGE_CLASS,
-    typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION = 0>
@@ -132,7 +131,7 @@ struct field_interface_u {
         TOPOLOGY_TYPE>;
 
     return storage_class_t::
-      template get_reference<DATA_TYPE, NAMESPACE, NAME, VERSION>(
+      template get_reference<NAMESPACE, NAME, VERSION>(
         topology_reference);
   } // field_instance
 

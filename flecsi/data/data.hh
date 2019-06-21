@@ -121,7 +121,6 @@
                        the data.
   @param nspace        The string namespace to use to access the variable.
   @param name          The string name of the data variable to access.
-  @param data_type     The data type to access, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param version       The version number of the data to access. This
                        parameter can be used to manage multiple data versions,
@@ -131,14 +130,13 @@
  */
 
 #define flecsi_field_instance(                                                 \
-  topology, nspace, name, data_type, storage_class, version)                   \
+  topology, nspace, name, storage_class, version)                              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::field_instance<decltype(                    \
                                                     topology)::topology_t,     \
     flecsi::data::storage_class,                                               \
-    data_type,                                                                 \
     flecsi_internal_string_hash(nspace),                                       \
     flecsi_internal_string_hash(name),                                         \
     version>(topology)
@@ -179,7 +177,6 @@
 
   @param nspace        The string namespace to use to access the variable.
   @param name          The string of the data variable to access.
-  @param data_type     The data type to access, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param version       The version number of the data to access. This
                        parameter can be used to manage multiple data versions,
@@ -188,7 +185,7 @@
   @ingroup data
  */
 
-#define flecsi_global_field_instance(nspace, name, data_type, version)         \
+#define flecsi_global_field_instance(nspace, name, version)                    \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
@@ -197,7 +194,6 @@
       flecsi::topology::global_topology_t, "internal", "global_topology"),     \
     nspace,                                                                    \
     name,                                                                      \
-    data_type,                                                                 \
     global,                                                                    \
     version)
 
@@ -236,7 +232,6 @@
 
   @param nspace        The string namespace to use to access the variable.
   @param name          The string of the data variable to access.
-  @param data_type     The data type to access, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param version       The version number of the data to access. This
                        parameter can be used to manage multiple data versions,
@@ -245,7 +240,7 @@
   @ingroup data
  */
 
-#define flecsi_index_field_instance(nspace, name, data_type, version)          \
+#define flecsi_index_field_instance(nspace, name, version)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
@@ -254,6 +249,5 @@
       flecsi::topology::index_topology_t, "internal", "index_topology"),       \
     nspace,                                                                    \
     name,                                                                      \
-    data_type,                                                                 \
     index,                                                                     \
     version)

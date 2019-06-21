@@ -21,7 +21,7 @@
 using namespace flecsi;
 
 flecsi_add_global_field("test", "global", double, 2);
-inline auto th = flecsi_global_field_instance("test", "global", double, 0);
+inline auto th = flecsi_global_field_instance("test", "global", 0);
 
 template<size_t PRIVILEGES>
 using global_accessor_u =
