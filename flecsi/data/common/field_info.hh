@@ -62,7 +62,6 @@ struct field_info_store_t {
                    << "\ttype_size: " << fi.type_size << std::endl;
     data_.emplace_back(fi);
     const size_t offset = data_.size() - 1;
-    fid_lookup_[fi.fid] = offset;
     key_lookup_[fi.key] = offset;
   } // add_field_info
 
@@ -125,7 +124,6 @@ struct field_info_store_t {
 
 private:
   std::vector<field_info_t> data_;
-  std::unordered_map<size_t, size_t> fid_lookup_;
   std::unordered_map<size_t, size_t> key_lookup_;
 
 }; // struct field_info_store_t
