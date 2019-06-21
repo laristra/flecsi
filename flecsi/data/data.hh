@@ -170,16 +170,8 @@
 #define flecsi_add_global_field(nspace, name, data_type, versions)             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  /* Call the storage policy to register the data */                           \
-  inline bool flecsi_internal_unique_name(global_field) =                      \
-    flecsi::data::field_interface_t::add_field<                                \
-      flecsi::topology::global_topology_t,                                     \
-      flecsi::data::global,                                                    \
-      data_type,                                                               \
-      flecsi_internal_string_hash(nspace),                                     \
-      flecsi_internal_string_hash(name),                                       \
-      versions,                                                                \
-      flecsi::topology::global_index_space>({flecsi_internal_stringify(name)})
+  flecsi_add_field(::flecsi::topology::global_topology_t,nspace,name,          \
+    data_type,global,versions,::flecsi::topology::global_index_space)
 
 /*!
   @def flecsi_global_field_instance
@@ -235,16 +227,8 @@
 #define flecsi_add_index_field(nspace, name, data_type, versions)              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  /* Call the storage policy to register the data */                           \
-  inline bool flecsi_internal_unique_name(index_field) =                       \
-    flecsi::data::field_interface_t::add_field<                                \
-      flecsi::topology::index_topology_t,                                      \
-      flecsi::data::index,                                                     \
-      data_type,                                                               \
-      flecsi_internal_string_hash(nspace),                                     \
-      flecsi_internal_string_hash(name),                                       \
-      versions,                                                                \
-      flecsi::topology::index_index_space>({flecsi_internal_stringify(name)})
+  flecsi_add_field(::flecsi::topology::index_topology_t,nspace,name,           \
+    data_type,index,versions,::flecsi::topology::index_index_space)
 
 /*!
   @def flecsi_index_field_instance
