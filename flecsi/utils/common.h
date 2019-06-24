@@ -32,14 +32,6 @@
 #define FLECSI_ID_EBITS 40
 #endif
 
-#ifndef FLECSI_ID_FBITS
-#define FLECSI_ID_FBITS 4
-#endif
-
-#ifndef FLECSI_ID_GBITS
-#define FLECSI_ID_GBITS 60
-#endif
-
 namespace flecsi {
 namespace utils {
 
@@ -60,9 +52,7 @@ constexpr T typeify<T, M>::value;
 // Entity id type.
 //----------------------------------------------------------------------------//
 
-using id_t =
-  id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
-
+using id_t = id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS>;
 using offset_t = offset_u<16>;
 
 //----------------------------------------------------------------------------//
