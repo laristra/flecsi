@@ -128,10 +128,10 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     auto & h = a.handle;
 
     // FIXME this no longer does anything under control replication
-      Legion::RegionRequirement rr(h.entire_region, privilege_mode(PERMISSIONS),
-        EXCLUSIVE, h.entire_region);
-      rr.add_field(h.fid);
-      region_reqs.push_back(rr);
+    Legion::RegionRequirement rr(
+      h.entire_region, privilege_mode(PERMISSIONS), EXCLUSIVE, h.entire_region);
+    rr.add_field(h.fid);
+    region_reqs.push_back(rr);
   }
 
   template<typename T, size_t PERMISSIONS>
