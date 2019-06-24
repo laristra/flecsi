@@ -1,0 +1,130 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file 09-task-compile-register-not-scope.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21m09-task-compile-register-not-scope.json[0m
+
+[35;21mFile:[0m
+   [35;21m09-task-compile-register-not-scope.json: 09-task-compile-register-not-scope.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: foo, ns, loc, single[0m
+   [36;1mFile: 09-task-compile-register-not-scope.cc[0m
+   [36;1mLine: 13[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   use of undeclared identifier 'foo'; did you mean 'ns::foo'?[0m
+   [31;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_return_type" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+   [31;21m   from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   'ns::foo' declared here[0m
+   [32;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [32;21mLine: 8[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   use of undeclared identifier 'foo'; did you mean 'ns::foo'?[0m
+   [31;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_arguments_type" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+   [31;21m   from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   'ns::foo' declared here[0m
+   [32;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [32;21mLine: 8[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   use of undeclared identifier 'foo'; did you mean 'for'?[0m
+   [31;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   expected expression[0m
+   [31;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   use of undeclared identifier 'foo'; did you mean 'ns::foo'?[0m
+   [31;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_return_type" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+   [31;21m   from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   'ns::foo' declared here[0m
+   [32;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [32;21mLine: 8[0m
+
+[31;21mError:[0m
+   [31;21mClang++ reports an error:[0m
+   [31;21m   use of undeclared identifier 'foo'; did you mean 'ns::foo'?[0m
+   [31;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [31;21mLine: 13[0m
+   [31;21mExpansion trace:[0m
+   [31;21m   from macro "flecsi_internal_arguments_type" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+   [31;21m   from macro "flecsi_register_task" (file 09-task-compile-register-not-scope.cc, line 13)[0m
+
+[32;21mNote:[0m
+   [32;21mClang++ reports a note:[0m
+   [32;21m   'ns::foo' declared here[0m
+   [32;21mFile: 09-task-compile-register-not-scope.cc[0m
+   [32;21mLine: 8[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_task[0m
+   [36;1mArgs: foo, ns, single, [0m
+   [36;1mFile: 09-task-compile-register-not-scope.cc[0m
+   [36;1mLine: 20[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_task (file 09-task-compile-register-not-scope.cc, line 13)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::execute_task[0m
+   [36;1mMatches macro: flecsi_execute_task (file 09-task-compile-register-not-scope.cc, line 20)[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[34;1mSynopsis:[0m
+   [36;1m6 errors[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[33;1mWarning:[0m
+   [33;1mFleCSI static analysis may be incomplete; errors occurred.[0m

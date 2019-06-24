@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 15-task-run-segfault-register-forgot.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   15-task-run-segfault-register-forgot.json
+
+File:
+   15-task-run-segfault-register-forgot.json: 15-task-run-segfault-register-forgot.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, ns, single, 
+   File: 15-task-run-segfault-register-forgot.cc
+   Line: 17
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file 15-task-run-segfault-register-forgot.cc, line 17)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Error:
+   The task executed with hash "ns::foo" here:
+      15-task-run-segfault-register-forgot.cc: file 15-task-run-segfault-register-forgot.cc, line 17
+   was not registered with any of FleCSI's task registration macros,
+   or was not registered with that hash.
+   This can trigger a run-time error if this line is reached.
+
+Synopsis:
+   1 error
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Task executions without registrations:
+   15-task-run-segfault-register-forgot.cc: file 15-task-run-segfault-register-forgot.cc, line 17
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

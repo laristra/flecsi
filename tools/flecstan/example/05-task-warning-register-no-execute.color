@@ -1,0 +1,53 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file 05-task-warning-register-no-execute.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21m05-task-warning-register-no-execute.json[0m
+
+[35;21mFile:[0m
+   [35;21m05-task-warning-register-no-execute.json: 05-task-warning-register-no-execute.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: foo, ns, loc, single[0m
+   [36;1mFile: 05-task-warning-register-no-execute.cc[0m
+   [36;1mLine: 9[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_task (file 05-task-warning-register-no-execute.cc, line 9)[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[33;1mWarning:[0m
+   [33;1mThe task registered with hash "ns::foo" here:[0m
+   [33;1m   05-task-warning-register-no-execute.cc: file 05-task-warning-register-no-execute.cc, line 9, scope ::ns[0m
+   [33;1mis never invoked with any of FleCSI's task execution macros.[0m
+   [33;1mIs this intentional?[0m
+
+[34;1mSynopsis:[0m
+   [36;1m1 warning[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[34;1mTask registrations without executions:[0m
+   [36;1m05-task-warning-register-no-execute.cc: file 05-task-warning-register-no-execute.cc, line 9
+[0m
+[32;21mNote:[0m
+   [32;21mFleCSI static analysis completed.[0m

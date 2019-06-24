@@ -7,7 +7,8 @@ stages:
   - Canary
   - Build
   - Test
-  - Format
+  - Tutorials
+  - Apps
 
 variables:
   GET_SOURCES_ATTEMPTS: 10
@@ -108,8 +109,8 @@ before_script:
     GIT_SUBMODULE_STRATEGY: recursive
     CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
     CCACHE_UMASK: 000
-    DISTRO: ""
-    RUNTIME: ""
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
     CC: "gcc"
     CXX: "g++"
     CXXFLAGS: "-Werror -Wno-deprecated-declarations"
@@ -162,6 +163,7 @@ before_script:
           -DENABLE_PARMETIS=ON \
           -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=OFF \
+          -DENABLE_FLECSTAN=ON \
           -DENABLE_DOCUMENTATION=OFF \
           -DENABLE_COVERAGE_BUILD=ON \
           ..;
@@ -186,8 +188,9 @@ before_script:
         gcovr .;
       fi
     - |
-      if [[ ${CI_JOB_STAGE} = "Format" ]];
+      if [[ ${CI_JOB_STAGE} = "Canary" ]];
       then
+        echo 'Format Checking';
         cd ${CI_PROJECT_DIR}/build/;
         echo 'clang-format -version';
         clang-format -version;
@@ -195,8 +198,25 @@ before_script:
         make format && git diff --exit-code --ignore-submodules;
       fi
     - |
-      if [[ ${CI_JOB_STAGE} = "Canary" ]];
+      if [[ ${CI_JOB_STAGE} = "Tutorials" ]];
       then
+        echo 'Building and Running Tutorials';
+        cd ${CI_PROJECT_DIR}/build/;
+        sudo make install;
+        source /usr/local/bin/flecsi-tutorial.sh;
+        cd ../flecsi-tutorial;
+        cd 00-driver;
+        flecsit compile driver.cc;
+        ./driver;
+        cd ../01-tasks;
+        flecsit compile tasks.cc;
+        ./tasks;
+      fi;
+    - |
+      if [[ ${CI_JOB_STAGE} = "Apps" ]];
+      then
+        echo 'Building and Testing FleCSALE';
+        cd ${CI_PROJECT_DIR}/build/;
         git clone --recursive https://github.com/laristra/flecsale.git;
         cd flecsale/flecsi;
         git fetch;
@@ -215,12 +235,9 @@ before_script:
           ..;
         echo 'make -j2 || make VERBOSE=1';
         make -j2 || make VERBOSE=1;
-        if [[ ${RUNTIME} = "mpi" ]];
-        then
-          echo 'make test ARGS="CTEST_OUTPUT_ON_FAILURE=1"';
-          make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";
-        fi;
-      fi
+        echo 'make test ARGS="CTEST_OUTPUT_ON_FAILURE=1"';
+        make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";
+      fi;
 
 ###############
 # Build Stage #
@@ -237,6 +254,7 @@ before_script:
 .test:
   extends: .canary
   stage: Test
+  artifacts:
   dependencies:
     #- "build:${CI_JOB_NAME#*:}"
     - .build
@@ -248,6 +266,31 @@ before_script:
 .format:
   extends: .canary
   stage: Format
+  artifacts:
+  dependencies:
+    #- build:${CI_JOB_NAME#*:}
+    - .build
+
+###################
+# Tutorials Stage #
+###################
+
+.tutorials:
+  extends: .canary
+  stage: Tutorials
+  artifacts:
+  dependencies:
+    #- build:${CI_JOB_NAME#*:}
+    - .build
+
+##############
+# Apps Stage #
+##############
+
+.apps:
+  extends: .canary
+  stage: Apps
+  artifacts:
   dependencies:
     #- build:${CI_JOB_NAME#*:}
     - .build
@@ -278,6 +321,13 @@ canary:fedora_legion:
   variables:
     DISTRO: "fedora"
     RUNTIME: "legion"
+
+canary:fedora_hpx:
+  extends: .canary
+  variables:
+    DISTRO: "fedora"
+    RUNTIME: "hpx"
+  allow_failure: true 
 
 #canary:centOS_mpi:
 #  extends: .canary
@@ -339,19 +389,19 @@ build:ubuntu_mpich_mpi_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-build:fedora_mpi:
+.build:fedora_mpi:
   extends: .build
   variables:
     DISTRO: "fedora"
     RUNTIME: "mpi"
 
 build:fedora_mpi_release:
-  extends: build:fedora_mpi
+  extends: .build:fedora_mpi
   variables:
     BUILD_TYPE: "Release"
 
 build:fedora_mpi_clang:
-  extends: build:fedora_mpi
+  extends: .build:fedora_mpi
   variables:
     CC: clang
     CXX: clang++
@@ -427,19 +477,19 @@ build:ubuntu_mpich_legion_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-build:fedora_legion:
+.build:fedora_legion:
   extends: .build
   variables:
     DISTRO: "fedora"
     RUNTIME: "legion"
 
 build:fedora_legion_release:
-  extends: build:fedora_legion
+  extends: .build:fedora_legion
   variables:
     BUILD_TYPE: "Release"
 
 build:fedora_legion_clang:
-  extends: build:fedora_legion
+  extends: .build:fedora_legion
   variables:
     CC: clang
     CXX: clang++
@@ -471,15 +521,15 @@ build:fedora_mpich_legion_clang_release:
   variables:
     BUILD_TYPE: "Release"
 
-build:fedora_hpx:
+build:ubuntu_hpx:
   extends: .build
   variables:
-    DISTRO: "fedora"
+    DISTRO: "ubuntu"
     RUNTIME: "hpx"
   allow_failure: true
 
-build:fedora_hpx_clang:
-  extends: build:fedora_hpx
+build:ubuntu_hpx_clang:
+  extends: build:ubuntu_hpx
   variables:
     CC: clang
     CXX: clang++
@@ -505,6 +555,7 @@ test:ubuntu_mpi:
     - build:ubuntu_mpi
   variables:
     DISTRO: "ubuntu"
+    RUNTIME: "mpi"
 
 test:ubuntu_mpi_release:
   extends: test:ubuntu_mpi
@@ -527,6 +578,7 @@ test:ubuntu_mpich_mpi:
     - build:ubuntu_mpich_mpi
   variables:
     DISTRO: "ubuntu_mpich"
+    RUNTIME: "mpi"
 
 test:ubuntu_mpich_mpi_release:
   extends: test:ubuntu_mpich_mpi
@@ -543,20 +595,21 @@ test:ubuntu_mpich_mpi_clang_release:
   dependencies:
     - build:ubuntu_mpich_mpi_clang_release
 
-test:fedora_mpi:
+.test:fedora_mpi:
   extends: .test
   dependencies:
     - build:fedora_mpi
   variables:
     DISTRO: "fedora"
+    RUNTIME: "mpi"
 
 test:fedora_mpi_release:
-  extends: test:fedora_mpi
+  extends: .test:fedora_mpi
   dependencies:
     - build:fedora_mpi_release
 
 test:fedora_mpi_clang:
-  extends: test:fedora_mpi
+  extends: .test:fedora_mpi
   dependencies:
     - build:fedora_mpi_clang
 
@@ -571,6 +624,7 @@ test:fedora_mpich_mpi:
     - build:fedora_mpich_mpi
   variables:
     DISTRO: "fedora_mpich"
+    RUNTIME: "mpi"
 
 test:fedora_mpich_mpi_release:
   extends: test:fedora_mpich_mpi
@@ -593,6 +647,7 @@ test:ubuntu_legion:
     - build:ubuntu_legion
   variables:
     DISTRO: "ubuntu"
+    RUNTIME: "legion"
 
 test:ubuntu_legion_release:
   extends: test:ubuntu_legion
@@ -615,6 +670,7 @@ test:ubuntu_mpich_legion:
     - build:ubuntu_mpich_legion
   variables:
     DISTRO: "ubuntu_mpich"
+    RUNTIME: "legion"
 
 test:ubuntu_mpich_legion_release:
   extends: test:ubuntu_mpich_legion
@@ -631,20 +687,21 @@ test:ubuntu_mpich_legion_clang_release:
   dependencies:
     - build:ubuntu_mpich_legion_clang_release
 
-test:fedora_legion:
+.test:fedora_legion:
   extends: .test
   dependencies:
     - build:fedora_legion
   variables:
     DISTRO: "fedora"
+    RUNTIME: "legion"
 
 test:fedora_legion_release:
-  extends: test:fedora_legion
+  extends: .test:fedora_legion
   dependencies:
     - build:fedora_legion_release
 
 test:fedora_legion_clang:
-  extends: test:fedora_legion
+  extends: .test:fedora_legion
   dependencies:
     - build:fedora_legion_clang
 
@@ -659,6 +716,7 @@ test:fedora_mpich_legion:
     - build:fedora_mpich_legion
   variables:
     DISTRO: "fedora_mpich"
+    RUNTIME: "legion"
 
 test:fedora_mpich_legion_release:
   extends: test:fedora_mpich_legion
@@ -675,39 +733,40 @@ test:fedora_mpich_legion_clang_release:
   dependencies:
     - build:fedora_mpich_legion_clang_release
 
-test:fedora_hpx:
+test:ubuntu_hpx:
   extends: .test
   dependencies:
-    - build:fedora_hpx
+    - build:ubuntu_hpx
   variables:
-    DISTRO: "fedora"
+    DISTRO: "ubuntu"
+    RUNTIME: "hpx"
   allow_failure: true
 
-test:fedora_hpx_clang:
-  extends: test:fedora_hpx
+test:ubuntu_hpx_clang:
+  extends: test:ubuntu_hpx
   dependencies:
-    - build:fedora_hpx_clang
+    - build:ubuntu_hpx_clang
 
-test:fedora_mpi.ignoreNoCI:
-  extends: test:fedora_mpi
+test:ubuntu_mpi.ignoreNoCI:
+  extends: test:ubuntu_mpi
   dependencies:
-    - build:fedora_mpi
-  variables:
-    IGNORE_NOCI: "TRUE"
-  allow_failure: true
-
-test:fedora_legion.ignoreNoCI:
-  extends: test:fedora_legion
-  dependencies:
-    - build:fedora_legion
+    - build:ubuntu_mpi
   variables:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
 
-test:fedora_hpx.ignoreNoCI:
-  extends: test:fedora_hpx
+test:ubuntu_legion.ignoreNoCI:
+  extends: test:ubuntu_legion
   dependencies:
-    - build:fedora_hpx
+    - build:ubuntu_legion
+  variables:
+    IGNORE_NOCI: "TRUE"
+  allow_failure: true
+
+test:ubuntu_hpx.ignoreNoCI:
+  extends: test:ubuntu_hpx
+  dependencies:
+    - build:ubuntu_hpx
   variables:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
@@ -716,20 +775,49 @@ test:centOS_mpi:
   extends: .test
   tags:
     - shell
+  image:
   dependencies:
     - build:centOS_mpi
-  image:
 
-###############
-# Format Jobs #
-###############
+##################
+# Tutorials Jobs #
+##################
 
-format:fedora:
-  extends: .format
+tutorials:ubuntu_mpi:
+  extends: .tutorials
   dependencies:
-    - build:fedora_mpi
+    - build:ubuntu_mpi
   variables:
-    DISTRO: "fedora"
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+
+tutorials:ubuntu_legion:
+  extends: .tutorials
+  dependencies:
+    - build:ubuntu_legion
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "legion"
+
+#############
+# Apps Jobs #
+#############
+
+apps:ubuntu_mpi:
+  extends: .apps
+  dependencies:
+    - build:ubuntu_mpi
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "mpi"
+
+apps:ubuntu_legion:
+  extends: .apps
+  dependencies:
+    - build:ubuntu_legion
+  variables:
+    DISTRO: "ubuntu"
+    RUNTIME: "legion"
 
 ###############
 ###############

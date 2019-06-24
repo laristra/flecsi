@@ -21,6 +21,7 @@
 
 #include <flecsi/data/accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
+#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -71,6 +72,9 @@ struct accessor_u<data::ragged,
   using offset_t = typename handle_t::offset_t;
   using value_t = T;
 
+  using index_space_t =
+    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
+
   //--------------------------------------------------------------------------//
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
@@ -109,6 +113,36 @@ struct accessor_u<data::ragged,
 
     const offset_t & oi = handle.offsets[index];
     return oi.count();
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over all indices.
+  //-------------------------------------------------------------------------//
+  index_space_t entries() const {
+    size_t id = 0;
+    index_space_t is;
+
+    const size_t max_size = size();
+    for(size_t entry = 0; entry < max_size; ++entry) {
+      is.push_back({id++, entry});
+    }
+
+    return is;
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over the specified index.
+  //-------------------------------------------------------------------------//
+  index_space_t entries(size_t index) const {
+    size_t id = 0;
+    index_space_t is;
+
+    const size_t my_size = size(index);
+    for(size_t entry = 0; entry < my_size; ++entry) {
+      is.push_back({id++, entry});
+    }
+
+    return is;
   }
 
   //-------------------------------------------------------------------------//

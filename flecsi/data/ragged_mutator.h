@@ -19,6 +19,7 @@
 
 #include <flecsi/data/mutator.h>
 #include <flecsi/data/mutator_handle.h>
+#include <flecsi/topology/index_space.h>
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -55,6 +56,9 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   using offset_t = typename handle_t::offset_t;
   using value_t = T;
   using overflow_map_t = typename mutator_handle_u<T>::overflow_map_t;
+
+  using index_space_t =
+    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
 
   //--------------------------------------------------------------------------//
   //! Constructor from handle.
@@ -104,6 +108,36 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   size_t size(size_t index) const {
     assert(index < h_.num_entries_);
     return h_.new_count(index);
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over all indices.
+  //-------------------------------------------------------------------------//
+  index_space_t entries() const {
+    size_t id = 0;
+    index_space_t is;
+
+    const size_t max_size = size();
+    for(size_t entry = 0; entry < max_size; ++entry) {
+      is.push_back({id++, entry});
+    }
+
+    return is;
+  }
+
+  //-------------------------------------------------------------------------//
+  //! Return all entries used over the specified index.
+  //-------------------------------------------------------------------------//
+  index_space_t entries(size_t index) const {
+    size_t id = 0;
+    index_space_t is;
+
+    const size_t my_size = size(index);
+    for(size_t entry = 0; entry < my_size; ++entry) {
+      is.push_back({id++, entry});
+    }
+
+    return is;
   }
 
   //-------------------------------------------------------------------------//
