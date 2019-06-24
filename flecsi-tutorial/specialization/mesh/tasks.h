@@ -18,8 +18,8 @@
 
 #include <flecsi-tutorial/specialization/mesh/inputs.h>
 #include <flecsi-tutorial/specialization/mesh/mesh.h>
-#include <flecsi-tutorial/specialization/mesh/policy.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/execution.h>
 
 namespace flecsi {
 namespace tutorial {
@@ -74,6 +74,8 @@ initialize_mesh(mesh<wo> m) {
 
   m.init<0>();
 } // initizlize_mesh
+
+flecsi_register_task(initialize_mesh, flecsi::tutorial, loc, index);
 
 } // namespace tutorial
 } // namespace flecsi

@@ -19,6 +19,7 @@
 
 #include <flecsi-tutorial/specialization/mesh/policy.h>
 #include <flecsi/data/common/privilege.h>
+#include <flecsi/data/data.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/data/ragged_accessor.h>
@@ -67,6 +68,7 @@ struct specialization_mesh_t
 }; // specialization_mesh_t
 
 using mesh_t = specialization_mesh_t;
+flecsi_register_data_client(mesh_t, clients, mesh);
 
 //----------------------------------------------------------------------------//
 // Type Definitions

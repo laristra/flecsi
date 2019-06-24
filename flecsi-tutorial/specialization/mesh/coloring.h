@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <flecsi/execution/execution.h>
 #include <stddef.h>
 
 namespace flecsi {
@@ -25,6 +26,7 @@ struct coloring_map_t {
 }; // struct coloring_map_t
 
 void add_colorings(coloring_map_t map);
+flecsi_register_mpi_task(add_colorings, flecsi::tutorial);
 
 } // namespace tutorial
 } // namespace flecsi
