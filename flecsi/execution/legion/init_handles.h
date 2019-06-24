@@ -271,8 +271,9 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       auto ac = regions[region].get_field_accessor(ent.fid);
 
       Legion::Domain d = runtime->get_index_space_domain(context, is);
-
+      // Legion::Domain::DomainPointIterator itr(d);
       dr = d.get_rect<2>();
+      Legion::Domain::DomainPointIterator itr(d);
 
       auto ents_raw =
         static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
@@ -280,11 +281,13 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
 
-      auto ac2 = regions[region]
-                   .get_field_accessor(ent.id_fid)
-                   .template typeify<utils::id_t>();
-      auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
+      const Legion::UnsafeFieldAccessor<utils::id_t, 2, Legion::coord_t,
+        Realm::AffineAccessor<utils::id_t, 2, Legion::coord_t>>
+        ac2(regions[region], ent.id_fid, sizeof(utils::id_t));
+      // get an accessor to the first element in exclusive LR:
+      utils::id_t * ac2_ptr = (utils::id_t *)(ac2.ptr(itr.p));
 
+      auto ids = ac2_ptr;
       // calculating exclusive, shared and ghost sizes fro the entity
       auto coloring = context_.coloring(ent.index_space);
       ent.num_exclusive = coloring.exclusive.size();
@@ -307,17 +310,24 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::PhysicalRegion pr = regions[region_map[adj.from_index_space]];
       Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
-
-      auto ac = pr.get_field_accessor(adj.offset_fid)
-                  .template typeify<utils::offset_t>();
-
       Legion::Domain d = runtime->get_index_space_domain(context, is);
+      Legion::Domain::DomainPointIterator itr(d);
+      //    auto ac = pr.get_field_accessor(adj.offset_fid)
+      //              .template typeify<utils::offset_t>();
 
+      //      Legion::Domain d = runtime->get_index_space_domain(context, is);
+      const Legion::UnsafeFieldAccessor<utils::offset_t, 2, Legion::coord_t,
+        Realm::AffineAccessor<utils::offset_t, 2, Legion::coord_t>>
+        ac(regions[region_map[adj.from_index_space]], adj.offset_fid,
+          sizeof(utils::offset_t));
+
+      utils::offset_t * offsets = (utils::offset_t *)(ac.ptr(itr.p));
+      // utils::offset_t * offsets = ac.template raw_rect_ptr<2>(dr, sr, bo);
       dr = d.get_rect<2>();
 
-      utils::offset_t * offsets = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      // utils::offset_t * offsets = ac_ptr;
 
-      size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
+      size_t num_offsets = dr.hi[1] - dr.lo[1] + 1;
 
       // Store these for translation to CRS
       adj.num_offsets = num_offsets;
@@ -326,18 +336,22 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       lr = regions[region].get_logical_region();
       is = lr.get_index_space();
-
-      auto ac3 = regions[region]
+      const Legion::UnsafeFieldAccessor<utils::id_t, 2, Legion::coord_t,
+        Realm::AffineAccessor<utils::id_t, 2, Legion::coord_t>>
+        ac3(regions[region], adj.index_fid, sizeof(utils::id_t));
+      /*auto ac3 = regions[region]
                    .get_field_accessor(adj.index_fid)
                    .template typeify<utils::id_t>();
+      */
 
       d = runtime->get_index_space_domain(context, is);
 
       dr = d.get_rect<2>();
 
-      utils::id_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
+      // utils::id_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
+      utils::id_t * indices = (utils::id_t *)(ac3.ptr(itr.p));
 
-      size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
+      size_t num_indices = dr.hi[1] - dr.lo[1] + 1;
 
       adj.num_indices = num_indices;
 
