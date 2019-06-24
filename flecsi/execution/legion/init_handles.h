@@ -103,22 +103,15 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
     // we need to get Rect for the parent index space in purpose to loop
     // over  compacted physical instance
 
-	// Legion::Domain dom = runtime-> get_index_space_domain(context, regions[region].get_logical_region().get_index_space());
-        Legion::Domain::DomainPointIterator itr(dom);
-	LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
-        const Legion::UnsafeFieldAccessor<T,2,
-        Legion::coord_t,
-        Realm::AffineAccessor<T, 2, Legion::coord_t>>
-        ac(regions[region], h.fid, sizeof(T));
-
-        T * ac_ptr = (T *)(ac.ptr(itr.p));
-
-
- //  Legion::Domain dom = runtime->get_index_space_domain(context, is);
-  // LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
-
-  // LegionRuntime::Arrays::Rect<2> sr;
-  // LegionRuntime::Accessor::ByteOffset bo[2];
+    // Legion::Domain dom = runtime-> get_index_space_domain(context, regions[region].get_logical_region().get_index_space());
+     Legion::Domain::DomainPointIterator itr(dom);
+     LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
+     const Legion::UnsafeFieldAccessor<T,2,
+     Legion::coord_t,
+     Realm::AffineAccessor<T, 2, Legion::coord_t>>
+     ac(regions[region], h.fid, sizeof(T));
+    // get an accessor to the first element in exclusive LR:
+     T * ac_ptr = (T *)(ac.ptr(itr.p));
 //#ifdef ENABLE_CALIPER
 //CALI_MARK_END("FleCSI_Execution dense_accessor_instance");
 //#endif
@@ -126,10 +119,7 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
 //#ifdef ENABLE_CALIPER
 //CALI_MARK_BEGIN("FleCSI_Execution dense_accessor_get_index");
 //#endif
-    // get an accessor to the first element in exclusive LR:
-    // auto ac = regions[region].get_field_accessor(h.fid).template typeify<T>();
-    // h.combined_data = ac.template raw_rect_ptr<2>(rect, sr, bo);
-     h.combined_data = ac_ptr;
+    h.combined_data = ac_ptr;
     //Exclusive
     h.exclusive_size = rect.hi[1]-rect.lo[1]+1;
     h.exclusive_data = h.exclusive_size == 0 ? nullptr : h.combined_data;
@@ -146,8 +136,8 @@ CALI_MARK_BEGIN("FleCSI_Execution dense_accesor");
     h.ghost_priv = GHOST_PERMISSIONS;
 
 
-    printf("Exclusive size is %d",h.exclusive_size);
-    printf("Exclusive size is %d",h.shared_size);
+    //printf("Exclusive size is %d",h.exclusive_size);
+    //printf("Exclusive size is %d",h.shared_size);
 
     h.combined_size = h.exclusive_size + h.shared_size + h.ghost_size;
 
@@ -190,21 +180,7 @@ CALI_MARK_BEGIN("FleCSI_Execution global_accesor");
         Legion::coord_t,
         Realm::AffineAccessor<T, 1, Legion::coord_t>>
         ac(regions[r], h.fid, sizeof(T));
-
         T * ac_ptr = (T *)(ac.ptr(itr.p));
-        //prs[r] = regions[region + r];
-        //Legion::LogicalRegion lr = prs[r].get_logical_region();
-        //Legion::IndexSpace is = lr.get_index_space();
-
-        //auto ac = prs[r].get_field_accessor(h.fid).template typeify<T>();
-
-        //Legion::Domain domain = runtime->get_index_space_domain(context, is);
-
-        //LegionRuntime::Arrays::Rect<1> dr = dom.get_rect<1>();
-        //LegionRuntime::Arrays::Rect<1> sr;
-        //LegionRuntime::Accessor::ByteOffset bo[2];
-        
-	//data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
 
         data[r] = ac_ptr;
         sizes[r] = dr.hi[1] - dr.lo[1] + 1;
