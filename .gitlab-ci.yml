@@ -36,8 +36,8 @@ before_script:
       module load intel/19.0.2;
       module load python/3.5.1;
       source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
-      spack load -r flecsi%intel@19.0.2 || /bin/true;
-      spack unload flecsi%intel@19.0.2 || /bin/true;
+      spack load -r flecsi~graphviz%intel@19.0.2 backend=mpi || /bin/true;
+      spack unload flecsi~graphviz%intel@19.0.2 backend=mpi || /bin/true;
       module list;
     fi
 
@@ -92,11 +92,11 @@ before_script:
       if [[ ! -d ${SPACK_ROOT} ]];
       then
         git init --shared=group ${SPACK_ROOT};
-        git -c ${SPACK_ROOT} pull https://github.com/spack/spack v0.12.1;
+        git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
       fi
     - source ${SPACK_ROOT}/share/spack/setup-env.sh
     - spack repo add ${SPACK_ROOT}/var/spack/repos/builtin/ || /bin/true
-    - spack install flecsi%intel@19.0.2
+    - spack install flecsi~graphviz%intel@19.0.2 backend=mpi
     - flock -u "${lock_fd}"
 
 ################
