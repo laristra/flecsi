@@ -170,6 +170,11 @@
   flecsi_add_field(::flecsi::topology::global_topology_t,nspace,name,          \
     data_type,global,versions)
 
+/// The global topology.
+#define flecsi_global_topology                                    \
+  flecsi_topology_reference(flecsi::topology::global_topology_t,  \
+                            "internal","global_topology")
+
 /*!
   @def flecsi_global_field_instance
 
@@ -190,8 +195,7 @@
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_field_instance(                                                       \
-    flecsi_topology_reference(                                                 \
-      flecsi::topology::global_topology_t, "internal", "global_topology"),     \
+    flecsi_global_topology,                                                    \
     nspace,                                                                    \
     name,                                                                      \
     global,                                                                    \
@@ -225,6 +229,11 @@
   flecsi_add_field(::flecsi::topology::index_topology_t,nspace,name,           \
     data_type,index,versions)
 
+/// The default index topology.
+#define flecsi_index_topology                                   \
+  flecsi_topology_reference(flecsi::topology::index_topology_t, \
+                            "internal","index_topology")
+
 /*!
   @def flecsi_index_field_instance
 
@@ -245,8 +254,7 @@
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_field_instance(                                                       \
-    flecsi_topology_reference(                                                 \
-      flecsi::topology::index_topology_t, "internal", "index_topology"),       \
+    flecsi_index_topology,                                                     \
     nspace,                                                                    \
     name,                                                                      \
     index,                                                                     \
