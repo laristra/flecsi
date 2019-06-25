@@ -22,7 +22,10 @@
   policy that is selected at compile time.
  */
 
+// Needed for storage_class.hh and for FLECSI_RUNTIME_DATA_POLICY:
+#include"flecsi/runtime/data_policy.hh"
 #include <flecsi/data/common/data_reference.hh>
+#include"common/storage_class.hh"
 #include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
@@ -42,6 +45,44 @@ namespace data {
 
 template<typename DATA_POLICY>
 struct field_interface_u {
+  /// Each \c field object registers (various versions of) a field.
+  template<class T,class Topo=topology::index_topology_t,
+           storage_label_t S=index>
+  struct field {
+    using version=std::size_t;
+    using topology_reference_t=topology_reference_u<Topo>;
+    field(version v=1) : versions(v),fid(reg()) {}
+    /// Get a field reference.
+    /// \param t topology reference
+    /// \param v field version
+    field_reference_t operator()(const topology_reference_t &t,
+                                 version v=0) const {
+      flog_assert(v<versions,"no such version #" << v << " in " <<
+                             versions << " versions");
+      // NB: This mimics the primary storage_class_u template only.
+      return {fid+v,t.identifier()};
+    }
+  private:
+    field_id_t reg() const {
+      constexpr auto max=utils::hash::field_max_versions;
+      flog_assert(versions<=max,
+                  "can't have " << versions << '>' << max << " versions");
+      field_id_t ret;
+      for(version v=0;v<versions;++v) {
+        const auto fid=unique_fid_t::instance().next();
+        if(v) assert(fid==ret+v);
+        else ret=fid;
+        execution::context_t::instance().add_field_info
+          (Topo::type_identifier_hash,S,{fid,sizeof(T)},fid);
+      }
+      return ret;
+    }
+    version versions;
+    field_id_t fid;
+  };
+
+  template<class T>
+  using global_field=field<T,topology::global_topology_t,global>;
 
   /*!
     Add a field to the given topology type. This method should be thought of as
@@ -178,12 +219,6 @@ struct field_interface_u {
 
 } // namespace data
 } // namespace flecsi
-
-//----------------------------------------------------------------------------//
-// This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
-//----------------------------------------------------------------------------//
-
-#include <flecsi/runtime/data_policy.hh>
 
 namespace flecsi {
 namespace data {

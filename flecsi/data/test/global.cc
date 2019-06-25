@@ -20,8 +20,10 @@
 
 using namespace flecsi;
 
-flecsi_add_global_field("test", "global", double, 2);
-inline auto th = flecsi_global_field_instance("test", "global", 0);
+namespace {
+  const data::field_interface_t::global_field<double> gfld(2);
+  const auto th=gfld(flecsi_global_topology);
+}
 
 template<size_t PRIVILEGES>
 using global_accessor_u =
