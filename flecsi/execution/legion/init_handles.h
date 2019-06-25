@@ -367,18 +367,22 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::PhysicalRegion pr = regions[region];
       Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
-
-      auto ac = regions[region]
+      Legion::Domain d = runtime->get_index_space_domain(context, is);
+      const Legion::UnsafeFieldAccessor<utils::id_t, 2, Legion::coord_t,
+        Realm::AffineAccessor<utils::id_t, 2, Legion::coord_t>>
+        ac(regions[region], iss.index_fid, sizeof(utils::id_t));
+      Legion::Domain::DomainPointIterator itr(d);
+      /*auto ac = regions[region]
                   .get_field_accessor(iss.index_fid)
                   .template typeify<utils::id_t>();
-
-      Legion::Domain d = runtime->get_index_space_domain(context, is);
+*/
+      //      Legion::Domain d = runtime->get_index_space_domain(context, is);
 
       dr = d.get_rect<2>();
 
-      utils::id_t * ids = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      utils::id_t * ids = (utils::id_t *)(ac.ptr(itr.p));
 
-      size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
+      size_t num_indices = dr.hi[1] - dr.lo[1] + 1;
 
       storage->init_index_subspace(iss.index_space, iss.index_subspace,
         iss.domain, iss.dim, ids, num_indices, _read);
