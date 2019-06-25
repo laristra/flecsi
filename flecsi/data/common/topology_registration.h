@@ -440,6 +440,22 @@ struct topology_registration_u<
 #endif
 
 //----------------------------------------------------------------------------//
+// NTREE
+//----------------------------------------------------------------------------//
+template < class NTREE_POLICY, size_t NAMESPACE, size_t NAME>
+struct topology_registration_u<flecsi::topology::ntree_topology_u<NTREE_POLICY>,
+  NAMESPACE,
+  NAME> {
+
+  using TOPOLOGY_TYPE = flecsi::topology::ntree_topology_u<NTREE_POLICY>;
+  static void register_fields(){
+
+  }
+
+};
+
+
+//----------------------------------------------------------------------------//
 // Global.
 //----------------------------------------------------------------------------//
 

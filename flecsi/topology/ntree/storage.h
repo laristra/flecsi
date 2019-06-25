@@ -37,9 +37,9 @@ struct ntree_storage_u {
   using id_t = utils::id_t;
   static constexpr size_t num_partitions = 5;
 
-  using entity_t = typename TREE_TYPE::tree_entity_;
-  using branch_t = typename TREE_TYPE::tree_branch_;
-  using tree_entity_t = typename TREE_TYPE::tree_entity_holder_;
+  using entity_t = typename TREE_TYPE::tree_entity_t;
+  using branch_t = typename TREE_TYPE::tree_branch_t;
+  using tree_entity_t = typename TREE_TYPE::tree_entity_holder_t;
 
   // entity index spaces
   using entity_index_space_t =

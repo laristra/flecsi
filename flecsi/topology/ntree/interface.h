@@ -28,6 +28,8 @@
 #include <flecsi/topology/ntree/geometry.h>
 #include <flecsi/topology/ntree/storage.h>
 #include <flecsi/topology/ntree/types.h>
+#include <flecsi/topology/ntree/hash_table.h>
+
 #include <flecsi/utils/flog.h>
 
 #endif
@@ -48,8 +50,7 @@ namespace topology {
 //! and entity types.
 //-----------------------------------------------------------------//
 template<typename POLICY_TYPE>
-struct ntree_topology_u : public ntree_topology_base_t,
-                          public data::data_reference_base_t {
+struct ntree_topology_u : public ntree_topology_base_t {
 
 public:
   using Policy = POLICY_TYPE;
@@ -73,15 +74,16 @@ public:
   // ------- Space filling curve
   using key_t = typename Policy::filling_curve_t;
   // ------- Tree topology
-  using branch_t = typename Policy::tree_branch_;
+  using branch_t = typename Policy::tree_branch_t;
   using branch_vector_t = std::vector<branch_t *>;
-  using tree_entity_t = typename Policy::tree_entity_holder_;
-  using entity_t = typename Policy::tree_entity_;
+  using tree_entity_t = typename Policy::tree_entity_holder_t;
+  using entity_t = typename Policy::tree_entity_t;
   using entity_vector_t = std::vector<entity_t *>;
-  using htable_t = std::unordered_map<key_t, branch_t>;
   using entity_id_t = typename entity_base_u<0>::id_t;
   using geometry_t = ntree_geometry_u<element_t, dimension>;
 
+  // ------- Hash Table
+  using htable_t = hash_table_u<key_t, branch_t>;
   static constexpr size_t hash_table_capacity_ = htable_t::hash_capacity_;
 
   /*!
@@ -91,12 +93,10 @@ public:
   ntree_topology_u() {
     max_depth_ = 0;
     // Init the new storage, for now without handler
-    base_t::set_storage(new storage_t);
-    // Init the branch hash table
-    base_t::ms_->init_branches(branch_map_, hash_table_capacity_);
+    nts_.init_branches(branch_map_, hash_table_capacity_);
     // Add the root in the branch_map_
-    htable_t::insert(base_t::ms_->branch_index_space, key_t::root());
-    root_ = htable_t::find(base_t::ms_->branch_index_space, key_t::root());
+    htable_t::insert(nts_.branch_index_space, key_t::root());
+    root_ = htable_t::find(nts_.branch_index_space, key_t::root());
   }
 
   ntree_topology_u(const ntree_topology_u & s) : base_t(s) {}
@@ -505,6 +505,8 @@ private:
   branch_t branch_map_[hash_table_capacity_]; // Hash table of branches
   static constexpr size_t root_id_ = 1; // Id of the roort in the hashtable
   branch_t * root_ = nullptr;
+
+  storage_t nts_;
 };
 
 template<class TREE_TYPE>
