@@ -366,28 +366,26 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
+      const Legion::UnsafeFieldAccessor<char, 2, Legion::coord_t,
+        Realm::AffineAccessor<char, 2, Legion::coord_t>>
+        ac(regions[region], ent.fid, ent.fid_size);
 
-      const Legion::UnsafeFieldAccessor<char,
-      2,
-      Legion::coord_t,
-      Realm::AffineAccessor<char, 2, Legion::coord_t>>
-       ac(regions[region], ent.fid, ent.fid_size);
-
-     // auto ac = regions[region].get_field_accessor(ent.fid);
+      // auto ac = regions[region].get_field_accessor(ent.fid);
 
       Legion::Domain d = runtime->get_index_space_domain(context, is);
 
       dr = d.get_rect<2>();
-			Legion::Domain::DomainPointIterator itr(d);
+      Legion::Domain::DomainPointIterator itr(d);
 
-//      auto ents_raw =
-//        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
-//      auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ents_raw);
+      //      auto ents_raw =
+      //        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+      //      auto ents = reinterpret_cast<topology::mesh_entity_base_
+      //      *>(ents_raw);
 
-			char * ac_ptr = (char *)(ac.ptr(itr.p));
-			auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ac_ptr);
+      char * ac_ptr = (char *)(ac.ptr(itr.p));
+      auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ac_ptr);
 
-			size_t num_ents = dr.hi[1] - dr.lo[1] + 1;
+      size_t num_ents = dr.hi[1] - dr.lo[1] + 1;
 
       auto ac2 = regions[region]
                    .get_field_accessor(ent.id_fid)
@@ -863,8 +861,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
    */
   template<typename T,
     std::size_t N,
-    template<typename, std::size_t>
-    typename Container,
+    template<typename, std::size_t> typename Container,
     typename =
       std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
   void handle(Container<T, N> & list) {
