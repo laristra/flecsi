@@ -63,15 +63,6 @@ namespace flecstan {
 inline const std::string unnamed_namespace = "<namespace>";
 }
 
-// stripdir
-namespace flecstan {
-inline std::string
-stripdir(const std::string & in) {
-  const std::size_t pos = in.rfind("/");
-  return pos == std::string::npos ? in : in.substr(pos + 1);
-}
-} // namespace flecstan
-
 // -----------------------------------------------------------------------------
 // Colors, for text
 // See: https://stackoverflow.com/questions/2616906/
@@ -107,30 +98,142 @@ inline const std::string white = "\033[37;21m";
 } // namespace lite
 
 // for output
-inline const std::string debug = bold::white;
-inline const std::string title = bold::black;
-inline const std::string file = lite::magenta;
-inline const std::string report1 = bold::blue;
-inline const std::string report2 = bold::cyan;
-inline const std::string note = lite::green;
-inline const std::string warning = bold::yellow;
-inline const std::string error = lite::red;
-inline const std::string fatal = lite::red;
-inline const std::string reset = "\033[0m";
-/*
-inline const std::string debug   = "`textWhite ";
-inline const std::string title   = "`textGray ";
-inline const std::string file    = "`textMagenta ";
-inline const std::string report1 = "`textBlueViolet ";
-inline const std::string report2 = "`textCyan ";
-inline const std::string note    = "`textGreen ";
-inline const std::string warning = "`textYellow ";
-inline const std::string error   = "`textRed ";
-inline const std::string fatal   = "`textRed ";
-inline const std::string reset   = "`textBlack";
-*/
+inline std::string debug;
+inline std::string title;
+inline std::string file;
+inline std::string report1;
+inline std::string report2;
+inline std::string note;
+inline std::string warning;
+inline std::string error;
+inline std::string fatal;
+inline std::string reset;
 
 } // namespace color
+} // namespace flecstan
+
+// -----------------------------------------------------------------------------
+// markup_t
+// -----------------------------------------------------------------------------
+
+namespace flecstan {
+
+class markup_t
+{
+  std::string _prefix = "";
+  std::string _suffix = "";
+
+public:
+  // constructor
+  markup_t() {
+    // initialize color scheme
+    ansi();
+  }
+
+  // begin()
+  void begin() const {
+    // print markup prefix
+    static auto & once = std::cout << _prefix;
+    (void)once;
+  }
+
+  // destructor
+  ~markup_t() {
+    // print markup suffix
+    static auto & once = std::cout << _suffix;
+    (void)once;
+  }
+
+  // ------------------------
+  // prefix, suffix
+  // ------------------------
+
+  void prefix(const std::string & p) {
+    _prefix = p;
+  }
+  void suffix(const std::string & s) {
+    _suffix = s;
+  }
+
+  // ------------------------
+  // schemes
+  // ------------------------
+
+  // ansi
+  void ansi() {
+    _prefix = "";
+    color::debug = color::bold::white;
+    color::title = color::bold::black;
+    color::file = color::lite::magenta;
+    color::report1 = color::bold::blue;
+    color::report2 = color::bold::cyan;
+    color::note = color::lite::green;
+    color::warning = color::bold::yellow;
+    color::error = color::lite::red;
+    color::fatal = color::lite::red;
+    color::reset = "\033[0m";
+    _suffix = "";
+  }
+
+  // html
+  void html(const std::string & indent = "") {
+    _prefix = "";
+    color::debug = indent + "<span style=\"color:lightgray\">";
+    color::title = indent + "<span style=\"color:dimgray\">";
+    color::file = indent + "<span style=\"color:magenta\">";
+    color::report1 = indent + "<span style=\"color:blue\">";
+    color::report2 = indent + "<span style=\"color:darkturquoise\">";
+    color::note = indent + "<span style=\"color:green\">";
+    color::warning = indent + "<span style=\"color:orange\">";
+    color::error = indent + "<span style=\"color:red\">";
+    color::fatal = indent + "<span style=\"color:red\">";
+    color::reset = "</span>";
+    _suffix = "";
+  }
+
+  // rst
+  void rst() {
+    html("   ");
+    // modify from html()'s...
+    _prefix = ".. raw:: html\n\n   <pre class=\"code literal-block\">\n";
+    _suffix = "   </pre>\n";
+  }
+
+  // tex
+  void tex() {
+    _prefix = "";
+    color::debug = "\\textWhite{}";
+    color::title = "\\textGray{}";
+    color::file = "\\textMagenta{}";
+    color::report1 = "\\textBlueViolet{}";
+    color::report2 = "\\textCyan{}";
+    color::note = "\\textGreen{}";
+    color::warning = "\\textYellow{}";
+    color::error = "\\textRed{}";
+    color::fatal = "\\textRed{}";
+    color::reset = "\\textBlack{}";
+    _suffix = "";
+  }
+
+  // tex_listing
+  void tex_listing() {
+    _prefix = "";
+    color::debug = "`textWhite``";
+    color::title = "`textGray``";
+    color::file = "`textMagenta``";
+    color::report1 = "`textBlueViolet``";
+    color::report2 = "`textCyan``";
+    color::note = "`textGreen``";
+    color::warning = "`textYellow``";
+    color::error = "`textRed``";
+    color::fatal = "`textRed``";
+    color::reset = "`textBlack";
+    _suffix = "";
+  }
+};
+
+inline markup_t markup;
+
 } // namespace flecstan
 
 // -----------------------------------------------------------------------------
@@ -178,8 +281,8 @@ inline bool emit_scan = true;
 inline bool emit_visit = true;
 
 // re: file name printing
+inline bool file_medium = false;
 inline bool file_short = false;
-inline bool file_shorter = false;
 inline bool file_strip = false;
 
 // other
@@ -222,6 +325,19 @@ title(const std::ostringstream & oss, const bool emit_section) {
 // filename
 // ------------------------
 
+// stripdir (helper)
+inline std::string
+stripdir(const std::string & in) {
+  if(!file_strip)
+    return in;
+  const std::size_t pos = in.rfind("/");
+  return pos == std::string::npos ? in : in.substr(pos + 1);
+}
+
+// stdin
+inline const std::string stdin = "<standard input>";
+
+// filename
 inline void
 filename(std::string outer, std::string inner) {
   // -file-long
@@ -230,11 +346,11 @@ filename(std::string outer, std::string inner) {
   //    File:
   //       a/b/c/foo.json: d/e/f/g/bar.cc
 
-  // -file-short
+  // -file-medium
   //    File:
   //       d/e/f/g/bar.cc
 
-  // -file-shorter
+  // -file-short
   //    d/e/f/g/bar.cc
 
   // -file-long -file-strip
@@ -243,39 +359,29 @@ filename(std::string outer, std::string inner) {
   //    File:
   //       foo.json: bar.cc
 
-  // -file-short -file-strip
+  // -file-medium -file-strip
   //    File:
   //       bar.cc
 
-  // -file-shorter -file-strip
+  // -file-short -file-strip
   //    bar.cc
 
   if(section_on && emit_file) {
-    static const std::string stdin = "<standard input>";
-
     if(outer == "-")
       outer = stdin;
     if(inner == "-")
       inner = stdin;
 
-    const std::string o =
-      file_short || file_shorter ? "" : file_strip ? stripdir(outer) : outer;
+    const std::string o = file_medium || file_short ? "" : stripdir(outer);
 
-    const std::string i = file_strip ? stripdir(inner) : inner;
+    const std::string i = stripdir(inner);
 
     const std::string name = o == "" ? i : i == "" ? o : o + ": " + i;
 
     if(name != "")
-      diagnostic(file_shorter ? "" : "File", name, color::file);
+      diagnostic(file_short ? "" : "File", name, color::file);
   }
 }
-
-/*
-inline void filename(const std::ostringstream &oss)
-{
-   filename(oss.str());
-}
-*/
 
 // ------------------------
 // report
@@ -519,9 +625,9 @@ print_flc(
   const bool csame = location.column == spelling.column;
 
   // file
-  oss << labf << location.file;
+  oss << labf << stripdir(location.file);
   if(!fsame)
-    oss << "[" << spelling.file << "]";
+    oss << "[" << stripdir(spelling.file) << "]";
 
   // line
   // Remark: morally, the same numeric line, in a different file, is different
