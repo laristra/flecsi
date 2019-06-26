@@ -26,7 +26,6 @@
 namespace flecsi {
 namespace execution {
 
-
 // ----------- data registration ----------------------------------------//
 using test_mesh_t = flecsi::supplemental::test_mesh_2d_t;
 
@@ -54,8 +53,7 @@ flecsi_register_field(test_mesh_t,
 #endif
 
 flecsi_register_global(global, int1, int, 1);
-flecsi_register_color (color,  int2, int, 1);
-
+flecsi_register_color(color, int2, int, 1);
 
 // ----------- tasks ----------------------------------------------------//
 
@@ -71,35 +69,42 @@ flecsi_register_task_simple(set_global_int, loc, single);
 
 void
 init(client_handle_t<test_mesh_t, ro> mesh,
-		dense_accessor<double, rw, rw, na> pressure,
-    color_accessor<int, rw> color) {
+  dense_accessor<double, rw, rw, na> pressure,
+  color_accessor<int, rw> color) {
 
   color = 2;
 
-  for (auto c:mesh.cells()){
-   pressure(c)=0;
+  for(auto c : mesh.cells()) {
+    pressure(c) = 0;
   }
 
-  flecsi::parallel_for(mesh.cells(), KOKKOS_LAMBDA (auto c){
-    pressure(c) = 1.0;
-    }, std::string("init"));
-
+  flecsi::parallel_for(
+    mesh.cells(), KOKKOS_LAMBDA(auto c) { pressure(c) = 1.0; },
+    std::string("init"));
 }
 
 flecsi_register_task_simple(init, loc, index);
 
-void 
-test (client_handle_t<test_mesh_t, ro> mesh,
-    dense_accessor<double, ro, ro, ro> pressure,
-		global_accessor_u<int, ro> global,
-    color_accessor<int, ro> color) {
+void
+test(client_handle_t<test_mesh_t, ro> mesh,
+  dense_accessor<double, ro, ro, ro> pressure,
+  global_accessor_u<int, ro> global,
+  color_accessor<int, ro> color) {
 
-  flecsi::parallel_for(mesh.cells(), KOKKOS_LAMBDA(auto c){
-    ASSERT_EQ(pressure(c), 1.0);
+  flecsi::parallel_for(
+    mesh.cells(),
+    KOKKOS_LAMBDA(auto c) {
+      ASSERT_EQ(pressure(c), 1.0);
+      ASSERT_EQ(global, 2042);
+      ASSERT_EQ(color, 2);
+    },
+    std::string("test"));
+
+  forall(mesh.cells(), "test2") {
+    ASSERT_EQ(pressure(i), 1.0);
     ASSERT_EQ(global, 2042);
     ASSERT_EQ(color, 2);
- }, std::string("test"));
-
+  }; // forall
 }
 
 flecsi_register_task_simple(test, loc, index);

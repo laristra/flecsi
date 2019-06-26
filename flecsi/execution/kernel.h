@@ -33,8 +33,8 @@ namespace flecsi {
  */
 
 template<typename ITERATOR, typename LAMBDA>
-void parallel_for(ITERATOR iterator, LAMBDA lambda,
-             std::string  const& name = "") {
+void
+parallel_for(ITERATOR iterator, LAMBDA lambda, std::string const & name = "") {
 
   struct functor_t {
 
@@ -54,10 +54,46 @@ void parallel_for(ITERATOR iterator, LAMBDA lambda,
   Kokkos::parallel_for(name, iterator.size(), functor_t{iterator, lambda});
 
 } // parallel_for
-}//end namespace
+
+template<typename ITERATOR>
+struct forall_t {
+
+  forall_t(ITERATOR iterator, std::string const & name = "")
+    : iterator_(iterator) {}
+
+  template<typename LAMBDA>
+  struct functor_u {
+
+    functor_u(ITERATOR & iterator, LAMBDA & lambda)
+      : iterator_(iterator), lambda_(lambda) {}
+
+    KOKKOS_INLINE_FUNCTION void operator()(int i) const {
+      lambda_(iterator_[i]);
+    } // operator()
+
+  private:
+    ITERATOR iterator_;
+    LAMBDA lambda_;
+
+  }; // struct functor_u
+
+  template<typename LAMBDA>
+  void operator+(LAMBDA lambda) {
+    Kokkos::parallel_for(
+      "  ", iterator_.size(), functor_u<LAMBDA>{iterator_, lambda});
+  } // operator+
+
+private:
+  ITERATOR iterator_;
+
+}; // forall_t
+
+#define forall(iterator, name) forall_t{iterator, name} + KOKKOS_LAMBDA(auto i)
+
+} // namespace flecsi
 #endif
 
-namespace flecsi{
+namespace flecsi {
 
 //----------------------------------------------------------------------------//
 //! Abstraction function for fine-grained, data-parallel interface.
