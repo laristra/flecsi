@@ -538,7 +538,18 @@ build:ubuntu_hpx_clang:
     CC: clang
     CXX: clang++
 
-build:centOS_mpi:
+build:centOS_legion_intel:
+  extends: .build
+  tags:
+    - shell
+  image:
+  variables:
+    DISTRO: "centOS"
+    RUNTIME: "legion"
+    CC: icc
+    CXX: icc
+
+build:centOS_mpi_intel:
   extends: .build
   tags:
     - shell
@@ -775,13 +786,21 @@ test:ubuntu_hpx.ignoreNoCI:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
 
-test:centOS_mpi:
+test:centOS_legion_intel:
   extends: .test
   tags:
     - shell
   image:
   dependencies:
-    - build:centOS_mpi
+    - build:centOS_legion_intel
+
+test:centOS_mpi_intel:
+  extends: .test
+  tags:
+    - shell
+  image:
+  dependencies:
+    - build:centOS_mpi_intel
 
 ##################
 # Tutorials Jobs #
