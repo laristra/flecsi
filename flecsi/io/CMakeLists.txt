@@ -11,6 +11,7 @@
 # Copyright (c) 2016, Triad National Security, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
+if(ENABLE_HDF5)
 
 set(io_HEADERS
   io_interface.hh
@@ -74,10 +75,12 @@ set(io_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 ftest_add_unit(io
   SOURCES
     test/io.cc
 )
+endif()
         
 ftest_add_unit(io_index
   SOURCES
@@ -88,3 +91,5 @@ ftest_add_unit(io_metadata
   SOURCES
     test/io_metadata.cc
 )
+                
+endif()

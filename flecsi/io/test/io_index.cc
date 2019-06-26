@@ -24,9 +24,10 @@
 
 using namespace flecsi;
 
-flecsi_add_index_field("test", "value", double, 2);
+flecsi_add_index_field("test", "value", double, 3);
 inline auto fh1 = flecsi_index_field_instance("test", "value", double, 0);
 inline auto fh2 = flecsi_index_field_instance("test", "value", double, 1);
+inline auto fh3 = flecsi_index_field_instance("test", "value", double, 2);
 
 template<size_t PRIVILEGES>
 using accessor =
@@ -43,7 +44,7 @@ flecsi_register_task(assign, index_test, loc, index);
 
 void
 reset_zero(accessor<rw> ia) {
-  ia = 0;
+  ia = -1;
 } // assign
 
 flecsi_register_task(reset_zero, index_test, loc, index);
@@ -70,7 +71,8 @@ index_topology(int argc, char ** argv) {
 
   flecsi_execute_task(assign, index_test, index, fh1);
   flecsi_execute_task(assign, index_test, index, fh2);
-  
+  flecsi_execute_task(assign, index_test, index, fh3);
+
   auto & flecsi_context = execution::context_t::instance();
   int my_rank = flecsi_context.process();
   int num_files = 4;
@@ -89,13 +91,15 @@ index_topology(int argc, char ** argv) {
   MPI_Barrier(MPI_COMM_WORLD);
   
   #if 1
-  //cp_io.checkpoint_default_index_topology(checkpoint_file);
+ // cp_io.checkpoint_default_index_topology(checkpoint_file);
   cp_io.checkpoint_index_topology_field(checkpoint_file, fh1);
   cp_io.checkpoint_index_topology_field(checkpoint_file, fh2);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh3);
   
 
   flecsi_execute_task(reset_zero, index_test, index, fh1);
   flecsi_execute_task(reset_zero, index_test, index, fh2);
+  flecsi_execute_task(reset_zero, index_test, index, fh3);
  
   //flecsi_execute_task(check, index_test, index, fh1);
   //flecsi_execute_task(check, index_test, index, fh2);
@@ -106,6 +110,7 @@ index_topology(int argc, char ** argv) {
 
   flecsi_execute_task(check, index_test, index, fh1);
   flecsi_execute_task(check, index_test, index, fh2);
+  flecsi_execute_task(check, index_test, index, fh3);
 #endif
   return 0;
 } // index
