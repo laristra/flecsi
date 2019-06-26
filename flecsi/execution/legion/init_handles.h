@@ -268,18 +268,26 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = regions[region].get_field_accessor(ent.fid);
+      const Legion::UnsafeFieldAccessor<char, 2, Legion::coord_t,
+        Realm::AffineAccessor<char, 2, Legion::coord_t>>
+        ac(regions[region], ent.fid, ent.fid_size);
+
+      // auto ac = regions[region].get_field_accessor(ent.fid);
 
       Legion::Domain d = runtime->get_index_space_domain(context, is);
       // Legion::Domain::DomainPointIterator itr(d);
       dr = d.get_rect<2>();
       Legion::Domain::DomainPointIterator itr(d);
 
-      auto ents_raw =
-        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
-      auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ents_raw);
+      //      auto ents_raw =
+      //        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+      //      auto ents = reinterpret_cast<topology::mesh_entity_base_
+      //      *>(ents_raw);
 
-      size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+      char * ac_ptr = (char *)(ac.ptr(itr.p));
+      auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ac_ptr);
+
+      size_t num_ents = dr.hi[1] - dr.lo[1] + 1;
 
       const Legion::UnsafeFieldAccessor<utils::id_t, 2, Legion::coord_t,
         Realm::AffineAccessor<utils::id_t, 2, Legion::coord_t>>
