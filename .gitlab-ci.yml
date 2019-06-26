@@ -36,6 +36,7 @@ before_script:
       module load intel/19.0.2;
       module load python/3.5.1;
       module load cmake/3.12.4;
+      module load gcc/7.3.0;
       source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
       spack load -r flecsi~graphviz%intel@19.0.2 backend=mpi || /bin/true;
       spack unload flecsi~graphviz%intel@19.0.2 backend=mpi || /bin/true;
