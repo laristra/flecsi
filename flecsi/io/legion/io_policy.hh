@@ -90,17 +90,17 @@ struct legion_io_policy_t {
   
   void generate_hdf5_files(legion_hdf5_t &hdf5_file);
   
-  void checkpoint_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
-  
   void checkpoint_default_index_topology(legion_hdf5_t &hdf5_file);
 
-  void checkpoint_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
-  
-  void recover_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
+  void checkpoint_default_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
   
   void recover_default_index_topology(legion_hdf5_t &hdf5_file);
 
-  void recover_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
+  void recover_default_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
+  
+  void checkpoint_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
+  
+  void recover_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
   
 private:
   IndexSpace default_index_topology_file_is;

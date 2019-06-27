@@ -99,9 +99,9 @@ index_topology(int argc, char ** argv) {
 
 #if 1
   // cp_io.checkpoint_default_index_topology(checkpoint_file);
-  cp_io.checkpoint_index_topology_field(checkpoint_file, fh1);
-  cp_io.checkpoint_index_topology_field(checkpoint_file, fh2);
-  cp_io.checkpoint_index_topology_field(checkpoint_file, fh3);
+  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh1);
+  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh2);
+  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh3);
 
   flecsi_execute_task(reset_zero, index_test, index, fh1);
   flecsi_execute_task(reset_zero, index_test, index, fh2);
@@ -109,17 +109,8 @@ index_topology(int argc, char ** argv) {
 
   // flecsi_execute_task(check, index_test, index, fh1);
   // flecsi_execute_task(check, index_test, index, fh2);
-
-  cp_io.recover_default_index_topology(checkpoint_file);
-  // cp_io.recover_index_topology_field(checkpoint_file, fh1);
-  // cp_io.recover_index_topology_field(checkpoint_file, fh2);
-
-  flecsi_execute_task(check, index_test, index, fh1);
-  flecsi_execute_task(check, index_test, index, fh2);
-  flecsi_execute_task(check, index_test, index, fh3);
-#endif
   
-#if 0
+#if 1
   cp_io.open_hdf5_file(checkpoint_file, my_rank);
   std::string str2("test string 2");
   cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank, "control", "ds2", str2.c_str(), str2.size());
@@ -129,6 +120,17 @@ index_topology(int argc, char ** argv) {
   printf("str 3 %s\n", str3.c_str());
   cp_io.close_hdf5_file(checkpoint_file);
 #endif
+
+  cp_io.recover_default_index_topology(checkpoint_file);
+  // cp_io.recover_default_index_topology_field(checkpoint_file, fh1);
+  // cp_io.recover_default_index_topology_field(checkpoint_file, fh2);
+
+  flecsi_execute_task(check, index_test, index, fh1);
+  flecsi_execute_task(check, index_test, index, fh2);
+  flecsi_execute_task(check, index_test, index, fh3);
+#endif
+  
+
   return 0;
 } // index
 
