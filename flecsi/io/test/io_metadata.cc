@@ -40,7 +40,11 @@ index_topology(int argc, char ** argv) {
   
   std::string str1("test string 1");
   cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank, "control", "ds1", str1.c_str(), str1.size());
-
+  
+  cp_io.close_hdf5_file(checkpoint_file, my_rank);
+  
+  cp_io.open_hdf5_file(checkpoint_file, my_rank);
+#if 1
   std::string str2("test string 2");
   cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank, "control", "ds2", str2.c_str(), str2.size());
   
@@ -55,8 +59,9 @@ index_topology(int argc, char ** argv) {
   cp_io.read_string_from_hdf5_file(checkpoint_file, my_rank, "topology", "ds1", str4);
 
   printf("str 4 %s\n", str4.c_str());
-  
+#endif  
   cp_io.close_hdf5_file(checkpoint_file, my_rank);
+
   
   return 0;
 } // index

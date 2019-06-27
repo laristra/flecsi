@@ -84,6 +84,7 @@ index_topology(int argc, char ** argv) {
 #if 0
     for (int i = 0; i < num_files; i++) {
       cp_io.open_hdf5_file(checkpoint_file, i);
+      cp_io.close_hdf5_file(checkpoint_file, i);
     }
 #endif
     cp_io.generate_hdf5_files(checkpoint_file);

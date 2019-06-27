@@ -30,6 +30,9 @@ namespace io {
   
 #define SERIALIZATION_BUFFER_SIZE 4096  
   
+#define FILE_NOT_EXIST  -2
+#define FILE_EXIST_CLOSED -1
+  
 struct checkpoint_task_args_s{
  size_t field_map_size;
  char field_map_serial[SERIALIZATION_BUFFER_SIZE];
@@ -62,7 +65,7 @@ legion_hdf5_t::legion_hdf5_t(const char* file_name, int num_files)
 }
 
 legion_hdf5_t::legion_hdf5_t(std::string file_name, int num_files)
-  :hdf5_file_id(-1), file_name(file_name), num_files(num_files) {
+  :hdf5_file_id(-2), file_name(file_name), num_files(num_files) {
   hdf5_region_vector.clear();  
   hdf5_group_map.clear();
 }
@@ -70,7 +73,7 @@ legion_hdf5_t::legion_hdf5_t(std::string file_name, int num_files)
 bool legion_hdf5_t::open_hdf5_file(int file_idx)
 {
   std::string fname = file_name + std::to_string(file_idx);
-  if (true) {
+  if (hdf5_file_id == FILE_NOT_EXIST) {
     hdf5_file_id = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
   } else {
     hdf5_file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
@@ -85,6 +88,7 @@ bool legion_hdf5_t::close_hdf5_file(int file_idx)
 {
   H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
   H5Fclose(hdf5_file_id);
+  hdf5_file_id = FILE_EXIST_CLOSED;
   return true;
 }
 
@@ -188,13 +192,19 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
   assert(hdf5_region_vector.size() > 0);
 
   std::string fname = file_name + std::to_string(file_idx);
+
 #if 0
-  hdf5_file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+  if (hdf5_file_id == FILE_NOT_EXIST) {
+    hdf5_file_id = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
+  } else if(hdf5_file_id == FILE_EXIST_CLOSED) {
+    hdf5_file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+  } 
 #else
   hdf5_file_id = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
-#endif  
+#endif
+  
   if(hdf5_file_id < 0) {
-    printf("H5Fcreate failed: %lld\n", (long long)hdf5_file_id);
+    printf("File is not existed nor opened: %lld\n", (long long)hdf5_file_id);
     return false;
   }
   
@@ -249,6 +259,7 @@ bool legion_hdf5_t::generate_hdf5_file(int file_idx) {
   }
   H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
   H5Fclose(hdf5_file_id);
+  hdf5_file_id = FILE_EXIST_CLOSED;
   return true;
 }
 
