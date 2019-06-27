@@ -247,7 +247,7 @@ bool legion_hdf5_t::create_datasets_for_regions(int file_idx) {
  //   H5Gclose(group_id);
     H5Sclose(dataspace_id);
   }
- // H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
+  H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
   return true;
 }
 
