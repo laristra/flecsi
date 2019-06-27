@@ -40,8 +40,8 @@ before_script:
       module unload gcc;
       module load gcc/7.3.0;
       source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
-      spack load -r flecsi~graphviz%intel@19.0.2 backend=mpi || /bin/true;
-      spack unload flecsi~graphviz%intel@19.0.2 backend=mpi || /bin/true;
+      spack load -r flecsi~graphviz%intel@19.0.2 backend=$RUNTIME || /bin/true;
+      spack unload flecsi~graphviz%intel@19.0.2 backend=$RUNTIME || /bin/true;
       module list;
     fi
 
