@@ -71,7 +71,7 @@ struct topology_instance_u<index_topology_t> {
 
   using topology_reference_t = topology_reference_u<index_topology_t>;
 
-  static void set_coloring(topology_reference_t const & topology_reference,
+  static void create(topology_reference_t const & topology_reference,
     index_topology_t::coloring_t const & coloring) {
 
     {
@@ -121,10 +121,9 @@ struct topology_instance_u<index_topology_t> {
     runtime_data.color_partition = legion_runtime->get_logical_partition(
       legion_context, runtime_data.logical_region, index_partition);
 
-  } // set_coloring
+  } // create
 
-  static void destroy_coloring(topology_reference_t const & topology_reference,
-    index_topology_t::coloring_t const & coloring) {
+  static void destroy(topology_reference_t const & topology_reference) {
 
     {
       flog_tag_guard(topologies);
@@ -145,7 +144,7 @@ struct topology_instance_u<index_topology_t> {
 
     legion_runtime->destroy_index_space(legion_context, runtime_data.index_space);
 
-  } // destroy_coloring
+  } // destroy
 
 }; // index_topology_t specialization
 
@@ -160,8 +159,10 @@ struct topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
     topology_reference_u<ntree_topology_u<POLICY_TYPE>>;
   using coloring_t = typename ntree_topology_u<POLICY_TYPE>::coloring_t;
 
-  static void set_coloring(topology_reference_t const & topology_reference,
-    coloring_t const & coloring) {} // set_coloring
+  static void create(topology_reference_t const & topology_reference,
+    coloring_t const & coloring) {}
+
+  static void destroy(topology_reference_t const & topology_reference) {}
 
 }; // ntree_topology_u specialization
 
