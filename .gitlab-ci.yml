@@ -798,6 +798,7 @@ test:centOS_legion_intel:
     RUNTIME: "legion"
   dependencies:
     - build:centOS_legion_intel
+  allow_failure: true
 
 test:centOS_mpi_intel:
   extends: .test
