@@ -793,6 +793,9 @@ test:centOS_legion_intel:
   tags:
     - shell
   image:
+  variables:
+    DISTRO: "centOS"
+    RUNTIME: "legion"
   dependencies:
     - build:centOS_legion_intel
 
@@ -801,6 +804,9 @@ test:centOS_mpi_intel:
   tags:
     - shell
   image:
+  variables:
+    DISTRO: "centOS"
+    RUNTIME: "mpi"
   dependencies:
     - build:centOS_mpi_intel
 
