@@ -45,18 +45,6 @@ struct mpi_data_policy_t {
       NAME>();
   } // get_client_handle
 
-  /*--------------------------------------------------------------------------*
-    Storage Class Interface.
-   *--------------------------------------------------------------------------*/
-
-  /*
-    Capture the base storage class type. This is necessary as a place
-    holder in the field interface.
-   */
-
-  template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
-  using storage_class_u = storage_class_u<STORAGE_CLASS, CLIENT_TYPE>;
-
 }; // struct mpi_data_policy_t
 
 } // namespace data

@@ -29,18 +29,6 @@ namespace data {
 struct legion_data_policy_t {
 
   /*--------------------------------------------------------------------------*
-    Storage Class Interface.
-   *--------------------------------------------------------------------------*/
-
-  /*
-    Capture the base storage class type. This is necessary as a place holder in
-    the field interface.
-   */
-
-  template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
-  using storage_class_u = storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>;
-
-  /*--------------------------------------------------------------------------*
     Topology Instance Interface.
    *--------------------------------------------------------------------------*/
 

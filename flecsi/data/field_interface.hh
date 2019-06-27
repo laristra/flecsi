@@ -30,6 +30,7 @@
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/hash.hh>
+#include"common/storage_class.hh"
 
 namespace flecsi {
 namespace data {
@@ -181,7 +182,7 @@ struct field_interface_u {
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
     using storage_class_t =
-      typename DATA_POLICY::template storage_class_u<STORAGE_CLASS,
+      storage_class_u<STORAGE_CLASS,
         TOPOLOGY_TYPE>;
 
     return storage_class_t::template get_reference<NAMESPACE, NAME, VERSION>(
@@ -220,7 +221,7 @@ struct field_interface_u {
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
     using storage_class_t =
-      typename DATA_POLICY::template storage_class_u<STORAGE_CLASS>;
+      storage_class_u<STORAGE_CLASS>;
 
     return storage_class_t::template get_mutator<TOPOLOGY_TYPE, DATA_TYPE,
       NAMESPACE, NAME, VERSION>(client_handle, slots);
