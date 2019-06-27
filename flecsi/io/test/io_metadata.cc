@@ -36,12 +36,12 @@ index_topology(int argc, char ** argv) {
   io::io_interface_t cp_io;
   io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
   
-  cp_io.open_hdf5_file(checkpoint_file, my_rank);
+  cp_io.create_hdf5_file(checkpoint_file, my_rank);
   
   std::string str1("test string 1");
   cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank, "control", "ds1", str1.c_str(), str1.size());
   
-  cp_io.close_hdf5_file(checkpoint_file, my_rank);
+  cp_io.close_hdf5_file(checkpoint_file);
   
   cp_io.open_hdf5_file(checkpoint_file, my_rank);
 #if 1
@@ -60,7 +60,7 @@ index_topology(int argc, char ** argv) {
 
   printf("str 4 %s\n", str4.c_str());
 #endif  
-  cp_io.close_hdf5_file(checkpoint_file, my_rank);
+  cp_io.close_hdf5_file(checkpoint_file);
 
   
   return 0;

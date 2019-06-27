@@ -73,8 +73,10 @@ io_sanity(int argc, char ** argv) {
   Runtime *runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
 
-  Rect<1> elem_rect(0,num_elements-1);
-  IndexSpace is = runtime->create_index_space(ctx, elem_rect);
+  Rect<1> elem_rect_1(0,num_elements-1);
+  Rect<1> elem_rect_2(0,num_elements*2-1);
+  IndexSpace is_1 = runtime->create_index_space(ctx, elem_rect_1);
+  IndexSpace is_2 = runtime->create_index_space(ctx, elem_rect_2);
   FieldSpace input_fs = runtime->create_field_space(ctx);
   {
     FieldAllocator allocator = 
@@ -85,16 +87,19 @@ io_sanity(int argc, char ** argv) {
   
   Rect<1> file_color_bounds(0,num_files-1);
   IndexSpace file_is = runtime->create_index_space(ctx, file_color_bounds);
-  IndexPartition file_ip = runtime->create_equal_partition(ctx, is, file_is);
+  IndexPartition file_ip_1 = runtime->create_equal_partition(ctx, is_1, file_is);
+  IndexPartition file_ip_2 = runtime->create_equal_partition(ctx, is_2, file_is);
   
-  LogicalRegion input_lr_1 = runtime->create_logical_region(ctx, is, input_fs);
-  LogicalRegion output_lr_1 = runtime->create_logical_region(ctx, is, input_fs);
-  LogicalRegion input_lr_2 = runtime->create_logical_region(ctx, is, input_fs);
+  LogicalRegion input_lr_1 = runtime->create_logical_region(ctx, is_1, input_fs);
+  LogicalRegion output_lr_1 = runtime->create_logical_region(ctx, is_1, input_fs);
+  LogicalRegion input_lr_2 = runtime->create_logical_region(ctx, is_2, input_fs);
+  LogicalRegion output_lr_2 = runtime->create_logical_region(ctx, is_2, input_fs);
   
-  LogicalPartition file_checkpoint_lp_input_1 = runtime->get_logical_partition(ctx, input_lr_1, file_ip);
-  LogicalPartition file_checkpoint_lp_input_2 = runtime->get_logical_partition(ctx, input_lr_2, file_ip);
+  LogicalPartition file_checkpoint_lp_input_1 = runtime->get_logical_partition(ctx, input_lr_1, file_ip_1);
+  LogicalPartition file_checkpoint_lp_input_2 = runtime->get_logical_partition(ctx, input_lr_2, file_ip_2);
     
-  LogicalPartition file_recover_lp_output_1 = runtime->get_logical_partition(ctx, output_lr_1, file_ip);
+  LogicalPartition file_recover_lp_output_1 = runtime->get_logical_partition(ctx, output_lr_1, file_ip_1);
+  LogicalPartition file_recover_lp_output_2 = runtime->get_logical_partition(ctx, output_lr_2, file_ip_2);
   
   io::hdf5_region_t cp_test_data_1(input_lr_1, file_checkpoint_lp_input_1, "input_lr_1");
   cp_test_data_1.field_string_map[FID_X] = "A_FID_X";
@@ -130,7 +135,7 @@ io_sanity(int argc, char ** argv) {
     input_region.wait_until_valid();
     const FieldAccessor<READ_WRITE,double,1> acc_x(input_region, FID_X);
     const FieldAccessor<READ_WRITE,double,1> acc_y(input_region, FID_Y);
-    for (PointInRectIterator<1> pir(elem_rect); pir(); pir++) {
+    for (PointInRectIterator<1> pir(elem_rect_1); pir(); pir++) {
       acc_x[*pir] = 0.29 + ct;
       acc_y[*pir] = 0.29 + ct;
       ct ++;
@@ -149,7 +154,7 @@ io_sanity(int argc, char ** argv) {
     input_region.wait_until_valid();
     const FieldAccessor<READ_WRITE,double,1> acc_x(input_region, FID_X);
     const FieldAccessor<READ_WRITE,double,1> acc_y(input_region, FID_Y);
-    for (PointInRectIterator<1> pir(elem_rect); pir(); pir++) {
+    for (PointInRectIterator<1> pir(elem_rect_2); pir(); pir++) {
       acc_x[*pir] = 0.29 + ct;
       acc_y[*pir] = 0.29 + ct;
       ct ++;
@@ -160,12 +165,17 @@ io_sanity(int argc, char ** argv) {
   cp_io.checkpoint_data(checkpoint_file, file_is, cp_test_data_vector, true);
   
   
-  io::hdf5_region_t re_test_data(output_lr_1, file_recover_lp_output_1, "output_lr_1");
-  re_test_data.field_string_map[FID_X] = "A_FID_X";
-  re_test_data.field_string_map[FID_Y] = "A_FID_Y";
+  io::hdf5_region_t re_test_data_1(output_lr_1, file_recover_lp_output_1, "output_lr_1");
+  re_test_data_1.field_string_map[FID_X] = "A_FID_X";
+  re_test_data_1.field_string_map[FID_Y] = "A_FID_Y";
+  
+  io::hdf5_region_t re_test_data_2(output_lr_2, file_recover_lp_output_2, "output_lr_2");
+  re_test_data_2.field_string_map[FID_X] = "B_FID_X";
+  re_test_data_2.field_string_map[FID_Y] = "B_FID_Y";
   
   std::vector<io::hdf5_region_t> re_test_data_vector;
-  re_test_data_vector.push_back(re_test_data);
+  re_test_data_vector.push_back(re_test_data_1);
+ // re_test_data_vector.push_back(re_test_data_2);
   
   cp_io.recover_data(checkpoint_file, file_is, re_test_data_vector, false);
   
@@ -180,7 +190,7 @@ io_sanity(int argc, char ** argv) {
     input_region.wait_until_valid();
     const FieldAccessor<READ_WRITE,double,1> acc_x(input_region, FID_X);
     const FieldAccessor<READ_WRITE,double,1> acc_y(input_region, FID_Y);
-    for (PointInRectIterator<1> pir(elem_rect); pir(); pir++) {
+    for (PointInRectIterator<1> pir(elem_rect_1); pir(); pir++) {
       double x = acc_x[*pir];
       double y = acc_y[*pir];
       assert(x == 0.29 + ct);
@@ -189,6 +199,28 @@ io_sanity(int argc, char ** argv) {
     }
     runtime->unmap_region(ctx, input_region);
   }
+#if 0  
+  {
+    ct = 0;
+    RegionRequirement req(output_lr_2, READ_WRITE, EXCLUSIVE, output_lr_2);
+    req.add_field(FID_X);
+    req.add_field(FID_Y);
+    
+    InlineLauncher input_launcher(req);
+    PhysicalRegion input_region = runtime->map_region(ctx, input_launcher);
+    input_region.wait_until_valid();
+    const FieldAccessor<READ_WRITE,double,1> acc_x(input_region, FID_X);
+    const FieldAccessor<READ_WRITE,double,1> acc_y(input_region, FID_Y);
+    for (PointInRectIterator<1> pir(elem_rect_2); pir(); pir++) {
+      double x = acc_x[*pir];
+      double y = acc_y[*pir];
+      assert(x == 0.29 + ct);
+      assert(y == 0.29 + ct);
+      ct ++;
+    }
+    runtime->unmap_region(ctx, input_region);
+  }
+#endif
 
 
   flecsi_execute_task(check, io_test, index);
@@ -196,9 +228,11 @@ io_sanity(int argc, char ** argv) {
   runtime->destroy_logical_region(ctx, input_lr_1);
   runtime->destroy_logical_region(ctx, input_lr_2);
   runtime->destroy_logical_region(ctx, output_lr_1);
+  runtime->destroy_logical_region(ctx, output_lr_2);
   runtime->destroy_field_space(ctx, input_fs);
   runtime->destroy_index_space(ctx, file_is);
-  runtime->destroy_index_space(ctx, is);
+  runtime->destroy_index_space(ctx, is_1);
+  runtime->destroy_index_space(ctx, is_2);
 
   return 0;
 } // io_sanity

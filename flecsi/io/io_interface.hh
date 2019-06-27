@@ -26,15 +26,25 @@ struct io_interface_u : public IO_POLICY{
   {
     return IO_POLICY::init_hdf5_file(file_name, num_files);
   }
+  
+  bool create_hdf5_file(hdf5_t &hdf5_file, int file_idx)
+  {
+    return IO_POLICY::create_hdf5_file(hdf5_file, file_idx);
+  }
 
   bool open_hdf5_file(hdf5_t &hdf5_file, int file_idx)
   {
     return IO_POLICY::open_hdf5_file(hdf5_file, file_idx);
   }
 
-  bool close_hdf5_file(hdf5_t &hdf5_file, int file_idx)
+  bool close_hdf5_file(hdf5_t &hdf5_file)
   {
-    return IO_POLICY::close_hdf5_file(hdf5_file, file_idx);
+    return IO_POLICY::close_hdf5_file(hdf5_file);
+  }
+  
+  bool create_datasets_for_regions(hdf5_t &hdf5_file, int file_idx)
+  {
+    return IO_POLICY::create_datasets_for_regions(hdf5_file, file_idx);
   }
 
   bool write_string_to_hdf5_file(hdf5_t &hdf5_file, int file_idx, const char* group_name, const char* dataset_name, const char* str, size_t size)

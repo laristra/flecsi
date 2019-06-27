@@ -79,16 +79,21 @@ index_topology(int argc, char ** argv) {
   io::io_interface_t cp_io;
   io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
   
-  cp_io.add_default_index_topology(checkpoint_file);
+  cp_io.add_default_index_topology(checkpoint_file);  
+#if 1
   if (my_rank == 0) { 
-#if 0
-    for (int i = 0; i < num_files; i++) {
-      cp_io.open_hdf5_file(checkpoint_file, i);
-      cp_io.close_hdf5_file(checkpoint_file, i);
-    }
-#endif
     cp_io.generate_hdf5_files(checkpoint_file);
   }
+#else
+  int num_ranks = flecsi_context.processes();
+  assert(num_ranks % num_files == 0);
+  int num_ranks_per_file = num_ranks / num_files;
+  if (my_rank % num_ranks_per_file == 0) {
+    cp_io.create_hdf5_file(checkpoint_file, my_rank/num_ranks_per_file);
+    cp_io.create_datasets_for_regions(checkpoint_file, my_rank/num_ranks_per_file);
+    cp_io.close_hdf5_file(checkpoint_file);
+  }
+#endif
   MPI_Barrier(MPI_COMM_WORLD);
   
   #if 1
