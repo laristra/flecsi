@@ -42,7 +42,7 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
     Legion::TaskVariantRegistrar registrar(
       FLECSI_TOP_LEVEL_TASK_ID, "runtime_driver");
     registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
-//    registrar.set_inner();
+    //    registrar.set_inner();
     registrar.set_replicable();
     Runtime::preregister_task_variant<top_level_task>(
       registrar, "runtime_driver");
@@ -273,8 +273,8 @@ legion_context_policy_t::initialize_global_topology() {
   global_topology_instance_.field_space =
     legion_runtime_->create_field_space(legion_context_);
 
-  FieldAllocator allocator =
-    legion_runtime_->create_field_allocator(legion_context_, global_topology_instance_.field_space);
+  FieldAllocator allocator = legion_runtime_->create_field_allocator(
+    legion_context_, global_topology_instance_.field_space);
 
   /*
     Note: This call to get_field_info_store uses the non-const version
@@ -292,8 +292,9 @@ legion_context_policy_t::initialize_global_topology() {
   } // for
 
   global_topology_instance_.logical_region =
-    legion_runtime_->create_logical_region(
-      legion_context_, global_topology_instance_.index_space, global_topology_instance_.field_space);
+    legion_runtime_->create_logical_region(legion_context_,
+      global_topology_instance_.index_space,
+      global_topology_instance_.field_space);
 } // legion_context_policy_t::initialize_global_topology
 
 //----------------------------------------------------------------------------//
@@ -309,11 +310,14 @@ legion_context_policy_t::finalize_global_topology() {
   auto legion_runtime_ = Legion::Runtime::get_runtime();
   auto legion_context_ = Legion::Runtime::get_context();
 
-  legion_runtime_->destroy_logical_region(legion_context_, global_topology_instance_.logical_region);
+  legion_runtime_->destroy_logical_region(
+    legion_context_, global_topology_instance_.logical_region);
 
-  legion_runtime_->destroy_field_space(legion_context_, global_topology_instance_.field_space);
+  legion_runtime_->destroy_field_space(
+    legion_context_, global_topology_instance_.field_space);
 
-  legion_runtime_->destroy_index_space(legion_context_, global_topology_instance_.index_space);
+  legion_runtime_->destroy_index_space(
+    legion_context_, global_topology_instance_.index_space);
 } // legion_context_policy_t::finalize_global_topology
 
 //----------------------------------------------------------------------------//
@@ -336,7 +340,7 @@ legion_context_policy_t::initialize_default_index_topology() {
   data::topology_reference_u<topology::index_topology_t> reference(identifier);
   topology::index_topology_t::coloring_t coloring(processes_);
 
-  data::legion_data_policy_t::template set_coloring<topology::index_topology_t>(
+  data::legion_data_policy_t::template create<topology::index_topology_t>(
     reference, coloring);
 } // legion_context_policy_t::initialize_default_index_topology
 
@@ -358,10 +362,9 @@ legion_context_policy_t::finalize_default_index_topology() {
   }
 
   data::topology_reference_u<topology::index_topology_t> reference(identifier);
-  topology::index_topology_t::coloring_t coloring(processes_);
 
-  data::legion_data_policy_t::template destroy_coloring<topology::index_topology_t>(
-    reference, coloring);
+  data::legion_data_policy_t::template destroy<topology::index_topology_t>(
+    reference);
 } // legion_context_policy_t::finalize_default_index_topology
 
 } // namespace execution

@@ -43,10 +43,10 @@ namespace flecsi {
  */
 
 enum partition_privilege_t : size_t {
-  nu = 0,
-  ro = 1,
-  wo = 2,
-  rw = 3
+  nu = 0b00,
+  ro = 0b01,
+  wo = 0b10,
+  rw = 0b11
 }; // enum partition_privilege_t
 
 /*!
