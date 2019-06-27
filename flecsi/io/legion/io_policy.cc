@@ -78,7 +78,7 @@ legion_hdf5_t::create_hdf5_file(int file_idx) {
   hdf5_file_id =
     H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   if(hdf5_file_id < 0) {
-    printf("H5Fcreate failed: %lld\n", (long long)hdf5_file_id);
+    flog(error) << "H5Fcreate failed: " << hdf5_file_id << std::endl;
     return false;
   }
 }
@@ -89,7 +89,7 @@ legion_hdf5_t::open_hdf5_file(int file_idx) {
   std::string fname = file_name + std::to_string(file_idx);
   hdf5_file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
   if(hdf5_file_id < 0) {
-    printf("H5Fopen failed: %lld\n", (long long)hdf5_file_id);
+    flog(error) << "H5Fopen failed: " << hdf5_file_id << std::endl;
     return false;
   }
 }
@@ -127,7 +127,7 @@ legion_hdf5_t::write_string_to_hdf5_file(const char * group_name,
     hdf5_group_map[std::string(group_name)] = group_id;
   }
   if(group_id < 0) {
-    printf("H5Gcreate2 failed: %lld\n", (long long)group_id);
+    flog(error) << "H5Gcreate2 failed: " << group_id << std::endl;
     H5Fclose(hdf5_file_id);
     return false;
   }
@@ -176,7 +176,7 @@ legion_hdf5_t::read_string_from_hdf5_file(const char * group_name,
   group_id = H5Gopen2(hdf5_file_id, group_name, H5P_DEFAULT);
 
   if(group_id < 0) {
-    printf("H5Gcreate2 failed: %lld\n", (long long)group_id);
+    flog(error) << "H5Gcreate2 failed: " << group_id << std::endl;
     H5Fclose(hdf5_file_id);
     return false;
   }
@@ -249,7 +249,7 @@ legion_hdf5_t::create_datasets_for_regions(int file_idx) {
       dataspace_id = H5Screate_simple(1, dims, NULL);
     }
     if(dataspace_id < 0) {
-      printf("H5Screate_simple failed: %lld\n", (long long)dataspace_id);
+      flog(error) << "H5Screate_simple failed: " << dataspace_id << std::endl;
       H5Fclose(hdf5_file_id);
       return false;
     }
@@ -275,7 +275,7 @@ legion_hdf5_t::create_datasets_for_regions(int file_idx) {
         H5P_DEFAULT,
         H5P_DEFAULT);
       if(dataset < 0) {
-        printf("H5Dcreate2 failed: %lld\n", (long long)dataset);
+        flog(error) << "H5Dcreate2 failed: " << dataset << std::endl;
         //    H5Gclose(group_id);
         H5Sclose(dataspace_id);
         H5Fclose(hdf5_file_id);
@@ -791,7 +791,7 @@ checkpoint_without_attach_task(const Legion::Task * task,
   hid_t file_id;
   file_id = H5Fopen(file_name, H5F_ACC_RDWR, H5P_DEFAULT);
   if(file_id < 0) {
-    printf("H5Fopen failed: %lld\n", (long long)file_id);
+    flog(error) << "H5Fopen failed: " << file_id << std::endl;
     assert(0);
   }
 
@@ -817,7 +817,7 @@ checkpoint_without_attach_task(const Legion::Task * task,
         hid_t dataset_id =
           H5Dopen2(file_id, (map_it->second).c_str(), H5P_DEFAULT);
         if(dataset_id < 0) {
-          printf("H5Dopen2 failed: %lld\n", (long long)dataset_id);
+          flog(error) << "H5Dopen2 failed: " << dataset_id << std::endl;
           H5Fclose(file_id);
           assert(0);
         }
@@ -938,7 +938,7 @@ recover_without_attach_task(const Legion::Task * task,
   hid_t file_id;
   file_id = H5Fopen(file_name, H5F_ACC_RDWR, H5P_DEFAULT);
   if(file_id < 0) {
-    printf("H5Fopen failed: %lld\n", (long long)file_id);
+    flog(error) << "H5Fopen failed: " << file_id << std::endl;
     assert(0);
   }
 
@@ -964,7 +964,7 @@ recover_without_attach_task(const Legion::Task * task,
         hid_t dataset_id =
           H5Dopen2(file_id, (map_it->second).c_str(), H5P_DEFAULT);
         if(dataset_id < 0) {
-          printf("H5Dopen2 failed: %lld\n", (long long)dataset_id);
+          flog(error) << "H5Dopen2 failed: " << dataset_id << std::endl;
           H5Fclose(file_id);
           assert(0);
         }
