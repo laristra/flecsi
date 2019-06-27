@@ -382,7 +382,7 @@ compilation() {
   exit_status_t status = exit_clean; // status for overall analysis
   Factory factory(status);
 
-  // Number of JSON/make-output/C++ files; and total
+  // Number of JSON/make-verbose/C++ files; and total
   const std::size_t jsize = com.jsonfile.size();
   const std::size_t msize = com.makeinfo.size();
   const std::size_t csize = com.commands.size(), size = jsize + msize + csize;
@@ -408,7 +408,7 @@ compilation() {
       j++;
     }
 
-    // Text make-output file
+    // Make-verbose file
     if(com.type[n] == CmdArgs::file_t::make_t) {
       std::unique_ptr<clang::tooling::CompilationDatabase> ptr =
         try_make(com.makeinfo[m]);

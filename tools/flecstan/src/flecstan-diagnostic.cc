@@ -110,7 +110,7 @@ Diagnostic::HandleDiagnostic(clang::DiagnosticsEngine::Level level,
           "\n   " +
           (MacroName.empty() ? "from"
                              : ("from macro \"" + MacroName.str() + "\"")) +
-          " (file " + exp.file + ", line " + exp.line +
+          " (file " + stripdir(exp.file) + ", line " + exp.line +
           (emit_column ? (", column " + exp.column) : "") + ")";
       }
     }
@@ -128,7 +128,8 @@ Diagnostic::HandleDiagnostic(clang::DiagnosticsEngine::Level level,
   // ------------------------
 
   // create
-  oss << "\n   " << text << "\nFile: " << flc.file << "\nLine: " << flc.line
+  oss << "\n   " << text << "\nFile: " << stripdir(flc.file)
+      << "\nLine: " << flc.line
       << (emit_column ? ("\nColumn: " + flc.column) : "")
       << (emit_trace && expansion != "" ? ("\nExpansion trace:" + expansion)
                                         : "");
