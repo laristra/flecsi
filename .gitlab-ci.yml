@@ -156,6 +156,7 @@ before_script:
                 -DENABLE_PARMETIS=ON \
                 -DENABLE_COLORING=ON \
                 -DENABLE_DOXYGEN=OFF \
+                -DENABLE_FLECSTAN=$([ "$CI_RUNNER_TAGS" = "shell" ] && echo OFF || echo ON) \
                 -DENABLE_DOCUMENTATION=OFF \
                 -DENABLE_COVERAGE_BUILD=ON \
                 ..';
@@ -168,6 +169,7 @@ before_script:
           -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=OFF \
           -DENABLE_FLECSTAN=ON \
+          -DENABLE_FLECSTAN=$([ "$CI_RUNNER_TAGS" = "shell" ] && echo OFF || echo ON) \
           -DENABLE_DOCUMENTATION=OFF \
           -DENABLE_COVERAGE_BUILD=ON \
           ..;
