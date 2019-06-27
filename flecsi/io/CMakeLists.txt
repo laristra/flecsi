@@ -11,6 +11,9 @@
 # Copyright (c) 2016, Triad National Security, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
+
+if(ENABLE_HDF5)
+
 set(io_HEADERS
   io_interface.hh
 )
@@ -89,3 +92,5 @@ ftest_add_unit(io_metadata
   SOURCES
     test/io_metadata.cc
 )
+                
+endif()
