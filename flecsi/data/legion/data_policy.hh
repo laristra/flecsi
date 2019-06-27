@@ -38,14 +38,14 @@ struct legion_data_policy_t {
    */
 
   template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
-  using storage_class_u = legion::storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>;
+  using storage_class_u = storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>;
 
   /*--------------------------------------------------------------------------*
     Topology Instance Interface.
    *--------------------------------------------------------------------------*/
 
   template<typename TOPOLOGY_TYPE>
-  using topology_instance_u = typename legion::topology_instance_u<
+  using topology_instance_u = topology_instance_u<
     typename TOPOLOGY_TYPE::type_identifier_t>;
 
   template<typename TOPOLOGY_TYPE>

@@ -24,13 +24,8 @@
 #include <flecsi/data/common/data_reference.hh>
 #endif
 
-#ifndef POLICY_NAMESPACE
-#error You must define a data policy namespace before including this file.
-#endif
-
 namespace flecsi {
 namespace data {
-namespace POLICY_NAMESPACE {
 
 #if 0 // FIXME: Remove this
 /*!
@@ -54,6 +49,5 @@ struct topology_u {
 template<typename TOPOLOGY_TYPE>
 struct topology_instance_u {};
 
-} // namespace POLICY_NAMESPACE
 } // namespace data
 } // namespace flecsi

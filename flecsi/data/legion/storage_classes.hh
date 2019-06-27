@@ -26,10 +26,8 @@
 //#include <flecsi/topology/unstructured_mesh/interface.hh>
 #endif
 
-#define POLICY_NAMESPACE legion
 #include <flecsi/data/common/storage_class.hh>
 #include <flecsi/data/common/topology.hh>
-#undef POLICY_NAMESPACE
 
 namespace flecsi {
 namespace data {

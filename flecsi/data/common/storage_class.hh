@@ -30,10 +30,6 @@
 #include <flecsi/utils/hash.hh>
 #endif
 
-#ifndef POLICY_NAMESPACE
-#error You must define a data policy namespace before including this file.
-#endif
-
 namespace flecsi {
 namespace data {
 
@@ -52,8 +48,6 @@ enum storage_label_t : size_t {
   ragged,
   subspace
 }; // enum storage_label_t
-
-namespace POLICY_NAMESPACE {
 
 /*!
   Base storage class type for topology-specific specializations.
@@ -76,6 +70,5 @@ struct storage_class_u {
 
 }; // struct storage_class_u
 
-} // namespace POLICY_NAMESPACE
 } // namespace data
 } // namespace flecsi

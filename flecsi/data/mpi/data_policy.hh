@@ -55,7 +55,7 @@ struct mpi_data_policy_t {
    */
 
   template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
-  using storage_class_u = mpi::storage_class_u<STORAGE_CLASS, CLIENT_TYPE>;
+  using storage_class_u = storage_class_u<STORAGE_CLASS, CLIENT_TYPE>;
 
 }; // struct mpi_data_policy_t
 

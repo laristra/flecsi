@@ -15,9 +15,7 @@
 
 /*! @file */
 
-#define POLICY_NAMESPACE mpi
 #include <flecsi/data/common/storage_class.hh>
-#undef POLICY_NAMESPACE
 
 namespace flecsi {
 namespace data {

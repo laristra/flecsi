@@ -15,10 +15,7 @@
 
 /*! @file */
 
-#define POLICY_NAMESPACE mpi
 #include <flecsi/data/common/client_handle_specialization.hh>
-#undef POLICY_NAMESPACE
-
 #include <flecsi/data/common/client_handle.hh>
 
 namespace flecsi {

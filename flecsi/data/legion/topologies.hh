@@ -19,10 +19,7 @@
 #include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/flog.hh>
-
-#define POLICY_NAMESPACE legion
 #include <flecsi/data/common/topology.hh>
-#undef POLICY_NAMESPACE
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -58,21 +55,18 @@ class unstructured_mesh_topology_u;
 } // namespace topology
 
 namespace data {
-namespace legion {
-
-using namespace topology;
 
 /*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_instance_u<index_topology_t> {
+struct topology_instance_u<topology::index_topology_t> {
 
-  using topology_reference_t = topology_reference_u<index_topology_t>;
+  using topology_reference_t = topology_reference_u<topology::index_topology_t>;
 
   static void create(topology_reference_t const & topology_reference,
-    index_topology_t::coloring_t const & coloring) {
+    topology::index_topology_t::coloring_t const & coloring) {
 
     {
       flog_tag_guard(topologies);
@@ -102,7 +96,7 @@ struct topology_instance_u<index_topology_t> {
       legion_runtime->create_field_space(legion_context);
 
     auto & field_info_store = flecsi_context.get_field_info_store(
-      index_topology_t::type_identifier_hash, storage_label_t::index);
+      topology::index_topology_t::type_identifier_hash, storage_label_t::index);
 
     Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(
       legion_context, runtime_data.field_space);
@@ -156,11 +150,12 @@ struct topology_instance_u<index_topology_t> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
+struct topology_instance_u<topology::ntree_topology_u<POLICY_TYPE>> {
 
   using topology_reference_t =
-    topology_reference_u<ntree_topology_u<POLICY_TYPE>>;
-  using coloring_t = typename ntree_topology_u<POLICY_TYPE>::coloring_t;
+    topology_reference_u<topology::ntree_topology_u<POLICY_TYPE>>;
+  using coloring_t =
+		typename topology::ntree_topology_u<POLICY_TYPE>::coloring_t;
 
   static void create(topology_reference_t const & topology_reference,
     coloring_t const & coloring) {}
@@ -174,10 +169,10 @@ struct topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<set_topology_u<POLICY_TYPE>> {
+struct topology_instance_u<topology::set_topology_u<POLICY_TYPE>> {
 
   using topology_reference_t =
-    topology_reference_u<set_topology_u<POLICY_TYPE>>;
+    topology_reference_u<topology::set_topology_u<POLICY_TYPE>>;
 
 }; // set_topology_u specialization
 
@@ -186,10 +181,10 @@ struct topology_instance_u<set_topology_u<POLICY_TYPE>> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<structured_mesh_topology_u<POLICY_TYPE>> {
+struct topology_instance_u<topology::structured_mesh_topology_u<POLICY_TYPE>> {
 
   using topology_reference_t =
-    topology_reference_u<structured_mesh_topology_u<POLICY_TYPE>>;
+    topology_reference_u<topology::structured_mesh_topology_u<POLICY_TYPE>>;
 
 }; // structured_mesh_topology_u specialization
 
@@ -198,10 +193,11 @@ struct topology_instance_u<structured_mesh_topology_u<POLICY_TYPE>> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<unstructured_mesh_topology_u<POLICY_TYPE>> {
+struct topology_instance_u<topology::unstructured_mesh_topology_u<POLICY_TYPE>>
+{
 
   using topology_reference_t =
-    topology_reference_u<unstructured_mesh_topology_u<POLICY_TYPE>>;
+    topology_reference_u<topology::unstructured_mesh_topology_u<POLICY_TYPE>>;
 
 }; // unstructured_mesh_topology_u specialization
 
@@ -223,6 +219,5 @@ struct client_handle_specialization_u<topology::mesh_topology_t<MESH_POLICY>> {
 }; // client_handle_specialization_u<topology::mesh_topology_t<MESH_POLICY>>
 #endif
 
-} // namespace legion
 } // namespace data
 } // namespace flecsi
