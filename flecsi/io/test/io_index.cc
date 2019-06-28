@@ -110,15 +110,20 @@ index_topology(int argc, char ** argv) {
   // flecsi_execute_task(check, index_test, index, fh1);
   // flecsi_execute_task(check, index_test, index, fh2);
   
-#if 0
-  cp_io.open_hdf5_file(checkpoint_file, my_rank);
-  std::string str2("test string 2");
-  cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank, "control", "ds2", str2.c_str(), str2.size());
+#if 1
+  int num_ranks = flecsi_context.processes();
+  assert(num_ranks % num_files == 0);
+  int num_ranks_per_file = num_ranks / num_files;
+  if(my_rank % num_ranks_per_file == 0) {
+    cp_io.open_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file);
+    std::string str2("test string 2");
+    cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str2.c_str(), str2.size());
 
-  std::string str3("");
-  cp_io.read_string_from_hdf5_file(checkpoint_file, my_rank, "control", "ds2", str3);
-  printf("str 3 %s\n", str3.c_str());
-  cp_io.close_hdf5_file(checkpoint_file);
+    std::string str3("");
+    cp_io.read_string_from_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str3);
+    printf("str 3 %s\n", str3.c_str());
+    cp_io.close_hdf5_file(checkpoint_file);
+  }
 #endif
 
   cp_io.recover_default_index_topology(checkpoint_file);
