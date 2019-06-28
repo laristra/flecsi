@@ -61,18 +61,6 @@ flecsi_legion_add_options(options_description & desc) {
 inline int
 flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
 
-#if defined(FLECSI_ENABLE_FLOG)
-  if(__flecsi_tags == "0") {
-    std::cout << "Available tags (FLOG):" << std::endl;
-
-    for(auto t : flog_tag_map()) {
-      std::cout << " " << t.first << std::endl;
-    } // for
-
-    return 1;
-  } // if
-#endif
-
   int version, subversion;
   MPI_Get_version(&version, &subversion);
 
@@ -95,6 +83,25 @@ flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
   } // if
 #else
   MPI_Init(&argc, &argv);
+#endif
+
+#if defined(FLECSI_ENABLE_FLOG)
+  if(__flecsi_tags == "0") {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    if(rank == 0) {
+      std::cout << "Available tags (FLOG):" << std::endl;
+
+      for(auto t : flog_tag_map()) {
+        std::cout << " " << t.first << std::endl;
+      } // for
+    } // if
+
+    MPI_Finalize();
+
+    return 1;
+  } // if
 #endif
 
 #if defined(FLECSI_ENABLE_FLOG)

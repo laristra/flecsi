@@ -23,7 +23,12 @@
   and \em color client types.
  */
 
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#else
 #include <flecsi/data/common/data_reference.hh>
+#include <flecsi/utils/hash.hh>
+#endif
 
 #ifndef POLICY_NAMESPACE
 #error You must define a data policy namespace before including this file.
@@ -48,7 +53,6 @@ enum storage_label_t : size_t {
   subspace
 }; // enum storage_label_t
 
-#if 1
 namespace POLICY_NAMESPACE {
 
 /*!
@@ -73,6 +77,5 @@ struct storage_class_u {
 }; // struct storage_class_u
 
 } // namespace POLICY_NAMESPACE
-#endif
 } // namespace data
 } // namespace flecsi
