@@ -388,15 +388,19 @@ filename(std::string outer, std::string inner) {
 // ------------------------
 
 inline exit_status_t
-report(const std::string & label, const std::string & str) {
+report(const std::string & label,
+  const std::string & str,
+  const bool keep_long_form) {
   if(section_on && emit_report)
-    diagnostic(label, str, color::report1, color::report2, true);
+    diagnostic(label, str, color::report1, color::report2, keep_long_form);
   return exit_clean;
 }
 
 inline exit_status_t
-report(const std::string & label, const std::ostringstream & oss) {
-  return report(label, oss.str());
+report(const std::string & label,
+  const std::ostringstream & oss,
+  const bool keep_long_form) {
+  return report(label, oss.str(), keep_long_form);
 }
 
 // ------------------------
@@ -509,7 +513,8 @@ print_version() {
 
 inline void
 print_help() {
-  report("Help", "Sorry, no command-line help is available at this time.");
+  report(
+    "Help", "Sorry, no command-line help is available at this time.", false);
 }
 
 } // namespace flecstan
@@ -780,7 +785,8 @@ public:
     if(emit_macro)
       flecstan::report("Macro",
         oss.str() +
-          print_flc("\nFile: ", "\nLine: ", "\nColumn: ", location, spelling));
+          print_flc("\nFile: ", "\nLine: ", "\nColumn: ", location, spelling),
+        true);
   }
 };
 
