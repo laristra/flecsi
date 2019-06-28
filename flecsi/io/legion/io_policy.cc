@@ -81,6 +81,7 @@ legion_hdf5_t::create_hdf5_file(int file_idx) {
     flog(error) << "H5Fcreate failed: " << hdf5_file_id << std::endl;
     return false;
   }
+  return true;
 }
 
 bool
@@ -92,6 +93,7 @@ legion_hdf5_t::open_hdf5_file(int file_idx) {
     flog(error) << "H5Fopen failed: " << hdf5_file_id << std::endl;
     return false;
   }
+  return true;
 }
 
 bool
