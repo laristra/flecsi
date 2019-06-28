@@ -102,10 +102,12 @@ match(const clang::CallExpr *& call, // output
   if(call) {
     mc.ast = true;
     if(emit_link)
-      report("Link", "Function call: " + theclass + "::" + thefunction +
-                       "\n"
-                       "Matches macro: " +
-                       mc.macname + " (" + mc.flc() + ")");
+      report("Link",
+        "Function call: " + theclass + "::" + thefunction +
+          "\n"
+          "Matches macro: " +
+          mc.macname + " (" + mc.flc() + ")",
+        true);
   }
   return call;
 }
@@ -735,11 +737,12 @@ Visitor::VisitTypeAliasDecl(const clang::TypeAliasDecl * const tad) {
     yaml.push(c, scp);
 
     if(emit_link)
-      report("Link", "Function type: " + tad->getNameAsString() + " = " +
-                       thetype +
-                       "\n"
-                       "Matches macro: " +
-                       mc.macname + " (" + mc.flc() + ")");
+      report("Link",
+        "Function type: " + tad->getNameAsString() + " = " + thetype +
+          "\n"
+          "Matches macro: " +
+          mc.macname + " (" + mc.flc() + ")",
+        true);
   }
 
   return true;
