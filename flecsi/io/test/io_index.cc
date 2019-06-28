@@ -110,7 +110,7 @@ index_topology(int argc, char ** argv) {
   // flecsi_execute_task(check, index_test, index, fh1);
   // flecsi_execute_task(check, index_test, index, fh2);
   
-#if 1
+#if 0
   cp_io.open_hdf5_file(checkpoint_file, my_rank);
   std::string str2("test string 2");
   cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank, "control", "ds2", str2.c_str(), str2.size());
