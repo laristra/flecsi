@@ -66,7 +66,7 @@ struct legion_io_policy_t {
   using launch_space_t = IndexSpace;
   using field_reference_t = data::field_reference_t;
   
-  legion_io_policy_t() {}
+  legion_io_policy_t();
   
   ~legion_io_policy_t();
 
@@ -91,6 +91,8 @@ struct legion_io_policy_t {
   void generate_hdf5_files(legion_hdf5_t &hdf5_file);
   
   void checkpoint_default_index_topology(legion_hdf5_t &hdf5_file);
+  
+  //void checkpoint_index_topology(legion_hdf5_t &hdf5_file, const flecsi::utils::const_string_t &index_topology_name);
 
   void checkpoint_default_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
   
@@ -102,10 +104,10 @@ struct legion_io_policy_t {
   
   void recover_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
   
-private:
-  IndexSpace default_index_topology_file_is;
-  IndexPartition default_index_topology_file_ip;
-  LogicalPartition default_index_topology_file_lp;
+private:  
+  std::map<size_t, IndexSpace> file_is_map;
+  std::map<size_t, IndexPartition> file_ip_map;
+  std::map<size_t, LogicalPartition> file_lp_map;
   
 }; // struct legion_io_policy_t
 

@@ -290,13 +290,26 @@ legion_hdf5_t::create_datasets_for_regions(int file_idx) {
   return true;
 }
 
+legion_io_policy_t::legion_io_policy_t() {
+  file_is_map.clear();
+  file_ip_map.clear();
+  file_lp_map.clear();
+}
+
 legion_io_policy_t::~legion_io_policy_t() {
   Runtime * runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
-  if(default_index_topology_file_is != IndexSpace::NO_SPACE) {
-    printf("clean up default_index_topology_file_is\n");
-    runtime->destroy_index_space(ctx, default_index_topology_file_is);
+  for (std::map<size_t, IndexSpace>::iterator it = file_is_map.begin();
+       it != file_is_map.end(); 
+       ++it) {
+    if(it->second != IndexSpace::NO_SPACE) {
+      printf("clean up default_index_topology_file_is hash %ld\n", it->first);
+      runtime->destroy_index_space(ctx, it->second);
+    }   
   }
+  file_is_map.clear();
+  file_ip_map.clear();
+  file_lp_map.clear();
 }
 
 legion_hdf5_t
@@ -385,7 +398,7 @@ legion_io_policy_t::add_default_index_topology(hdf5_t & hdf5_file) {
   Runtime * runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
   Rect<1> file_color_bounds(0, hdf5_file.num_files - 1);
-  default_index_topology_file_is =
+  IndexSpace default_index_topology_file_is =
     runtime->create_index_space(ctx, file_color_bounds);
 #if 0 
   default_index_topology_file_ip = runtime->create_pending_partition(ctx, index_runtime_data.index_space, default_index_topology_file_is);
@@ -400,15 +413,19 @@ legion_io_policy_t::add_default_index_topology(hdf5_t & hdf5_file) {
     runtime->create_index_space_union(ctx, default_index_topology_file_ip, point, subspaces);
   }
 #else
-  default_index_topology_file_ip = runtime->create_equal_partition(
+  IndexPartition default_index_topology_file_ip = runtime->create_equal_partition(
     ctx, index_runtime_data.index_space, default_index_topology_file_is);
 #endif
-  default_index_topology_file_lp = runtime->get_logical_partition(
+  LogicalPartition default_index_topology_file_lp = runtime->get_logical_partition(
     ctx, index_runtime_data.logical_region, default_index_topology_file_ip);
   hdf5_file.add_logical_region(index_runtime_data.logical_region,
     default_index_topology_file_lp,
     "null",
     field_string_map);
+    
+  file_is_map[identifier] = default_index_topology_file_is;
+  file_ip_map[identifier] = default_index_topology_file_ip;
+  file_lp_map[identifier] = default_index_topology_file_lp;
 }
 
 void
@@ -439,7 +456,7 @@ legion_io_policy_t::checkpoint_default_index_topology(
     flecsi_context.index_topology_instance(identifier);
 
   legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
-    default_index_topology_file_lp,
+    file_lp_map[identifier],
     "input_lr_1");
   for(std::vector<data::field_info_t>::const_iterator it = fid_vector.begin();
       it != fid_vector.end();
@@ -451,7 +468,7 @@ legion_io_policy_t::checkpoint_default_index_topology(
   std::vector<legion_hdf5_region_t> hdf5_region_vector;
   hdf5_region_vector.push_back(cp_test_data);
   checkpoint_data(
-    hdf5_file, default_index_topology_file_is, hdf5_region_vector, true);
+    hdf5_file, file_is_map[identifier], hdf5_region_vector, true);
 }
 
 void
@@ -473,14 +490,14 @@ legion_io_policy_t::checkpoint_default_index_topology_field(hdf5_t & hdf5_file,
     flecsi_context.index_topology_instance(identifier);
 
   legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
-    default_index_topology_file_lp,
+    file_lp_map[identifier],
     "input_lr_1");
   cp_test_data.field_string_map[fid.fid] = std::to_string(fid.fid);
 
   std::vector<legion_hdf5_region_t> hdf5_region_vector;
   hdf5_region_vector.push_back(cp_test_data);
   checkpoint_data(
-    hdf5_file, default_index_topology_file_is, hdf5_region_vector, true);
+    hdf5_file, file_is_map[identifier], hdf5_region_vector, true);
 }
 
 void
@@ -496,12 +513,14 @@ legion_io_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
   constexpr size_t identifier =
     utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
       flecsi_internal_string_hash("index_topology")>();
+      
+      printf("idf %ld\n", identifier);
 
   data::legion::index_runtime_data_t & index_runtime_data =
     flecsi_context.index_topology_instance(identifier);
 
   legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
-    default_index_topology_file_lp,
+    file_lp_map[identifier],
     "input_lr_1");
   for(std::vector<data::field_info_t>::const_iterator it = fid_vector.begin();
       it != fid_vector.end();
@@ -513,7 +532,7 @@ legion_io_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
   std::vector<legion_hdf5_region_t> hdf5_region_vector;
   hdf5_region_vector.push_back(cp_test_data);
   recover_data(
-    hdf5_file, default_index_topology_file_is, hdf5_region_vector, true);
+    hdf5_file, file_is_map[identifier], hdf5_region_vector, true);
 }
 
 void
@@ -535,14 +554,14 @@ legion_io_policy_t::recover_default_index_topology_field(hdf5_t & hdf5_file,
     flecsi_context.index_topology_instance(identifier);
 
   legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
-    default_index_topology_file_lp,
+    file_lp_map[identifier],
     "input_lr_1");
   cp_test_data.field_string_map[fid.fid] = std::to_string(fid.fid);
 
   std::vector<legion_hdf5_region_t> hdf5_region_vector;
   hdf5_region_vector.push_back(cp_test_data);
   recover_data(
-    hdf5_file, default_index_topology_file_is, hdf5_region_vector, true);
+    hdf5_file, file_is_map[identifier], hdf5_region_vector, true);
 }
 
 void
