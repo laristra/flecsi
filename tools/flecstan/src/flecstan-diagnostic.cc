@@ -22,10 +22,10 @@
 
 namespace flecstan {
 
+// We intercept clang++'s diagnostic reporting, in order to use our style
 void
 Diagnostic::HandleDiagnostic(clang::DiagnosticsEngine::Level level,
   const clang::Diagnostic & diag) /* override */ {
-  // Construct our own message about Clang++ finding something...
 
   // ------------------------
   // Intro
