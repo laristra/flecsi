@@ -308,7 +308,7 @@ Second, the underlying compilation commands - the full ``g++`` or ``clang++``
 commands that ``make`` would invoke - are more complex here than they'd be
 when compiling a simple C++ code as shown above.
 
-.. differentsuite of codes uses a ``cmake/make``-based build system,
+.. different suite of codes uses a ``cmake/make``-based build system,
 
 .. zzz write this
 
@@ -528,11 +528,12 @@ Categorized
       * ``-[-]file-full``
       * ``-[-]file-strip``
 
-   * **Format: markup**
+   * **Format: color markup**
       * ``-[-]markup-ansi``
       * ``-[-]markup-html``
       * ``-[-]markup-rst``
       * ``-[-]markup-tex``
+      * ``-[-]markup-tex-listing``
 
    * **Content: combos**
       * ``-[-]quiet``
@@ -566,16 +567,21 @@ Categorized
    * **Content: debugging**
       * ``-[-]debug``
 
+   * **Direct compilation**
+      * ``-[-]dir[ectory]``
+      * ``-[-]folder``
+      * ``-[-]clang[++]``
+      * ``-[-]flag[s]``
+      * ``-[-]cc``
+      * ``-[-]cpp``
+      * ``-[-]cxx``
+      * ``-[-]c++``
+      * ``-[-]C``
+
    * **Files: input**
       * ``-[-]make``
       * ``-[-]json``
       * ``-[-]yaml``
-
-   * **Direct compilation**
-      * ``-[-]dir[ectory], -[-]folder``
-      * ``-[-]clang[++]``
-      * ``-[-]flag[s]``
-      * ``-[-]cc, -[-]cpp, -[-]cxx, -[-]c++, -[-]C``
 
    * **Files: output**
       * ``-[-]yout``
