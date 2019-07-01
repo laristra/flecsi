@@ -54,42 +54,6 @@ public:
     io.mapRequired("spelling", spelling);
     io.mapRequired("scope", scope);
   }
-
-  /*
-  // operator==
-  // Say that they're equal if the location and spelling location are equal.
-  // I think that this will be a sufficient test to which we can defer by the
-  // operator==s in each derived, macro-specific class, in order to determine
-  // if a newly found macro call is identical to a macro call that
-  // was already recorded. We don't want flecstan to get false positives about
-  // duplicate macro calls, if a macro that's called once, in one header file,
-  // is seen multiple times due to the one header file being #included in
-  // multiple source files. So, the derived-class operator==s will defer to
-  // this one, in order to see if the macro is already recorded, based on its
-  // location and spelling location. If it's already recorded, then we won't
-  // record it again. Note: earlier in flecstan's development, we didn't worry
-  // so much about getting *false* positives due to the header/source file
-  // situation as described above, because earlier FleCSI versions didn't use
-  // inline variables in the macros. That, in turn, would ultimately have led
-  // to compilation errors - so that such duplicates reflected a real problem.
-  // With inline variables, our hypothetical situation no longer implies C++
-  // errors, so we need to avoid reporting (no-longer-problematic) duplicates!
-  bool operator==(const flecsi_base &rhs) const
-  {
-     std::cout << "operator==\n";
-     std::cout << "   location.file   = \"" << location.file   << "\"\n";
-     std::cout << "   location.line   = \"" << location.line   << "\"\n";
-     std::cout << "   location.column = \"" << location.column << "\"\n";
-     std::cout << "   spelling.file   = \"" << spelling.file   << "\"\n";
-     std::cout << "   spelling.line   = \"" << spelling.line   << "\"\n";
-     std::cout << "   spelling.column = \"" << spelling.column << "\"\n";
-     std::cout << std::flush;
-
-     return
-        location == rhs.location &&
-        spelling == rhs.spelling;
-  }
-  */
 };
 
 } // namespace flecstan

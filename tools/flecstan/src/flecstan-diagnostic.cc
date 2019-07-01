@@ -22,10 +22,10 @@
 
 namespace flecstan {
 
+// We intercept clang++'s diagnostic reporting, in order to use our style
 void
 Diagnostic::HandleDiagnostic(clang::DiagnosticsEngine::Level level,
   const clang::Diagnostic & diag) /* override */ {
-  // Construct our own message about Clang++ finding something...
 
   // ------------------------
   // Intro
@@ -110,7 +110,7 @@ Diagnostic::HandleDiagnostic(clang::DiagnosticsEngine::Level level,
           "\n   " +
           (MacroName.empty() ? "from"
                              : ("from macro \"" + MacroName.str() + "\"")) +
-          " (file " + exp.file + ", line " + exp.line +
+          " (file " + stripdir(exp.file) + ", line " + exp.line +
           (emit_column ? (", column " + exp.column) : "") + ")";
       }
     }
@@ -128,7 +128,8 @@ Diagnostic::HandleDiagnostic(clang::DiagnosticsEngine::Level level,
   // ------------------------
 
   // create
-  oss << "\n   " << text << "\nFile: " << flc.file << "\nLine: " << flc.line
+  oss << "\n   " << text << "\nFile: " << stripdir(flc.file)
+      << "\nLine: " << flc.line
       << (emit_column ? ("\nColumn: " + flc.column) : "")
       << (emit_trace && expansion != "" ? ("\nExpansion trace:" + expansion)
                                         : "");

@@ -77,9 +77,9 @@ public:
 
   // Results
   // In the first three vectors, the bools indicate whether or not the files
-  // in question (JSON, make-output, or C++) were found at the time of command
+  // in question (JSON, make-verbose, or C++) were found at the time of command
   // line parsing. The last vector is a simple way to indicate whether the
-  // next queued file is a JSON, make-output, or C++ file.
+  // next queued file is a JSON, make-verbose, or C++ file.
   std::vector<std::pair<std::string, bool>> jsonfile;
   std::vector<std::pair<std::string, bool>> makeinfo;
   std::vector<std::pair<clang::tooling::CompileCommand, bool>> commands;
