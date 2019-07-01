@@ -73,8 +73,8 @@ getFileLineColumn(
 // -----------------------------------------------------------------------------
 // Remark: Our handling of colors, in some of the below functions, may *appear*
 // to be more complicated than it needs to be. In particular, we'll explicitly
-// set and unset color codes on a per-line, not per-block-of-lines, basis. While
-// this clutters the output with more color escape sequences than are necessary,
+// set and unset color markup on a per-line, not per-block-of-lines, basis.
+// While this clutters the output with more color markup than is necessary,
 // we're doing it intentionally: so that colors are preserved if, for example,
 // you send the code's output through something that processes individual lines.
 // Imagine, for example, using the Unix "grep" command to display lines with the
@@ -83,7 +83,7 @@ getFileLineColumn(
 //    flecstan ... | grep foo
 //
 // Well, grep isn't the best example, because, depending on how it's configured,
-// it may mess with color codes or use its own. You may, however, be able to
+// it may mess with color markup or use its own. You may, however, be able to
 // switch that off, for example with:
 //
 //    flecstan ... | grep --color=never foo
@@ -98,6 +98,8 @@ getFileLineColumn(
 
 void
 debug(const std::string & text) {
+  markup.begin();
+
   if(!emit_debug)
     return;
 
@@ -132,6 +134,8 @@ bool first_print = true;
 
 void
 title(const std::string & text, const bool emit_section) {
+  markup.begin();
+
   section_on = emit_section;
   if(!section_on)
     return;
@@ -151,7 +155,7 @@ title(const std::string & text, const bool emit_section) {
     first_print = false;
 
     if(short_form)
-      std::cout << color << text << reset;
+      std::cout << color << text << "..." << reset;
     else
       std::cout << color << line << reset << "\n"
                 << color << text << reset << "\n"
@@ -173,6 +177,8 @@ diagnostic(const std::string & label,
   std::string textcolor,
   const bool keep_long_form // override short-form flag?
 ) {
+  markup.begin();
+
   // spacing
   if(!short_form && !first_print)
     std::cout << "\n";

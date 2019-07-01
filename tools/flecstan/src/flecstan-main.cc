@@ -80,7 +80,7 @@ public:
     debug("}");
 
     if(emit_visit)
-      report("", "Visiting the C++ abstract syntax tree...");
+      report("", "Visiting the C++ abstract syntax tree...", false);
 
     if(!ci.hasSema()) {
       status = std::max(status, error("Could not get the Semantic Analyzer "
@@ -131,7 +131,7 @@ public:
       filename(outer_name, file.str());
 
     if(emit_scan)
-      report("", "Scanning for FleCSI macros...");
+      report("", "Scanning for FleCSI macros...", false);
 
     if(!ci.hasPreprocessor()) {
       status = std::max(status, error("Could not get the Preprocessor "
@@ -287,40 +287,73 @@ try_make(const std::pair<std::string, bool> & pair) {
   static std::string dbstr;
 
   // json begin
+  // json, because we're going to scan for compilation commands and build
+  // a temporary .json file to represent those commands to clang's API.
   dbstr = "[\n";
 
   // Scan for lines like this:
   //    cd /foo/bar/etc && /a/b/etc/clang++ -some -flags -c x/y/etc/file.cc
   //    ^               ^           ^                      ^
   //    pos_cd          pos_and     pos_clang              pos_file
-  // fixme This function is simple-minded right now!!! It won't handle, for
-  // instance, spaces in the file name. Right now, my goal is to get something
-  // that works most of the time. -Martin
-  bool first = true;
+  // or this:
+  //    /a/b/etc/clang++ -some -flags -c x/y/etc/file.cc
+  //             ^                      ^
+  //             pos_clang              pos_file
+  // and ensure that there's a " -c ", and that the ending looks like a C++
+  // file. Otherwise, we might get false positives.
+  //
+  // fixme This function is simple-minded right now. It won't handle, for
+  // instance, spaces in the file name. And, some of the parsing may reject
+  // valid constructs or accept invalid ones. It should work correctly with
+  // what I've actually *seen* from make VERBOSE=1 output, and my goal in
+  // the immediate term is to get something that's functional. -Martin
+
+  bool first = true; // for handling commas between {...}s
   for(std::string line; std::getline(in, line);) {
-    std::size_t pos_cd;
-    std::size_t pos_and;
-    std::size_t pos_clang = std::string::npos;
-    std::size_t pos_g = std::string::npos;
-    std::size_t pos_file;
+    if(!(endsin(line, ".cc") || endsin(line, ".cpp") || endsin(line, ".cxx") ||
+         endsin(line, ".C")))
+      continue;
 
     // Note that "cd " and "[clan]g++ ", below, intentionally end with spaces.
     // fixme Needs more work in order to be really robust. Think, for example,
     // general white space rather than spaces.
-    if((pos_cd = line.find("cd ")) == 0 &&
-       (pos_and = line.find("&&")) != std::string::npos &&
-       ((pos_clang = line.find("clang++ ")) != std::string::npos ||
-         (pos_g = line.find("g++ ")) != std::string::npos) &&
-       (pos_file = line.rfind(" ")) != std::string::npos) {
+    const std::size_t pos_cd = line.find("cd ");
+    const std::size_t pos_and = line.find("&&");
+    const std::size_t pos_clang = line.find("clang++ ");
+    const std::size_t pos_g = line.find("g++ ");
+    const std::size_t pos_file = line.rfind(" ");
+    const std::size_t pos_space = line.find(" ");
+
+    const std::size_t pos_comp =
+      pos_clang != std::string::npos ? pos_clang : pos_g;
+
+    // Form #1
+    if(pos_cd == 0 && pos_and != std::string::npos &&
+       pos_comp != std::string::npos && pos_file != std::string::npos) {
       dbstr += (first ? "   {" : ",\n   {");
       const std::string dir =
                           stripws(line.substr(3, pos_and - 3)), // start,length
         com = stripws(line.substr(pos_and + 2)), // to end
-        file = stripws(line.substr(pos_file + 1));
+        file = stripws(line.substr(pos_file + 1)); // to end
       dbstr += "\n      \"directory\" : \"" + dir + "\",";
       dbstr += "\n      \"command\"   : \"" + com + "\",";
       dbstr += "\n      \"file\"      : \"" + file + "\"\n   }";
       first = false;
+      continue;
+    }
+
+    // Form #2
+    // /a/b/etc/clang++ -some -flags -c x/y/etc/file.cc
+    if(pos_comp != std::string::npos && pos_file != std::string::npos &&
+       pos_space != std::string::npos && pos_comp < pos_space) {
+      dbstr += (first ? "   {" : ",\n   {");
+      const std::string dir = ".", com = line,
+                        file = stripws(line.substr(pos_file + 1)); // to end
+      dbstr += "\n      \"directory\" : \"" + dir + "\",";
+      dbstr += "\n      \"command\"   : \"" + com + "\",";
+      dbstr += "\n      \"file\"      : \"" + file + "\"\n   }";
+      first = false;
+      continue;
     }
   }
 
@@ -382,7 +415,7 @@ compilation() {
   exit_status_t status = exit_clean; // status for overall analysis
   Factory factory(status);
 
-  // Number of JSON/make-output/C++ files; and total
+  // Number of JSON/make-verbose/C++ files; and total
   const std::size_t jsize = com.jsonfile.size();
   const std::size_t msize = com.makeinfo.size();
   const std::size_t csize = com.commands.size(), size = jsize + msize + csize;
@@ -408,7 +441,7 @@ compilation() {
       j++;
     }
 
-    // Text make-output file
+    // Make-verbose file
     if(com.type[n] == CmdArgs::file_t::make_t) {
       std::unique_ptr<clang::tooling::CompilationDatabase> ptr =
         try_make(com.makeinfo[m]);
@@ -541,23 +574,23 @@ summary() {
 
   // Re: Task registration/execution
   if(summary_task_reg_dup != "")
-    report("Task registration duplicates", summary_task_reg_dup);
+    report("Task registration duplicates", summary_task_reg_dup, true);
   if(summary_task_reg_without_exe != "")
-    report(
-      "Task registrations without executions", summary_task_reg_without_exe);
+    report("Task registrations without executions",
+      summary_task_reg_without_exe, true);
   if(summary_task_exe_without_reg != "")
-    report(
-      "Task executions without registrations", summary_task_exe_without_reg);
+    report("Task executions without registrations",
+      summary_task_exe_without_reg, true);
 
   // Re: Function interface
   if(summary_function_reg_dup != "")
-    report("Function registration duplicates", summary_function_reg_dup);
+    report("Function registration duplicates", summary_function_reg_dup, true);
   if(summary_function_reg_without_hand != "")
     report("Function registrations without handle retrievals",
-      summary_function_reg_without_hand);
+      summary_function_reg_without_hand, true);
   if(summary_function_hand_without_reg != "")
     report("Function handle retrievals without registrations",
-      summary_function_hand_without_reg);
+      summary_function_hand_without_reg, true);
 
   // Re: YAML
   bool written = false;
