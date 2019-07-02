@@ -165,6 +165,31 @@ flecsi_internal_legion_task(unset_call_mpi_task, void) {
 flecsi_internal_register_legion_task(unset_call_mpi_task,
   processor_type_t::loc,
   leaf);
-  
+
+#if defined(FLECSI_ENABLE_FLOG)
+/*----------------------------------------------------------------------------*
+  Flog tasks.
+ *----------------------------------------------------------------------------*/
+
+// reduction task to find out  the max buffer size
+flecsi_internal_legion_task(flog_reduction_task, size_t) {
+  return flecsi_color();
+} // flog_reduction_task
+
+flecsi_internal_register_legion_task(flog_reduction_task,
+  processor_type_t::loc,
+  leaf);
+
+// mpi task
+flecsi_internal_legion_task(flog_mpi_task, void) {
+  // serilize and output
+} // flog_reduction_task
+
+flecsi_internal_register_legion_task(flog_mpi_task,
+  processor_type_t::loc,
+  leaf);
+
+#endif
+
 } // namespace execution
 } // namespace flecsi
