@@ -32,6 +32,8 @@ set(utils_HEADERS
   flog.hh
   flog/message.hh
   flog/packet.hh
+  flog/state.hh
+  flog/tag_scope.hh
   flog/types.hh
   flog/utils.hh
   ftest.hh
@@ -75,6 +77,7 @@ set(utils_SOURCES
   debruijn.cc
   demangle.cc
   flog/packet.cc
+  flog/utils.cc
 )
 
 #------------------------------------------------------------------------------#

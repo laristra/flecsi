@@ -165,6 +165,6 @@ flecsi_internal_legion_task(unset_call_mpi_task, void) {
 flecsi_internal_register_legion_task(unset_call_mpi_task,
   processor_type_t::loc,
   leaf);
-  
+
 } // namespace execution
 } // namespace flecsi

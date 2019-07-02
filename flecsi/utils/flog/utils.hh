@@ -123,11 +123,13 @@ timestamp(bool underscores = false) {
  */
 
 template<char C>
-std::string
+inline std::string
 rstrip(const char * file) {
   std::string tmp(file);
   return tmp.substr(tmp.rfind(C) + 1);
 } // rstrip
+
+void send_to_one();
 
 } // namespace flog
 } // namespace utils

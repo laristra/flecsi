@@ -31,7 +31,6 @@
 #include <math.h>
 #include <vector>
 
-
 namespace flecsi {
 namespace topology {
 
