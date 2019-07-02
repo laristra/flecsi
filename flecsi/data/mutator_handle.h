@@ -109,9 +109,8 @@ public:
 
   void init() {
     new_counts_ = new int32_t[num_entries_];
-    overflow_map_ = new overflow_map_t;
-
-    std::fill_n(new_counts_, num_entries_, -1);
+    new_entries_ = new new_entries_t;
+    new_entries_->resize(num_entries_);
   }
 
   size_t commit(commit_info_t * ci) {
@@ -132,22 +131,11 @@ public:
     for(size_t index = 0; index < num_exclusive_; ++index) {
       offset_t & coi = offsets[index];
 
-      size_t num_existing = coi.count();
       size_t count = new_count(index);
-      size_t base_count = std::min(count, num_existing);
+      const auto & overflow = (*new_entries_)[index];
 
-      std::copy_n(eptr, base_count, cptr);
-      cptr += base_count;
-      eptr += num_existing;
-
-      if(count > num_existing) {
-        size_t overflow_count = count - num_existing;
-        // map entry must already exist - use "at" method
-        const auto & overflow = overflow_map_->at(index);
-
-        std::copy_n(overflow.begin(), overflow_count, cptr);
-        cptr += overflow_count;
-      }
+      std::copy_n(overflow.begin(), count, cptr);
+      cptr += count;
 
       coi.set_offset(offset);
       coi.set_count(count);
@@ -165,21 +153,11 @@ public:
     for(size_t index = start; index < end; ++index) {
       offset_t & coi = offsets[index];
 
-      size_t num_existing = coi.count();
-
       size_t count = new_count(index);
-      assert(count <= max_entries_per_index_ &&
-             "ragged data: exceeded max_entries_per_index in shared/ghost");
+      value_t * eptr = entries + coi.start();
+      const auto & overflow = (*new_entries_)[index];
 
-      if(count > num_existing) {
-        value_t * eptr = entries + coi.start();
-        eptr += num_existing;
-        size_t overflow_count = count - num_existing;
-        // map entry must already exist - use "at" method
-        const auto & overflow = overflow_map_->at(index);
-
-        std::copy_n(overflow.begin(), overflow_count, eptr);
-      }
+      std::copy_n(overflow.begin(), count, eptr);
 
       coi.set_count(count);
     } // for index
@@ -191,8 +169,8 @@ public:
     delete[] new_counts_;
     new_counts_ = nullptr;
 
-    delete overflow_map_;
-    overflow_map_ = nullptr;
+    delete new_entries_;
+    new_entries_ = nullptr;
 
     return num_exclusive_filled;
   } // commit
@@ -226,11 +204,10 @@ public:
   }
 
   size_t new_count(size_t index) const {
-    int nc = new_counts_[index];
-    return (nc >= 0 ? nc : offsets_[index].count());
+    return new_counts_[index];
   }
 
-  using overflow_map_t = std::unordered_map<size_t, std::vector<value_t>>;
+  using new_entries_t = std::vector<std::vector<value_t>>;
 
   partition_info_t pi_;
   size_t num_exclusive_;
@@ -240,7 +217,7 @@ public:
   offset_t * offsets_ = nullptr;
   value_t * entries_ = nullptr;
   int32_t * new_counts_ = nullptr;
-  overflow_map_t * overflow_map_ = nullptr;
+  new_entries_t * new_entries_ = nullptr;
   commit_info_t ci_;
 
 }; // mutator_handle_base_u

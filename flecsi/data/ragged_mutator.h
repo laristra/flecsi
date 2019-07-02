@@ -55,7 +55,6 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   using handle_t = mutator_handle_u<T>;
   using offset_t = typename handle_t::offset_t;
   using value_t = T;
-  using overflow_map_t = typename mutator_handle_u<T>::overflow_map_t;
 
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
@@ -65,28 +64,20 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   //--------------------------------------------------------------------------//
 
   mutator_u(const mutator_handle_u<T> & h) : h_(h) {
-    assert(!h_.overflow_map_ && "expected null overflow map");
+    assert(!h_.new_entries_ && "expected null new_entries");
   }
 
   T & operator()(size_t index, size_t ragged_index) {
-    assert(h_.offsets_ && "uninitialized ragged_mutator");
+    assert(h_.new_entries_ && "uninitialized ragged_mutator");
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_[index];
-
-    size_t n = offset.count();
     size_t nnew = h_.new_count(index);
     assert(ragged_index < nnew);
 
-    if(ragged_index >= n) {
-      // value is in overflow area
-      auto & overflow = h_.overflow_map_->at(index);
-      assert(ragged_index - n < overflow.size());
-      return overflow[ragged_index - n];
-    }
+    auto & overflow = (*h_.new_entries_)[index];
+    assert(ragged_index < overflow.size());
+    return overflow[ragged_index];
 
-    // value is in base area
-    return h_.entries_[offset.start() + ragged_index];
   } // operator ()
 
   //-------------------------------------------------------------------------//
@@ -155,101 +146,47 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
 
     h_.new_counts_[index] = size;
 
-    offset_t & offset = h_.offsets_[index];
-    size_t n = offset.count();
-    if(size > n) {
-      auto & overflow = (*h_.overflow_map_)[index];
-      overflow.resize(size - n);
-    }
-    else {
-      h_.overflow_map_->erase(index);
-    }
+    auto & overflow = (*h_.new_entries_)[index];
+    overflow.resize(size);
   } // resize
 
   void erase(size_t index, size_t ragged_index) {
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_[index];
-
-    size_t n = offset.count();
     size_t nnew = h_.new_count(index);
     assert(ragged_index < nnew);
 
     h_.new_counts_[index] = nnew - 1;
 
-    if(ragged_index >= n) {
-      // erase from overflow area
-      auto & overflow = h_.overflow_map_->at(index);
-      assert(ragged_index - n < overflow.size());
-      overflow.erase(overflow.begin() + (ragged_index - n));
-      return;
-    }
-
-    // erase from base area
-    auto eptr = h_.entries_ + offset.start();
-    size_t ncopy = std::min(n, nnew);
-    std::copy(&eptr[ragged_index + 1], &eptr[ncopy], &eptr[ragged_index]);
-    if(nnew > n) {
-      // shift out of overflow area, if needed
-      auto & overflow = h_.overflow_map_->at(index);
-      eptr[n - 1] = overflow.front();
-      overflow.erase(overflow.begin());
-    }
+    auto & overflow = (*h_.new_entries_)[index];
+    assert(ragged_index < overflow.size());
+    overflow.erase(overflow.begin() + ragged_index);
   } // erase
 
   void push_back(size_t index, const T & value) {
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_[index];
-
-    size_t n = offset.count();
     size_t nnew = h_.new_count(index);
 
     h_.new_counts_[index] = nnew + 1;
 
-    if(nnew >= n) {
-      // add to overflow area
-      auto & overflow = (*h_.overflow_map_)[index];
-      overflow.push_back(value);
-      return;
-    }
-
-    // add to base area
-    auto eptr = h_.entries_ + offset.start();
-    eptr[nnew] = value;
+    auto & overflow = (*h_.new_entries_)[index];
+    overflow.push_back(value);
   } // push_back
 
   // insert BEFORE ragged index
   T * insert(size_t index, size_t ragged_index, const T & value) {
     assert(index < h_.num_entries_);
 
-    offset_t & offset = h_.offsets_[index];
-
-    size_t n = offset.count();
     size_t nnew = h_.new_count(index);
     assert(ragged_index <= nnew);
 
     h_.new_counts_[index] = nnew + 1;
 
-    if(ragged_index >= n) {
-      // insert in overflow area
-      auto & overflow = (*h_.overflow_map_)[index];
-      assert(ragged_index - n <= overflow.size());
-      auto itr = overflow.insert(overflow.begin() + (ragged_index - n), value);
-      return &(*itr);
-    }
-
-    // insert in base area
-    auto eptr = h_.entries_ + offset.start();
-    if(nnew >= n) {
-      // shift into overflow area, if needed
-      auto & overflow = (*h_.overflow_map_)[index];
-      overflow.insert(overflow.begin(), eptr[n - 1]);
-    }
-    size_t ncopy = std::min(n - 1, nnew);
-    std::copy_backward(&eptr[ragged_index], &eptr[ncopy], &eptr[ncopy + 1]);
-    eptr[ragged_index] = value;
-    return &eptr[ragged_index];
+    auto & overflow = (*h_.new_entries_)[index];
+    assert(ragged_index <= overflow.size());
+    auto itr = overflow.insert(overflow.begin() + ragged_index, value);
+    return &(*itr);
   } // insert
 
   handle_t h_;
