@@ -170,6 +170,7 @@ flecsi_internal_register_legion_task(unset_call_mpi_task,
 /*----------------------------------------------------------------------------*
   Flog tasks.
  *----------------------------------------------------------------------------*/
+#include <flecsi/utils/flog/state.hh>
 
 // reduction task to find out  the max buffer size
 flecsi_internal_legion_task(flog_reduction_task, size_t) {
@@ -182,7 +183,13 @@ flecsi_internal_register_legion_task(flog_reduction_task,
 
 // mpi task
 flecsi_internal_legion_task(flog_mpi_task, void) {
-  // serilize and output
+  // Create bound function to pass to MPI runtime.
+  std::function<void()> bound_mpi_task =
+    std::bind(flecsi::utils::flog::flush_packets);
+
+  // Set the MPI function and make the runtime active.
+  context_t::instance().set_mpi_task(bound_mpi_task);
+  context_t::instance().set_mpi_state(true);
 } // flog_reduction_task
 
 flecsi_internal_register_legion_task(flog_mpi_task,
