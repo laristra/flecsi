@@ -297,7 +297,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       auto ids = ac2_ptr;
       // calculating exclusive, shared and ghost sizes fro the entity
-      auto coloring = context_.coloring(ent.index_space);
+      const auto & coloring = context_.coloring(ent.index_space);
       ent.num_exclusive = coloring.exclusive.size();
       ent.num_shared = coloring.shared.size();
       ent.num_ghost = coloring.ghost.size();
