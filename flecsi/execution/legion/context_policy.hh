@@ -502,7 +502,7 @@ private:
     Backend initialization.
    *--------------------------------------------------------------------------*/
 
-  void finalize_global_topology(); 
+  void finalize_global_topology();
   void finalize_default_index_topology();
 
   /*--------------------------------------------------------------------------*

@@ -104,8 +104,8 @@ struct topology_instance_u<index_topology_t> {
     auto & field_info_store = flecsi_context.get_field_info_store(
       index_topology_t::type_identifier_hash, storage_label_t::index);
 
-    Legion::FieldAllocator allocator =
-      legion_runtime->create_field_allocator(legion_context, runtime_data.field_space);
+    Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(
+      legion_context, runtime_data.field_space);
 
     for(auto const & fi : field_info_store.field_info()) {
       allocator.allocate_field(fi.type_size, fi.fid);
@@ -138,11 +138,14 @@ struct topology_instance_u<index_topology_t> {
     auto & runtime_data =
       flecsi_context.index_topology_instance(topology_reference.identifier());
 
-    legion_runtime->destroy_logical_region(legion_context, runtime_data.logical_region);
+    legion_runtime->destroy_logical_region(
+      legion_context, runtime_data.logical_region);
 
-    legion_runtime->destroy_field_space(legion_context, runtime_data.field_space);
+    legion_runtime->destroy_field_space(
+      legion_context, runtime_data.field_space);
 
-    legion_runtime->destroy_index_space(legion_context, runtime_data.index_space);
+    legion_runtime->destroy_index_space(
+      legion_context, runtime_data.index_space);
 
   } // destroy
 

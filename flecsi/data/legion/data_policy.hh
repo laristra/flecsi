@@ -53,16 +53,16 @@ struct legion_data_policy_t {
     topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
       topology_reference,
     typename TOPOLOGY_TYPE::coloring_t const & coloring) {
-    topology_instance_u<typename TOPOLOGY_TYPE::type_identifier_t>::
-      create(topology_reference, coloring);
+    topology_instance_u<typename TOPOLOGY_TYPE::type_identifier_t>::create(
+      topology_reference, coloring);
   } // create
 
   template<typename TOPOLOGY_TYPE>
   static void destroy(
     topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
       topology_reference) {
-    topology_instance_u<typename TOPOLOGY_TYPE::type_identifier_t>::
-      destroy(topology_reference);
+    topology_instance_u<typename TOPOLOGY_TYPE::type_identifier_t>::destroy(
+      topology_reference);
   } // destroy
 
   /*--------------------------------------------------------------------------*

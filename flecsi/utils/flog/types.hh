@@ -22,19 +22,12 @@
 #include <flecsi/utils/flog/packet.hh>
 #include <flecsi/utils/flog/utils.hh>
 
-#include <bitset>
 #include <cassert>
-#include <sstream>
 #include <unordered_map>
 
 namespace flecsi {
 namespace utils {
 namespace flog {
-
-/*
-  Stream buffer type to allow output to multiple targets
-  a la the tee function.
- */
 
 /*!
   The tee_buffer_t type provides a stream buffer that allows output to
@@ -312,335 +305,18 @@ private:
 
 }; // struct tee_stream_t
 
-/*!
-  The flog_t type provides access to logging parameters and configuration.
-
-  This type provides access to the underlying logging parameters for
-  configuration and information. The cinch logging functions provide
-  basic logging with an interface that is similar to Google's GLOG
-  and the Boost logging utilities.
-
-  @note We may want to consider adopting one of these packages
-  in the future.
-
-  @ingroup logging
- */
-
-class flog_t
-{
-public:
-  /*!
-    Copy constructor (disabled)
-   */
-
-  flog_t(const flog_t &) = delete;
-
-  /*!
-    Assignment operator (disabled)
-   */
-
-  flog_t & operator=(const flog_t &) = delete;
-
-  /*!
-    Meyer's singleton instance.
-
-    \return The singleton instance of this type.
-   */
-
-  static flog_t & instance() {
-    static flog_t c;
-    return c;
-  } // instance
-
-  void initialize(std::string active = "none") {
-#if defined(FLOG_ENABLE_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing runtime"
-              << FLOG_COLOR_PLAIN << std::endl;
-#endif
-
-#if defined(FLOG_ENABLE_TAGS)
-    // Because active tags are specified at runtime, it is
-    // necessary to maintain a map of the compile-time registered
-    // tag names to the id that they get assigned after the flog_t
-    // initialization (register_tag). This map will be used to populate
-    // the tag_bitset_ for fast runtime comparisons of enabled tag groups.
-
-    // Note: For the time being, the map uses actual strings rather than
-    // hashes. We should consider creating a const_string_t type for
-    // constexpr string creation.
-
-    // Initialize everything to false. This is the default, i.e., "none".
-    tag_bitset_.reset();
-
-    // The default group is always active (unscoped). To avoid
-    // output for this tag, make sure to scope all FLOG output.
-    tag_bitset_.set(0);
-
-    if(active == "all") {
-      // Turn on all of the bits for "all".
-      tag_bitset_.set();
-    }
-    else if(active != "none") {
-      // Turn on the bits for the selected groups.
-      std::istringstream is(active);
-      std::string tag;
-      while(std::getline(is, tag, ',')) {
-        if(tag_map_.find(tag) != tag_map_.end()) {
-          tag_bitset_.set(tag_map_[tag]);
-        }
-        else {
-          std::cerr << "FLOG WARNING: tag " << tag
-                    << " has not been registered. Ignoring this group..."
-                    << std::endl;
-        } // if
-      } // while
-    } // if
-
-#if defined(FLOG_ENABLE_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: active tags (" << active << ")"
-              << FLOG_COLOR_PLAIN << std::endl;
-#endif
-
-#endif // FLOG_ENABLE_TAGS
-
-#if defined(FLOG_ENABLE_MPI)
-
-#if defined(FLOG_ENABLE_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing mpi state"
-              << FLOG_COLOR_PLAIN << std::endl;
-#endif
-
-    mpi_state_t::instance().initialize();
-#endif // FLOG_ENABLE_MPI
-
-    initialized_ = true;
-  } // initialize
-
-  void finalize() {
-#if defined(FLOG_ENABLE_MPI)
-    mpi_state_t::instance().finalize();
-#endif // FLOG_ENABLE_MPI
-  } // finalize
-
-  /*!
-    Return the tag map.
-   */
-
-  const std::unordered_map<std::string, size_t> & tag_map() {
-    return tag_map_;
-  } // tag_map
-
-  /*!
-    Return the buffered log stream.
-   */
-
-  std::stringstream & buffer_stream() {
-    return buffer_stream_;
-  } // stream
-
-  /*!
-    Return the log stream.
-   */
-  std::ostream & stream() {
-    return *stream_;
-  } // stream
-
-  /*!
-    Return the log stream predicated on a boolean.
-    This method interface will allow us to select between
-    the actual stream and a null stream.
-   */
-  std::ostream & severity_stream(bool active = true) {
-    return active ? buffer_stream_ : null_stream_;
-  } // stream
-
-  /*!
-    Return a null stream to disable output.
-   */
-
-  std::ostream & null_stream() {
-    return null_stream_;
-  } // null_stream
-
-  /*!
-    Return the tee stream to allow the user to set configuration options.
-    FIXME: Need a better interface for this...
-   */
-
-  tee_stream_t & config_stream() {
-    return *stream_;
-  } // stream
-
-  /*!
-    Return the next tag id.
-   */
-
-  size_t register_tag(const char * tag) {
-    // If the tag is already registered, just return the previously
-    // assigned id. This allows tags to be registered in headers.
-    if(tag_map_.find(tag) != tag_map_.end()) {
-      return tag_map_[tag];
-    } // if
-
-    const size_t id = ++tag_id_;
-    assert(id < FLOG_TAG_BITS && "Tag bits overflow! Increase FLOG_TAG_BITS");
-#if defined(FLOG_ENABLE_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: registering tag " << tag << ": "
-              << id << FLOG_COLOR_PLAIN << std::endl;
-#endif
-    tag_map_[tag] = id;
-    return id;
-  } // next_tag
-
-  /*!
-    Return a reference to the active tag (const version).
-   */
-
-  const size_t & active_tag() const {
-    return active_tag_;
-  } // active_tag
-
-  /*!
-    Return a reference to the active tag (mutable version).
-   */
-
-  size_t & active_tag() {
-    return active_tag_;
-  } // active_tag
-
-  bool tag_enabled() {
-#if defined(FLOG_ENABLE_TAGS)
-
-#if defined(FLOG_ENABLE_DEBUG)
-    auto active_set = tag_bitset_.test(active_tag_) == 1 ? "true" : "false";
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: tag " << active_tag_ << " is "
-              << active_set << FLOG_COLOR_PLAIN << std::endl;
-#endif
-
-    // If the runtime context hasn't been initialized, return true only
-    // if the user has enabled externally-scoped messages.
-    if(!initialized_) {
-#if defined(FLOG_ENABLE_EXTERNAL)
-      return true;
-#else
-      return false;
-#endif
-    } // if
-
-    return tag_bitset_.test(active_tag_);
-#else
-    return true;
-#endif // FLOG_ENABLE_TAGS
-  } // tag_enabled
-
-  size_t lookup_tag(const char * tag) {
-    if(tag_map_.find(tag) == tag_map_.end()) {
-      std::cerr << FLOG_COLOR_YELLOW << "FLOG: !!!WARNING " << tag
-                << " has not been registered. Ignoring this group..."
-                << FLOG_COLOR_PLAIN << std::endl;
-      return 0;
-    } // if
-
-    return tag_map_[tag];
-  } // lookup_tag
-
-  bool initialized() {
-    return initialized_;
-  } // initialized
-
-#if defined(FLOG_ENABLE_MPI)
-  int rank() {
-    return mpi_state_t::instance().rank();
-  } // rank
-
-  int size() {
-    return mpi_state_t::instance().size();
-  } // rank
-#endif
-
-private:
-  /*!
-    Constructor. This method is hidden because we are a singleton.
-   */
-  flog_t()
-
-    : null_stream_(0), tag_id_(0), active_tag_(0) {} // flog_t
-
-  ~flog_t() {
-#if defined(FLOG_ENABLE_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: flog_t destructor" << std::endl;
-#endif
-  }
-
-  bool initialized_ = false;
-
-  tee_stream_t stream_;
-  std::stringstream buffer_stream_;
-  std::ostream null_stream_;
-
-  size_t tag_id_;
-  size_t active_tag_;
-  std::bitset<FLOG_TAG_BITS> tag_bitset_;
-  std::unordered_map<std::string, size_t> tag_map_;
-
-}; // class flog_t
-
-/*!
-  \class flog_tag_scope_t
-  \brief flog_tag_scope_t provides an execution scope for which a given
-         tag id is active.
-
-  This type sets the active tag id to the id passed to the constructor,
-  stashing the current active tag. When the instance goes out of scope,
-  the active tag is reset to the stashed value.
- */
-
-struct flog_tag_scope_t {
-  flog_tag_scope_t(size_t tag = 0) : stash_(flog_t::instance().active_tag()) {
-#if defined(FLOG_ENABLE_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: activating tag " << tag
-              << FLOG_COLOR_PLAIN << std::endl;
-#endif
-
-    // Warn users about externally-scoped messages
-    if(!flog_t::instance().initialized()) {
-      std::cerr
-        << FLOG_COLOR_YELLOW << "FLOG: !!!WARNING You cannot use "
-        << "tag guards for externally scoped messages!!! "
-        << "This message will be active if FLOG_ENABLE_EXTERNAL is defined!!!"
-        << FLOG_COLOR_PLAIN << std::endl;
-    } // if
-
-    flog_t::instance().active_tag() = tag;
-  } // flog_tag_scope_t
-
-  ~flog_tag_scope_t() {
-    flog_t::instance().active_tag() = stash_;
-  } // ~flog_tag_scope_t
-
-private:
-  size_t stash_;
-
-}; // flog_tag_scope_t
-
 } // namespace flog
 } // namespace utils
 } // namespace flecsi
 
-#define buffer_message(message)                                                \
-                                                                               \
-  if(mpi_state_t::instance().initialized()) {                                  \
-    packet_t pkt(message);                                                     \
-    mpi_state_t::instance().packets().push_back(pkt);                          \
-  } /* if */
-
+#if 0
 #define send_to_one(message)                                                   \
                                                                                \
-  if(mpi_state_t::instance().initialized()) {                                  \
+  if(flog_t::instance().initialized()) {                                       \
     packet_t pkt(message);                                                     \
                                                                                \
-    packet_t * pkts = mpi_state_t::instance().rank() == 0                      \
-                        ? new packet_t[mpi_state_t::instance().size()]         \
+    packet_t * pkts = flog_t::instance().rank() == 0                           \
+                        ? new packet_t[flog_t::instance().size()]              \
                         : nullptr;                                             \
                                                                                \
     MPI_Gather(pkt.data(),                                                     \
@@ -652,18 +328,18 @@ private:
       0,                                                                       \
       MPI_COMM_WORLD);                                                         \
                                                                                \
-    if(mpi_state_t::instance().rank() == 0) {                                  \
+    if(flog_t::instance().rank() == 0) {                                       \
                                                                                \
-      std::lock_guard<std::mutex> guard(                                       \
-        mpi_state_t::instance().packets_mutex());                              \
+      std::lock_guard<std::mutex> guard(flog_t::instance().packets_mutex());   \
                                                                                \
-      for(size_t i{0}; i < mpi_state_t::instance().size(); ++i) {              \
-        mpi_state_t::instance().packets().push_back(pkts[i]);                  \
+      for(size_t i{0}; i < flog_t::instance().size(); ++i) {                   \
+        flog_t::instance().packets().push_back(pkts[i]);                       \
       } /* for */                                                              \
                                                                                \
       delete[] pkts;                                                           \
                                                                                \
     } /* if */                                                                 \
   } /* if */
+#endif
 
 #endif // FLECSI_ENABLE_FLOG
