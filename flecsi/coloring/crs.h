@@ -52,7 +52,8 @@ struct crs_t {
   define_as(offsets) define_as(indices)
 
   size_t size() const {
-    return offsets.size() - 1;
+    if ( offsets.empty() ) return 0;
+    else return offsets.size() - 1;
   } // size
  
   /// \brief erase a bunch of ids

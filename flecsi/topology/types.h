@@ -105,8 +105,17 @@ public:
     return ids_[DOM];
   } // id
 
+  template<size_t DOM = 0>
+  id_t & global_id() {
+    return ids_[DOM];
+  } // id
+
   id_t global_id(size_t domain) const {
     return ids_[domain];
+  } // id
+
+  const auto & global_ids() const {
+    return ids_;
   } // id
 
   template<size_t DOM = 0>
@@ -129,6 +138,10 @@ public:
   template<size_t DOM = 0>
   void set_global_id(const id_t & id) {
     ids_[DOM] = id;
+  } // id
+
+  void set_global_ids(const std::array<id_t, NUM_DOMAINS> & ids) {
+    ids_ = ids;
   } // id
 
   /*!

@@ -902,11 +902,10 @@ void migrate(
 
   for ( size_t i=0; i< comm_size; ++i )
     dcrs.distribution[i+1] += dcrs.distribution[i];
-  
-  std::cout << "done migration" << std::endl;
 
 }
 
+inline
 void get_owner_info(
   const dcrs_t & dcrs,
   flecsi::coloring::index_coloring_t & entities,
@@ -982,8 +981,6 @@ void get_owner_info(
   color_info.shared = entities.shared.size();
   color_info.ghost = entities.ghost.size();
 
-  std::cout << "on rank="<<comm_rank << " e=" << color_info.exclusive << ", s=" << color_info.shared << ", g=" << color_info.ghost << std::endl;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -996,8 +993,6 @@ void color_entities(
   const flecsi::coloring::index_coloring_t & cells,
   flecsi::coloring::index_coloring_t & entities,
   flecsi::coloring::coloring_info_t & color_info,
-  std::vector<size_t> & ghost_ids,
-  flecsi::coloring::crs_t & ghost_connectivity,
   size_t & connectivity_counts
 ) {
   
@@ -1014,22 +1009,22 @@ void color_entities(
   //----------------------------------------------------------------------------
   
   const auto & local2global = md.local_to_global(dimension);
-  const auto & cells2vertex = md.entities_crs(MESH_DIMENSION, dimension);
+  const auto & cells2entity = md.entities_crs(MESH_DIMENSION, dimension);
 
   // marked as exclusive by default
-  auto num_verts = md.num_entities(dimension);
-  std::vector<bool> exclusive(num_verts, true);
+  auto num_ents = md.num_entities(dimension);
+  std::vector<bool> exclusive(num_ents, true);
  
   // set of possible shared vertices
   std::vector<size_t> potential_shared;
 
   // now mark shared
   for ( const auto & c : cells.shared ) {
-    auto start = cells2vertex.offsets[c.offset];
-    auto end = cells2vertex.offsets[c.offset+1];
+    auto start = cells2entity.offsets[c.offset];
+    auto end = cells2entity.offsets[c.offset+1];
     auto n = end - start;
     for ( size_t i=start; i<end; ++i ) {
-      auto local_id = cells2vertex.indices[i];
+      auto local_id = cells2entity.indices[i];
       exclusive[local_id] = false;
       potential_shared.emplace_back(local_id);
     }
@@ -1053,13 +1048,13 @@ void color_entities(
 
   for ( const auto & c : cells.shared ) {
     // get cell info
-    auto start = cells2vertex.offsets[c.offset];
-    auto end = cells2vertex.offsets[c.offset+1];
+    auto start = cells2entity.offsets[c.offset];
+    auto end = cells2entity.offsets[c.offset+1];
     auto n = end - start;
     // loop over shared ranks
     for ( auto r : c.shared ) {
-      // we will be sending the cell global id, number of vertices, plus vertices
-      if ( r != comm_rank ) sendcounts[r] += 2 + n;
+      // we will be sending the cell number of vertices, plus vertices
+      if ( r != comm_rank ) sendcounts[r] += 1 + n;
     }
   }
   
@@ -1073,8 +1068,8 @@ void color_entities(
 
   for ( const auto & c : cells.shared ) {
     // get cell info
-    auto start = cells2vertex.offsets[c.offset];
-    auto end = cells2vertex.offsets[c.offset+1];
+    auto start = cells2entity.offsets[c.offset];
+    auto end = cells2entity.offsets[c.offset+1];
     auto n = end - start;
     // loop over shared ranks
     for ( auto r : c.shared ) {
@@ -1082,10 +1077,9 @@ void color_entities(
       if ( r != comm_rank ) {
         // first the id and size
         auto j = senddispls[r] + sendcounts[r];
-        sendbuf[j++] = c.id;
         sendbuf[j++] = n;
         for ( auto i=start; i<end; ++i ) {
-          auto local_id = cells2vertex.indices[i];
+          auto local_id = cells2entity.indices[i];
           auto global_id = local2global[local_id];
           sendbuf[j++] = global_id;
         }
@@ -1113,13 +1107,12 @@ void color_entities(
   std::vector<size_t> recvbuf( recvdispls[comm_size] );
 
   // figure out the size of the connectivity array
-  connectivity_counts = cells2vertex.indices.size() + recvdispls[comm_size];
-
+  connectivity_counts = cells2entity.indices.size();
+  
   // now send the actual vertex info
   ret = alltoallv(sendbuf, sendcounts, senddispls, recvbuf,
       recvcounts, recvdispls, MPI_COMM_WORLD );
   if ( ret != MPI_SUCCESS ) clog_error( "Error communicating vertices" );
-
 
   //----------------------------------------------------------------------------
   // Unpack results
@@ -1128,28 +1121,20 @@ void color_entities(
   // set of possible ghost vertices
   std::vector<size_t> potential_ghost;
 
-
   for ( size_t r=0; r<comm_size; ++r ) {
     for ( size_t i=recvdispls[r]; i<recvdispls[r+1]; ) {
-      // cell global id
-      auto cell_global_id = recvbuf[i];
-      ghost_ids.emplace_back( cell_global_id );
-      i++;
       // num of vertices
       auto n = recvbuf[i];
       i++;
+      connectivity_counts += n;
       // no sift through ghost vertices 
-      auto start = potential_ghost.size();
       for ( auto j=0; j<n; ++j, ++i ) {
         // local and global ids of the vertex (relative to sender)
-        auto vert_global_id = recvbuf[i];
+        auto ent_global_id = recvbuf[i];
         // Don't bother checking if i have this vertex yet, even if I already
         // have it, it might be a ghost
-        potential_ghost.emplace_back( vert_global_id );
+        potential_ghost.emplace_back( ent_global_id );
       } // vertices
-      // append the vertices to the cell list
-      ghost_connectivity.append( std::next(potential_ghost.begin(), start),
-          potential_ghost.end());
     }
   }
 
@@ -1161,23 +1146,23 @@ void color_entities(
   //----------------------------------------------------------------------------
 
   // first figure out the maximum global id on this rank
-  size_t max_global_vert_id{0};
+  size_t max_global_ent_id{0};
   for ( auto v : local2global )
-    max_global_vert_id = std::max( max_global_vert_id, v );
+    max_global_ent_id = std::max( max_global_ent_id, v );
 
   // now the global max id
-  size_t tot_verts{0};
+  size_t tot_ents{0};
   MPI_Allreduce(
-    &max_global_vert_id,
-    &tot_verts,
+    &max_global_ent_id,
+    &tot_ents,
     1,
     mpi_size_t,
     MPI_MAX,
     MPI_COMM_WORLD);
-  tot_verts++;
+  tot_ents++;
 
-  std::vector<size_t> vert_dist;
-  subdivide( tot_verts, comm_size, vert_dist );
+  std::vector<size_t> ent_dist;
+  subdivide( tot_ents, comm_size, ent_dist );
 
   
   //----------------------------------------------------------------------------
@@ -1194,7 +1179,7 @@ void color_entities(
     std::vector<size_t> ghost_ranks;
     owner_t(size_t r, size_t id) : rank(r), local_id(id) {}
   };
-  std::map<size_t, owner_t> vertex2rank;
+  std::map<size_t, owner_t> entities2rank;
 
   
   // We send the results for each vertex to their owner rank, which was
@@ -1204,7 +1189,7 @@ void color_entities(
   for ( auto local_id : potential_shared) {
     auto global_id = local2global[local_id];
     // who owns this vertex
-    auto rank = rank_owner( vert_dist, global_id );
+    auto rank = rank_owner( ent_dist, global_id );
     // we will be sending global and local ids
     if ( rank != comm_rank ) sendcounts[rank] += 2;
   } // vert
@@ -1222,7 +1207,7 @@ void color_entities(
   for ( const auto & local_id : potential_shared) {
     auto global_id = local2global[local_id];
     // who owns this vertex
-    auto rank = rank_owner( vert_dist, global_id );
+    auto rank = rank_owner( ent_dist, global_id );
     // we will be sending vertex id, number of cells, plus cell ids
     if ( rank != comm_rank ) {
       auto i = senddispls[rank] + sendcounts[rank];
@@ -1232,7 +1217,7 @@ void color_entities(
     }
     // if its ours, just add it to the list
     else {
-      vertex2rank.emplace( global_id, owner_t{rank, local_id} );
+      entities2rank.emplace( global_id, owner_t{rank, local_id} );
     }
   } // vert
  
@@ -1260,7 +1245,7 @@ void color_entities(
     for ( size_t i=recvdispls[r]; i<recvdispls[r+1]; i+=2) {
       auto global_id = recvbuf[i];
       auto local_id = recvbuf[i+1];
-      auto res = vertex2rank.emplace( global_id, owner_t{r, local_id} );
+      auto res = entities2rank.emplace( global_id, owner_t{r, local_id} );
       if ( !res.second && r < res.first->second.rank) {
         res.first->second = {r, local_id};
       }
@@ -1277,7 +1262,7 @@ void color_entities(
 
   for ( auto global_id : potential_ghost ) {
     // who owns this vertex
-    auto rank = rank_owner( vert_dist, global_id );
+    auto rank = rank_owner( ent_dist, global_id );
     // we will be sending global ids
     if ( rank != comm_rank ) sendcounts[rank]++;
   } // vert
@@ -1294,7 +1279,7 @@ void color_entities(
   
   for ( const auto & global_id : potential_ghost) {
     // who owns this vertex
-    auto rank = rank_owner( vert_dist, global_id );
+    auto rank = rank_owner( ent_dist, global_id );
     // we will be sending global ids
     if ( rank != comm_rank ) {
       auto i = senddispls[rank] + sendcounts[rank];
@@ -1303,7 +1288,7 @@ void color_entities(
     }
     // otherwise, i am responsible for this ghost
     else {
-      auto & owner = vertex2rank.at(global_id);
+      auto & owner = entities2rank.at(global_id);
       if ( owner.rank != rank ) {
         owner.ghost_ranks.emplace_back(rank);
       }
@@ -1334,7 +1319,7 @@ void color_entities(
     for ( size_t i=recvdispls[r]; i<recvdispls[r+1]; i++) {
       auto global_id = recvbuf[i];
       // definately a ghost!
-      auto & owner = vertex2rank.at(global_id);
+      auto & owner = entities2rank.at(global_id);
       if ( owner.rank != r ) {
         owner.ghost_ranks.emplace_back(r);
       }
@@ -1348,7 +1333,7 @@ void color_entities(
 
   // figure out send counts
   std::vector<size_t> ranks;
-  for ( const auto & pair : vertex2rank ) {
+  for ( const auto & pair : entities2rank ) {
     const auto owner = pair.second;
     // who am i sending to
     ranks.assign( owner.ghost_ranks.begin(), owner.ghost_ranks.end() );
@@ -1370,7 +1355,7 @@ void color_entities(
   sendbuf.resize(senddispls[comm_size]);
   std::fill( sendcounts.begin(), sendcounts.end(), 0 );
   
-  for ( const auto & pair : vertex2rank ) {
+  for ( const auto & pair : entities2rank ) {
     auto global_id = pair.first;
     const auto owner = pair.second;
     // who am i sending to
@@ -1422,7 +1407,7 @@ void color_entities(
       i++;
       auto num_shared = recvbuf[i];
       i++;
-      auto it = vertex2rank.emplace( global_id, owner_t{rank, local_id} );
+      auto it = entities2rank.emplace( global_id, owner_t{rank, local_id} );
       assert( it.second &&
           "did not insert vertex, which means multiple owners sent it" );
       for ( size_t j=0; j<num_shared; ++j, ++i ) {
@@ -1436,7 +1421,7 @@ void color_entities(
   //----------------------------------------------------------------------------
  
   // exclusive
-  for ( size_t local_id=0; local_id<num_verts; ++local_id ) {
+  for ( size_t local_id=0; local_id<num_ents; ++local_id ) {
     if ( exclusive[local_id] ) {
       auto global_id = local2global[local_id];
       entities.exclusive.emplace( global_id, comm_rank, local_id );
@@ -1444,7 +1429,7 @@ void color_entities(
   }
  
   // shared and ghost
-  for ( const auto pair : vertex2rank ) {
+  for ( const auto pair : entities2rank ) {
     auto global_id = pair.first;
     auto owner = pair.second;
     // if i am the owner, shared
@@ -1512,7 +1497,6 @@ void match_ids(
   std::vector<size_t> vert_dist;
   subdivide( tot_verts, comm_size, vert_dist );
 
-
   //----------------------------------------------------------------------------
   // Send each edge to the edge owner
   //
@@ -1526,6 +1510,7 @@ void match_ids(
 
   // storage for vertex sorting
   std::vector<size_t> sorted_vs;
+
   // a utility function for sorting and adding to the map
   auto add_to_map = [&](const auto & vs, auto & vertices2id, auto id)
   {
@@ -1539,9 +1524,17 @@ void match_ids(
   std::vector<size_t> sendcounts(comm_size, 0);
   std::vector<size_t> senddispls(comm_size+1);
 
+  // storage for global ids
+  std::vector<size_t> global_vs;
+
   for ( const auto & vs : entities2vertex ) {
+    // convert to global ids
+    global_vs.clear();
+    global_vs.reserve(vs.size());
+    for ( auto v : vs )
+      global_vs.emplace_back( vertex_local2global.at(v) );
     // get the rank owner
-    auto it = std::min_element( vs.begin(), vs.end() );
+    auto it = std::min_element( global_vs.begin(), global_vs.end() );
     auto r = rank_owner( vert_dist, *it );
     // we will be sending the number of vertices, plus the vertices
     if ( r != comm_rank ) sendcounts[r] += 1 + vs.size();
@@ -1556,27 +1549,28 @@ void match_ids(
   std::fill( sendcounts.begin(), sendcounts.end(), 0 );
 
   for ( const auto & vs : entities2vertex ) {
+    // convert to global ids
+    global_vs.clear();
+    global_vs.reserve(vs.size());
+    for ( auto v : vs )
+      global_vs.emplace_back( vertex_local2global.at(v) );
     // get the rank owner
-    auto it = std::min_element( vs.begin(), vs.end() );
-    auto global_id = vertex_local2global[*it];
+    auto it = std::min_element( global_vs.begin(), global_vs.end() );
     auto r = rank_owner( vert_dist, *it );
     // we will be sending the number of vertices, plus the vertices
     if ( r != comm_rank ) {
       // first the id and size
       auto j = senddispls[r] + sendcounts[r];
       sendbuf[j++] = vs.size();
-      for ( auto local_id : vs ) {
-        auto global_id = vertex_local2global[local_id];
-        sendbuf[j++] = local_id;
-      }
+      for ( auto v : global_vs ) sendbuf[j++] = v;
       // increment send counter
       sendcounts[r] = j - senddispls[r];
     }
     // otherwise, if its mine, add it
     else {
-      add_to_map( vs, entities, entities.size() );
+      add_to_map( global_vs, entities, entities.size() );
     }
-
+  
   }
   
   //----------------------------------------------------------------------------
@@ -1627,6 +1621,7 @@ void match_ids(
         rank_data.end(),
         [](const auto & a, const auto & b){ return a->second < b->second; } );
     auto last = std::unique( rank_data.begin(), rank_data.end() );
+    rank_data.erase( last, rank_data.end() );
   }
     
   
@@ -1634,22 +1629,21 @@ void match_ids(
   // Come up with a global numbering
   //----------------------------------------------------------------------------
 
-  size_t my_edges{entities.size()}, tot_edges{0};
-  MPI_Allreduce(
-    &my_edges,
-    &tot_edges,
-    1,
-    mpi_size_t,
-    MPI_SUM,
+  size_t my_edges{entities.size()};
+
+  std::vector<size_t> edge_dist(comm_size+1);
+  edge_dist[0] = 0;
+
+  MPI_Allgather(&my_edges, 1, mpi_size_t, &edge_dist[1], 1, mpi_size_t,
     MPI_COMM_WORLD);
 
-  std::vector<size_t> edge_dist;
-  subdivide( tot_edges, comm_size, edge_dist );
+  for ( size_t r=0; r<comm_size; ++r )
+    edge_dist[r+1] += edge_dist[r];
 
   // bump all my local edge counts up
   for ( auto & pair : entities )
     pair.second += edge_dist[comm_rank];
-  
+
   
   //----------------------------------------------------------------------------
   // Send back the finished edges to those that sent you the pairs
@@ -1664,11 +1658,10 @@ void match_ids(
     if ( r == comm_rank ) continue;
     // we will be sending the edge id, number of vertices, plus the vertices
     for ( auto edge : rank_edges.at(r) ) {
-      auto local_id = edge->second;
-      auto global_id = local_id + edge_dist[comm_rank];
+      auto global_id = edge->second;
       auto n = edge->first.size();
       sendcounts[r] += 2 + n;
-      sendbuf.emplace_back( edge->second );
+      sendbuf.emplace_back( global_id );
       sendbuf.emplace_back( n );
       for ( auto v : edge->first )
         sendbuf.emplace_back(v);
@@ -1719,10 +1712,14 @@ void match_ids(
   //----------------------------------------------------------------------------
 
   for ( const auto & vs : entities2vertex ) {
+    // convert to global ids
+    global_vs.clear();
+    global_vs.reserve(vs.size());
+    for ( auto v : vs )
+      global_vs.emplace_back( vertex_local2global.at(v) );
     // sort the vertices and find the edge
-    sorted_vs.assign( vs.begin(), vs.end() );
-    std::sort( sorted_vs.begin(), sorted_vs.end() );
-    auto it = entities.find(sorted_vs);
+    std::sort( global_vs.begin(), global_vs.end() );
+    auto it = entities.find(global_vs);
     assert( it != entities.end() && "messed up setting entity ids" );
     // figure out the edges global id
     auto global_id = it->second;
@@ -1731,6 +1728,142 @@ void match_ids(
   }
 
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Color an auxiliary index space like vertices or edges
+////////////////////////////////////////////////////////////////////////////////
+template<std::size_t MESH_DIMENSION>
+void ghost_connectivity(
+  const typename flecsi::topology::mesh_definition_u<MESH_DIMENSION> & md,
+  size_t from_dimension,
+  size_t to_dimension,
+  const flecsi::coloring::index_coloring_t & from_entities,
+  std::vector<size_t> & from_ids,
+  flecsi::coloring::crs_t & connectivity
+) {
+  
+  int comm_size, comm_rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
+  
+  // the mpi data type for size_t
+  const auto mpi_size_t = utils::mpi_typetraits_u<size_t>::type();
+  
+ 
+  //----------------------------------------------------------------------------
+  // Start marking all vertices as exclusive
+  //----------------------------------------------------------------------------
+  
+  const auto & local2global = md.local_to_global(to_dimension);
+  const auto & from2to = md.entities_crs(from_dimension, to_dimension);
+
+  //----------------------------------------------------------------------------
+  // Determine cell-to-vertex connecitivity for my shared cells
+  //----------------------------------------------------------------------------
+  
+  // first count for storage
+  std::vector<size_t> sendcounts(comm_size, 0);
+  std::vector<size_t> senddispls(comm_size+1);
+
+  for ( const auto & e : from_entities.shared ) {
+    // get cell info
+    auto start = from2to.offsets[e.offset];
+    auto end = from2to.offsets[e.offset+1];
+    auto n = end - start;
+    // loop over shared ranks
+    for ( auto r : e.shared ) {
+      // we will be sending the cell global id, number of vertices, plus vertices
+      if ( r != comm_rank ) sendcounts[r] += 2 + n;
+    }
+  }
+  
+  // finish displacements
+  senddispls[0] = 0;
+  for ( size_t r=0; r<comm_size; ++r ) senddispls[r+1] = senddispls[r] + sendcounts[r];
+  
+  // now fill buffers
+  std::vector<size_t> sendbuf(senddispls[comm_size]);
+  std::fill( sendcounts.begin(), sendcounts.end(), 0 );
+
+  for ( const auto & e : from_entities.shared ) {
+    // get cell info
+    auto start = from2to.offsets[e.offset];
+    auto end = from2to.offsets[e.offset+1];
+    auto n = end - start;
+    // loop over shared ranks
+    for ( auto r : e.shared ) {
+      // we will be sending global id, number of vertices, plus vertices
+      if ( r != comm_rank ) {
+        // first the id and size
+        auto j = senddispls[r] + sendcounts[r];
+        sendbuf[j++] = e.id;
+        sendbuf[j++] = n;
+        for ( auto i=start; i<end; ++i ) {
+          auto local_id = from2to.indices[i];
+          auto global_id = local2global[local_id];
+          sendbuf[j++] = global_id;
+        }
+        // increment send counter
+        sendcounts[r] = j - senddispls[r];
+      }
+    } // shared ranks
+  }
+  
+  //----------------------------------------------------------------------------
+  // Send shared information
+  //----------------------------------------------------------------------------
+
+  // send the counts
+  std::vector<size_t> recvcounts(comm_size);
+  auto ret = MPI_Alltoall(sendcounts.data(), 1, mpi_size_t, recvcounts.data(),
+      1, mpi_size_t, MPI_COMM_WORLD);
+  if ( ret != MPI_SUCCESS ) clog_error( "Error communicating vertex counts" );
+
+  // how much info will we be receiving
+  std::vector<size_t> recvdispls(comm_size+1);
+  recvdispls[0] = 0;
+  for ( size_t r=0; r<comm_size; ++r )
+    recvdispls[r+1] = recvdispls[r] + recvcounts[r];
+  std::vector<size_t> recvbuf( recvdispls[comm_size] );
+
+  // now send the actual vertex info
+  ret = alltoallv(sendbuf, sendcounts, senddispls, recvbuf,
+      recvcounts, recvdispls, MPI_COMM_WORLD );
+  if ( ret != MPI_SUCCESS ) clog_error( "Error communicating vertices" );
+
+  //----------------------------------------------------------------------------
+  // Unpack results
+  //----------------------------------------------------------------------------
+  
+  connectivity.clear();
+  connectivity.offsets.emplace_back(0);
+  from_ids.clear();
+
+  for ( size_t r=0; r<comm_size; ++r ) {
+    for ( size_t i=recvdispls[r]; i<recvdispls[r+1]; ) {
+      // global id
+      auto global_id = recvbuf[i];
+      from_ids.emplace_back( global_id );
+      i++;
+      // num of vertices
+      auto n = recvbuf[i];
+      i++;
+      // no sift through ghost vertices 
+      for ( auto j=0; j<n; ++j, ++i ) {
+        // local and global ids of the vertex (relative to sender)
+        auto ent_global_id = recvbuf[i];
+        // Don't bother checking if i have this vertex yet, even if I already
+        // have it, it might be a ghost
+        connectivity.indices.emplace_back( ent_global_id );
+      } // vertices
+      // now add final offset
+      connectivity.offsets.emplace_back( connectivity.offsets.back() + n );
+    }
+  }
+
+
+}
+
 
 } // namespace coloring
 } // namespace flecsi

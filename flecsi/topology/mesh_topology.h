@@ -466,6 +466,13 @@ public:
     return base_t::ms_->partition_index_spaces[partition][DOM][dim];
   } // get_entities_
 
+  template<size_t DIM, size_t DOM = 0>
+  auto get_entities() const {
+    using etype = entity_type<DIM, DOM>;
+    return static_cast<etype *>(
+      base_t::ms_->index_spaces[DOM][DIM][0]);
+  } // get_entity
+
   //--------------------------------------------------------------------------//
   //! Get an entity in domain DOM of topological dimension DIM with specified
   //! id.
@@ -1187,8 +1194,8 @@ private:
   typename std::enable_if<(
     UsingDimension > 1 && UsingDimension <= MESH_TYPE::num_dimensions)>::type
   build_connectivity() {
-    std::cerr << "build: " << DimensionToBuild
-    << " using " << UsingDimension << std::endl;
+    // std::cerr << "build: " << DimensionToBuild
+    // << " using " << UsingDimension << std::endl;
 
     // Sanity check
     static_assert(DimensionToBuild <= MESH_TYPE::num_dimensions,
@@ -1422,7 +1429,7 @@ private:
   //--------------------------------------------------------------------------//
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   void transpose() {
-    // std::cout << "transpose: (" << FROM_DOM << ", " <<FROM_DIM
+    // std::cerr << "transpose: (" << FROM_DOM << ", " <<FROM_DIM
     //   <<") -> (" << TO_DOM<<", "<<TO_DIM<<")" << std::endl;
 
     // The connectivity we will be populating
@@ -1507,7 +1514,7 @@ private:
     size_t TO_DIM,
     size_t DIM>
   void intersect() {
-    std::cerr << "intersect: " << FROM_DIM << " -> " << TO_DIM << std::endl;
+    // std::cerr << "intersect: " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // The connectivity we will be populating
     connectivity_t & out_conn =
@@ -1606,9 +1613,10 @@ private:
 
       max_size = std::max(ents.size(), max_size);
     } // for
-
+    
     // Finally create the connection from the temporary conns
     out_conn.init(conns);
+
   } // intersect
 
   //--------------------------------------------------------------------------//
@@ -1621,7 +1629,7 @@ private:
   //--------------------------------------------------------------------------//
   template<size_t DOM, size_t FROM_DIM, size_t TO_DIM>
   void compute_connectivity() {
-    std::cerr << "compute: " << FROM_DIM << " -> " << TO_DIM << std::endl;
+    // std::cerr << "compute: " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // Get the output connectivity
     connectivity_t & out_conn = get_connectivity_(DOM, FROM_DIM, TO_DIM);
@@ -1776,8 +1784,8 @@ private:
   //--------------------------------------------------------------------------//
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   void compute_bindings() {
-    std::cerr << "compute: , dom " << FROM_DOM << " -> " << TO_DOM
-              <<  ", dim " << FROM_DIM << " -> " << TO_DIM << std::endl;
+    // std::cerr << "compute: , dom " << FROM_DOM << " -> " << TO_DOM
+    //           <<  ", dim " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // check if requested connectivity is already there, nothing to do
     connectivity_t & out_conn =
