@@ -345,7 +345,7 @@ CALI_MARK_END("data_client_handle_mapping_entity");
 #ifdef ENABLE_CALIPER
 CALI_MARK_BEGIN("data_client_handle_calculating_entity");
 #endif
-      auto coloring = context_.coloring(ent.index_space);
+      const auto & coloring = context_.coloring(ent.index_space);
       ent.num_exclusive = coloring.exclusive.size();
       ent.num_shared = coloring.shared.size();
       ent.num_ghost = coloring.ghost.size();
