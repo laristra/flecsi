@@ -70,7 +70,7 @@ struct mutator_u<data::sparse, T>
 
   mutator_u(const handle_t & h) : base_t(h) {}
 
-  T & operator()(size_t index, size_t entry) {
+  T & operator()(size_t index, size_t entry) const {
     size_t ragged_idx;
     auto itr = lower_bound(index, entry, &ragged_idx);
 
@@ -81,13 +81,13 @@ struct mutator_u<data::sparse, T>
     }
 
     // otherwise, create a new entry
-    auto & ragged = static_cast<base_t &>(*this);
+    auto & ragged = static_cast<const base_t &>(*this);
     auto ritr = ragged.insert(index, ragged_idx, {entry, T()});
     return ritr->value;
 
   } // operator ()
 
-  void dump() {
+  void dump() const {
     auto & h_ = base_t::h_;
     for(size_t p = 0; p < 3; ++p) {
       switch(p) {
@@ -149,7 +149,7 @@ struct mutator_u<data::sparse, T>
   // for row 'index', return pointer to first entry not less
   // than 'entry'
   entry_value_t *
-  lower_bound(size_t index, size_t entry, size_t * pos = nullptr) {
+  lower_bound(size_t index, size_t entry, size_t * pos = nullptr) const {
     auto & h_ = base_t::h_;
     assert(h_.offsets_ && "uninitialized mutator");
     assert(index < h_.num_entries_);
@@ -182,40 +182,6 @@ struct mutator_u<data::sparse, T>
         ragged_idx += n;
       *pos = ragged_idx;
     }
-
-    return (itr == end ? nullptr : itr);
-
-  } // lower_bound
-
-  // for row 'index', return pointer to first entry not less
-  // than 'entry'
-  const entry_value_t * lower_bound(size_t index, size_t entry) const {
-    auto & h_ = base_t::h_;
-    assert(h_.offsets_ && "uninitialized mutator");
-    assert(index < h_.num_entries_);
-
-    const offset_t & offset = h_.offsets_[index];
-
-    size_t n = offset.count();
-    size_t nnew = h_.new_count(index);
-
-    const entry_value_t * start = h_.entries_ + offset.start();
-    const entry_value_t * end = start + std::min(n, nnew);
-
-    // try to find entry in overflow, if appropriate
-    bool use_overflow = (nnew > n && (n == 0 || entry > end[-1].entry));
-    if(use_overflow) {
-      auto & overflow = h_.overflow_map_->at(index);
-      start = overflow.data();
-      end = start + (nnew - n);
-    }
-
-    // find where entry should be
-    const entry_value_t * itr =
-      std::lower_bound(start, end, entry_value_t(entry),
-        [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
-          return e1.entry < e2.entry;
-        });
 
     return (itr == end ? nullptr : itr);
 

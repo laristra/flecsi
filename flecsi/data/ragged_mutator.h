@@ -64,7 +64,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(!h_.overflow_map_ && "expected null overflow map");
   }
 
-  T & operator()(size_t index, size_t ragged_index) {
+  T & operator()(size_t index, size_t ragged_index) const {
     assert(h_.offsets_ && "uninitialized ragged_mutator");
     assert(index < h_.num_entries_);
 
@@ -163,7 +163,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     }
   } // erase
 
-  void push_back(size_t index, const T & value) {
+  void push_back(size_t index, const T & value) const {
     assert(index < h_.num_entries_);
 
     offset_t & offset = h_.offsets_[index];
@@ -186,7 +186,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   } // push_back
 
   // insert BEFORE ragged index
-  T * insert(size_t index, size_t ragged_index, const T & value) {
+  T * insert(size_t index, size_t ragged_index, const T & value) const {
     assert(index < h_.num_entries_);
 
     offset_t & offset = h_.offsets_[index];

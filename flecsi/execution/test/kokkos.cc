@@ -42,7 +42,6 @@ flecsi_register_field(test_mesh_t,
   1,
   index_spaces::cells);
 
-#if 0
 flecsi_register_field(test_mesh_t,
   hydro,
   alpha,
@@ -50,7 +49,6 @@ flecsi_register_field(test_mesh_t,
   sparse,
   1,
   index_spaces::cells);
-#endif
 
 flecsi_register_global(global, int1, int, 1);
 flecsi_register_color(color, int2, int, 1);
@@ -70,7 +68,8 @@ flecsi_register_task_simple(set_global_int, loc, single);
 void
 init(client_handle_t<test_mesh_t, ro> mesh,
   dense_accessor<double, rw, rw, na> pressure,
-  color_accessor<int, rw> color) {
+  color_accessor<int, rw> color,
+  sparse_mutator<double> sm) {
 
   color = 2;
 
@@ -81,6 +80,21 @@ init(client_handle_t<test_mesh_t, ro> mesh,
   flecsi::parallel_for(
     mesh.cells(), KOKKOS_LAMBDA(auto c) { pressure(c) = 1.0; },
     std::string("init"));
+
+  auto rank = execution::context_t::instance().color();
+  forall(mesh.cells(), "init2") {
+    auto gid = i->gid();
+    // for most cells, do a checkerboard pattern
+    bool parity = (gid / 8 + gid % 8) & 1;
+    int start = (parity ? 0 : 1);
+    int stop = (parity ? 6 : 5);
+    // make a few cells overflow
+    if(gid >= 11 && gid <= 13)
+      stop = (parity ? 16 : 17);
+    for(size_t j = start; j < stop; j += 2) {
+      sm(i, j) = rank * 10000 + gid * 100 + j;
+    }
+  };
 }
 
 flecsi_register_task_simple(init, loc, index);
@@ -89,7 +103,8 @@ void
 test(client_handle_t<test_mesh_t, ro> mesh,
   dense_accessor<double, ro, ro, ro> pressure,
   global_accessor_u<int, ro> global,
-  color_accessor<int, ro> color) {
+  color_accessor<int, ro> color,
+  sparse_accessor<double, rw, rw, rw> alpha) {
 
   flecsi::parallel_for(
     mesh.cells(),
@@ -97,6 +112,10 @@ test(client_handle_t<test_mesh_t, ro> mesh,
       ASSERT_EQ(pressure(c), 1.0);
       ASSERT_EQ(global, 2042);
       ASSERT_EQ(color, 2);
+      for(auto entry : alpha.entries(c)) {
+        std::cout << c->id() << ":" << entry << ": " << alpha(c, entry)
+                  << std::endl;
+      }
     },
     std::string("test"));
 
@@ -118,6 +137,12 @@ specialization_tlt_init(int argc, char ** argv) {
 
   clog(info) << "In specialization top-level-task init" << std::endl;
   supplemental::do_test_mesh_2d_coloring();
+
+  context_t::sparse_index_space_info_t isi;
+  isi.index_space = index_spaces::cells;
+  isi.max_entries_per_index = 10;
+  isi.exclusive_reserve = 8192;
+  context_t::instance().set_sparse_index_space_info(isi);
 
   auto gh = flecsi_get_global(global, int1, int, 0);
   flecsi_execute_task_simple(set_global_int, single, gh, 2042);
@@ -145,9 +170,11 @@ driver(int argc, char ** argv) {
   auto ph = flecsi_get_handle(mh, hydro, pressure, double, dense, 0);
   auto gh = flecsi_get_global(global, int1, int, 0);
   auto ch = flecsi_get_color(color, int2, int, 0);
+  auto am = flecsi_get_mutator(mh, hydro, alpha, double, sparse, 0, 5);
+  auto ah = flecsi_get_handle(mh, hydro, alpha, double, sparse, 0);
 
-  flecsi_execute_task_simple(init, index, mh, ph, ch);
-  flecsi_execute_task_simple(test, index, mh, ph, gh, ch);
+  flecsi_execute_task_simple(init, index, mh, ph, ch, am);
+  flecsi_execute_task_simple(test, index, mh, ph, gh, ch, ah);
 } // driver
 
 //----------------------------------------------------------------------------//

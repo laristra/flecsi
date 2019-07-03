@@ -101,27 +101,11 @@ struct accessor_u<data::sparse,
   //! Access a sparse element.  The element has to exist because we
   //! return a reference to it.
   //-------------------------------------------------------------------------//
-  T & operator()(size_t index, size_t entry) {
+  T & operator()(size_t index, size_t entry) const {
     auto itr = lower_bound(index, entry);
     assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
 
     return itr->value;
-  } // operator ()
-
-  //-------------------------------------------------------------------------//
-  //! Main accessor (const version)
-  //!
-  //! Access a sparse element.  Return an emtpy value if not found.  The empty
-  //! value is specified by the default constructor of the underlying type.
-  //-------------------------------------------------------------------------//
-  const T & operator()(size_t index, size_t entry) const {
-    auto itr = lower_bound(index, entry);
-    assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
-
-    if(itr && itr->entry == entry)
-      return itr->value;
-    else
-      return T{};
   } // operator ()
 
   //! a struct used for accessing elements.
@@ -152,7 +136,7 @@ struct accessor_u<data::sparse,
 
   // for row 'index', return pointer to first entry not less
   // than 'entry'
-  entry_value_t * lower_bound(size_t index, size_t entry) {
+  entry_value_t * lower_bound(size_t index, size_t entry) const {
     auto & handle = base_t::handle;
     assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
 
@@ -166,28 +150,6 @@ struct accessor_u<data::sparse,
       [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
         return k1.entry < k2.entry;
       });
-
-    return (itr == end ? nullptr : itr);
-
-  } // lower_bound
-
-  // for row 'index', return pointer to first entry not less
-  // than 'entry'
-  const entry_value_t * lower_bound(size_t index, size_t entry) const {
-    auto & handle = base_t::handle;
-    assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
-
-    const offset_t & oi = handle.offsets[index];
-
-    const entry_value_t * start = handle.entries + oi.start();
-    const entry_value_t * end = start + oi.count();
-
-    // find where entry should be
-    const entry_value_t * itr =
-      std::lower_bound(start, end, entry_value_t(entry),
-        [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
-          return k1.entry < k2.entry;
-        });
 
     return (itr == end ? nullptr : itr);
 
