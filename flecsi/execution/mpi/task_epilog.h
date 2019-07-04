@@ -324,17 +324,18 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       std::vector<size_t> sendcounts(comm_size, 0);
       for(auto & shared : my_coloring.shared) {
         for(auto peer : shared.shared) {
+          assert( peer != comm_rank );
           sendcounts[peer] += entity_size;
         }
       }
-      
-      std::vector<size_t> senddispls(comm_size);
+
+      std::vector<size_t> senddispls(comm_size+1);
       senddispls[0] = 0;
       for ( size_t r=0; r<comm_size; ++r )
         senddispls[r+1] = senddispls[r] + sendcounts[r];
 
       std::fill( sendcounts.begin(), sendcounts.end(), 0 );
-      std::vector<byte_t> sendbuf(senddispls[comm_size]);
+      std::vector<byte_t> sendbuf(senddispls[comm_size], 0);
       for(auto & shared : my_coloring.shared) {
         auto eptr = &entities[shared.offset];
         for(auto peer : shared.shared) {
@@ -343,19 +344,20 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
           sendcounts[peer] += entity_size;
         }
       }
-      
+     
       // setup recv buffers
       std::vector<size_t> recvcounts(comm_size, 0);
       for(auto & ghost : my_coloring.ghost)
         recvcounts[ghost.rank] += entity_size;
-      
-      std::vector<size_t> recvdispls(comm_size);
+     
+      std::vector<size_t> recvdispls(comm_size+1);
+
       recvdispls[0] = 0;
       for ( size_t r=0; r<comm_size; ++r )
         recvdispls[r+1] = recvdispls[r] + recvcounts[r];
 
       std::vector<byte_t> recvbuf(recvdispls[comm_size]);
-
+      
       // exchange data
       auto ret = coloring::alltoallv(sendbuf, sendcounts, senddispls, recvbuf,
         recvcounts, recvdispls, MPI_COMM_WORLD );
@@ -382,10 +384,9 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
         recvcounts[ghost.rank] += entity_size;
         ++i;
       }
-
+      
       // recursively call this function
       client_handler<I+1>(h);
-
     } // constexpr if
 
   }

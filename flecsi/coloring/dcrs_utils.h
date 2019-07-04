@@ -526,15 +526,15 @@ void make_dcrs_distributed(
   for ( size_t r=0; r<size; ++r ) {
     for ( size_t i=recvdispls[r]; i<recvdispls[r+1]; ) {
       // get vertex
-      auto vertex = recvbuf[i++];
+      auto vertex = recvbuf[i]; ++i;
       // keep track of ranks that share this vertex
       vertex2rank[vertex].emplace_back( r );
       assert( i<recvdispls[r+1] );
       // unpack cell neighbors
-      auto n = recvbuf[i++];
+      auto n = recvbuf[i]; ++i;
       for ( size_t j=0; j<n; ++j ) {
         assert( i<recvdispls[r+1] );
-        auto cell = recvbuf[i++];
+        auto cell = recvbuf[i]; ++i;
         // might not already be there
         vertex2cell[vertex].emplace_back( cell );
       }
@@ -548,13 +548,10 @@ void make_dcrs_distributed(
   // Send back the final results for shared vertices
   //----------------------------------------------------------------------------
 
-  // previous sendcounts are now receive counts
-  std::copy( sendcounts.begin(), sendcounts.end(), recvcounts.begin() );
-
   // now perpare to send results back
+  
+  // count send buffer size
   std::fill( sendcounts.begin(), sendcounts.end(), 0);
-  sendbuf.clear();
-
   for (const auto & vertex_pair : vertex2rank ) {
     auto vertex = vertex_pair.first;
     for ( auto r : vertex_pair.second ) {
@@ -564,10 +561,6 @@ void make_dcrs_distributed(
         // we will be sending vertex id, number of cells, plus cell ids
         auto n = 2 + cells.size();
         sendcounts[r] += n;
-        sendbuf.reserve( sendbuf.size() + n );
-        sendbuf.emplace_back( vertex );
-        sendbuf.emplace_back( cells.size() );
-        sendbuf.insert( sendbuf.end(), cells.begin(), cells.end() );
       }
     }
   }
@@ -575,60 +568,44 @@ void make_dcrs_distributed(
   // finish displacements
   senddispls[0] = 0;
   for ( size_t r=0; r<size; ++r ) senddispls[r+1] = senddispls[r] + sendcounts[r];
+ 
+  // resize send buffer
+  sendbuf.clear();
+  sendbuf.resize( senddispls[size] );
 
-  // send counts, this time i already know who i am receiving from... everyone
-  // i sent to.  So we can use our own alltoallv which implements non-blocking
-  // send/recvs between only the ranks that need to exchange info.
-  {
-
-    // prepare data to send and receive buffers
-    std::vector<size_t> sendcounts_buf;
-    std::vector<size_t> sendcounts_count(size, 0);
-    std::vector<size_t> sendcounts_displ(size+1);
-
-    std::vector<size_t> recvcounts_count(size, 0);
-    std::vector<size_t> recvcounts_displ(size+1);
-    
-    sendcounts_displ[0] = 0;
-    recvcounts_displ[0] = 0;
-
-    for ( size_t r=0; r<size; ++r ) {
-      if ( sendcounts[r] > 0 ) {
-        sendcounts_count[r] = 1;
-        sendcounts_buf.emplace_back( sendcounts[r] );
+  // now fill buffer
+  std::fill( sendcounts.begin(), sendcounts.end(), 0);
+  for (const auto & vertex_pair : vertex2rank ) {
+    auto vertex = vertex_pair.first;
+    for ( auto r : vertex_pair.second ) {
+      if ( r != rank ) { // should always enter anyway! 
+        auto j = senddispls[r] + sendcounts[r];
+        // better already be there
+        const auto & cells = vertex2cell.at(vertex);
+        // we will be sending vertex id, number of cells, plus cell ids
+        auto n = 2 + cells.size();
+        sendbuf[j++] = vertex;
+        sendbuf[j++] = cells.size();
+        for ( auto c : cells ) sendbuf[j++] = c;
+        // increment send counter
+        sendcounts[r] = j - senddispls[r];
       }
-      if ( recvcounts[r] > 0 ) {
-        recvcounts_count[r] = 1;
-      }
-      sendcounts_displ[r+1] = sendcounts_displ[r] + sendcounts_count[r];
-      recvcounts_displ[r+1] = recvcounts_displ[r] + recvcounts_count[r];
     }
-    
-    std::vector<size_t> recvcounts_buf( recvcounts_displ[size] );
+  }
+ 
+  // send counts
+  std::fill(recvcounts.begin(), recvcounts.end(), 0);
+  ret = MPI_Alltoall(sendcounts.data(), 1, mpi_size_t, recvcounts.data(), 1, mpi_size_t, MPI_COMM_WORLD);
+  if ( ret != MPI_SUCCESS ) clog_error( "Error communicating back vertex counts" );
 
-    // exchange sizes
-    ret = alltoallv(sendcounts_buf, sendcounts_count,
-        sendcounts_displ, recvcounts_buf, recvcounts_count, recvcounts_displ, 
-        MPI_COMM_WORLD );
-    if ( ret != MPI_SUCCESS ) clog_error( "Error communicating new vertex counts" );
-
-    // copy size info into non-compressed form, and set displacements
-    recvdispls[0] = 0;
-    for ( size_t r=0; r<size; ++r ) {
-      if ( recvcounts_count[r] > 0 )
-        recvcounts[r] = recvcounts_buf[recvcounts_displ[r]];
-      else
-        recvcounts[r] = 0;
-      recvdispls[r+1] = recvdispls[r] + recvcounts[r];
-    }
-
-  } // scope
+  // how much info will we be receiving
+  recvdispls[0] = 0;
+  for ( size_t r=0; r<size; ++r )
+    recvdispls[r+1] = recvdispls[r] + recvcounts[r];
 
   // how much info will we be receiving
   recvbuf.clear();
   recvbuf.resize( recvdispls.at(size) );
-
-  std::fill( recvbuf.begin(), recvbuf.end(), 0 );
 
   // now send the final vertex info back
   ret = alltoallv(sendbuf, sendcounts, senddispls, recvbuf,
@@ -643,15 +620,15 @@ void make_dcrs_distributed(
   for ( size_t r=0; r<size; ++r ) {
     for ( size_t i=recvdispls[r]; i<recvdispls[r+1]; ) {
       // get vertex
-      auto vertex = recvbuf[i++];
+      auto vertex = recvbuf[i]; ++i;
       // keep track of ranks that share this vertex
       vertex2rank[vertex].emplace_back( r );
       assert( i<recvdispls[r+1] );
       // unpack cell neighbors
-      auto n = recvbuf[i++];
+      auto n = recvbuf[i]; ++i;
       for ( size_t j=0; j<n; ++j ) {
         assert( i<recvdispls[r+1] );
-        auto cell = recvbuf[i++];
+        auto cell = recvbuf[i]; ++i;
         // might not already be there
         vertex2cell[vertex].emplace_back( cell );
       }
@@ -759,7 +736,8 @@ void migrate(
     auto start_buf = sendbuf.size();
 
     // loop over entities we partitionied
-    for(size_t local_id(0); local_id < num_elements; ++local_id) {
+    for(size_t local_id(0); local_id < num_elements && rank != comm_rank;
+        ++local_id) {
       
       // the global id
       auto global_id = dcrs.distribution[comm_rank] + local_id;
@@ -797,6 +775,11 @@ void migrate(
   //----------------------------------------------------------------------------
  
   if ( erase_local_ids.size() ) {
+
+    // sort them first
+    std::sort( erase_local_ids.begin(), erase_local_ids.end() );
+    auto last = std::unique( erase_local_ids.begin(), erase_local_ids.end() );
+    assert( last == erase_local_ids.end() && "duplicate ids to delete" );
 
     // erase dcrs elements
     dcrs.erase( erase_local_ids );
@@ -1440,10 +1423,14 @@ void color_entities(
       color_info.shared_users.insert( it.first->shared.begin(),
         it.first->shared.end() );
     }
-    // otherwise this is a ghost
+    // otherwise this "may" be a ghost
     else {
-      auto it = entities.ghost.emplace( global_id, owner.rank, owner.local_id );
-      color_info.ghost_owners.insert( owner.rank );
+      auto is_ghost = std::binary_search(potential_ghost.begin(),
+          potential_ghost.end(), global_id);
+      if (is_ghost) {
+        auto it = entities.ghost.emplace( global_id, owner.rank, owner.local_id );
+        color_info.ghost_owners.insert( owner.rank );
+      } // is ghost
     }
   }
   
