@@ -664,6 +664,15 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     h.entries = reinterpret_cast<value_t *>(h.entries_data[0]);
 #endif
     region += num_regions;
+
+    for(size_t e = 0; e < h.num_total_; ++e) {
+      int start = h.offsets[e].start();
+      int count = h.offsets[e].count();
+      auto & entry = h.new_entries[e];
+      entry.resize(count);
+      std::copy_n(h.entries + start, count, entry.begin());
+    }
+
   } // handle
 
   template<typename T,

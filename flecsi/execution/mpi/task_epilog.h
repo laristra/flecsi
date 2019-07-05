@@ -133,6 +133,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     using offset_t = typename handle_t::offset_t;
     using value_t = T;
 
+    h.commit(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro);
+
     // Skip Read Only handles
     if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
       return;

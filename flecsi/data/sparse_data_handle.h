@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/simple_vector.h>
 
 namespace flecsi {
 
@@ -33,11 +34,7 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
    */
   using value_type = T;
 
-  size_t index_space;
-  size_t data_client_hash;
-
-  value_type * entries = nullptr;
-  offset_t * offsets = nullptr;
+  using vector_t = data::simple_vector_u<T>;
 
   //--------------------------------------------------------------------------//
   //! Default constructor.
@@ -59,7 +56,7 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
   ragged_data_handle_base_u(const ragged_data_handle_base_u & b)
     : DATA_POLICY(b), index_space(b.index_space),
       data_client_hash(b.data_client_hash), entries(b.entries),
-      offsets(b.offsets), num_exclusive_(b.num_exclusive_),
+      offsets(b.offsets), new_entries(b.new_entries), num_exclusive_(b.num_exclusive_),
       num_shared_(b.num_shared_), num_ghost_(b.num_ghost_),
       num_total_(b.num_total_) {}
 
@@ -68,6 +65,28 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
     num_shared_ = num_shared;
     num_ghost_ = num_ghost;
     num_total_ = num_exclusive_ + num_shared_ + num_ghost_;
+
+    init();
+  }
+
+  void init() {
+    new_entries = new vector_t[num_total_];
+  }
+
+  void commit(bool read_only) {
+    if (!read_only) {
+      for(size_t index = 0; index < num_total_; ++index) {
+        offset_t & coi = offsets[index];
+        value_type * eptr = entries + coi.start();
+        const auto & row = new_entries[index];
+        size_t count = row.size();
+
+        std::copy_n(row.begin(), count, eptr);
+      }
+    }
+
+    delete [] new_entries;
+    new_entries = nullptr;
   }
 
   size_t num_exclusive() const {
@@ -86,6 +105,15 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
   size_t num_shared_;
   size_t num_ghost_;
   size_t num_total_;
+
+  size_t index_space;
+  size_t data_client_hash;
+
+  value_type * entries = nullptr;
+  offset_t * offsets = nullptr;
+
+  vector_t * new_entries = nullptr;
+
 }; // ragged_data_handle_base_u
 
 } // namespace flecsi

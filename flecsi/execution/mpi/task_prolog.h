@@ -63,6 +63,26 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    auto & h = a.handle;
+    h.init();
+
+    for(size_t e = 0; e < h.num_total_; ++e) {
+      int start = h.offsets[e].start();
+      int count = h.offsets[e].count();
+      auto & entry = h.new_entries[e];
+      entry.resize(count);
+      std::copy_n(h.entries + start, count, entry.begin());
+    }
+  } // handle
+
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
   void handle(sparse_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,

@@ -69,8 +69,8 @@ struct accessor_u<data::ragged,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
 
-  using offset_t = typename handle_t::offset_t;
   using value_t = T;
+  using vector_t = typename handle_t::vector_t;
 
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
@@ -83,11 +83,19 @@ struct accessor_u<data::ragged,
     : handle(reinterpret_cast<const handle_t &>(h)) {}
 
   T & operator()(size_t index, size_t ragged_index) {
-    const offset_t & offset = handle.offsets[index];
+    vector_t & row = handle.new_entries[index];
     assert(
-      ragged_index < offset.count() && "ragged accessor: index out of range");
+      ragged_index < row.size() && "ragged accessor: index out of range");
 
-    return handle.entries[offset.start() + ragged_index];
+    return row[ragged_index];
+  } // operator ()
+
+  const T & operator()(size_t index, size_t ragged_index) const {
+    const vector_t & row = handle.new_entries[index];
+    assert(
+      ragged_index < row.size() && "ragged accessor: index out of range");
+
+    return row[ragged_index];
   } // operator ()
 
   //-------------------------------------------------------------------------//
@@ -97,8 +105,8 @@ struct accessor_u<data::ragged,
     size_t max_so_far = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const offset_t & oi = handle.offsets[index];
-      max_so_far = std::max(max_so_far, oi.count());
+      const vector_t & row = handle.new_entries[index];
+      max_so_far = std::max(max_so_far, row.size());
     }
 
     return max_so_far;
@@ -111,8 +119,8 @@ struct accessor_u<data::ragged,
     clog_assert(
       index < handle.num_total_, "ragged accessor: index out of bounds");
 
-    const offset_t & oi = handle.offsets[index];
-    return oi.count();
+    const vector_t & row = handle.new_entries[index];
+    return row.size();
   }
 
   //-------------------------------------------------------------------------//
