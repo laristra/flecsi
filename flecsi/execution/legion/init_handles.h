@@ -842,10 +842,10 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     for(size_t e = 0; e < h.num_entries_; ++e) {
       int start = h.offsets_[e].start();
-      int end   = h.offsets_[e].end();
       int count = h.offsets_[e].count();
-      h.new_counts_[e] = count;
-      (*h.new_entries_)[e].assign(h.entries_ + start, h.entries_ + end);
+      auto & entry = h.new_entries_[e];
+      entry.resize(count);
+      std::copy_n(h.entries_ + start, count, entry.begin());
       h.offsets_[e].set_count(0);
     }
 

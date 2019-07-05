@@ -109,7 +109,7 @@ struct mutator_u<data::sparse, T>
 
       for(size_t i = start; i < end; ++i) {
         std::cout << "  index: " << i << std::endl;
-        const auto & overflow = (*h_.new_entries_)[i];
+        const auto & overflow = h_.new_entries_[i];
         for(const auto & ev : overflow) {
           std::cout << "    +" << ev.entry << " = " << ev.value << std::endl;
         }
@@ -141,7 +141,7 @@ struct mutator_u<data::sparse, T>
     assert(h_.new_entries_ && "uninitialized mutator");
     assert(index < h_.num_entries_);
 
-    auto & overflow = (*h_.new_entries_)[index];
+    auto & overflow = h_.new_entries_[index];
     auto start = overflow.begin();
     auto end = overflow.end();
 
@@ -167,7 +167,7 @@ struct mutator_u<data::sparse, T>
     assert(h_.new_entries_ && "uninitialized mutator");
     assert(index < h_.num_entries_);
 
-    auto & overflow = (*h_.new_entries_)[index];
+    auto & overflow = h_.new_entries_[index];
     auto start = overflow.begin();
     auto end = overflow.end();
 
@@ -197,7 +197,7 @@ struct mutator_u<data::sparse, T>
     std::unordered_set<size_t> found;
 
     for(size_t index = 0; index < h_.num_total_; ++index) {
-      const auto & overflow = (*h_.new_entries_)[index];
+      const auto & overflow = h_.new_entries_[index];
       for(const auto & ev : overflow) {
         size_t entry = ev.entry;
         if(found.find(entry) == found.end()) {
@@ -220,7 +220,7 @@ struct mutator_u<data::sparse, T>
     size_t id = 0;
     index_space_t is;
 
-    const auto & overflow = (*h_.new_entries_)[index];
+    const auto & overflow = h_.new_entries_[index];
     for(const auto & ev : overflow) {
       is.push_back({id++, ev.entry});
     }

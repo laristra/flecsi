@@ -74,7 +74,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     size_t nnew = h_.new_count(index);
     assert(ragged_index < nnew);
 
-    auto & overflow = (*h_.new_entries_)[index];
+    auto & overflow = h_.new_entries_[index];
     assert(ragged_index < overflow.size());
     return overflow[ragged_index];
 
@@ -144,21 +144,14 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(size <= h_.max_entries_per_index_ &&
            "resize length exceeds max entries per index");
 
-    h_.new_counts_[index] = size;
-
-    auto & overflow = (*h_.new_entries_)[index];
+    auto & overflow = h_.new_entries_[index];
     overflow.resize(size);
   } // resize
 
   void erase(size_t index, size_t ragged_index) {
     assert(index < h_.num_entries_);
 
-    size_t nnew = h_.new_count(index);
-    assert(ragged_index < nnew);
-
-    h_.new_counts_[index] = nnew - 1;
-
-    auto & overflow = (*h_.new_entries_)[index];
+    auto & overflow = h_.new_entries_[index];
     assert(ragged_index < overflow.size());
     overflow.erase(overflow.begin() + ragged_index);
   } // erase
@@ -166,11 +159,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   void push_back(size_t index, const T & value) {
     assert(index < h_.num_entries_);
 
-    size_t nnew = h_.new_count(index);
-
-    h_.new_counts_[index] = nnew + 1;
-
-    auto & overflow = (*h_.new_entries_)[index];
+    auto & overflow = h_.new_entries_[index];
     overflow.push_back(value);
   } // push_back
 
@@ -178,12 +167,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   T * insert(size_t index, size_t ragged_index, const T & value) {
     assert(index < h_.num_entries_);
 
-    size_t nnew = h_.new_count(index);
-    assert(ragged_index <= nnew);
-
-    h_.new_counts_[index] = nnew + 1;
-
-    auto & overflow = (*h_.new_entries_)[index];
+    auto & overflow = h_.new_entries_[index];
     assert(ragged_index <= overflow.size());
     auto itr = overflow.insert(overflow.begin() + ragged_index, value);
     return &(*itr);

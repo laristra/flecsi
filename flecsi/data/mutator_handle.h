@@ -15,11 +15,11 @@
 
 /*! @file */
 
+#include <stdint.h>
 #include <algorithm>
-#include <unordered_map>
-#include <vector>
 
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/simple_vector.h>
 
 namespace flecsi {
 
@@ -38,6 +38,8 @@ public:
   using offset_t = data::sparse_data_offset_t;
 
   using index_t = uint64_t;
+
+  using vector_t = data::simple_vector_u<T>;
 
   size_t * num_exclusive_insertions;
 
@@ -108,13 +110,11 @@ public:
   }
 
   void init() {
-    new_counts_ = new int32_t[num_entries_];
-    new_entries_ = new new_entries_t;
-    new_entries_->resize(num_entries_);
+    new_entries_ = new vector_t[num_entries_];
   }
 
   size_t commit(commit_info_t * ci) {
-    assert(new_counts_ && "uninitialized mutator");
+    assert(new_entries_ && "uninitialized mutator");
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
@@ -132,7 +132,7 @@ public:
       offset_t & coi = offsets[index];
 
       size_t count = new_count(index);
-      const auto & overflow = (*new_entries_)[index];
+      const auto & overflow = new_entries_[index];
 
       std::copy_n(overflow.begin(), count, cptr);
       cptr += count;
@@ -155,7 +155,7 @@ public:
 
       size_t count = new_count(index);
       value_t * eptr = entries + coi.start();
-      const auto & overflow = (*new_entries_)[index];
+      const auto & overflow = new_entries_[index];
 
       std::copy_n(overflow.begin(), count, eptr);
 
@@ -166,10 +166,7 @@ public:
 
     offsets_ = nullptr;
 
-    delete[] new_counts_;
-    new_counts_ = nullptr;
-
-    delete new_entries_;
+    delete [] new_entries_;
     new_entries_ = nullptr;
 
     return num_exclusive_filled;
@@ -204,10 +201,8 @@ public:
   }
 
   size_t new_count(size_t index) const {
-    return new_counts_[index];
+    return new_entries_[index].size();
   }
-
-  using new_entries_t = std::vector<std::vector<value_t>>;
 
   partition_info_t pi_;
   size_t num_exclusive_;
@@ -216,8 +211,7 @@ public:
   size_t num_entries_;
   offset_t * offsets_ = nullptr;
   value_t * entries_ = nullptr;
-  int32_t * new_counts_ = nullptr;
-  new_entries_t * new_entries_ = nullptr;
+  vector_t * new_entries_ = nullptr;
   commit_info_t ci_;
 
 }; // mutator_handle_base_u
