@@ -1130,7 +1130,8 @@ analysis(const flecstan::Yaml & yaml) {
     num_error && num_warn
       ? estr + "\n" + wstr
       : num_error ? estr
-                  : num_warn ? wstr : "No errors or warnings were detected.");
+                  : num_warn ? wstr : "No errors or warnings were detected.",
+    false);
 
   // ------------------------
   // Finish
