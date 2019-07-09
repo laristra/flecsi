@@ -463,20 +463,18 @@ struct context_u : public CONTEXT_POLICY {
   /*!
     Returns domain information from the domain key
    */
+
   size_t get_domain(size_t key) {
     return launch_domain_map_[key];
   }
 
-  /*--------------------------------------------------------------------------*
-    Counting # of tasks.
-   *--------------------------------------------------------------------------*/
-  void advance_num_tasks() {
-    num_tasks_++;
-  }
+  size_t const & tasks_executed() const {
+    return tasks_executed_;
+  } // tasks_executed
 
-  size_t num_tasks() {
-    return num_tasks_;
-  }
+  size_t & tasks_executed() {
+    return tasks_executed_;
+  } // tasks_executed
 
 private:
   /*--------------------------------------------------------------------------*
@@ -556,7 +554,9 @@ private:
   /*--------------------------------------------------------------------------*
     Task count.
    *--------------------------------------------------------------------------*/
-  size_t num_tasks_ = 0;
+
+  size_t tasks_executed_ = 0;
+
 #if 0
   // handle state
   using data_reference_map_t = std::unordered_map<size_t, data_reference_state_t>;

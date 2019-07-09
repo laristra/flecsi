@@ -24,7 +24,8 @@ namespace flog {
 
 #if defined(FLOG_ENABLE_MPI)
 
-void send_to_one() {
+void
+send_to_one() {
 
 #if 0
   if(flog_t::instance().initialized()) {

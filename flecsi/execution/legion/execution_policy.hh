@@ -28,6 +28,7 @@
 #include <flecsi/execution/legion/invocation/task_prologue.hh>
 #include <flecsi/execution/legion/reduction_wrapper.hh>
 #include <flecsi/utils/const_string.hh>
+#include <flecsi/utils/flog/utils.hh>
 #include <flecsi/utils/flog.hh>
 #endif
 
@@ -160,9 +161,10 @@ struct legion_execution_policy_t {
                                    : domain_size;
 
 #if defined(FLECSI_ENABLE_FLOG)
-    size_t num_tasks = flecsi_context.num_tasks();
-    if(num_tasks != 0 && num_tasks % 10 == 0) {
-      // launch reduction task to get max size of the buffer
+    const size_t tasks_executed = flecsi_context.tasks_executed();
+    if((tasks_executed > 0) &&
+       (tasks_executed % FLOG_SERIALIZATION_INTERVAL == 0)) {
+
       size_t processes = flecsi_context.processes();
       LegionRuntime::Arrays::Rect<1> launch_bounds(
         LegionRuntime::Arrays::Point<1>(0),
@@ -176,13 +178,14 @@ struct legion_execution_policy_t {
       Legion::IndexLauncher reduction_launcher(
         reduction_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
 
-      Legion::Future future;
-
+      constexpr size_t max_hash = utils::hash::reduction_hash<
+        flecsi_internal_hash(max), flecsi_internal_hash(size_t)>();
       size_t reduction_id =
-        flecsi_context.reduction_operations()[flecsi_internal_hash(min)];
-      future = legion_runtime->execute_index_space(
+        flecsi_context.reduction_operations()[max_hash];
+      Legion::Future future = legion_runtime->execute_index_space(
         legion_context, reduction_launcher, reduction_id);
-      // launch mpi task that will serialize and output buffer
+
+      size_t max = future.get_result<size_t>();
 
       const auto flog_mpi_tid =
         context_t::instance().task_id<flecsi_internal_hash(flog_mpi_task)>();
@@ -195,6 +198,7 @@ struct legion_execution_policy_t {
       // Launch the MPI task
       auto future_mpi =
         legion_runtime->execute_index_space(legion_context, flog_mpi_launcher);
+
       // Force synchronization
       future_mpi.wait_all_results(true);
 
@@ -206,12 +210,10 @@ struct legion_execution_policy_t {
 
       // Reset the calling state to false.
       flecsi_context.unset_call_mpi(legion_context, legion_runtime);
+    } // if
+#endif // FLECSI_ENABLE_FLOG
 
-    } // end if
-
-#endif
-
-    context_t::instance().advance_num_tasks();
+    context_t::instance().tasks_executed()++;
 
     legion::init_args_t init_args(legion_runtime, legion_context, domain_size);
     init_args.walk(task_args);

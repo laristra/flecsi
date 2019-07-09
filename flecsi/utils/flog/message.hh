@@ -80,7 +80,6 @@ struct log_message_t {
 #if defined(FLOG_ENABLE_MPI)
     if(can_send_to_one_ && flog_t::instance().initialized()) {
       flog_t::instance().buffer_output();
-      // send_to_one(flog_t::instance().buffer_stream().str().c_str());
     }
     else {
       if(!flog_t::instance().initialized()) {

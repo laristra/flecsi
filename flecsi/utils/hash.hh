@@ -400,10 +400,17 @@ intermediate_hash(size_t dimension, size_t domain) {
 // Reduction hash interface.
 ////////////////////////////////////////////////////////////////////////////////
 
-template<size_t OPERATOR, size_t DATA>
+/*!
+  Create a hash key for a reduction operation.
+
+  @tparam OPERATOR A hash key derived from the operator name, e.g., max.
+  @tparam TYPE     A hash key derived from the type, e.g., double.
+ */
+
+template<size_t OPERATOR, size_t TYPE>
 inline constexpr size_t
 reduction_hash() {
-  return (OPERATOR << 32) ^ DATA;
+  return (OPERATOR << 32) ^ TYPE;
 } // reduction_hash
 } // namespace hash
 

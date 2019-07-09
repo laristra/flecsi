@@ -31,6 +31,7 @@ namespace index_test {
 
 void
 assign(accessor<rw> ia) {
+  flog(info) << "assign" << std::endl;
   ia = flecsi_color();
 } // assign
 
@@ -41,6 +42,7 @@ check(accessor<ro> ia) {
 
   FTEST();
 
+  flog(info) << "check" << std::endl;
   ASSERT_EQ(ia, flecsi_color());
 
   return FTEST_RESULT();
