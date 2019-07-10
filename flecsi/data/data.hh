@@ -100,7 +100,7 @@
  */
 
 #define flecsi_add_field(                                                      \
-  topology_type, nspace, name, data_type, storage_class, versions, ...)        \
+  topology_type, nspace, name, data_type, storage_class, versions)             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to register the data */                           \
@@ -110,8 +110,7 @@
       data_type,                                                               \
       flecsi_internal_string_hash(nspace),                                     \
       flecsi_internal_string_hash(name),                                       \
-      versions,                                                                \
-      ##__VA_ARGS__>({flecsi_internal_stringify(name)})
+      versions>({flecsi_internal_stringify(name)})
 
 /*!
   @def flecsi_field_instance
@@ -122,7 +121,6 @@
                        the data.
   @param nspace        The string namespace to use to access the variable.
   @param name          The string name of the data variable to access.
-  @param data_type     The data type to access, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param version       The version number of the data to access. This
                        parameter can be used to manage multiple data versions,
@@ -132,14 +130,13 @@
  */
 
 #define flecsi_field_instance(                                                 \
-  topology, nspace, name, data_type, storage_class, version)                   \
+  topology, nspace, name, storage_class, version)                              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_interface_t::field_instance<decltype(                    \
                                                     topology)::topology_t,     \
     flecsi::data::storage_class,                                               \
-    data_type,                                                                 \
     flecsi_internal_string_hash(nspace),                                       \
     flecsi_internal_string_hash(name),                                         \
     version>(topology)
@@ -170,16 +167,13 @@
 #define flecsi_add_global_field(nspace, name, data_type, versions)             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  /* Call the storage policy to register the data */                           \
-  inline bool flecsi_internal_unique_name(global_field) =                      \
-    flecsi::data::field_interface_t::add_field<                                \
-      flecsi::topology::global_topology_t,                                     \
-      flecsi::data::global,                                                    \
-      data_type,                                                               \
-      flecsi_internal_string_hash(nspace),                                     \
-      flecsi_internal_string_hash(name),                                       \
-      versions,                                                                \
-      flecsi::topology::global_index_space>({flecsi_internal_stringify(name)})
+  flecsi_add_field(::flecsi::topology::global_topology_t,nspace,name,          \
+    data_type,global,versions)
+
+/// The global topology.
+#define flecsi_global_topology                                    \
+  flecsi_topology_reference(flecsi::topology::global_topology_t,  \
+                            "internal","global_topology")
 
 /*!
   @def flecsi_global_field_instance
@@ -188,7 +182,6 @@
 
   @param nspace        The string namespace to use to access the variable.
   @param name          The string of the data variable to access.
-  @param data_type     The data type to access, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param version       The version number of the data to access. This
                        parameter can be used to manage multiple data versions,
@@ -197,16 +190,14 @@
   @ingroup data
  */
 
-#define flecsi_global_field_instance(nspace, name, data_type, version)         \
+#define flecsi_global_field_instance(nspace, name, version)                    \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_field_instance(                                                       \
-    flecsi_topology_reference(                                                 \
-      flecsi::topology::global_topology_t, "internal", "global_topology"),     \
+    flecsi_global_topology,                                                    \
     nspace,                                                                    \
     name,                                                                      \
-    data_type,                                                                 \
     global,                                                                    \
     version)
 
@@ -235,16 +226,13 @@
 #define flecsi_add_index_field(nspace, name, data_type, versions)              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  /* Call the storage policy to register the data */                           \
-  inline bool flecsi_internal_unique_name(index_field) =                       \
-    flecsi::data::field_interface_t::add_field<                                \
-      flecsi::topology::index_topology_t,                                      \
-      flecsi::data::index,                                                     \
-      data_type,                                                               \
-      flecsi_internal_string_hash(nspace),                                     \
-      flecsi_internal_string_hash(name),                                       \
-      versions,                                                                \
-      flecsi::topology::index_index_space>({flecsi_internal_stringify(name)})
+  flecsi_add_field(::flecsi::topology::index_topology_t,nspace,name,           \
+    data_type,index,versions)
+
+/// The default index topology.
+#define flecsi_index_topology                                   \
+  flecsi_topology_reference(flecsi::topology::index_topology_t, \
+                            "internal","index_topology")
 
 /*!
   @def flecsi_index_field_instance
@@ -253,7 +241,6 @@
 
   @param nspace        The string namespace to use to access the variable.
   @param name          The string of the data variable to access.
-  @param data_type     The data type to access, e.g., double or my_type_t.
   @param storage_class The storage type for the data \ref storage_class_t.
   @param version       The version number of the data to access. This
                        parameter can be used to manage multiple data versions,
@@ -262,15 +249,13 @@
   @ingroup data
  */
 
-#define flecsi_index_field_instance(nspace, name, data_type, version)          \
+#define flecsi_index_field_instance(nspace, name, version)                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
   flecsi_field_instance(                                                       \
-    flecsi_topology_reference(                                                 \
-      flecsi::topology::index_topology_t, "internal", "index_topology"),       \
+    flecsi_index_topology,                                                     \
     nspace,                                                                    \
     name,                                                                      \
-    data_type,                                                                 \
     index,                                                                     \
     version)

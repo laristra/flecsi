@@ -66,7 +66,7 @@ struct storage_class_u {
 
   using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
 
-  template<typename DATA_TYPE, size_t NAMESPACE, size_t NAME, size_t VERSION>
+  template<size_t NAMESPACE, size_t NAME, size_t VERSION>
   static field_reference_t get_reference(
     topology_reference_t const & topology) {
     constexpr size_t identifier =

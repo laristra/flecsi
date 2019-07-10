@@ -399,6 +399,7 @@ struct legion_context_policy_t {
     flog_assert(task_registry_.find(key) == task_registry_.end(),
       "task key already exists");
 
+    // FIXME: can we just re-use "key" (at least if it's reduced to 32 bits)?
     task_registry_[key] = std::make_tuple(
       unique_tid_t::instance().next(), processor, execution, name, callback);
 
