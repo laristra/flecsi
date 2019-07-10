@@ -127,12 +127,11 @@ struct pure_task_wrapper_u {
  @tparam RETURN    The return type of the user task.
  @tparam ARG_TUPLE A std::tuple of the user task arguments.
  @tparam DELEGATE  The delegate function that invokes the user task.
- @tparam KEY       A hash key identifying the task.
 
  @ingroup legion-execution
  */
 
-template<size_t KEY,
+template<
   typename RETURN,
   typename ARG_TUPLE,
   RETURN (*DELEGATE)(ARG_TUPLE)>

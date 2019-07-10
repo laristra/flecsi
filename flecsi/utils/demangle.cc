@@ -14,6 +14,8 @@
 
 /*! @file */
 
+#include <flecsi/utils/demangle.hh>
+
 #include <memory>
 
 #if defined(__GNUG__)

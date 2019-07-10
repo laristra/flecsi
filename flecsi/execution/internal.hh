@@ -34,9 +34,9 @@
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_interface_t::execute_task<flecsi_internal_hash(      \
-                                                      task),                   \
+  flecsi::execution::task_interface_t::execute_task<                           \
     flecsi_internal_hash(domain),                                              \
     flecsi_internal_hash(operation),                                           \
     flecsi_internal_return_type(task),                                         \
-    flecsi_internal_arguments_type(task)>(__VA_ARGS__)
+    flecsi_internal_arguments_type(task)>(flecsi_internal_hash(task),          \
+      ##__VA_ARGS__)

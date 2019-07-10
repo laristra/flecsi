@@ -20,8 +20,10 @@
 
 using namespace flecsi;
 
-flecsi_add_index_field("test", "pressure", double, 2);
-inline auto pressure = flecsi_index_field_instance("test", "pressure", double, 0);
+namespace {
+  const data::field_interface_t::field<double> ifld(2);
+  const auto fh=ifld(flecsi_index_topology);
+}
 
 template<size_t PRIVILEGES>
 using accessor =

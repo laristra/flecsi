@@ -31,6 +31,13 @@ demangle(int argc, char ** argv) {
   EXPECT_NE(str_type, "");
   EXPECT_EQ(str_demangle, str_type);
 
+  const auto sym=flecsi::utils::symbol<demangle>();
+#ifdef __GNUG__
+  EXPECT_EQ(sym,"demangle(int, char**)");
+#else
+  EXPECT_NE(sym,"");
+#endif
+
   return 0;
 }
 
