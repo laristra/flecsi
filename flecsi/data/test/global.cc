@@ -21,9 +21,9 @@
 using namespace flecsi;
 
 namespace {
-  const data::field_interface_t::global_field<double> gfld(2);
-  const auto th=gfld(flecsi_global_topology);
-}
+const data::field_interface_t::global_field<double> gfld(2);
+const auto th = gfld(flecsi_global_topology);
+} // namespace
 
 template<size_t PRIVILEGES>
 using global_accessor_u =

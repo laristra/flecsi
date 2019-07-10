@@ -121,8 +121,6 @@ bind(accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor_u : public field_reference_t {
 
-  friend void bind<DATA_TYPE, PRIVILEGES>(accessor_u & a, DATA_TYPE * data);
-
   accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
 
   operator DATA_TYPE &() {
@@ -143,6 +141,8 @@ struct accessor_u : public field_reference_t {
   } // operator=
 
 private:
+  friend void bind<DATA_TYPE, PRIVILEGES>(accessor_u & a, DATA_TYPE * data);
+
   DATA_TYPE * data_;
 
 }; // struct accessor_u

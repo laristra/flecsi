@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include<string>
-#include<typeinfo>              // typeid()
+#include <string>
+#include <typeinfo> // typeid()
 
 namespace flecsi {
 namespace utils {
@@ -60,14 +60,17 @@ type(const std::type_info & type_info) {
 
 /// Dummy class template.
 /// \tparam S a reference to a function or variable
-template<auto &S> struct Symbol {};
+template<auto & S>
+struct Symbol {};
 /// Return the name of the template argument.
 /// \tparam a reference to a function or variable
 /// \return demangled name
-template<auto &S> std::string symbol() {
-  constexpr int PFX=sizeof("flecsi::utils::Symbol<")-1;
-  const auto s=type<Symbol<S>>();
-  return s.substr(PFX,s.size()-1-PFX);
+template<auto & S>
+std::string
+symbol() {
+  constexpr int PFX = sizeof("flecsi::utils::Symbol<") - 1;
+  const auto s = type<Symbol<S>>();
+  return s.substr(PFX, s.size() - 1 - PFX);
 }
 
 } // namespace utils

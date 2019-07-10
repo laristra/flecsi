@@ -14,9 +14,9 @@
 
 /*! @file */
 
-#include <memory>
+#include <flecsi/utils/demangle.hh>
 
-#include"demangle.h"
+#include <memory>
 
 #if defined(__GNUG__)
 #include <cxxabi.h>

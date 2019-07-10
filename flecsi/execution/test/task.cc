@@ -38,7 +38,8 @@ simple(int value) {
 } // simple
 
 template<class T>
-void simple2(T t) {
+void
+simple2(T t) {
   flog_tag_guard(task);
   flog(info) << "simple2(" << t << ")\n";
 }

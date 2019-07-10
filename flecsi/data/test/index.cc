@@ -21,9 +21,9 @@
 using namespace flecsi;
 
 namespace {
-  const data::field_interface_t::field<double> ifld(2);
-  const auto fh=ifld(flecsi_index_topology);
-}
+const data::field_interface_t::field<double> ifld(2);
+const auto fh = ifld(flecsi_index_topology);
+} // namespace
 
 template<size_t PRIVILEGES>
 using accessor =

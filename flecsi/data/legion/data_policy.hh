@@ -81,6 +81,16 @@ struct legion_data_policy_t {
   using index_accessor_u =
     legion::index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
+#if 0
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  using dense_unstructured_mesh_accessor_u =
+    legion::unstructured_mesh_topology::dense_accessor_u<DATA_TYPE, PRIVILEGES>;
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  using dense_structured_mesh_accessor_u =
+    legion::structured_mesh_topology::dense_accessor_u<DATA_TYPE, PRIVILEGES>;
+#endif
+
 }; // struct legion_data_policy_t
 
 } // namespace data

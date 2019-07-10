@@ -131,10 +131,7 @@ struct pure_task_wrapper_u {
  @ingroup legion-execution
  */
 
-template<
-  typename RETURN,
-  typename ARG_TUPLE,
-  RETURN (*DELEGATE)(ARG_TUPLE)>
+template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
 struct task_wrapper_u {
 
   /*!

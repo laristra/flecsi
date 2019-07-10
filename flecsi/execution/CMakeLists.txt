@@ -132,6 +132,11 @@ if(ENABLE_KOKKOS)
   )
 endif()
 
+#ftest_add_unit(reduction
+#  SOURCES
+#    test/reduction.cc
+#)
+
 ftest_add_unit(task
   SOURCES
     test/task.cc

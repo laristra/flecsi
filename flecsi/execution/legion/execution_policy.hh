@@ -28,8 +28,8 @@
 #include <flecsi/execution/legion/invocation/task_prologue.hh>
 #include <flecsi/execution/legion/reduction_wrapper.hh>
 #include <flecsi/utils/const_string.hh>
-#include <flecsi/utils/flog/utils.hh>
 #include <flecsi/utils/flog.hh>
+#include <flecsi/utils/flog/utils.hh>
 #endif
 
 #include <functional>
@@ -105,11 +105,9 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(std::size_t TASK,processor_type_t processor,
+  template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
+  static bool register_task(std::size_t TASK,
+    processor_type_t processor,
     task_execution_type_t execution,
     std::string name) {
 
@@ -127,13 +125,12 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<
-    size_t LAUNCH_DOMAIN,
+  template<size_t LAUNCH_DOMAIN,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(std::size_t TASK,ARGS &&... args) {
+  static decltype(auto) execute_task(std::size_t TASK, ARGS &&... args) {
 
     using namespace Legion;
 
@@ -178,10 +175,10 @@ struct legion_execution_policy_t {
       Legion::IndexLauncher reduction_launcher(
         reduction_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
 
-      constexpr size_t max_hash = utils::hash::reduction_hash<
-        flecsi_internal_hash(max), flecsi_internal_hash(size_t)>();
-      size_t reduction_id =
-        flecsi_context.reduction_operations()[max_hash];
+      constexpr size_t max_hash =
+        utils::hash::reduction_hash<flecsi_internal_hash(max),
+          flecsi_internal_hash(size_t)>();
+      size_t reduction_id = flecsi_context.reduction_operations()[max_hash];
       Legion::Future future = legion_runtime->execute_index_space(
         legion_context, reduction_launcher, reduction_id);
 
