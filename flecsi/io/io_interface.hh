@@ -74,13 +74,12 @@ struct io_interface_u : public IO_POLICY {
     return IO_POLICY::generate_hdf5_files(hdf5_file);
   }
   
-  void checkpoint_default_index_topology(hdf5_t &hdf5_file)
-  {
+  void checkpoint_default_index_topology(hdf5_t & hdf5_file) {
     return IO_POLICY::checkpoint_default_index_topology(hdf5_file);
   }
 
-  void checkpoint_default_index_topology_field(hdf5_t &hdf5_file, field_reference_t &fh)
-  {
+  void checkpoint_default_index_topology_field(hdf5_t & hdf5_file, 
+    field_reference_t & fh) {
     return IO_POLICY::checkpoint_default_index_topology_field(hdf5_file, fh);
   }
 
@@ -88,19 +87,25 @@ struct io_interface_u : public IO_POLICY {
     return IO_POLICY::recover_default_index_topology(hdf5_file);
   }
 
-  void recover_default_index_topology_field(hdf5_t &hdf5_file, field_reference_t &fh)
-  {
+  void recover_default_index_topology_field(hdf5_t &hdf5_file, 
+    field_reference_t &fh) {
     return IO_POLICY::recover_default_index_topology_field(hdf5_file, fh);
   }
   
-  void checkpoint_data(hdf5_t &hdf5_file, launch_space_t launch_space, std::vector<hdf5_region_t> &hdf5_region_vector, bool attach_flag)
-  {
-    return IO_POLICY::checkpoint_data(hdf5_file, launch_space, hdf5_region_vector, attach_flag);
+  void checkpoint_data(hdf5_t & hdf5_file,
+    launch_space_t launch_space,
+    std::vector<hdf5_region_t> & hdf5_region_vector,
+    bool attach_flag) {
+    return IO_POLICY::checkpoint_data(
+      hdf5_file, launch_space, hdf5_region_vector, attach_flag);
   }
   
-  void recover_data(hdf5_t &hdf5_file, launch_space_t launch_space, std::vector<hdf5_region_t> &hdf5_region_vector, bool attach_flag)
-  {
-    return IO_POLICY::recover_data(hdf5_file, launch_space, hdf5_region_vector, attach_flag);
+  void recover_data(hdf5_t & hdf5_file,
+    launch_space_t launch_space,
+    std::vector<hdf5_region_t> & hdf5_region_vector,
+    bool attach_flag) {
+    return IO_POLICY::recover_data(
+      hdf5_file, launch_space, hdf5_region_vector, attach_flag);
   }
 }; // struct io_interface_u
 

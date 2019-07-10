@@ -105,25 +105,33 @@ struct legion_io_policy_t {
     const char * dataset_name,
     std::string & str);
   
-  void add_regions(legion_hdf5_t &hdf5_file, std::vector<legion_hdf5_region_t> &hdf5_region_vector);
+  void add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector);
   
-  void add_default_index_topology(legion_hdf5_t &hdf5_file);
+  void add_default_index_topology(legion_hdf5_t & hdf5_file);
   
-  void generate_hdf5_files(legion_hdf5_t &hdf5_file);
+  void generate_hdf5_files(legion_hdf5_t & hdf5_file);
   
-  void checkpoint_default_index_topology(legion_hdf5_t &hdf5_file);
+  void checkpoint_default_index_topology(legion_hdf5_t & hdf5_file);
   
-  //void checkpoint_index_topology(legion_hdf5_t &hdf5_file, const flecsi::utils::const_string_t &index_topology_name);
+  //void checkpoint_index_topology(legion_hdf5_t & hdf5_file, const flecsi::utils::const_string_t &index_topology_name);
 
-  void checkpoint_default_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
+  void checkpoint_default_index_topology_field(hdf5_t & hdf5_file, 
+    data::field_reference_t & fh);
   
-  void recover_default_index_topology(legion_hdf5_t &hdf5_file);
+  void recover_default_index_topology(legion_hdf5_t & hdf5_file);
 
-  void recover_default_index_topology_field(hdf5_t &hdf5_file, data::field_reference_t &fh);
+  void recover_default_index_topology_field(hdf5_t & hdf5_file, 
+    data::field_reference_t & fh);
   
-  void checkpoint_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
+  void checkpoint_data(legion_hdf5_t & hdf5_file, 
+    IndexSpace launch_space, 
+    std::vector<legion_hdf5_region_t> & hdf5_region_vector, 
+    bool attach_flag);
   
-  void recover_data(legion_hdf5_t &hdf5_file, IndexSpace launch_space, std::vector<legion_hdf5_region_t> &hdf5_region_vector, bool attach_flag);
+  void recover_data(legion_hdf5_t & hdf5_file, 
+    IndexSpace launch_space, 
+    std::vector<legion_hdf5_region_t> & hdf5_region_vector, 
+    bool attach_flag);
   
 private:  
   std::map<size_t, IndexSpace> file_is_map;
