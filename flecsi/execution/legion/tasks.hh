@@ -157,7 +157,7 @@ flecsi_internal_register_legion_task(unset_call_mpi_task,
   processor_type_t::loc,
   leaf);
 
-#if defined(FLECSI_ENABLE_FLOG)
+#if defined(FLOG_ENABLE_MPI)
 
 #include <flecsi/utils/flog/state.hh>
 

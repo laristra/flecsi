@@ -157,7 +157,7 @@ struct legion_execution_policy_t {
                                        flecsi_context.threads_per_process()
                                    : domain_size;
 
-#if defined(FLECSI_ENABLE_FLOG)
+#if defined(FLOG_ENABLE_MPI)
     const size_t tasks_executed = flecsi_context.tasks_executed();
     if((tasks_executed > 0) &&
        (tasks_executed % FLOG_SERIALIZATION_INTERVAL == 0)) {
