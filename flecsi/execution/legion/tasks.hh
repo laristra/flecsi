@@ -22,27 +22,6 @@
 #include <flecsi/execution/context.hh>
 #endif
 
-/*!
- @def flecsi_internal_legion_task
-
- This macro simplifies pure Legion task definitions by filling in the
- boiler-plate function arguments.
-
- @param task_name   The plain-text task name.
- @param return_type The return type of the task.
-
- @ingroup legion-execution
-*/
-
-#define flecsi_internal_legion_task(task_name, return_type)                    \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Legion task template */                                                   \
-  inline return_type task_name(const Legion::Task * task,                      \
-    const std::vector<Legion::PhysicalRegion> & regions,                       \
-    Legion::Context ctx,                                                       \
-    Legion::Runtime * runtime)
-
 namespace flecsi {
 namespace execution {
 
@@ -129,7 +108,11 @@ top_level_task(const Legion::Task * task,
  @ingroup legion-execution
  */
 
-flecsi_internal_legion_task(handoff_to_mpi_task, void) {
+inline void
+handoff_to_mpi_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime) {
   context_t::instance().handoff_to_mpi();
 } // handoff_to_mpi_task
 
@@ -144,9 +127,13 @@ flecsi_internal_register_legion_task(handoff_to_mpi_task,
  @ingroup legion-execution
  */
 
-flecsi_internal_legion_task(wait_on_mpi_task, void) {
+inline void
+wait_on_mpi_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime) {
   context_t::instance().wait_on_mpi();
-} // wait_on_mpi_task
+} // handoff_to_mpi_task
 
 flecsi_internal_register_legion_task(wait_on_mpi_task,
   processor_type_t::loc,
@@ -158,13 +145,52 @@ flecsi_internal_register_legion_task(wait_on_mpi_task,
  @ingroup legion-execution
 */
 
-flecsi_internal_legion_task(unset_call_mpi_task, void) {
+inline void
+unset_call_mpi_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime) {
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
 
 flecsi_internal_register_legion_task(unset_call_mpi_task,
   processor_type_t::loc,
   leaf);
-  
+
+#if defined(FLECSI_ENABLE_FLOG)
+
+#include <flecsi/utils/flog/state.hh>
+
+inline size_t
+flog_reduction_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime) {
+  const size_t max = utils::flog::flog_t::instance().packets().size();
+  return utils::flog::flog_t::instance().packets().size();
+} // flog_reduction_task
+
+flecsi_internal_register_legion_task(flog_reduction_task,
+  processor_type_t::loc,
+  leaf);
+
+inline void
+flog_mpi_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime) {
+
+  std::function<void()> bound_mpi_task = utils::flog::send_to_one;
+
+  context_t::instance().set_mpi_task(bound_mpi_task);
+  context_t::instance().set_mpi_state(true);
+} // flog_mpi_task
+
+flecsi_internal_register_legion_task(flog_mpi_task,
+  processor_type_t::loc,
+  leaf);
+
+#endif // FLECSI_ENABLE_FLOG
+
 } // namespace execution
 } // namespace flecsi

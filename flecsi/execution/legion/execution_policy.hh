@@ -28,6 +28,7 @@
 #include <flecsi/execution/legion/invocation/task_prologue.hh>
 #include <flecsi/execution/legion/reduction_wrapper.hh>
 #include <flecsi/utils/const_string.hh>
+#include <flecsi/utils/flog/utils.hh>
 #include <flecsi/utils/flog.hh>
 #endif
 
@@ -104,15 +105,15 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<size_t TASK,
+  template<
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(processor_type_t processor,
+  static bool register_task(std::size_t TASK,processor_type_t processor,
     task_execution_type_t execution,
     std::string name) {
 
-    using wrapper_t = legion::task_wrapper_u<TASK, RETURN, ARG_TUPLE, DELEGATE>;
+    using wrapper_t = legion::task_wrapper_u<RETURN, ARG_TUPLE, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
       TASK, processor, execution, name, wrapper_t::registration_callback);
@@ -126,13 +127,13 @@ struct legion_execution_policy_t {
     Documentation for this interface is in the top-level context type.
    */
 
-  template<size_t TASK,
+  template<
     size_t LAUNCH_DOMAIN,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(ARGS &&... args) {
+  static decltype(auto) execute_task(std::size_t TASK,ARGS &&... args) {
 
     using namespace Legion;
 
@@ -146,7 +147,7 @@ struct legion_execution_policy_t {
     context_t & flecsi_context = context_t::instance();
 
     // Get the processor type.
-    auto processor_type = flecsi_context.processor_type<TASK>();
+    auto processor_type = flecsi_context.processor_type(TASK);
 
     // Get the Legion runtime and context from the current task.
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -158,6 +159,61 @@ struct legion_execution_policy_t {
     domain_size = domain_size == 0 ? flecsi_context.processes() *
                                        flecsi_context.threads_per_process()
                                    : domain_size;
+
+#if defined(FLECSI_ENABLE_FLOG)
+    const size_t tasks_executed = flecsi_context.tasks_executed();
+    if((tasks_executed > 0) &&
+       (tasks_executed % FLOG_SERIALIZATION_INTERVAL == 0)) {
+
+      size_t processes = flecsi_context.processes();
+      LegionRuntime::Arrays::Rect<1> launch_bounds(
+        LegionRuntime::Arrays::Point<1>(0),
+        LegionRuntime::Arrays::Point<1>(processes - 1));
+      Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
+      const auto reduction_tid =
+        context_t::instance()
+          .task_id<flecsi_internal_hash(flog_reduction_task)>();
+      Legion::ArgumentMap arg_map;
+      Legion::IndexLauncher reduction_launcher(
+        reduction_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
+
+      constexpr size_t max_hash = utils::hash::reduction_hash<
+        flecsi_internal_hash(max), flecsi_internal_hash(size_t)>();
+      size_t reduction_id =
+        flecsi_context.reduction_operations()[max_hash];
+      Legion::Future future = legion_runtime->execute_index_space(
+        legion_context, reduction_launcher, reduction_id);
+
+      size_t max = future.get_result<size_t>();
+
+      const auto flog_mpi_tid =
+        context_t::instance().task_id<flecsi_internal_hash(flog_mpi_task)>();
+
+      Legion::IndexLauncher flog_mpi_launcher(
+        flog_mpi_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
+
+      flog_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
+
+      // Launch the MPI task
+      auto future_mpi =
+        legion_runtime->execute_index_space(legion_context, flog_mpi_launcher);
+
+      // Force synchronization
+      future_mpi.wait_all_results(true);
+
+      // Handoff to the MPI runtime.
+      flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
+
+      // Wait for MPI to finish execution (synchronous).
+      flecsi_context.wait_on_mpi(legion_context, legion_runtime);
+
+      // Reset the calling state to false.
+      flecsi_context.unset_call_mpi(legion_context, legion_runtime);
+    } // if
+#endif // FLECSI_ENABLE_FLOG
+
+    context_t::instance().tasks_executed()++;
 
     legion::init_args_t init_args(legion_runtime, legion_context, domain_size);
     init_args.walk(task_args);
@@ -176,7 +232,7 @@ struct legion_execution_policy_t {
         flog(internal) << "Executing single task" << std::endl;
       }
 
-      TaskLauncher launcher(flecsi_context.task_id<TASK>(),
+      TaskLauncher launcher(flecsi_context.task_id(TASK),
         TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
       for(auto & req : init_args.region_requirements()) {
@@ -232,7 +288,7 @@ struct legion_execution_policy_t {
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
       Legion::ArgumentMap arg_map;
-      Legion::IndexLauncher launcher(flecsi_context.task_id<TASK>(),
+      Legion::IndexLauncher launcher(flecsi_context.task_id(TASK),
         launch_domain,
         TaskArgument(&task_args, sizeof(ARG_TUPLE)),
         arg_map);
@@ -338,6 +394,7 @@ struct legion_execution_policy_t {
 
       } // switch
     } // if constexpr
+
   } // execute_task
 
   //------------------------------------------------------------------------//

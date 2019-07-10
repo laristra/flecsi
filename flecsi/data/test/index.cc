@@ -20,8 +20,10 @@
 
 using namespace flecsi;
 
-flecsi_add_index_field("test", "value", double, 2);
-inline auto fh = flecsi_index_field_instance("test", "value", double, 0);
+namespace {
+  const data::field_interface_t::field<double> ifld(2);
+  const auto fh=ifld(flecsi_index_topology);
+}
 
 template<size_t PRIVILEGES>
 using accessor =
@@ -31,6 +33,7 @@ namespace index_test {
 
 void
 assign(accessor<rw> ia) {
+  flog(info) << "assign" << std::endl;
   ia = flecsi_color();
 } // assign
 
@@ -41,6 +44,7 @@ check(accessor<ro> ia) {
 
   FTEST();
 
+  flog(info) << "check" << std::endl;
   ASSERT_EQ(ia, flecsi_color());
 
   return FTEST_RESULT();

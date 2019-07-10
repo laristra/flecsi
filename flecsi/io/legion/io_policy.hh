@@ -21,18 +21,22 @@
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
-#include <legion.h>
 #include <hdf5.h>
+#include <legion.h>
 
 using namespace Legion;
 
 namespace flecsi {
 namespace io {
 
-struct legion_hdf5_region_t
-{
-  legion_hdf5_region_t(LogicalRegion lr, LogicalPartition lp, std::string lr_name, std::map<FieldID, std::string> &field_string_map);
-  legion_hdf5_region_t(LogicalRegion lr, LogicalPartition lp, std::string lr_name);
+struct legion_hdf5_region_t {
+  legion_hdf5_region_t(LogicalRegion lr,
+    LogicalPartition lp,
+    std::string lr_name,
+    std::map<FieldID, std::string> & field_string_map);
+  legion_hdf5_region_t(LogicalRegion lr,
+    LogicalPartition lp,
+    std::string lr_name);
 
   LogicalRegion logical_region;
   LogicalPartition logical_partition;
@@ -40,19 +44,27 @@ struct legion_hdf5_region_t
   std::map<FieldID, std::string> field_string_map;
   size_t dim_size[3];
 };
-  
+
 struct legion_hdf5_t {
-  legion_hdf5_t(const char* file_name, int num_files);
+  legion_hdf5_t(const char * file_name, int num_files);
   legion_hdf5_t(std::string file_name, int num_files);
   bool create_hdf5_file(int file_idx);
   bool open_hdf5_file(int file_idx);
   bool close_hdf5_file();
-  bool write_string_to_hdf5_file(const char* group_name, const char* dataset_name, const char* str, size_t size);
-  bool read_string_from_hdf5_file(const char* group_name, const char* dataset_name, std::string &str);
-  void add_logical_region(LogicalRegion lr, LogicalPartition lp, std::string lr_name, std::map<FieldID, std::string> field_string_map);
-  void add_hdf5_region(const legion_hdf5_region_t &hdf5_region);
+  bool write_string_to_hdf5_file(const char * group_name,
+    const char * dataset_name,
+    const char * str,
+    size_t size);
+  bool read_string_from_hdf5_file(const char * group_name,
+    const char * dataset_name,
+    std::string & str);
+  void add_logical_region(LogicalRegion lr,
+    LogicalPartition lp,
+    std::string lr_name,
+    std::map<FieldID, std::string> field_string_map);
+  void add_hdf5_region(const legion_hdf5_region_t & hdf5_region);
   bool create_datasets_for_regions(int file_idx);
-  
+
   hid_t hdf5_file_id;
   std::string file_name;
   int num_files;
@@ -70,19 +82,28 @@ struct legion_io_policy_t {
   
   ~legion_io_policy_t();
 
-  legion_hdf5_t init_hdf5_file(const char* file_name, int num_files);
+  legion_hdf5_t init_hdf5_file(const char * file_name, int num_files);
 
-  bool create_hdf5_file(legion_hdf5_t &hdf5_file, int file_idx);
+  bool create_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx);
 
-  bool open_hdf5_file(legion_hdf5_t &hdf5_file, int file_idx);
+  bool open_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx);
 
-  bool close_hdf5_file(legion_hdf5_t &hdf5_file);
-  
-  bool create_datasets_for_regions(legion_hdf5_t &hdf5_file, int file_idx);
+  bool close_hdf5_file(legion_hdf5_t & hdf5_file);
 
-  bool write_string_to_hdf5_file(legion_hdf5_t &hdf5_file, int rank_id, const char* group_name, const char* dataset_name, const char* str, size_t size);
+  bool create_datasets_for_regions(legion_hdf5_t & hdf5_file, int file_idx);
 
-  bool read_string_from_hdf5_file(legion_hdf5_t &hdf5_file, int file_idx, const char* group_name, const char* dataset_name, std::string &str);
+  bool write_string_to_hdf5_file(legion_hdf5_t & hdf5_file,
+    int rank_id,
+    const char * group_name,
+    const char * dataset_name,
+    const char * str,
+    size_t size);
+
+  bool read_string_from_hdf5_file(legion_hdf5_t & hdf5_file,
+    int file_idx,
+    const char * group_name,
+    const char * dataset_name,
+    std::string & str);
   
   void add_regions(legion_hdf5_t &hdf5_file, std::vector<legion_hdf5_region_t> &hdf5_region_vector);
   

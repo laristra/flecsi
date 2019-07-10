@@ -12,31 +12,41 @@
    All rights reserved.
                                                                               */
 
-/*! @file */
+#include <flecsi/utils/flog/packet.hh>
+#include <flecsi/utils/flog/state.hh>
+#include <flecsi/utils/flog/utils.hh>
 
-#include <memory>
-
-#include"demangle.h"
-
-#if defined(__GNUG__)
-#include <cxxabi.h>
-#endif
+#if defined(FLECSI_ENABLE_FLOG)
 
 namespace flecsi {
 namespace utils {
+namespace flog {
 
-std::string
-demangle(const char * const name) {
-#if defined(__GNUG__)
-  int status = -4;
-  std::unique_ptr<char, void (*)(void *)> res{
-    abi::__cxa_demangle(name, NULL, NULL, &status), std::free};
-  if(status == 0)
-    return res.get();
+#if defined(FLOG_ENABLE_MPI)
+
+void
+send_to_one() {
+
+#if 0
+  if(flog_t::instance().initialized()) {
+
+    binary_serializer_t serializer;
+    //serializer << flog_t::instance().
+
+    int * sizes = flog_t::instance().rank() == 0 ?
+      new int[flog_t::instance().size()] : nullptr;
+
+    MPI_Gather();
+    MPI_Gatherv();
+  } // if
 #endif
-  // does nothing if not __GNUG__, or if abi::__cxa_demangle failed
-  return name;
-} // demangle
 
+} // send_to_one
+
+#endif // FLOG_ENABLE_MPI
+
+} // namespace flog
 } // namespace utils
 } // namespace flecsi
+
+#endif // FLECSI_ENABLE_FLOG

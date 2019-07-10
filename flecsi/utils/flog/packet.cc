@@ -12,6 +12,7 @@
    All rights reserved.
                                                                               */
 #include "packet.hh"
+#include "state.hh"
 #include "types.hh"
 
 #if defined(FLECSI_ENABLE_FLOG)
@@ -23,22 +24,21 @@ namespace flog {
 #if defined(FLOG_ENABLE_MPI)
 void
 flush_packets() {
-  while(mpi_state_t::instance().run_flusher()) {
+  while(flog_t::instance().run_flusher()) {
     usleep(FLOG_PACKET_FLUSH_INTERVAL);
 
     {
-      std::lock_guard<std::mutex> guard(
-        mpi_state_t::instance().packets_mutex());
+      std::lock_guard<std::mutex> guard(flog_t::instance().packets_mutex());
 
-      if(mpi_state_t::instance().packets().size()) {
-        std::sort(mpi_state_t::instance().packets().begin(),
-          mpi_state_t::instance().packets().end());
+      if(flog_t::instance().packets().size()) {
+        std::sort(flog_t::instance().packets().begin(),
+          flog_t::instance().packets().end());
 
-        for(auto & p : mpi_state_t::instance().packets()) {
+        for(auto & p : flog_t::instance().packets()) {
           flog_t::instance().stream() << p.message();
         } // for
 
-        mpi_state_t::instance().packets().clear();
+        flog_t::instance().packets().clear();
       } // if
     } // scope
 

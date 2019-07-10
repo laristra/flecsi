@@ -21,6 +21,7 @@
 
 #if defined(FLECSI_ENABLE_FLOG)
 #include <flecsi/utils/flog/message.hh>
+#include <flecsi/utils/flog/tag_scope.hh>
 #endif
 
 #include <iostream>
@@ -65,7 +66,7 @@
 #define flog_tag_guard(name)                                                   \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::utils::flog::flog_tag_scope_t name##_flog_tag_scope__(               \
+  flecsi::utils::flog::tag_scope_t name##_flog_tag_scope__(                    \
     flecsi::utils::flog::flog_t::instance().lookup_tag(_flog_stringify(name)))
 
 /*!

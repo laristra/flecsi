@@ -38,7 +38,8 @@ namespace execution {
  */
 
 template<typename ITERATOR, typename LAMBDA>
-parallel_for(ITERATOR const iterator, LAMBDA const lambda,
+parallel_for(ITERATOR const iterator,
+  LAMBDA const lambda,
   std::string const & name = "") {
 
   struct functor_t {
@@ -67,9 +68,10 @@ parallel_for(ITERATOR const iterator, LAMBDA const lambda,
 
 // We will need this when/if we begin to customize behavior based on
 // ITERATOR type.
-//template<typename ITERATOR> struct forall_u {};
+// template<typename ITERATOR> struct forall_u {};
 
-template<typename ITERATOR> struct forall_u {
+template<typename ITERATOR>
+struct forall_u {
 
   /*!
     Construct a forall_u instance.
@@ -93,7 +95,7 @@ template<typename ITERATOR> struct forall_u {
     functor_u(ITERATOR iterator, LAMBDA lambda, std::string const & name)
       : iterator_(iterator), lambda_(lambda), name_(name) {}
 
-    void operator() (int64_t i) const {
+    void operator()(int64_t i) const {
       lambda_(iterator_[i]);
     } // operator()
 
@@ -112,9 +114,9 @@ template<typename ITERATOR> struct forall_u {
    */
 
   template<typename CALLABLE>
-  void operator<< (CALLABLE l) {
-    Kokkos::parallel_for(name_, iterator_.size(),
-      functor_t{iterator_, lambda_});
+  void operator<<(CALLABLE l) {
+    Kokkos::parallel_for(
+      name_, iterator_.size(), functor_t{iterator_, lambda_});
   } // operator<<
 
 private:

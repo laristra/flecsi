@@ -37,6 +37,12 @@ simple(int value) {
   }
 } // simple
 
+template<class T>
+void simple2(T t) {
+  flog_tag_guard(task);
+  flog(info) << "simple2(" << t << ")\n";
+}
+
 flecsi_register_task(simple, task, loc, index);
 
 } // namespace task
@@ -53,6 +59,8 @@ test_driver(int argc, char ** argv) {
   flecsi_execute_task(simple, task, single, 10);
 
   flecsi_execute_task(simple, task, index, 8);
+
+  task_interface_t::execute<task::simple2<float>>(6.1);
 
   return FTEST_RESULT();
 }

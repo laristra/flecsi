@@ -123,11 +123,21 @@ timestamp(bool underscores = false) {
  */
 
 template<char C>
-std::string
+inline std::string
 rstrip(const char * file) {
   std::string tmp(file);
   return tmp.substr(tmp.rfind(C) + 1);
 } // rstrip
+
+#ifndef FLOG_SERIALIZATION_INTERVAL
+#define FLOG_SERIALIZATION_INTERVAL 1
+#endif
+
+/*!
+  Serialize output to a single process.
+ */
+
+void send_to_one();
 
 } // namespace flog
 } // namespace utils

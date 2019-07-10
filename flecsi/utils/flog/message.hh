@@ -17,6 +17,7 @@
 
 #include <flecsi-config.h>
 
+#include <flecsi/utils/flog/state.hh>
 #include <flecsi/utils/flog/types.hh>
 #include <flecsi/utils/flog/utils.hh>
 
@@ -78,7 +79,7 @@ struct log_message_t {
 
 #if defined(FLOG_ENABLE_MPI)
     if(can_send_to_one_ && flog_t::instance().initialized()) {
-      send_to_one(flog_t::instance().buffer_stream().str().c_str());
+      flog_t::instance().buffer_output();
     }
     else {
       if(!flog_t::instance().initialized()) {
@@ -155,7 +156,7 @@ protected:
 #define message_stamp timestamp() << " " << rstrip<'/'>(file_) << ":" << line_
 
 #if defined(FLOG_ENABLE_MPI)
-#define mpi_stamp " c" << mpi_state_t::instance().rank()
+#define mpi_stamp " c" << flog_t::instance().rank()
 #else
 #define mpi_stamp ""
 #endif

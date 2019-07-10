@@ -22,6 +22,10 @@
 #include <flecsi/execution/common/processor.hh>
 #endif
 
+#include"../utils/demangle.hh"  // symbol
+// We can't use internal.hh; it depends on us.
+#include"../utils/function_traits.hh"
+
 #include <iostream>
 #include <string>
 
@@ -39,6 +43,12 @@ namespace execution {
 
 template<typename EXECUTION_POLICY>
 struct task_interface_u {
+  /// An arbitrary index for each task function.
+  /// \tparam F task function
+  /// \tparam P processor type
+  /// \tparam L launch type
+  template<auto &F,processor_type_t P,launch_type_t L>
+  static const std::size_t task_id;
 
   /*!
     Register a task with the FleCSI runtime.
@@ -64,8 +74,8 @@ struct task_interface_u {
     task_execution_type_t execution,
     std::string name) {
     return EXECUTION_POLICY::
-      template register_task<KEY, RETURN, ARG_TUPLE, DELEGATE>(
-        processor, execution, name);
+      template register_task<RETURN, ARG_TUPLE, DELEGATE>
+        (KEY, processor, execution, name);
   } // register_task
 
   /*!
@@ -85,27 +95,44 @@ struct task_interface_u {
     Execute a task.
 
     @tparam LAUNCH    The launch mode for this task execution.
-    @tparam TASK      The task hash key.
     @tparam REDUCTION The reduction operation hash key.
     @tparam RETURN    The return type of the task.
     @tparam ARG_TUPLE A std::tuple of the user task argument types.
     @tparam ARGS      The task arguments.
 
-    @param domain_key A hash from the domain name
+    @param TASK      The task hash key.
     @param args   The arguments to pass to the user task during execution.
    */
 
-  template<size_t TASK,
+  template<
     size_t LAUNCH_DOMAIN,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(ARGS &&... args) {
+  static decltype(auto) execute_task(std::size_t TASK,ARGS &&... args) {
     return EXECUTION_POLICY::
-      template execute_task<TASK, LAUNCH_DOMAIN, REDUCTION, RETURN, ARG_TUPLE>(
+      template execute_task<LAUNCH_DOMAIN, REDUCTION, RETURN, ARG_TUPLE>(TASK,
         std::forward<ARGS>(args)...);
   } // execute_task
+
+  /// Execute a task.
+  /// \tparam F task function
+  /// \tparam P processor type
+  /// \tparam L launch type
+  /// \tparam Dom launch domain
+  /// \tparam Args task argument types
+  /// \param args task arguments
+  template<auto &F,processor_type_t P=loc,launch_type_t L=index,
+           std::size_t Dom=flecsi_internal_hash(single),
+           typename ...Args>
+  static decltype(auto) execute(Args &&...args) {
+    using Traits=utils::function_traits_u<decltype(F)>;
+    return EXECUTION_POLICY::template execute_task
+      <Dom,flecsi_internal_hash(0),typename Traits::return_type,
+       typename Traits::arguments_type>
+      (task_id<F,P,L>,std::forward<Args>(args)...);
+  }
 
   /*!
     Register a custom reduction operation.
@@ -124,7 +151,24 @@ struct task_interface_u {
       HASH, wrapper_t::registration_callback);
   } // register_reduction_operation
 
+private:
+  template<auto &F>
+  static std::size_t register_task(processor_type_t p,
+                                   task_execution_type_t e) {
+    using Traits=utils::function_traits_u<decltype(F)>;
+    using Args=typename Traits::arguments_type;
+    constexpr auto delegate=+[](Args a) {return std::apply(F,a);};
+    EXECUTION_POLICY::template register_task
+      <typename Traits::return_type,Args,delegate>
+      (next_task,p,e,utils::symbol<F>());
+    return next_task++;
+  }
+
+  static inline std::size_t next_task=0;
 }; // struct task_interface_u
+
+template<class E> template<auto &F,processor_type_t P,launch_type_t L>
+const std::size_t task_interface_u<E>::task_id=register_task<F>(P,L);
 
 } // namespace execution
 } // namespace flecsi
