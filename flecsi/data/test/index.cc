@@ -21,9 +21,9 @@
 using namespace flecsi;
 
 namespace {
-  const data::field_interface_t::field<double> ifld(2);
-  const auto fh=ifld(flecsi_index_topology);
-}
+const data::field_interface_t::field<double> ifld(2);
+const auto fh = ifld(flecsi_index_topology);
+} // namespace
 
 template<size_t PRIVILEGES>
 using accessor =
@@ -57,8 +57,8 @@ flecsi_register_task(check, index_test, loc, index);
 int
 index_topology(int argc, char ** argv) {
 
-  flecsi_execute_task(assign, index_test, index, pressure);
-  flecsi_execute_task(check, index_test, index, pressure);
+  flecsi_execute_task(assign, index_test, index, fh);
+  flecsi_execute_task(check, index_test, index, fh);
 
   return 0;
 } // index

@@ -129,8 +129,7 @@
   @ingroup data
  */
 
-#define flecsi_field_instance(                                                 \
-  topology, nspace, name, storage_class, version)                              \
+#define flecsi_field_instance(topology, nspace, name, storage_class, version)  \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
@@ -167,13 +166,17 @@
 #define flecsi_add_global_field(nspace, name, data_type, versions)             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi_add_field(::flecsi::topology::global_topology_t,nspace,name,          \
-    data_type,global,versions)
+  flecsi_add_field(::flecsi::topology::global_topology_t,                      \
+    nspace,                                                                    \
+    name,                                                                      \
+    data_type,                                                                 \
+    global,                                                                    \
+    versions)
 
 /// The global topology.
-#define flecsi_global_topology                                    \
-  flecsi_topology_reference(flecsi::topology::global_topology_t,  \
-                            "internal","global_topology")
+#define flecsi_global_topology                                                 \
+  flecsi_topology_reference(                                                   \
+    flecsi::topology::global_topology_t, "internal", "global_topology")
 
 /*!
   @def flecsi_global_field_instance
@@ -194,12 +197,7 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_field_instance(                                                       \
-    flecsi_global_topology,                                                    \
-    nspace,                                                                    \
-    name,                                                                      \
-    global,                                                                    \
-    version)
+  flecsi_field_instance(flecsi_global_topology, nspace, name, global, version)
 
 /*----------------------------------------------------------------------------*
   Default Index Topology Interface.
@@ -226,13 +224,17 @@
 #define flecsi_add_index_field(nspace, name, data_type, versions)              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi_add_field(::flecsi::topology::index_topology_t,nspace,name,           \
-    data_type,index,versions)
+  flecsi_add_field(::flecsi::topology::index_topology_t,                       \
+    nspace,                                                                    \
+    name,                                                                      \
+    data_type,                                                                 \
+    index,                                                                     \
+    versions)
 
 /// The default index topology.
-#define flecsi_index_topology                                   \
-  flecsi_topology_reference(flecsi::topology::index_topology_t, \
-                            "internal","index_topology")
+#define flecsi_index_topology                                                  \
+  flecsi_topology_reference(                                                   \
+    flecsi::topology::index_topology_t, "internal", "index_topology")
 
 /*!
   @def flecsi_index_field_instance
@@ -253,9 +255,4 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_field_instance(                                                       \
-    flecsi_index_topology,                                                     \
-    nspace,                                                                    \
-    name,                                                                      \
-    index,                                                                     \
-    version)
+  flecsi_field_instance(flecsi_index_topology, nspace, name, index, version)
