@@ -20,8 +20,8 @@
 
 using namespace flecsi;
 
-flecsi_add_index_field("test", "value", double, 2);
-inline auto fh = flecsi_index_field_instance("test", "value", double, 0);
+flecsi_add_index_field("test", "pressure", double, 2);
+inline auto pressure = flecsi_index_field_instance("test", "pressure", double, 0);
 
 template<size_t PRIVILEGES>
 using accessor =
@@ -55,8 +55,8 @@ flecsi_register_task(check, index_test, loc, index);
 int
 index_topology(int argc, char ** argv) {
 
-  flecsi_execute_task(assign, index_test, index, fh);
-  flecsi_execute_task(check, index_test, index, fh);
+  flecsi_execute_task(assign, index_test, index, pressure);
+  flecsi_execute_task(check, index_test, index, pressure);
 
   return 0;
 } // index
