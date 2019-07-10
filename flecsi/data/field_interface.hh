@@ -23,9 +23,9 @@
  */
 
 // Needed for storage_class.hh and for FLECSI_RUNTIME_DATA_POLICY:
-#include "common/storage_class.hh"
-#include "flecsi/runtime/data_policy.hh"
+#include <flecsi/runtime/data_policy.hh>
 #include <flecsi/data/common/data_reference.hh>
+#include <flecsi/data/common/storage_class.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
