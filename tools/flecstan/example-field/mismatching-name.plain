@@ -1,0 +1,12 @@
+Error:
+   The flecsi_get_handle() macro call here:
+      file mismatching-name.cc, line 27
+   with:
+      namespace = "example"
+      name      = "presure"
+   does not match with namespace + name in any flecsi_register_field() call.
+   Check if either is misspelled, or misspelled in a flecsi_register_field(),
+   or not registered in any flecsi_register_field() at all.
+
+Synopsis:
+   1 error

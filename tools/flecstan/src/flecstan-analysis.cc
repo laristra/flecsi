@@ -63,9 +63,15 @@ vector<macro>: matched
 std::string
 uflcs(const flecsi_base & base, const bool print_scope) {
   std::ostringstream oss;
-  oss << base.unit << ": "
-      << print_flc(
-           "file ", ", line ", ", column ", base.location, base.spelling);
+
+  // prefix with translation unit only if it's different from the file
+  // in which the macro call was triggered (which would be different from
+  // translation unit if, say, the macro call were in an #included header)
+  if(base.unit != base.location.file)
+    oss << base.unit << ": ";
+
+  oss << print_flc(
+    "file ", ", line ", ", column ", base.location, base.spelling);
 
   // scope
   if(print_scope) {
@@ -424,7 +430,150 @@ analyze_flecsi_register_color(const flecstan::Yaml & yaml) {
 static exit_status_t
 analyze_flecsi_get_handle(const flecstan::Yaml & yaml) {
   flecstan_im(flecsi_get_handle);
-  // ( ) write something here
+
+  /*
+  Let's check here for the following problems:
+     - Pair {nspace,name} that matches none in any register_field
+     - Match is incompatible in view of the client handle (first argument)
+       ...fixme not implemented yet
+     - Match, but with a different data model (e.g. sparse instead of dense)
+     - Match, but with a different data type (e.g. int instead of double)
+     - Match, but with an out-of-range version (e.g. pressure #4 of 0,1,2,3)
+  */
+
+  /*
+  unit:            wrong-mesh-type-in-handle.cc
+
+  location:
+    file:            wrong-mesh-type-in-handle.cc
+    line:            '37'
+    column:          '13'
+
+  spelling:
+    file:            wrong-mesh-type-in-handle.cc
+    line:            '37'
+    column:          '13'
+
+  scope:           []
+
+  client_handle:   m
+  nspace:          example
+  name:            pressure
+  data_type:       double
+  storage_class:   dense
+  version:         0
+  */
+
+  // Loop over [flecsi_get_handle] calls...
+  for(auto gh : yaml.flecsi_get_handle.matched) {
+    // {nspace,name}
+    const std::pair<std::string, std::string> pair(gh.nspace, gh.name);
+
+    // Is {nspace,name} in any [flecsi_register_field] call?
+    flecsi_register_field rf;
+    bool pair_was_registered = false;
+    for(auto rfiter : yaml.flecsi_register_field.matched) {
+      const std::pair<std::string, std::string> p(rfiter.nspace, rfiter.name);
+      if(pair == p) {
+        pair_was_registered = true;
+        rf = rfiter;
+      }
+    }
+    if(!pair_was_registered) {
+      /*
+      status = error(
+         "The flecsi_get_handle() macro call here:\n   "
+         + uflcs(gh,false) + "\n"
+         "with namespace=" + pair.first + " and name=" + pair.second +
+         ", matches with no namespace\n"
+         "and/or name in any flecsi_register_field() macro call. "
+         "Check if namespace\n"
+         "and/or name was misspelled here, misspelled in any "
+         "flecsi_register_field()\n"
+         "call, or not placed into any flecsi_register_field() at all."
+      );
+      */
+      status = error(
+        "The flecsi_get_handle() macro call here:\n   " + uflcs(gh, false) +
+        "\n"
+        "with:\n"
+        "   namespace = \"" +
+        pair.first +
+        "\"\n"
+        "   name      = \"" +
+        pair.second +
+        "\"\n"
+        "does not match with namespace + name in any "
+        "flecsi_register_field() call.\n"
+        "Check if either is misspelled, or misspelled "
+        "in a flecsi_register_field(),\n"
+        "or not registered in any flecsi_register_field() at all.\n");
+      break;
+    }
+
+    // ------------------------
+    // At this point:
+    // gh = this get_handle(),
+    // rf = the matching
+    // register_field() call.
+    // ------------------------
+
+    // Does the field's data model match?
+    if(gh.storage_class != rf.storage_class) {
+      status = error(
+        "The flecsi_get_handle() macro call here:\n   " + uflcs(gh, false) +
+        "\n"
+        "is inconsistent with the matching flecsi_register_field() "
+        "call here:\n   " +
+        uflcs(rf, false) +
+        "\n"
+        "because the storage class was registered as " +
+        rf.storage_class + ",\nbut retrieved as " + gh.storage_class + ".");
+      break;
+    }
+
+    // Does the field's type match?
+    if(gh.data_type != rf.data_type) {
+      status = error(
+        "The flecsi_get_handle() macro call here:\n   " + uflcs(gh, false) +
+        "\n"
+        "is inconsistent with the matching flecsi_register_field() "
+        "call here:\n   " +
+        uflcs(rf, false) +
+        "\n"
+        "because the data type was registered as " +
+        rf.data_type + ",\nbut retrieved as " + gh.data_type + ".");
+      break;
+    }
+
+    // Is the field's version in-range?
+    if(!(gh.version < rf.versions)) {
+      std::string str;
+
+      if(rf.versions == 0)
+        str = "because 0 versions were registered!";
+      else if(rf.versions == 1)
+        str = "because 1 version "
+              "(index [0]) "
+              "was registered,\nbut version [" +
+              std::to_string(gh.version) + "] was retrieved.";
+      else
+        str = "because " + std::to_string(rf.versions) + " versions " +
+              "(indices [0]..[" + std::to_string(rf.versions - 1) +
+              "]) "
+              "were registered,\nbut version [" +
+              std::to_string(gh.version) + "] was retrieved.";
+
+      status = error(
+        "The flecsi_get_handle() macro call here:\n   " + uflcs(gh, false) +
+        "\n"
+        "is inconsistent with the matching flecsi_register_field() "
+        "call here:\n   " +
+        uflcs(rf, false) + "\n" + str);
+      break;
+    }
+  }
+
   return status;
 }
 

@@ -1,0 +1,10 @@
+Error:
+   The flecsi_get_handle() macro call here:
+      file version-out-of-range.cc, line 27
+   is inconsistent with the matching flecsi_register_field() call here:
+      file version-out-of-range.cc, line 17
+   because 1 version (index [0]) was registered,
+   but version [1] was retrieved.
+
+Synopsis:
+   1 error

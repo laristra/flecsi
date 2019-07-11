@@ -1,0 +1,175 @@
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCommand[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[32;21mNote:[0m
+   [32;21mQueueing JSON file mismatching-namespace.json.[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mCompilation[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[35;21mFile:[0m
+   [35;21mmismatching-namespace.json[0m
+
+[35;21mFile:[0m
+   [35;21mmismatching-namespace.json: /home/staley/flecsi/flecsi-tutorial/specialization/control/control.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[35;21mFile:[0m
+   [35;21mmismatching-namespace.json: mismatching-namespace.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_data_client[0m
+   [36;1mArgs: mesh_t, clients, mesh[0m
+   [36;1mFile: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/mesh.h[0m
+   [36;1mLine: 71[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_field[0m
+   [36;1mArgs: mesh_t, example, pressure, double, dense, 1, cells[0m
+   [36;1mFile: mismatching-namespace.cc[0m
+   [36;1mLine: 16[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_get_client_handle[0m
+   [36;1mArgs: mesh_t, clients, mesh[0m
+   [36;1mFile: mismatching-namespace.cc[0m
+   [36;1mLine: 23[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_get_handle[0m
+   [36;1mArgs: m, exmaple, pressure, double, dense, 0[0m
+   [36;1mFile: mismatching-namespace.cc[0m
+   [36;1mLine: 26[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::data::data_client_interface_u::register_data_client[0m
+   [36;1mMatches macro: flecsi_register_data_client (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/mesh.h, line 71)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::data::field_interface_u::register_field[0m
+   [36;1mMatches macro: flecsi_register_field (file mismatching-namespace.cc, line 16)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::data::data_client_interface_u::get_client_handle[0m
+   [36;1mMatches macro: flecsi_get_client_handle (file mismatching-namespace.cc, line 23)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::data::field_interface_u::get_handle[0m
+   [36;1mMatches macro: flecsi_get_handle (file mismatching-namespace.cc, line 26)[0m
+
+[35;21mFile:[0m
+   [35;21mmismatching-namespace.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_mpi_task[0m
+   [36;1mArgs: add_colorings, flecsi::tutorial[0m
+   [36;1mFile: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h[0m
+   [36;1mLine: 29[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_mpi_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h, line 29)[0m
+
+[35;21mFile:[0m
+   [35;21mmismatching-namespace.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc[0m
+
+[34;1mScanning for FleCSI macros...[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_mpi_task[0m
+   [36;1mArgs: add_colorings, flecsi::tutorial[0m
+   [36;1mFile: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h[0m
+   [36;1mLine: 29[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_data_client[0m
+   [36;1mArgs: mesh_t, clients, mesh[0m
+   [36;1mFile: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/mesh.h[0m
+   [36;1mLine: 71[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_register_task[0m
+   [36;1mArgs: initialize_mesh, flecsi::tutorial, loc, index[0m
+   [36;1mFile: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/tasks.h[0m
+   [36;1mLine: 78[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_mpi_task[0m
+   [36;1mArgs: add_colorings, flecsi::tutorial, map[0m
+   [36;1mFile: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc[0m
+   [36;1mLine: 36[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_get_client_handle[0m
+   [36;1mArgs: mesh_t, clients, mesh[0m
+   [36;1mFile: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc[0m
+   [36;1mLine: 77[0m
+
+[34;1mMacro:[0m
+   [36;1mName: flecsi_execute_task[0m
+   [36;1mArgs: initialize_mesh, flecsi::tutorial, index, mh[0m
+   [36;1mFile: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc[0m
+   [36;1mLine: 78[0m
+
+[34;1mVisiting the C++ abstract syntax tree...[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_mpi_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h, line 29)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::data::data_client_interface_u::register_data_client[0m
+   [36;1mMatches macro: flecsi_register_data_client (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/mesh.h, line 71)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::register_task[0m
+   [36;1mMatches macro: flecsi_register_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/tasks.h, line 78)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::execute_task[0m
+   [36;1mMatches macro: flecsi_execute_mpi_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc, line 36)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::data::data_client_interface_u::get_client_handle[0m
+   [36;1mMatches macro: flecsi_get_client_handle (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc, line 77)[0m
+
+[34;1mLink:[0m
+   [36;1mFunction call: flecsi::execution::task_interface_u::execute_task[0m
+   [36;1mMatches macro: flecsi_execute_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc, line 78)[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mAnalysis[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[31;21mError:[0m
+   [31;21mThe flecsi_get_handle() macro call here:[0m
+   [31;21m   file mismatching-namespace.cc, line 26[0m
+   [31;21mwith:[0m
+   [31;21m   namespace = "exmaple"[0m
+   [31;21m   name      = "pressure"[0m
+   [31;21mdoes not match with namespace + name in any flecsi_register_field() call.[0m
+   [31;21mCheck if either is misspelled, or misspelled in a flecsi_register_field(),[0m
+   [31;21mor not registered in any flecsi_register_field() at all.
+[0m
+[34;1mSynopsis:[0m
+   [36;1m1 error[0m
+
+[30;1m--------------------------------------------------------------------------------[0m
+[30;1mSummary[0m
+[30;1m--------------------------------------------------------------------------------[0m
+
+[33;1mWarning:[0m
+   [33;1mFleCSI static analysis may be incomplete; errors occurred.[0m
