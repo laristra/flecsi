@@ -1,6 +1,6 @@
 
 /*
-# Mismatching name
+# Mismatching namespace
 flecsi_register_field(mesh_t, example, pressure, double, dense, 1, cells);
 auto f = flecsi_get_handle(m, exmaple, pressure, double, dense, 0);
 */

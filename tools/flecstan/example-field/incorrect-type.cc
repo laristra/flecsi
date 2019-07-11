@@ -23,7 +23,7 @@ void driver(int argc, char **argv)
 {
    auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
 
-   // The error here is "int" when we mean "double"
+   // The error here is "int" when we want "double"
    auto f = flecsi_get_handle(m, example, pressure, int, dense, 0);
 }
 

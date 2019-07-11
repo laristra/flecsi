@@ -49,6 +49,6 @@ Output
 Sample output files come from running the Flecsi Static Analyzer in a few
 different ways:
 
-   - ``*.full``   With no particular command-line options
+   - ``*.full``   Full output, and with ``--no-color``
    - ``*.color``  With ``--quiet`` mode
    - ``*.plain``  With ``--quiet`` mode and ``--no-color``
