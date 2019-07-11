@@ -288,7 +288,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       handle(item);
     }
   }
-  /* begin (zojdberg edit)
+  /* 
    * Handle tuple of items
    */
 
@@ -308,7 +308,6 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       std::make_index_sequence<sizeof...(Ts)>{}
     );
   }
-  /* end (zojdberg edit) */
 
   /*!
     This method is called on any task arguments that are not handles, e.g.

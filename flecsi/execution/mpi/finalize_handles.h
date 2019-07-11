@@ -205,7 +205,7 @@ struct finalize_handles_t
       handle(item);
   }
 
-  /* begin (zojdberg edit)
+  /*
    * Handle tuple of items
    */
 
@@ -225,7 +225,6 @@ struct finalize_handles_t
       std::make_index_sequence<sizeof...(Ts)>{}
     );
   }
-  /* end (zojdberg edit) */
 
   //-----------------------------------------------------------------------//
   // If this is not a data handle, then simply skip it.
