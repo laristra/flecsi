@@ -3,10 +3,10 @@
 ###################
 
 stages:
+  - Env
   - Canary
   - Build
   - Test
-  - Format
   - Tutorials
   - Apps
 
@@ -19,14 +19,89 @@ variables:
   CI_JOB_NAME_TMP: ${CI_JOB_NAME}
   CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME_TMP#*:}
   #CI_DEBUG_TRACE: "true"
+  http_proxy: "http://proxyout.lanl.gov:8080"
+  https_proxy: "http://proxyout.lanl.gov:8080"
+  ftp_proxy: "http://proxyout.lanl.gov:8080"
+  no_proxy: "lanl.gov"
+  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
+  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
+  lock_fd: 314
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
+  - |
+    if [[ ${CI_RUNNER_TAGS} = "shell" ]];
+    then
+      module load intel/19.0.2;
+      module load python/3.5.1;
+      module load cmake/3.12.4;
+      module load clang/7.0.0;
+      module unload gcc;
+      module load gcc/7.3.0;
+      source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
+      spack load -r flecsi~graphviz%intel@19.0.2 backend=$RUNTIME || /bin/true;
+      spack unload flecsi~graphviz%intel@19.0.2 backend=$RUNTIME || /bin/true;
+      module list;
+    fi
 
 ###################
 ###################
 ###################
+
+#############
+# Env Stage #
+#############
+
+.env:
+  retry: 2
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
+    CCACHE_UMASK: 000
+    DISTRO: ""
+    RUNTIME: ""
+    CC: "gcc"
+    CXX: "g++"
+    CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+    BUILD_TYPE: "Debug"
+    IGNORE_NOCI: "FALSE"
+  stage: Env
+  tags:
+    - shell
+  cache:
+    #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
+    #key: ${CI_COMMIT_REF_SLUG}
+    # key: ${DISTRO}-${RUNTIME}-${CC}
+    # paths:
+    #   - ccache/
+  artifacts:
+    # name: "${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}"
+    # paths:
+    #   - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsi/build
+    # when: always
+  dependencies: []
+  script:
+    - mkdir -p build
+    - cd ${CI_PROJECT_DIR}/build/
+    - cp ${CI_PROJECT_DIR}/spack/repo_env.yaml ./spack.yaml
+    - exec {lock_fd}>${DEPS_LOCK}
+    - |
+      if [[ ${I_WANT_TO_CLEAN_UP} ]];
+      then
+        rm -rf ${SPACK_ROOT}/*;
+      fi
+    - flock -n "${lock_fd}"
+    - |
+      if [[ ! -d ${SPACK_ROOT} ]];
+      then
+        git init --shared=group ${SPACK_ROOT};
+        git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
+      fi
+    - source ${SPACK_ROOT}/share/spack/setup-env.sh
+    - spack repo add ${SPACK_ROOT}/var/spack/repos/builtin/ || /bin/true
+    - spack install flecsi~graphviz%intel@19.0.2 backend=mpi
+    - flock -u "${lock_fd}"
 
 ################
 # Canary Stage #
@@ -72,7 +147,19 @@ before_script:
         # git config submodule.cinch.url https://github.com/laristra/cinch.git;
         # git submodule update --init --recursive;
         mkdir -p build;
-        cd build;
+        cd ${CI_PROJECT_DIR}/build/;
+        echo 'cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+                -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+                ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
+                -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
+                -DENABLE_UNIT_TESTS=ON \
+                -DENABLE_PARMETIS=ON \
+                -DENABLE_COLORING=ON \
+                -DENABLE_DOXYGEN=OFF \
+                -DENABLE_FLECSTAN=$([ "$CI_RUNNER_TAGS" = "shell" ] && echo OFF || echo ON) \
+                -DENABLE_DOCUMENTATION=OFF \
+                -DENABLE_COVERAGE_BUILD=ON \
+                ..';
         cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
@@ -80,33 +167,42 @@ before_script:
           -DENABLE_UNIT_TESTS=ON \
           -DENABLE_PARMETIS=ON \
           -DENABLE_COLORING=ON \
-          -DENABLE_DOXYGEN=ON \
+          -DENABLE_DOXYGEN=OFF \
           -DENABLE_FLECSTAN=ON \
+          -DENABLE_FLECSTAN=$([ "$CI_RUNNER_TAGS" = "shell" ] && echo OFF || echo ON) \
           -DENABLE_DOCUMENTATION=OFF \
           -DENABLE_COVERAGE_BUILD=ON \
           ..;
+        echo 'make -k VERBOSE=1 -j2 -l80';
         make -k VERBOSE=1 -j2 -l80;
-        make doxygen;
         mkdir -p install;
+        echo 'make install DESTDIR=install';
         make install DESTDIR=install;
-        sudo make install;
+        if [[ ${CI_RUNNER_TAGS} = "docker" ]];
+        then
+          sudo make install;
+        fi;
         ccache -s;
-      fi;
+      fi
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" || ${CI_JOB_STAGE} = "Test" ]];
       then
         cd ${CI_PROJECT_DIR}/build/;
+        echo 'make test ARGS="-V"';
         make test ARGS="-V";
-        $HOME/.local/bin/gcovr .;
-      fi;
+        echo 'gcovr .';
+        gcovr .;
+      fi
     - |
       if [[ ${CI_JOB_STAGE} = "Canary" ]];
       then
         echo 'Format Checking';
         cd ${CI_PROJECT_DIR}/build/;
+        echo 'clang-format -version';
         clang-format -version;
+        echo 'make format && git diff --exit-code --ignore-submodules';
         make format && git diff --exit-code --ignore-submodules;
-      fi;
+      fi
     - |
       if [[ ${CI_JOB_STAGE} = "Tutorials" ]];
       then
@@ -135,11 +231,17 @@ before_script:
         cd ../;
         mkdir build;
         cd build;
+        echo 'cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+                -DFLECSI_RUNTIME_MODEL=mpi \
+                -DENABLE_UNIT_TESTS=ON \
+                ..';
         cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
           -DFLECSI_RUNTIME_MODEL=mpi \
           -DENABLE_UNIT_TESTS=ON \
           ..;
+        echo 'make -j2 || make VERBOSE=1';
         make -j2 || make VERBOSE=1;
+        echo 'make test ARGS="CTEST_OUTPUT_ON_FAILURE=1"';
         make test ARGS="CTEST_OUTPUT_ON_FAILURE=1";
       fi;
 
@@ -203,6 +305,13 @@ before_script:
 ################
 ################
 
+############
+# Env Jobs #
+############
+
+env:
+  extends: .env
+
 ###############
 # Canary Jobs #
 ###############
@@ -225,6 +334,15 @@ canary:fedora_hpx:
     DISTRO: "fedora"
     RUNTIME: "hpx"
   allow_failure: true 
+
+#canary:centOS_mpi:
+#  extends: .canary
+#  tags:
+#    - shell
+#  image: 
+#  variables:
+#    DISTRO: "centOS"
+#    RUNTIME: "mpi"
 
 ##############
 # Build Jobs #
@@ -421,6 +539,28 @@ build:ubuntu_hpx_clang:
   variables:
     CC: clang
     CXX: clang++
+
+build:centOS_legion_intel:
+  extends: .build
+  tags:
+    - shell
+  image:
+  variables:
+    DISTRO: "centOS"
+    RUNTIME: "legion"
+    CC: icc
+    CXX: icc
+
+build:centOS_mpi_intel:
+  extends: .build
+  tags:
+    - shell
+  image:
+  variables:
+    DISTRO: "centOS"
+    RUNTIME: "mpi"
+    CC: icc
+    CXX: icc
 
 #############
 # Test Jobs #
@@ -647,6 +787,29 @@ test:ubuntu_hpx.ignoreNoCI:
   variables:
     IGNORE_NOCI: "TRUE"
   allow_failure: true
+
+test:centOS_legion_intel:
+  extends: .test
+  tags:
+    - shell
+  image:
+  variables:
+    DISTRO: "centOS"
+    RUNTIME: "legion"
+  dependencies:
+    - build:centOS_legion_intel
+  allow_failure: true
+
+test:centOS_mpi_intel:
+  extends: .test
+  tags:
+    - shell
+  image:
+  variables:
+    DISTRO: "centOS"
+    RUNTIME: "mpi"
+  dependencies:
+    - build:centOS_mpi_intel
 
 ##################
 # Tutorials Jobs #
