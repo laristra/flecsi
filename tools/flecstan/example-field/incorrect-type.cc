@@ -1,4 +1,3 @@
-
 /*
 # Incorrect type
 flecsi_register_field(mesh_t, example, pressure, double, dense, 1, cells);

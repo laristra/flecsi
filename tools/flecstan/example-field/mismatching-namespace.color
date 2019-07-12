@@ -1,6 +1,6 @@
 [31;21mError:[0m
    [31;21mThe flecsi_get_handle() macro call here:[0m
-   [31;21m   file mismatching-namespace.cc, line 26[0m
+   [31;21m   file mismatching-namespace.cc, line 25[0m
    [31;21mwith:[0m
    [31;21m   namespace = "exmaple"[0m
    [31;21m   name      = "pressure"[0m

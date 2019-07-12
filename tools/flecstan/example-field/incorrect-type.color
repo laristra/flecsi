@@ -1,8 +1,8 @@
 [31;21mError:[0m
    [31;21mThe flecsi_get_handle() macro call here:[0m
-   [31;21m   file incorrect-type.cc, line 27[0m
+   [31;21m   file incorrect-type.cc, line 26[0m
    [31;21mis inconsistent with the matching flecsi_register_field() call here:[0m
-   [31;21m   file incorrect-type.cc, line 17[0m
+   [31;21m   file incorrect-type.cc, line 16[0m
    [31;21mbecause the data type was registered as double,[0m
    [31;21mbut retrieved as int.[0m
 

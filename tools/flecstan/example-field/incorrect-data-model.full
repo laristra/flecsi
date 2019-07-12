@@ -34,19 +34,19 @@ Macro:
    Name: flecsi_register_field
    Args: mesh_t, example, pressure, double, dense, 1, cells
    File: incorrect-data-model.cc
-   Line: 17
+   Line: 16
 
 Macro:
    Name: flecsi_get_client_handle
    Args: mesh_t, clients, mesh
    File: incorrect-data-model.cc
-   Line: 24
+   Line: 23
 
 Macro:
    Name: flecsi_get_handle
    Args: m, example, pressure, double, sparse, 0
    File: incorrect-data-model.cc
-   Line: 27
+   Line: 26
 
 Visiting the C++ abstract syntax tree...
 
@@ -56,15 +56,15 @@ Link:
 
 Link:
    Function call: flecsi::data::field_interface_u::register_field
-   Matches macro: flecsi_register_field (file incorrect-data-model.cc, line 17)
+   Matches macro: flecsi_register_field (file incorrect-data-model.cc, line 16)
 
 Link:
    Function call: flecsi::data::data_client_interface_u::get_client_handle
-   Matches macro: flecsi_get_client_handle (file incorrect-data-model.cc, line 24)
+   Matches macro: flecsi_get_client_handle (file incorrect-data-model.cc, line 23)
 
 Link:
    Function call: flecsi::data::field_interface_u::get_handle
-   Matches macro: flecsi_get_handle (file incorrect-data-model.cc, line 27)
+   Matches macro: flecsi_get_handle (file incorrect-data-model.cc, line 26)
 
 File:
    incorrect-data-model.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.cc
@@ -156,9 +156,9 @@ Analysis
 
 Error:
    The flecsi_get_handle() macro call here:
-      file incorrect-data-model.cc, line 27
+      file incorrect-data-model.cc, line 26
    is inconsistent with the matching flecsi_register_field() call here:
-      file incorrect-data-model.cc, line 17
+      file incorrect-data-model.cc, line 16
    because the storage class was registered as dense,
    but retrieved as sparse.
 

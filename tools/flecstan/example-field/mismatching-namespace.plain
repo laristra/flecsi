@@ -1,6 +1,6 @@
 Error:
    The flecsi_get_handle() macro call here:
-      file mismatching-namespace.cc, line 26
+      file mismatching-namespace.cc, line 25
    with:
       namespace = "exmaple"
       name      = "pressure"

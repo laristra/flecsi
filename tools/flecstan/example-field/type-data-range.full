@@ -3,24 +3,24 @@ Command
 --------------------------------------------------------------------------------
 
 Note:
-   Queueing JSON file mismatching-namespace.json.
+   Queueing JSON file type-data-range.json.
 
 --------------------------------------------------------------------------------
 Compilation
 --------------------------------------------------------------------------------
 
 File:
-   mismatching-namespace.json
+   type-data-range.json
 
 File:
-   mismatching-namespace.json: /home/staley/flecsi/flecsi-tutorial/specialization/control/control.cc
+   type-data-range.json: /home/staley/flecsi/flecsi-tutorial/specialization/control/control.cc
 
 Scanning for FleCSI macros...
 
 Visiting the C++ abstract syntax tree...
 
 File:
-   mismatching-namespace.json: mismatching-namespace.cc
+   type-data-range.json: type-data-range.cc
 
 Scanning for FleCSI macros...
 
@@ -32,21 +32,21 @@ Macro:
 
 Macro:
    Name: flecsi_register_field
-   Args: mesh_t, example, pressure, double, dense, 1, cells
-   File: mismatching-namespace.cc
-   Line: 15
+   Args: mesh_t, example, pressure, double, dense, 2, cells
+   File: type-data-range.cc
+   Line: 16
 
 Macro:
    Name: flecsi_get_client_handle
    Args: mesh_t, clients, mesh
-   File: mismatching-namespace.cc
-   Line: 22
+   File: type-data-range.cc
+   Line: 23
 
 Macro:
    Name: flecsi_get_handle
-   Args: m, exmaple, pressure, double, dense, 0
-   File: mismatching-namespace.cc
-   Line: 25
+   Args: m, example, pressure, int, sparse, 4
+   File: type-data-range.cc
+   Line: 24
 
 Visiting the C++ abstract syntax tree...
 
@@ -56,18 +56,18 @@ Link:
 
 Link:
    Function call: flecsi::data::field_interface_u::register_field
-   Matches macro: flecsi_register_field (file mismatching-namespace.cc, line 15)
+   Matches macro: flecsi_register_field (file type-data-range.cc, line 16)
 
 Link:
    Function call: flecsi::data::data_client_interface_u::get_client_handle
-   Matches macro: flecsi_get_client_handle (file mismatching-namespace.cc, line 22)
+   Matches macro: flecsi_get_client_handle (file type-data-range.cc, line 23)
 
 Link:
    Function call: flecsi::data::field_interface_u::get_handle
-   Matches macro: flecsi_get_handle (file mismatching-namespace.cc, line 25)
+   Matches macro: flecsi_get_handle (file type-data-range.cc, line 24)
 
 File:
-   mismatching-namespace.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.cc
+   type-data-range.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.cc
 
 Scanning for FleCSI macros...
 
@@ -84,7 +84,7 @@ Link:
    Matches macro: flecsi_register_mpi_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h, line 29)
 
 File:
-   mismatching-namespace.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc
+   type-data-range.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc
 
 Scanning for FleCSI macros...
 
@@ -156,16 +156,30 @@ Analysis
 
 Error:
    The flecsi_get_handle() macro call here:
-      file mismatching-namespace.cc, line 25
-   with:
-      namespace = "exmaple"
-      name      = "pressure"
-   does not match with namespace + name in any flecsi_register_field() call.
-   Check if either is misspelled, or misspelled in a flecsi_register_field(),
-   or not registered in any flecsi_register_field() at all.
+      file type-data-range.cc, line 24
+   is inconsistent with the matching flecsi_register_field() call here:
+      file type-data-range.cc, line 16
+   because the data type was registered as double,
+   but retrieved as int.
+
+Error:
+   The flecsi_get_handle() macro call here:
+      file type-data-range.cc, line 24
+   is inconsistent with the matching flecsi_register_field() call here:
+      file type-data-range.cc, line 16
+   because the storage class was registered as dense,
+   but retrieved as sparse.
+
+Error:
+   The flecsi_get_handle() macro call here:
+      file type-data-range.cc, line 24
+   is inconsistent with the matching flecsi_register_field() call here:
+      file type-data-range.cc, line 16
+   because 2 versions (indices [0]..[1]) were registered,
+   but version [4] was retrieved.
 
 Synopsis:
-   1 error
+   3 errors
 
 --------------------------------------------------------------------------------
 Summary

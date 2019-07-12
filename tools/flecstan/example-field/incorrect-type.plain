@@ -1,8 +1,8 @@
 Error:
    The flecsi_get_handle() macro call here:
-      file incorrect-type.cc, line 27
+      file incorrect-type.cc, line 26
    is inconsistent with the matching flecsi_register_field() call here:
-      file incorrect-type.cc, line 17
+      file incorrect-type.cc, line 16
    because the data type was registered as double,
    but retrieved as int.
 

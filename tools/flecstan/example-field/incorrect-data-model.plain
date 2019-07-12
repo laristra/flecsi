@@ -1,8 +1,8 @@
 Error:
    The flecsi_get_handle() macro call here:
-      file incorrect-data-model.cc, line 27
+      file incorrect-data-model.cc, line 26
    is inconsistent with the matching flecsi_register_field() call here:
-      file incorrect-data-model.cc, line 17
+      file incorrect-data-model.cc, line 16
    because the storage class was registered as dense,
    but retrieved as sparse.
 

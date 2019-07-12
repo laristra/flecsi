@@ -1,8 +1,8 @@
 /*
-# Incorrect data model
-flecsi_register_field(mesh_t, example, pressure, double, dense, 1, cells);
+# Incorrect type, data model, and range
+flecsi_register_field(mesh_t, example, pressure, `textRed``double, dense, 2,`textBlack cells);
 auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
-auto f = flecsi_get_handle(m, example, pressure, double, sparse, 0);
+auto f = flecsi_get_handle(m, example, pressure, `textRed``int, sparse, 4`textBlack);
 */
 
 #include <iostream>
@@ -13,7 +13,7 @@ auto f = flecsi_get_handle(m, example, pressure, double, sparse, 0);
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-flecsi_register_field(mesh_t, example, pressure, double, dense, 1, cells);
+flecsi_register_field(mesh_t, example, pressure, double, dense, 2, cells);
 
 namespace flecsi {
 namespace execution {
@@ -21,9 +21,7 @@ namespace execution {
 void driver(int argc, char **argv)
 {
    auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
-
-   // The error here is "sparse" when we want "dense"
-   auto f = flecsi_get_handle(m, example, pressure, double, sparse, 0);
+   auto f = flecsi_get_handle(m, example, pressure, int, sparse, 4);
 }
 
 }
