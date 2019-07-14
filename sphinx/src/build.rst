@@ -37,18 +37,16 @@ options, but is not necessary for a particular build:
   GASNet is only required if Legion support is enabled.
 
 * **CMake** |br|
-  We currently require CMake version 3.9 or greater.
+  We currently require CMake version 3.12 or greater.
 
 * **Boost** |br|
-  Boost is only required if you wish to enable program options support
-  in the FleCSI unit test and tutorial executables. Please read this
-  explanation for more information.
+  We require *program_options*, *serialization*, and *stacktrace*.
 
 * **Doxygen** |br|
   Doxygen is only required to build the interface documentation.
 
 * **Sphinx** |br|
-  Sphinx only required to build the web-based documentation. We are
+  Sphinx is only required to build the web-based documentation. We are
   currently using Sphinx 1.1.0. We also require the Sphinx RTD Theme
   (using version 0.4.2). These can be installed on most Linux systems
   using pip.
