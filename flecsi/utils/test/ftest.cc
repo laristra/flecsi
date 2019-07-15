@@ -40,7 +40,9 @@ ftest_add_initialize_dependency(init_b, init_a);
 
 int
 test1(int argc, char ** argv) {
+
   FTEST();
+
   ASSERT_EQ(0, 0);
   EXPECT_EQ(0, 0);
   flog(info) << "result " << FTEST_RESULT() << std::endl;
@@ -54,11 +56,12 @@ ftest_register_driver(test1);
 
 int
 test2(int argc, char ** argv) {
+
   FTEST();
+
   ASSERT_EQ(0, 0);
   int v{0};
   ASSERT_EQ(v, 0);
-  std::cerr << "result " << FTEST_RESULT() << std::endl;
   return FTEST_RESULT();
 }
 

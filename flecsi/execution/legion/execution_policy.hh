@@ -184,7 +184,6 @@ struct legion_execution_policy_t {
       Legion::Future future = legion_runtime->execute_index_space(
         legion_context, reduction_launcher, reduction_id);
 
-      std::cerr << "max: " << future.get_result<size_t>() << std::endl;
       if(future.get_result<size_t>() > FLOG_SERIALIZATION_SIZE) {
         const auto flog_mpi_tid =
           context_t::instance().task_id<flecsi_internal_hash(flog_mpi_task)>();

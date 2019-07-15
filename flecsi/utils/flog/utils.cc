@@ -81,6 +81,9 @@ send_to_one() {
       delete[] sizes;
       delete[] offsets;
       delete[] buffer;
+    }
+    else {
+      flog_t::instance().packets().clear();
     } // if
   } // if
 

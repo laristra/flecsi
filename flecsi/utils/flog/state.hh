@@ -135,8 +135,10 @@ public:
     MPI_Comm_rank(MPI_COMM_WORLD, &process_);
     MPI_Comm_size(MPI_COMM_WORLD, &processes_);
 
-    std::thread flusher(flush_packets);
-    instance().flusher_thread().swap(flusher);
+    if(process_ == 0) {
+      std::thread flusher(flush_packets);
+      instance().flusher_thread().swap(flusher);
+    } // if
 #endif // FLOG_ENABLE_MPI
 
     initialized_ = true;
@@ -145,9 +147,12 @@ public:
   void finalize() {
 #if defined(FLOG_ENABLE_MPI)
     if(initialized_) {
-      end_flusher();
-      // FIXME: ??? flush_packets();
-      flusher_thread_.join();
+      send_to_one();
+
+      if(process_ == 0) {
+        end_flusher();
+        flusher_thread_.join();
+      } // if
     } // if
 #endif // FLOG_ENABLE_MPI
   } // finalize
@@ -304,6 +309,14 @@ public:
     return packets_;
   }
 
+  void set_serialized() {
+    has_serialized_ = true;
+  }
+
+  bool has_serialized() {
+    return has_serialized_;
+  }
+
   bool run_flusher() {
     return run_flusher_;
   }
@@ -344,6 +357,7 @@ private:
   std::mutex packets_mutex_;
   std::vector<packet_t> packets_;
   bool run_flusher_ = true;
+  bool has_serialized_ = false;
 #endif
 
 }; // class flog_t
