@@ -132,8 +132,8 @@ public:
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
-    MPI_Comm_size(MPI_COMM_WORLD, &size_);
+    MPI_Comm_rank(MPI_COMM_WORLD, &process_);
+    MPI_Comm_size(MPI_COMM_WORLD, &processes_);
 
     std::thread flusher(flush_packets);
     instance().flusher_thread().swap(flusher);
@@ -146,6 +146,7 @@ public:
 #if defined(FLOG_ENABLE_MPI)
     if(initialized_) {
       end_flusher();
+      // FIXME: ??? flush_packets();
       flusher_thread_.join();
     } // if
 #endif // FLOG_ENABLE_MPI
@@ -170,6 +171,7 @@ public:
   /*!
     Return the log stream.
    */
+
   std::ostream & stream() {
     return *stream_;
   } // stream
@@ -179,6 +181,7 @@ public:
     This method interface will allow us to select between
     the actual stream and a null stream.
    */
+
   std::ostream & severity_stream(bool active = true) {
     return active ? buffer_stream_ : null_stream_;
   } // stream
@@ -278,13 +281,13 @@ public:
   } // initialized
 
 #if defined(FLOG_ENABLE_MPI)
-  int rank() {
-    return rank_;
-  } // rank
+  int process() {
+    return process_;
+  } // process
 
-  int size() {
-    return size_;
-  } // rank
+  int processes() {
+    return processes_;
+  } // processes
 
   std::thread & flusher_thread() {
     return flusher_thread_;
@@ -304,6 +307,7 @@ public:
   bool run_flusher() {
     return run_flusher_;
   }
+
   void end_flusher() {
     run_flusher_ = false;
   }
@@ -313,9 +317,8 @@ private:
   /*!
     Constructor. This method is hidden because we are a singleton.
    */
-  flog_t()
 
-    : null_stream_(0), tag_id_(0), active_tag_(0) {} // flog_t
+  flog_t() : null_stream_(0), tag_id_(0), active_tag_(0) {}
 
   ~flog_t() {
 #if defined(FLOG_ENABLE_DEBUG)
@@ -335,8 +338,8 @@ private:
   std::unordered_map<std::string, size_t> tag_map_;
 
 #if defined(FLOG_ENABLE_MPI)
-  int rank_;
-  int size_;
+  int process_;
+  int processes_;
   std::thread flusher_thread_;
   std::mutex packets_mutex_;
   std::vector<packet_t> packets_;

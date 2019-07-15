@@ -133,6 +133,10 @@ rstrip(const char * file) {
 #define FLOG_SERIALIZATION_INTERVAL 1
 #endif
 
+#ifndef FLOG_SERIALIZATION_SIZE
+#define FLOG_SERIALIZATION_SIZE 1
+#endif
+
 /*!
   Serialize output to a single process.
  */
