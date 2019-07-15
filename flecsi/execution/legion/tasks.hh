@@ -166,7 +166,6 @@ flog_reduction_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime) {
-  const size_t max = utils::flog::flog_t::instance().packets().size();
   return utils::flog::flog_t::instance().packets().size();
 } // flog_reduction_task
 

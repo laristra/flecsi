@@ -315,7 +315,7 @@ private:
   if(flog_t::instance().initialized()) {                                       \
     packet_t pkt(message);                                                     \
                                                                                \
-    packet_t * pkts = flog_t::instance().rank() == 0                           \
+    packet_t * pkts = flog_t::instance().process() == 0                        \
                         ? new packet_t[flog_t::instance().size()]              \
                         : nullptr;                                             \
                                                                                \
@@ -328,7 +328,7 @@ private:
       0,                                                                       \
       MPI_COMM_WORLD);                                                         \
                                                                                \
-    if(flog_t::instance().rank() == 0) {                                       \
+    if(flog_t::instance().process() == 0) {                                    \
                                                                                \
       std::lock_guard<std::mutex> guard(flog_t::instance().packets_mutex());   \
                                                                                \

@@ -30,6 +30,9 @@ flush_packets() {
     {
       std::lock_guard<std::mutex> guard(flog_t::instance().packets_mutex());
 
+      std::cerr << "FLUSHING " << flog_t::instance().packets().size()
+                << " PACKETS" << std::endl;
+
       if(flog_t::instance().packets().size()) {
         std::sort(flog_t::instance().packets().begin(),
           flog_t::instance().packets().end());

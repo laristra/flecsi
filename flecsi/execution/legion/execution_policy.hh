@@ -171,6 +171,7 @@ struct legion_execution_policy_t {
       const auto reduction_tid =
         context_t::instance()
           .task_id<flecsi_internal_hash(flog_reduction_task)>();
+
       Legion::ArgumentMap arg_map;
       Legion::IndexLauncher reduction_launcher(
         reduction_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
@@ -179,34 +180,36 @@ struct legion_execution_policy_t {
         utils::hash::reduction_hash<flecsi_internal_hash(max),
           flecsi_internal_hash(size_t)>();
       size_t reduction_id = flecsi_context.reduction_operations()[max_hash];
+
       Legion::Future future = legion_runtime->execute_index_space(
         legion_context, reduction_launcher, reduction_id);
 
-      size_t max = future.get_result<size_t>();
+      std::cerr << "max: " << future.get_result<size_t>() << std::endl;
+      if(future.get_result<size_t>() > FLOG_SERIALIZATION_SIZE) {
+        const auto flog_mpi_tid =
+          context_t::instance().task_id<flecsi_internal_hash(flog_mpi_task)>();
 
-      const auto flog_mpi_tid =
-        context_t::instance().task_id<flecsi_internal_hash(flog_mpi_task)>();
+        Legion::IndexLauncher flog_mpi_launcher(
+          flog_mpi_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
 
-      Legion::IndexLauncher flog_mpi_launcher(
-        flog_mpi_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
+        flog_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
 
-      flog_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
+        // Launch the MPI task
+        auto future_mpi = legion_runtime->execute_index_space(
+          legion_context, flog_mpi_launcher);
 
-      // Launch the MPI task
-      auto future_mpi =
-        legion_runtime->execute_index_space(legion_context, flog_mpi_launcher);
+        // Force synchronization
+        future_mpi.wait_all_results(true);
 
-      // Force synchronization
-      future_mpi.wait_all_results(true);
+        // Handoff to the MPI runtime.
+        flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
 
-      // Handoff to the MPI runtime.
-      flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
+        // Wait for MPI to finish execution (synchronous).
+        flecsi_context.wait_on_mpi(legion_context, legion_runtime);
 
-      // Wait for MPI to finish execution (synchronous).
-      flecsi_context.wait_on_mpi(legion_context, legion_runtime);
-
-      // Reset the calling state to false.
-      flecsi_context.unset_call_mpi(legion_context, legion_runtime);
+        // Reset the calling state to false.
+        flecsi_context.unset_call_mpi(legion_context, legion_runtime);
+      } // if
     } // if
 #endif // FLECSI_ENABLE_FLOG
 

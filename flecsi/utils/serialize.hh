@@ -72,7 +72,7 @@ struct binary_serializer_t {
     Return the number of bytes stored in the string device.
    */
 
-  size_t size() {
+  size_t bytes() {
     return serial_data_.size();
   } // size
 

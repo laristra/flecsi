@@ -27,19 +27,32 @@ namespace flog {
 void
 send_to_one() {
 
-#if 0
+  std::cerr << "Executing send_to_one" << std::endl;
+
   if(flog_t::instance().initialized()) {
 
+    int * sizes = flog_t::instance().process() == 0
+                    ? new int[flog_t::instance().processes()]
+                    : nullptr;
+
     binary_serializer_t serializer;
-    //serializer << flog_t::instance().
+    serializer << flog_t::instance().packets();
 
-    int * sizes = flog_t::instance().rank() == 0 ?
-      new int[flog_t::instance().size()] : nullptr;
+    int bytes = serializer.bytes();
 
-    MPI_Gather();
-    MPI_Gatherv();
+    MPI_Gather(&bytes, 1, MPI_INT, sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if(flog_t::instance().process() == 0) {
+      for(size_t i{0}; i<flog_t::instance().processes(); ++i) {
+        std::cout << "bytes: " << sizes[i] << std::endl;
+      } // for
+    } // if
+
+    // binary_serializer_t serializer;
+    // serializer << flog_t::instance().
+
+    //MPI_Gatherv();
   } // if
-#endif
 
 } // send_to_one
 

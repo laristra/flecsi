@@ -48,7 +48,7 @@ sanity(int argc, char ** argv) {
 
     serializer.flush();
 
-    size = serializer.size();
+    size = serializer.bytes();
     data = new char[size];
     memcpy(data, serializer.data(), size);
   } // scope
@@ -143,7 +143,7 @@ user_type(int argc, char ** argv) {
 
     serializer.flush();
 
-    size = serializer.size();
+    size = serializer.bytes();
     data = new char[size];
     memcpy(data, serializer.data(), size);
   } // scope
@@ -276,7 +276,7 @@ simple_context(int argc, char ** argv) {
 
     serializer.flush();
 
-    size = serializer.size();
+    size = serializer.bytes();
     data = new char[size];
     memcpy(data, serializer.data(), size);
   } // scope

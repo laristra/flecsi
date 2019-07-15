@@ -469,9 +469,17 @@ struct context_u : public CONTEXT_POLICY {
     return launch_domain_map_[key];
   }
 
+  /*!
+    Return the count of executed tasks. Const version.
+   */
+
   size_t const & tasks_executed() const {
     return tasks_executed_;
   } // tasks_executed
+
+  /*!
+    Return the count of executed tasks.
+   */
 
   size_t & tasks_executed() {
     return tasks_executed_;

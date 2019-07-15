@@ -56,7 +56,7 @@ struct log_message_t {
     @param predicate       The predicate function to determine whether or not
                            the calling runtime should produce output.
     @param can_send_to_one A boolean indicating whether the calling scope can
-                           route messages through one rank.
+                           route messages through one process.
 */
 
   log_message_t(const char * file,
@@ -156,7 +156,7 @@ protected:
 #define message_stamp timestamp() << " " << rstrip<'/'>(file_) << ":" << line_
 
 #if defined(FLOG_ENABLE_MPI)
-#define mpi_stamp " c" << flog_t::instance().rank()
+#define mpi_stamp " c" << flog_t::instance().process()
 #else
 #define mpi_stamp ""
 #endif

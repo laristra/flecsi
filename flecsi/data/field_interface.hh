@@ -22,8 +22,9 @@
   policy that is selected at compile time.
  */
 
-// Needed for storage_class.hh and for FLECSI_RUNTIME_DATA_POLICY:
 #include <flecsi/runtime/data_policy.hh>
+
+// Needed for storage_class.hh and for FLECSI_RUNTIME_DATA_POLICY:
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/storage_class.hh>
 #include <flecsi/execution/context.hh>
