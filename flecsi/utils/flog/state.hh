@@ -343,8 +343,7 @@ private:
   std::thread flusher_thread_;
   std::mutex packets_mutex_;
   std::vector<packet_t> packets_;
-  // bool run_flusher_ = true;
-  bool run_flusher_ = false;
+  bool run_flusher_ = true;
 #endif
 
 }; // class flog_t
