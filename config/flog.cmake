@@ -44,6 +44,14 @@ set(FLOG_TAG_BITS "64" CACHE STRING
   "Select the number of bits to use for tag groups")
 mark_as_advanced(FLOG_TAG_BITS)
 
+set(FLOG_SERIALIZATION_INTERVAL "100" CACHE STRING
+  "Select the frequency of message serialization in number of tasks")
+mark_as_advanced(FLOG_SERIALIZATION_INTERVAL)
+
+set(FLOG_SERIALIZATION_OVERFLOW "1024" CACHE STRING
+  "Select the overflow size in number of messages")
+mark_as_advanced(FLOG_SERIALIZATION_OVERFLOW)
+
 if(ENABLE_FLOG)
   set(FLOG_STRIP_LEVELS 0 1 2 3 4)
 

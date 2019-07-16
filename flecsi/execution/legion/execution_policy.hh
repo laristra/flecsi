@@ -184,7 +184,7 @@ struct legion_execution_policy_t {
       Legion::Future future = legion_runtime->execute_index_space(
         legion_context, reduction_launcher, reduction_id);
 
-      if(future.get_result<size_t>() > FLOG_SERIALIZATION_SIZE) {
+      if(future.get_result<size_t>() > FLOG_SERIALIZATION_OVERFLOW) {
         const auto flog_mpi_tid =
           context_t::instance().task_id<flecsi_internal_hash(flog_mpi_task)>();
 
