@@ -80,6 +80,7 @@
 #cmakedefine FLOG_ENABLE_DEBUG
 #define FLOG_TAG_BITS @FLOG_TAG_BITS@
 #cmakedefine FLOG_ENABLE_EXTERNAL
+#cmakedefine FLOG_ENABLE_DEVEL
 #cmakedefine FLOG_ENABLE_MPI
 
 //----------------------------------------------------------------------------//

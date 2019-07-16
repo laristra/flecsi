@@ -76,8 +76,8 @@ struct topology_instance_u<index_topology_t> {
 
     {
       flog_tag_guard(topologies);
-      flog(internal) << "Set coloring for " << topology_reference.identifier()
-                     << std::endl;
+      flog_devel(info) << "Set coloring for " << topology_reference.identifier()
+                       << std::endl;
     }
 
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -127,8 +127,8 @@ struct topology_instance_u<index_topology_t> {
 
     {
       flog_tag_guard(topologies);
-      flog(internal) << "Set coloring for " << topology_reference.identifier()
-                     << std::endl;
+      flog_devel(info) << "Set coloring for " << topology_reference.identifier()
+                       << std::endl;
     }
 
     auto legion_runtime = Legion::Runtime::get_runtime();

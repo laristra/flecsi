@@ -59,7 +59,7 @@ inline int
 flecsi_mpi_initialize(int argc, char ** argv, variables_map & vm) {
 
 #if defined(FLECSI_ENABLE_FLOG)
-  if(__flecsi_tags == "0") {
+  if(__flog_tags == "0") {
     std::cout << "Available tags (FLOG):" << std::endl;
 
     for(auto t : flog_tag_map()) {
@@ -80,7 +80,7 @@ flecsi_mpi_initialize(int argc, char ** argv, variables_map & vm) {
   flecsi::execution::context_t::instance().set_colors(size);
 
 #if defined(FLECSI_ENABLE_FLOG)
-  flog_initialize(__flecsi_tags);
+  flog_initialize(__flog_tags);
 #endif
 
   return 0;

@@ -280,12 +280,12 @@ struct context_u : public CONTEXT_POLICY {
 
     auto ptr = new OBJECT_TYPE(std::forward<ARGS>(args)...);
 
-    flog(internal) << "Adding global object" << std::endl
-                   << "\tindex: " << index << std::endl
-                   << "\thash: " << NAMESPACE << std::endl
-                   << "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name())
-                   << std::endl
-                   << "\taddress: " << ptr << std::endl;
+    flog_devel(info) << "Adding global object" << std::endl
+                     << "\tindex: " << index << std::endl
+                     << "\thash: " << NAMESPACE << std::endl
+                     << "\ttype: "
+                     << utils::demangle(typeid(OBJECT_TYPE).name()) << std::endl
+                     << "\taddress: " << ptr << std::endl;
 
     std::get<0>(global_object_registry_[KEY]) =
       reinterpret_cast<uintptr_t>(ptr);
@@ -317,12 +317,12 @@ struct context_u : public CONTEXT_POLICY {
     auto ptr = reinterpret_cast<OBJECT_TYPE *>(
       std::get<0>(global_object_registry_[KEY]));
 
-    flog(internal) << "Getting global object" << std::endl
-                   << "\tindex: " << index << std::endl
-                   << "\thash: " << NAMESPACE << std::endl
-                   << "\ttype: " << utils::demangle(typeid(OBJECT_TYPE).name())
-                   << std::endl
-                   << "\taddress: " << ptr << std::endl;
+    flog_devel(info) << "Getting global object" << std::endl
+                     << "\tindex: " << index << std::endl
+                     << "\thash: " << NAMESPACE << std::endl
+                     << "\ttype: "
+                     << utils::demangle(typeid(OBJECT_TYPE).name()) << std::endl
+                     << "\taddress: " << ptr << std::endl;
 
     return ptr;
   } // get_global_object
@@ -352,7 +352,7 @@ struct context_u : public CONTEXT_POLICY {
       "function has already been registered");
 
     // clang-format off
-    flog(internal) << "Registering function" << std::endl <<
+    flog_devel(info) << "Registering function" << std::endl <<
       "\thash: " << KEY << std::endl <<
       "\taddress: " << reinterpret_cast<std::size_t>(FUNCTION) << std::endl <<
       "\treturn type: " <<
@@ -400,10 +400,10 @@ struct context_u : public CONTEXT_POLICY {
     size_t storage_class,
     const data::field_info_t & field_info,
     std::size_t key) {
-    flog(internal) << "Registering field info (context)" << std::endl
-                   << "\ttopology type identifier: " << topology_type_identifier
-                   << std::endl
-                   << "\tstorage class: " << storage_class << std::endl;
+    flog_devel(info) << "Registering field info (context)" << std::endl
+                     << "\ttopology type identifier: "
+                     << topology_type_identifier << std::endl
+                     << "\tstorage class: " << storage_class << std::endl;
     topology_field_info_map_[topology_type_identifier][storage_class]
       .add_field_info(field_info, key);
   } // add_field_information
@@ -432,8 +432,8 @@ struct context_u : public CONTEXT_POLICY {
     size_t topology_type_identifier,
     size_t storage_class) const {
 
-    flog(internal) << "Type identifier: " << topology_type_identifier
-                   << std::endl;
+    flog_devel(info) << "Type identifier: " << topology_type_identifier
+                     << std::endl;
 
     auto const & tita = topology_field_info_map_.find(topology_type_identifier);
     flog_assert(tita != topology_field_info_map_.end(),

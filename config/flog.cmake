@@ -36,6 +36,10 @@ cmake_dependent_option(FLOG_ENABLE_EXTERNAL
   "Enable messages that are defined at namespace scope" OFF "ENABLE_FLOG" ON)
 mark_as_advanced(FLOG_ENABLE_EXTERNAL)
 
+cmake_dependent_option(FLOG_ENABLE_DEVEL
+  "Enable internal FleCSI developer messages" OFF "ENABLE_FLOG" OFF)
+mark_as_advanced(FLOG_ENABLE_DEVEL)
+
 set(FLOG_TAG_BITS "64" CACHE STRING
   "Select the number of bits to use for tag groups")
 mark_as_advanced(FLOG_TAG_BITS)

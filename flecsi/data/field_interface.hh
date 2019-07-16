@@ -134,10 +134,10 @@ struct field_interface_u {
 
     fi.type_size = sizeof(DATA_TYPE);
 
-    flog(internal) << "Registering field" << std::endl
-                   << "\tname: " << name << std::endl
-                   << "\ttype: " << utils::demangle(typeid(DATA_TYPE).name())
-                   << std::endl;
+    flog_devel(info) << "Registering field" << std::endl
+                     << "\tname: " << name << std::endl
+                     << "\ttype: " << utils::demangle(typeid(DATA_TYPE).name())
+                     << std::endl;
 
     for(size_t version(0); version < VERSIONS; ++version) {
       fi.fid = unique_fid_t::instance().next();

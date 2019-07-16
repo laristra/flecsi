@@ -83,7 +83,7 @@ struct pure_task_wrapper_u {
     std::string & name) {
     {
       flog_tag_guard(task_wrapper);
-      flog(info) << "registering pure Legion task " << name << std::endl;
+      flog_devel(info) << "registering pure Legion task " << name << std::endl;
     }
 
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
@@ -156,7 +156,7 @@ struct task_wrapper_u {
     std::string & name) {
     {
       flog_tag_guard(task_wrapper);
-      flog(info) << "registering task " << name << std::endl;
+      flog_devel(info) << "registering task " << name << std::endl;
     }
 
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
@@ -202,7 +202,7 @@ struct task_wrapper_u {
     Legion::Runtime * runtime) {
     {
       flog_tag_guard(task_wrapper);
-      flog(info) << "In execute_user_task" << std::endl;
+      flog_devel(info) << "In execute_user_task" << std::endl;
     }
 
     // Unpack task arguments
@@ -240,7 +240,7 @@ struct task_wrapper_u {
     // FIXME: Refactor
     //    {
     //      flog_tag_guard(task_wrapper);
-    //      flog(info) << "In execute_mpi_task" << std::endl;
+    //      flog_devel(info) << "In execute_mpi_task" << std::endl;
     //    }
 
     // Unpack task arguments.

@@ -51,7 +51,7 @@ flecsi_legion_add_options(options_description & desc) {
   options_description flecsi("FleCSI Runtime Options");
   flecsi.add_options()
 #if defined(FLECSI_ENABLE_FLOG)
-    FLECSI_FLOG_TAG_OPTION
+    FLECSI_FLOG_TAG_OPTION FLECSI_FLOG_PROCESS_OPTION
 #endif
       FLECSI_THREADS_PER_PROCESS_OPTION;
 
@@ -86,7 +86,7 @@ flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
 #endif
 
 #if defined(FLECSI_ENABLE_FLOG)
-  if(__flecsi_tags == "0") {
+  if(__flog_tags == "0") {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -105,7 +105,7 @@ flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
 #endif
 
 #if defined(FLECSI_ENABLE_FLOG)
-  flog_initialize(__flecsi_tags);
+  flog_initialize(__flog_tags, __flog_process);
 #endif
 
 #if defined(FLECSI_ENABLE_KOKKOS)

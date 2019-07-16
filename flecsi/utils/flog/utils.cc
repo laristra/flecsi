@@ -48,9 +48,9 @@ send_to_one() {
     if(flog_t::instance().process() == 0) {
       offsets = new int[flog_t::instance().processes()];
 
-      for(size_t i{0}; i < flog_t::instance().processes(); ++i) {
-        offsets[i] = sum;
-        sum += sizes[i];
+      for(size_t p{0}; p < flog_t::instance().processes(); ++p) {
+        offsets[p] = sum;
+        sum += sizes[p];
       } // for
     } // if
 
@@ -67,15 +67,35 @@ send_to_one() {
       MPI_COMM_WORLD);
 
     if(flog_t::instance().process() == 0) {
-      for(size_t i{1}; i < flog_t::instance().processes(); ++i) {
-        binary_deserializer_t deserializer(&buffer[offsets[i]], sizes[i]);
-        std::vector<packet_t> remote_packets;
-        deserializer >> remote_packets;
 
-        std::vector<packet_t> & packets = flog_t::instance().packets();
-        packets.reserve(packets.size() + remote_packets.size());
-        packets.insert(
-          packets.end(), remote_packets.begin(), remote_packets.end());
+      flog_t::instance().packets().clear();
+
+      for(size_t p{0}; p < flog_t::instance().processes(); ++p) {
+
+        if(flog_t::instance().one_process()) {
+          if(p == flog_t::instance().output_process()) {
+            binary_deserializer_t deserializer(&buffer[offsets[p]], sizes[p]);
+            std::vector<packet_t> remote_packets;
+            deserializer >> remote_packets;
+
+            std::vector<packet_t> & packets = flog_t::instance().packets();
+
+            packets.reserve(packets.size() + remote_packets.size());
+            packets.insert(
+              packets.end(), remote_packets.begin(), remote_packets.end());
+          } // if
+        }
+        else {
+          binary_deserializer_t deserializer(&buffer[offsets[p]], sizes[p]);
+          std::vector<packet_t> remote_packets;
+          deserializer >> remote_packets;
+
+          std::vector<packet_t> & packets = flog_t::instance().packets();
+
+          packets.reserve(packets.size() + remote_packets.size());
+          packets.insert(
+            packets.end(), remote_packets.begin(), remote_packets.end());
+        } // if
       } // for
 
       delete[] sizes;
@@ -85,6 +105,8 @@ send_to_one() {
     else {
       flog_t::instance().packets().clear();
     } // if
+
+    flog_t::instance().set_serialized();
   } // if
 
 } // send_to_one

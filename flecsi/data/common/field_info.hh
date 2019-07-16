@@ -53,10 +53,10 @@ struct field_info_t {
 struct field_info_store_t {
 
   void add_field_info(field_info_t const & fi, std::size_t key) {
-    flog(internal) << "Registering field info" << std::endl
-                   << "\tkey: " << key << std::endl
-                   << "\tfid: " << fi.fid << std::endl
-                   << "\ttype_size: " << fi.type_size << std::endl;
+    flog_devel(info) << "Registering field info" << std::endl
+                     << "\tkey: " << key << std::endl
+                     << "\tfid: " << fi.fid << std::endl
+                     << "\ttype_size: " << fi.type_size << std::endl;
     data_.emplace_back(fi);
     const size_t offset = data_.size() - 1;
     key_lookup_[key] = offset;

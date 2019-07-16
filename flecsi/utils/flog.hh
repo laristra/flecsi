@@ -83,13 +83,15 @@
   flecsi::utils::flog::flog_t::instance().tag_map()
 
 /*!
-  @def flog_initialize(active)
+  @def flog_initialize(active, process)
 
   This call initializes the flog runtime with the list of tags specified
   in \em active.
 
-  @param active A const char * or std::string containing the list of
-                active tags. Tags should be comma delimited.
+  @param active  A const char * or std::string containing the list of
+                 active tags. Tags should be comma delimited.
+  @param process The process id to which output should be restricted. For no
+                 restrictions, pass std::numeric_limits<size_t>::max().
 
   \b Usage
   \code
@@ -97,10 +99,11 @@
 
      // Fill a string object with the active tags.
      std::string tags{"init,advance,analysis"};
+     size_t process = std::numeric_limits<size_t>::max();
 
      // Initialize the flog runtime with active tags, 'init', 'advance',
      // and 'analysis'.
-     flog_initialize(tags);
+     flog_initialize(tags, process);
 
      return 0;
   } // main
@@ -109,10 +112,10 @@
   @ingroup flog
  */
 
-#define flog_initialize(active)                                                \
+#define flog_initialize(active, process)                                       \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::utils::flog::flog_t::instance().initialize(active)
+  flecsi::utils::flog::flog_t::instance().initialize(active, process)
 
 /*!
   @def flog_finalize()
@@ -157,7 +160,27 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   true &&                                                                      \
-    flecsi::utils::flog::severity##_log_message_t(__FILE__, __LINE__).stream()
+    flecsi::utils::flog::severity##_log_message_t(__FILE__, __LINE__, false)   \
+      .stream()
+
+#if defined(FLOG_ENABLE_DEVEL)
+
+#define flog_devel(severity)                                                   \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  true &&                                                                      \
+    flecsi::utils::flog::severity##_log_message_t(__FILE__, __LINE__, true)    \
+      .stream()
+
+#else
+
+#define flog_devel(severity)                                                   \
+  if(true) {                                                                   \
+  }                                                                            \
+  else                                                                         \
+    std::cerr
+
+#endif
 
 /*!
   @def flog_trace(message)
@@ -266,6 +289,12 @@
 #define flog_finalize()
 
 #define flog(severity)                                                         \
+  if(true) {                                                                   \
+  }                                                                            \
+  else                                                                         \
+    std::cerr
+
+#define flog_devel(severity)                                                   \
   if(true) {                                                                   \
   }                                                                            \
   else                                                                         \

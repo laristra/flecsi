@@ -74,7 +74,8 @@ public:
     return c;
   } // instance
 
-  void initialize(std::string active = "none") {
+  void initialize(std::string active = "none",
+    size_t one_process = std::numeric_limits<size_t>::max()) {
 #if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing runtime"
               << FLOG_COLOR_PLAIN << std::endl;
@@ -131,6 +132,8 @@ public:
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing mpi state"
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
+
+    one_process_ = one_process;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &process_);
     MPI_Comm_size(MPI_COMM_WORLD, &processes_);
@@ -286,35 +289,36 @@ public:
   } // initialized
 
 #if defined(FLOG_ENABLE_MPI)
+  bool one_process() const {
+    return one_process_ < processes_;
+  }
+
+  size_t output_process() const {
+    return one_process_;
+  }
+
   int process() {
     return process_;
-  } // process
+  }
 
   int processes() {
     return processes_;
-  } // processes
+  }
 
   std::thread & flusher_thread() {
     return flusher_thread_;
   }
+
   std::mutex & packets_mutex() {
     return packets_mutex_;
   }
 
   void buffer_output() {
     packets_.push_back({buffer_stream().str().c_str()});
-  } // buffer_output
+  }
 
   std::vector<packet_t> & packets() {
     return packets_;
-  }
-
-  void set_serialized() {
-    has_serialized_ = true;
-  }
-
-  bool has_serialized() {
-    return has_serialized_;
   }
 
   bool run_flusher() {
@@ -323,6 +327,14 @@ public:
 
   void end_flusher() {
     run_flusher_ = false;
+  }
+
+  void set_serialized() {
+    serialized_ = true;
+  }
+
+  bool serialized() {
+    return serialized_;
   }
 #endif
 
@@ -351,13 +363,14 @@ private:
   std::unordered_map<std::string, size_t> tag_map_;
 
 #if defined(FLOG_ENABLE_MPI)
+  size_t one_process_;
   int process_;
   int processes_;
   std::thread flusher_thread_;
   std::mutex packets_mutex_;
   std::vector<packet_t> packets_;
   bool run_flusher_ = true;
-  bool has_serialized_ = false;
+  bool serialized_ = false;
 #endif
 
 }; // class flog_t

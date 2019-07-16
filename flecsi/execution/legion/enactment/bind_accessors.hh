@@ -143,8 +143,8 @@ struct bind_accessors_t
   visit(DATA_TYPE &) {
     {
       flog_tag_guard(bind_accessors);
-      flog(internal) << "Skipping argument with type "
-                     << flecsi::utils::type<DATA_TYPE>() << std::endl;
+      flog_devel(info) << "Skipping argument with type "
+                       << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }
   } // visit
 

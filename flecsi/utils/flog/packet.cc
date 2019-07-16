@@ -28,7 +28,7 @@ flush_packets() {
 
     usleep(FLOG_PACKET_FLUSH_INTERVAL);
 
-    {
+    if(flog_t::instance().serialized()) {
       std::lock_guard<std::mutex> guard(flog_t::instance().packets_mutex());
 
       if(flog_t::instance().packets().size()) {
@@ -41,7 +41,7 @@ flush_packets() {
 
         flog_t::instance().packets().clear();
       } // if
-    } // scope
+    } // if
 
   } // while
 } // flush_packets

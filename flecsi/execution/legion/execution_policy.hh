@@ -87,9 +87,9 @@ struct legion_execution_policy_t {
   static bool register_legion_task(processor_type_t processor,
     task_execution_type_t execution,
     std::string name) {
-    flog(internal) << "Registering legion task" << std::endl
-                   << "\tname: " << name << std::endl
-                   << "\thash: " << TASK << std::endl;
+    flog_devel(info) << "Registering legion task" << std::endl
+                     << "\tname: " << name << std::endl
+                     << "\thash: " << TASK << std::endl;
 
     using wrapper_t = legion::pure_task_wrapper_u<RETURN, DELEGATE>;
 
@@ -228,7 +228,7 @@ struct legion_execution_policy_t {
 
       {
         flog_tag_guard(execution);
-        flog(internal) << "Executing single task" << std::endl;
+        flog_devel(info) << "Executing single task" << std::endl;
       }
 
       TaskLauncher launcher(flecsi_context.task_id(TASK),
@@ -278,7 +278,7 @@ struct legion_execution_policy_t {
 
       {
         flog_tag_guard(execution);
-        flog(internal) << "Executing index task" << std::endl;
+        flog_devel(info) << "Executing index task" << std::endl;
       }
 
       LegionRuntime::Arrays::Rect<1> launch_bounds(
@@ -305,11 +305,11 @@ struct legion_execution_policy_t {
 
         case processor_type_t::toc:
         case processor_type_t::loc: {
-          flog(info) << "Executing index launch on loc" << std::endl;
+          flog_devel(info) << "Executing index launch on loc" << std::endl;
 
           if constexpr(REDUCTION != ZERO) {
-            flog(info) << "executing reduction logic for " << REDUCTION
-                       << std::endl;
+            flog_devel(info)
+              << "executing reduction logic for " << REDUCTION << std::endl;
             auto reduction_op =
               flecsi_context.reduction_operations().find(REDUCTION);
 
