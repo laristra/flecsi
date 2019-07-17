@@ -27,6 +27,7 @@
 #include <flecsi/execution/legion/invocation/task_epilogue.hh>
 #include <flecsi/execution/legion/invocation/task_prologue.hh>
 #include <flecsi/execution/legion/reduction_wrapper.hh>
+#include <flecsi/execution/legion/runtime.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/flog/utils.hh>
