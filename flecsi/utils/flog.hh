@@ -280,7 +280,7 @@
 
 #define __flog_internal_wait_on_flusher() usleep(FLOG_PACKET_FLUSH_INTERVAL)
 
-#else
+#else // FLECSI_ENABLE_FLOG
 
 #define flog_register_tag(name)
 #define flog_tag_guard(name)
