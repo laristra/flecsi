@@ -20,6 +20,7 @@
 #endif
 
 #include <flecsi/control/control.hh>
+#include <flecsi/execution/execution.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/ftest/node.hh>
