@@ -148,6 +148,14 @@ cinch_append_runtime_handler(flecsi_legion_handler);
 inline int
 flecsi_legion_runtime_driver(int argc, char ** argv, variables_map & vm) {
   return flecsi::execution::context_t::instance().start(argc, argv, vm);
-} // runtime_driver
+}
+
+inline bool
+flecsi_legion_output_driver() {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  return rank == 0;
+}
 
 cinch_register_runtime_driver(flecsi_legion_runtime_driver);
+cinch_register_output_driver(flecsi_legion_output_driver);
