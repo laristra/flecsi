@@ -27,6 +27,7 @@
 #include <flecsi/execution/legion/invocation/task_epilogue.hh>
 #include <flecsi/execution/legion/invocation/task_prologue.hh>
 #include <flecsi/execution/legion/reduction_wrapper.hh>
+#include <flecsi/execution/legion/runtime.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/flog/utils.hh>
@@ -87,9 +88,9 @@ struct legion_execution_policy_t {
   static bool register_legion_task(processor_type_t processor,
     task_execution_type_t execution,
     std::string name) {
-    flog(internal) << "Registering legion task" << std::endl
-                   << "\tname: " << name << std::endl
-                   << "\thash: " << TASK << std::endl;
+    flog_devel(info) << "Registering legion task" << std::endl
+                     << "\tname: " << name << std::endl
+                     << "\thash: " << TASK << std::endl;
 
     using wrapper_t = legion::pure_task_wrapper_u<RETURN, DELEGATE>;
 
@@ -184,8 +185,7 @@ struct legion_execution_policy_t {
       Legion::Future future = legion_runtime->execute_index_space(
         legion_context, reduction_launcher, reduction_id);
 
-      std::cerr << "max: " << future.get_result<size_t>() << std::endl;
-      if(future.get_result<size_t>() > FLOG_SERIALIZATION_SIZE) {
+      if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
         const auto flog_mpi_tid =
           context_t::instance().task_id<flecsi_internal_hash(flog_mpi_task)>();
 
@@ -229,7 +229,7 @@ struct legion_execution_policy_t {
 
       {
         flog_tag_guard(execution);
-        flog(internal) << "Executing single task" << std::endl;
+        flog_devel(info) << "Executing single task" << std::endl;
       }
 
       TaskLauncher launcher(flecsi_context.task_id(TASK),
@@ -279,7 +279,7 @@ struct legion_execution_policy_t {
 
       {
         flog_tag_guard(execution);
-        flog(internal) << "Executing index task" << std::endl;
+        flog_devel(info) << "Executing index task" << std::endl;
       }
 
       LegionRuntime::Arrays::Rect<1> launch_bounds(
@@ -306,11 +306,11 @@ struct legion_execution_policy_t {
 
         case processor_type_t::toc:
         case processor_type_t::loc: {
-          flog(info) << "Executing index launch on loc" << std::endl;
+          flog_devel(info) << "Executing index launch on loc" << std::endl;
 
           if constexpr(REDUCTION != ZERO) {
-            flog(info) << "executing reduction logic for " << REDUCTION
-                       << std::endl;
+            flog_devel(info)
+              << "executing reduction logic for " << REDUCTION << std::endl;
             auto reduction_op =
               flecsi_context.reduction_operations().find(REDUCTION);
 

@@ -52,7 +52,8 @@ struct reduction_wrapper_u {
 
     {
       flog_tag_guard(reduction_wrapper);
-      flog(info) << "registering reduction operation " << HASH << std::endl;
+      flog_devel(info) << "registering reduction operation " << HASH
+                       << std::endl;
     }
 
     const size_t id = unique_oid_t::instance().next();

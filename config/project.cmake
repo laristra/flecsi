@@ -133,15 +133,6 @@ foreach(_variableName ${_matchedVars})
   set(FLECSI_${_variableName} ${${_variableName}})
 endforeach()
 
-# CLOG options from Cinch
-get_cmake_property(_variableNames VARIABLES)
-string (REGEX MATCHALL "(^|;)CLOG_[A-Za-z0-9_]*"
-  _matchedVars "${_variableNames}")
-
-foreach(_variableName ${_matchedVars})
-  set(FLECSI_${_variableName} ${${_variableName}})
-endforeach()
-
 #------------------------------------------------------------------------------#
 # Add option for setting id bits
 #------------------------------------------------------------------------------#

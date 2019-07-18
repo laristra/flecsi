@@ -25,13 +25,11 @@ namespace flog {
 void
 flush_packets() {
   while(flog_t::instance().run_flusher()) {
+
     usleep(FLOG_PACKET_FLUSH_INTERVAL);
 
-    {
+    if(flog_t::instance().serialized()) {
       std::lock_guard<std::mutex> guard(flog_t::instance().packets_mutex());
-
-      std::cerr << "FLUSHING " << flog_t::instance().packets().size()
-                << " PACKETS" << std::endl;
 
       if(flog_t::instance().packets().size()) {
         std::sort(flog_t::instance().packets().begin(),
@@ -43,7 +41,7 @@ flush_packets() {
 
         flog_t::instance().packets().clear();
       } // if
-    } // scope
+    } // if
 
   } // while
 } // flush_packets

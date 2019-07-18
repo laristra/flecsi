@@ -98,8 +98,8 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
   visit(DATA_TYPE &) {
     {
       flog_tag_guard(init_args);
-      flog(internal) << "Skipping argument with type "
-                     << flecsi::utils::type<DATA_TYPE>() << std::endl;
+      flog_devel(info) << "Skipping argument with type "
+                       << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }
   } // visit
 

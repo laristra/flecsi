@@ -48,12 +48,17 @@ using namespace boost::program_options;
 
 inline void
 flecsi_legion_add_options(options_description & desc) {
+
+  // clang-format off
   options_description flecsi("FleCSI Runtime Options");
   flecsi.add_options()
 #if defined(FLECSI_ENABLE_FLOG)
     FLECSI_FLOG_TAG_OPTION
+    FLECSI_FLOG_VERBOSE_OPTION
+    FLECSI_FLOG_PROCESS_OPTION
 #endif
-      FLECSI_THREADS_PER_PROCESS_OPTION;
+    FLECSI_THREADS_PER_PROCESS_OPTION;
+  // clang-format on
 
   desc.add(flecsi);
 } // add_options
@@ -86,7 +91,7 @@ flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
 #endif
 
 #if defined(FLECSI_ENABLE_FLOG)
-  if(__flecsi_tags == "0") {
+  if(__flog_tags == "0") {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -105,7 +110,7 @@ flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
 #endif
 
 #if defined(FLECSI_ENABLE_FLOG)
-  flog_initialize(__flecsi_tags);
+  flog_initialize(__flog_tags, __flog_verbose, __flog_process);
 #endif
 
 #if defined(FLECSI_ENABLE_KOKKOS)
@@ -143,6 +148,14 @@ cinch_append_runtime_handler(flecsi_legion_handler);
 inline int
 flecsi_legion_runtime_driver(int argc, char ** argv, variables_map & vm) {
   return flecsi::execution::context_t::instance().start(argc, argv, vm);
-} // runtime_driver
+}
+
+inline bool
+flecsi_legion_output_driver() {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  return rank == 0;
+}
 
 cinch_register_runtime_driver(flecsi_legion_runtime_driver);
+cinch_register_output_driver(flecsi_legion_output_driver);

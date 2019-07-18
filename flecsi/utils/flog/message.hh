@@ -41,7 +41,6 @@ true_state() {
   formatted logging utilities.
  */
 
-template<typename P>
 struct log_message_t {
 
   /*!
@@ -53,18 +52,10 @@ struct log_message_t {
     @param line            The current line (where the log message was
                            called). In general, this will always use the
                            __LINE__ parameter from the calling macro.
-    @param predicate       The predicate function to determine whether or not
-                           the calling runtime should produce output.
-    @param can_send_to_one A boolean indicating whether the calling scope can
-                           route messages through one process.
 */
 
-  log_message_t(const char * file,
-    int line,
-    P && predicate,
-    bool can_send_to_one = true)
-    : file_(file), line_(line), predicate_(predicate),
-      can_send_to_one_(can_send_to_one), clean_color_(false) {
+  log_message_t(const char * file, int line)
+    : file_(file), line_(line), clean_color_(false) {
 #if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: log_message_t constructor " << file
               << " " << line << FLOG_COLOR_PLAIN << std::endl;
@@ -78,7 +69,7 @@ struct log_message_t {
 #endif
 
 #if defined(FLOG_ENABLE_MPI)
-    if(can_send_to_one_ && flog_t::instance().initialized()) {
+    if(flog_t::instance().initialized()) {
       flog_t::instance().buffer_output();
     }
     else {
@@ -104,32 +95,24 @@ struct log_message_t {
    */
 
   virtual std::ostream & stream() {
-    return flog_t::instance().severity_stream(predicate_());
+    return flog_t::instance().severity_stream();
   } // stream
 
 protected:
   const char * file_;
   int line_;
-  P & predicate_;
-  bool can_send_to_one_;
   bool clean_color_;
 
 }; // struct log_message_t
 
 /*----------------------------------------------------------------------------*
   Convenience macro to define severity levels.
-
-  Log message types defined using this macro always use the default
-  predicate function, true_state().
  *----------------------------------------------------------------------------*/
 
-#define severity_message_t(severity, P, format)                                \
-  struct severity##_log_message_t : public log_message_t<P> {                  \
-    severity##_log_message_t(const char * file,                                \
-      int line,                                                                \
-      P && predicate = true_state,                                             \
-      bool can_send_to_one = true)                                             \
-      : log_message_t<P>(file, line, predicate, can_send_to_one) {}            \
+#define severity_message_t(severity, format)                                   \
+  struct severity##_log_message_t : public log_message_t {                     \
+    severity##_log_message_t(const char * file, int line, bool devel = false)  \
+      : devel_(devel), log_message_t(file, line) {}                            \
                                                                                \
     ~severity##_log_message_t() {                                              \
       /* Clean colors from the stream */                                       \
@@ -151,90 +134,183 @@ protected:
     std::ostream &                                                             \
     stream() override /* This is replaced by the scoped logic */               \
       format                                                                   \
+                                                                               \
+      private : bool devel_;                                                   \
   }
 
-#define message_stamp timestamp() << " " << rstrip<'/'>(file_) << ":" << line_
+#define verbose_stamp timestamp() << " " << rstrip<'/'>(file_) << ":" << line_ << " "
 
 #if defined(FLOG_ENABLE_MPI)
-#define mpi_stamp " c" << flog_t::instance().process()
+#define process_stamp " p" << flog_t::instance().process()
 #else
-#define mpi_stamp ""
+#define process_stamp ""
 #endif
 
-// Utility
-severity_message_t(utility, decltype(flecsi::utils::flog::true_state), {
+//----------------------------------------------------------------------------//
+// utility
+//
+// This is currently only used by ftest.
+//----------------------------------------------------------------------------//
+
+severity_message_t(utility, {
   std::ostream & stream =
     flog_t::instance().severity_stream(flog_t::instance().tag_enabled());
   return stream;
 });
 
-// Internal
-severity_message_t(internal, decltype(flecsi::utils::flog::true_state), {
-  std::ostream & stream = flog_t::instance().severity_stream(
-    FLOG_STRIP_LEVEL < 2 && predicate_() && flog_t::instance().tag_enabled());
+//----------------------------------------------------------------------------//
+// trace
+//----------------------------------------------------------------------------//
 
-  {
-    stream << FLOG_OUTPUT_LTBLUE("[INT") << FLOG_OUTPUT_PURPLE(message_stamp);
-    stream << FLOG_OUTPUT_LTGRAY(mpi_stamp);
-    stream << FLOG_OUTPUT_LTBLUE("] ") << FLOG_COLOR_LTGRAY;
-  } // scope
+severity_message_t(trace, {
+  std::ostream & stream = flog_t::instance().severity_stream(
+    FLOG_STRIP_LEVEL < 1 && flog_t::instance().tag_enabled());
+
+  std::string devel = devel_ ? "(devel)" : "";
+  std::string active_tag = flog_t::instance().initialized() ?
+    flog_t::instance().active_tag_name() : "external ";
+
+  switch(flog_t::instance().verbose()) {
+    case 1:
+    {
+      stream << FLOG_OUTPUT_CYAN("[trace ") << FLOG_OUTPUT_PURPLE(devel);
+      stream << FLOG_OUTPUT_LTGRAY(verbose_stamp);
+      stream << FLOG_OUTPUT_CYAN(active_tag);
+      stream << FLOG_OUTPUT_GREEN(process_stamp);
+      stream << FLOG_OUTPUT_CYAN("] ");
+    } // scope
+    break;
+
+    case 0:
+    {
+      stream << FLOG_OUTPUT_CYAN("[trace ") << FLOG_OUTPUT_PURPLE(devel);
+      stream << FLOG_OUTPUT_CYAN(active_tag);
+      stream << FLOG_OUTPUT_GREEN(process_stamp);
+      stream << FLOG_OUTPUT_CYAN("] ");
+    } // scope
+    break;
+
+    default:
+      break;
+  } // switch
 
   return stream;
 });
 
-// Trace
-severity_message_t(trace, decltype(flecsi::utils::flog::true_state), {
-  std::ostream & stream = flog_t::instance().severity_stream(
-    FLOG_STRIP_LEVEL < 1 && predicate_() && flog_t::instance().tag_enabled());
+//----------------------------------------------------------------------------//
+// info
+//----------------------------------------------------------------------------//
 
-  {
-    stream << FLOG_OUTPUT_CYAN("[T") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_CYAN(mpi_stamp);
-    stream << FLOG_OUTPUT_CYAN("] ");
-  } // scope
+severity_message_t(info, {
+  std::ostream & stream = flog_t::instance().severity_stream(
+    FLOG_STRIP_LEVEL < 2 && flog_t::instance().tag_enabled());
+
+  std::string devel = devel_ ? "devel " : "";
+  std::string active_tag = flog_t::instance().initialized() ?
+    flog_t::instance().active_tag_name() : "external ";
+
+  switch(flog_t::instance().verbose()) {
+    case 1:
+    {
+      stream << FLOG_OUTPUT_GREEN("[info ") << FLOG_OUTPUT_PURPLE(devel);
+      stream << FLOG_OUTPUT_LTGRAY(verbose_stamp);
+      stream << FLOG_OUTPUT_CYAN(active_tag);
+      stream << FLOG_OUTPUT_GREEN(process_stamp);
+      stream << FLOG_OUTPUT_GREEN("] ");
+    } // scope
+    break;
+
+    case 0:
+    {
+      stream << FLOG_OUTPUT_GREEN("[info ") << FLOG_OUTPUT_PURPLE(devel);
+      stream << FLOG_OUTPUT_CYAN(active_tag);
+      stream << FLOG_OUTPUT_GREEN(process_stamp);
+      stream << FLOG_OUTPUT_GREEN("] ");
+    } // scope
+    break;
+
+    default:
+      break;
+  } // switch
 
   return stream;
 });
 
-// Info
-severity_message_t(info, decltype(flecsi::utils::flog::true_state), {
+//----------------------------------------------------------------------------//
+// warn
+//----------------------------------------------------------------------------//
+
+severity_message_t(warn, {
   std::ostream & stream = flog_t::instance().severity_stream(
-    FLOG_STRIP_LEVEL < 2 && predicate_() && flog_t::instance().tag_enabled());
+    FLOG_STRIP_LEVEL < 3 && flog_t::instance().tag_enabled());
 
-  {
-    stream << FLOG_OUTPUT_GREEN("[I") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_CYAN(mpi_stamp);
-    stream << FLOG_OUTPUT_GREEN("] ");
-  } // scope
+  std::string devel = devel_ ? "(devel)" : "";
+  std::string active_tag = flog_t::instance().initialized() ?
+    flog_t::instance().active_tag_name() : "external ";
 
-  return stream;
-});
+  switch(flog_t::instance().verbose()) {
+    case 1:
+    {
+      stream << FLOG_OUTPUT_BROWN("[Warn ") << FLOG_OUTPUT_PURPLE(devel);
+      stream << FLOG_OUTPUT_LTGRAY(verbose_stamp);
+      stream << FLOG_OUTPUT_CYAN(active_tag);
+      stream << FLOG_OUTPUT_GREEN(process_stamp);
+      stream << FLOG_OUTPUT_BROWN("] ") << FLOG_COLOR_YELLOW;
+    } // scope
+    break;
 
-// Warn
-severity_message_t(warn, decltype(flecsi::utils::flog::true_state), {
-  std::ostream & stream = flog_t::instance().severity_stream(
-    FLOG_STRIP_LEVEL < 3 && predicate_() && flog_t::instance().tag_enabled());
+    case 0:
+    {
+      stream << FLOG_OUTPUT_BROWN("[Warn ") << FLOG_OUTPUT_PURPLE(devel);
+      stream << FLOG_OUTPUT_CYAN(active_tag);
+      stream << FLOG_OUTPUT_GREEN(process_stamp);
+      stream << FLOG_OUTPUT_BROWN("] ") << FLOG_COLOR_YELLOW;
+    } // scope
+    break;
 
-  {
-    stream << FLOG_OUTPUT_BROWN("[W") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_CYAN(mpi_stamp);
-    stream << FLOG_OUTPUT_BROWN("] ") << FLOG_COLOR_YELLOW;
-  } // scope
+    default:
+      break;
+  } // switch
 
   clean_color_ = true;
   return stream;
 });
 
-// Error
-severity_message_t(error, decltype(flecsi::utils::flog::true_state), {
-  std::ostream & stream = flog_t::instance().severity_stream(
-    FLOG_STRIP_LEVEL < 4 && predicate_() && flog_t::instance().tag_enabled());
+//----------------------------------------------------------------------------//
+// error
+//----------------------------------------------------------------------------//
 
-  {
-    stream << FLOG_OUTPUT_RED("[E") << FLOG_OUTPUT_LTGRAY(message_stamp);
-    stream << FLOG_OUTPUT_CYAN(mpi_stamp);
-    stream << FLOG_OUTPUT_RED("] ") << FLOG_COLOR_LTRED;
-  } // scope
+severity_message_t(error, {
+  std::ostream & stream = flog_t::instance().severity_stream(
+    FLOG_STRIP_LEVEL < 4 && flog_t::instance().tag_enabled());
+
+  std::string devel = devel_ ? "(devel)" : "";
+  std::string active_tag = flog_t::instance().initialized() ?
+    flog_t::instance().active_tag_name() : "external ";
+
+  switch(flog_t::instance().verbose()) {
+    case 1:
+    {
+      stream << FLOG_OUTPUT_RED("[ERROR ") << FLOG_OUTPUT_PURPLE(devel);
+      stream << FLOG_OUTPUT_LTGRAY(verbose_stamp);
+      stream << FLOG_OUTPUT_CYAN(active_tag);
+      stream << FLOG_OUTPUT_GREEN(process_stamp);
+      stream << FLOG_OUTPUT_RED("] ") << FLOG_COLOR_LTRED;
+    } // scope
+    break;
+
+    case 0:
+    {
+      stream << FLOG_OUTPUT_RED("[ERROR ") << FLOG_OUTPUT_PURPLE(devel);
+      stream << FLOG_OUTPUT_CYAN(active_tag);
+      stream << FLOG_OUTPUT_GREEN(process_stamp);
+      stream << FLOG_OUTPUT_RED("] ") << FLOG_COLOR_LTRED;
+    } // scope
+    break;
+
+    default:
+      break;
+  } // switch
 
   clean_color_ = true;
   return stream;

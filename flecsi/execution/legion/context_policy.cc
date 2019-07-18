@@ -54,7 +54,7 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
 
   {
     flog_tag_guard(context);
-    flog(internal) << "Invoking task registration callbacks" << std::endl;
+    flog_devel(info) << "Invoking task registration callbacks" << std::endl;
   }
 
   // clang-format off
@@ -125,7 +125,7 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
 
   {
     flog_tag_guard(context);
-    flog(internal) << "Starting Legion runtime" << std::endl;
+    flog_devel(info) << "Starting Legion runtime" << std::endl;
   }
 
   Runtime::start(largv.size(), largv.data(), true);
@@ -157,7 +157,7 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
   {
     flog_tag_guard(context);
-    flog(internal) << "In unset_call_mpi" << std::endl;
+    flog_devel(info) << "In unset_call_mpi" << std::endl;
   }
 
   const auto tid =
@@ -333,8 +333,8 @@ legion_context_policy_t::initialize_default_index_topology() {
 
   {
     flog_tag_guard(context);
-    flog(internal) << "Initializing default index topology" << std::endl
-                   << "\tidentifier: " << identifier << std::endl;
+    flog_devel(info) << "Initializing default index topology" << std::endl
+                     << "\tidentifier: " << identifier << std::endl;
   }
 
   data::topology_reference_u<topology::index_topology_t> reference(identifier);
@@ -357,8 +357,8 @@ legion_context_policy_t::finalize_default_index_topology() {
 
   {
     flog_tag_guard(context);
-    flog(internal) << "Finalizing default index topology" << std::endl
-                   << "\tidentifier: " << identifier << std::endl;
+    flog_devel(info) << "Finalizing default index topology" << std::endl
+                     << "\tidentifier: " << identifier << std::endl;
   }
 
   data::topology_reference_u<topology::index_topology_t> reference(identifier);
