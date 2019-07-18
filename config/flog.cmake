@@ -36,9 +36,9 @@ cmake_dependent_option(FLOG_ENABLE_EXTERNAL
   "Enable messages that are defined at namespace scope" OFF "ENABLE_FLOG" ON)
 mark_as_advanced(FLOG_ENABLE_EXTERNAL)
 
-cmake_dependent_option(FLOG_ENABLE_DEVEL
+cmake_dependent_option(FLOG_ENABLE_DEVELOPER_MODE
   "Enable internal FleCSI developer messages" OFF "ENABLE_FLOG" OFF)
-mark_as_advanced(FLOG_ENABLE_DEVEL)
+mark_as_advanced(FLOG_ENABLE_DEVELOPER_MODE)
 
 set(FLOG_TAG_BITS "64" CACHE STRING
   "Select the number of bits to use for tag groups")
@@ -48,9 +48,9 @@ set(FLOG_SERIALIZATION_INTERVAL "100" CACHE STRING
   "Select the frequency of message serialization in number of tasks")
 mark_as_advanced(FLOG_SERIALIZATION_INTERVAL)
 
-set(FLOG_SERIALIZATION_OVERFLOW "1024" CACHE STRING
-  "Select the overflow size in number of messages")
-mark_as_advanced(FLOG_SERIALIZATION_OVERFLOW)
+set(FLOG_SERIALIZATION_THRESHOLD "1024" CACHE STRING
+  "Select the threshold size in number of messages")
+mark_as_advanced(FLOG_SERIALIZATION_THRESHOLD)
 
 if(ENABLE_FLOG)
   set(FLOG_STRIP_LEVELS 0 1 2 3 4)

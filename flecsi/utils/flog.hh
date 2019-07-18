@@ -166,7 +166,7 @@
     flecsi::utils::flog::severity##_log_message_t(__FILE__, __LINE__, false)   \
       .stream()
 
-#if defined(FLOG_ENABLE_DEVEL)
+#if defined(FLOG_ENABLE_DEVELOPER_MODE)
 
 #define flog_devel(severity)                                                   \
   /* MACRO IMPLEMENTATION */                                                   \
@@ -183,7 +183,7 @@
   else                                                                         \
     std::cerr
 
-#endif
+#endif // FLOG_ENABLE_DEVELOPER_MODE
 
 /*!
   @def flog_trace(message)
