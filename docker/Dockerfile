@@ -36,7 +36,7 @@ RUN mkdir build
 
 WORKDIR build
 RUN ccache -z
-RUN cmake -DMPIEXEC_PREFLAGS=$([ "$DISTRO" = "fedora" ] && echo '--oversubscribe -mca pml ^ucx' || echo ) \
+RUN cmake -DMPIEXEC_PREFLAGS=$([ "$DISTRO" = "fedora" ] && echo '--oversubscribe -mca pml ^ucx') \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
