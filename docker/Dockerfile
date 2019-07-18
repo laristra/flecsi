@@ -1,5 +1,6 @@
 FROM laristra/flecsi-third-party:fedora
 
+ARG DISTRO
 ARG MINIMAL
 ARG LEGION
 ARG BUILD_TYPE
@@ -35,7 +36,8 @@ RUN mkdir build
 
 WORKDIR build
 RUN ccache -z
-RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+RUN cmake -DMPIEXEC_PREFLAGS=$([ "$DISTRO" = "fedora" ] && echo '--oversubscribe -mca pml ^ucx' || echo )
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
