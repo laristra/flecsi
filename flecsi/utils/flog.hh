@@ -83,13 +83,15 @@
   flecsi::utils::flog::flog_t::instance().tag_map()
 
 /*!
-  @def flog_initialize(active, process)
+  @def flog_initialize(active, verbose, process)
 
   This call initializes the flog runtime with the list of tags specified
   in \em active.
 
   @param active  A const char * or std::string containing the list of
                  active tags. Tags should be comma delimited.
+  @param         A boolean value indicating whether or not to enable verbose
+                 output.
   @param process The process id to which output should be restricted. For no
                  restrictions, pass std::numeric_limits<size_t>::max().
 
@@ -99,11 +101,12 @@
 
      // Fill a string object with the active tags.
      std::string tags{"init,advance,analysis"};
+     bool verbose{true};
      size_t process = std::numeric_limits<size_t>::max();
 
      // Initialize the flog runtime with active tags, 'init', 'advance',
      // and 'analysis'.
-     flog_initialize(tags, process);
+     flog_initialize(tags, verbose, process);
 
      return 0;
   } // main
@@ -112,10 +115,10 @@
   @ingroup flog
  */
 
-#define flog_initialize(active, process)                                       \
+#define flog_initialize(active, verbose, process)                              \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flecsi::utils::flog::flog_t::instance().initialize(active, process)
+  flecsi::utils::flog::flog_t::instance().initialize(active, verbose, process)
 
 /*!
   @def flog_finalize()

@@ -24,6 +24,7 @@
 #include <string>
 
 inline std::string __flog_tags;
+inline int __flog_verbose;
 inline size_t __flog_process;
 
 /*
@@ -35,6 +36,16 @@ inline size_t __flog_process;
     value(&__flog_tags)->implicit_value("0")->default_value("all"),            \
     "Enable the specified output tags, e.g., --flog-tags=tag1,tag2."           \
     " Passing --flog-tags by itself will print the available tags.")
+
+/*
+  Command-line option to set verbose flog output.
+ */
+
+#define FLECSI_FLOG_VERBOSE_OPTION                                             \
+  ("flog-verbose",                                                             \
+    value(&__flog_verbose)->implicit_value(1)->default_value(0),        \
+    "Enable verbose output. Passing '-1' will strip any additional" \
+    "decorations added by flog and will only output the user's message.")
 
 /*
   Command-line option to restrict flog output to a single process.

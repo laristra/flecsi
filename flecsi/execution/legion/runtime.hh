@@ -49,15 +49,16 @@ using namespace boost::program_options;
 inline void
 flecsi_legion_add_options(options_description & desc) {
 
-// clang-format off
+  // clang-format off
   options_description flecsi("FleCSI Runtime Options");
   flecsi.add_options()
 #if defined(FLECSI_ENABLE_FLOG)
     FLECSI_FLOG_TAG_OPTION
+    FLECSI_FLOG_VERBOSE_OPTION
     FLECSI_FLOG_PROCESS_OPTION
 #endif
     FLECSI_THREADS_PER_PROCESS_OPTION;
-// clang-format on
+  // clang-format on
 
   desc.add(flecsi);
 } // add_options
@@ -109,7 +110,7 @@ flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
 #endif
 
 #if defined(FLECSI_ENABLE_FLOG)
-  flog_initialize(__flog_tags, __flog_process);
+  flog_initialize(__flog_tags, __flog_verbose, __flog_process);
 #endif
 
 #if defined(FLECSI_ENABLE_KOKKOS)
