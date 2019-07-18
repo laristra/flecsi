@@ -429,19 +429,22 @@ analyze_flecsi_get_handle(const flecstan::Yaml & yaml) {
   flecstan_im(flecsi_get_handle);
 
   /*
-  Let's check for the following problems:
-     - Pair {nspace,name} that matches none in any register_field
-     - Match is incompatible in view of the client handle (first argument)
-       ...fixme not implemented yet
-     - Match, but with a different data model (e.g. sparse instead of dense)
-     - Match, but with a different data type (e.g. int instead of double)
-     - Match, but with an out-of-range version (e.g. pressure #4 of 0,1,2,3)
+  Let's check for the following issues:
+     - 1. Pair {nspace,name} that matches none in any register_field
+     - 2. Match, but with a different data type (e.g. int instead of double)
+     - 3. Match, but with a different data model (e.g. sparse instead of dense)
+     - 4. Match, but with an out-of-range version (e.g. pressure #4 of 0,1,2,3)
+     - 5. Match is incompatible in view of the client handle (first argument)
   */
 
   // Loop over [flecsi_get_handle] calls...
   for(auto gh : yaml.flecsi_get_handle.matched) {
     // {nspace,name}
     const std::pair<std::string, std::string> pair(gh.nspace, gh.name);
+
+    // ------------------------
+    // 1. Registered?
+    // ------------------------
 
     // Is {nspace,name} in any [flecsi_register_field] call? Note that
     // we're just doing a simple linear search here; I don't think
@@ -488,7 +491,11 @@ analyze_flecsi_get_handle(const flecstan::Yaml & yaml) {
     // register_field() call.
     // ------------------------
 
-    // Does the field's type match?
+    // ------------------------
+    // 2. Same data type?
+    // ------------------------
+
+    // Does the field's data type match?
     // Re: double, float, int, etc.
     if(gh.data_type != rf.data_type) {
       status = std::max(status,
@@ -502,6 +509,11 @@ analyze_flecsi_get_handle(const flecstan::Yaml & yaml) {
               "because the data type was registered as " +
               rf.data_type + ",\nbut retrieved as " + gh.data_type + "."));
     }
+
+    // ------------------------
+    // 3. Same data model,
+    // a.k.a. storage type?
+    // ------------------------
 
     // Does the field's data model (a.k.a. storage type) match?
     // Re: dense, sparse, etc.
@@ -517,6 +529,11 @@ analyze_flecsi_get_handle(const flecstan::Yaml & yaml) {
           "because the storage class was registered as " +
           rf.storage_class + ",\nbut retrieved as " + gh.storage_class + "."));
     }
+
+    // ------------------------
+    // 4. In-range version,
+    // a.k.a. field index?
+    // ------------------------
 
     // Is the field's version (a.k.a. index) in-range?
     // Re: 2 versions allows [0] and [1]; etc.
@@ -544,6 +561,25 @@ analyze_flecsi_get_handle(const flecstan::Yaml & yaml) {
               "is inconsistent with the matching flecsi_register_field() "
               "call here:\n   " +
               uflcs(rf, false) + "\n" + str));
+    }
+
+    // ------------------------
+    // 5. Compatible client
+    // handle, a.k.a. mesh?
+    // ------------------------
+
+    // Does the field's mesh type match?
+    // Re: mesh_t, mesh_2_t, etc.
+    if(gh.type != rf.type) {
+      status = std::max(status,
+        error("The flecsi_get_handle() macro call here:\n   " +
+              uflcs(gh, false) +
+              "\nis inconsistent with the matching flecsi_register_field() "
+              "call here:\n   " +
+              uflcs(rf, false) +
+              "\nbecause the registration stipulated a mesh type of:\n   " +
+              rf.type + "\nbut the type is:\n   " + gh.type +
+              "\nfor the provided mesh handle " + gh.client_handle + "."));
     }
   }
 
