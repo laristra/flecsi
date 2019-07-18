@@ -239,8 +239,10 @@ your browser with
 *file:///path/to/your/build/directory/doc/doxygen/html/index.html*, and
 *file:///path/to/your/build/directory/doc/sphinx/index.html*.
 
+Advanced
+********
+
 .. toctree::
-  :caption: Advanced:
 
   build/options
 
