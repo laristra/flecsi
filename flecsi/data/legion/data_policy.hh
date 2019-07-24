@@ -33,20 +33,17 @@ struct legion_data_policy_t {
    *--------------------------------------------------------------------------*/
 
   template<typename TOPOLOGY_TYPE>
-  using topology_instance_u =
-    typename legion::topology_instance_u<TOPOLOGY_TYPE>;
-
-  template<typename TOPOLOGY_TYPE>
   static void create(
     topology_reference_u<TOPOLOGY_TYPE> const & topology_reference,
     typename TOPOLOGY_TYPE::coloring_t const & coloring) {
-    topology_instance_u<TOPOLOGY_TYPE>::create(topology_reference, coloring);
+    legion::topology_instance_u<TOPOLOGY_TYPE>::create(
+      topology_reference, coloring);
   } // create
 
   template<typename TOPOLOGY_TYPE>
   static void destroy(
     topology_reference_u<TOPOLOGY_TYPE> const & topology_reference) {
-    topology_instance_u<TOPOLOGY_TYPE>::destroy(topology_reference);
+    legion::topology_instance_u<TOPOLOGY_TYPE>::destroy(topology_reference);
   } // destroy
 
   /*--------------------------------------------------------------------------*
