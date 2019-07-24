@@ -38,9 +38,6 @@ struct data_reference_base_t {
 
   data_reference_base_t(size_t identifier) : identifier_(identifier) {}
 
-  data_reference_base_t(data_reference_base_t const & ref)
-    : identifier_(ref.identifier_) {}
-
   size_t identifier() const {
     return identifier_;
   } // identifier
@@ -60,10 +57,6 @@ struct topology_reference_u : public data_reference_base_t {
   using topology_t = TOPOLOGY_TYPE;
 
   topology_reference_u(size_t identifier) : data_reference_base_t(identifier) {}
-
-  topology_reference_u(topology_reference_u const & ref)
-    : data_reference_base_t(ref) {}
-
 }; // struct topology_reference_u
 
 /*!

@@ -132,12 +132,6 @@ public:
   {
   public:
     //-----------------------------------------------------------------//
-    //! Copy constructor
-    //-----------------------------------------------------------------//
-    id_range_(const id_range_ & r)
-      : items_(r.items_), begin_(r.begin_), end_(r.end_) {}
-
-    //-----------------------------------------------------------------//
     //! Initialize range from items
     //-----------------------------------------------------------------//
     id_range_(const id_storage_t & items)
@@ -148,15 +142,6 @@ public:
     //-----------------------------------------------------------------//
     id_range_(const id_storage_t & items, size_t begin, size_t end)
       : items_(&items), begin_(begin), end_(end) {}
-
-    //-----------------------------------------------------------------//
-    //! Assignment operator
-    //-----------------------------------------------------------------//
-    id_range_ & operator=(const id_range_ & r) {
-      items_ = r.items_;
-      begin_ = r.begin_;
-      end_ = r.end_;
-    }
 
     //-----------------------------------------------------------------//
     //! Get begin iterator
@@ -188,12 +173,6 @@ public:
     using MS = typename std::remove_const<S>::type;
 
     //-----------------------------------------------------------------//
-    //! Copy constructor
-    //-----------------------------------------------------------------//
-    iterator_base_(const iterator_base_ & itr)
-      : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_) {}
-
-    //-----------------------------------------------------------------//
     //! Initialize iterator from items and range
     //-----------------------------------------------------------------//
     iterator_base_(storage_t * s,
@@ -211,17 +190,6 @@ public:
       size_t end)
       : items_(&items), index_(index), end_(end),
         s_(const_cast<storage_t *>(s)) {}
-
-    //-----------------------------------------------------------------//
-    //! Assignment operator
-    //-----------------------------------------------------------------//
-    iterator_base_ & operator=(const iterator_base_ & itr) {
-      index_ = itr.index_;
-      end_ = itr.end_;
-      items_ = itr.items_;
-      s_ = itr.s_;
-      return *this;
-    }
 
     //-----------------------------------------------------------------//
     //! Equality operator
@@ -306,11 +274,6 @@ public:
   {
   public:
     using B = iterator_base_<S>;
-
-    //-----------------------------------------------------------------//
-    //! Copy constructors
-    //-----------------------------------------------------------------//
-    iterator_(const iterator_ & itr) : B(itr) {}
 
     //-----------------------------------------------------------------//
     //! Initialize iterator from item storage and index range
@@ -445,13 +408,6 @@ public:
 
       assert(false && "end of range");
     }
-
-    friend void swap(iterator_ & a, iterator_ & b) {
-      std::swap(a.B::items_, b.B::items_);
-      std::swap(a.B::index_, b.B::index_);
-      std::swap(a.B::end_, b.B::end_);
-      std::swap(a.B::s_, b.B::s_);
-    }
   };
 
   //------------------------------------------------------------------------//
@@ -468,11 +424,6 @@ public:
     using B = iterator_base_<S>;
 
     using ref_t = index_space_ref_type_u<S>;
-
-    //-----------------------------------------------------------------//
-    //! Copy constructor
-    //-----------------------------------------------------------------//
-    iterator_(const iterator_ & itr) : B(itr) {}
 
     //-----------------------------------------------------------------//
     //! Initialize iterator from items and range
@@ -590,13 +541,6 @@ public:
     //-----------------------------------------------------------------//
     S * operator->() {
       return &B::get_(B::index_);
-    }
-
-    friend void swap(iterator_ & a, iterator_ & b) {
-      std::swap(a.B::items_, b.B::items_);
-      std::swap(a.B::index_, b.B::index_);
-      std::swap(a.B::end_, b.B::end_);
-      std::swap(a.B::s_, b.B::s_);
     }
   };
 
