@@ -647,7 +647,7 @@ struct context_u : public CONTEXT_POLICY {
       "adjacency exists");
 
     adjacency_info_.emplace(
-      adjacency_info.index_space, std::move(adjacency_info));
+      adjacency_info.index_space, adjacency_info);
   } // add_adjacency
 
   /*!

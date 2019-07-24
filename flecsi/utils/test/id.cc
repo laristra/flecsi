@@ -136,8 +136,8 @@ TEST(id, all) {
     // Arguments: (local_id [,partition_id [,flags [,global]]])
     const id a = id::make<1, 2>(3);
     const id b = id::make<1, 2>(3, 4);
-    const id c = id::make<1, 2>(3, 4, 5);
-    const id d = id::make<1, 2>(3, 4, 5, 6);
+    const id c = id::make<1, 2>(3, 4, 0, 5);
+    const id d = id::make<1, 2>(3, 4, 6, 5);
     print(a);
     print(b);
     print(c);
@@ -166,7 +166,7 @@ TEST(id, all) {
   // ------------------------
 
   {
-    const id a = id::make<1, 2>(3, 4, 5, 6);
+    const id a = id::make<1, 2>(3, 4, 6, 5);
     print(a);
 
     CINCH_CAPTURE() << std::endl;
@@ -190,7 +190,7 @@ TEST(id, all) {
   // ------------------------
 
   {
-    id a = id::make<1, 2>(3, 4, 5, 6);
+    id a = id::make<1, 2>(3, 4, 6, 5);
     id b = id{};
     a = b = id{};
     b = a = a;
@@ -201,7 +201,7 @@ TEST(id, all) {
   // ------------------------
 
   {
-    id a = id::make<1, 2>(3, 4, 5, 6);
+    id a = id::make<1, 2>(3, 4, 6, 5);
     print(a);
     a.set_global(100);
     a.set_partition(200);
@@ -214,7 +214,7 @@ TEST(id, all) {
   // ------------------------
 
   {
-    id a = id::make<1, 2>(3, 4, 5, 6);
+    id a = id::make<1, 2>(3, 4, 6, 5);
 
     CINCH_CAPTURE() << a.dimension() << std::endl;
     CINCH_CAPTURE() << a.domain() << std::endl;
@@ -246,9 +246,9 @@ TEST(id, all) {
     //    local_id() == bits from: [entity partition domain dimension]
 
     // <dimension,domain>(entity,partition,flags,global)...
-    const id a = id::make<2, 3>(10, 20, 30, 40);
-    const id b = id::make<2, 3>(50, 60, 70, 80);
-    const id c = id::make<2, 3>(50, 60, 7000, 8000);
+    const id a = id::make<2, 3>(10, 20, 40, 30);
+    const id b = id::make<2, 3>(50, 60, 80, 70);
+    const id c = id::make<2, 3>(50, 60, 8000, 7000);
 
     CINCH_CAPTURE() << a.local_id() << std::endl;
     CINCH_CAPTURE() << b.local_id() << std::endl;

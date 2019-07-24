@@ -224,7 +224,7 @@ struct accessor_u<data::dense,
    */
   template<typename E>
   const T & operator()(E * e) const {
-    return this->operator()(e->template id<0>());
+    return this->operator()(e->template id());
   } // operator ()
 
   /*!
@@ -238,7 +238,7 @@ struct accessor_u<data::dense,
    */
   template<typename E>
   T & operator()(E * e) {
-    return this->operator()(e->template id<0>());
+    return this->operator()(e->template id());
   } // operator ()
 
   handle_t handle;

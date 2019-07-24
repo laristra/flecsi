@@ -375,11 +375,11 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
         auto offset = recvdispls[ghost.rank] + recvcounts[ghost.rank];
         auto eptr = entities + my_coloring_info.shared + i;
         // copy the original ids for now (GROSS)      
-        auto ids = eptr->global_ids();
+        auto id = eptr->global_id();
         // overrite data
         std::memcpy( eptr, recvbuf.data()+offset, entity_size );
         // copy back the ids
-        eptr->set_global_ids(ids);
+        eptr->set_global_id(id);
         // bump counters
         recvcounts[ghost.rank] += entity_size;
         ++i;

@@ -19,6 +19,7 @@
 #include <vector>
 
 #include <flecsi/geometry/point.h>
+#include <flecsi/coloring/crs.h>
 
 namespace flecsi {
 namespace topology {
@@ -128,7 +129,7 @@ public:
       size_t from_dimension,
       size_t to_dimension,
       size_t min_connections,
-      flecsi::coloring::dcrs_t & dcrs ) const = 0;
+      flecsi::coloring::dcrs_t & dcrs ) const {};
 
   virtual void pack(
     size_t dimension,
@@ -147,6 +148,8 @@ public:
   virtual void build_connectivity() {};
 
   virtual void vertex(size_t id, real_t * coord ) const {};
+  
+  virtual const std::vector<size_t> & face_owners() const {};
 
 }; // class mesh_definition_u
 

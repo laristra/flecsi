@@ -969,10 +969,11 @@ void get_owner_info(
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Color an auxiliary index space like vertices or edges
 ////////////////////////////////////////////////////////////////////////////////
-template<std::size_t MESH_DIMENSION>
+inline
 void color_entities(
-  const typename flecsi::topology::mesh_definition_u<MESH_DIMENSION> & md,
-  size_t dimension,
+  const flecsi::coloring::crs_t & cells2entity,
+  const std::vector<size_t> & local2global,
+  const std::map<size_t,size_t> & global2local,
   const flecsi::coloring::index_coloring_t & cells,
   flecsi::coloring::index_coloring_t & entities,
   flecsi::coloring::coloring_info_t & color_info,
@@ -991,11 +992,8 @@ void color_entities(
   // Start marking all vertices as exclusive
   //----------------------------------------------------------------------------
   
-  const auto & local2global = md.local_to_global(dimension);
-  const auto & cells2entity = md.entities_crs(MESH_DIMENSION, dimension);
-
   // marked as exclusive by default
-  auto num_ents = md.num_entities(dimension);
+  auto num_ents = local2global.size();
   std::vector<bool> exclusive(num_ents, true);
  
   // set of possible shared vertices
@@ -1153,8 +1151,6 @@ void color_entities(
   //
   // After this, we know who is the sharer of a particular vertex
   //----------------------------------------------------------------------------
-  
-  const auto & global2local = md.global_to_local(dimension);
   
   struct owner_t {
     size_t rank;
@@ -1719,11 +1715,10 @@ void match_ids(
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Color an auxiliary index space like vertices or edges
 ////////////////////////////////////////////////////////////////////////////////
-template<std::size_t MESH_DIMENSION>
+inline
 void ghost_connectivity(
-  const typename flecsi::topology::mesh_definition_u<MESH_DIMENSION> & md,
-  size_t from_dimension,
-  size_t to_dimension,
+  const flecsi::coloring::crs_t & from2to,
+  const std::vector<size_t> & local2global,
   const flecsi::coloring::index_coloring_t & from_entities,
   std::vector<size_t> & from_ids,
   flecsi::coloring::crs_t & connectivity
@@ -1737,12 +1732,6 @@ void ghost_connectivity(
   const auto mpi_size_t = utils::mpi_typetraits_u<size_t>::type();
   
  
-  //----------------------------------------------------------------------------
-  // Start marking all vertices as exclusive
-  //----------------------------------------------------------------------------
-  
-  const auto & local2global = md.local_to_global(to_dimension);
-  const auto & from2to = md.entities_crs(from_dimension, to_dimension);
 
   //----------------------------------------------------------------------------
   // Determine cell-to-vertex connecitivity for my shared cells
@@ -1851,6 +1840,22 @@ void ghost_connectivity(
 
 }
 
+template<std::size_t MESH_DIMENSION>
+void ghost_connectivity(
+  const typename flecsi::topology::mesh_definition_u<MESH_DIMENSION> & md,
+  size_t from_dimension,
+  size_t to_dimension,
+  const flecsi::coloring::index_coloring_t & from_entities,
+  std::vector<size_t> & from_ids,
+  flecsi::coloring::crs_t & connectivity
+) {
+  
+  const auto & to_local2global = md.local_to_global(to_dimension);
+  const auto & from2to = md.entities_crs(from_dimension, to_dimension);
+
+  ghost_connectivity( from2to, to_local2global, from_entities, from_ids,
+      connectivity );
+}
 
 } // namespace coloring
 } // namespace flecsi

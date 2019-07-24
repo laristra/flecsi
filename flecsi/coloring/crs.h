@@ -157,6 +157,12 @@ struct crs_t {
   }
 
   template< typename U >
+  void append( const U & value ) {
+    auto ptr = &value;
+    append( ptr, ptr+1 );
+  }
+
+  template< typename U >
   void push_back( std::initializer_list<U> init )
   {
     append(init.begin(), init.end());
