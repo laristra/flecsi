@@ -93,7 +93,7 @@ struct topology_registration_u<
         flecsi::data::dense, ENTITY_TYPE, entity_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t type_key =
-        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+        typeid(CLIENT_TYPE).hash_code();
 
       using flecsi::utils::const_string_t;
       const size_t field_key =
@@ -106,7 +106,7 @@ struct topology_registration_u<
       flog_tag_guard(registration);
       flog(info) << "registering field for type id: " <<
         flecsi::utils::demangle(
-          typeid(typename CLIENT_TYPE::type_identifier_t).name()
+          typeid(CLIENT_TYPE).name()
         ) << std::endl <<
         " index: " << INDEX_TYPE::value << std::endl <<
         " namespace: " << NAMESPACE << std::endl <<
@@ -176,7 +176,7 @@ struct topology_registration_u<
           utils::id_t, adjacency_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t type_key =
-        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+        typeid(CLIENT_TYPE).hash_code();
 
       using flecsi::utils::const_string_t;
       const size_t index_key =
@@ -246,7 +246,7 @@ struct topology_registration_u<
           utils::id_t, adjacency_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t type_key =
-        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+        typeid(CLIENT_TYPE).hash_code();
 
       using flecsi::utils::const_string_t;
       const size_t index_key =
@@ -300,7 +300,7 @@ struct topology_registration_u<
           utils::id_t, index_subspace_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t type_key =
-        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+        typeid(CLIENT_TYPE).hash_code();
 
       using flecsi::utils::const_string_t;
       const size_t field_key =
@@ -328,7 +328,7 @@ struct topology_registration_u<
     using bindings = typename POLICY_TYPE::bindings;
 
     const size_t type_hash =
-      typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+      typeid(CLIENT_TYPE).hash_code();
     const size_t instance_hash =
       utils::hash::client_hash<NAMESPACE, NAME>();
 
@@ -392,7 +392,7 @@ struct topology_registration_u<
         INDEX_TYPE::value>;
 
       const size_t type_key =
-        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+        typeid(CLIENT_TYPE).hash_code();
 
       using flecsi::utils::const_string_t;
       const size_t field_key = utils::hash::client_internal_field_hash<
@@ -430,7 +430,7 @@ struct topology_registration_u<
   static void register_fields(field_id_t fid) {
     using entity_types_t = typename POLICY_TYPE::entity_types;
     const size_t type_key =
-      typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+      typeid(CLIENT_TYPE).hash_code();
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types_t>();
