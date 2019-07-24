@@ -26,9 +26,6 @@
 namespace flecsi {
 namespace topology {
 
-// FIXME: user id generator
-constexpr size_t global_index_space = 4096;
-
 /*!
   The global_topology_u type allows users to register data on a
   topology with a single index, i.e., there is one instance of

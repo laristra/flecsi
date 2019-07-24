@@ -24,8 +24,6 @@
 namespace flecsi {
 namespace topology {
 
-constexpr size_t index_index_space = 4097;
-
 /*!
   The index_topology_u type allows users to register data on an
   arbitrarily-sized set of indices that have an implicit one-to-one coloring.
