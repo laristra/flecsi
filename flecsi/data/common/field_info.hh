@@ -38,6 +38,8 @@ namespace data {
 
 struct field_info_t {
   field_id_t fid = FIELD_ID_MAX;
+  size_t index_space = std::numeric_limits<size_t>::max();
+  size_t versions = std::numeric_limits<size_t>::max();
   size_t type_size = std::numeric_limits<size_t>::max();
 }; // struct field_info_t
 

@@ -33,6 +33,7 @@ namespace flecsi {
 namespace execution {
 
 using FLECSI_RUNTIME_EXECUTION_POLICY = legion_execution_policy_t;
+using execution_policy_t = legion_execution_policy_t;
 
 } // namespace execution
 } // namespace flecsi

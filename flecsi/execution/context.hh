@@ -19,7 +19,8 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/field_info.hh>
-#include <flecsi/execution/common/launch.hh>
+//#include <flecsi/execution/common/launch.hh>
+#include <flecsi/execution/common/task_attributes.hh>
 #include <flecsi/execution/global_object_wrapper.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/base_topology_types.hh>
@@ -399,7 +400,7 @@ struct context_u : public CONTEXT_POLICY {
   void add_field_info(size_t topology_type_identifier,
     size_t storage_class,
     const data::field_info_t & field_info,
-    std::size_t key) {
+    size_t key) {
     flog_devel(info) << "Registering field info (context)" << std::endl
                      << "\ttopology type identifier: "
                      << topology_type_identifier << std::endl

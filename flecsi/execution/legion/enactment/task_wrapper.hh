@@ -20,8 +20,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/common/processor.hh>
+//#include <flecsi/execution/common/launch.hh>
+//#include <flecsi/execution/common/processor.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/enactment/bind_accessors.hh>
 #include <flecsi/execution/legion/enactment/unbind_accessors.hh>
@@ -78,9 +78,9 @@ struct pure_task_wrapper_u {
    */
 
   static void registration_callback(task_id_t tid,
-    processor_type_t processor_type,
-    task_execution_type_t execution,
+    size_t attribtues,
     std::string & name) {
+#if 0
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "registering pure Legion task " << name << std::endl;
@@ -116,6 +116,7 @@ struct pure_task_wrapper_u {
       Legion::Runtime::preregister_task_variant<RETURN, TASK>(
         registrar, name.c_str());
     } // if
+#endif
   } // registration_callback
 
 }; // struct pure_task_wrapper_u
@@ -151,9 +152,9 @@ struct task_wrapper_u {
    */
 
   static void registration_callback(task_id_t tid,
-    processor_type_t processor_type,
-    task_execution_type_t execution,
+    task_attributes_mask_t attributes,
     std::string & name) {
+#if 0
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "registering task " << name << std::endl;
@@ -190,6 +191,7 @@ struct task_wrapper_u {
       Legion::Runtime::preregister_task_variant<RETURN, execute_user_task>(
         registrar, name.c_str());
     } // if
+#endif
   } // registration_callback
 
   /*!
@@ -200,6 +202,7 @@ struct task_wrapper_u {
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context context,
     Legion::Runtime * runtime) {
+#if 0
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "In execute_user_task" << std::endl;
@@ -227,6 +230,7 @@ struct task_wrapper_u {
 
       return result;
     } // if
+#endif
   } // execute_user_task
 
   /*!
@@ -237,6 +241,7 @@ struct task_wrapper_u {
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context context,
     Legion::Runtime * runtime) {
+#if 0
     // FIXME: Refactor
     //    {
     //      flog_tag_guard(task_wrapper);
@@ -261,6 +266,7 @@ struct task_wrapper_u {
     // finalize_handles_t finalize_handles;
     // finalize_handles.walk(mpi_task_args);
 
+#endif
   } // execute_mpi_task
 
 }; // struct task_wrapper_u

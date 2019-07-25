@@ -53,6 +53,7 @@ struct field_interface_u {
   struct field {
     using version = std::size_t;
     using topology_reference_t = topology_reference_u<Topo>;
+
     field(version v = 1) : versions(v), fid(reg()) {}
     /// Get a field reference.
     /// \param t topology reference

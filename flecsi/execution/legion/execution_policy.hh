@@ -22,7 +22,7 @@
 #else
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/enactment/task_wrapper.hh>
-#include <flecsi/execution/legion/future.hh>
+//#include <flecsi/execution/legion/future.hh>
 #include <flecsi/execution/legion/invocation/init_args.hh>
 #include <flecsi/execution/legion/invocation/task_epilogue.hh>
 #include <flecsi/execution/legion/invocation/task_prologue.hh>
@@ -85,9 +85,7 @@ struct legion_execution_policy_t {
       const std::vector<Legion::PhysicalRegion> &,
       Legion::Context,
       Legion::Runtime *)>
-  static bool register_legion_task(processor_type_t processor,
-    task_execution_type_t execution,
-    std::string name) {
+  static bool register_legion_task(size_t attributes, std::string name) {
     flog_devel(info) << "Registering legion task" << std::endl
                      << "\tname: " << name << std::endl
                      << "\thash: " << TASK << std::endl;
@@ -95,7 +93,7 @@ struct legion_execution_policy_t {
     using wrapper_t = legion::pure_task_wrapper_u<RETURN, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      TASK, processor, execution, name, wrapper_t::registration_callback);
+      TASK, attributes, name, wrapper_t::registration_callback);
 
     flog_assert(success, "callback registration failed for " << name);
 
@@ -107,15 +105,12 @@ struct legion_execution_policy_t {
    */
 
   template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(std::size_t TASK,
-    processor_type_t processor,
-    task_execution_type_t execution,
-    std::string name) {
+  static bool register_task(std::size_t task, size_t attributes, std::string name) {
 
     using wrapper_t = legion::task_wrapper_u<RETURN, ARG_TUPLE, DELEGATE>;
 
     const bool success = context_t::instance().register_task(
-      TASK, processor, execution, name, wrapper_t::registration_callback);
+      task, attributes, name, wrapper_t::registration_callback);
 
     flog_assert(success, "callback registration failed for " << name);
 
@@ -127,12 +122,13 @@ struct legion_execution_policy_t {
    */
 
   template<size_t LAUNCH_DOMAIN,
+    size_t ATTRIBUTES,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(std::size_t TASK, ARGS &&... args) {
-
+  static decltype(auto) execute_task(size_t task, ARGS &&... args) {
+#if 0
     using namespace Legion;
 
     // This will guard the entire method
@@ -145,7 +141,7 @@ struct legion_execution_policy_t {
     context_t & flecsi_context = context_t::instance();
 
     // Get the processor type.
-    auto processor_type = flecsi_context.processor_type(TASK);
+    auto processor_type = flecsi_context.processor_type(task);
 
     // Get the Legion runtime and context from the current task.
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -232,7 +228,7 @@ struct legion_execution_policy_t {
         flog_devel(info) << "Executing single task" << std::endl;
       }
 
-      TaskLauncher launcher(flecsi_context.task_id(TASK),
+      TaskLauncher launcher(flecsi_context.task_id(task),
         TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
       for(auto & req : init_args.region_requirements()) {
@@ -288,7 +284,7 @@ struct legion_execution_policy_t {
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
       Legion::ArgumentMap arg_map;
-      Legion::IndexLauncher launcher(flecsi_context.task_id(TASK),
+      Legion::IndexLauncher launcher(flecsi_context.task_id(task),
         launch_domain,
         TaskArgument(&task_args, sizeof(ARG_TUPLE)),
         arg_map);
@@ -395,6 +391,8 @@ struct legion_execution_policy_t {
       } // switch
     } // if constexpr
 
+#endif
+    return 0;
   } // execute_task
 
   //------------------------------------------------------------------------//

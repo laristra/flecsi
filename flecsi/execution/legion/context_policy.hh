@@ -21,8 +21,8 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/legion/runtime_data_types.hh>
-#include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/common/processor.hh>
+//#include <flecsi/execution/common/launch.hh>
+//#include <flecsi/execution/common/processor.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
 #endif
@@ -103,7 +103,7 @@ struct legion_context_policy_t {
    */
 
   using registration_function_t = std::function<
-    void(task_id_t, processor_type_t, task_execution_type_t, std::string &)>;
+    void(task_id_t, size_t, std::string &)>;
 
   /*!
     The task_info_t type is a convenience type for defining the task
@@ -111,8 +111,7 @@ struct legion_context_policy_t {
    */
 
   using task_info_t = std::tuple<task_id_t,
-    processor_type_t,
-    task_execution_type_t,
+    size_t,
     std::string,
     registration_function_t>;
 
@@ -382,26 +381,26 @@ struct legion_context_policy_t {
   /*!
     Register a task with the runtime.
 
-    @param key      The task hash key.
-    @param name     The task name string.
-    @param callback The registration call back function.
+    @param task       The task id.
+    @param attributes The task attributes mask.
+    @param name       The task name string.
+    @param callback   The registration call back function.
    */
 
-  bool register_task(size_t key,
-    processor_type_t processor,
-    task_execution_type_t execution,
+  bool register_task(size_t task,
+    size_t attributes,
     std::string & name,
     const registration_function_t & callback) {
     flog_devel(info) << "Registering task callback" << std::endl
                      << "\tname: " << name << std::endl
-                     << "\thash: " << key << std::endl;
+                     << "\thash: " << task << std::endl;
 
-    flog_assert(task_registry_.find(key) == task_registry_.end(),
+    flog_assert(task_registry_.find(task) == task_registry_.end(),
       "task key already exists");
 
-    // FIXME: can we just re-use "key" (at least if it's reduced to 32 bits)?
-    task_registry_[key] = std::make_tuple(
-      unique_tid_t::instance().next(), processor, execution, name, callback);
+    // FIXME: can we just re-use "task" (at least if it's reduced to 32 bits)?
+    task_registry_[task] = std::make_tuple(
+      unique_tid_t::instance().next(), attributes, name, callback);
 
     return true;
   } // register_task
@@ -475,8 +474,8 @@ struct legion_context_policy_t {
   // clang-format off
   task_info_template_method(task_id, task_id_t, 0);
   task_info_method(task_id, task_id_t, 0);
-  task_info_template_method(processor_type, processor_type_t, 1);
-  task_info_method(processor_type, processor_type_t, 1);
+  task_info_template_method(task_attributes, size_t, 1);
+  task_info_method(task_attributes, size_t, 1);
   // clang-format on
 
   //--------------------------------------------------------------------------//

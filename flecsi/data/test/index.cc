@@ -20,10 +20,23 @@
 
 using namespace flecsi;
 
+#if 0
 namespace {
 const data::field_interface_t::field<double> ifld(2);
 const auto fh = ifld(flecsi_index_topology);
 } // namespace
+
+namespace new_interface {
+
+using namespace flecsi::data;
+using namespace flecsi::topology;
+
+using dense_field_t = data::
+  field_definition_u<double, dense, index_topology_t, 0 /* index space */>;
+
+const dense_field_t nifld(1);
+const auto nifh = nifld(flecsi_index_topology);
+} // namespace new_interface
 
 template<size_t PRIVILEGES>
 using accessor =
@@ -54,11 +67,13 @@ flecsi_register_task(check, index_test, loc, index);
 
 } // namespace index_test
 
+#endif
+
 int
 index_topology(int argc, char ** argv) {
 
-  flecsi_execute_task(assign, index_test, index, fh);
-  flecsi_execute_task(check, index_test, index, fh);
+//  flecsi_execute_task(assign, index_test, index, fh);
+//  flecsi_execute_task(check, index_test, index, fh);
 
   return 0;
 } // index

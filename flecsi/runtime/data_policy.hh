@@ -42,6 +42,7 @@ namespace flecsi {
 namespace data {
 
 using FLECSI_RUNTIME_DATA_POLICY = mpi_data_policy_t;
+using data_policy_t = mpi_data_policy_t;
 
 } // namespace data
 } // namespace flecsi

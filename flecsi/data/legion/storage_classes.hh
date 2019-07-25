@@ -13,7 +13,11 @@
                                                                               */
 #pragma once
 
-/*! @file */
+/*!
+  @file
+
+  This file contains implementations of field accessor types.
+ */
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!

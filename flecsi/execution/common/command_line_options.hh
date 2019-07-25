@@ -43,8 +43,8 @@ inline size_t __flog_process;
 
 #define FLECSI_FLOG_VERBOSE_OPTION                                             \
   ("flog-verbose",                                                             \
-    value(&__flog_verbose)->implicit_value(1)->default_value(0),        \
-    "Enable verbose output. Passing '-1' will strip any additional" \
+    value(&__flog_verbose)->implicit_value(1)->default_value(0),               \
+    "Enable verbose output. Passing '-1' will strip any additional"            \
     "decorations added by flog and will only output the user's message.")
 
 /*

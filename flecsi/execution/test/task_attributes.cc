@@ -8,15 +8,31 @@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
 
-   Copyright (c) 2016, Los Alamos National Security, LLC
+   Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#include <flecsi/execution/execution.hh>
 
-// Registering some default launch domains
+#include <flecsi/utils/ftest.hh>
 
-// Single:
-flecsi_register_launch_domain(single, 1);
+#define __FLECSI_PRIVATE__
+#include <flecsi/execution/common/task_attributes.hh>
 
-// Indsex, "0" means use default # of index points
-flecsi_register_launch_domain(index, 0);
+flog_register_tag(task_attributes);
+
+using namespace flecsi;
+
+int
+task_attributes(int argc, char ** argv) {
+
+  FTEST();
+
+  {
+  size_t mask = loc | leaf;
+
+  ASSERT_TRUE(execution::leaf_task(mask));
+  } // scope
+
+  return FTEST_RESULT();
+}
+
+ftest_register_driver(task_attributes);

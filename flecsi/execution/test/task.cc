@@ -15,9 +15,9 @@
 #include <flecsi/utils/ftest.hh>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/execution.hh>
 
+#if 0
 using namespace flecsi::execution;
 
 flog_register_tag(task);
@@ -37,6 +37,8 @@ simple(int value) {
   }
 } // simple
 
+flecsi_register_task(simple, task, loc, index);
+
 template<class T>
 void
 simple2(T t) {
@@ -44,24 +46,21 @@ simple2(T t) {
   flog(info) << "simple2(" << t << ")\n";
 }
 
-flecsi_register_task(simple, task, loc, index);
-
 } // namespace task
 
-/*
-  Test driver.
- */
+#endif
 
 int
 test_driver(int argc, char ** argv) {
 
   FTEST();
 
-  flecsi_execute_task(simple, task, single, 10);
+//  flecsi_execute_task(simple, task, single, 10);
 
-  flecsi_execute_task(simple, task, index, 8);
+//  flecsi_execute_task(simple, task, index, 8);
 
-  task_interface_t::execute<task::simple2<float>>(6.1);
+//  task_interface_t::execute<task::simple2<float>>(6.1);
+//  flecsi::execution::execute<task::simple2<float>, loc, index>(6.2);
 
   return FTEST_RESULT();
 }

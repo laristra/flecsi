@@ -20,7 +20,6 @@
 set(execution_HEADERS
   common/command_line_options.hh
   common/function_handle.hh
-  common/launch.hh
   common/processor.hh
   context.hh
   execution.hh
@@ -28,11 +27,11 @@ set(execution_HEADERS
   internal.hh
   kernel_interface.hh
   reduction.hh
+  task.hh
   task_interface.hh
 )
 
 set(execution_SOURCES
-  common/launch.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
@@ -140,6 +139,11 @@ endif()
 ftest_add_unit(task
   SOURCES
     test/task.cc
+)
+
+ftest_add_unit(task_attributes
+  SOURCES
+    test/task_attributes.cc
 )
 
 ftest_add_unit(gpu_task

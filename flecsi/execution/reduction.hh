@@ -18,6 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include <flecsi/execution/task.hh>
 #include <flecsi/execution/task_interface.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/hash.hh>

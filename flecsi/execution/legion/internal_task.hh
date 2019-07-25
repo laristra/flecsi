@@ -20,7 +20,6 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/common/processor.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/execution.hh>
 #include <flecsi/utils/const_string.hh>
@@ -48,7 +47,7 @@
   @ingroup legion-execution
 */
 
-#define flecsi_internal_register_legion_task(task, processor, execution_type)  \
+#define flecsi_internal_register_legion_task(task, attributes)  \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \
@@ -56,4 +55,4 @@
     flecsi::execution::legion_execution_policy_t::register_legion_task<        \
       flecsi_internal_hash(task),                                              \
       typename flecsi::utils::function_traits_u<decltype(task)>::return_type,  \
-      task>(processor, execution_type, {flecsi_internal_stringify(task)})
+      task>(attributes, {flecsi_internal_stringify(task)})

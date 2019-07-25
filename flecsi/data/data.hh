@@ -21,6 +21,7 @@
  */
 
 #include <flecsi/data/common/privilege.hh>
+#include <flecsi/data/field.hh>
 #include <flecsi/data/field_interface.hh>
 #include <flecsi/data/topology_interface.hh>
 #include <flecsi/topology/internal/global.hh>

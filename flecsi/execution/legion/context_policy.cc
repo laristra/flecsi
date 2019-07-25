@@ -59,11 +59,11 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
 
   // clang-format off
   for(auto & t : task_registry_) {
-    std::get<4>(t.second)(
+    std::get<3>(t.second)(
       std::get<0>(t.second) /* tid */,
-      std::get<1>(t.second) /* processor */,
-      std::get<2>(t.second) /* launch */,
-      std::get<3>(t.second) /* name */);
+      std::get<1>(t.second) /* attributes */,
+      std::get<2>(t.second) /* name */
+    );
   } // for
   // clang-format on
 
