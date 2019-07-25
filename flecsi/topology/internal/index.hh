@@ -17,8 +17,6 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
-#include <flecsi/utils/const_string.hh>
 #endif
 
 namespace flecsi {
@@ -33,8 +31,6 @@ namespace topology {
 
 struct index_topology_t {
 
-  static constexpr size_t type_identifier_hash =
-    flecsi_internal_hash(index_topology_t);
   index_topology_t() = delete;
 
   struct coloring_t {

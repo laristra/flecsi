@@ -20,6 +20,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/topology/common/core.hh"
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/execution/context.hh>
@@ -83,8 +84,8 @@ struct bind_accessors_t
 
     const auto fid =
       context_t::instance()
-        .get_field_info_store(
-          global_topology_t::type_identifier_hash, data::storage_label_t::dense)
+        .get_field_info_store(topology::id<topology::global_topology_t>(),
+          data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 
@@ -115,8 +116,8 @@ struct bind_accessors_t
 
     const auto fid =
       context_t::instance()
-        .get_field_info_store(
-          index_topology_t::type_identifier_hash, data::storage_label_t::dense)
+        .get_field_info_store(topology::id<topology::index_topology_t>(),
+          data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 

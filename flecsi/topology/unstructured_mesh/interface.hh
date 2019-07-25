@@ -169,8 +169,6 @@ class unstructured_mesh_topology_u
       num_index_subspaces_u<POLICY_TYPE>::value>>
 {
 public:
-  constexpr size_t type_identifier_hash = POLICY_TYPE::type_identifier_hash;
-
   // mesh storage type definition
   using storage_t = mesh_storage_u<POLICY_TYPE::num_dimensions,
     POLICY_TYPE::num_domains,

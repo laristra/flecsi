@@ -370,7 +370,7 @@ legion_io_policy_t::add_default_index_topology(hdf5_t & hdf5_file) {
 
   std::vector<data::field_info_t> const & fid_vector =
     flecsi_context
-      .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+      .get_field_info_store(topology::id<topology::index_topology_t>(),
         data::storage_label_t::dense)
       .field_info();
   printf("add fid vector size %ld\n", fid_vector.size());
@@ -500,7 +500,7 @@ legion_io_policy_t::checkpoint_default_index_topology(
   auto & flecsi_context = execution::context_t::instance();
   std::vector<data::field_info_t> const & fid_vector =
     flecsi_context
-      .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+      .get_field_info_store(topology::id<topology::index_topology_t>(),
         data::storage_label_t::dense)
       .field_info();
   printf("checkpoint fid vector size %ld\n", fid_vector.size());
@@ -534,7 +534,7 @@ legion_io_policy_t::checkpoint_index_topology_field(hdf5_t & hdf5_file,
   auto & flecsi_context = execution::context_t::instance();
   const data::field_info_t & fid =
     flecsi_context
-      .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+      .get_field_info_store(topology::id<topology::index_topology_t>(),
         data::storage_label_t::dense)
       .get_field_info(fh.identifier());
   printf("checkpoint fid %ld\n", fid.fid);
@@ -562,7 +562,7 @@ legion_io_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
   auto & flecsi_context = execution::context_t::instance();
   std::vector<data::field_info_t> const & fid_vector =
     flecsi_context
-      .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+      .get_field_info_store(topology::id<topology::index_topology_t>(),
         data::storage_label_t::dense)
       .field_info();
   printf("recover fid vector size %ld\n", fid_vector.size());
@@ -596,7 +596,7 @@ legion_io_policy_t::recover_index_topology_field(hdf5_t & hdf5_file,
   auto & flecsi_context = execution::context_t::instance();
   const data::field_info_t & fid =
     flecsi_context
-      .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+      .get_field_info_store(topology::id<topology::index_topology_t>(),
         data::storage_label_t::dense)
       .get_field_info(fh.identifier());
   printf("recover fid %ld\n", fid.fid);

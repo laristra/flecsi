@@ -54,10 +54,25 @@ struct core<T,
   std::void_t<utils::base_specialization_t<unstructured_mesh_topology_u, T>>> {
   using type = utils::base_specialization_t<unstructured_mesh_topology_u, T>;
 };
+
+inline std::size_t next_id;
+// Use functions because these are needed during non-local initialization:
+template<class>
+std::size_t
+id() {
+  static auto ret = next_id++;
+  return ret;
+}
 } // namespace detail
 
 template<class T>
 using core_t = typename detail::core<T>::type;
+
+template<class T>
+std::size_t
+id() {
+  return detail::id<std::remove_cv_t<T>>();
+}
 
 } // namespace topology
 } // namespace flecsi

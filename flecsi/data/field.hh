@@ -18,6 +18,7 @@
 // This can move into the includes below as soon as storage_class_u is removed.
 #include <flecsi/runtime/data_policy.hh>
 
+#include "../topology/common/core.hh" // id
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/common/storage_label.hh>
@@ -81,7 +82,7 @@ private:
     field_id_t fid = unique_fid_t::instance().next();
 
     execution::context_t::instance().add_field_info(
-      TOPOLOGY_TYPE::type_identifier_hash,
+      topology::id<TOPOLOGY_TYPE>(),
       STORAGE_CLASS,
       {fid, INDEX_SPACE, sizeof(DATA_TYPE)},
       fid);
