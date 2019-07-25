@@ -35,6 +35,7 @@ struct index_topology_t {
 
   static constexpr size_t type_identifier_hash =
     flecsi_internal_hash(index_topology_t);
+  index_topology_t() = delete;
 
   struct coloring_t {
     coloring_t(size_t size) : size_(size) {}

@@ -37,6 +37,7 @@ namespace topology {
 struct global_topology_t {
   static constexpr size_t type_identifier_hash =
     flecsi_internal_hash(global_topology_t);
+  global_topology_t() = delete;
 }; // struct global_topology_u
 
 } // namespace topology
