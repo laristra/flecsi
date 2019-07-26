@@ -72,8 +72,13 @@ mask_to_task_type(size_t mask) {
 
 inline task_processor_type_t
 mask_to_processor_type(size_t mask) {
+  const size_t processor_mask = mask >> task_type_bits;
+
+  flog_assert(processor_mask && !(processor_mask & (processor_mask - 1)),
+    "only one processor type can be specified");
+
   return static_cast<task_processor_type_t>(
-    flecsi::utils::debruijn32_t::index(mask >> task_type_bits));
+    flecsi::utils::debruijn32_t::index(processor_mask));
 } // mask_to_processor_type
 
 inline bool
