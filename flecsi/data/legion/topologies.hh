@@ -89,7 +89,7 @@ struct topology_instance_u<index_topology_t> {
 
     runtime_data.colors = coloring.size();
 
-    // Maybe this can go away
+    // Maybe this line can go away
     runtime_data.index_space_id = unique_isid_t::instance().next();
 
     LegionRuntime::Arrays::Rect<1> bounds(0, coloring.size() - 1);

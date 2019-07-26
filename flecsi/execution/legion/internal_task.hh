@@ -22,6 +22,7 @@
 #else
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/execution.hh>
+#include <flecsi/execution/legion/execution_policy.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/function_traits.hh>
 #include <flecsi/utils/macros.hh>
@@ -47,7 +48,7 @@
   @ingroup legion-execution
 */
 
-#define flecsi_internal_register_legion_task(task, attributes)  \
+#define flecsi_internal_register_legion_task(task, attributes)                 \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* Call the execution policy to register the task */                         \

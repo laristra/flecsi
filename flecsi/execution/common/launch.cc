@@ -12,36 +12,20 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.hh>
-
+#if !defined(__FLECSI_PRIVATE__)
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.hh>
+#endif
+
 #include <flecsi/execution/common/launch.hh>
+#include <flecsi/execution/context.hh>
 
-flog_register_tag(task);
+namespace flecsi {
+namespace execution {
 
-using namespace flecsi::execution;
-using namespace flecsi;
-
-namespace hydro {
-
-template<typename TYPE>
 void
-simple(TYPE arg) {
-  flog_tag_guard(task);
-  flog(info) << "arg(" << arg << ")\n";
-} // simple
+set_launch_domain_size(const size_t hash, size_t indices) {
+  context_t::instance().set_launch_domain_size(hash, indices);
+} // set_launch_domain_size
 
-} // namespace hydro
-
-int
-test_driver(int argc, char ** argv) {
-
-  FTEST();
-
-  execute<hydro::simple<float>>(6.2);
-
-  return FTEST_RESULT();
-}
-
-ftest_register_driver(test_driver);
+} // namespace execution
+} // namespace flecsi

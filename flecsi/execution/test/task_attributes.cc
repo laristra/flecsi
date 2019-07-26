@@ -27,9 +27,9 @@ task_attributes(int argc, char ** argv) {
   FTEST();
 
   {
-  size_t mask = loc | leaf;
+    size_t mask = loc | leaf;
 
-  ASSERT_TRUE(execution::leaf_task(mask));
+    ASSERT_TRUE(execution::leaf_task(mask));
   } // scope
 
   return FTEST_RESULT();

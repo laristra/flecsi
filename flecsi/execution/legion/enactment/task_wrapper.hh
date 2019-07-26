@@ -20,8 +20,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-//#include <flecsi/execution/common/launch.hh>
-//#include <flecsi/execution/common/processor.hh>
+#include <flecsi/execution/common/task_attributes.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/enactment/bind_accessors.hh>
 #include <flecsi/execution/legion/enactment/unbind_accessors.hh>
@@ -77,23 +76,23 @@ struct pure_task_wrapper_u {
    @param A std::string containing the task name.
    */
 
-  static void registration_callback(task_id_t tid,
-    size_t attribtues,
-    std::string & name) {
-#if 0
+  static void
+  registration_callback(task_id_t tid, size_t attributes, std::string & name) {
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "registering pure Legion task " << name << std::endl;
     }
 
+    auto processor_type = mask_to_processor_type(attributes);
+
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
-    Legion::Processor::Kind kind = processor_type == processor_type_t::toc
+    Legion::Processor::Kind kind = processor_type == task_processor_type_t::toc
                                      ? Legion::Processor::TOC_PROC
                                      : Legion::Processor::LOC_PROC;
     registrar.add_constraint(Legion::ProcessorConstraint(kind));
-    registrar.set_leaf(task_leaf(execution));
-    registrar.set_inner(task_inner(execution));
-    registrar.set_idempotent(task_idempotent(execution));
+    registrar.set_leaf(leaf_task(attributes));
+    registrar.set_inner(inner_task(attributes));
+    registrar.set_idempotent(idempotent_task(attributes));
 
     /*
       This section of conditionals is necessary because there is still
@@ -104,7 +103,7 @@ struct pure_task_wrapper_u {
      */
 
     if constexpr(std::is_same_v<RETURN, void>) {
-      if(processor_type == processor_type_t::mpi) {
+      if(processor_type == task_processor_type_t::mpi) {
         flog_fatal("MPI type passed to pure task registration");
       }
       else {
@@ -116,7 +115,6 @@ struct pure_task_wrapper_u {
       Legion::Runtime::preregister_task_variant<RETURN, TASK>(
         registrar, name.c_str());
     } // if
-#endif
   } // registration_callback
 
 }; // struct pure_task_wrapper_u
@@ -145,29 +143,29 @@ struct task_wrapper_u {
    Registration callback function for user tasks.
 
    @param tid            The task id to assign to the task.
-   @param processor_type A \ref processor_type_t with the processor type.
+   @param processor_type A \ref task_processor_type_t with the processor type.
    @param execution      A \ref task_executin_type_t with the task
                           execution type parameters.
    @param name           A std::string containing the task name.
    */
 
-  static void registration_callback(task_id_t tid,
-    task_attributes_mask_t attributes,
+  static void registration_callback(task_id_t tid, size_t attributes,
     std::string & name) {
-#if 0
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "registering task " << name << std::endl;
     }
 
+    auto processor_type = mask_to_processor_type(attributes);
+
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
-    Legion::Processor::Kind kind = processor_type == processor_type_t::toc
+    Legion::Processor::Kind kind = processor_type == task_processor_type_t::toc
                                      ? Legion::Processor::TOC_PROC
                                      : Legion::Processor::LOC_PROC;
     registrar.add_constraint(Legion::ProcessorConstraint(kind));
-    registrar.set_leaf(task_leaf(execution));
-    registrar.set_inner(task_inner(execution));
-    registrar.set_idempotent(task_idempotent(execution));
+    registrar.set_leaf(leaf_task(attributes));
+    registrar.set_inner(inner_task(attributes));
+    registrar.set_idempotent(idempotent_task(attributes));
 
     /*
       This section of conditionals is necessary because there is still
@@ -178,7 +176,7 @@ struct task_wrapper_u {
      */
 
     if constexpr(std::is_same_v<RETURN, void>) {
-      if(processor_type == processor_type_t::mpi) {
+      if(processor_type == task_processor_type_t::mpi) {
         Legion::Runtime::preregister_task_variant<execute_mpi_task>(
           registrar, name.c_str());
       }
@@ -191,7 +189,6 @@ struct task_wrapper_u {
       Legion::Runtime::preregister_task_variant<RETURN, execute_user_task>(
         registrar, name.c_str());
     } // if
-#endif
   } // registration_callback
 
   /*!
@@ -202,7 +199,6 @@ struct task_wrapper_u {
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context context,
     Legion::Runtime * runtime) {
-#if 0
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "In execute_user_task" << std::endl;
@@ -230,7 +226,6 @@ struct task_wrapper_u {
 
       return result;
     } // if
-#endif
   } // execute_user_task
 
   /*!
@@ -241,7 +236,6 @@ struct task_wrapper_u {
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context context,
     Legion::Runtime * runtime) {
-#if 0
     // FIXME: Refactor
     //    {
     //      flog_tag_guard(task_wrapper);
@@ -266,7 +260,6 @@ struct task_wrapper_u {
     // finalize_handles_t finalize_handles;
     // finalize_handles.walk(mpi_task_args);
 
-#endif
   } // execute_mpi_task
 
 }; // struct task_wrapper_u

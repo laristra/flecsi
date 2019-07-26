@@ -18,6 +18,7 @@
 
 #include <flecsi/data/legion/data_policy.hh>
 #include <flecsi/execution/common/command_line_options.hh>
+#include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/internal_task.hh>
 #include <flecsi/execution/legion/mapper.hh>
@@ -47,6 +48,13 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
     Runtime::preregister_task_variant<top_level_task>(
       registrar, "runtime_driver");
   } // scope
+
+  /*
+    Setup internal launch domains.
+   */
+
+  set_launch_domain_size(single, 1);
+  set_launch_domain_size(index, 0);
 
   /*
     Register tasks.

@@ -102,18 +102,16 @@ struct legion_context_policy_t {
      registration callbacks.
    */
 
-  using registration_function_t = std::function<
-    void(task_id_t, size_t, std::string &)>;
+  using registration_function_t =
+    std::function<void(task_id_t, size_t, std::string &)>;
 
   /*!
     The task_info_t type is a convenience type for defining the task
     registration map below.
    */
 
-  using task_info_t = std::tuple<task_id_t,
-    size_t,
-    std::string,
-    registration_function_t>;
+  using task_info_t =
+    std::tuple<task_id_t, size_t, std::string, registration_function_t>;
 
   //--------------------------------------------------------------------------//
   //  Runtime.

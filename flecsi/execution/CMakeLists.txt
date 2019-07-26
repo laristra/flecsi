@@ -20,7 +20,8 @@
 set(execution_HEADERS
   common/command_line_options.hh
   common/function_handle.hh
-  common/processor.hh
+  common/launch.hh
+  common/task_attributes.hh
   context.hh
   execution.hh
   global_object_wrapper.hh
@@ -32,6 +33,7 @@ set(execution_HEADERS
 )
 
 set(execution_SOURCES
+  common/launch.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")

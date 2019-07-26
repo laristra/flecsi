@@ -20,9 +20,10 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/enactment/task_wrapper.hh>
-//#include <flecsi/execution/legion/future.hh>
+#include <flecsi/execution/legion/future.hh>
 #include <flecsi/execution/legion/invocation/init_args.hh>
 #include <flecsi/execution/legion/invocation/task_epilogue.hh>
 #include <flecsi/execution/legion/invocation/task_prologue.hh>
@@ -105,7 +106,8 @@ struct legion_execution_policy_t {
    */
 
   template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(std::size_t task, size_t attributes, std::string name) {
+  static bool
+  register_task(size_t task, size_t attributes, std::string name) {
 
     using wrapper_t = legion::task_wrapper_u<RETURN, ARG_TUPLE, DELEGATE>;
 
@@ -122,13 +124,12 @@ struct legion_execution_policy_t {
    */
 
   template<size_t LAUNCH_DOMAIN,
-    size_t ATTRIBUTES,
     size_t REDUCTION,
+    size_t ATTRIBUTES,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
   static decltype(auto) execute_task(size_t task, ARGS &&... args) {
-#if 0
     using namespace Legion;
 
     // This will guard the entire method
@@ -141,18 +142,11 @@ struct legion_execution_policy_t {
     context_t & flecsi_context = context_t::instance();
 
     // Get the processor type.
-    auto processor_type = flecsi_context.processor_type(task);
+    auto processor_type = mask_to_processor_type(ATTRIBUTES);
 
     // Get the Legion runtime and context from the current task.
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
-
-    constexpr size_t ZERO = flecsi_internal_hash(0);
-
-    size_t domain_size = flecsi_context.get_domain(LAUNCH_DOMAIN);
-    domain_size = domain_size == 0 ? flecsi_context.processes() *
-                                       flecsi_context.threads_per_process()
-                                   : domain_size;
 
 #if defined(FLECSI_ENABLE_FLOG)
     const size_t tasks_executed = flecsi_context.tasks_executed();
@@ -209,6 +203,13 @@ struct legion_execution_policy_t {
     } // if
 #endif // FLECSI_ENABLE_FLOG
 
+    constexpr size_t ZERO = flecsi_internal_hash(0);
+
+    size_t domain_size = flecsi_context.get_launch_domain_size(LAUNCH_DOMAIN);
+    domain_size = domain_size == 0 ? flecsi_context.processes() *
+                                       flecsi_context.threads_per_process()
+                                   : domain_size;
+
     context_t::instance().tasks_executed()++;
 
     legion::init_args_t init_args(legion_runtime, legion_context, domain_size);
@@ -218,7 +219,7 @@ struct legion_execution_policy_t {
     // Single launch
     //------------------------------------------------------------------------//
 
-    if constexpr(flecsi_internal_hash(single) == LAUNCH_DOMAIN) {
+    if constexpr(LAUNCH_DOMAIN == launch_identifier("single")) {
 
       static_assert(
         REDUCTION == ZERO, "reductions are not supported for single tasks");
@@ -245,19 +246,19 @@ struct legion_execution_policy_t {
 
       switch(processor_type) {
 
-        case processor_type_t::toc:
-        case processor_type_t::loc: {
+        case task_processor_type_t::toc:
+        case task_processor_type_t::loc: {
           auto future = legion_runtime->execute_task(legion_context, launcher);
 
           return legion_future_u<RETURN, launch_type_t::single>(future);
-        } // case processor_type_t::loc
+        } // case task_processor_type_t::loc
 
-        case processor_type_t::mpi: {
+        case task_processor_type_t::mpi: {
           flog_fatal("Invalid launch type!"
                      << std::endl
                      << "Legion backend does not support 'single' launch"
                      << " for MPI tasks yet");
-        } // case processor_type_t::mpi
+        } // case task_processor_type_t::mpi
 
         default:
           flog_fatal("Unknown processor type: " << processor_type);
@@ -300,8 +301,8 @@ struct legion_execution_policy_t {
 
       switch(processor_type) {
 
-        case processor_type_t::toc:
-        case processor_type_t::loc: {
+        case task_processor_type_t::toc:
+        case task_processor_type_t::loc: {
           flog_devel(info) << "Executing index launch on loc" << std::endl;
 
           if constexpr(REDUCTION != ZERO) {
@@ -347,9 +348,9 @@ struct legion_execution_policy_t {
             return 0;
           } // else
 
-        } // case processor_type_t::loc
+        } // case task_processor_type_t::loc
 
-        case processor_type_t::mpi: {
+        case task_processor_type_t::mpi: {
           launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
 
           // Launch the MPI task
@@ -383,7 +384,7 @@ struct legion_execution_policy_t {
             return 0;
           }
 
-        } // case processor_type_t::mpi
+        } // case task_processor_type_t::mpi
 
         default:
           flog_fatal("Unknown processor type: " << processor_type);
@@ -391,7 +392,6 @@ struct legion_execution_policy_t {
       } // switch
     } // if constexpr
 
-#endif
     return 0;
   } // execute_task
 

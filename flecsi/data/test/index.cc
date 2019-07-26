@@ -32,7 +32,7 @@ using namespace flecsi::data;
 using namespace flecsi::topology;
 
 using dense_field_t = data::
-  field_definition_u<double, dense, index_topology_t, 0 /* index space */>;
+  field_member_u<double, dense, index_topology_t, 0 /* index space */>;
 
 const dense_field_t nifld(1);
 const auto nifh = nifld(flecsi_index_topology);
@@ -72,8 +72,8 @@ flecsi_register_task(check, index_test, loc, index);
 int
 index_topology(int argc, char ** argv) {
 
-//  flecsi_execute_task(assign, index_test, index, fh);
-//  flecsi_execute_task(check, index_test, index, fh);
+  //  flecsi_execute_task(assign, index_test, index, fh);
+  //  flecsi_execute_task(check, index_test, index, fh);
 
   return 0;
 } // index

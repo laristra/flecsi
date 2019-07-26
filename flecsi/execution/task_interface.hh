@@ -78,19 +78,6 @@ struct task_interface_u {
   } // register_task
 
   /*!
-    Register a launch domain with the FleCSI runtime.
-
-    @tparam KEY       A hash key identifying the domain.
-    @tparam SIZE      A domain size
-   */
-
-  template<size_t KEY, size_t SIZE>
-  static decltype(auto) register_domain() {
-    execution::context_t::instance().register_index_domain(KEY, SIZE);
-    return true;
-  } // register_domain
-
-  /*!
     Execute a task.
 
     @tparam LAUNCH    The launch mode for this task execution.
@@ -132,8 +119,7 @@ struct task_interface_u {
       flecsi_internal_hash(0),
       typename Traits::return_type,
       typename Traits::arguments_type>(
-        task_id<TASK, ATTRIBUTES>,
-        std::forward<Args>(args)...);
+      task_id<TASK, ATTRIBUTES>, std::forward<Args>(args)...);
   }
 
   /*!
@@ -173,8 +159,8 @@ private:
 
 template<class E>
 template<auto & TASK, task_attributes_mask_t ATTRIBUTES>
-const std::size_t task_interface_u<E>::task_id =
-  register_task<TASK>(ATTRIBUTES);
+const std::size_t task_interface_u<E>::task_id = register_task<TASK>(
+  ATTRIBUTES);
 
 } // namespace execution
 } // namespace flecsi

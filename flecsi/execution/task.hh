@@ -37,14 +37,40 @@
 namespace flecsi {
 namespace execution {
 
+inline size_t next_task = 0;
+
+namespace internal {
+
 /*!
-  Arbitrary index for each task. The parameters for the variable template
-  should be consistent with the options requried to register a task with the
-  backend runtime, i.e., the task function, the task type (leaf, inner,
-  idempotent), and the processor type (loc, toc, mpi). These options may evolve
-  over time, although this will likely be reflected in updates to the
-  task_attributes_t and task_attributes_mask_t type, and will not affect this
-  interface.
+  Internal function to register tasks. IT IS UNNECESSARY FOR USERS TO INVOKE
+  THIS FUNCTION!
+ */
+
+template<auto & TASK>
+size_t
+register_task(size_t attributes) {
+
+  using traits_t = utils::function_traits_u<decltype(TASK)>;
+  using args_t = typename traits_t::arguments_type;
+
+  /*
+    The 'plus' operator in the following lambda definition converts the lambda
+    to a plain-old function pointer.
+   */
+
+  constexpr auto delegate = +[](args_t args) { return std::apply(TASK, args); };
+
+  execution_policy_t::register_task<typename traits_t::return_type,
+    args_t,
+    delegate>(next_task, attributes, utils::symbol<TASK>());
+
+  return next_task++;
+} // register_task
+
+} // namespace internal
+
+/*!
+  Arbitrary index for each task.
 
   @tparam TASK       The user task function.
   @tparam ATTRIBUTES A size_t holding the mask of the task attributes mask
@@ -52,7 +78,7 @@ namespace execution {
  */
 
 template<auto & TASK, size_t ATTRIBUTES>
-const inline size_t task_id;
+const inline size_t task_id = internal::register_task<TASK>(ATTRIBUTES);
 
 /*!
   Execute a task.
@@ -64,8 +90,8 @@ const inline size_t task_id;
  */
 
 template<auto & TASK,
-  size_t LAUNCH_DOMAIN,
-  size_t ATTRIBUTES,
+  size_t LAUNCH_DOMAIN = index,
+  size_t ATTRIBUTES = loc | leaf,
   typename... ARGS>
 decltype(auto)
 execute(ARGS &&... args) {
@@ -73,12 +99,11 @@ execute(ARGS &&... args) {
   using traits_t = utils::function_traits_u<decltype(TASK)>;
 
   return execution_policy_t::template execute_task<LAUNCH_DOMAIN,
-    ATTRIBUTES,
     flecsi_internal_hash(0),
+    ATTRIBUTES,
     typename traits_t::return_type,
     typename traits_t::arguments_type>(
-      task_id<TASK, ATTRIBUTES>,
-      std::forward<ARGS>(args)...);
+    task_id<TASK, ATTRIBUTES>, std::forward<ARGS>(args)...);
 } // execute
 
 /*!
@@ -103,46 +128,11 @@ reduce(ARGS &&... args) {
 
   return execution_policy_t::template execute_task<LAUNCH_DOMAIN,
     REDUCTION_OPERATION,
+    ATTRIBUTES,
     typename traits_t::return_type,
     typename traits_t::arguments_type>(
     task_id<TASK, ATTRIBUTES>, std::forward<ARGS>(args)...);
 } // execute
-
-inline size_t next_task = 0;
-
-namespace internal {
-
-/*!
-  Internal function to register tasks. IT IS UNNECESSARY FOR USERS TO INVOKE
-  THIS FUNCTION!
- */
-
-template<auto & TASK>
-size_t
-register_task(size_t attributes) {
-
-  using traits_t = utils::function_traits_u<decltype(TASK)>;
-  using args_t = typename traits_t::arguments_type;
-
-  /*
-    The 'plus' operator in the following lambda definition converts the lambda
-    to a plain-old function pointer.
-   */
-
-  constexpr auto delegate = +[](args_t args) { return std::apply(TASK, args); };
-
-  execution_policy_t::template register_task<typename traits_t::return_type,
-    args_t,
-    delegate>(next_task, attributes, utils::symbol<TASK>());
-
-  return next_task++;
-} // register_task
-
-} // namespace internal
-
-template<auto & TASK, size_t ATTRIBUTES>
-const inline size_t task_id =
-  internal::register_task<TASK>(ATTRIBUTES);
 
 } // namespace execution
 } // namespace flecsi

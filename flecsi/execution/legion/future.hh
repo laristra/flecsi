@@ -15,17 +15,23 @@
 
 /*! @file */
 
-#include <functional>
-#include <iostream>
-#include <memory>
-
 #include <flecsi-config.h>
+
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#else
+#include <flecsi/execution/common/launch.hh>
+#endif
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
 #include <legion.h>
+
+#include <functional>
+#include <iostream>
+#include <memory>
 
 namespace flecsi {
 namespace execution {

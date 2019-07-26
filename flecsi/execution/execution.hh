@@ -21,7 +21,8 @@
 
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/internal.hh>
-#include <flecsi/execution/reduction.hh>
+#include <flecsi/execution/task.hh>
+//#include <flecsi/execution/reduction.hh>
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface

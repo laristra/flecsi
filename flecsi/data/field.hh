@@ -29,7 +29,7 @@ namespace flecsi {
 namespace data {
 
 /*!
-  The field_definition_t type provides a mechanism to define and register
+  The field_member_u type provides a mechanism to define and register
   fundamental field types with the FleCSI runtime.
 
   @tparam DATA_TYPE     A compact type that will be defined at each index of
@@ -38,20 +38,21 @@ namespace data {
                         user-defined type that does not have external
                         references, i.e., sizeof for a compact type is equal to
                         the logical serialization of that type.
-  @tparam STORAGE_CLASS The label of the storage class for the field definition.
+  @tparam STORAGE_CLASS The label of the storage class for the field member.
   @tparam TOPOLOGY_TYPE A specialization of a core FleCSI topology type.
   @tparam INDEX_SPACE   The id of the index space on which to define the field.
  */
 
+  // topology_field
 template<typename DATA_TYPE,
   storage_label_t STORAGE_CLASS,
   typename TOPOLOGY_TYPE,
   size_t INDEX_SPACE>
-struct field_definition_u {
+struct field_member_u {
 
   using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
 
-  field_definition_u(size_t versions = 1)
+  field_member_u(size_t versions = 1)
     : versions_(versions), fid_(register_field()) {}
 
   /*!
@@ -108,7 +109,7 @@ private:
   size_t versions_;
   field_id_t fid_;
 
-}; // struct field_definition_u
+}; // struct field_member_u
 
 } // namespace data
 } // namespace flecsi

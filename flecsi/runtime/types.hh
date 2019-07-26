@@ -79,14 +79,16 @@ namespace flecsi {
  */
 
 struct fid_counter_t {};
-using unique_fid_t = utils::unique_id_u<fid_counter_t, FLECSI_GENERATED_ID_MAX>;
+using unique_fid_t =
+  utils::unique_id_u<fid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
 /*!
   Unique counter for task ids.
  */
 
 struct tid_counter_t {};
-using unique_tid_t = utils::unique_id_u<tid_counter_t, FLECSI_GENERATED_ID_MAX>;
+using unique_tid_t =
+  utils::unique_id_u<tid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
 /*!
   Unique counter for index space ids.
@@ -94,13 +96,14 @@ using unique_tid_t = utils::unique_id_u<tid_counter_t, FLECSI_GENERATED_ID_MAX>;
 
 struct isid_counter_t {};
 using unique_isid_t =
-  utils::unique_id_u<isid_counter_t, FLECSI_GENERATED_ID_MAX>;
+  utils::unique_id_u<isid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
 /*!
   Unique counter for reduction operator ids.
  */
 
 struct oid_counter_t {};
-using unique_oid_t = utils::unique_id_u<oid_counter_t, FLECSI_GENERATED_ID_MAX>;
+using unique_oid_t =
+  utils::unique_id_u<oid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
 } // namespace flecsi

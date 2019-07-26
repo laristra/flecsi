@@ -64,12 +64,13 @@ common(int argc, char ** argv) {
   EXPECT_TRUE(FLECSI_GENERATED_ID_MAX > 0);
 
   // unique_id_t
-  auto & a = flecsi::utils::unique_id_u<int, 10>::instance();
-  auto & b = flecsi::utils::unique_id_u<int, 10>::instance();
+  struct unique_type_t {};
+  auto & a = flecsi::utils::unique_id_u<unique_type_t, int, 10>::instance();
+  auto & b = flecsi::utils::unique_id_u<unique_type_t, int, 10>::instance();
   EXPECT_EQ(&a, &b); // because type is a singleton
 
-  auto & c = flecsi::utils::unique_id_u<int>::instance();
-  auto & d = flecsi::utils::unique_id_u<int>::instance();
+  auto & c = flecsi::utils::unique_id_u<unique_type_t, int>::instance();
+  auto & d = flecsi::utils::unique_id_u<unique_type_t, int>::instance();
   EXPECT_EQ(&c, &d); // singleton again
   EXPECT_NE((void *)&c, (void *)&a); // != (different template specializations)
 
