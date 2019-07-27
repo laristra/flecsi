@@ -37,12 +37,12 @@ namespace flecsi {
  */
 
 enum task_attributes_mask_t : size_t {
-  leaf = 0b00000001,
-  inner = 0b00000010,
-  idempotent = 0b00000100,
-  loc = 0b00001000,
-  toc = 0b00010000,
-  mpi = 0b00100000
+  leaf = 0x01,
+  inner = 0x02,
+  idempotent = 0x04,
+  loc = 0x08,
+  toc = 0x10,
+  mpi = 0x20
 }; // task_attributes_mask_t
 
 namespace execution {
@@ -73,9 +73,11 @@ mask_to_task_type(size_t mask) {
 inline task_processor_type_t
 mask_to_processor_type(size_t mask) {
   const size_t processor_mask = mask >> task_type_bits;
+  std::bitset<8> bits(mask);
+  std::cout << bits << std::endl;
 
-  flog_assert(processor_mask && !(processor_mask & (processor_mask - 1)),
-    "only one processor type can be specified");
+//  flog_assert(processor_mask && !(processor_mask & (processor_mask - 1)),
+//    "only one processor type can be specified");
 
   return static_cast<task_processor_type_t>(
     flecsi::utils::debruijn32_t::index(processor_mask));

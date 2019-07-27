@@ -29,7 +29,6 @@ set(execution_HEADERS
   kernel_interface.hh
   reduction.hh
   task.hh
-  task_interface.hh
 )
 
 set(execution_SOURCES

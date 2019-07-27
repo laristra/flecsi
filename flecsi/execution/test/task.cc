@@ -16,11 +16,9 @@
 
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution/execution.hh>
-#include <flecsi/execution/common/launch.hh>
 
 flog_register_tag(task);
 
-using namespace flecsi::execution;
 using namespace flecsi;
 
 namespace hydro {

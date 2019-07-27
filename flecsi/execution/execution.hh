@@ -28,31 +28,63 @@
   Basic runtime interface
  *----------------------------------------------------------------------------*/
 
-/*!
-  @def flecsi_color
-
-  Return the index of the currently executing color.
-
-  @ingroup execution
- */
-
-#define flecsi_color()                                                         \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  flecsi::execution::context_t::instance().color()
+namespace flecsi {
 
 /*!
-  @def flecsi_colors
-
-  Return the number of colors in the currently executing code.
-
-  @ingroup execution
+  Return the current process id.
  */
 
-#define flecsi_colors()                                                        \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  flecsi::execution::context_t::instance().colors()
+inline size_t process() {
+  return execution::context_t::instance().process();
+}
+
+/*!
+  Return the number of processes.
+ */
+
+inline size_t processes() {
+  return execution::context_t::instance().processes();
+}
+
+/*!
+  Return the number of threads per process.
+ */
+
+inline size_t threads_per_process() {
+  return execution::context_t::instance().threads_per_process();
+}
+
+/*!
+  Return the number of execution instances with which the runtime was
+  invoked. In this context a \em thread is defined as an instance of
+  execution, and does not imply any other properties. This interface can be
+  used to determine the full subscription of the execution instances of the
+  running process that invokded the FleCSI runtime.
+ */
+
+inline size_t threads() {
+  return execution::context_t::instance().threads();
+}
+
+/*!
+  Return the color of the current execution instance. This function is only
+  valid if invoked from within a task.
+ */
+
+inline size_t color() {
+  return execution::context_t::instance().color();
+}
+
+/*!
+  Return the number of colors of the current task invocation. This function is
+  only valid if invoked from within a task.
+ */
+
+inline size_t colors() {
+  return execution::context_t::instance().colors();
+}
+
+} // namespace flecsi
 
 /*----------------------------------------------------------------------------*
   Global object interface.
@@ -98,92 +130,3 @@
   flecsi::execution::context_t::instance()                                     \
     .template get_global_object<flecsi_internal_string_hash(scope), type>(     \
       index);
-
-//----------------------------------------------------------------------------//
-// Task Registration Interface
-//----------------------------------------------------------------------------//
-
-/*!
-  @def flecsi_register_task
-
-  This macro registers a user task with the FleCSI runtime. This interface
-  requires that the task be scoped in a namespace. This is best practice to
-  avoid the possiblity of naming collisions.
-
-  @param task      The task to register. This is normally just a function.
-  @param nspace    The enclosing C++ namespace of the task.
-  @param processor The \ref processor_type_t type.
-  @param task_execution_type The \ref task_execution_type_t type.
-                   This may be an \em or list of supported task types and
-                   configuration options.
-
-  @ingroup execution
- */
-
-#define flecsi_register_task(task, nspace, processor, task_execution_type)     \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Define a delegate function to the user's function that takes a tuple */   \
-  /* of the arguments (as opposed to the raw argument pack). This is */        \
-  /* necessary because we cannot infer the argument type without using */      \
-  /* a tuple. */                                                               \
-  inline flecsi_internal_return_type(task)                                     \
-    task##_tuple_delegate(flecsi_internal_arguments_type(task) args) {         \
-    return flecsi::utils::tuple_function(task, args);                          \
-  } /* delegate task */                                                        \
-                                                                               \
-  /* Call the execution policy to register the task delegate */                \
-  inline bool task##_task_registered =                                         \
-    flecsi::execution::task_interface_t::register_task<flecsi_internal_hash(   \
-                                                         nspace::task),        \
-      flecsi_internal_return_type(task),                                       \
-      flecsi_internal_arguments_type(task),                                    \
-      task##_tuple_delegate>(flecsi::processor,                                \
-      flecsi::task_execution_type,                                             \
-      {flecsi_internal_stringify(nspace::task)})
-
-//----------------------------------------------------------------------------//
-// Task Execution Interface
-//----------------------------------------------------------------------------//
-
-/*!
-  @def flecsi_register_domain
-
-  Declare a domain of launch type (single, index) and domain size (for index)
-
-  This macro registers a launch domain that can be used when executing
-  FleCSI tasks.
-
-  @param type   The string namespace to use to register the domain.
-  @param nspace The launch type (single or index).
-  @param name   The domain size.
-
-  @ingroup execution
- */
-
-#define flecsi_register_launch_domain(name, size)                              \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Call the task interface to register the domain */                         \
-  inline bool flecsi_internal_unique_name(domain_registration_) =              \
-    flecsi::execution::task_interface_t::                                      \
-      register_domain<flecsi_internal_hash(name), size>()
-
-/*!
-  @def flecsi_execute_task
-
-  This macro executes a user task.
-
-  @param task          The user task to execute.
-  @param nspace        The enclosing C++ namespace of the task.
-  @param launch_domain The launch domain name for the task
-  @param ...           The arguments to pass to the user task during execution.
-
-  @ingroup execution
- */
-
-#define flecsi_execute_task(task, nspace, domain, ...)                         \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  /* Execute the user task */                                                  \
-  flecsi_internal_execute_task(nspace::task, domain, 0, ##__VA_ARGS__)

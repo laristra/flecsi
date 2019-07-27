@@ -66,14 +66,42 @@ check(accessor<ro> ia) {
 flecsi_register_task(check, index_test, loc, index);
 
 } // namespace index_test
-
 #endif
+
+using namespace flecsi;
+using namespace flecsi::data;
+using namespace flecsi::topology;
+
+template<size_t PRIVILEGES>
+using dense_accessor = index_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
+
+using dense_field_t = field_member_u<double, dense, index_topology_t, 0 /* index space */>;
+
+const dense_field_t nifld(1);
+const auto nifh = nifld(flecsi_index_topology);
+
+void
+assign(dense_accessor<rw> ia) {
+  flog(info) << "assign on " << color() << std::endl;
+  ia = color();
+} // assign
+
+int
+check(dense_accessor<ro> ia) {
+
+  FTEST();
+
+  flog(info) << "check on " << color() << std::endl;
+  ASSERT_EQ(ia, color());
+
+  return FTEST_RESULT();
+} // print
 
 int
 index_topology(int argc, char ** argv) {
 
-  //  flecsi_execute_task(assign, index_test, index, fh);
-  //  flecsi_execute_task(check, index_test, index, fh);
+  execute<assign>(nifh);
+  execute<check>(nifh);
 
   return 0;
 } // index
