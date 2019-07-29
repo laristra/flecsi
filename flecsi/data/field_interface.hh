@@ -95,7 +95,7 @@ struct field_interface_u {
   };
 
   template<class T>
-  using global_field = field<T, topology::global_topology_t, global>;
+  using global_field = field<T, topology::global_topology_t, dense>;
 
   /*!
     Add a field to the given topology type. This method should be thought of as

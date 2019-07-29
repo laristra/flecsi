@@ -12,6 +12,7 @@
    All rights reserved.
                                                                               */
 
+#if 0
 #define __FLECSI_PRIVATE__
 #include <flecsi/data/data.hh>
 #include <flecsi/execution/execution.hh>
@@ -46,18 +47,50 @@ print(global_accessor_u<ro> ga) {
 // flecsi_register_task(print, global_test, loc, single);
 
 } // namespace global_test
+#endif
+
+#define __FLECSI_PRIVATE__
+#include <flecsi/data/data.hh>
+#include <flecsi/execution/execution.hh>
+#include <flecsi/utils/ftest.hh>
+
+using namespace flecsi;
+using namespace flecsi::data;
+using namespace flecsi::topology;
+
+template<size_t PRIVILEGES>
+using global_accessor = global_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
+
+using global_field_t = global_field_member_u<double>;
+
+const global_field_t energy_field(1);
+const auto energy = energy_field(flecsi_global_topology);
+
+void
+assign(global_accessor<rw> ga) {
+  flog(info) << "assign on " << color() << std::endl;
+  ga = color();
+} // assign
+
+int
+check(global_accessor<ro> ga) {
+  FTEST();
+
+  flog(info) << "check on " << color() << std::endl;
+  ASSERT_EQ(ga, 0);
+
+  return FTEST_RESULT();
+} // check
 
 int
 global(int argc, char ** argv) {
 
-  FTEST();
-
   double value{10.0};
 
-  //  flecsi_execute_task(global_task, global_test, single, th, value);
-  //  flecsi_execute_task(print, global_test, single, th);
+  execute<assign>(energy);
+  execute<check>(energy);
 
-  return FTEST_RESULT();
+  return 0;
 }
 
 ftest_register_driver(global);

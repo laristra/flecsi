@@ -28,6 +28,18 @@
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/utils/const_string.hh>
 
+namespace flecsi {
+
+template<typename DATA_TYPE>
+using global_field_member_u =
+  data::field_member_u<DATA_TYPE, data::storage_label_t::dense, topology::global_topology_t, 0>;
+
+template<typename DATA_TYPE>
+using index_field_member_u =
+  data::field_member_u<DATA_TYPE, data::storage_label_t::dense, topology::index_topology_t, 0>;
+
+} // namespace flecsi
+
 /*----------------------------------------------------------------------------*
   General Topology Interface.
  *----------------------------------------------------------------------------*/

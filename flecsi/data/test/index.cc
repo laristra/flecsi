@@ -75,9 +75,9 @@ using namespace flecsi::topology;
 template<size_t PRIVILEGES>
 using dense_accessor = index_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
 
-using dense_field_t = field_member_u<double, dense, index_topology_t, 0 /* index space */>;
+using index_field_t = index_field_member_u<double>;
 
-const dense_field_t nifld(1);
+const index_field_t nifld(1);
 const auto nifh = nifld(flecsi_index_topology);
 
 void

@@ -111,7 +111,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     const auto fid =
       context_t::instance()
         .get_field_info_store(global_topology_t::type_identifier_hash,
-          data::storage_label_t::global)
+          data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 
@@ -149,7 +149,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     const auto fid =
       flecsi_context
         .get_field_info_store(
-          index_topology_t::type_identifier_hash, data::storage_label_t::index)
+          index_topology_t::type_identifier_hash, data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 

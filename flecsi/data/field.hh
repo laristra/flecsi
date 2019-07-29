@@ -43,7 +43,6 @@ namespace data {
   @tparam INDEX_SPACE   The id of the index space on which to define the field.
  */
 
-  // topology_field
 template<typename DATA_TYPE,
   storage_label_t STORAGE_CLASS,
   typename TOPOLOGY_TYPE,
