@@ -1,6 +1,15 @@
 #------------------------------------------------------------------------------#
-# Copyright (c) 2014 Los Alamos National Security, LLC
-# All rights reserved.
+#  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+# /@@/////  /@@          @@////@@ @@////// /@@
+# /@@       /@@  @@@@@  @@    // /@@       /@@
+# /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+# /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+# /@@       /@@/@@//// //@@    @@       /@@/@@
+# /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+# //       ///  //////   //////  ////////  //
+#
+# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# All rights reserved
 #------------------------------------------------------------------------------#
 
 from __future__ import generators
@@ -18,13 +27,13 @@ from flecsit.services import *
 # flecsit module.
 #------------------------------------------------------------------------------#
 
-def main(config):
+def main():
 
     """
     """
 
     driver = create_driver()
-    return driver.main(config)
+    return driver.main()
 
 # main
 
@@ -74,7 +83,7 @@ class FleCSITDriver():
 
     # __init__
 
-    def main(self, config, args=None):
+    def main(self, args=None):
 
         """
         """
@@ -82,13 +91,14 @@ class FleCSITDriver():
         # parse arguments and call the appropriate function
         # as set by the Service subclass.
         args = self.parser.parse_args()
-        args.func(config, args)
+
+        try:
+            func = args.func
+        except AttributeError:
+            self.parser.error("too few arguments")
+
+        func(args)
 
     # main
 
 # class FleCSITDriver
-
-#------------------------------------------------------------------------------#
-# Formatting options for emacs and vim.
-# vim: set tabstop=4 shiftwidth=4 expandtab :
-#------------------------------------------------------------------------------#

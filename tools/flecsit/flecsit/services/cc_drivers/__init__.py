@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------#
 
 """
-FleCSIT Analysis implementation.
+Source implementation.
 """
 
 import os

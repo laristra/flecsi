@@ -16,7 +16,7 @@ def overwrite_existing(filename):
     """
 
     if os.path.exists(filename):
-        return True if raw_input(filename +
+        return True if input(filename +
             ' exists.  Overwrite? [y/N]: ') is 'y' else False
     else:
         return True
@@ -96,10 +96,10 @@ def add_command_line_compiler_options(parser):
 # add_compiler_options
 
 #------------------------------------------------------------------------------#
-# Generate a compile string from config information and user arguements.
+# Generate a compile string from environment information and user arguements.
 #------------------------------------------------------------------------------#
 
-def generate_compiler_options(config, entries, environment, option):
+def generate_compiler_options(entries, environment, option):
 
     """
     General function to process compiler flags for include, ldflags,
@@ -107,11 +107,6 @@ def generate_compiler_options(config, entries, environment, option):
     """
 
     opts = {}
-
-    # Add entries from cmake config
-    if config:
-        opts.update(dict(s.split("=") for s in config.split(' ') if "=" in s))
-        opts.update(dict([s, ""] for s in config.split(' ') if not "=" in s))
 
     # Add command-line entries
     if entries:
