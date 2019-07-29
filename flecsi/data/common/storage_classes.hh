@@ -23,6 +23,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/data_reference.hh>
+#include <flecsi/data/common/storage_label.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
@@ -30,14 +31,8 @@
 //#include <flecsi/topology/unstructured_mesh/interface.hh>
 #endif
 
-#define POLICY_NAMESPACE legion
-#include <flecsi/data/common/storage_class.hh>
-#include <flecsi/data/common/topology.hh>
-#undef POLICY_NAMESPACE
-
 namespace flecsi {
 namespace data {
-namespace legion {
 
 /*----------------------------------------------------------------------------*
   Global Topology.
@@ -262,6 +257,5 @@ struct storage_class_u<dense, flecsi::topology::mesh_topology_u<POLICY_TYPE>> {
 }; // struct storage_class_u
 #endif
 
-} // namespace legion
 } // namespace data
 } // namespace flecsi

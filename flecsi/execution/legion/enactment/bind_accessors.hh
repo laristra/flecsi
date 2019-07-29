@@ -21,7 +21,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/privilege.hh>
-#include <flecsi/data/legion/storage_classes.hh>
+#include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
@@ -39,7 +39,7 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-using namespace flecsi::data::legion;
+using namespace flecsi::data;
 
 /*!
   The bind_accessors_t type is called to walk the user task arguments inside of
@@ -66,7 +66,7 @@ struct bind_accessors_t
       regions_(regions), futures_(futures) {}
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
-    The following methods are specializations on storage class and client
+    The following methods are specializations on storage class and topology
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 

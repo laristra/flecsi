@@ -19,7 +19,7 @@
 #include <flecsi/runtime/data_policy.hh>
 
 #include <flecsi/data/common/data_reference.hh>
-#include <flecsi/data/common/storage_class.hh>
+#include <flecsi/data/common/storage_label.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>

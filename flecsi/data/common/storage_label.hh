@@ -13,47 +13,32 @@
                                                                               */
 #pragma once
 
-/*!
-  @file
-
- */
+/*!  @file */
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/data_reference.hh>
-#endif
-
-#ifndef POLICY_NAMESPACE
-#error You must define a data policy namespace before including this file.
+#include <flecsi/utils/hash.hh>
 #endif
 
 namespace flecsi {
 namespace data {
-namespace POLICY_NAMESPACE {
 
-#if 0 // FIXME: Remove this
 /*!
-  Base topology type for topology-specific specializations. Specializations of
-  this type must implement a get_reference method.
+  The storage_label_t type enumerates the available FleCSI storage classes.
+  A FleCSI storage class provides a specific interface for different
+  logical data layouts, e.g., dense vs. sparse. The actual data layout
+  is implementation-dependent.
  */
 
-template<typename TOPOLOGY_TYPE>
-struct topology_u {
+enum storage_label_t : size_t {
+  dense,
+  sparse,
+  ragged,
+  array,
+  subspace
+}; // enum storage_label_t
 
-  using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
-
-  template<size_t NAMESPACE, size_t NAME>
-  static topology_reference_t get_reference() {
-    constexpr size_t identifier = utils::hash::topology_hash<NAMESPACE, NAME>();
-    return {identifier};
-  } // get_reference
-};
-#endif
-
-template<typename TOPOLOGY_TYPE>
-struct topology_instance_u {};
-
-} // namespace POLICY_NAMESPACE
 } // namespace data
 } // namespace flecsi

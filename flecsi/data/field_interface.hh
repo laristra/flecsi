@@ -26,7 +26,7 @@
 
 // Needed for storage_class.hh and for FLECSI_RUNTIME_DATA_POLICY:
 #include <flecsi/data/common/data_reference.hh>
-#include <flecsi/data/common/storage_class.hh>
+#include <flecsi/data/common/storage_label.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>

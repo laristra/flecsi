@@ -22,7 +22,7 @@
 #else
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/data/common/topology_accessor.hh>
-#include <flecsi/data/legion/storage_classes.hh>
+#include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/set/interface.hh>

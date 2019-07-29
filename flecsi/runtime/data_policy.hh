@@ -30,6 +30,7 @@ namespace flecsi {
 namespace data {
 
 using FLECSI_RUNTIME_DATA_POLICY = legion_data_policy_t;
+using data_policy_t = legion_data_policy_t;
 
 } // namespace data
 } // namespace flecsi

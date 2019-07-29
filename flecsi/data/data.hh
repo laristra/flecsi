@@ -30,6 +30,11 @@
 
 namespace flecsi {
 
+#if 0 // working to fix this
+  flecsi_topology_reference(                                                   \
+    flecsi::topology::index_topology_t, "internal", "index_topology")
+#endif
+
 template<typename DATA_TYPE>
 using global_field_member_u =
   data::field_member_u<DATA_TYPE, data::storage_label_t::dense, topology::global_topology_t, 0>;

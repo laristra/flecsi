@@ -20,10 +20,6 @@
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/flog.hh>
 
-#define POLICY_NAMESPACE legion
-#include <flecsi/data/common/topology.hh>
-#undef POLICY_NAMESPACE
-
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
@@ -58,9 +54,13 @@ class unstructured_mesh_topology_u;
 } // namespace topology
 
 namespace data {
+  // FIXME: get rid of this namespace
 namespace legion {
 
 using namespace topology;
+
+template<typename TOPOLOGY_TYPE>
+struct topology_instance_u {};
 
 /*----------------------------------------------------------------------------*
   Index Topology.

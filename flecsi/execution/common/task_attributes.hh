@@ -73,8 +73,6 @@ mask_to_task_type(size_t mask) {
 inline task_processor_type_t
 mask_to_processor_type(size_t mask) {
   const size_t processor_mask = mask >> task_type_bits;
-  std::bitset<8> bits(mask);
-  std::cout << bits << std::endl;
 
 //  flog_assert(processor_mask && !(processor_mask & (processor_mask - 1)),
 //    "only one processor type can be specified");
