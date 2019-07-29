@@ -51,7 +51,7 @@ namespace data {
  */
 
 template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-struct topology_registration_u {};
+struct topology_registration_u;
 
 #if 0
 /*!

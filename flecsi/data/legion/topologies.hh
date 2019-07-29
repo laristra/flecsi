@@ -36,7 +36,7 @@ namespace legion {
 using namespace topology;
 
 template<typename TOPOLOGY_TYPE>
-struct topology_instance_u {};
+struct topology_instance_u;
 
 /*----------------------------------------------------------------------------*
   Index Topology.
