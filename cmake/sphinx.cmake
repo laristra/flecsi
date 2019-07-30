@@ -112,14 +112,14 @@ if(ENABLE_SPHINX)
         file(MAKE_DIRECTORY ${_directory}/.sphinx/_static)
     endif()
 
-    cinch_copy_directory(${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_static
+    copy_directory(${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_static
         doc/.sphinx/_static)
 
     if(NOT EXISTS ${_directory}/.sphinx/_templates)
         file(MAKE_DIRECTORY ${_directory}/.sphinx/_templates)
     endif()
 
-    cinch_copy_directory(${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_templates
+    copy_directory(${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_templates
         doc/.sphinx/_templates)
 
     #--------------------------------------------------------------------------#
