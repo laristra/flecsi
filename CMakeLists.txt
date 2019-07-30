@@ -71,6 +71,12 @@ set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
 mark_as_advanced(FLECSI_COUNTER_TYPE)
 
 #------------------------------------------------------------------------------#
+# FleCSIT utility.
+#------------------------------------------------------------------------------#
+
+option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
+
+#------------------------------------------------------------------------------#
 # These variables are used to collect library and include dependencies
 # for the FleCSIConfig file below.
 #------------------------------------------------------------------------------#
@@ -350,7 +356,6 @@ message(STATUS "${FLECSI_Yellow}Set id_t bits to allow:\n"
 # FLOG and FTEST
 #------------------------------------------------------------------------------#
 
-message(STATUS "FLECSI_LIBRARY_DEPENDENCIES: ${FLECSI_LIBRARY_DEPENDENCIES}")
 include(flog)
 include(ftest)
 
@@ -471,6 +476,12 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   hpx_setup_target(FleCSI NONAMEPREFIX)
 
 endif()
+
+#------------------------------------------------------------------------------#
+# Tools.
+#------------------------------------------------------------------------------#
+
+add_subdirectory("tools")
 
 #------------------------------------------------------------------------------#
 # CMake config file: This should be the last thing to happen.
