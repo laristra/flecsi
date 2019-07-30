@@ -350,6 +350,7 @@ message(STATUS "${FLECSI_Yellow}Set id_t bits to allow:\n"
 # FLOG and FTEST
 #------------------------------------------------------------------------------#
 
+message(STATUS "FLECSI_LIBRARY_DEPENDENCIES: ${FLECSI_LIBRARY_DEPENDENCIES}")
 include(flog)
 include(ftest)
 
