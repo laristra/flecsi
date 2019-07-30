@@ -45,6 +45,6 @@ if(ENABLE_HPX)
     add_definitions(-DGTEST_LANG_CXX11=1)
   endif()
 
-  message(STATUS "HPX found: ${HPX_FOUND}")
+  message(STATUS "Found HPX: ${HPX_FOUND}")
 
 endif(ENABLE_HPX)

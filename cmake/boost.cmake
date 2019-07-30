@@ -24,8 +24,7 @@ if(ENABLE_BOOST)
     filesystem
     regex
     serialization
-    system
-    QUIET)
+    system)
 
   include_directories(${Boost_INCLUDE_DIRS})
   link_directories(${Boost_LIBRARY_DIRS})

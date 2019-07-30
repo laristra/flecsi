@@ -180,10 +180,10 @@ include(graphviz)
 # Boost.
 #------------------------------------------------------------------------------#
 
-include(boost)
-
 set(ENABLE_BOOST ON CACHE BOOL "Enable Boost (required by FleCSI)" FORCE)
 mark_as_advanced(ENABLE_BOOST)
+
+include(boost)
 
 #------------------------------------------------------------------------------#
 # Kokkos

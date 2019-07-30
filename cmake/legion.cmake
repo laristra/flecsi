@@ -31,6 +31,4 @@ if(ENABLE_LEGION)
 
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Legion_LIBRARIES})
 
-  message(STATUS "Legion found: ${Legion_LIBRARIES}")
-
 endif(ENABLE_LEGION)
