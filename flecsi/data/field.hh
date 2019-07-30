@@ -15,9 +15,6 @@
 
 /*! @file */
 
-// This can move into the includes below as soon as storage_class_u is removed.
-#include <flecsi/runtime/data_policy.hh>
-
 #include "../topology/common/core.hh" // id
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/storage_classes.hh>
