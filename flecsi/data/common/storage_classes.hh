@@ -34,6 +34,9 @@
 namespace flecsi {
 namespace data {
 
+template<storage_label_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
+struct storage_class_u {};
+
 /*----------------------------------------------------------------------------*
   Global Topology.
  *----------------------------------------------------------------------------*/
@@ -93,6 +96,14 @@ private:
 
 } // namespace global_topology
 
+template<>
+struct storage_class_u<storage_label_t::dense, topology::global_topology_t> {
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  using accessor = global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+
+}; // struct storage_class_u<storage_labal_t::dense, global_topology_t>
+
 /*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/
@@ -147,6 +158,14 @@ private:
 }; // struct accessor_u
 
 } // namespace index_topology
+
+template<>
+struct storage_class_u<storage_label_t::dense, topology::index_topology_t> {
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  using accessor = index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+
+}; // struct storage_class_u<storage_labal_t::dense, index_topology_t>
 
 /*----------------------------------------------------------------------------*
   NTree Topology.

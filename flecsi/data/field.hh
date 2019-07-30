@@ -19,6 +19,7 @@
 #include <flecsi/runtime/data_policy.hh>
 
 #include <flecsi/data/common/data_reference.hh>
+#include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/common/storage_label.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
@@ -50,6 +51,10 @@ template<typename DATA_TYPE,
 struct field_member_u {
 
   using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
+
+  template<size_t PRIVILEGES>
+  using accessor = typename storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>::
+    template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES>::value>;
 
   field_member_u(size_t versions = 1)
     : versions_(versions), fid_(register_field()) {}
