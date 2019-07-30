@@ -85,32 +85,6 @@ const inline size_t task_id = internal::register_task<TASK>(ATTRIBUTES);
 } // namespace execution
 
 /*!
-  Execute a task.
-
-  @tparam TASK          The user task.
-  @tparam LAUNCH_DOMAIN The launch domain id.
-  @tparam ATTRIBUTES    The task attributes mask.
-  @tparam ARGS          The user-specified task arguments.
- */
-
-template<auto & TASK,
-  size_t LAUNCH_DOMAIN = flecsi::index,
-  size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
-  typename... ARGS>
-decltype(auto)
-execute(ARGS &&... args) {
-
-  using traits_t = utils::function_traits_u<decltype(TASK)>;
-
-  return execution::execution_policy_t::template execute_task<LAUNCH_DOMAIN,
-    flecsi_internal_hash(0),
-    ATTRIBUTES,
-    typename traits_t::return_type,
-    typename traits_t::arguments_type>(
-    execution::task_id<TASK, ATTRIBUTES>, std::forward<ARGS>(args)...);
-} // execute
-
-/*!
   Execute a reduction task.
 
   @tparam TASK                The user task.
@@ -136,6 +110,25 @@ reduce(ARGS &&... args) {
     typename traits_t::return_type,
     typename traits_t::arguments_type>(
     execution::task_id<TASK, ATTRIBUTES>, std::forward<ARGS>(args)...);
+} // execute
+
+/*!
+  Execute a task.
+
+  @tparam TASK          The user task.
+  @tparam LAUNCH_DOMAIN The launch domain id.
+  @tparam ATTRIBUTES    The task attributes mask.
+  @tparam ARGS          The user-specified task arguments.
+ */
+
+template<auto & TASK,
+  size_t LAUNCH_DOMAIN = flecsi::index,
+  size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
+  typename... ARGS>
+decltype(auto)
+execute(ARGS &&... args) {
+  return reduce<TASK, LAUNCH_DOMAIN, flecsi_internal_hash(0), ATTRIBUTES>(
+    std::forward<ARGS>(args)...);
 } // execute
 
 } // namespace flecsi
