@@ -52,9 +52,9 @@ struct field_member_u {
 
   using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
 
-  template<size_t PRIVILEGES>
+  template<size_t ... PRIVILEGES>
   using accessor = typename storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>::
-    template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES>::value>;
+    template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES ...>::value>;
 
   field_member_u(size_t versions = 1)
     : versions_(versions), fid_(register_field()) {}

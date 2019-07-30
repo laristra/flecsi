@@ -68,6 +68,18 @@ struct privilege_pack_u {
 }; // struct privilege_pack_u
 
 /*!
+  Return the number of privileges stored in a privilege pack.
+
+  @tparam PACK  A valid size_t from a privilege_pack_u type.
+ */
+
+template<size_t PACK>
+constexpr size_t
+privilege_count() {
+  return (utils::msb<PACK>() - 1) >> 1;
+} // privilege_count
+
+/*!
   Get a privilege out of a pack for the specified id.
 
   @tparam INDEX The index of the privilege to get.
@@ -78,7 +90,7 @@ template<size_t INDEX, size_t PACK>
 constexpr partition_privilege_t
 get_privilege() {
   constexpr size_t count = (utils::msb<PACK>() - 1) >> 1;
-  return partition_privilege_t(PACK >> ((count - 1 - INDEX) * 2) & 0x03);
+  return partition_privilege_t(PACK >> ((privilege_count<PACK>() - 1 - INDEX) * 2) & 0x03);
 } // get_privilege
 
 } // namespace flecsi

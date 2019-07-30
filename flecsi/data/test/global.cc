@@ -68,13 +68,13 @@ const global_field_t energy_field(1);
 const auto energy = energy_field(flecsi_global_topology);
 
 void
-assign(global_accessor<rw> ga) {
+assign(global_field_t::accessor<rw> ga) {
   flog(info) << "assign on " << color() << std::endl;
   ga = color();
 } // assign
 
 int
-check(global_accessor<ro> ga) {
+check(global_field_t::accessor<ro> ga) {
   FTEST();
 
   flog(info) << "check on " << color() << std::endl;

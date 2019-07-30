@@ -79,8 +79,11 @@ main(int argc, char ** argv) {
       std::cout << desc << std::endl;
     } // if
 
-    runtime_.finalize_runtimes(argc, argv, exit_mode_t::help);
-    return 1;
+    if(runtime_.finalize_runtimes(argc, argv, exit_mode_t::help)) {
+      return 1;
+    }
+  
+    return 0;
   } // if
 
   // Invoke the primary callback

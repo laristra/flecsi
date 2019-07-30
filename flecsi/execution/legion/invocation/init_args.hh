@@ -161,6 +161,9 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
         << instance_data.colors << " into task with launch domain of size "
         << domain_);
 
+    static_assert(privilege_count<PRIVILEGES>() == 1,
+      "index topology accessor type only takes one privilege");
+
     Legion::RegionRequirement rr(instance_data.color_partition,
       0,
       privilege_mode(get_privilege<0, PRIVILEGES>()),
