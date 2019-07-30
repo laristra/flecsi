@@ -12,24 +12,22 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-option(ENABLE_BOOST "Enable Boost" OFF)
+option(ENABLE_OPENMP "Enable OpenMP" OFF)
 
-if(ENABLE_BOOST)
+if(ENABLE_OPENMP)
 
-  set(Boost_NO_BOOST_CMAKE ON)
+#------------------------------------------------------------------------------#
+# Find OpenMP
+#------------------------------------------------------------------------------#
 
-  find_package(Boost REQUIRED 
-    program_options
-    atomic
-    filesystem
-    regex
-    serialization
-    system
-    QUIET)
+find_package(OpenMP)
 
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
+  if(NOT OPENMP_FOUND)
+      message(WARNING "OpenMP was requested but not found.")
+  else()
+    set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+	endif()
 
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-
-endif()
+endif(ENABLE_OPENMP)

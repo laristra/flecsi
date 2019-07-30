@@ -12,24 +12,19 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-option(ENABLE_BOOST "Enable Boost" OFF)
+option(ENABLE_KOKKOS "Enable Kokkos" OFF)
 
-if(ENABLE_BOOST)
+if(ENABLE_KOKKOS)
 
-  set(Boost_NO_BOOST_CMAKE ON)
+  if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND
+    NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 8)
+    message(FATAL_ERROR "Clang version 8 or greater required for Kokkos")
+  endif()
 
-  find_package(Boost REQUIRED 
-    program_options
-    atomic
-    filesystem
-    regex
-    serialization
-    system
-    QUIET)
+  find_package(Kokkos REQUIRED)
 
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
+  include_directories(${KOKKOS_INCLUDE_DIR})
+  link_directories(${KOKKOS_LIBRARY_DIRS})
 
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${KOKKOS_CORE_LIBRARY})
 endif()

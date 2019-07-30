@@ -12,24 +12,25 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-option(ENABLE_BOOST "Enable Boost" OFF)
+option(ENABLE_LEGION "Enable Legion" OFF)
 
-if(ENABLE_BOOST)
+if(ENABLE_LEGION)
 
-  set(Boost_NO_BOOST_CMAKE ON)
+  find_package(Legion REQUIRED)
 
-  find_package(Boost REQUIRED 
-    program_options
-    atomic
-    filesystem
-    regex
-    serialization
-    system
-    QUIET)
+  if(NOT Legion_FOUND)
+    message(FATAL_ERROR "Legion is required for this build configuration")
+  endif(NOT Legion_FOUND)
 
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
+  set(CMAKE_PREFIX_PATH  ${CMAKE_PREFIX_PATH} ${LEGION_INSTALL_DIRS})
 
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+  include_directories(${Legion_INCLUDE_DIRS})
 
-endif()
+  add_definitions(-DLEGION_USE_CMAKE)
+  add_definitions(-DREALM_USE_CMAKE)
+
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Legion_LIBRARIES})
+
+  message(STATUS "Legion found: ${Legion_FOUND}")
+
+endif(ENABLE_LEGION)

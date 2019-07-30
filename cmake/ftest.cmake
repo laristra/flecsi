@@ -1,4 +1,4 @@
-#
+#------------------------------------------------------------------------------#
 #   @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
 #  /@@/////  /@@          @@////@@ @@////// /@@
 #  /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -10,7 +10,7 @@
 #
 #  Copyright (c) 2016, Los Alamos National Security, LLC
 #  All rights reserved.
-#
+#------------------------------------------------------------------------------#
 
 include(CMakeDependentOption)
 
@@ -65,7 +65,7 @@ function(ftest_add_unit name)
   #----------------------------------------------------------------------------#
 
   get_filename_component(_SOURCE_DIR_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-  if ( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+  if(PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
     set(_OUTPUT_DIR "${CMAKE_BINARY_DIR}/test/${_SOURCE_DIR_NAME}")
   else()
     set(_OUTPUT_DIR
@@ -100,7 +100,7 @@ function(ftest_add_unit name)
     AND MPI_${MPI_LANGUAGE}_FOUND)
 
     set(unit_policy_runtime
-      ${FLECSI_SOURCE_DIR}/flecsi/execution/mpi/runtime.cc)
+      ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi/runtime.cc)
     set(unit_policy_flags ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS})
     set(unit_policy_includes ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH})
     set(unit_policy_libraries ${MPI_${MPI_LANGUAGE}_LIBRARIES})
@@ -114,7 +114,7 @@ function(ftest_add_unit name)
     AND Legion_FOUND)
 
     set(unit_policy_runtime
-      ${FLECSI_SOURCE_DIR}/flecsi/execution/legion/runtime.cc)
+      ${CMAKE_SOURCE_DIR}/flecsi/execution/legion/runtime.cc)
     set(unit_policy_flags ${Legion_CXX_FLAGS}
       ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS})
     set(unit_policy_includes ${Legion_INCLUDE_DIRS}
@@ -167,8 +167,8 @@ function(ftest_add_unit name)
 
   add_executable(${name}
     ${unit_SOURCES}
-    ${FLECSI_SOURCE_DIR}/flecsi/utils/flog/packet.cc
-    ${CINCH_SOURCE_DIR}/cinch/runtime.cc
+    ${CMAKE_SOURCE_DIR}/flecsi/utils/flog/packet.cc
+    ${CMAKE_SOURCE_DIR}/flecsi/runtime/runtime.cc
     ${_OUTPUT_DIR}/${_TARGET_MAIN}
   )
   
@@ -230,9 +230,8 @@ function(ftest_add_unit name)
   endif()
 
   target_link_libraries(${name} FleCSI)
-  target_link_libraries(${name} ${CINCH_RUNTIME_LIBRARIES}
+  target_link_libraries(${name} ${FLECSI_LIBRARY_DEPENDENCIES}
     ${CMAKE_THREAD_LIBS_INIT})
-  target_link_libraries(${name} ${FLECSI_LIBRARY_DEPENDENCIES})
 
   if(unit_policy_libraries)
     target_link_libraries(${name} ${unit_policy_libraries})

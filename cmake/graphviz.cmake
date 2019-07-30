@@ -12,24 +12,17 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-option(ENABLE_BOOST "Enable Boost" OFF)
+option(ENABLE_GRAPHVIZ "Enable Graphviz" OFF)
 
-if(ENABLE_BOOST)
+if(ENABLE_GRAPHVIZ)
+    find_package(Graphviz REQUIRED)
 
-  set(Boost_NO_BOOST_CMAKE ON)
+    if(NOT Graphviz_FOUND)
+        message(FATAL_ERROR "Graphviz is required for this build configuration")
+    endif()
 
-  find_package(Boost REQUIRED 
-    program_options
-    atomic
-    filesystem
-    regex
-    serialization
-    system
-    QUIET)
+    message(STATUS "Found Graphviz: ${Graphviz_INCLUDE_DIRS}")
 
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
-
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-
-endif()
+    include_directories(${Graphviz_INCLUDE_DIRS})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Graphviz_LIBRARIES})
+endif(ENABLE_GRAPHVIZ)

@@ -106,7 +106,7 @@ function(add_library_target target directory)
     endforeach(_SUBDIR)
   
     # if there are source files, build a library
-    if (SOURCES)
+    if(SOURCES)
       add_library(${target} ${SOURCES})
       # if an export target has been specified
       if(lib_EXPORT_TARGET)
@@ -129,4 +129,17 @@ function(add_library_target target directory)
     foreach(file ${${target}_PUBLIC_HEADERS})
         install(FILES ${directory}/${file} DESTINATION include)
     endforeach()
+endfunction()
+
+function(add_target_link_libraries target)
+
+    if (ARGN)
+        get_target_property(_type ${target} TYPE)
+        if ( ${_type} STREQUAL "INTERFACE_LIBRARY")
+            target_link_libraries( ${target} INTERFACE ${ARGN} )
+        else()
+            target_link_libraries( ${target} ${ARGN} )
+        endif()
+    endif()
+
 endfunction()

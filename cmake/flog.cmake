@@ -1,4 +1,4 @@
-#
+#------------------------------------------------------------------------------#
 #   @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
 #  /@@/////  /@@          @@////@@ @@////// /@@
 #  /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -10,7 +10,7 @@
 #
 #  Copyright (c) 2016, Los Alamos National Security, LLC
 #  All rights reserved.
-#
+#------------------------------------------------------------------------------#
 
 include(CMakeDependentOption)
 
@@ -68,5 +68,5 @@ endif()
 
 if(FLOG_ENABLE_MPI)
   find_package(Threads)
-  list(APPEND CINCH_RUNTIME_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${CMAKE_THREAD_LIBS_INIT})
 endif()

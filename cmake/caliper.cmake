@@ -12,24 +12,22 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-option(ENABLE_BOOST "Enable Boost" OFF)
+option(ENABLE_CALIPER "Enable Caliper" OFF)
+mark_as_advanced(ENABLE_CALIPER)
 
-if(ENABLE_BOOST)
+if(ENABLE_CALIPER)
+    find_package(Caliper REQUIRED)
 
-  set(Boost_NO_BOOST_CMAKE ON)
+    if(NOT Caliper_FOUND)
+	    message(FATAL_ERROR "Caliper is required for this build configuration")
+    endif()
 
-  find_package(Boost REQUIRED 
-    program_options
-    atomic
-    filesystem
-    regex
-    serialization
-    system
-    QUIET)
+    message(STATUS "Found Caliper: ${Caliper_INCLUDE_DIRS}")
 
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
-
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-
-endif()
+    include_directories(${Caliper_INCLUDE_DIRS})
+    add_definitions(-DENABLE_CALIPER)
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES})
+    if(ENABLE_MPI)
+      list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_MPI_LIBRARIES})
+    endif(ENABLE_MPI)
+endif(ENABLE_CALIPER)

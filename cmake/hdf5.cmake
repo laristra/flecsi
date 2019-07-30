@@ -12,24 +12,16 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-option(ENABLE_BOOST "Enable Boost" OFF)
+option(ENABLE_HDF5 "Enable HDF5" OFF)
 
-if(ENABLE_BOOST)
+if(ENABLE_HDF5)
+  find_package(HDF5 REQUIRED)
 
-  set(Boost_NO_BOOST_CMAKE ON)
+  include_directories(${HDF5_C_INCLUDE_DIR})
 
-  find_package(Boost REQUIRED 
-    program_options
-    atomic
-    filesystem
-    regex
-    serialization
-    system
-    QUIET)
-
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
-
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-
+  if(CMAKE_BUILD_TYPE MATCHES Debug)
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${HDF5_hdf5_LIBRARY_DEBUG})
+  else()
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${HDF5_hdf5_LIBRARY_RELEASE})
+  endif()
 endif()

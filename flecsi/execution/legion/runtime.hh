@@ -26,9 +26,8 @@
 
 #include <flecsi/execution/common/command_line_options.hh>
 #include <flecsi/execution/context.hh>
+#include <flecsi/runtime/runtime.hh>
 #endif
-
-#include <cinch/runtime.h>
 
 #if !defined(FLECSI_ENABLE_MPI)
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
@@ -121,7 +120,7 @@ flecsi_legion_initialize(int argc, char ** argv, variables_map & vm) {
 } // initialize
 
 inline int
-flecsi_legion_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
+flecsi_legion_finalize(int argc, char ** argv, flecsi::exit_mode_t mode) {
 
 #if defined(FLECSI_ENABLE_KOKKOS)
   Kokkos::finalize();
@@ -139,11 +138,11 @@ flecsi_legion_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
   return 0;
 } // initialize
 
-inline cinch::runtime_handler_t flecsi_legion_handler{flecsi_legion_initialize,
+inline flecsi::runtime_handler_t flecsi_legion_handler{flecsi_legion_initialize,
   flecsi_legion_finalize,
   flecsi_legion_add_options};
 
-cinch_append_runtime_handler(flecsi_legion_handler);
+flecsi_append_runtime_handler(flecsi_legion_handler);
 
 inline int
 flecsi_legion_runtime_driver(int argc, char ** argv, variables_map & vm) {
@@ -157,5 +156,5 @@ flecsi_legion_output_driver() {
   return rank == 0;
 }
 
-cinch_register_runtime_driver(flecsi_legion_runtime_driver);
-cinch_register_output_driver(flecsi_legion_output_driver);
+flecsi_register_runtime_driver(flecsi_legion_runtime_driver);
+flecsi_register_output_driver(flecsi_legion_output_driver);
