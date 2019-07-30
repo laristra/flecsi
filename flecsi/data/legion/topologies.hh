@@ -54,7 +54,7 @@ class unstructured_mesh_topology_u;
 } // namespace topology
 
 namespace data {
-  // FIXME: get rid of this namespace
+// FIXME: get rid of this namespace
 namespace legion {
 
 using namespace topology;

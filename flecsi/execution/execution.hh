@@ -34,7 +34,8 @@ namespace flecsi {
   Return the current process id.
  */
 
-inline size_t process() {
+inline size_t
+process() {
   return execution::context_t::instance().process();
 }
 
@@ -42,7 +43,8 @@ inline size_t process() {
   Return the number of processes.
  */
 
-inline size_t processes() {
+inline size_t
+processes() {
   return execution::context_t::instance().processes();
 }
 
@@ -50,7 +52,8 @@ inline size_t processes() {
   Return the number of threads per process.
  */
 
-inline size_t threads_per_process() {
+inline size_t
+threads_per_process() {
   return execution::context_t::instance().threads_per_process();
 }
 
@@ -62,7 +65,8 @@ inline size_t threads_per_process() {
   running process that invokded the FleCSI runtime.
  */
 
-inline size_t threads() {
+inline size_t
+threads() {
   return execution::context_t::instance().threads();
 }
 
@@ -71,7 +75,8 @@ inline size_t threads() {
   valid if invoked from within a task.
  */
 
-inline size_t color() {
+inline size_t
+color() {
   return execution::context_t::instance().color();
 }
 
@@ -80,7 +85,8 @@ inline size_t color() {
   only valid if invoked from within a task.
  */
 
-inline size_t colors() {
+inline size_t
+colors() {
   return execution::context_t::instance().colors();
 }
 

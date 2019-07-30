@@ -26,7 +26,7 @@
 using namespace boost::program_options;
 
 #if defined(FLECSI_RUNTIME_DEBUG)
-  #include <iostream>
+#include <iostream>
 #endif
 
 #include <functional>
@@ -34,10 +34,10 @@ using namespace boost::program_options;
 #include <vector>
 
 #if defined(FLECSI_RUNTIME_DEBUG)
-  #define runtime_function() std::cout << __FILE__ << " " <<                     \
-    __FUNCTION__ << std::endl;
+#define runtime_function()                                                     \
+  std::cout << __FILE__ << " " << __FUNCTION__ << std::endl;
 #else
-  #define runtime_function()
+#define runtime_function()
 #endif
 
 namespace flecsi {
@@ -57,7 +57,7 @@ struct runtime_handler_t {
   std::function<int(int, char **, variables_map &)> initialize;
   std::function<int(int, char **, exit_mode_t)> finalize;
   std::function<void(options_description &)> add_options =
-    [](options_description &){};
+    [](options_description &) {};
 }; // struct runtime_handler_t
 
 /*!
@@ -74,8 +74,12 @@ struct runtime_t {
     return r;
   } // instance
 
-  std::string const & program() const { return program_; }
-  std::string & program() { return program_; }
+  std::string const & program() const {
+    return program_;
+  }
+  std::string & program() {
+    return program_;
+  }
 
   using driver_function_t = std::function<int(int, char **, variables_map &)>;
   using output_function_t = std::function<bool()>;
@@ -135,7 +139,7 @@ struct runtime_t {
 
   void add_options(options_description & desc) {
     runtime_function();
-    for(auto r: handlers_) {
+    for(auto r : handlers_) {
       r.add_options(desc);
     } // for
   } // add_options
@@ -148,7 +152,7 @@ struct runtime_t {
     runtime_function();
     int result{0};
 
-    for(auto r: handlers_) {
+    for(auto r : handlers_) {
       result |= r.initialize(argc, argv, vm);
     } // for
 
@@ -163,7 +167,7 @@ struct runtime_t {
     runtime_function();
     int result{0};
 
-    for(auto r: handlers_) {
+    for(auto r : handlers_) {
       result |= r.finalize(argc, argv, mode);
     } // for
 
@@ -171,7 +175,6 @@ struct runtime_t {
   } // finalize_runtimes
 
 private:
-
   runtime_t() {
     runtime_function();
   }
@@ -195,7 +198,7 @@ private:
 
 }; // runtime_t
 
-} // namespace runtime
+} // namespace flecsi
 
 /*!
   @def flecsi_register_runtime_driver(driver)
@@ -206,10 +209,10 @@ private:
                 that should be invoked by the Cinch runtime.
  */
 
-#define flecsi_register_runtime_driver(driver)                                  \
+#define flecsi_register_runtime_driver(driver)                                 \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  inline bool flecsi_registered_driver_##driver =                               \
+  inline bool flecsi_registered_driver_##driver =                              \
     flecsi::runtime_t::instance().register_driver(driver)
 
 /*!
@@ -223,10 +226,10 @@ private:
                 which processes should join output operations.
  */
 
-#define flecsi_register_output_driver(driver)                                   \
+#define flecsi_register_output_driver(driver)                                  \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  inline bool flecsi_registered_output_driver_##driver =                        \
+  inline bool flecsi_registered_output_driver_##driver =                       \
     flecsi::runtime_t::instance().register_output_driver(driver)
 
 /*!
@@ -241,8 +244,8 @@ private:
                  initialize, finalize, and add_options functions.
  */
 
-#define flecsi_append_runtime_handler(handler)                                  \
+#define flecsi_append_runtime_handler(handler)                                 \
   /* MACRO DEFINITION */                                                       \
                                                                                \
-  inline bool flecsi_append_runtime_handler_##handler =                         \
+  inline bool flecsi_append_runtime_handler_##handler =                        \
     flecsi::runtime_t::instance().append_runtime_handler(handler)

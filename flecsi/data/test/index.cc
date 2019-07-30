@@ -23,7 +23,8 @@ using namespace flecsi::data;
 using namespace flecsi::topology;
 
 template<size_t PRIVILEGES>
-using dense_accessor = index_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
+using dense_accessor =
+  index_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
 
 using index_field_t = index_field_member_u<double>;
 

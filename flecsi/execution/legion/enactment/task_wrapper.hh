@@ -149,8 +149,8 @@ struct task_wrapper_u {
    @param name           A std::string containing the task name.
    */
 
-  static void registration_callback(task_id_t tid, size_t attributes,
-    std::string & name) {
+  static void
+  registration_callback(task_id_t tid, size_t attributes, std::string & name) {
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "registering task " << name << std::endl;

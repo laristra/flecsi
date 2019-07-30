@@ -106,8 +106,7 @@ struct legion_execution_policy_t {
    */
 
   template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool
-  register_task(size_t task, size_t attributes, std::string name) {
+  static bool register_task(size_t task, size_t attributes, std::string name) {
 
     using wrapper_t = legion::task_wrapper_u<RETURN, ARG_TUPLE, DELEGATE>;
 

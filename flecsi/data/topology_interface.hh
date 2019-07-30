@@ -24,7 +24,6 @@
 
 #include <flecsi/runtime/data_policy.hh>
 
-
 #include <flecsi/data/common/topology_registration.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/topology/base_topology_types.hh>
@@ -108,7 +107,8 @@ struct topology_interface_t {
   template<typename TOPOLOGY_TYPE>
   void destroy(
     topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
-      topology_reference, std::string const & name) {
+      topology_reference,
+    std::string const & name) {
 
     data_policy_t::destroy<TOPOLOGY_TYPE>(topology_reference);
 

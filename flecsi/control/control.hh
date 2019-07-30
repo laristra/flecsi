@@ -223,12 +223,11 @@ private:
   }                                                                            \
                                                                                \
   inline int flecsi_control_finalize(                                          \
-    int argc, char ** argv, exit_mode_t mode) {                         \
+    int argc, char ** argv, exit_mode_t mode) {                                \
     return 0;                                                                  \
   }                                                                            \
                                                                                \
-  inline runtime_handler_t flecsi_control_handler{                      \
-    flecsi_control_initialize,                                                 \
+  inline runtime_handler_t flecsi_control_handler{flecsi_control_initialize,   \
     flecsi_control_finalize,                                                   \
     flecsi_control_add_options};                                               \
                                                                                \

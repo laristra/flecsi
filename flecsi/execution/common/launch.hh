@@ -31,7 +31,8 @@ enum class launch_type_t : size_t { single, index };
  */
 
 template<size_t CHARACTERS>
-inline constexpr size_t launch_identifier(const char (&str)[CHARACTERS]) {
+inline constexpr size_t
+launch_identifier(const char (&str)[CHARACTERS]) {
   return utils::const_string_t(str).hash();
 }
 

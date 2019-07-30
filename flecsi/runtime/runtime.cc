@@ -28,12 +28,13 @@
 using namespace boost::program_options;
 using namespace flecsi;
 
-int main(int argc, char ** argv) {
+int
+main(int argc, char ** argv) {
 
   runtime_t & runtime_ = runtime_t::instance();
 
   std::string program(argv[0]);
-  program = "Basic Options (" + program.substr(program.rfind('/')+1) + ")";
+  program = "Basic Options (" + program.substr(program.rfind('/') + 1) + ")";
   options_description desc(program.c_str());
 
   // Add help option
@@ -63,13 +64,13 @@ int main(int argc, char ** argv) {
   if(unrecog_options.size()) {
     if(runtime_.join_output()) {
       std::cout << std::endl << "Unrecognized options: ";
-      for(size_t i=0; i<unrecog_options.size(); ++i) {
+      for(size_t i = 0; i < unrecog_options.size(); ++i) {
         std::cout << unrecog_options[i] << " ";
       }
       std::cout << std::endl << std::endl << desc << std::endl;
     } // if
 
-    // runtime_.unrecognized_option(argc, argv, ...); 
+    // runtime_.unrecognized_option(argc, argv, ...);
     return 1;
   } // if
 
