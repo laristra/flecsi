@@ -66,7 +66,7 @@ struct field_member_u {
     @param topology_reference A reference to a valid topology instance.
    */
 
-  field_reference_t operator()(
+  field_reference<DATA_TYPE> operator()(
     topology_reference_t const & topology_reference) const {
 
     return {fid_, topology_reference.identifier()};

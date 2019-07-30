@@ -134,6 +134,7 @@ struct legion_execution_policy_t {
     flog_tag_guard(execution);
 
     // Make a tuple from the arugments passed by the user
+    // NB: conversions like field_reference -> accessor_u happen here
     ARG_TUPLE task_args = std::forward_as_tuple(args...);
 
     // Get the FleCSI runtime context

@@ -66,11 +66,12 @@ bind(accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
  */
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor_u : public field_reference_t {
+struct accessor_u : field_reference<DATA_TYPE> {
 
   friend void bind<DATA_TYPE, PRIVILEGES>(accessor_u & a, DATA_TYPE * data);
 
-  accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
+  using Base = field_reference<DATA_TYPE>;
+  accessor_u(Base const & ref) : Base(ref) {}
 
   operator DATA_TYPE &() {
     return *data_;
@@ -129,9 +130,10 @@ bind(accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
 } // bind
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor_u : public field_reference_t {
+struct accessor_u : field_reference<DATA_TYPE> {
 
-  accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
+  using Base = field_reference<DATA_TYPE>;
+  accessor_u(Base const & ref) : Base(ref) {}
 
   operator DATA_TYPE &() {
     return *data_;
