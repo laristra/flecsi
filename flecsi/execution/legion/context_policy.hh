@@ -246,13 +246,13 @@ struct legion_context_policy_t {
     it will execute whichever function is currently set.
    */
 
-  void set_mpi_task(std::function<void()> & mpi_task) {
+  void set_mpi_task(std::function<void()> mpi_task) {
     {
       flog_tag_guard(context);
       flog_devel(info) << "In set_mpi_task" << std::endl;
     }
 
-    mpi_task_ = mpi_task;
+    mpi_task_ = std::move(mpi_task);
   }
 
   /*!
