@@ -60,6 +60,8 @@ struct ftest_control_policy_t {
     control_point(driver),
     control_point(finalize)>;
 
+#undef control_point
+
 }; // struct ftest_control_policy_t
 
 using control_t =
