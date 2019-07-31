@@ -83,14 +83,6 @@ using unique_fid_t =
   utils::unique_id_u<fid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
 /*!
-  Unique counter for task ids.
- */
-
-struct tid_counter_t {};
-using unique_tid_t =
-  utils::unique_id_u<tid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
-
-/*!
   Unique counter for index space ids.
  */
 

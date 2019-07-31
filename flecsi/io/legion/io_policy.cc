@@ -16,7 +16,6 @@
 #include <flecsi/data/common/field_info.hh>
 #include <flecsi/data/legion/runtime_data_types.hh>
 #include <flecsi/execution/context.hh>
-#include <flecsi/execution/legion/internal_task.hh>
 #include <flecsi/io/legion/io_policy.hh>
 #include <flecsi/utils/const_string.hh>
 
@@ -453,15 +452,12 @@ legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file,
     dbs.detach_buffer(),
     task_argument.field_map_size);
 
-  execution::context_t & context_ = execution::context_t::instance();
   auto task_id = 0;
   if(attach_flag == true) {
-    task_id =
-      context_.task_id<flecsi_internal_hash(checkpoint_with_attach_task)>();
+    task_id = legion_task_id<checkpoint_with_attach_task, loc | inner>;
   }
   else {
-    task_id =
-      context_.task_id<flecsi_internal_hash(checkpoint_without_attach_task)>();
+    task_id = legion_task_id<checkpoint_without_attach_task>;
   }
 
   IndexLauncher checkpoint_launcher(task_id,
@@ -652,15 +648,12 @@ legion_io_policy_t::recover_data(legion_hdf5_t & hdf5_file,
     dbs.detach_buffer(),
     task_argument.field_map_size);
 
-  execution::context_t & context_ = execution::context_t::instance();
   auto task_id = 0;
   if(attach_flag == true) {
-    task_id =
-      context_.task_id<flecsi_internal_hash(recover_with_attach_task)>();
+    task_id = legion_task_id<recover_with_attach_task, loc | inner>;
   }
   else {
-    task_id =
-      context_.task_id<flecsi_internal_hash(recover_without_attach_task)>();
+    task_id = legion_task_id<recover_without_attach_task>;
   }
 
   IndexLauncher recover_launcher(task_id,
@@ -985,15 +978,6 @@ recover_without_attach_task(const Legion::Task * task,
       getpid());
   }
 } // recover_without_attach_task
-
-flecsi_internal_register_legion_task(checkpoint_with_attach_task, loc | inner);
-
-flecsi_internal_register_legion_task(checkpoint_without_attach_task,
-  loc | leaf);
-
-flecsi_internal_register_legion_task(recover_with_attach_task, loc | inner);
-
-flecsi_internal_register_legion_task(recover_without_attach_task, loc | leaf);
 
 } // namespace io
 } // namespace flecsi

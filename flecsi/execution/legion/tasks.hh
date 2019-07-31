@@ -116,8 +116,6 @@ handoff_to_mpi_task(const Legion::Task * task,
   context_t::instance().handoff_to_mpi();
 } // handoff_to_mpi_task
 
-flecsi_internal_register_legion_task(handoff_to_mpi_task, loc | leaf);
-
 /*!
  Interprocess communication to wait for control to pass back to the Legion
  runtime.
@@ -133,8 +131,6 @@ wait_on_mpi_task(const Legion::Task * task,
   context_t::instance().wait_on_mpi();
 } // handoff_to_mpi_task
 
-flecsi_internal_register_legion_task(wait_on_mpi_task, loc | leaf);
-
 /*!
  Interprocess communication to unset mpi execute state.
 
@@ -149,8 +145,6 @@ unset_call_mpi_task(const Legion::Task * task,
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
 
-flecsi_internal_register_legion_task(unset_call_mpi_task, loc | leaf);
-
 #if defined(FLECSI_ENABLE_FLOG)
 
 #include <flecsi/utils/flog/state.hh>
@@ -163,8 +157,6 @@ flog_reduction_task(const Legion::Task * task,
   return utils::flog::flog_t::instance().packets().size();
 } // flog_reduction_task
 
-flecsi_internal_register_legion_task(flog_reduction_task, loc | leaf);
-
 inline void
 flog_mpi_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
@@ -176,8 +168,6 @@ flog_mpi_task(const Legion::Task * task,
   context_t::instance().set_mpi_task(bound_mpi_task);
   context_t::instance().set_mpi_state(true);
 } // flog_mpi_task
-
-flecsi_internal_register_legion_task(flog_mpi_task, loc | leaf);
 
 #endif // FLECSI_ENABLE_FLOG
 

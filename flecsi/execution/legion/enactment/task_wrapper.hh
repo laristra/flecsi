@@ -20,14 +20,13 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/utils/function_traits.hh"
 #include <flecsi/execution/common/task_attributes.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/enactment/bind_accessors.hh>
 #include <flecsi/execution/legion/enactment/unbind_accessors.hh>
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/flog.hh>
-#include <flecsi/utils/tuple_function.hh>
-#include <flecsi/utils/tuple_type_converter.hh>
 #endif
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -73,11 +72,10 @@ struct pure_task_wrapper_u {
    @param processor_type A valid Legion processor type.
    @param execution  A \ref task_execution_type_t with the task
               execution type parameters.
-   @param A std::string containing the task name.
    */
 
-  static void
-  registration_callback(task_id_t tid, size_t attributes, std::string & name) {
+  static void registration_callback(task_id_t tid, size_t attributes) {
+    const std::string name = utils::symbol<*TASK>();
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "registering pure Legion task " << name << std::endl;
@@ -123,14 +121,12 @@ struct pure_task_wrapper_u {
  The task_wrapper_u type provides registation callback and execution
  functions for user and MPI tasks.
 
- @tparam RETURN    The return type of the user task.
- @tparam ARG_TUPLE A std::tuple of the user task arguments.
- @tparam DELEGATE  The delegate function that invokes the user task.
+ \tparam F the user task
 
  @ingroup legion-execution
  */
 
-template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
+template<auto & F>
 struct task_wrapper_u {
 
   /*!
@@ -138,6 +134,9 @@ struct task_wrapper_u {
    */
 
   using task_id_t = Legion::TaskID;
+  using Traits = utils::function_traits_u<decltype(F)>;
+  using RETURN = typename Traits::return_type;
+  using ARG_TUPLE = typename Traits::arguments_type;
 
   /*!
    Registration callback function for user tasks.
@@ -146,11 +145,10 @@ struct task_wrapper_u {
    @param processor_type A \ref task_processor_type_t with the processor type.
    @param execution      A \ref task_executin_type_t with the task
                           execution type parameters.
-   @param name           A std::string containing the task name.
    */
 
-  static void
-  registration_callback(task_id_t tid, size_t attributes, std::string & name) {
+  static void registration_callback(task_id_t tid, size_t attributes) {
+    const std::string name = utils::symbol<F>();
     {
       flog_tag_guard(task_wrapper);
       flog_devel(info) << "registering task " << name << std::endl;
@@ -211,14 +209,14 @@ struct task_wrapper_u {
     bind_accessors.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
-      (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+      apply(F, std::forward<ARG_TUPLE>(task_args));
 
       // FIXME: Refactor
       // finalize_handles_t finalize_handles;
       // finalize_handles.walk(task_args);
     }
     else {
-      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+      RETURN result = apply(F, std::forward<ARG_TUPLE>(task_args));
 
       // FIXME: Refactor
       // finalize_handles_t finalize_handles;
@@ -249,11 +247,8 @@ struct task_wrapper_u {
     // init_handles_t init_handles(runtime, context, regions, task->futures);
     // init_handles.walk(mpi_task_args);
 
-    // Create bound function to pass to MPI runtime.
-    std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
-
     // Set the MPI function and make the runtime active.
-    context_t::instance().set_mpi_task(bound_mpi_task);
+    context_t::instance().set_mpi_task([=] { apply(F, mpi_task_args); });
     context_t::instance().set_mpi_state(true);
 
     // FIXME: Refactor

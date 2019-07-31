@@ -102,16 +102,8 @@ struct legion_context_policy_t {
      registration callbacks.
    */
 
-  using registration_function_t =
-    std::function<void(task_id_t, size_t, std::string &)>;
-
-  /*!
-    The task_info_t type is a convenience type for defining the task
-    registration map below.
-   */
-
-  using task_info_t =
-    std::tuple<task_id_t, size_t, std::string, registration_function_t>;
+  using registration_function_t = void (*)(task_id_t, size_t);
+  using task_info_t = std::tuple<size_t, registration_function_t>;
 
   //--------------------------------------------------------------------------//
   //  Runtime.
@@ -379,78 +371,34 @@ struct legion_context_policy_t {
   /*!
     Register a task with the runtime.
 
-    @param task       The task id.
     @param attributes The task attributes mask.
     @param name       The task name string.
     @param callback   The registration call back function.
+    \return task ID
    */
-
-  bool register_task(size_t task,
-    size_t attributes,
-    std::string & name,
+  std::size_t register_task(size_t attributes,
+    std::string_view name,
     const registration_function_t & callback) {
-    flog_devel(info) << "Registering task callback" << std::endl
-                     << "\tname: " << name << std::endl
-                     << "\thash: " << task << std::endl;
+    flog_devel(info) << "Registering task callback: " << name << std::endl;
 
-    flog_assert(task_registry_.find(task) == task_registry_.end(),
-      "task key already exists");
-
-    // FIXME: can we just re-use "task" (at least if it's reduced to 32 bits)?
-    task_registry_[task] = std::make_tuple(
-      unique_tid_t::instance().next(), attributes, name, callback);
-
-    return true;
+    flog_assert(
+      task_registry_.size() < FLECSI_GENERATED_ID_MAX, "too many tasks");
+    task_registry_.emplace_back(attributes, callback);
+    return task_registry_.size(); // 0 is the top-level task
   } // register_task
 
   /*!
     Return the task registration tuple.
 
-    @param key The task hash key.
-   */
-
-  template<size_t KEY>
-  task_info_t & task_info() {
-    auto task_entry = task_registry_.find(KEY);
-
-    flog_assert(task_entry != task_registry_.end(),
-      "task key " << KEY << " does not exist");
-
-    return task_entry->second;
-  } // task_info
-
-  /*!
-    Return the task registration tuple.
-
-    @param key The task hash key.
+    @param key The task ID.
    */
 
   task_info_t & task_info(size_t key) {
-    auto task_entry = task_registry_.find(key);
+    flog_assert(key && key <= task_registry_.size(),
+      "task #" << key << " does not exist");
 
-    flog_assert(task_entry != task_registry_.end(),
-      "task key " << key << " does not exist");
-
-    return task_entry->second;
+    return task_registry_[key - 1];
   } // task_info
-
-  /*!
-    Return task key information.
-
-    @param key The task hash key.
-   */
-
-#define task_info_template_method(name, return_type, index)                    \
-  template<size_t KEY>                                                         \
-  return_type name() {                                                         \
-    {                                                                          \
-      flog_tag_guard(context);                                                 \
-      flog_devel(info) << "Returning task info" << std::endl                   \
-                       << "\tname: " << #name << std::endl                     \
-                       << "\thash: " << KEY << std::endl;                      \
-    }                                                                          \
-    return std::get<index>(task_info<KEY>());                                  \
-  }
 
   /*!
     Return task key information.
@@ -470,10 +418,7 @@ struct legion_context_policy_t {
   }
 
   // clang-format off
-  task_info_template_method(task_id, task_id_t, 0);
-  task_info_method(task_id, task_id_t, 0);
-  task_info_template_method(task_attributes, size_t, 1);
-  task_info_method(task_attributes, size_t, 1);
+  task_info_method(task_attributes, size_t, 0);
   // clang-format on
 
   //--------------------------------------------------------------------------//
@@ -528,7 +473,7 @@ private:
     Task data members.
    *--------------------------------------------------------------------------*/
 
-  std::map<size_t, task_info_t> task_registry_;
+  std::vector<task_info_t> task_registry_;
 
   /*--------------------------------------------------------------------------*
     Reduction data members.

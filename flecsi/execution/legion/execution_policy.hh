@@ -20,6 +20,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/utils/demangle.hh"
+#include "flecsi/utils/function_traits.hh"
+#include "tasks.hh"
 #include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/enactment/task_wrapper.hh>
@@ -48,6 +51,20 @@ flog_register_tag(execution);
 namespace flecsi {
 namespace execution {
 
+// There is a circular dependency between legion_task_id and
+// legion_execution_policy_t.  Forward declaring the variable fails due to GCC
+// bug #83342, so we forward declare a helper function instead.
+namespace detail {
+template<auto &>
+std::size_t register_legion_task(std::size_t);
+}
+
+/// Task ID for a native Legion task.
+/// \tparam F Legion task function
+/// \tparam A \c task_attributes_mask_t values
+template<auto & F, std::size_t A = loc | leaf>
+inline const std::size_t legion_task_id = detail::register_legion_task<F>(A);
+
 //----------------------------------------------------------------------------//
 // Execution policy.
 //----------------------------------------------------------------------------//
@@ -67,54 +84,40 @@ struct legion_execution_policy_t {
 
   /*!
     This method allows the user to register a pure Legion task with
-    the runtime. A task id will automatically be generated, and can be
-    accessed via legion_context_policy_t::task_id using a valid
-    task hash.
+    the runtime.
 
-    @tparam TASK     A hash key identifying the task.
     @tparam RETURN   The return type of the pure Legion task.
     @tparam DELEGATE The function pointer template type of the task.
 
     @param name The string name for the task. This can be set to any
                 valid std::string value.
+
+    \return task ID
    */
 
-  template<size_t TASK,
-    typename RETURN,
+  template<typename RETURN,
     RETURN (*DELEGATE)(const Legion::Task *,
       const std::vector<Legion::PhysicalRegion> &,
       Legion::Context,
       Legion::Runtime *)>
-  static bool register_legion_task(size_t attributes, std::string name) {
-    flog_devel(info) << "Registering legion task" << std::endl
-                     << "\tname: " << name << std::endl
-                     << "\thash: " << TASK << std::endl;
+  static std::size_t register_legion_task(size_t attributes, std::string name) {
+    flog_devel(info) << "Registering legion task: " << name << std::endl;
 
     using wrapper_t = legion::pure_task_wrapper_u<RETURN, DELEGATE>;
 
-    const bool success = context_t::instance().register_task(
-      TASK, attributes, name, wrapper_t::registration_callback);
-
-    flog_assert(success, "callback registration failed for " << name);
-
-    return true;
+    return context_t::instance().register_task(
+      attributes, name, wrapper_t::registration_callback);
   } // register_legion_task
 
   /*
     Documentation for this interface is in the top-level context type.
    */
 
-  template<typename RETURN, typename ARG_TUPLE, RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool register_task(size_t task, size_t attributes, std::string name) {
-
-    using wrapper_t = legion::task_wrapper_u<RETURN, ARG_TUPLE, DELEGATE>;
-
-    const bool success = context_t::instance().register_task(
-      task, attributes, name, wrapper_t::registration_callback);
-
-    flog_assert(success, "callback registration failed for " << name);
-
-    return true;
+  template<auto & F>
+  static std::size_t register_task(size_t attributes) {
+    return context_t::instance().register_task(attributes,
+      utils::symbol<F>(),
+      legion::task_wrapper_u<F>::registration_callback);
   } // register_task
 
   /*
@@ -158,13 +161,12 @@ struct legion_execution_policy_t {
         LegionRuntime::Arrays::Point<1>(processes - 1));
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
-      const auto reduction_tid =
-        context_t::instance()
-          .task_id<flecsi_internal_hash(flog_reduction_task)>();
-
       Legion::ArgumentMap arg_map;
       Legion::IndexLauncher reduction_launcher(
-        reduction_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
+        legion_task_id<flog_reduction_task>,
+        launch_domain,
+        Legion::TaskArgument(NULL, 0),
+        arg_map);
 
       constexpr size_t max_hash =
         utils::hash::reduction_hash<flecsi_internal_hash(max),
@@ -175,11 +177,10 @@ struct legion_execution_policy_t {
         legion_context, reduction_launcher, reduction_id);
 
       if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
-        const auto flog_mpi_tid =
-          context_t::instance().task_id<flecsi_internal_hash(flog_mpi_task)>();
-
-        Legion::IndexLauncher flog_mpi_launcher(
-          flog_mpi_tid, launch_domain, Legion::TaskArgument(NULL, 0), arg_map);
+        Legion::IndexLauncher flog_mpi_launcher(legion_task_id<flog_mpi_task>,
+          launch_domain,
+          Legion::TaskArgument(NULL, 0),
+          arg_map);
 
         flog_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
 
@@ -228,8 +229,7 @@ struct legion_execution_policy_t {
         flog_devel(info) << "Executing single task" << std::endl;
       }
 
-      TaskLauncher launcher(flecsi_context.task_id(task),
-        TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+      TaskLauncher launcher(task, TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
       for(auto & req : init_args.region_requirements()) {
         launcher.add_region_requirement(req);
@@ -284,7 +284,7 @@ struct legion_execution_policy_t {
       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
       Legion::ArgumentMap arg_map;
-      Legion::IndexLauncher launcher(flecsi_context.task_id(task),
+      Legion::IndexLauncher launcher(task,
         launch_domain,
         TaskArgument(&task_args, sizeof(ARG_TUPLE)),
         arg_map);
@@ -402,6 +402,14 @@ struct legion_execution_policy_t {
   using reduction_wrapper_u = legion::reduction_wrapper_u<HASH, TYPE>;
 
 }; // struct legion_execution_policy_t
+
+template<auto & F>
+std::size_t
+detail::register_legion_task(std::size_t attr) {
+  return legion_execution_policy_t::register_legion_task<
+    typename utils::function_traits_u<decltype(F)>::return_type,
+    F>(attr, utils::symbol<F>());
+}
 
 } // namespace execution
 } // namespace flecsi

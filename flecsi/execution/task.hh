@@ -39,38 +39,6 @@
 namespace flecsi {
 namespace execution {
 
-inline size_t next_task = 0;
-
-namespace internal {
-
-/*!
-  Internal function to register tasks. IT IS UNNECESSARY FOR USERS TO INVOKE
-  THIS FUNCTION!
- */
-
-template<auto & TASK>
-size_t
-register_task(size_t attributes) {
-
-  using traits_t = utils::function_traits_u<decltype(TASK)>;
-  using args_t = typename traits_t::arguments_type;
-
-  /*
-    The 'plus' operator in the following lambda definition converts the lambda
-    to a plain-old function pointer.
-   */
-
-  constexpr auto delegate = +[](args_t args) { return std::apply(TASK, args); };
-
-  execution::execution_policy_t::register_task<typename traits_t::return_type,
-    args_t,
-    delegate>(next_task, attributes, utils::symbol<TASK>());
-
-  return next_task++;
-} // register_task
-
-} // namespace internal
-
 /*!
   Arbitrary index for each task.
 
@@ -80,7 +48,8 @@ register_task(size_t attributes) {
  */
 
 template<auto & TASK, size_t ATTRIBUTES>
-const inline size_t task_id = internal::register_task<TASK>(ATTRIBUTES);
+const inline size_t task_id = execution_policy_t::register_task<TASK>(
+  ATTRIBUTES);
 
 } // namespace execution
 
