@@ -29,7 +29,7 @@ namespace execution {
   Legion top-level task.
  *----------------------------------------------------------------------------*/
 
-void
+inline void
 top_level_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
