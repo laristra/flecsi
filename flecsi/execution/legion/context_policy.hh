@@ -55,24 +55,6 @@ const size_t FLECSI_MAPPER_COMPACTED_STORAGE = 0x00002000;
 const size_t FLECSI_MAPPER_SUBRANK_LAUNCH = 0x00003000;
 const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
-// Forward declarations
-void top_level_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime);
-void handoff_to_mpi_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime);
-void wait_on_mpi_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime);
-void unset_call_mpi_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime);
-
 struct legion_context_policy_t {
 
   /*
