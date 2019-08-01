@@ -149,7 +149,7 @@ before_script:
 # Env Stage #
 #############
 
-# Christoph
+# Christoph: maybe you could fix the locking errors while you are at it?
 .env_template: &env_def
   <<: *job_def
   stage: Env
@@ -162,7 +162,7 @@ before_script:
       then
         rm -rf ${SPACK_ROOT}/*;
       fi
-    - flock -n "${lock_fd}"
+    #- flock -n "${lock_fd}"
     - |
       if [[ ! -d ${SPACK_ROOT} ]];
       then
@@ -173,7 +173,7 @@ before_script:
     - spack repo add ${CI_PROJECT_DIR}/spack-repo || /bin/true
     - spack install flecsi~graphviz%intel@19.0.2 backend=mpi
     - spack install flecsi~graphviz%intel@19.0.2 backend=legion
-    - flock -u "${lock_fd}"
+    #- flock -u "${lock_fd}"
 
 ###############
 # Build Stage #
