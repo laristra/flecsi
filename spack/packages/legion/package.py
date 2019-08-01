@@ -45,7 +45,7 @@ class Legion(CMakePackage):
     depends_on("cmake@3.1:", type='build')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB'", when='~mpi')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB' +mpi", when='+mpi')
-    depends_on("hdf5", when='+hdf5')
+    depends_on("hdf5~mpi", when='+hdf5')
 
     def cmake_args(self):
         options = [

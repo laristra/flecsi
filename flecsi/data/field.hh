@@ -105,9 +105,11 @@ private:
       execution::context_t::instance().add_field_info(
         TOPOLOGY_TYPE::type_identifier_hash,
         STORAGE_CLASS,
-        {fid, INDEX_SPACE, versions_, sizeof(DATA_TYPE)},
-        fid);
+        {unique, INDEX_SPACE, versions_, sizeof(DATA_TYPE)},
+        unique);
     } // for
+
+    return fid;
   } // register_field
 
   size_t versions_;
