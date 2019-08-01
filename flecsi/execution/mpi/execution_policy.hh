@@ -26,46 +26,31 @@
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-// Execution policy.
-//----------------------------------------------------------------------------//
+//--------------------------------------------------------------------------//
+// Task interface.
+//--------------------------------------------------------------------------//
 
 /*!
-  The mpi_execution_policy_t is the backend runtime execution policy
-  for MPI.
-
-  @ingroup mpi-execution
+  MPI backend task registration. For documentation on this
+  method please see task_u::register_task.
  */
 
-struct mpi_execution_policy_t {
+template<size_t TASK,
+  typename RETURN,
+  typename ARG_TUPLE,
+  RETURN (*DELEGATE)(ARG_TUPLE)>
+bool
+register_task(processor_type_t processor, launch_t launch, std::string name) {
+  return context_t::instance()
+    .template register_function<TASK, RETURN, ARG_TUPLE, DELEGATE>();
+} // register_task
 
-  //--------------------------------------------------------------------------//
-  // Task interface.
-  //--------------------------------------------------------------------------//
+//--------------------------------------------------------------------------//
+// Reduction interface.
+//--------------------------------------------------------------------------//
 
-  /*!
-    MPI backend task registration. For documentation on this
-    method please see task_u::register_task.
-   */
-
-  template<size_t TASK,
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE)>
-  static bool
-  register_task(processor_type_t processor, launch_t launch, std::string name) {
-    return context_t::instance()
-      .template register_function<TASK, RETURN, ARG_TUPLE, DELEGATE>();
-  } // register_task
-
-  //--------------------------------------------------------------------------//
-  // Reduction interface.
-  //--------------------------------------------------------------------------//
-
-  template<size_t HASH, typename TYPE>
-  using reduction_wrapper_u = mpi::reduction_wrapper_u<HASH, TYPE>;
-
-}; // struct mpi_execution_policy_t
+template<size_t HASH, typename TYPE>
+using reduction_wrapper_u = mpi::reduction_wrapper_u<HASH, TYPE>;
 
 } // namespace execution
 } // namespace flecsi

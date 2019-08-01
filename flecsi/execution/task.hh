@@ -32,6 +32,7 @@
 #endif
 
 namespace flecsi {
+
 /*!
   Execute a reduction task.
 
@@ -47,15 +48,7 @@ template<auto & TASK,
   size_t REDUCTION_OPERATION,
   size_t ATTRIBUTES,
   typename... ARGS>
-decltype(auto)
-reduce(ARGS &&... args) {
-
-  using traits_t = utils::function_traits_u<decltype(TASK)>;
-
-  return execution::execution_policy_t::
-    reduce<TASK, LAUNCH_DOMAIN, REDUCTION_OPERATION, ATTRIBUTES>(
-      std::forward<ARGS>(args)...);
-} // execute
+decltype(auto) reduce(ARGS &&... args);
 
 /*!
   Execute a task.
