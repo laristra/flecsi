@@ -250,7 +250,7 @@ using index_field_member_u = data::field_member_u<DATA_TYPE,
     nspace,                                                                    \
     name,                                                                      \
     data_type,                                                                 \
-    index,                                                                     \
+    dense,                                                                     \
     versions)
 
 /// The default index topology.
@@ -277,4 +277,4 @@ using index_field_member_u = data::field_member_u<DATA_TYPE,
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_field_instance(flecsi_index_topology, nspace, name, index, version)
+  flecsi_field_instance(flecsi_index_topology, nspace, name, dense, version)
