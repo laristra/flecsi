@@ -25,9 +25,9 @@
 using namespace flecsi;
 
 flecsi_add_index_field("test", "value", double, 3);
-inline auto fh1 = flecsi_index_field_instance("test", "value", double, 0);
-inline auto fh2 = flecsi_index_field_instance("test", "value", double, 1);
-inline auto fh3 = flecsi_index_field_instance("test", "value", double, 2);
+inline auto fh1 = flecsi_index_field_instance("test", "value", 0);
+inline auto fh2 = flecsi_index_field_instance("test", "value", 1);
+inline auto fh3 = flecsi_index_field_instance("test", "value", 2);
 
 template<size_t PRIVILEGES>
 using accessor =
