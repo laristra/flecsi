@@ -94,8 +94,8 @@ private:
       const auto unique = unique_fid_t::instance().next();
 
       if(v) {
-        flog_assert(unique == fid_ + v,
-          "version id " << unique << " is not consecutive to fid " << fid_
+        flog_assert(unique == fid + v,
+          "version id " << unique << " is not consecutive to fid " << fid
                         << " with versions " << versions_);
       }
       else {
@@ -105,9 +105,11 @@ private:
       execution::context_t::instance().add_field_info(
         TOPOLOGY_TYPE::type_identifier_hash,
         STORAGE_CLASS,
-        {fid, INDEX_SPACE, versions_, sizeof(DATA_TYPE)},
-        fid);
+        {unique, INDEX_SPACE, versions_, sizeof(DATA_TYPE)},
+        unique);
     } // for
+
+    return fid;
   } // register_field
 
   size_t versions_;
