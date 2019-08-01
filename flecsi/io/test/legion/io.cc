@@ -28,8 +28,6 @@ using namespace Legion;
 
 using namespace flecsi;
 
-namespace io_test {
-
 void
 check() {
 
@@ -37,9 +35,6 @@ check() {
 
 } // check
 
-flecsi_register_task(check, io_test, loc, index);
-
-} // namespace io_test
 
 enum FieldIDs {
   FID_X,
@@ -233,7 +228,7 @@ io_sanity(int argc, char ** argv) {
   }
 #endif
 
-  flecsi_execute_task(check, io_test, index);
+  execute<check>();
 
   runtime->destroy_logical_region(ctx, input_lr_1);
   runtime->destroy_logical_region(ctx, input_lr_2);

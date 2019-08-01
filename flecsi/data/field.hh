@@ -94,8 +94,8 @@ private:
       const auto unique = unique_fid_t::instance().next();
 
       if(v) {
-        flog_assert(unique == fid_ + v,
-          "version id " << unique << " is not consecutive to fid " << fid_
+        flog_assert(unique == fid + v,
+          "version id " << unique << " is not consecutive to fid " << fid
                         << " with versions " << versions_);
       }
       else {
