@@ -149,13 +149,13 @@ before_script:
 # Env Stage #
 #############
 
+# Christoph
 .env_template: &env_def
   <<: *job_def
   stage: Env
   script: &env_script
     - mkdir -p build
     - cd ${CI_PROJECT_DIR}/build/
-    - cp ${CI_PROJECT_DIR}/spack/repo_env.yaml ./spack.yaml
     - exec {lock_fd}>${DEPS_LOCK}
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
@@ -170,8 +170,9 @@ before_script:
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
       fi
     - source ${SPACK_ROOT}/share/spack/setup-env.sh
-    - spack repo add ${SPACK_ROOT}/var/spack/repos/builtin/ || /bin/true
+    - spack repo add ${CI_PROJECT_DIR}/spack-repo || /bin/true
     - spack install flecsi~graphviz%intel@19.0.2 backend=mpi
+    - spack install flecsi~graphviz%intel@19.0.2 backend=legion
     - flock -u "${lock_fd}"
 
 ###############
