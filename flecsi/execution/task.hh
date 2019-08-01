@@ -29,30 +29,9 @@
 #include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/common/task_attributes.hh>
 #include <flecsi/runtime/execution_policy.hh>
-#include <flecsi/utils/demangle.hh>
-#include <flecsi/utils/function_traits.hh>
 #endif
 
-#include <iostream>
-#include <string>
-
 namespace flecsi {
-namespace execution {
-
-/*!
-  Arbitrary index for each task.
-
-  @tparam TASK       The user task function.
-  @tparam ATTRIBUTES A size_t holding the mask of the task attributes mask
-                     \ref task_attributes_mask_t.
- */
-
-template<auto & TASK, size_t ATTRIBUTES>
-const inline size_t task_id = execution_policy_t::register_task<TASK>(
-  ATTRIBUTES);
-
-} // namespace execution
-
 /*!
   Execute a reduction task.
 
@@ -73,12 +52,9 @@ reduce(ARGS &&... args) {
 
   using traits_t = utils::function_traits_u<decltype(TASK)>;
 
-  return execution::execution_policy_t::template execute_task<LAUNCH_DOMAIN,
-    REDUCTION_OPERATION,
-    ATTRIBUTES,
-    typename traits_t::return_type,
-    typename traits_t::arguments_type>(
-    execution::task_id<TASK, ATTRIBUTES>, std::forward<ARGS>(args)...);
+  return execution::execution_policy_t::
+    reduce<TASK, LAUNCH_DOMAIN, REDUCTION_OPERATION, ATTRIBUTES>(
+      std::forward<ARGS>(args)...);
 } // execute
 
 /*!

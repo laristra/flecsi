@@ -109,29 +109,31 @@ struct legion_execution_policy_t {
       attributes, name, wrapper_t::registration_callback);
   } // register_legion_task
 
-  /*
-    Documentation for this interface is in the top-level context type.
+  /*!
+    Arbitrary index for each task.
+
+    @tparam F          The user task function.
+    @tparam ATTRIBUTES A size_t holding the mask of the task attributes mask
+                       \ref task_attributes_mask_t.
    */
 
-  template<auto & F>
-  static std::size_t register_task(size_t attributes) {
-    return context_t::instance().register_task(attributes,
-      utils::symbol<F>(),
-      legion::task_wrapper_u<F>::registration_callback);
-  } // register_task
+  template<auto & F, size_t ATTRIBUTES>
+  static inline const size_t task_id = context_t::instance().register_task(
+    ATTRIBUTES,
+    utils::symbol<F>(),
+    legion::task_wrapper_u<F>::registration_callback);
 
-  /*
-    Documentation for this interface is in the top-level context type.
-   */
-
-  template<size_t LAUNCH_DOMAIN,
+  template<auto & F,
+    size_t LAUNCH_DOMAIN,
     size_t REDUCTION,
     size_t ATTRIBUTES,
-    typename RETURN,
-    typename ARG_TUPLE,
     typename... ARGS>
-  static decltype(auto) execute_task(size_t task, ARGS &&... args) {
+  static decltype(auto) reduce(ARGS &&... args) {
     using namespace Legion;
+
+    using traits_t = utils::function_traits_u<decltype(F)>;
+    using RETURN = typename traits_t::return_type;
+    using ARG_TUPLE = typename traits_t::arguments_type;
 
     // This will guard the entire method
     flog_tag_guard(execution);
@@ -219,6 +221,7 @@ struct legion_execution_policy_t {
     // Single launch
     //------------------------------------------------------------------------//
 
+    const auto task = task_id<F, ATTRIBUTES>;
     if constexpr(LAUNCH_DOMAIN == launch_identifier("single")) {
 
       static_assert(
