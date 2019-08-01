@@ -34,7 +34,7 @@ variables:
   BUILD_TYPE: "Debug"
   CC: "gcc"
   CXX: "g++"
-  CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+  CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
   IGNORE_NOCI: "FALSE"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
