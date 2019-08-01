@@ -138,7 +138,8 @@ protected:
       private : bool devel_;                                                   \
   }
 
-#define verbose_stamp timestamp() << " " << rstrip<'/'>(file_) << ":" << line_ << " "
+#define verbose_stamp                                                          \
+  timestamp() << " " << rstrip<'/'>(file_) << ":" << line_ << " "
 
 #if defined(FLOG_ENABLE_MPI)
 #define process_stamp " p" << flog_t::instance().process()
@@ -167,12 +168,12 @@ severity_message_t(trace, {
     FLOG_STRIP_LEVEL < 1 && flog_t::instance().tag_enabled());
 
   std::string devel = devel_ ? "(devel)" : "";
-  std::string active_tag = flog_t::instance().initialized() ?
-    flog_t::instance().active_tag_name() : "external ";
+  std::string active_tag = flog_t::instance().initialized()
+                             ? flog_t::instance().active_tag_name()
+                             : "external ";
 
   switch(flog_t::instance().verbose()) {
-    case 1:
-    {
+    case 1: {
       stream << FLOG_OUTPUT_CYAN("[trace ") << FLOG_OUTPUT_PURPLE(devel);
       stream << FLOG_OUTPUT_LTGRAY(verbose_stamp);
       stream << FLOG_OUTPUT_CYAN(active_tag);
@@ -181,8 +182,7 @@ severity_message_t(trace, {
     } // scope
     break;
 
-    case 0:
-    {
+    case 0: {
       stream << FLOG_OUTPUT_CYAN("[trace ") << FLOG_OUTPUT_PURPLE(devel);
       stream << FLOG_OUTPUT_CYAN(active_tag);
       stream << FLOG_OUTPUT_GREEN(process_stamp);
@@ -206,12 +206,12 @@ severity_message_t(info, {
     FLOG_STRIP_LEVEL < 2 && flog_t::instance().tag_enabled());
 
   std::string devel = devel_ ? "devel " : "";
-  std::string active_tag = flog_t::instance().initialized() ?
-    flog_t::instance().active_tag_name() : "external ";
+  std::string active_tag = flog_t::instance().initialized()
+                             ? flog_t::instance().active_tag_name()
+                             : "external ";
 
   switch(flog_t::instance().verbose()) {
-    case 1:
-    {
+    case 1: {
       stream << FLOG_OUTPUT_GREEN("[info ") << FLOG_OUTPUT_PURPLE(devel);
       stream << FLOG_OUTPUT_LTGRAY(verbose_stamp);
       stream << FLOG_OUTPUT_CYAN(active_tag);
@@ -220,8 +220,7 @@ severity_message_t(info, {
     } // scope
     break;
 
-    case 0:
-    {
+    case 0: {
       stream << FLOG_OUTPUT_GREEN("[info ") << FLOG_OUTPUT_PURPLE(devel);
       stream << FLOG_OUTPUT_CYAN(active_tag);
       stream << FLOG_OUTPUT_GREEN(process_stamp);
@@ -245,12 +244,12 @@ severity_message_t(warn, {
     FLOG_STRIP_LEVEL < 3 && flog_t::instance().tag_enabled());
 
   std::string devel = devel_ ? "(devel)" : "";
-  std::string active_tag = flog_t::instance().initialized() ?
-    flog_t::instance().active_tag_name() : "external ";
+  std::string active_tag = flog_t::instance().initialized()
+                             ? flog_t::instance().active_tag_name()
+                             : "external ";
 
   switch(flog_t::instance().verbose()) {
-    case 1:
-    {
+    case 1: {
       stream << FLOG_OUTPUT_BROWN("[Warn ") << FLOG_OUTPUT_PURPLE(devel);
       stream << FLOG_OUTPUT_LTGRAY(verbose_stamp);
       stream << FLOG_OUTPUT_CYAN(active_tag);
@@ -259,8 +258,7 @@ severity_message_t(warn, {
     } // scope
     break;
 
-    case 0:
-    {
+    case 0: {
       stream << FLOG_OUTPUT_BROWN("[Warn ") << FLOG_OUTPUT_PURPLE(devel);
       stream << FLOG_OUTPUT_CYAN(active_tag);
       stream << FLOG_OUTPUT_GREEN(process_stamp);
@@ -285,12 +283,12 @@ severity_message_t(error, {
     FLOG_STRIP_LEVEL < 4 && flog_t::instance().tag_enabled());
 
   std::string devel = devel_ ? "(devel)" : "";
-  std::string active_tag = flog_t::instance().initialized() ?
-    flog_t::instance().active_tag_name() : "external ";
+  std::string active_tag = flog_t::instance().initialized()
+                             ? flog_t::instance().active_tag_name()
+                             : "external ";
 
   switch(flog_t::instance().verbose()) {
-    case 1:
-    {
+    case 1: {
       stream << FLOG_OUTPUT_RED("[ERROR ") << FLOG_OUTPUT_PURPLE(devel);
       stream << FLOG_OUTPUT_LTGRAY(verbose_stamp);
       stream << FLOG_OUTPUT_CYAN(active_tag);
@@ -299,8 +297,7 @@ severity_message_t(error, {
     } // scope
     break;
 
-    case 0:
-    {
+    case 0: {
       stream << FLOG_OUTPUT_RED("[ERROR ") << FLOG_OUTPUT_PURPLE(devel);
       stream << FLOG_OUTPUT_CYAN(active_tag);
       stream << FLOG_OUTPUT_GREEN(process_stamp);

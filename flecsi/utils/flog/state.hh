@@ -38,7 +38,7 @@ void flush_packets();
   The flog_t type provides access to logging parameters and configuration.
 
   This type provides access to the underlying logging parameters for
-  configuration and information. The cinch logging functions provide
+  configuration and information. The FleCSI logging functions provide
   basic logging with an interface that is similar to Google's GLOG
   and the Boost logging utilities.
 

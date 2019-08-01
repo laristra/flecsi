@@ -21,11 +21,33 @@
  */
 
 #include <flecsi/data/common/privilege.hh>
+#include <flecsi/data/field.hh>
 #include <flecsi/data/field_interface.hh>
 #include <flecsi/data/topology_interface.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/utils/const_string.hh>
+
+namespace flecsi {
+
+#if 0 // working to fix this
+  flecsi_topology_reference(                                                   \
+    flecsi::topology::index_topology_t, "internal", "index_topology")
+#endif
+
+template<typename DATA_TYPE>
+using global_field_member_u = data::field_member_u<DATA_TYPE,
+  data::storage_label_t::dense,
+  topology::global_topology_t,
+  0>;
+
+template<typename DATA_TYPE>
+using index_field_member_u = data::field_member_u<DATA_TYPE,
+  data::storage_label_t::dense,
+  topology::index_topology_t,
+  0>;
+
+} // namespace flecsi
 
 /*----------------------------------------------------------------------------*
   General Topology Interface.
@@ -228,7 +250,7 @@
     nspace,                                                                    \
     name,                                                                      \
     data_type,                                                                 \
-    index,                                                                     \
+    dense,                                                                     \
     versions)
 
 /// The default index topology.
@@ -255,4 +277,4 @@
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   /* WARNING: This macro returns a handle. Don't add terminations! */          \
-  flecsi_field_instance(flecsi_index_topology, nspace, name, index, version)
+  flecsi_field_instance(flecsi_index_topology, nspace, name, dense, version)

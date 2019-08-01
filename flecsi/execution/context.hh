@@ -20,6 +20,7 @@
 #else
 #include <flecsi/data/common/field_info.hh>
 #include <flecsi/execution/common/launch.hh>
+#include <flecsi/execution/common/task_attributes.hh>
 #include <flecsi/execution/global_object_wrapper.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/base_topology_types.hh>
@@ -86,9 +87,10 @@ struct context_u : public CONTEXT_POLICY {
   using field_info_map_t = std::unordered_map<size_t, field_info_store_t>;
 
   /*!
-   this types allows storing launch_domains, key is a hash from the domain
+   This type allows storage of launch_domains, key is a hash from the domain
    name, value is # of index points
    */
+
   using launch_domain_map_t = std::unordered_map<size_t, size_t>;
 
   /*--------------------------------------------------------------------------*
@@ -399,7 +401,7 @@ struct context_u : public CONTEXT_POLICY {
   void add_field_info(size_t topology_type_identifier,
     size_t storage_class,
     const data::field_info_t & field_info,
-    std::size_t key) {
+    size_t key) {
     flog_devel(info) << "Registering field info (context)" << std::endl
                      << "\ttopology type identifier: "
                      << topology_type_identifier << std::endl
@@ -451,22 +453,22 @@ struct context_u : public CONTEXT_POLICY {
    *--------------------------------------------------------------------------*/
 
   /*!
-    Register launch domains
+    Set the number of indices for the associated launch identifier.
 
-    @param key      Domain key
-    @param launch   Launch type (single, index)
-    @param size     Launch domain size
+    @param hash    A hash key identifies the launch domain.
+    @param indices The size to set the launch domain.
    */
-  void register_index_domain(size_t key, size_t size) {
-    launch_domain_map_[key] = size;
+
+  void set_launch_domain_size(const size_t hash, size_t indices) {
+    launch_domain_map_[hash] = indices;
   }
 
   /*!
     Returns domain information from the domain key
    */
 
-  size_t get_domain(size_t key) {
-    return launch_domain_map_[key];
+  size_t get_launch_domain_size(const size_t hash) {
+    return launch_domain_map_[hash];
   }
 
   /*!

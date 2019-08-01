@@ -54,8 +54,53 @@ options, but is not necessary for a particular build:
 * **Python** |br|
   We currently require Python 2.7 or greater.
 
+Spack
+*****
+
+The preferred method for installing FleCSI is to use the
+`spack <https://github.com/spack/spack>`_ package:
+
+.. code-block:: console
+
+  $ spack install flecsi
+  $ spack load -r flecsi
+
+FleCSI supports several different versions and variants, e.g.:
+
+.. code-block:: console
+
+  $ spack install flecsi@1.0 +legion +graphviz
+
+For a complete list of versions and variants, type:
+
+.. code-block:: console
+
+  $ spack info flecsi
+
+Currently, FleCSI depends on the following spack packages:
+
+.. code-block:: console
+
+  $ spack install cmake
+  $ spack install boost@1.68.0
+  $ spack install parmetis
+  $ spack install hdf5
+  $ spack install kokkos
+  $ spack install legion@ctrl-rep
+
+.. note::
+
+  Users of spack can safely ignore the remaining sections on this page.
+  Loading the flecsi spack package will properly configure your
+  environment.
+
 FleCSI Third Party Libraries Project
 ************************************
+
+.. warning::
+
+  The FleCSI superbuild project is deprecated in favor of Spack, and
+  will eventually be removed.
 
 To facilitate FleCSI adoption by a broad set of users, we have provided
 a superbuild project that can build many of the libraries and tools
@@ -239,8 +284,10 @@ your browser with
 *file:///path/to/your/build/directory/doc/doxygen/html/index.html*, and
 *file:///path/to/your/build/directory/doc/sphinx/index.html*.
 
+Advanced
+********
+
 .. toctree::
-  :caption: Advanced:
 
   build/options
 

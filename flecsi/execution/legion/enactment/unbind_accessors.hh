@@ -21,7 +21,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/privilege.hh>
-#include <flecsi/data/legion/storage_classes.hh>
+#include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
@@ -64,7 +64,7 @@ struct unbind_accessors_t
       futures_(futures) {}
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
-    The following methods are specializations on storage class and client
+    The following methods are specializations on storage class and topology
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 

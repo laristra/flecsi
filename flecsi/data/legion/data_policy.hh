@@ -20,25 +20,13 @@
   specializations for data clients and storage classes.
  */
 
-#include <flecsi/data/legion/storage_classes.hh>
+#include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/legion/topologies.hh>
 
 namespace flecsi {
 namespace data {
 
 struct legion_data_policy_t {
-
-  /*--------------------------------------------------------------------------*
-    Storage Class Interface.
-   *--------------------------------------------------------------------------*/
-
-  /*
-    Capture the base storage class type. This is necessary as a place holder in
-    the field interface.
-   */
-
-  template<size_t STORAGE_CLASS, typename TOPOLOGY_TYPE>
-  using storage_class_u = legion::storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>;
 
   /*--------------------------------------------------------------------------*
     Topology Instance Interface.
@@ -73,13 +61,12 @@ struct legion_data_policy_t {
     Field Accessor Interface.
    *--------------------------------------------------------------------------*/
 
+  // FIXME: These can move up into common
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using global_accessor_u =
-    legion::global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+  using global_accessor_u = global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using index_accessor_u =
-    legion::index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+  using index_accessor_u = index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
 #if 0
   template<typename DATA_TYPE, size_t PRIVILEGES>

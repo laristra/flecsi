@@ -107,12 +107,18 @@ square(const T & a) {
   The unique_id_u type provides a utility to generate a series of unique ids.
 
   @tparam UNIQUENESS_TYPE A dummy type to differentiate instances.
+  @tparam COUNTER_TYPE    The underlying counter type.
   @tparam MAXIMUM         The maximum legal id.
  */
 
 template<typename UNIQUENESS_TYPE,
-  std::size_t MAXIMUM = (std::numeric_limits<std::size_t>::max)()>
+  typename COUNTER_TYPE = size_t,
+  COUNTER_TYPE MAXIMUM = (std::numeric_limits<COUNTER_TYPE>::max)()>
 struct unique_id_u {
+
+  static_assert(std::is_integral<COUNTER_TYPE>::value,
+    "COUNTER_TYPE must be an integral type");
+
   static unique_id_u & instance() {
     static unique_id_u u;
     return u;
@@ -128,7 +134,7 @@ private:
   unique_id_u(const unique_id_u &) {}
   ~unique_id_u() {}
 
-  std::size_t id_;
+  COUNTER_TYPE id_;
 }; // unique_id_u
 
 //! Create a unique name from the type, address, and unique id

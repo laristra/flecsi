@@ -8,15 +8,24 @@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
 
-   Copyright (c) 2016, Los Alamos National Security, LLC
+   Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#include <flecsi/execution/execution.hh>
 
-// Registering some default launch domains
+#if !defined(__FLECSI_PRIVATE__)
+#define __FLECSI_PRIVATE__
+#endif
 
-// Single:
-flecsi_register_launch_domain(single, 1);
+#include <flecsi/execution/common/launch.hh>
+#include <flecsi/execution/context.hh>
 
-// Indsex, "0" means use default # of index points
-flecsi_register_launch_domain(index, 0);
+namespace flecsi {
+namespace execution {
+
+void
+set_launch_domain_size(const size_t hash, size_t indices) {
+  context_t::instance().set_launch_domain_size(hash, indices);
+} // set_launch_domain_size
+
+} // namespace execution
+} // namespace flecsi

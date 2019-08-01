@@ -1,18 +1,20 @@
-#!@PYTHON_EXECUTABLE@
+#!@Python_EXECUTABLE@
 #------------------------------------------------------------------------------#
-# Copyright (c) 2014 Los Alamos National Security, LLC
-# All rights reserved.
+#  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+# /@@/////  /@@          @@////@@ @@////// /@@
+# /@@       /@@  @@@@@  @@    // /@@       /@@
+# /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+# /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+# /@@       /@@/@@//// //@@    @@       /@@/@@
+# /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+# //       ///  //////   //////  ////////  //
+#
+# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# All rights reserved
 #------------------------------------------------------------------------------#
 
 import sys
 import flecsit.driver
-
-#------------------------------------------------------------------------------#
-# !!!WARNING!!! DO NOT EDIT! THIS IS A GENERATED SCRIPT!
-# This script doesn't really do anything except to execute the command-line
-# driver, which is located in flecsit/driver.py.  Look there for more
-# information on the functionality of this script.
-#------------------------------------------------------------------------------#
 
 def main():
 
@@ -23,54 +25,7 @@ def main():
     % ./flecsit help
     """
 
-    build = dict(
-        # C++ compiler
-        compiler = '@CMAKE_CXX_COMPILER@',
-
-        # C++ compiler flags
-        flags = '@CMAKE_CXX_FLAGS@',
-
-        # C++ debug compiler flags
-        debug_flags = '@CMAKE_CXX_FLAGS_DEBUG@',
-
-        # Preprocessor defines
-        defines = '@FLECSIT_COMPILE_DEFINES@',
-
-        # Include paths
-        includes = '@FLECSIT_INCLUDES@',
-
-        # CMake packages (this is generally not set by the config
-        packages = '',
-
-        # LD_LIBRARY_PATH hint
-        ldflags = '@FLECSIT_LDFLAGS@',
-
-        # Link libraries
-        libraries = '@FLECSIT_LIBRARIES@',
-
-        # FleCSI library
-        flecsi = '@FLECSIT_FLECSI_LIBRARY@',
-
-        # CMake source directory
-        source = '@CMAKE_SOURCE_DIR@',
-
-        # CMake binary directory
-        binary = '@CMAKE_BINARY_DIR@',
-
-        # CMake install prefix
-        prefix = '@CMAKE_INSTALL_PREFIX@',
-
-        # Library install prefix
-        libprefix = '@CMAKE_INSTALL_LIBDIR@',
-
-        # CMake build system
-        system = '@CMAKE_SYSTEM_NAME@',
-
-        # Clang header path
-        clang_headers = '@CLANG_HEADER_PATH@'
-    )
-
-    return flecsit.driver.main(build)
+    return flecsit.driver.main()
 
 # main
 
@@ -78,8 +33,3 @@ def main():
 if __name__ == '__main__':
     main()
 # if
-
-#------------------------------------------------------------------------------#
-# Formatting options for emacs and vim.
-# vim: set syntax=python tabstop=4 shiftwidth=4 expandtab :
-#------------------------------------------------------------------------------#

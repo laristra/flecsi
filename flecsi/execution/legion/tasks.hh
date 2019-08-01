@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/common/launch.hh>
+//#include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/context.hh>
 #endif
 
@@ -116,9 +116,7 @@ handoff_to_mpi_task(const Legion::Task * task,
   context_t::instance().handoff_to_mpi();
 } // handoff_to_mpi_task
 
-flecsi_internal_register_legion_task(handoff_to_mpi_task,
-  processor_type_t::loc,
-  leaf);
+flecsi_internal_register_legion_task(handoff_to_mpi_task, loc | leaf);
 
 /*!
  Interprocess communication to wait for control to pass back to the Legion
@@ -135,9 +133,7 @@ wait_on_mpi_task(const Legion::Task * task,
   context_t::instance().wait_on_mpi();
 } // handoff_to_mpi_task
 
-flecsi_internal_register_legion_task(wait_on_mpi_task,
-  processor_type_t::loc,
-  leaf);
+flecsi_internal_register_legion_task(wait_on_mpi_task, loc | leaf);
 
 /*!
  Interprocess communication to unset mpi execute state.
@@ -153,9 +149,7 @@ unset_call_mpi_task(const Legion::Task * task,
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
 
-flecsi_internal_register_legion_task(unset_call_mpi_task,
-  processor_type_t::loc,
-  leaf);
+flecsi_internal_register_legion_task(unset_call_mpi_task, loc | leaf);
 
 #if defined(FLOG_ENABLE_MPI)
 
@@ -169,9 +163,7 @@ flog_reduction_task(const Legion::Task * task,
   return utils::flog::flog_t::instance().packets().size();
 } // flog_reduction_task
 
-flecsi_internal_register_legion_task(flog_reduction_task,
-  processor_type_t::loc,
-  leaf);
+flecsi_internal_register_legion_task(flog_reduction_task, loc | leaf);
 
 inline void
 flog_mpi_task(const Legion::Task * task,
@@ -185,9 +177,7 @@ flog_mpi_task(const Legion::Task * task,
   context_t::instance().set_mpi_state(true);
 } // flog_mpi_task
 
-flecsi_internal_register_legion_task(flog_mpi_task,
-  processor_type_t::loc,
-  leaf);
+flecsi_internal_register_legion_task(flog_mpi_task, loc | leaf);
 
 #endif // FLECSI_ENABLE_FLOG
 

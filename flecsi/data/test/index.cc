@@ -19,48 +19,38 @@
 #include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
+using namespace flecsi::data;
+using namespace flecsi::topology;
 
-namespace {
-const data::field_interface_t::field<double> ifld(2);
-const auto fh = ifld(flecsi_index_topology);
-} // namespace
+using index_field_t = index_field_member_u<double>;
+const index_field_t field(1);
 
-template<size_t PRIVILEGES>
-using accessor =
-  flecsi::data::index_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
-
-namespace index_test {
+const auto pressure = field(flecsi_index_topology);
 
 void
-assign(accessor<rw> ia) {
-  flog(info) << "assign on " << flecsi_color() << std::endl;
-  ia = flecsi_color();
+assign(index_field_t::accessor<rw> p) {
+  flog(info) << "assign on " << color() << std::endl;
+  p = color();
 } // assign
 
-flecsi_register_task(assign, index_test, loc, index);
-
 int
-check(accessor<ro> ia) {
+check(index_field_t::accessor<ro> p) {
 
   FTEST();
 
-  flog(info) << "check on " << flecsi_color() << std::endl;
-  ASSERT_EQ(ia, flecsi_color());
+  flog(info) << "check on " << color() << std::endl;
+  ASSERT_EQ(p, color());
 
   return FTEST_RESULT();
 } // print
 
-flecsi_register_task(check, index_test, loc, index);
-
-} // namespace index_test
-
 int
-index_topology(int argc, char ** argv) {
+index_driver(int argc, char ** argv) {
 
-  flecsi_execute_task(assign, index_test, index, fh);
-  flecsi_execute_task(check, index_test, index, fh);
+  execute<assign>(pressure);
+  execute<check>(pressure);
 
   return 0;
 } // index
 
-ftest_register_driver(index_topology);
+ftest_register_driver(index_driver);

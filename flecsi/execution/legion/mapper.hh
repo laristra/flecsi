@@ -28,9 +28,8 @@
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
-#include <default_mapper.h>
 #include <legion.h>
-#include <legion_mapping.h>
+#include <legion/legion_mapping.h>
 #include <mappers/default_mapper.h>
 
 flog_register_tag(legion_mapper);

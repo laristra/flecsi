@@ -179,7 +179,7 @@ private:
 } // namespace flecsi
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-#include <cinch/runtime.h>
+#include <flecsi/runtime/runtime.hh>
 
 /*!
   @def flecsi_register_control_options
@@ -223,16 +223,15 @@ private:
   }                                                                            \
                                                                                \
   inline int flecsi_control_finalize(                                          \
-    int argc, char ** argv, cinch::exit_mode_t mode) {                         \
+    int argc, char ** argv, exit_mode_t mode) {                                \
     return 0;                                                                  \
   }                                                                            \
                                                                                \
-  inline cinch::runtime_handler_t flecsi_control_handler{                      \
-    flecsi_control_initialize,                                                 \
+  inline runtime_handler_t flecsi_control_handler{flecsi_control_initialize,   \
     flecsi_control_finalize,                                                   \
     flecsi_control_add_options};                                               \
                                                                                \
-  cinch_append_runtime_handler(flecsi_control_handler);
+  flecsi_append_runtime_handler(flecsi_control_handler);
 
 #else
 

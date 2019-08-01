@@ -21,14 +21,14 @@ set(execution_HEADERS
   common/command_line_options.hh
   common/function_handle.hh
   common/launch.hh
-  common/processor.hh
+  common/task_attributes.hh
   context.hh
   execution.hh
   global_object_wrapper.hh
   internal.hh
   kernel_interface.hh
   reduction.hh
-  task_interface.hh
+  task.hh
 )
 
 set(execution_SOURCES
@@ -140,6 +140,11 @@ endif()
 ftest_add_unit(task
   SOURCES
     test/task.cc
+)
+
+ftest_add_unit(task_attributes
+  SOURCES
+    test/task_attributes.cc
 )
 
 ftest_add_unit(gpu_task

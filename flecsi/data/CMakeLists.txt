@@ -21,11 +21,12 @@ set(data_HEADERS
   common/data_reference.hh
   common/field_info.hh
   common/privilege.hh
-  common/storage_class.hh
-  common/topology.hh
+  common/storage_classes.hh
+  common/storage_label.hh
   common/topology_accessor.hh
   common/topology_registration.hh
   data.hh
+  field.hh
   field_interface.hh
   topology_interface.hh
 )
@@ -38,7 +39,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     legion/data_policy.hh
     legion/runtime_data_types.hh
-    legion/storage_classes.hh
     legion/topologies.hh
     ${data_HEADERS}
   )
@@ -51,7 +51,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(data_HEADERS
     mpi/data_policy.hh
-    mpi/storage_classes.hh
     ${data_HEADERS}
   )
 

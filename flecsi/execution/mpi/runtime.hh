@@ -15,7 +15,6 @@
 
 /*! @file */
 
-#include <cinch-config.h>
 #include <flecsi-config.h>
 
 #if !defined(__FLECSI_PRIVATE__)
@@ -27,9 +26,8 @@
 
 #include <flecsi/execution/common/command_line_options.hh>
 #include <flecsi/execution/context.hh>
+#include <flecsi/runtime/runtime.h>
 #endif
-
-#include <cinch/runtime.h>
 
 #if !defined(FLECSI_ENABLE_MPI)
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
@@ -87,7 +85,7 @@ flecsi_mpi_initialize(int argc, char ** argv, variables_map & vm) {
 } // initialize
 
 inline int
-flecsi_mpi_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
+flecsi_mpi_finalize(int argc, char ** argv, exit_mode_t mode) {
 
 #if defined(FLECSI_ENABLE_FLOG)
   flog_finalize();
@@ -98,15 +96,15 @@ flecsi_mpi_finalize(int argc, char ** argv, cinch::exit_mode_t mode) {
   return 0;
 } // initialize
 
-inline cinch::runtime_handler_t flecsi_mpi_handler{flecsi_mpi_initialize,
+inline runtime_handler_t flecsi_mpi_handler{flecsi_mpi_initialize,
   flecsi_mpi_finalize,
   flecsi_mpi_add_options};
 
-cinch_append_runtime_handler(flecsi_mpi_handler);
+flecsi_append_runtime_handler(flecsi_mpi_handler);
 
 inline int
 flecsi_mpi_runtime_driver(int argc, char ** argv) {
   return flecsi::execution::context_t::instance().start(argc, argv);
 } // runtime_driver
 
-cinch_register_runtime_driver(flecsi_mpi_runtime_driver);
+flecsi_register_runtime_driver(flecsi_mpi_runtime_driver);

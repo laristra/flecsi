@@ -26,7 +26,7 @@
 
 // Needed for storage_class.hh and for FLECSI_RUNTIME_DATA_POLICY:
 #include <flecsi/data/common/data_reference.hh>
-#include <flecsi/data/common/storage_class.hh>
+#include <flecsi/data/common/storage_label.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
@@ -53,6 +53,7 @@ struct field_interface_u {
   struct field {
     using version = std::size_t;
     using topology_reference_t = topology_reference_u<Topo>;
+
     field(version v = 1) : versions(v), fid(reg()) {}
     /// Get a field reference.
     /// \param t topology reference
@@ -94,7 +95,7 @@ struct field_interface_u {
   };
 
   template<class T>
-  using global_field = field<T, topology::global_topology_t, global>;
+  using global_field = field<T, topology::global_topology_t, dense>;
 
   /*!
     Add a field to the given topology type. This method should be thought of as

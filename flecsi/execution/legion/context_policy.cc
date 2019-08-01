@@ -18,6 +18,7 @@
 
 #include <flecsi/data/legion/data_policy.hh>
 #include <flecsi/execution/common/command_line_options.hh>
+#include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/internal_task.hh>
 #include <flecsi/execution/legion/mapper.hh>
@@ -49,6 +50,13 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   } // scope
 
   /*
+    Setup internal launch domains.
+   */
+
+  set_launch_domain_size(single, 1);
+  set_launch_domain_size(index, 0);
+
+  /*
     Register tasks.
    */
 
@@ -59,11 +67,11 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
 
   // clang-format off
   for(auto & t : task_registry_) {
-    std::get<4>(t.second)(
+    std::get<3>(t.second)(
       std::get<0>(t.second) /* tid */,
-      std::get<1>(t.second) /* processor */,
-      std::get<2>(t.second) /* launch */,
-      std::get<3>(t.second) /* name */);
+      std::get<1>(t.second) /* attributes */,
+      std::get<2>(t.second) /* name */
+    );
   } // for
   // clang-format on
 
@@ -285,7 +293,7 @@ legion_context_policy_t::initialize_global_topology() {
 
   auto & field_info_store = context_t::instance().get_field_info_store(
     global_topology_t::type_identifier_hash,
-    flecsi::data::storage_label_t::global);
+    flecsi::data::storage_label_t::dense);
 
   for(auto const & fi : field_info_store.field_info()) {
     allocator.allocate_field(fi.type_size, fi.fid);

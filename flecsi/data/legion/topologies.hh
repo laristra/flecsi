@@ -20,10 +20,6 @@
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/flog.hh>
 
-#define POLICY_NAMESPACE legion
-#include <flecsi/data/common/topology.hh>
-#undef POLICY_NAMESPACE
-
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
@@ -58,9 +54,13 @@ class unstructured_mesh_topology_u;
 } // namespace topology
 
 namespace data {
+// FIXME: get rid of this namespace
 namespace legion {
 
 using namespace topology;
+
+template<typename TOPOLOGY_TYPE>
+struct topology_instance_u {};
 
 /*----------------------------------------------------------------------------*
   Index Topology.
@@ -89,7 +89,7 @@ struct topology_instance_u<index_topology_t> {
 
     runtime_data.colors = coloring.size();
 
-    // Maybe this can go away
+    // Maybe this line can go away
     runtime_data.index_space_id = unique_isid_t::instance().next();
 
     LegionRuntime::Arrays::Rect<1> bounds(0, coloring.size() - 1);
@@ -102,7 +102,7 @@ struct topology_instance_u<index_topology_t> {
       legion_runtime->create_field_space(legion_context);
 
     auto & field_info_store = flecsi_context.get_field_info_store(
-      index_topology_t::type_identifier_hash, storage_label_t::index);
+      index_topology_t::type_identifier_hash, storage_label_t::dense);
 
     Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(
       legion_context, runtime_data.field_space);

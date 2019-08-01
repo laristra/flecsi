@@ -17,10 +17,12 @@ set(runtime_HEADERS
   data_policy.hh
   execution_policy.hh
   io_policy.hh
+  runtime.hh
   types.hh
   PARENT_SCOPE
 )
 
 set(runtime_SOURCES
+  runtime.cc
   PARENT_SCOPE
 )

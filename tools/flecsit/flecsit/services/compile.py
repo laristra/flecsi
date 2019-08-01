@@ -67,7 +67,7 @@ class FleCSIT_Compile(Service):
     # Main.
     #--------------------------------------------------------------------------#
 
-    def main(self, config, args=None):
+    def main(self, args=None):
 
         """
         """
@@ -76,22 +76,19 @@ class FleCSIT_Compile(Service):
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
-        # Copy cmake config to initialize build dict
-        build = config
-
         # Add driver to build defines
         build['driver'] = args.driver
 
         # Get the base inptut deck name
         build['deck'] = splitext(basename(args.driver))[0]
 
-        includes = generate_compiler_options(config['includes'],
-            args.include, 'FLECSIT_INCLUDES', '-I')
-        defines = generate_compiler_options(config['defines'],
+        includes = generate_compiler_options(args.include, 'FLECSIT_INCLUDES',
+            '-I')
+        defines = generate_compiler_options(
             args.define, 'FLECSIT_DEFINES', '-D')
-        libraries = generate_compiler_options(config['libraries'],
+        libraries = generate_compiler_options(
             args.library, 'FLECSIT_LIBRARIES', '')
-        packages = generate_compiler_options(config['packages'],
+        packages = generate_compiler_options(
             args.package, 'FLECSIT_PACKAGES', '')
 
         build['includes'] = includes

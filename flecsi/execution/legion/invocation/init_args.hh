@@ -21,8 +21,8 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/privilege.hh>
+#include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/common/topology_accessor.hh>
-#include <flecsi/data/legion/storage_classes.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/set/interface.hh>
@@ -110,13 +110,16 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
     const auto fid =
       context_t::instance()
-        .get_field_info_store(global_topology_t::type_identifier_hash,
-          data::storage_label_t::global)
+        .get_field_info_store(
+          global_topology_t::type_identifier_hash, data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 
     Legion::LogicalRegion region =
       context_t::instance().global_topology_instance().logical_region;
+
+    static_assert(privilege_count<PRIVILEGES>() == 1,
+      "global topology accessor type only takes one privilege");
 
     if constexpr(get_privilege<0, PRIVILEGES>() > partition_privilege_t::ro) {
       flog_assert(domain_ == 1,
@@ -149,7 +152,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     const auto fid =
       flecsi_context
         .get_field_info_store(
-          index_topology_t::type_identifier_hash, data::storage_label_t::index)
+          index_topology_t::type_identifier_hash, data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 
@@ -160,6 +163,9 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
       "attempting to pass index topology reference with size "
         << instance_data.colors << " into task with launch domain of size "
         << domain_);
+
+    static_assert(privilege_count<PRIVILEGES>() == 1,
+      "index topology accessor type only takes one privilege");
 
     Legion::RegionRequirement rr(instance_data.color_partition,
       0,

@@ -386,7 +386,7 @@ legion_io_policy_t::add_default_index_topology(hdf5_t & hdf5_file) {
   std::vector<data::field_info_t> const & fid_vector =
     flecsi_context
       .get_field_info_store(topology::index_topology_t::type_identifier_hash,
-        data::storage_label_t::index)
+        data::storage_label_t::dense)
       .field_info();
   printf("add fid vector size %ld\n", fid_vector.size());
 
@@ -446,7 +446,7 @@ legion_io_policy_t::checkpoint_default_index_topology(
   std::vector<data::field_info_t> const & fid_vector =
     flecsi_context
       .get_field_info_store(topology::index_topology_t::type_identifier_hash,
-        data::storage_label_t::index)
+        data::storage_label_t::dense)
       .field_info();
   printf("checkpoint fid vector size %ld\n", fid_vector.size());
 
@@ -480,7 +480,7 @@ legion_io_policy_t::checkpoint_default_index_topology_field(hdf5_t & hdf5_file,
   const data::field_info_t & fid =
     flecsi_context
       .get_field_info_store(topology::index_topology_t::type_identifier_hash,
-        data::storage_label_t::index)
+        data::storage_label_t::dense)
       .get_field_info(fh.identifier());
   printf("checkpoint fid %ld\n", fid.fid);
 
@@ -508,7 +508,7 @@ legion_io_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
   std::vector<data::field_info_t> const & fid_vector =
     flecsi_context
       .get_field_info_store(topology::index_topology_t::type_identifier_hash,
-        data::storage_label_t::index)
+        data::storage_label_t::dense)
       .field_info();
   printf("recover fid vector size %ld\n", fid_vector.size());
 
@@ -544,7 +544,7 @@ legion_io_policy_t::recover_default_index_topology_field(hdf5_t & hdf5_file,
   const data::field_info_t & fid =
     flecsi_context
       .get_field_info_store(topology::index_topology_t::type_identifier_hash,
-        data::storage_label_t::index)
+        data::storage_label_t::dense)
       .get_field_info(fh.identifier());
   printf("recover fid %ld\n", fid.fid);
 
@@ -1008,20 +1008,16 @@ recover_without_attach_task(const Legion::Task * task,
 } // recover_without_attach_task
 
 flecsi_internal_register_legion_task(checkpoint_with_attach_task,
-  processor_type_t::loc,
-  inner);
+  loc | inner);
 
 flecsi_internal_register_legion_task(checkpoint_without_attach_task,
-  processor_type_t::loc,
-  leaf);
+  loc | leaf);
 
 flecsi_internal_register_legion_task(recover_with_attach_task,
-  processor_type_t::loc,
-  inner);
+  loc | inner);
 
 flecsi_internal_register_legion_task(recover_without_attach_task,
-  processor_type_t::loc,
-  leaf);
+  loc | leaf);
 
 } // namespace io
 } // namespace flecsi

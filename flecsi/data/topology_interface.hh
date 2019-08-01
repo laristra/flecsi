@@ -22,6 +22,8 @@
   runtime policy that is selected at compile time.
  */
 
+#include <flecsi/runtime/data_policy.hh>
+
 #include <flecsi/data/common/topology_registration.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/topology/base_topology_types.hh>
@@ -42,8 +44,7 @@ namespace data {
   @ingroup data
  */
 
-template<typename DATA_POLICY>
-struct topology_interface_u {
+struct topology_interface_t {
 
   /*!
     Return a topology reference.
@@ -93,47 +94,27 @@ struct topology_interface_u {
    */
 
   template<typename TOPOLOGY_TYPE>
-  void set_coloring(
+  void create(
     topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
       topology_reference,
     typename TOPOLOGY_TYPE::type_identifier_t::coloring_t const & coloring,
     std::string const & name) {
-    DATA_POLICY::template set_coloring<TOPOLOGY_TYPE>(
-      topology_reference, coloring);
+
+    data_policy_t::create<TOPOLOGY_TYPE>(topology_reference, coloring);
+
   } // add_coloring
 
   template<typename TOPOLOGY_TYPE>
-  void destroy_coloring(
+  void destroy(
     topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
       topology_reference,
-    typename TOPOLOGY_TYPE::type_identifier_t::coloring_t const & coloring,
     std::string const & name) {
-    DATA_POLICY::template destroy_coloring<TOPOLOGY_TYPE>(
-      topology_reference, coloring);
+
+    data_policy_t::destroy<TOPOLOGY_TYPE>(topology_reference);
+
   } // destroy_coloring
 
 }; // struct topology_interface_u
-
-} // namespace data
-} // namespace flecsi
-
-//----------------------------------------------------------------------------//
-// This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
-//----------------------------------------------------------------------------//
-
-#include <flecsi/runtime/data_policy.hh>
-
-namespace flecsi {
-namespace data {
-
-/*!
-  The topology_interface_t type is the high-level interface to the FleCSI
-  toplogy model.
-
-  @ingroup data
- */
-
-using topology_interface_t = topology_interface_u<FLECSI_RUNTIME_DATA_POLICY>;
 
 } // namespace data
 } // namespace flecsi
