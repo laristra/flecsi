@@ -150,6 +150,7 @@ struct mpi_execution_policy_t {
     // run task_prolog to copy ghost cells.
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
+    task_prolog.launch_copies();
 
     auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
 

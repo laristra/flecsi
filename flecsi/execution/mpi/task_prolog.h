@@ -50,6 +50,38 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   task_prolog_t() = default;
 
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+
+    auto & h = a.handle;
+    auto & context = context_t::instance();
+
+    auto rank = context_t::instance().color();
+
+    if(context.hasBeenModified.count(h.index_space) == 0 ||
+       context.hasBeenModified[h.index_space].count(h.fid) == 0 ||
+       !context.hasBeenModified[h.index_space][h.fid])
+      return;
+
+    fidsInIndexSpace[h.index_space].push_back(h.fid);
+
+    auto & my_coloring_info = context.coloring_info(h.index_space).at(context.color());
+
+    auto data = context.registered_field_data().at(h.fid).data();
+    auto shared_data = data + my_coloring_info.exclusive * sizeof(T);
+    auto ghost_data = shared_data + my_coloring_info.shared * sizeof(T);
+
+    sharedDataBuffers[h.index_space][h.fid] = shared_data;
+    ghostDataBuffers[h.index_space][h.fid] = ghost_data;
+
+  }
+
   template<typename T, size_t PERMISSIONS>
   void handle(global_accessor_u<T, PERMISSIONS> & a) {
     if(a.handle.state >= SPECIALIZATION_SPMD_INIT) {
@@ -286,6 +318,162 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   template<typename T>
   void handle(T &) {} // handle
+
+  void launch_copies() {
+
+    int mpiSize;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
+
+    auto & context = context_t::instance();
+    const int my_color = context.color();
+
+    // index_space, indices
+    std::map<int, std::vector<size_t> > ghostIndices;
+    std::map<int, std::vector<size_t> > sharedIndices;
+
+    // rank, size
+    std::vector<size_t> ghostSize(mpiSize, 0);
+    std::vector<size_t> sharedSize(mpiSize, 0);
+
+    for(auto const & [index_space, fids] : fidsInIndexSpace) {
+
+      auto index_coloring = context_t::instance().coloring(index_space);
+
+      size_t sumOfTemplateSizes = 0;
+      for(auto const & fid : fids) {
+
+        if(context.hasBeenModified.count(index_space) &&
+           context.hasBeenModified[index_space].count(fid) &&
+           context.hasBeenModified[index_space][fid])
+
+          sumOfTemplateSizes += context.templateParamSize[fid];
+      }
+
+      size_t ghost_cnt = 0;
+      for(auto const & ghost : index_coloring.ghost) {
+        ghostIndices[ghost.rank].push_back(ghost_cnt);
+        ghost_cnt++;
+        ghostSize[ghost.rank] += sumOfTemplateSizes;
+      }
+
+      for(auto const & shared : index_coloring.shared) {
+        for(auto & s : shared.shared) {
+          sharedSize[s] += sumOfTemplateSizes;
+          sharedIndices[s].push_back(shared.offset);
+        }
+      }
+
+    }
+
+    std::vector<std::vector<unsigned char> > allSendBuffer(mpiSize);
+    std::vector<std::vector<unsigned char> > allRecvBuffer(mpiSize);
+    std::vector<MPI_Request> allSendRequests(mpiSize);
+    std::vector<MPI_Request> allRecvRequests(mpiSize);
+
+    for(size_t r = 0; r < ghostSize.size(); ++r) {
+
+      const auto bufSize = ghostSize[r];
+
+      allRecvBuffer[r].resize(bufSize);
+
+      int result = MPI_Irecv(&allRecvBuffer[r].data()[0], bufSize, MPI_CHAR, r, r, MPI_COMM_WORLD, &allRecvRequests[r]);
+      if(result != MPI_SUCCESS) {
+        std::cerr << "ERROR: MPI_Irecv of rank " << my_color << " for receiving data from rank " << r << " failed with error code: " << result << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+      }
+
+    }
+
+    for(size_t r = 0; r < sharedSize.size(); ++r) {
+
+      const auto bufSize = sharedSize[r];
+
+      allSendBuffer[r].resize(bufSize);
+
+      size_t offset = 0;
+
+      for(auto & [index_space, fids] : fidsInIndexSpace) {
+
+        auto index_coloring = context_t::instance().coloring(index_space);
+
+        for(auto ind : sharedIndices[r]) {
+
+          for(auto & fid : fids) {
+
+            if(context.hasBeenModified.count(index_space) &&
+               context.hasBeenModified[index_space].count(fid) &&
+               context.hasBeenModified[index_space][fid]) {
+
+              memcpy(&allSendBuffer[r][offset],
+                    &sharedDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
+                    context.templateParamSize[fid]);
+              offset += context.templateParamSize[fid];
+
+            }
+
+          }
+
+        }
+
+      }
+
+      int result = MPI_Isend(allSendBuffer[r].data(), bufSize, MPI_CHAR, r, my_color, MPI_COMM_WORLD, &allSendRequests[r]);
+      if(result != MPI_SUCCESS) {
+        std::cerr << "ERROR: MPI_Isend of rank " << my_color << " for data sent to " << r << " failed with error code: " << result << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+      }
+
+    }
+
+    int result = MPI_Waitall(allRecvRequests.size(), allRecvRequests.data(), MPI_STATUSES_IGNORE);
+    if(result != MPI_SUCCESS) {
+      std::cerr << "ERROR: MPI_Waitall of rank " << my_color << " on recv requests failed with error code: " << result << std::endl;
+      MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+
+    for(size_t r = 0; r < ghostSize.size(); ++r) {
+
+      const auto bufSize = ghostSize[r];
+
+      if(bufSize == 0)
+        continue;
+
+      int offset = 0;
+
+      for(auto & [index_space, fids] : fidsInIndexSpace) {
+
+        auto index_coloring = context_t::instance().coloring(index_space);
+
+        for(auto ind : ghostIndices[r]) {
+
+          for(auto & fid : fids) {
+
+            if(context.hasBeenModified.count(index_space) &&
+               context.hasBeenModified[index_space].count(fid) &&
+               context.hasBeenModified[index_space][fid]) {
+
+              memcpy(&ghostDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
+                      &allRecvBuffer[r][offset],
+                      context.templateParamSize[fid]);
+              offset += context.templateParamSize[fid];
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+    MPI_Waitall(allSendRequests.size(), allSendRequests.data(), MPI_STATUSES_IGNORE);
+
+  }
+
+  std::map<size_t, std::map<field_id_t, unsigned char*> > sharedDataBuffers;
+  std::map<size_t, std::map<field_id_t, unsigned char*> > ghostDataBuffers;
+  std::map<size_t, std::vector<size_t> > fidsInIndexSpace;
 
 }; // struct task_prolog_t
 

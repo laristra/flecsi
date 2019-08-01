@@ -78,30 +78,15 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
+
     auto & h = a.handle;
-
-    // Skip Read Only handles
-    if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
-      return;
-
     auto & context = context_t::instance();
-    const int my_color = context.color();
-    auto & my_coloring_info = context.coloring_info(h.index_space).at(my_color);
 
-    auto & field_metadata = context.registered_field_metadata().at(h.fid);
+    if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
+      context.hasBeenModified[h.index_space][h.fid] = false;
+    else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
+      context.hasBeenModified[h.index_space][h.fid] = true;
 
-    MPI_Win win = field_metadata.win;
-
-    MPI_Win_post(field_metadata.shared_users_grp, 0, win);
-    MPI_Win_start(field_metadata.ghost_owners_grp, 0, win);
-
-    for(auto ghost_owner : my_coloring_info.ghost_owners) {
-      MPI_Get(h.ghost_data, 1, field_metadata.origin_types[ghost_owner],
-        ghost_owner, 0, 1, field_metadata.target_types[ghost_owner], win);
-    }
-
-    MPI_Win_complete(win);
-    MPI_Win_wait(win);
   } // handle
 
   template<typename T, size_t PERMISSIONS>
@@ -274,12 +259,12 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
   }
-  
+
   template< size_t I, typename T, size_t PERMISSIONS >
   void client_handler(data_client_handle_u<T, PERMISSIONS> & h) {
-    
+
     using entity_types_t = typename T::types_t::entity_types;
-    
+
     if constexpr (I < std::tuple_size<entity_types_t>::value) {
 
       // get the entitiy type
@@ -296,7 +281,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       // loop over entities and exchange the ghost values
       auto entity_size = sizeof(entity_type_t);
       auto entities = h.template get_entities<DIM, DOM>();
-      
+
       // get context information
       auto & context = context_t::instance();
       const int my_color = context.color();
@@ -307,7 +292,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
           std::tuple_size<entity_types_t>::value,
           entity_types_t, DIM, DOM>::find();
       const auto & index_map = context.index_map(index_space);
-   
+
       // get ghost/shared info
       const auto & my_coloring = context.coloring(index_space);
       const auto & my_coloring_info = context.coloring_info(index_space).at(my_color);
@@ -344,12 +329,12 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
           sendcounts[peer] += entity_size;
         }
       }
-     
+
       // setup recv buffers
       std::vector<size_t> recvcounts(comm_size, 0);
       for(auto & ghost : my_coloring.ghost)
         recvcounts[ghost.rank] += entity_size;
-     
+
       std::vector<size_t> recvdispls(comm_size+1);
 
       recvdispls[0] = 0;
@@ -357,7 +342,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
         recvdispls[r+1] = recvdispls[r] + recvcounts[r];
 
       std::vector<byte_t> recvbuf(recvdispls[comm_size]);
-      
+
       // exchange data
       auto ret = coloring::alltoallv(sendbuf, sendcounts, senddispls, recvbuf,
         recvcounts, recvdispls, MPI_COMM_WORLD );
@@ -374,7 +359,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
         // get pointer to entity in question
         auto offset = recvdispls[ghost.rank] + recvcounts[ghost.rank];
         auto eptr = entities + my_coloring_info.shared + i;
-        // copy the original ids for now (GROSS)      
+        // copy the original ids for now (GROSS)
         auto id = eptr->global_id();
         // overrite data
         std::memcpy( eptr, recvbuf.data()+offset, entity_size );
@@ -384,13 +369,13 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
         recvcounts[ghost.rank] += entity_size;
         ++i;
       }
-      
+
       // recursively call this function
       client_handler<I+1>(h);
     } // constexpr if
 
   }
-  
+
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>

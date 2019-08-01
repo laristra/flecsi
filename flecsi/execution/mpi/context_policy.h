@@ -206,21 +206,6 @@ struct mpi_context_policy_t {
    Field metadata is used maintain MPI information and data types for
    MPI windows/one-sided communication to perform ghost copies.
    */
-  struct field_metadata_t {
-
-    MPI_Group shared_users_grp;
-    MPI_Group ghost_owners_grp;
-
-    std::map<int, MPI_Datatype> origin_types;
-    std::map<int, MPI_Datatype> target_types;
-
-    MPI_Win win;
-  };
-
-  /*!
-   Field metadata is used maintain MPI information and data types for
-   MPI windows/one-sided communication to perform ghost copies.
-   */
   struct sparse_field_metadata_t {
     MPI_Group shared_users_grp;
     MPI_Group ghost_owners_grp;
@@ -246,43 +231,22 @@ struct mpi_context_policy_t {
   void register_field_metadata(const field_id_t fid,
     const coloring_info_t & coloring_info,
     const index_coloring_t & index_coloring) {
-    std::map<int, std::vector<int>> compact_origin_lengs;
-    std::map<int, std::vector<int>> compact_origin_disps;
 
-    std::map<int, std::vector<int>> compact_target_lengs;
-    std::map<int, std::vector<int>> compact_target_disps;
+    #ifdef FLECSI_USE_ONE_SIDED_AGGCOMM
 
-    field_metadata_t metadata;
+    std::vector<int> shared_users(coloring_info.shared_users.begin(), coloring_info.shared_users.end());
+    std::vector<int> ghost_owners(coloring_info.ghost_owners.begin(), coloring_info.ghost_owners.end());
 
-    register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
-      compact_origin_lengs, compact_origin_disps, compact_target_lengs,
-      compact_target_disps);
+    MPI_Group comm_grp;
+    MPI_Comm_group(MPI_COMM_WORLD, &comm_grp);
 
-    for(auto ghost_owner : coloring_info.ghost_owners) {
-      MPI_Datatype origin_type;
-      MPI_Datatype target_type;
+    MPI_Group_incl(comm_grp, shared_users.size(), shared_users.data(), &sharedGroups[fid]);
+    MPI_Group_incl(comm_grp, ghost_owners.size(), ghost_owners.data(), &ghostGroups[fid]);
 
-      MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
-        compact_origin_lengs[ghost_owner].data(),
-        compact_origin_disps[ghost_owner].data(),
-        flecsi::utils::mpi_typetraits_u<T>::type(), &origin_type);
-      MPI_Type_commit(&origin_type);
-      metadata.origin_types.insert({ghost_owner, origin_type});
+#endif
 
-      MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
-        compact_target_lengs[ghost_owner].data(),
-        compact_target_disps[ghost_owner].data(),
-        flecsi::utils::mpi_typetraits_u<T>::type(), &target_type);
-      MPI_Type_commit(&target_type);
-      metadata.target_types.insert({ghost_owner, target_type});
-    }
+    templateParamSize[fid] = sizeof(T);
 
-    auto data = field_data[fid].data();
-    auto shared_data = data + coloring_info.exclusive * sizeof(T);
-    MPI_Win_create(shared_data, coloring_info.shared * sizeof(T), sizeof(T),
-      MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
-
-    field_metadata.insert({fid, metadata});
   }
 
   /*!
@@ -514,10 +478,6 @@ struct mpi_context_policy_t {
 #endif
   } // register_field_metadata_
 
-  std::map<field_id_t, field_metadata_t> & registered_field_metadata() {
-    return field_metadata;
-  };
-
   /*!
    Register new field data, i.e. allocate a new buffer for the specified field
    ID.
@@ -569,6 +529,14 @@ struct mpi_context_policy_t {
 
   int rank;
 
+  std::map<size_t, std::map<field_id_t, bool> > hasBeenModified;
+
+  std::map<int, size_t> templateParamSize;
+#ifdef FLECSI_USE_ONE_SIDED_AGGCOMM
+  std::map<int, MPI_Group> ghostGroups;
+  std::map<int, MPI_Group> sharedGroups;
+#endif
+
 private:
   int color_ = 0;
   int colors_ = 0;
@@ -588,7 +556,6 @@ private:
   //  > task_registry_;
 
   std::map<field_id_t, std::vector<uint8_t>> field_data;
-  std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
