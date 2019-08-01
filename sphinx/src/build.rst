@@ -65,6 +65,14 @@ The preferred method for installing FleCSI is to use the
   $ spack install flecsi
   $ spack load -r flecsi
 
+Note that unless you specify which compiler to use to build FleCSI,
+spack will use the default one on your system. Here is an example how to
+explicitly tell spack which compiler to use for building FleCSI:
+
+.. code-block:: console
+
+  $ spack install flecsi%gcc@8.1.0  
+ 
 FleCSI supports several different versions and variants, e.g.:
 
 .. code-block:: console
