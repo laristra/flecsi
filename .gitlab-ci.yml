@@ -323,23 +323,20 @@ env:
 
 canary:fedora_mpi:
   extends: .canary
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_fedora
     <<: *runtime_mpi
 
 canary:fedora_legion:
   extends: .canary
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_fedora
     <<: *runtime_legion
 
 canary:fedora_hpx:
   extends: .canary
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_fedora
     <<: *runtime_hpx
   allow_failure: true 
 
