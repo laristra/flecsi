@@ -622,6 +622,10 @@ struct context_u : public CONTEXT_POLICY {
     return colorings_;
   } // colorings
 
+  auto & coloring_map() {
+    return colorings_;
+  } // colorings
+
   /*!
     Return the coloring info map (convenient for iterating through all
     of the colorings.
@@ -629,8 +633,8 @@ struct context_u : public CONTEXT_POLICY {
     @return The map of index coloring information.
    */
 
-  const std::map<size_t, std::unordered_map<size_t, coloring_info_t>> &
-  coloring_info_map() const {
+  std::map<size_t, std::unordered_map<size_t, coloring_info_t>> &
+  coloring_info_map() {
     return coloring_info_;
   } // colorings
 
