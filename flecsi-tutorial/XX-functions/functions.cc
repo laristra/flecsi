@@ -20,7 +20,7 @@
 using namespace flecsi;
 using namespace flecsi::tutorial;
 
-flecsi_register_data_client(mesh_t, clients, mesh);
+// flecsi_register_data_client(mesh_t, clients, mesh);
 flecsi_register_field(mesh_t, hydro, pressure, double, dense, 1, cells);
 
 namespace example {
@@ -100,7 +100,9 @@ argument_function(double arg) {
 flecsi_register_function(argument_function, example);
 
 int
-argument_task(mesh<ro> m, field<ro> p, argument_function_t fh) {
+argument_task(mesh<rw> m,
+  dense_accessor<double, rw, rw, rw> p,
+  argument_function_t fh) {
 
   for(auto c : m.cells()) {
     if(flecsi_execute_function(fh, p(c))) {
@@ -111,7 +113,7 @@ argument_task(mesh<ro> m, field<ro> p, argument_function_t fh) {
   return 0;
 } // argument_task
 
-flecsi_register_task(argument_task, example, loc, single);
+flecsi_register_task(argument_task, example, loc, index);
 
 } // namespace example
 
@@ -138,7 +140,7 @@ driver(int argc, char ** argv) {
     auto m = flecsi_get_client_handle(mesh_t, clients, mesh);
     auto fh = flecsi_function_handle(argument_function, example);
     auto p = flecsi_get_handle(m, hydro, pressure, double, dense, 0);
-    auto retval = flecsi_execute_task(argument_task, example, single, m, p, fh);
+    auto retval = flecsi_execute_task(argument_task, example, index, m, p, fh);
   } // argument function scope
 
 } // driver

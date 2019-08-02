@@ -41,6 +41,11 @@
 #include <flecsi/execution/legion/task_prolog.h>
 #include <flecsi/execution/legion/task_wrapper.h>
 
+#if defined(ENABLE_CALIPER)
+// Caliper include
+#include <caliper/cali.h>
+#endif // ENABLE_CALIPER
+
 namespace flecsi {
 namespace execution {
 
@@ -190,8 +195,13 @@ struct legion_execution_policy_t {
 
     if constexpr(LAUNCH == launch_type_t::single) {
 
-      switch(processor_type) {
+      // Creae single Legion Launcher
+      TaskLauncher launcher(
+        context_.task_id<TASK>(), TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
+      switch(processor_type) {
+        case processor_type_t::toc:
+          launcher.tag = PREFER_GPU;
         case processor_type_t::loc: {
           clog(info) << "Executing single task: " << TASK << std::endl;
 
@@ -199,14 +209,6 @@ struct legion_execution_policy_t {
           // that are passed to the task
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
-
-          // Create a task launcher, passing the task arguments.
-          TaskLauncher launcher(context_.task_id<TASK>(),
-            TaskArgument(&task_args, sizeof(ARG_TUPLE)));
-
-#ifdef MAPPER_COMPACTION
-          launcher.tag = MAPPER_COMPACTED_STORAGE;
-#endif
 
           // Add region requirements and future dependencies to the
           // task launcher
@@ -255,9 +257,6 @@ struct legion_execution_policy_t {
           return legion_future_u<RETURN, launch_type_t::single>(future);
         } // scope
 
-        case processor_type_t::toc:
-          clog_fatal("Invalid processor type (toc is un-implemented)");
-
         case processor_type_t::mpi:
           clog_fatal("Invalid launch type!"
                      << std::endl
@@ -276,7 +275,7 @@ struct legion_execution_policy_t {
     else {
 
       switch(processor_type) {
-
+        case processor_type_t::toc:
         case processor_type_t::loc: {
           clog(info) << "Executing index task: " << TASK << std::endl;
 
@@ -296,9 +295,9 @@ struct legion_execution_policy_t {
             arg_map);
 
           launcher.tag = MAPPER_FORCE_RANK_MATCH;
-#ifdef MAPPER_COMPACTION
-          launcher.tag = MAPPER_COMPACTED_STORAGE;
-#endif
+          if(processor_type == processor_type_t::toc) {
+            launcher.tag = PREFER_GPU;
+          }
 
           // Add region requirements and future dependencies to the
           // task launcher
@@ -310,6 +309,13 @@ struct legion_execution_policy_t {
             launcher.add_future(future);
           } // for
 
+#if defined(ENABLE_CALIPER)
+          // [Caliper] Mark this function
+          CALI_CXX_MARK_FUNCTION;
+
+          CALI_MARK_BEGIN("FleCSI_Invocation task_prolog");
+#endif // ENABLE_CALIPER
+
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
           {
@@ -320,6 +326,11 @@ struct legion_execution_policy_t {
             task_prolog.launch_copies();
           } // scope
 
+#ifdef ENABLE_CALIPER
+          CALI_MARK_END("FleCSI_Invocation task_prolog");
+          CALI_MARK_BEGIN("FleCSI_Invocation task_prolog_sparse");
+#endif // ENABLE_CALIPER
+
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -327,6 +338,10 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
+
+#ifdef ENABLE_CALIPER
+          CALI_MARK_END("FleCSI_Invocation task_prolog_sparse");
+#endif // ENABLE_CALIPER
 
           if constexpr(REDUCTION != ZERO) {
             clog(info) << "executing reduction logic for " << REDUCTION
@@ -342,9 +357,17 @@ struct legion_execution_policy_t {
             future = legion_runtime->execute_index_space(
               legion_context, launcher, reduction_id);
 
+#ifdef ENABLE_CALIPER
+            CALI_MARK_BEGIN("FleCSI_Invocation task_epilog");
+#endif // ENABLE_CALIPER
+
             // Enqueue the epilog.
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
+
+#ifdef ENABLE_CALIPER
+            CALI_MARK_END("FleCSI_Invocation task_epilog");
+#endif // ENABLE_CALIPER
 
             return legion_future_u<RETURN, launch_type_t::single>(future);
           }
@@ -353,10 +376,18 @@ struct legion_execution_policy_t {
             Legion::FutureMap future_map =
               legion_runtime->execute_index_space(legion_context, launcher);
 
+#ifdef ENABLE_CALIPER
+            CALI_MARK_BEGIN("FleCSI_Invocation task_epilog");
+#endif // ENABLE_CALIPER
+
             // Execute a tuple walker that applies the task epilog operations
             // on the mapped handles
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
+
+#ifdef ENABLE_CALIPER
+            CALI_MARK_END("FleCSI_Invocation task_epilog");
+#endif // ENABLE_CALIPER
 
             return legion_future_u<RETURN, launch_type_t::index>(future_map);
           } // else

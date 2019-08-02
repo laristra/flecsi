@@ -143,7 +143,7 @@ if(ENABLE_FLECSIT)
       execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
     endif()
 
-    install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/tools/flecsit/flecsit
         DESTINATION ${PYTHON_INSTDIR}
         FILES_MATCHING PATTERN "*.py")
 
@@ -280,6 +280,11 @@ install(
     GROUP_READ
     WORLD_READ
 )
+
+option(ENABLE_FLECSTAN "Build flecstan tools" OFF)
+if(ENABLE_FLECSTAN)
+  add_subdirectory(flecstan)
+endif(ENABLE_FLECSTAN)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for emacs and vim.

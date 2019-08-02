@@ -1,0 +1,128 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file 21-task-compile-argument-too-few.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   21-task-compile-argument-too-few.json
+
+File:
+   21-task-compile-argument-too-few.json: 21-task-compile-argument-too-few.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_task
+   Args: foo, A, loc, single
+   File: 21-task-compile-argument-too-few.cc
+   Line: 10
+
+Macro:
+   Name: flecsi_execute_task
+   Args: foo, A, single, 1
+   File: 21-task-compile-argument-too-few.cc
+   Line: 22
+
+Error:
+   Clang++ reports an error:
+      no viable conversion from 'tuple<[...], (no argument)>' to 'tuple<[...], double>'
+   File: /home/staley/flecsi/flecsi/execution/mpi/execution_policy.h
+   Line: 148
+
+Note:
+   Clang++ reports a note:
+      in instantiation of function template specialization 'flecsi::execution::mpi_execution_policy_t::execute_task<flecsi::execution::launch_type_t::single, 13403595139865779998, 351273959, void, std::tuple<int, double>, int>' requested here
+   File: /home/staley/flecsi/flecsi/execution/task.h
+   Line: 98
+
+Note:
+   Clang++ reports a note:
+      in instantiation of function template specialization 'flecsi::execution::task_interface_u<flecsi::execution::mpi_execution_policy_t>::execute_task<flecsi::execution::launch_type_t::single, 13403595139865779998, 351273959, void, std::tuple<int, double>, int>' requested here
+   File: 21-task-compile-argument-too-few.cc
+   Line: 22
+
+Note:
+   Clang++ reports a note:
+      candidate constructor not viable: no known conversion from 'tuple<typename __decay_and_strip<int>::__type>' (aka 'tuple<int>') to 'const std::tuple<int, double> &' for 1st argument
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 985
+
+Note:
+   Clang++ reports a note:
+      candidate constructor not viable: no known conversion from 'tuple<typename __decay_and_strip<int>::__type>' (aka 'tuple<int>') to 'std::tuple<int, double> &&' for 1st argument
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 987
+
+Note:
+   Clang++ reports a note:
+      candidate template ignored: failed template argument deduction
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 995
+
+Note:
+   Clang++ reports a note:
+      candidate template ignored: failed template argument deduction
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 1013
+
+Note:
+   Clang++ reports a note:
+      candidate template ignored: could not match 'pair' against 'tuple'
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 1031
+
+Note:
+   Clang++ reports a note:
+      candidate template ignored: could not match 'pair' against 'tuple'
+   File: /usr/local/bin/../lib/gcc/x86_64-pc-linux-gnu/8.2.0/../../../../include/c++/8.2.0/tuple
+   Line: 1049
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file 21-task-compile-argument-too-few.cc, line 10)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Warning:
+   Internal warning from the FleCSI Static Analyzer.
+   Re: macro "flecsi_execute_task".
+   Detected call count != detected C++ abstract syntax tree count.
+      Macro Calls: 1
+      Syntax Tree: 0
+   This warning may be spurious, if your code has errors or certain warnings.
+   Also, it can occur if the set of C++ files you're analyzing together contain
+   more than one application build (analogy: trying to link object files from
+   multiple C++ sources that have a main() program). This can happen, e.g., if
+   you're reading a cmake-produced .json file from a cmake that emits build
+   rules for multiple target applications. If none of the situations described
+   here is the case, then please report this warning to us.
+
+Warning:
+   The task registered with hash "A::foo" here:
+      21-task-compile-argument-too-few.cc: file 21-task-compile-argument-too-few.cc, line 10, scope ::A
+   is never invoked with any of FleCSI's task execution macros.
+   Is this intentional?
+
+Synopsis:
+   1 error
+   2 warnings
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Task registrations without executions:
+   21-task-compile-argument-too-few.cc: file 21-task-compile-argument-too-few.cc, line 10
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

@@ -22,6 +22,24 @@ namespace flecsi {
 namespace utils {
 
 ////////////////////////////////////////////////////////////////////////////////
+//! \brief Test to see if all variadic template arguments Ts are of base type.
+////////////////////////////////////////////////////////////////////////////////
+namespace detail {
+template<typename... Conds>
+struct and_ : std::true_type {};
+
+//! \brief Combine conditions.
+//! \remark Main template expansion function.
+template<typename Cond, typename... Conds>
+struct and_<Cond, Conds...>
+  : std::conditional<Cond::value, and_<Conds...>, std::false_type>::type {};
+} // namespace detail
+
+template<typename Base, typename... Ts>
+using are_base_of_t =
+  detail::and_<std::is_base_of<std::decay_t<Base>, std::decay_t<Ts>>...>;
+
+////////////////////////////////////////////////////////////////////////////////
 // A type trait utility to detect if a type is a strict STL container.
 ////////////////////////////////////////////////////////////////////////////////
 
