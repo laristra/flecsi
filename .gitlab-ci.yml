@@ -43,15 +43,10 @@ before_script:
   - |
     if [[ ${CI_RUNNER_TAGS} = "shell" ]];
     then
-      module load intel/19.0.2;
       module load python/3.5.1;
       module load cmake/3.12.4;
-      module load clang/7.0.0;
-      module unload gcc;
       module load gcc/7.3.0;
       source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
-      spack load -r flecsi%intel@19.0.2 ~graphviz backend=$RUNTIME || /bin/true;
-      spack unload flecsi%intel@19.0.2 ~graphviz backend=$RUNTIME || /bin/true;
       module list;
     fi
 
@@ -162,7 +157,7 @@ before_script:
       then
         rm -rf ${SPACK_ROOT}/*;
       fi
-    #- flock -n "${lock_fd}"
+    - flock -n "${lock_fd}"
     - |
       if [[ ! -d ${SPACK_ROOT} ]];
       then
@@ -171,9 +166,9 @@ before_script:
       fi
     - source ${SPACK_ROOT}/share/spack/setup-env.sh
     - spack repo add ${CI_PROJECT_DIR}/spack-repo || /bin/true
-    - spack install flecsi~graphviz%intel@19.0.2 backend=mpi
-    - spack install flecsi~graphviz%intel@19.0.2 backend=legion
-    #- flock -u "${lock_fd}"
+    - spack install flecsi~graphviz backend=mpi
+    - spack install flecsi~graphviz backend=legion
+    - flock -u "${lock_fd}"
 
 ###############
 # Build Stage #
