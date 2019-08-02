@@ -165,12 +165,11 @@ before_script:
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
       fi
     - source ${SPACK_ROOT}/share/spack/setup-env.sh
-    - echo ${CI_PROJECT_DIR}
-    - ls -R ${CI_PROJECT_DIR}
+    - spack repo rm laristra_flecsi #TODO this assumes laristra_flecsi is the namespace
+    - spack repo add ${CI_PROJECT_DIR}/spack-repo
     - spack repo list
-#    - spack repo add ${CI_PROJECT_DIR}/spack-repo || /bin/true
-    - spack install flecsi~graphviz%gcc@7.3.0 backend=mpi
-    - spack install flecsi~graphviz%gcc@7.3.0 backend=legion
+    - spack install --only=dependencies flecsi~graphviz%gcc@7.3.0 backend=mpi
+    - spack install --only=dependencies flecsi~graphviz%gcc@7.3.0 backend=legion
 #    - flock -u "${lock_fd}"
 
 ###############
