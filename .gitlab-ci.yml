@@ -47,6 +47,7 @@ before_script:
       module load cmake/3.12.4;
       module load gcc/7.3.0;
       source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
+      spack load -r flecsi-deps backend=$RUNTIME
       module list;
     fi
 
@@ -168,8 +169,8 @@ before_script:
     - spack repo rm laristra_flecsi #TODO this assumes laristra_flecsi is the namespace
     - spack repo add ${CI_PROJECT_DIR}/spack-repo
     - spack repo list
-    - spack install --only=dependencies flecsi~graphviz%gcc@7.3.0 backend=mpi
-    - spack install --only=dependencies flecsi~graphviz%gcc@7.3.0 backend=legion
+    - spack install flecsi-deps~graphviz%gcc@7.3.0 backend=mpi
+    - spack install flecsi-deps~graphviz%gcc@7.3.0 backend=legion
 #    - flock -u "${lock_fd}"
 
 ###############
