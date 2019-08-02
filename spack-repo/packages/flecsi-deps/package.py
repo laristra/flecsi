@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
 
+import os
 from spack import *
 
 
@@ -40,10 +41,9 @@ class FlecsiDeps(Package):
     depends_on('python@3.0:', when='+tutorial')
     depends_on('llvm', when='+flecstan')
 
-   def install(self, spec, prefix):
+    def install(self, spec, prefix):
         with open(os.path.join(spec.prefix, 'package-list.txt'), 'w') as out:
             for dep in spec.dependencies(deptype='build'):
                 out.write("%s\n" % dep.format(
                     format_string='${PACKAGE} ${VERSION}'))
                 os.symlink(dep.prefix, os.path.join(spec.prefix, dep.name))
-            out.close()
