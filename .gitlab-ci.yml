@@ -47,7 +47,7 @@ before_script:
       module load cmake/3.12.4;
       module load gcc/7.3.0;
       source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
-      spack load -r flecsi-deps backend=$RUNTIME
+      spack load -r flecsi-deps backend=$RUNTIME || /bin/true;
       module list;
     fi
 
