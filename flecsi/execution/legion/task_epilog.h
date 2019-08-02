@@ -161,6 +161,26 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     for(auto & item : list)
       handle(item);
   }
+  /* 
+   * Handle tuple of items
+   */
+
+  template<typename ... Ts, size_t ... I>
+  void handle_tuple_items( std::tuple<Ts...> & items,
+                           std::index_sequence<I...>
+                         )
+  {
+      ( handle(std::get<I>(items)), ... );
+  }
+
+  template<typename ... Ts>
+  void handle(std::tuple<Ts ...> & items) {
+    handle_tuple_items
+    (
+      items,
+      std::make_index_sequence<sizeof...(Ts)>{}
+    );
+  }
 
   /*!
    This method is a no-op and is called when the task argument does not match
