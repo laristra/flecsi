@@ -157,7 +157,7 @@ before_script:
       then
         rm -rf ${SPACK_ROOT}/*;
       fi
-    - flock -n "${lock_fd}"
+#    - flock -n "${lock_fd}"
     - |
       if [[ ! -d ${SPACK_ROOT} ]];
       then
@@ -169,7 +169,7 @@ before_script:
 #    - spack repo add ${CI_PROJECT_DIR}/spack-repo || /bin/true
     - spack install flecsi~graphviz%gcc@7.3.0 backend=mpi
     - spack install flecsi~graphviz%gcc@7.3.0 backend=legion
-    - flock -u "${lock_fd}"
+#    - flock -u "${lock_fd}"
 
 ###############
 # Build Stage #
