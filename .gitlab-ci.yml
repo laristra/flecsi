@@ -25,7 +25,6 @@ variables:
   no_proxy: "lanl.gov"
   SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
   DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
-  lock_fd: 314
   GIT_SUBMODULE_STRATEGY: recursive
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   CCACHE_UMASK: 000
@@ -146,33 +145,31 @@ before_script:
 # Env Stage #
 #############
 
-# Christoph: maybe you could fix the locking errors while you are at it?
 .env_template: &env_def
   <<: *job_def
   stage: Env
   script: &env_script
     - mkdir -p build
     - cd ${CI_PROJECT_DIR}/build/
-    - exec {lock_fd}>${DEPS_LOCK}
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
       then
         rm -rf ${SPACK_ROOT}/*;
       fi
-#    - flock -n "${lock_fd}"
     - |
+      ( flock -s 200
       if [[ ! -d ${SPACK_ROOT} ]];
       then
         git init --shared=group ${SPACK_ROOT};
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
-      fi
-    - source ${SPACK_ROOT}/share/spack/setup-env.sh
-    - spack repo rm laristra_flecsi #TODO this assumes laristra_flecsi is the namespace
-    - spack repo add ${CI_PROJECT_DIR}/spack-repo
-    - spack repo list
-    - spack install flecsi-deps~graphviz%gcc@7.3.0 backend=mpi
-    - spack install flecsi-deps~graphviz%gcc@7.3.0 backend=legion
-#    - flock -u "${lock_fd}"
+      fi;
+      source ${SPACK_ROOT}/share/spack/setup-env.sh;
+      spack repo rm laristra_flecsi;
+      spack repo add ${CI_PROJECT_DIR}/spack-repo;
+      spack repo list;
+      spack install flecsi-deps~graphviz%gcc@7.3.0 backend=mpi;
+      spack install flecsi-deps~graphviz%gcc@7.3.0 backend=legion;
+      ) 200>${DEPS_LOCK}
 
 ###############
 # Build Stage #
