@@ -166,8 +166,8 @@ before_script:
       fi
     - source ${SPACK_ROOT}/share/spack/setup-env.sh
     - spack repo add ${CI_PROJECT_DIR}/spack-repo || /bin/true
-    - spack install flecsi~graphviz backend=mpi
-    - spack install flecsi~graphviz backend=legion
+    - spack install flecsi~graphviz%gcc@7.3.0 backend=mpi
+    - spack install flecsi~graphviz%gcc@7.3.0 backend=legion
     - flock -u "${lock_fd}"
 
 ###############
