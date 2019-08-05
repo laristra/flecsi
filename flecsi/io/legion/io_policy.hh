@@ -116,12 +116,12 @@ struct legion_io_policy_t {
   //void checkpoint_index_topology(legion_hdf5_t & hdf5_file, const flecsi::utils::const_string_t &index_topology_name);
 
   void checkpoint_default_index_topology_field(hdf5_t & hdf5_file, 
-    data::field_reference_t & fh);
+    const data::field_reference_t & fh);
   
   void recover_default_index_topology(legion_hdf5_t & hdf5_file);
 
   void recover_default_index_topology_field(hdf5_t & hdf5_file, 
-    data::field_reference_t & fh);
+    const data::field_reference_t & fh);
   
   void checkpoint_data(legion_hdf5_t & hdf5_file, 
     IndexSpace launch_space, 

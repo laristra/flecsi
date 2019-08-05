@@ -475,7 +475,7 @@ legion_io_policy_t::checkpoint_default_index_topology(
 
 void
 legion_io_policy_t::checkpoint_default_index_topology_field(hdf5_t & hdf5_file,
-  data::field_reference_t & fh) {
+  const data::field_reference_t & fh) {
   auto & flecsi_context = execution::context_t::instance();
   const data::field_info_t & fid =
     flecsi_context
@@ -539,7 +539,7 @@ legion_io_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
 
 void
 legion_io_policy_t::recover_default_index_topology_field(hdf5_t & hdf5_file,
-  data::field_reference_t & fh) {
+  const data::field_reference_t & fh) {
   auto & flecsi_context = execution::context_t::instance();
   const data::field_info_t & fid =
     flecsi_context

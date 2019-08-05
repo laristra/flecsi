@@ -79,7 +79,7 @@ struct io_interface_u : public IO_POLICY {
   }
 
   void checkpoint_default_index_topology_field(hdf5_t & hdf5_file, 
-    field_reference_t & fh) {
+    const field_reference_t & fh) {
     return IO_POLICY::checkpoint_default_index_topology_field(hdf5_file, fh);
   }
 
@@ -88,7 +88,7 @@ struct io_interface_u : public IO_POLICY {
   }
 
   void recover_default_index_topology_field(hdf5_t &hdf5_file, 
-    field_reference_t &fh) {
+    const field_reference_t &fh) {
     return IO_POLICY::recover_default_index_topology_field(hdf5_file, fh);
   }
   
