@@ -305,21 +305,21 @@ canary:centOS_mpi:
   <<: *shell_def
   variables:
     <<: *runtime_mpi
-    <<: *openmpi
+    <<: *mpich
 
 canary:centOS_legion:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_legion
-    <<: *openmpi
+    <<: *mpich
 
 canary:centOS_hpx:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_hpx
-    <<: *openmpi
+    <<: *mpich
   allow_failure: true 
 
 ##############
