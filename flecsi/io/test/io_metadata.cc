@@ -29,10 +29,8 @@ index_topology(int argc, char ** argv) {
   char file_name[256];
   strcpy(file_name, "checkpoint.dat");
 
-  auto & flecsi_context = execution::context_t::instance();
-
-  int my_rank = flecsi_context.process();
-  int num_files = flecsi_context.processes();
+  int my_rank = process();
+  int num_files = processes();
   io::io_interface_t cp_io;
   io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
 

@@ -11,11 +11,9 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#include <fstream>
 #define __FLECSI_PRIVATE__
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/field_info.hh>
-#include <flecsi/data/data.hh>
 #include <flecsi/data/legion/runtime_data_types.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/internal_task.hh>
@@ -24,6 +22,8 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <fstream>
 
 namespace flecsi {
 namespace io {
@@ -530,7 +530,7 @@ legion_io_policy_t::checkpoint_default_index_topology(
 
 void
 legion_io_policy_t::checkpoint_index_topology_field(hdf5_t & hdf5_file,
-  data::field_reference_t & fh) {
+  data::field_reference_t const & fh) {
   auto & flecsi_context = execution::context_t::instance();
   const data::field_info_t & fid =
     flecsi_context

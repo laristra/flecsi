@@ -77,6 +77,7 @@ set(io_SOURCES
 #------------------------------------------------------------------------------#
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
 ftest_add_unit(io
   SOURCES
     test/legion/io.cc

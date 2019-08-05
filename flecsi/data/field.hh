@@ -56,24 +56,19 @@ struct field_member_u {
   using accessor = typename storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>::
     template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES ...>::value>;
 
-  field_member_u(size_t versions = 1)
-    : versions_(versions), fid_(register_field()) {}
+  field_member_u()
+    : fid_(register_field()) {}
 
   /*!
     Return a reference to the field instance associated with the given topology
     reference.
 
     @param topology_reference A reference to a valid topology instance.
-    @param version            The field version.
    */
 
-  field_reference_t operator()(topology_reference_t const & topology_reference,
-    size_t version = 0) const {
+  field_reference_t operator()(topology_reference_t const & topology_reference) const {
 
-    flog_assert(version < versions_,
-      "no such version #" << version << " in " << versions_ << " versions");
-
-    return {fid_ + version, topology_reference.identifier()};
+    return {fid_, topology_reference.identifier()};
   } // operator()
 
 private:
@@ -83,36 +78,17 @@ private:
 
   field_id_t register_field() const {
 
-    constexpr auto max = utils::hash::field_max_versions;
+    field_id_t fid = unique_fid_t::instance().next();
 
-    flog_assert(versions_ <= max,
-      "can't have " << versions_ << '>' << max << " versions");
-
-    field_id_t fid;
-
-    for(size_t v{0}; v < versions_; ++v) {
-      const auto unique = unique_fid_t::instance().next();
-
-      if(v) {
-        flog_assert(unique == fid + v,
-          "version id " << unique << " is not consecutive to fid " << fid
-                        << " with versions " << versions_);
-      }
-      else {
-        fid = unique;
-      } // if
-
-      execution::context_t::instance().add_field_info(
-        TOPOLOGY_TYPE::type_identifier_hash,
-        STORAGE_CLASS,
-        {unique, INDEX_SPACE, versions_, sizeof(DATA_TYPE)},
-        unique);
-    } // for
+    execution::context_t::instance().add_field_info(
+      TOPOLOGY_TYPE::type_identifier_hash,
+      STORAGE_CLASS,
+      {fid, INDEX_SPACE, sizeof(DATA_TYPE)},
+      fid);
 
     return fid;
   } // register_field
 
-  size_t versions_;
   field_id_t fid_;
 
 }; // struct field_member_u

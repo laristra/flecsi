@@ -25,9 +25,7 @@ set(data_HEADERS
   common/storage_label.hh
   common/topology_accessor.hh
   common/topology_registration.hh
-  data.hh
   field.hh
-  field_interface.hh
   topology_interface.hh
 )
 

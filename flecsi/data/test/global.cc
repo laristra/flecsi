@@ -58,13 +58,9 @@ using namespace flecsi;
 using namespace flecsi::data;
 using namespace flecsi::topology;
 
-template<size_t PRIVILEGES>
-using global_accessor =
-  global_accessor_u<double, privilege_pack_u<PRIVILEGES>::value>;
-
 using global_field_t = global_field_member_u<double>;
+const global_field_t energy_field;
 
-const global_field_t energy_field(1);
 const auto energy = energy_field(flecsi_global_topology);
 
 void
