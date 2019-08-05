@@ -27,10 +27,13 @@ using namespace flecsi::data;
 using namespace flecsi::topology;
 
 using index_field_t = index_field_member_u<double>;
-const index_field_t field(3);
-const auto fh1 = field(flecsi_index_topology, 0);
-const auto fh2 = field(flecsi_index_topology, 1);
-const auto fh3 = field(flecsi_index_topology, 2);
+const index_field_t test_value_1;
+const index_field_t test_value_2;
+const index_field_t test_value_3;
+
+const auto fh1 = test_value_1(flecsi_index_topology);
+const auto fh2 = test_value_2(flecsi_index_topology);
+const auto fh3 = test_value_3(flecsi_index_topology);
 
 void
 assign(index_field_t::accessor<rw> ia) {
@@ -88,10 +91,10 @@ index_driver(int argc, char ** argv) {
   MPI_Barrier(MPI_COMM_WORLD);
 
 #if 1
-    cp_io.checkpoint_default_index_topology(checkpoint_file);
-  //cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh1);
-  //cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh2);
-  //cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh3);
+  //cp_io.checkpoint_default_index_topology(checkpoint_file);
+  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh1);
+  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh2);
+  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh3);
 
   execute<reset_zero>(fh1);
   execute<reset_zero>(fh2);
