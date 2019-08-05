@@ -327,87 +327,109 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     auto & context = context_t::instance();
     const int my_color = context.color();
 
-    // index_space, indices
-    std::map<int, std::vector<size_t> > ghostIndices;
-    std::map<int, std::vector<size_t> > sharedIndices;
+    // index_space, rank, indices
+    std::map<int, std::vector<std::vector<int> > > sharedIndices;
+    std::map<int, std::vector<std::vector<int> > > ghostIndices;
 
-    // rank, size
-    std::vector<size_t> ghostSize(mpiSize, 0);
-    std::vector<size_t> sharedSize(mpiSize, 0);
+    std::vector<int> sharedSize(mpiSize, 0);
+    std::vector<int> ghostSize(mpiSize, 0);
 
     for(auto const & [index_space, fids] : fidsInIndexSpace) {
 
+      sharedIndices[index_space].resize(mpiSize);
+      ghostIndices[index_space].resize(mpiSize);
+
       auto index_coloring = context_t::instance().coloring(index_space);
 
-      size_t sumOfTemplateSizes = 0;
+      int sumOfTemplateSizes = 0;
       for(auto const & fid : fids) {
 
         if(context.hasBeenModified.count(index_space) &&
            context.hasBeenModified[index_space].count(fid) &&
-           context.hasBeenModified[index_space][fid])
+           context.hasBeenModified[index_space][fid]) {
 
           sumOfTemplateSizes += context.templateParamSize[fid];
+
+        }
+
       }
 
       size_t ghost_cnt = 0;
       for(auto const & ghost : index_coloring.ghost) {
-        ghostIndices[ghost.rank].push_back(ghost_cnt);
-        ghost_cnt++;
+        ghostIndices[index_space][ghost.rank].push_back(ghost_cnt);
         ghostSize[ghost.rank] += sumOfTemplateSizes;
+        ++ghost_cnt;
       }
 
       for(auto const & shared : index_coloring.shared) {
-        for(auto & s : shared.shared) {
+        for(auto const & s : shared.shared) {
+          sharedIndices[index_space][s].push_back(shared.offset);
           sharedSize[s] += sumOfTemplateSizes;
-          sharedIndices[s].push_back(shared.offset);
         }
       }
 
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
+
+
     std::vector<std::vector<unsigned char> > allSendBuffer(mpiSize);
     std::vector<std::vector<unsigned char> > allRecvBuffer(mpiSize);
+
     std::vector<MPI_Request> allSendRequests(mpiSize);
     std::vector<MPI_Request> allRecvRequests(mpiSize);
 
-    for(size_t r = 0; r < ghostSize.size(); ++r) {
 
-      const auto bufSize = ghostSize[r];
+    // Post receives
 
-      allRecvBuffer[r].resize(bufSize);
+    for(size_t rank = 0; rank < mpiSize; ++rank) {
 
-      int result = MPI_Irecv(&allRecvBuffer[r].data()[0], bufSize, MPI_CHAR, r, r, MPI_COMM_WORLD, &allRecvRequests[r]);
+      const auto bufSize = ghostSize[rank];
+
+      if(bufSize == 0) {
+        allRecvRequests[rank] = MPI_REQUEST_NULL;
+        continue;
+      }
+
+      allRecvBuffer[rank].resize(bufSize);
+
+      int result = MPI_Irecv(&allRecvBuffer[rank].data()[0], bufSize, MPI_CHAR, rank, rank, MPI_COMM_WORLD, &allRecvRequests[rank]);
       if(result != MPI_SUCCESS) {
-        std::cerr << "ERROR: MPI_Irecv of rank " << my_color << " for receiving data from rank " << r << " failed with error code: " << result << std::endl;
+        std::cerr << "ERROR: MPI_Irecv of rank " << my_color << " for receiving data from rank " << rank << " failed with error code: " << result << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
       }
 
     }
 
-    for(size_t r = 0; r < sharedSize.size(); ++r) {
+    // pack and send data
 
-      const auto bufSize = sharedSize[r];
+    for(int rank = 0; rank < mpiSize; ++rank) {
 
-      allSendBuffer[r].resize(bufSize);
+      const auto bufSize = sharedSize[rank];
 
-      size_t offset = 0;
+      if(bufSize == 0) {
+        allSendRequests[rank] = MPI_REQUEST_NULL;
+        continue;
+      }
+
+      allSendBuffer[rank].resize(bufSize);
+
+      int sendBufferOffset = 0;
 
       for(auto & [index_space, fids] : fidsInIndexSpace) {
 
-        auto index_coloring = context_t::instance().coloring(index_space);
+        for(auto & fid : fids) {
 
-        for(auto ind : sharedIndices[r]) {
+          if(context.hasBeenModified.count(index_space) &&
+             context.hasBeenModified[index_space].count(fid) &&
+             context.hasBeenModified[index_space][fid]) {
 
-          for(auto & fid : fids) {
+            for(auto ind : sharedIndices[index_space][rank]) {
 
-            if(context.hasBeenModified.count(index_space) &&
-               context.hasBeenModified[index_space].count(fid) &&
-               context.hasBeenModified[index_space][fid]) {
-
-              memcpy(&allSendBuffer[r][offset],
-                    &sharedDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
-                    context.templateParamSize[fid]);
-              offset += context.templateParamSize[fid];
+              memcpy(&allSendBuffer[rank][sendBufferOffset],
+                     &sharedDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
+                     context.templateParamSize[fid]);
+              sendBufferOffset += context.templateParamSize[fid];
 
             }
 
@@ -417,45 +439,46 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       }
 
-      int result = MPI_Isend(allSendBuffer[r].data(), bufSize, MPI_CHAR, r, my_color, MPI_COMM_WORLD, &allSendRequests[r]);
+      int result = MPI_Isend(allSendBuffer[rank].data(), bufSize, MPI_CHAR, rank, my_color, MPI_COMM_WORLD, &allSendRequests[rank]);
       if(result != MPI_SUCCESS) {
-        std::cerr << "ERROR: MPI_Isend of rank " << my_color << " for data sent to " << r << " failed with error code: " << result << std::endl;
+        std::cerr << "ERROR: MPI_Isend of rank " << my_color << " for data sent to " << rank << " failed with error code: " << result << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
       }
 
     }
 
+
+    // wait for data to arrive
     int result = MPI_Waitall(allRecvRequests.size(), allRecvRequests.data(), MPI_STATUSES_IGNORE);
     if(result != MPI_SUCCESS) {
       std::cerr << "ERROR: MPI_Waitall of rank " << my_color << " on recv requests failed with error code: " << result << std::endl;
       MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    for(size_t r = 0; r < ghostSize.size(); ++r) {
+    // unpack data
+    for(int rank = 0; rank < mpiSize; ++rank) {
 
-      const auto bufSize = ghostSize[r];
+      const auto bufSize = ghostSize[rank];
 
       if(bufSize == 0)
         continue;
 
-      int offset = 0;
+      int recvBufferOffset = 0;
 
       for(auto & [index_space, fids] : fidsInIndexSpace) {
 
-        auto index_coloring = context_t::instance().coloring(index_space);
+        for(auto & fid : fids) {
 
-        for(auto ind : ghostIndices[r]) {
+          if(context.hasBeenModified.count(index_space) &&
+             context.hasBeenModified[index_space].count(fid) &&
+             context.hasBeenModified[index_space][fid]) {
 
-          for(auto & fid : fids) {
-
-            if(context.hasBeenModified.count(index_space) &&
-               context.hasBeenModified[index_space].count(fid) &&
-               context.hasBeenModified[index_space][fid]) {
+            for(auto ind : ghostIndices[index_space][rank]) {
 
               memcpy(&ghostDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
-                      &allRecvBuffer[r][offset],
-                      context.templateParamSize[fid]);
-              offset += context.templateParamSize[fid];
+                     &allRecvBuffer[rank][recvBufferOffset],
+                     context.templateParamSize[fid]);
+              recvBufferOffset += context.templateParamSize[fid];
 
             }
 
@@ -467,6 +490,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     }
 
+    // ensure all send are completed
     MPI_Waitall(allSendRequests.size(), allSendRequests.data(), MPI_STATUSES_IGNORE);
 
   }
