@@ -49,17 +49,16 @@ namespace execution {
 using namespace boost::program_options;
 using namespace topology;
 
+struct context_t; // supplied by backend
+
 /*!
   The context_u type provides a high-level execution context interface that
-  is implemented by the given context policy.
-
-  @tparam CONTEXT_POLICY The backend context policy.
+  is implemented by a specific backend.
 
   @ingroup execution
  */
 
-template<class CONTEXT_POLICY>
-struct context_u : public CONTEXT_POLICY {
+struct context_u {
 
   /*--------------------------------------------------------------------------*
     Public types.
@@ -117,15 +116,13 @@ struct context_u : public CONTEXT_POLICY {
     Meyer's singleton instance.
    */
 
-  static context_u & instance() {
-    static context_u context;
-    return context;
-  } // instance
+  static inline context_t & instance();
 
   /*--------------------------------------------------------------------------*
     Runtime interface.
    *--------------------------------------------------------------------------*/
 
+#ifdef DOXYGEN // these functions are implemented per-backend
   /*!
     Start the FleCSI runtime.
 
@@ -136,33 +133,25 @@ struct context_u : public CONTEXT_POLICY {
             being failure.
    */
 
-  int start(int argc, char ** argv, variables_map & vm) {
-    return CONTEXT_POLICY::start(argc, argv, vm);
-  } // start
+  int start(int argc, char ** argv, variables_map & vm);
 
   /*!
     Return the current process id.
    */
 
-  size_t process() const {
-    return CONTEXT_POLICY::process();
-  }
+  std::size_t process() const;
 
   /*!
     Return the number of processes.
    */
 
-  size_t processes() const {
-    return CONTEXT_POLICY::processes();
-  }
+  std::size_t processes() const;
 
   /*!
     Return the number of threads per process.
    */
 
-  size_t threads_per_process() const {
-    return CONTEXT_POLICY::threads_per_process();
-  } // threads_per_process
+  std::size_t threads_per_process() const;
 
   /*!
     Return the number of execution instances with which the runtime was
@@ -172,9 +161,7 @@ struct context_u : public CONTEXT_POLICY {
     running process that invokded the FleCSI runtime.
    */
 
-  size_t threads() const {
-    return CONTEXT_POLICY::threads();
-  } // threads
+  std::size_t threads() const;
 
   /*!
     Return the current task depth within the execution hierarchy. The
@@ -182,25 +169,20 @@ struct context_u : public CONTEXT_POLICY {
     for FleCSI developers to use in enforcing runtime constraints.
    */
 
-  static size_t task_depth() {
-    return CONTEXT_POLICY::task_depth();
-  } // task_level
+  static std::size_t task_depth();
 
   /*!
     Get the color of this process.
    */
 
-  size_t color() const {
-    return CONTEXT_POLICY::color();
-  } // color
+  std::size_t color() const;
 
   /*!
     Get the number of colors.
    */
 
-  size_t colors() const {
-    return CONTEXT_POLICY::colors();
-  } // colors
+  std::size_t colors() const;
+#endif
 
   using top_level_action_t = std::function<int(int, char **)>;
 
@@ -444,13 +426,11 @@ currently only for unstructured mesh topologies.
     return tasks_executed_;
   } // tasks_executed
 
+protected:
+  context_u() = default;
+
 private:
-  /*--------------------------------------------------------------------------*
-    Singleton.
-   *--------------------------------------------------------------------------*/
-
-  context_u() : CONTEXT_POLICY() {}
-
+#ifdef DOXYGEN
   /*
     Clear the runtime state of the context.
 
@@ -460,6 +440,7 @@ private:
    */
 
   void clear();
+#endif
 
   /*--------------------------------------------------------------------------*
     Basic runtime data members.
@@ -517,32 +498,6 @@ private:
   size_t tasks_executed_ = 0;
 
 }; // struct context_u
-
-template<class CONTEXT_POLICY>
-void
-context_u<CONTEXT_POLICY>::clear() {
-
-  CONTEXT_POLICY::clear();
-} // clear
-
-} // namespace execution
-} // namespace flecsi
-
-// This include file defines the FLECSI_RUNTIME_CONTEXT_POLICY used below.
-
-#include <flecsi/runtime/context_policy.hh>
-
-namespace flecsi {
-namespace execution {
-
-/*!
-  The context_t type is the high-level interface to the FleCSI execution
-  context.
-
-  @ingroup execution
- */
-
-using context_t = context_u<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
 } // namespace execution
 } // namespace flecsi

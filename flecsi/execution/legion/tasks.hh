@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #else
 //#include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context_policy.hh"
 #endif
 
 namespace flecsi {

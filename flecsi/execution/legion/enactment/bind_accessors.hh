@@ -20,10 +20,10 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/runtime/context_policy.hh"
 #include "flecsi/topology/common/core.hh"
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/data/common/storage_classes.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
 #endif

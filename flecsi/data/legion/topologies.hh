@@ -15,9 +15,9 @@
 
 /*! @file */
 
+#include "flecsi/runtime/context_policy.hh"
 #include "flecsi/topology/common/core.hh"
 #include <flecsi/data/common/data_reference.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/flog.hh>
 

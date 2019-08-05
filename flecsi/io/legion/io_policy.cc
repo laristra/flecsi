@@ -12,10 +12,10 @@
    All rights reserved.
                                                                               */
 #define __FLECSI_PRIVATE__
+#include "flecsi/runtime/context_policy.hh"
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/field_info.hh>
 #include <flecsi/data/legion/runtime_data_types.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/io/legion/io_policy.hh>
 #include <flecsi/utils/const_string.hh>
 

@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context_policy.hh"
 #include <flecsi/topology/common/entity_storage.hh>
 #include <flecsi/topology/common/index_space.hh>
 #include <flecsi/topology/ntree/storage.hh>

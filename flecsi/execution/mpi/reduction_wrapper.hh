@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context_policy.hh"
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/mpi_type_traits.hh>
 

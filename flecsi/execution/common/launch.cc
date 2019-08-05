@@ -16,8 +16,8 @@
 #define __FLECSI_PRIVATE__
 #endif
 
+#include "flecsi/runtime/context_policy.hh"
 #include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/context.hh>
 
 namespace flecsi {
 namespace execution {

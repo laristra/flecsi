@@ -19,7 +19,7 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context_policy.hh"
 #include <flecsi/execution/internal.hh>
 #include <flecsi/execution/task.hh>
 //#include <flecsi/execution/reduction.hh>

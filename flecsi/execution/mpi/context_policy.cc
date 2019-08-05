@@ -15,13 +15,13 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include <flecsi/execution/context.hh>
+#include "context_policy.hh"
 
 namespace flecsi {
 namespace execution {
 
 int
-mpi_context_policy_t::start(int argc, char ** argv) {
+context_t::start(int argc, char ** argv) {
 
   context_t & context_ = context_t::instance();
 

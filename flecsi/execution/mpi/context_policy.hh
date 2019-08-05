@@ -26,6 +26,8 @@
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
+#include "../context.hh"
+
 #include <mpi.h>
 
 #include <map>
@@ -33,7 +35,7 @@
 namespace flecsi {
 namespace execution {
 
-struct mpi_context_policy_t {
+struct context_t : context_u<context_t> {
 
   /*!
     Documnetation for this interface is in the top-level context type.
@@ -115,8 +117,7 @@ private:
 
   std::map<size_t, MPI_Datatype> reduction_types_;
   std::map<size_t, MPI_Op> reduction_ops_;
-
-}; // struct mpi_context_policy_t
+};
 
 } // namespace execution
 } // namespace flecsi

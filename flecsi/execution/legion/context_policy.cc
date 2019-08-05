@@ -16,11 +16,11 @@
 #define __FLECSI_PRIVATE__
 #endif
 
+#include "context_policy.hh"
 #include "enactment/task_wrapper.hh"
 #include <flecsi/data/legion/data_policy.hh>
 #include <flecsi/execution/common/command_line_options.hh>
 #include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/mapper.hh>
 #include <flecsi/execution/legion/tasks.hh>
 #include <flecsi/runtime/types.hh>
@@ -30,7 +30,7 @@ namespace flecsi {
 namespace execution {
 
 int
-legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
+context_t::start(int argc, char ** argv, variables_map & vm) {
   using namespace Legion;
 
   /*
@@ -147,15 +147,14 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
   Legion::Runtime::wait_for_shutdown();
 
   return context_t::instance().exit_status();
-} // legion_context_policy_t::start
+} // context_t::start
 
 //----------------------------------------------------------------------------//
-// Implementation of legion_context_policy_t::unset_call_mpi.
+// Implementation of context_t::unset_call_mpi.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
-  Legion::Runtime * runtime) {
+context_t::unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
   {
     flog_tag_guard(context);
     flog_devel(info) << "In unset_call_mpi" << std::endl;
@@ -171,15 +170,14 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
   launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
   auto fm = runtime->execute_index_space(ctx, launcher);
   fm.wait_all_results(true);
-} // legion_context_policy_t::unset_call_mpi
+} // context_t::unset_call_mpi
 
 //----------------------------------------------------------------------------//
-// Implementation of legion_context_policy_t::handoff_to_mpi.
+// Implementation of context_t::handoff_to_mpi.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
-  Legion::Runtime * runtime) {
+context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
     legion::task_id<handoff_to_mpi_task>,
@@ -191,15 +189,14 @@ legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
   auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
 
   fm.wait_all_results(true);
-} // legion_context_policy_t::handoff_to_mpi
+} // context_t::handoff_to_mpi
 
 //----------------------------------------------------------------------------//
-// Implementation of legion_context_policy_t::wait_on_mpi.
+// Implementation of context_t::wait_on_mpi.
 //----------------------------------------------------------------------------//
 
 Legion::FutureMap
-legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
-  Legion::Runtime * runtime) {
+context_t::wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(legion::task_id<wait_on_mpi_task>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
@@ -212,15 +209,14 @@ legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
   fm.wait_all_results(true);
 
   return fm;
-} // legion_context_policy_t::wait_on_mpi
+} // context_t::wait_on_mpi
 
 //----------------------------------------------------------------------------//
-// Implementation of legion_context_policy_t::connect_with_mpi.
+// Implementation of context_t::connect_with_mpi.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::connect_with_mpi(Legion::Context & ctx,
-  Legion::Runtime * runtime) {
+context_t::connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
@@ -240,14 +236,14 @@ legion_context_policy_t::connect_with_mpi(Legion::Context & ctx,
     printf(
       "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
 #endif
-} // legion_context_policy_t::connect_with_mpi
+} // context_t::connect_with_mpi
 
 //----------------------------------------------------------------------------//
 // Implementation of initialize_global_topology.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::initialize_global_topology() {
+context_t::initialize_global_topology() {
   using namespace Legion;
 
   global_topology_instance_.index_space_id = unique_isid_t::instance().next();
@@ -287,14 +283,14 @@ legion_context_policy_t::initialize_global_topology() {
     legion_runtime_->create_logical_region(legion_context_,
       global_topology_instance_.index_space,
       global_topology_instance_.field_space);
-} // legion_context_policy_t::initialize_global_topology
+} // context_t::initialize_global_topology
 
 //----------------------------------------------------------------------------//
 // Implementation of finalize_global_topology.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::finalize_global_topology() {
+context_t::finalize_global_topology() {
   using namespace Legion;
 
   global_topology_instance_.index_space_id = unique_isid_t::instance().next();
@@ -310,14 +306,14 @@ legion_context_policy_t::finalize_global_topology() {
 
   legion_runtime_->destroy_index_space(
     legion_context_, global_topology_instance_.index_space);
-} // legion_context_policy_t::finalize_global_topology
+} // context_t::finalize_global_topology
 
 //----------------------------------------------------------------------------//
 // Implementation of initialize_default_index_topology.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::initialize_default_index_topology() {
+context_t::initialize_default_index_topology() {
 
   constexpr size_t identifier =
     utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
@@ -333,14 +329,14 @@ legion_context_policy_t::initialize_default_index_topology() {
   topology::index_topology_t::coloring_t coloring(processes_);
 
   data::legion_data_policy_t::create(reference, coloring);
-} // legion_context_policy_t::initialize_default_index_topology
+} // context_t::initialize_default_index_topology
 
 //----------------------------------------------------------------------------//
 // Implementation of initialize_default_index_topology.
 //----------------------------------------------------------------------------//
 
 void
-legion_context_policy_t::finalize_default_index_topology() {
+context_t::finalize_default_index_topology() {
 
   constexpr size_t identifier =
     utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
@@ -355,7 +351,7 @@ legion_context_policy_t::finalize_default_index_topology() {
   data::topology_reference_u<topology::index_topology_t> reference(identifier);
 
   data::legion_data_policy_t::destroy(reference);
-} // legion_context_policy_t::finalize_default_index_topology
+} // context_t::finalize_default_index_topology
 
 } // namespace execution
 } // namespace flecsi

@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context_policy.hh"
 #include <flecsi/topology/common/connectivity.hh>
 #include <flecsi/topology/common/utility_types.hh>
 #include <flecsi/topology/unstructured_mesh/partition.hh>

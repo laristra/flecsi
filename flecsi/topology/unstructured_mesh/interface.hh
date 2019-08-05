@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/data_reference.hh>
-//#include <flecsi/execution/context.hh>
+//#include "flecsi/runtime/context_policy.hh"
 //#include <flecsi/topology/unstructured_mesh/partition.hh>
 #include <flecsi/topology/unstructured_mesh/storage.hh>
 #include <flecsi/topology/unstructured_mesh/types.hh>

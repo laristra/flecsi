@@ -20,9 +20,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/runtime/context_policy.hh"
 #include "flecsi/utils/function_traits.hh"
 #include <flecsi/execution/common/task_attributes.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/execution/legion/enactment/bind_accessors.hh>
 #include <flecsi/execution/legion/enactment/unbind_accessors.hh>
 #include <flecsi/utils/common.hh>

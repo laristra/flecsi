@@ -20,8 +20,8 @@
 #include <flecsi/utils/flog.hh>
 #endif
 
+#include "flecsi/runtime/context_policy.hh"
 #include <flecsi/execution/common/command_line_options.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/runtime/runtime.hh>
 
 #if !defined(FLECSI_ENABLE_MPI)

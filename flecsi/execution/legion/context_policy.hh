@@ -20,6 +20,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "../context.hh"
 #include <flecsi/data/legion/runtime_data_types.hh>
 //#include <flecsi/execution/common/launch.hh>
 //#include <flecsi/execution/common/processor.hh>
@@ -55,7 +56,7 @@ const size_t FLECSI_MAPPER_COMPACTED_STORAGE = 0x00002000;
 const size_t FLECSI_MAPPER_SUBRANK_LAUNCH = 0x00003000;
 const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
-struct legion_context_policy_t {
+struct context_t : context_u {
 
   /*
     Friend declarations. Some parts of this interface are intentionally private
@@ -425,8 +426,7 @@ private:
    *--------------------------------------------------------------------------*/
 
   std::map<size_t, size_t> reduction_ops_;
-
-}; // struct legion_context_policy_t
+};
 
 } // namespace execution
 } // namespace flecsi
