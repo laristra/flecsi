@@ -51,7 +51,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/invocation/task_prologue.hh
     legion/mapper.hh
     legion/reduction_wrapper.hh
-    legion/runtime.hh
     legion/tasks.hh
   )
 
@@ -68,7 +67,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/context_policy.hh
     mpi/execution_policy.hh
     mpi/reduction_wrapper.hh
-    mpi/runtime.hh
   )
 
   set(execution_SOURCES
@@ -78,11 +76,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
-  set(execution_HEADERS
-    ${execution_HEADERS}
-    hpx/runtime.hh
-  )
 
   set(execution_SOURCES
     ${execution_SOURCES}
