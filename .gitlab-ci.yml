@@ -149,7 +149,7 @@ before_script:
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
       fi;
       source ${SPACK_ROOT}/share/spack/setup-env.sh
-      spack repo rm laristra_flecsi;
+      spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
       spack install flecsi-deps%gcc@7.3.0 ~graphviz backend=legion ^openmpi;
