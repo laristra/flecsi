@@ -21,8 +21,6 @@
 #include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/common/storage_label.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/utils/common.hh>
-#include <flecsi/utils/hash.hh>
 
 namespace flecsi {
 namespace data {
@@ -54,7 +52,14 @@ struct field_member_u {
   using accessor = typename storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>::
     template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES...>::value>;
 
-  field_member_u() : fid_(register_field()) {}
+  field_member_u() : fid_(unique_fid_t::instance().next()) {
+
+    execution::context_t::instance().add_field_info(
+      topology::id<TOPOLOGY_TYPE>(),
+      STORAGE_CLASS,
+      {fid_, INDEX_SPACE, sizeof(DATA_TYPE)},
+      fid_);
+  }
 
   /*!
     Return a reference to the field instance associated with the given topology
@@ -70,23 +75,6 @@ struct field_member_u {
   } // operator()
 
 private:
-  /*!
-    Register this field definition with the runtime.
-   */
-
-  field_id_t register_field() const {
-
-    field_id_t fid = unique_fid_t::instance().next();
-
-    execution::context_t::instance().add_field_info(
-      topology::id<TOPOLOGY_TYPE>(),
-      STORAGE_CLASS,
-      {fid, INDEX_SPACE, sizeof(DATA_TYPE)},
-      fid);
-
-    return fid;
-  } // register_field
-
   field_id_t fid_;
 
 }; // struct field_member_u
