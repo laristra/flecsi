@@ -370,9 +370,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
-
-
     std::vector<std::vector<unsigned char> > allSendBuffer(mpiSize);
     std::vector<std::vector<unsigned char> > allRecvBuffer(mpiSize);
 
