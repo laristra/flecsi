@@ -152,7 +152,8 @@ before_script:
       spack repo rm laristra_flecsi;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install flecsi-deps%gcc@7.3.0 ~graphviz backend=legion ^${MPI_PACKAGE};
+      spack install flecsi-deps%gcc@7.3.0 ~graphviz backend=legion ^openmpi;
+      spack install flecsi-deps%gcc@7.3.0 ~graphviz backend=legion ^mpich;
       ) 200>${DEPS_LOCK}
 
 ###############
@@ -291,17 +292,9 @@ before_script:
 # Env Jobs #
 ############
 
-env_openmpi:
+env:
   extends: .env_template
   <<: *shell_def
-  variables:
-    <<: *openmpi
-
-env_mpich:
-  extends: .env_template
-  <<: *shell_def
-  variables:
-    <<: *mpich
 
 ###############
 # Canary Jobs #
