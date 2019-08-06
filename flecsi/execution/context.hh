@@ -87,11 +87,23 @@ struct context_u : public CONTEXT_POLICY {
   using field_info_map_t = std::unordered_map<size_t, field_info_store_t>;
 
   /*!
-   This type allows storage of launch_domains, key is a hash from the domain
-   name, value is # of index points
+   This type allows storage of launch_domains, the key is a hash from the
+   domain name, the value is # of index points.
    */
 
   using launch_domain_map_t = std::unordered_map<size_t, size_t>;
+
+  /*!
+    This type allows storage of subspace information.
+    @todo Currently only for unstructured mesh types. However, this needs to be
+    extended.)
+   */
+
+  struct index_subspace_info_t {
+    size_t index_subspace;
+    size_t capacity;
+    size_t size = 0;
+  }; // struct index_subspace_info_t
 
   /*--------------------------------------------------------------------------*
     Deleted contructor and assignment interfaces.
@@ -448,6 +460,49 @@ struct context_u : public CONTEXT_POLICY {
     return sita->second;
   } // get_field_info_store
 
+  /*!
+FIXME: Do we need to make this general for other topology types? This is
+currently only for unstructured mesh topologies.
+
+    Add an index subspace to the specified index space with the specified
+    capcity.
+
+    @param index_space The parent index space.
+    @param capacity    The maximum size of the subspace in indices.
+   */
+
+  void add_index_subspace(size_t index_subspace, size_t capacity) {
+    index_subspace_info_t info;
+    info.index_subspace = index_subspace;
+    info.capacity = capacity;
+
+    index_subspace_map_.emplace(index_subspace, std::move(info));
+  }
+
+  /*!
+FIXME: Do we need to make this general for other topology types? This is
+currently only for unstructured mesh topologies.
+
+    Add an index subspace struct instance.
+
+    @param info An initialized instance of index_subspace_info_t.
+   */
+
+  void add_index_subspace(const index_subspace_info_t & info) {
+    index_subspace_map_.emplace(info.index_subspace, info);
+  }
+
+  /*!
+FIXME: Do we need to make this general for other topology types? This is
+currently only for unstructured mesh topologies.
+
+    Return the map of index subspaces.
+   */
+
+  std::map<size_t, index_subspace_info_t> & index_subspace_info() {
+    return index_subspace_map_;
+  }
+
   /*--------------------------------------------------------------------------*
     Task Launch iterface.
    *--------------------------------------------------------------------------*/
@@ -549,12 +604,19 @@ private:
     Field data members.
    *--------------------------------------------------------------------------*/
 
-  /*!
+  /*
     This type allows storage of runtime field information per topology type.
     The size_t key is the topology type hash.
    */
 
   std::unordered_map<size_t, field_info_map_t> topology_field_info_map_;
+
+  /*
+    This type allows storage of runtime index subspace information.
+    The size_t key is the index subspace identifier.
+   */
+
+  std::map<size_t, index_subspace_info_t> index_subspace_map_;
 
   /*--------------------------------------------------------------------------*
     Launch data members.
@@ -568,13 +630,6 @@ private:
 
   size_t tasks_executed_ = 0;
 
-#if 0
-  // handle state
-  using data_reference_map_t = std::unordered_map<size_t, data_reference_state_t>;
-  std::unordered_map<std::pair<size_t, size_t>, std::unordered_map<size_t, data_reference_map_t>>
-
-  std::unordered_map<std::pair<size_t, size_t>, std::unordered_map<std::pair<size_t, size_t>, data_reference_state_t>>;
-#endif
 }; // struct context_u
 
 template<class CONTEXT_POLICY>

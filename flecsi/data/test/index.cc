@@ -23,9 +23,9 @@ using namespace flecsi::data;
 using namespace flecsi::topology;
 
 using index_field_t = index_field_member_u<double>;
-const index_field_t field;
+const index_field_t pressure_field;
 
-const auto pressure = field(flecsi_index_topology);
+const auto pressure = pressure_field(flecsi_index_topology);
 
 void
 assign(index_field_t::accessor<rw> p) {

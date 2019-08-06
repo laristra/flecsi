@@ -673,17 +673,14 @@ recover_without_attach_task(const Legion::Task * task,
   }
 } // recover_without_attach_task
 
-flecsi_internal_register_legion_task(checkpoint_with_attach_task,
-  loc | inner);
+flecsi_internal_register_legion_task(checkpoint_with_attach_task, loc | inner);
 
 flecsi_internal_register_legion_task(checkpoint_without_attach_task,
   loc | leaf);
 
-flecsi_internal_register_legion_task(recover_with_attach_task,
-  loc | inner);
+flecsi_internal_register_legion_task(recover_with_attach_task, loc | inner);
 
-flecsi_internal_register_legion_task(recover_without_attach_task,
-  loc | leaf);
+flecsi_internal_register_legion_task(recover_without_attach_task, loc | leaf);
 
 } // namespace io
 } // namespace flecsi

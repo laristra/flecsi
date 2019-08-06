@@ -159,7 +159,7 @@ struct mesh_storage_u {
     auto & context_ = execution::context_t::instance();
     auto & ssm = context_.index_subspace_info();
     auto itr = ssm.find(index_subspace);
-    clog_assert(itr != ssm.end(), "invalid index subspace");
+    flog_assert(itr != ssm.end(), "invalid index subspace");
     const execution::context_t::index_subspace_info_t & si = itr->second;
 
     auto & is = index_spaces[domain][dim];

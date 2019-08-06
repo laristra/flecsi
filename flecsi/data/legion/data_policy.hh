@@ -61,12 +61,14 @@ struct legion_data_policy_t {
     Field Accessor Interface.
    *--------------------------------------------------------------------------*/
 
+#if 0
   // FIXME: These can move up into common
   template<typename DATA_TYPE, size_t PRIVILEGES>
   using global_accessor_u = global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   using index_accessor_u = index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+#endif
 
 #if 0
   template<typename DATA_TYPE, size_t PRIVILEGES>
