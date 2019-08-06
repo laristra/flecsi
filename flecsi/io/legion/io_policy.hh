@@ -33,10 +33,28 @@ struct legion_hdf5_region_t {
   legion_hdf5_region_t(LogicalRegion lr,
     LogicalPartition lp,
     std::string lr_name,
-    std::map<FieldID, std::string> & field_string_map);
+    std::map<FieldID, std::string> & field_string_map)
+    : logical_region(lr), logical_partition(lp), logical_region_name(lr_name),
+        field_string_map(field_string_map) {    
+    Runtime * runtime = Runtime::get_runtime();
+    Context ctx = Runtime::get_context();
+    if(lr.get_dim() == 1) {
+      Domain domain = runtime->get_index_space_domain(ctx, lr.get_index_space());
+      dim_size[0] = domain.get_volume();
+      printf("ID logical region size %ld\n", dim_size[0]);
+    }
+    else {
+      Domain domain = runtime->get_index_space_domain(ctx, lr.get_index_space());
+      dim_size[0] = domain.get_volume();
+      printf("2D ID logical region size %ld\n", dim_size[0]);
+    }
+  }
+
   legion_hdf5_region_t(LogicalRegion lr,
     LogicalPartition lp,
-    std::string lr_name);
+    std::string lr_name)
+    : logical_region(lr), logical_partition(lp), logical_region_name(lr_name) {
+  }
 
   LogicalRegion logical_region;
   LogicalPartition logical_partition;
@@ -46,24 +64,230 @@ struct legion_hdf5_region_t {
 };
 
 struct legion_hdf5_t {
-  legion_hdf5_t(const char * file_name, int num_files);
-  legion_hdf5_t(std::string file_name, int num_files);
-  bool create_hdf5_file(int file_idx);
-  bool open_hdf5_file(int file_idx);
-  bool close_hdf5_file();
+  legion_hdf5_t(std::string file_name, int num_files)
+  : hdf5_file_id(-1), file_name(file_name), num_files(num_files) {
+    hdf5_region_vector.clear();
+    hdf5_group_map.clear();
+  }
+    
+  
+  legion_hdf5_t(const char * file_name, int num_files)
+  : legion_hdf5_t(std::string(file_name), num_files) {
+  }
+  
+  bool create_hdf5_file(int file_idx) {
+    assert(hdf5_file_id == -1);
+    std::string fname = file_name + std::to_string(file_idx);
+    hdf5_file_id =
+      H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    if(hdf5_file_id < 0) {
+      flog(error) << "H5Fcreate failed: " << hdf5_file_id << std::endl;
+      return false;
+    }
+    return true;
+  }
+  
+  bool open_hdf5_file(int file_idx) {
+    assert(hdf5_file_id == -1);
+    std::string fname = file_name + std::to_string(file_idx);
+    hdf5_file_id = H5Fopen(fname.c_str(), H5F_ACC_RDWR, H5P_DEFAULT);
+    if(hdf5_file_id < 0) {
+      flog(error) << "H5Fopen failed: " << hdf5_file_id << std::endl;
+      return false;
+    }
+    return true;
+  }
+  
+  bool close_hdf5_file() {
+    assert(hdf5_file_id >= 0);
+    H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
+    H5Fclose(hdf5_file_id);
+    hdf5_file_id = -1;
+    return true;
+  }
+  
   bool write_string_to_hdf5_file(const char * group_name,
     const char * dataset_name,
     const char * str,
-    size_t size);
+    size_t size) {
+
+    assert(hdf5_file_id >= 0);
+
+    herr_t status;
+    // TODO:FIXME
+    // status = H5Eset_auto(NULL, NULL);
+    // status = H5Gget_objinfo (hdf5_file_id, group_name, 0, NULL);
+
+    hid_t group_id;
+    std::map<std::string, hid_t>::iterator it;
+    it = hdf5_group_map.find(std::string(group_name));
+    if(it != hdf5_group_map.end()) {
+      group_id = H5Gopen2(hdf5_file_id, group_name, H5P_DEFAULT);
+    }
+    else {
+      group_id = H5Gcreate2(
+        hdf5_file_id, group_name, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      hdf5_group_map[std::string(group_name)] = group_id;
+    }
+    if(group_id < 0) {
+      flog(error) << "H5Gcreate2 failed: " << group_id << std::endl;
+      H5Fclose(hdf5_file_id);
+      return false;
+    }
+
+    hid_t filetype = H5Tcopy(H5T_C_S1);
+    status = H5Tset_size(filetype, H5T_VARIABLE);
+    hid_t memtype = H5Tcopy(H5T_C_S1);
+    status = H5Tset_size(memtype, H5T_VARIABLE);
+
+    hsize_t dims[1];
+    dims[0] = 1;
+    hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
+
+    const char * data[1];
+    data[0] = str;
+    hid_t dset = H5Dcreate2(group_id,
+      dataset_name,
+      filetype,
+      dataspace_id,
+      H5P_DEFAULT,
+      H5P_DEFAULT,
+      H5P_DEFAULT);
+    status = H5Dwrite(dset, memtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+
+    H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
+    status = H5Dclose(dset);
+    status = H5Sclose(dataspace_id);
+    status = H5Tclose(filetype);
+    status = H5Tclose(memtype);
+    status = H5Gclose(group_id);
+    return true;
+  }
+    
   bool read_string_from_hdf5_file(const char * group_name,
     const char * dataset_name,
-    std::string & str);
+    std::string & str) {
+    
+    assert(hdf5_file_id >= 0);
+
+    herr_t status;
+    // TODO:FIXME
+    // status = H5Eset_auto(NULL, NULL);
+    // status = H5Gget_objinfo (hdf5_file_id, group_name, 0, NULL);
+
+    hid_t group_id;
+    group_id = H5Gopen2(hdf5_file_id, group_name, H5P_DEFAULT);
+
+    if(group_id < 0) {
+      flog(error) << "H5Gcreate2 failed: " << group_id << std::endl;
+      H5Fclose(hdf5_file_id);
+      return false;
+    }
+
+    hid_t dset = H5Dopen2(group_id, dataset_name, H5P_DEFAULT);
+
+    hid_t filetype = H5Dget_type(dset);
+    hid_t memtype = H5Tcopy(H5T_C_S1);
+    status = H5Tset_size(memtype, H5T_VARIABLE);
+
+    char * data[1];
+    status = H5Dread(dset, memtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
+
+    str = str + std::string(data[0]);
+    H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
+
+    hid_t space = H5Dget_space(dset);
+    status = H5Dvlen_reclaim(memtype, space, H5P_DEFAULT, data);
+    status = H5Dclose(dset);
+    status = H5Tclose(filetype);
+    status = H5Tclose(memtype);
+    status = H5Gclose(group_id);
+    return true;    
+  }
+  
   void add_logical_region(LogicalRegion lr,
     LogicalPartition lp,
     std::string lr_name,
-    std::map<FieldID, std::string> field_string_map);
-  void add_hdf5_region(const legion_hdf5_region_t & hdf5_region);
-  bool create_datasets_for_regions(int file_idx);
+    std::map<FieldID, std::string> field_string_map) {
+    legion_hdf5_region_t h5_lr(lr, lp, lr_name, field_string_map);
+    hdf5_region_vector.push_back(h5_lr);    
+  }
+  
+  void add_hdf5_region(const legion_hdf5_region_t & hdf5_region) {
+    hdf5_region_vector.push_back(hdf5_region);
+  }
+  
+  bool create_datasets_for_regions(int file_idx) {
+    assert(hdf5_region_vector.size() > 0);
+    assert(hdf5_file_id >= 0);
+
+    Runtime * runtime = Runtime::get_runtime();
+    Context ctx = Runtime::get_context();
+
+    for(std::vector<legion_hdf5_region_t>::iterator lr_it =
+          hdf5_region_vector.begin();
+        lr_it != hdf5_region_vector.end();
+        ++lr_it) {
+      hid_t dataspace_id = -1;
+      if((*lr_it).logical_region.get_index_space().get_dim() == 1) {
+        LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+          ctx, (*lr_it).logical_partition, file_idx);
+        Domain domain =
+          runtime->get_index_space_domain(ctx, sub_lr.get_index_space());
+        hsize_t dims[1];
+        dims[0] = domain.get_volume();
+        dataspace_id = H5Screate_simple(1, dims, NULL);
+      }
+      else {
+        LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+          ctx, (*lr_it).logical_partition, file_idx);
+        Domain domain =
+          runtime->get_index_space_domain(ctx, sub_lr.get_index_space());
+        hsize_t dims[1];
+        dims[0] = domain.get_volume();
+        dataspace_id = H5Screate_simple(1, dims, NULL);
+      }
+      if(dataspace_id < 0) {
+        flog(error) << "H5Screate_simple failed: " << dataspace_id << std::endl;
+        H5Fclose(hdf5_file_id);
+        return false;
+      }
+  #if 0
+      hid_t group_id = H5Gcreate2(file_id, (*lr_it).logical_region_name.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+      if (group_id < 0) {
+        printf("H5Gcreate2 failed: %lld\n", (long long)group_id);
+        H5Sclose(dataspace_id);
+        H5Fclose(hdf5_file_id);
+        return false;
+      }
+  #endif
+      for(std::map<FieldID, std::string>::iterator it =
+            (*lr_it).field_string_map.begin();
+          it != (*lr_it).field_string_map.end();
+          ++it) {
+        const char * dataset_name = (it->second).c_str();
+        hid_t dataset = H5Dcreate2(hdf5_file_id,
+          dataset_name,
+          H5T_IEEE_F64LE,
+          dataspace_id,
+          H5P_DEFAULT,
+          H5P_DEFAULT,
+          H5P_DEFAULT);
+        if(dataset < 0) {
+          flog(error) << "H5Dcreate2 failed: " << dataset << std::endl;
+          //    H5Gclose(group_id);
+          H5Sclose(dataspace_id);
+          H5Fclose(hdf5_file_id);
+          return false;
+        }
+        H5Dclose(dataset);
+      }
+      //   H5Gclose(group_id);
+      H5Sclose(dataspace_id);
+    }
+    H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
+    return true;
+  }
 
   hid_t hdf5_file_id;
   std::string file_name;
@@ -78,34 +302,74 @@ struct legion_io_policy_t {
   using launch_space_t = IndexSpace;
   using field_reference_t = data::field_reference_t;
   
-  legion_io_policy_t();
+  legion_io_policy_t() {
+    file_is_map.clear();
+    file_ip_map.clear();
+    file_lp_map.clear();
+  }
   
-  ~legion_io_policy_t();
+  ~legion_io_policy_t() {
+    Runtime * runtime = Runtime::get_runtime();
+    Context ctx = Runtime::get_context();
+    for (std::map<size_t, IndexSpace>::iterator it = file_is_map.begin();
+         it != file_is_map.end(); 
+         ++it) {
+      if(it->second != IndexSpace::NO_SPACE) {
+        printf("clean up default_index_topology_file_is hash %ld\n", it->first);
+        runtime->destroy_index_space(ctx, it->second);
+      }   
+    }
+    file_is_map.clear();
+    file_ip_map.clear();
+    file_lp_map.clear();
+  }
 
-  legion_hdf5_t init_hdf5_file(const char * file_name, int num_files);
+  legion_hdf5_t init_hdf5_file(const char * file_name, int num_files) {
+    return legion_hdf5_t(file_name, num_files);
+  }
 
-  bool create_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx);
+  bool create_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx) {
+    return hdf5_file.create_hdf5_file(file_idx);
+  }
 
-  bool open_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx);
+  bool open_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx) {
+    return hdf5_file.open_hdf5_file(file_idx);
+  }
 
-  bool close_hdf5_file(legion_hdf5_t & hdf5_file);
+  bool close_hdf5_file(legion_hdf5_t & hdf5_file) {
+    return hdf5_file.close_hdf5_file();
+  }
 
-  bool create_datasets_for_regions(legion_hdf5_t & hdf5_file, int file_idx);
+  bool create_datasets_for_regions(legion_hdf5_t & hdf5_file, int file_idx) {
+    return hdf5_file.create_datasets_for_regions(file_idx);
+  }
 
   bool write_string_to_hdf5_file(legion_hdf5_t & hdf5_file,
     int rank_id,
     const char * group_name,
     const char * dataset_name,
     const char * str,
-    size_t size);
+    size_t size) {
+    return hdf5_file.write_string_to_hdf5_file(
+      group_name, dataset_name, str, size);
+  }
 
   bool read_string_from_hdf5_file(legion_hdf5_t & hdf5_file,
     int file_idx,
     const char * group_name,
     const char * dataset_name,
-    std::string & str);
+    std::string & str) {
+    return hdf5_file.read_string_from_hdf5_file(group_name, dataset_name, str);
+  }
   
-  void add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector);
+  void add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector) {
+    for(std::vector<legion_hdf5_region_t>::iterator it =
+          hdf5_region_vector.begin();
+        it != hdf5_region_vector.end();
+        ++it) {
+      hdf5_file.add_hdf5_region(*it);
+    }
+  }
   
   void add_default_index_topology(legion_hdf5_t & hdf5_file);
   
