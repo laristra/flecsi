@@ -33,7 +33,8 @@ namespace flecsi {
 namespace data {
 
 /*!
-
+  The field_info_t type provides a structure for capturing runtime field
+  information.
  */
 
 struct field_info_t {

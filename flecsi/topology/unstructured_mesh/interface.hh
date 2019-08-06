@@ -200,7 +200,7 @@ public:
 
   // Don't allow the mesh to be copied or copy constructed
 
-  don't allow mesh to be assigned unstructured_mesh_topology_u & operator=(
+  // don't allow mesh to be assigned unstructured_mesh_topology_u & operator=(
     const unstructured_mesh_topology_u &) = delete;
 
   Allow move operations unstructured_mesh_topology_u(

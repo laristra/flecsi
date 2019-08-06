@@ -28,7 +28,7 @@
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/structured_mesh/interface.hh>
-//#include <flecsi/topology/unstructured_mesh/interface.hh>
+#include <flecsi/topology/unstructured_mesh/interface.hh>
 #endif
 
 namespace flecsi {
@@ -102,7 +102,7 @@ struct storage_class_u<storage_label_t::dense, topology::global_topology_t> {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   using accessor = global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
-}; // struct storage_class_u<storage_labal_t::dense, global_topology_t>
+}; // struct storage_class_u
 
 /*----------------------------------------------------------------------------*
   Index Topology.
@@ -165,7 +165,7 @@ struct storage_class_u<storage_label_t::dense, topology::index_topology_t> {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   using accessor = index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
 
-}; // struct storage_class_u<storage_labal_t::dense, index_topology_t>
+}; // struct storage_class_u
 
 /*----------------------------------------------------------------------------*
   NTree Topology.
@@ -188,6 +188,64 @@ namespace structured_mesh_topology {} // namespace structured_mesh_topology
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
+
+namespace unstructured_mesh_topology {
+
+/*!
+  Forward dense accessor type for bind friend.
+ */
+
+template<typename DATA_TYPE, size_t PRIVILEGES>
+struct dense_accessor_u;
+
+/*!
+  Friend function to bind mapped data into the accessor. This lets init_views
+  to set the private data of the accessor.
+ */
+
+#if 0
+template<typename DATA_TYPE, size_t PRIVILEGES>
+void
+bind(dense_accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
+  a.data_ = data;
+} // bind
+#endif
+
+template<typename DATA_TYPE, size_t PRIVILEGES>
+struct dense_accessor_u : public field_reference_t {
+
+  dense_accessor_u(field_reference_t const & ref) : field_reference_t(ref) {}
+
+  /*!
+    Provide logical array-based access to the data referenced by this
+    accessor. \em Const version.
+
+    @param index The index of the logical array to access.
+   */
+
+  const DATA_TYPE & operator()(size_t index) const {} // operator()
+
+  /*!
+    Provide logical array-based access to the data referenced by this
+    accessor.
+
+    @param index The index of the logical array to access.
+   */
+
+  DATA_TYPE & operator()(size_t index) {} // operator()
+
+private:
+  // friend void bind<DATA_TYPE, PRIVILEGES>(dense_accessor_u & a, DATA_TYPE *
+  // data);
+
+}; // struct dense_accessor_u
+
+} // namespace unstructured_mesh_topology
+
+template<typename POLICY_TYPE>
+struct storage_class_u<storage_label_t::dense,
+  topology::unstructured_mesh_topology_u<POLICY_TYPE>> {
+}; // struct storage_class_u
 
 #if 0
 namespace unstructured_mesh_topology {

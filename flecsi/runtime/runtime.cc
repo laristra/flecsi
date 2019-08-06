@@ -82,7 +82,7 @@ main(int argc, char ** argv) {
     if(runtime_.finalize_runtimes(argc, argv, exit_mode_t::help)) {
       return 1;
     }
-  
+
     return 0;
   } // if
 
