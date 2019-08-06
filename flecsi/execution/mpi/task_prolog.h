@@ -321,23 +321,16 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   void launch_copies() {
 
-    int mpiSize;
-    MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
-
     auto & context = context_t::instance();
     const int my_color = context.color();
+    const int num_colors = context.colors();
 
-    // index_space, rank, indices
-    std::map<int, std::vector<std::vector<int> > > sharedIndices;
-    std::map<int, std::vector<std::vector<int> > > ghostIndices;
+    std::vector<int> sharedSize(num_colors, 0);
+    std::vector<int> ghostSize(num_colors, 0);
 
-    std::vector<int> sharedSize(mpiSize, 0);
-    std::vector<int> ghostSize(mpiSize, 0);
+    std::map<int, std::vector<int> > modifiedFields;
 
     for(auto const & [index_space, fids] : fidsInIndexSpace) {
-
-      sharedIndices[index_space].resize(mpiSize);
-      ghostIndices[index_space].resize(mpiSize);
 
       const auto index_coloring = context_t::instance().coloring(index_space);
 
@@ -348,38 +341,36 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
            context.hasBeenModified[index_space].count(fid) &&
            context.hasBeenModified[index_space][fid]) {
 
+          modifiedFields[index_space].push_back(fid);
+
           sumOfTemplateSizes += context.templateParamSize[fid];
 
         }
 
       }
 
-      size_t ghost_cnt = 0;
       for(auto const & ghost : index_coloring.ghost) {
-        ghostIndices[index_space][ghost.rank].push_back(ghost_cnt);
         ghostSize[ghost.rank] += sumOfTemplateSizes;
-        ++ghost_cnt;
       }
 
       for(auto const & shared : index_coloring.shared) {
         for(auto const & s : shared.shared) {
-          sharedIndices[index_space][s].push_back(shared.offset);
           sharedSize[s] += sumOfTemplateSizes;
         }
       }
 
     }
 
-    std::vector<std::vector<unsigned char> > allSendBuffer(mpiSize);
-    std::vector<std::vector<unsigned char> > allRecvBuffer(mpiSize);
+    std::vector<std::vector<unsigned char> > allSendBuffer(num_colors);
+    std::vector<std::vector<unsigned char> > allRecvBuffer(num_colors);
 
-    std::vector<MPI_Request> allSendRequests(mpiSize);
-    std::vector<MPI_Request> allRecvRequests(mpiSize);
+    std::vector<MPI_Request> allSendRequests(num_colors);
+    std::vector<MPI_Request> allRecvRequests(num_colors);
 
 
     // Post receives
 
-    for(int rank = 0; rank < mpiSize; ++rank) {
+    for(int rank = 0; rank < num_colors; ++rank) {
 
       const auto & bufSize = ghostSize[rank];
 
@@ -400,7 +391,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     // pack and send data
 
-    for(int rank = 0; rank < mpiSize; ++rank) {
+    for(int rank = 0; rank < num_colors; ++rank) {
 
       const auto & bufSize = sharedSize[rank];
 
@@ -413,24 +404,19 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       size_t sendBufferOffset = 0;
 
-      for(auto const & [index_space, fids] : fidsInIndexSpace) {
+      for(auto const & [index_space, fids] : modifiedFields) {
 
         for(auto const & fid : fids) {
 
-          if(context.hasBeenModified.count(index_space) &&
-             context.hasBeenModified[index_space].count(fid) &&
-             context.hasBeenModified[index_space][fid]) {
+          for(auto const & ind : context.sharedIndices[fid][rank]) {
 
-            for(auto const & ind : sharedIndices[index_space][rank]) {
-
-              memcpy(&allSendBuffer[rank][sendBufferOffset],
-                     &sharedDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
-                     context.templateParamSize[fid]);
-              sendBufferOffset += context.templateParamSize[fid];
-
-            }
+            memcpy(&allSendBuffer[rank][sendBufferOffset],
+                    &sharedDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
+                    context.templateParamSize[fid]);
+            sendBufferOffset += context.templateParamSize[fid];
 
           }
+
 
         }
 
@@ -453,7 +439,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     }
 
     // unpack data
-    for(int rank = 0; rank < mpiSize; ++rank) {
+    for(int rank = 0; rank < num_colors; ++rank) {
 
       const auto & bufSize = ghostSize[rank];
 
@@ -462,24 +448,17 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       size_t recvBufferOffset = 0;
 
-      for(auto const & [index_space, fids] : fidsInIndexSpace) {
+      for(auto const & [index_space, fids] : modifiedFields) {
 
         for(auto const & fid : fids) {
 
-          if(context.hasBeenModified.count(index_space) &&
-             context.hasBeenModified[index_space].count(fid) &&
-             context.hasBeenModified[index_space][fid]) {
+          auto const & start = context.ghostIndices[fid][rank][0];
+          auto const & num = context.ghostIndices[fid][rank].size();
 
-            for(auto const & ind : ghostIndices[index_space][rank]) {
-
-              memcpy(&ghostDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
-                     &allRecvBuffer[rank][recvBufferOffset],
-                     context.templateParamSize[fid]);
-              recvBufferOffset += context.templateParamSize[fid];
-
-            }
-
-          }
+          memcpy(&ghostDataBuffers[index_space][fid][start*context.templateParamSize[fid]],
+                    &allRecvBuffer[rank][recvBufferOffset],
+                    num*context.templateParamSize[fid]);
+          recvBufferOffset += num*context.templateParamSize[fid];
 
         }
 
