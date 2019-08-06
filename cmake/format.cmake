@@ -19,9 +19,10 @@ endif()
 if(EXISTS ${PROJECT_SOURCE_DIR}/.clang-format)
 
   set(CLANG-FORMAT_BASE-VERSION "7.0.0")
+  set(GIT-BASE-VERSION "1.8.5")
 
   find_package(CLANG_FORMAT ${CLANG-FORMAT_BASE-VERSION})
-  find_package(Git)
+  find_package(Git ${GIT-BASE-VERSION})
 
   if (CLANG_FORMAT_FOUND AND GIT_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/.git)
 

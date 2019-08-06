@@ -52,12 +52,11 @@ struct field_member_u {
 
   using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
 
-  template<size_t ... PRIVILEGES>
+  template<size_t... PRIVILEGES>
   using accessor = typename storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>::
-    template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES ...>::value>;
+    template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES...>::value>;
 
-  field_member_u()
-    : fid_(register_field()) {}
+  field_member_u() : fid_(register_field()) {}
 
   /*!
     Return a reference to the field instance associated with the given topology
@@ -66,7 +65,8 @@ struct field_member_u {
     @param topology_reference A reference to a valid topology instance.
    */
 
-  field_reference_t operator()(topology_reference_t const & topology_reference) const {
+  field_reference_t operator()(
+    topology_reference_t const & topology_reference) const {
 
     return {fid_, topology_reference.identifier()};
   } // operator()
