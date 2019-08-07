@@ -454,11 +454,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
           for(const auto & ind : context.ghostIndices[fid][rank]) {
 
-            memcpy(&ghostDataBuffers[index_space][fid][ind*context.templateParamSize[fid]],
-                    &allRecvBuffer[rank][recvBufferOffset],
-                    context.templateParamSize[fid]);
-
-            recvBufferOffset += context.templateParamSize[fid];
+            memcpy(&ghostDataBuffers[index_space][fid][ind[0]*context.templateParamSize[fid]],
+                   &allRecvBuffer[rank][recvBufferOffset],
+                   ind[1]*context.templateParamSize[fid]);
+            recvBufferOffset += ind[1]*context.templateParamSize[fid];
 
           }
 
