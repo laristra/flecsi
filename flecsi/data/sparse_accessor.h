@@ -147,7 +147,7 @@ struct accessor_u<data::sparse,
 
   template<typename E>
   T & operator()(E * e, size_t entry) {
-    return this->operator()(e->template id<0>(), entry);
+    return this->operator()(e->id(), entry);
   } // operator ()
 
   // for row 'index', return pointer to first entry not less

@@ -85,6 +85,7 @@ remap_shared_entities() {
       auto n = counts[i];
       if(n > 0) {
         auto rank = i;
+        clog_assert( rank != my_color, "Why would I be receiving data from myself?" );
         auto & buf = recv_buffers[i];
         buf.resize(n);
         requests.resize(requests.size() + 1);
@@ -97,6 +98,7 @@ remap_shared_entities() {
     // send the data
     for(const auto & comm_pair : send_buffers) {
       const auto & rank = comm_pair.first;
+      clog_assert( rank != my_color, "Why would I be sending data to myself?" );
       const auto & buf = comm_pair.second;
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();

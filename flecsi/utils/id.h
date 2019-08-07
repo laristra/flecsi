@@ -55,8 +55,8 @@ public:
   template<std::size_t D, std::size_t M>
   static id_ make(const std::size_t local_id,
     const std::size_t partition_id = 0,
-    const std::size_t flags = 0,
-    const std::size_t global = 0) {
+    const std::size_t global = 0,
+    const std::size_t flags = 0) {
     id_ global_id;
     global_id.dimension_ = D;
     global_id.domain_ = M;
