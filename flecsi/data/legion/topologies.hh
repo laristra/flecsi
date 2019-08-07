@@ -18,6 +18,7 @@
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
+#include <flecsi/topology/unstructured_mesh/types.hh>
 #include <flecsi/utils/flog.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -163,7 +164,8 @@ struct topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
   using coloring_t = typename ntree_topology_u<POLICY_TYPE>::coloring_t;
 
   static void create(topology_reference_t const & topology_reference,
-    coloring_t const & coloring) {}
+    coloring_t const & coloring) {
+  } // create
 
   static void destroy(topology_reference_t const & topology_reference) {}
 
@@ -202,6 +204,38 @@ struct topology_instance_u<unstructured_mesh_topology_u<POLICY_TYPE>> {
 
   using topology_reference_t =
     topology_reference_u<unstructured_mesh_topology_u<POLICY_TYPE>>;
+  using coloring_t = typename topology::unstructured_mesh_topology_base_t::coloring_t;
+
+  static void create(topology_reference_t const & topology_reference,
+    coloring_t const & coloring) {
+
+#if 0
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
+    auto & flecsi_context = execution::context_t::instance();
+
+    auto & dense_field_info_store = flecsi_context.get_field_info_store(
+      /* unstructured_mesh_topology_u<POLICY_TYPE> */, storage_label_t::dense);
+
+    for(size_t is{0}; is<coloring.index_spaces; ++is) {
+
+      for(auto const & fi : field_info_store.field_info()) {
+        allocator.allocate_field(fi.type_size, fi.fid);
+      } // for
+
+
+    } // for
+
+    auto & ragged_field_info_store = flecsi_context.get_field_info_store(
+      /* unstructured_mesh_topology_u<POLICY_TYPE> */, storage_label_t::ragged);
+
+    auto & sparse_field_info_store = flecsi_context.get_field_info_store(
+      /* unstructured_mesh_topology_u<POLICY_TYPE> */, storage_label_t::sparse);
+
+#endif
+  } // create
+
+  static void destroy(topology_reference_t const & topology_reference) {}
 
 }; // unstructured_mesh_topology_u specialization
 

@@ -73,6 +73,15 @@ struct unstructured_mesh_runtime_data_t {
 }; // struct unstructured_mesh_runtime_data_t
 #endif
 
+struct umesh_dense_rd_t {
+};
+
+struct umesh_rd_t {
+  // dense
+  // sparse...
+}; // struct umesh_runtime_data_t
+
+#if 0
 struct unstructured_mesh_dense_runtime_data_t {
 }; // struct unstructured_mesh_dense_runtime_data_t
 
@@ -87,6 +96,7 @@ struct unstructured_mesh_subspace_runtime_data_t {
 
 struct structured_mesh_runtime_data_t {
 }; // struct structured_mesh_runtime_data_t
+#endif
 
 } // namespace legion
 } // namespace data

@@ -220,6 +220,23 @@ struct legion_context_policy_t {
     return ti->second;
   } // index_topology_instance
 
+  /*!
+    Unstructured mesh topology instances.
+   */
+
+  umesh_runtime_data_t & umesh_topology_instance(size_t instance_identifier) {
+    return umesh_topology_instances_[instance_identifier];
+  } // umesh_topology_instance
+
+  umesh_runtime_data_t umesh_topology_instance(
+    size_t instance_identifier) const {
+    auto ti = umesh_topology_instances_.find(instance_identifier);
+    flog_assert(ti != umesh_topology_instances_.end(),
+      "umesh topology instance does not exists");
+
+    return ti->second;
+  } // umesh_topology_instance
+
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
   //--------------------------------------------------------------------------//
@@ -509,6 +526,7 @@ private:
 
   global_runtime_data_t global_topology_instance_;
   std::unordered_map<size_t, index_runtime_data_t> index_topology_instances_;
+  std::unordered_map<size_t, umesh_runtime_data_t> umesh_topology_instances_;
 
   size_t process_ = std::numeric_limits<size_t>::max();
   size_t processes_ = std::numeric_limits<size_t>::max();

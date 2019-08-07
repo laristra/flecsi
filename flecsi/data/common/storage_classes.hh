@@ -203,13 +203,13 @@ struct dense_accessor_u;
   to set the private data of the accessor.
  */
 
-#if 0
 template<typename DATA_TYPE, size_t PRIVILEGES>
 void
-bind(dense_accessor_u<DATA_TYPE, PRIVILEGES> & a, DATA_TYPE * data) {
+bind(dense_accessor_u<DATA_TYPE, PRIVILEGES> & a, size_t size,
+  DATA_TYPE * data) {
+  a.size_ = size;
   a.data_ = data;
 } // bind
-#endif
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct dense_accessor_u : public field_reference_t {
@@ -218,25 +218,26 @@ struct dense_accessor_u : public field_reference_t {
 
   /*!
     Provide logical array-based access to the data referenced by this
-    accessor. \em Const version.
-
-    @param index The index of the logical array to access.
-   */
-
-  const DATA_TYPE & operator()(size_t index) const {} // operator()
-
-  /*!
-    Provide logical array-based access to the data referenced by this
     accessor.
 
     @param index The index of the logical array to access.
    */
 
-  DATA_TYPE & operator()(size_t index) {} // operator()
+  DATA_TYPE & operator()(size_t index) const {
+    flog_assert(index < size_, "index out of range");
+    return data_[index];
+  } // operator()
+
+  DATA_TYPE * data() const {
+    return data_;
+  } // data
 
 private:
-  // friend void bind<DATA_TYPE, PRIVILEGES>(dense_accessor_u & a, DATA_TYPE *
-  // data);
+  friend void bind<DATA_TYPE, PRIVILEGES>(dense_accessor_u & a, size_t size, DATA_TYPE *
+    data);
+
+  size_t size_;
+  DATA_TYPE * data_;
 
 }; // struct dense_accessor_u
 
