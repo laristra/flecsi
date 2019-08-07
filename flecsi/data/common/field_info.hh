@@ -54,7 +54,7 @@ struct field_info_t {
 
 struct field_info_store_t {
 
-  void add_field_info(field_info_t const & fi, std::size_t key) {
+  void add_field_info(field_info_t const & fi, size_t key) {
     flog_devel(info) << "Registering field info" << std::endl
                      << "\tkey: " << key << std::endl
                      << "\tfid: " << fi.fid << std::endl

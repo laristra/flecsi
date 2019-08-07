@@ -164,8 +164,7 @@ struct topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
   using coloring_t = typename ntree_topology_u<POLICY_TYPE>::coloring_t;
 
   static void create(topology_reference_t const & topology_reference,
-    coloring_t const & coloring) {
-  } // create
+    coloring_t const & coloring) {} // create
 
   static void destroy(topology_reference_t const & topology_reference) {}
 
@@ -204,19 +203,20 @@ struct topology_instance_u<unstructured_mesh_topology_u<POLICY_TYPE>> {
 
   using topology_reference_t =
     topology_reference_u<unstructured_mesh_topology_u<POLICY_TYPE>>;
-  using coloring_t = typename topology::unstructured_mesh_topology_base_t::coloring_t;
+  using coloring_t =
+    typename topology::unstructured_mesh_topology_base_t::coloring_t;
 
   static void create(topology_reference_t const & topology_reference,
     coloring_t const & coloring) {
 
-#if 0
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
     auto & flecsi_context = execution::context_t::instance();
 
     auto & dense_field_info_store = flecsi_context.get_field_info_store(
-      /* unstructured_mesh_topology_u<POLICY_TYPE> */, storage_label_t::dense);
+      POLICY_TYPE::type_identifier_hash, storage_label_t::dense);
 
+#if 0
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
 
       for(auto const & fi : field_info_store.field_info()) {

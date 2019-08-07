@@ -205,7 +205,8 @@ struct dense_accessor_u;
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 void
-bind(dense_accessor_u<DATA_TYPE, PRIVILEGES> & a, size_t size,
+bind(dense_accessor_u<DATA_TYPE, PRIVILEGES> & a,
+  size_t size,
   DATA_TYPE * data) {
   a.size_ = size;
   a.data_ = data;
@@ -233,8 +234,9 @@ struct dense_accessor_u : public field_reference_t {
   } // data
 
 private:
-  friend void bind<DATA_TYPE, PRIVILEGES>(dense_accessor_u & a, size_t size, DATA_TYPE *
-    data);
+  friend void bind<DATA_TYPE, PRIVILEGES>(dense_accessor_u & a,
+    size_t size,
+    DATA_TYPE * data);
 
   size_t size_;
   DATA_TYPE * data_;

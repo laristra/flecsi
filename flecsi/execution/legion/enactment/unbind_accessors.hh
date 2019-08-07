@@ -39,7 +39,7 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-using namespace flecsi::data::legion;
+using namespace flecsi::data;
 
 /*!
   The unbind_accessors_t type is called to walk the user task arguments inside

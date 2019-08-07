@@ -46,7 +46,7 @@
 namespace flecsi {
 namespace execution {
 
-using namespace flecsi::data::legion;
+using namespace flecsi::data;
 using namespace boost::program_options;
 
 const size_t FLECSI_TOP_LEVEL_TASK_ID = 0;
@@ -199,7 +199,7 @@ struct legion_context_policy_t {
     Global topology instance.
    */
 
-  global_runtime_data_t & global_topology_instance() {
+  auto & global_topology_instance() {
     return global_topology_instance_;
   } // global_topology_instance
 
@@ -207,12 +207,11 @@ struct legion_context_policy_t {
     Index topology instances.
    */
 
-  index_runtime_data_t & index_topology_instance(size_t instance_identifier) {
+  auto & index_topology_instance(size_t instance_identifier) {
     return index_topology_instances_[instance_identifier];
   } // index_topology_instance
 
-  index_runtime_data_t index_topology_instance(
-    size_t instance_identifier) const {
+  auto index_topology_instance(size_t instance_identifier) const {
     auto ti = index_topology_instances_.find(instance_identifier);
     flog_assert(ti != index_topology_instances_.end(),
       "index topology instance does not exists");
@@ -224,18 +223,17 @@ struct legion_context_policy_t {
     Unstructured mesh topology instances.
    */
 
-  umesh_runtime_data_t & umesh_topology_instance(size_t instance_identifier) {
-    return umesh_topology_instances_[instance_identifier];
-  } // umesh_topology_instance
+  auto & unstructured_mesh_topology_instance(size_t instance_identifier) {
+    return unstructured_mesh_topology_instances_[instance_identifier];
+  } // unstructured_mesh_topology_instance
 
-  umesh_runtime_data_t umesh_topology_instance(
-    size_t instance_identifier) const {
-    auto ti = umesh_topology_instances_.find(instance_identifier);
-    flog_assert(ti != umesh_topology_instances_.end(),
+  auto unstructured_mesh_topology_instance(size_t instance_identifier) const {
+    auto ti = unstructured_mesh_topology_instances_.find(instance_identifier);
+    flog_assert(ti != unstructured_mesh_topology_instances_.end(),
       "umesh topology instance does not exists");
 
     return ti->second;
-  } // umesh_topology_instance
+  } // unstructured_mesh_topology_instance
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -524,9 +522,11 @@ private:
     Runtime data.
    *--------------------------------------------------------------------------*/
 
-  global_runtime_data_t global_topology_instance_;
-  std::unordered_map<size_t, index_runtime_data_t> index_topology_instances_;
-  std::unordered_map<size_t, umesh_runtime_data_t> umesh_topology_instances_;
+  global_topology::runtime_data_t global_topology_instance_;
+  std::unordered_map<size_t, index_topology::runtime_data_t>
+    index_topology_instances_;
+  std::unordered_map<size_t, unstructured_mesh::runtime_data_t>
+    unstructured_mesh_topology_instances_;
 
   size_t process_ = std::numeric_limits<size_t>::max();
   size_t processes_ = std::numeric_limits<size_t>::max();

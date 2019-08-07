@@ -45,7 +45,6 @@ namespace execution {
 namespace legion {
 
 using namespace flecsi::data;
-using namespace flecsi::data::legion;
 
 /*!
   The init_args_t type can be called to walk task args before the
@@ -156,7 +155,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
         .get_field_info(accessor.identifier())
         .fid;
 
-    index_runtime_data_t instance_data =
+    auto instance_data =
       flecsi_context.index_topology_instance(accessor.topology_identifier());
 
     flog_assert(instance_data.colors = domain_,
