@@ -26,7 +26,7 @@ class FlecsiDeps(Package):
     variant('flecstan', default=False,
             description='Build FleCSI Static Analyzer')
 
-    depends_on('cmake@3.12',  type='build')
+    depends_on('cmake@3.12.4',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
     depends_on('cinch@1.01:', type='build')
     depends_on('mpi')
