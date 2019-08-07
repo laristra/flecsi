@@ -186,8 +186,8 @@ before_script:
         -DENABLE_COVERAGE_BUILD=ON \
         ..
     make -k VERBOSE=1 -j2 -l80
-    mkdir -p ${CI_PROJECT_DIR}/install
-    make install DESTDIR=${CI_PROJECT_DIR}/install
+    mkdir -p ${CI_PROJECT_DIR}/build/install
+    make install DESTDIR=${CI_PROJECT_DIR}/build/install
     ccache -s
 
 ##############
@@ -235,7 +235,7 @@ before_script:
   script: &tutorials_script
     - echo 'Start tutorials checking'
     - cd ${CI_PROJECT_DIR}/build/
-    - source ${CI_PROJECT_DIR}/install/bin/flecsi-tutorial.sh
+    - source ${CI_PROJECT_DIR}/build/install/bin/flecsi-tutorial.sh
     - cd ../flecsi-tutorial
 
     # Tutorial 00-driver
@@ -337,6 +337,7 @@ build:centOS_mpi:
     <<: *openmpi
   script:
     - *build_script
+    - *test_script
 
 build:centOS_mpi_release:
   extends: build:centOS_mpi
@@ -373,6 +374,7 @@ build:centOS_mpich_mpi:
     <<: *mpich
   script:
     - *build_script
+    - *test_script
 
 build:centOS_mpich_mpi_release:
   extends: build:centOS_mpich_mpi
@@ -410,6 +412,7 @@ build:centOS_legion:
   allow_failure: true 
   script:
     - *build_script
+    - *test_script
 
 build:centOS_legion_release:
   extends: build:centOS_legion
@@ -447,6 +450,7 @@ build:centOS_mpich_legion:
   allow_failure: true 
   script:
     - *build_script
+    - *test_script
 
 build:centOS_mpich_legion_release:
   extends: build:centOS_mpich_legion
@@ -483,6 +487,7 @@ build:centOS_hpx:
     <<: *openmpi
   script:
     - *build_script
+    - *test_script
   allow_failure: true
 
 build:centOS_mpich_hpx_clang:
@@ -497,257 +502,275 @@ build:centOS_hpx_intel_release:
     <<: *buildtype_release
     <<: *compiler_intel
 
+build:centOS_mpi.ignoreNoCI:
+  extends: build:centOS_mpi
+  variables:
+    <<: *ignore_noci
+  allow_failure: true
+
+build:centOS_legion.ignoreNoCI:
+  extends: build:centOS_legion
+  variables:
+    <<: *ignore_noci
+  allow_failure: true
+
+build:centOS_hpx.ignoreNoCI:
+  extends: build:centOS_hpx
+  variables:
+    <<: *ignore_noci
+  allow_failure: true
+
 #############
 # Test Jobs #
 #############
 
-test:centOS_mpi:
-  extends: .test
-  <<: *shell_def
-  variables:
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  script:
-    - *test_script
-  dependencies:
-    - build:centOS_mpi
-
-test:centOS_mpi_release:
-  extends: test:centOS_mpi
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpi_release
-
-test:centOS_mpi_clang:
-  extends: test:centOS_mpi
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:centOS_mpi_clang
-
-test:centOS_mpi_clang_release:
-  extends: test:centOS_mpi_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpi_clang_release
-
-test:centOS_mpi_intel:
-  extends: test:centOS_mpi
-  variables:
-    <<: *compiler_intel
-  dependencies:
-    - build:centOS_mpi_intel
-
-test:centOS_mpi_intel_release:
-  extends: test:centOS_mpi_intel
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpi_intel_release
-
-test:centOS_mpich_mpi:
-  extends: .test
-  <<: *shell_def
-  variables:
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *mpich
-  script:
-    - *test_script
-  dependencies:
-    - build:centOS_mpich_mpi
-
-test:centOS_mpich_mpi_release:
-  extends: test:centOS_mpich_mpi
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpich_mpi_release
-
-test:centOS_mpich_mpi_clang:
-  extends: test:centOS_mpich_mpi
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:centOS_mpich_mpi_clang
-
-test:centOS_mpich_mpi_clang_release:
-  extends: test:centOS_mpich_mpi_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpich_mpi_clang_release
-
-test:centOS_mpich_mpi_intel:
-  extends: test:centOS_mpich_mpi
-  variables:
-    <<: *compiler_intel
-  dependencies:
-    - build:centOS_mpich_mpi_intel
-
-test:centOS_mpich_mpi_intel_release:
-  extends: test:centOS_mpich_mpi_intel
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpich_mpi_intel_release
-
-test:centOS_legion:
-  extends: .test
-  <<: *shell_def
-  variables:
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  allow_failure: true 
-  script:
-    - *test_script
-  dependencies:
-    - build:centOS_legion
-
-test:centOS_legion_release:
-  extends: test:centOS_legion
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_legion_release
-
-test:centOS_legion_clang:
-  extends: test:centOS_legion
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:centOS_legion_clang
-
-test:centOS_legion_clang_release:
-  extends: test:centOS_legion_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_legion_clang_release
-
-test:centOS_legion_intel:
-  extends: test:centOS_legion
-  variables:
-    <<: *compiler_intel
-  dependencies:
-    - build:centOS_legion_intel
-
-test:centOS_legion_intel_release:
-  extends: test:centOS_legion_intel
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_legion_intel_release
-
-test:centOS_mpich_legion:
-  extends: .test
-  <<: *shell_def
-  variables:
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *mpich
-  allow_failure: true 
-  script:
-    - *test_script
-  dependencies:
-    - build:centOS_mpich_legion
-
-test:centOS_mpich_legion_release:
-  extends: test:centOS_mpich_legion
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpich_legion_release
-
-test:centOS_mpich_legion_clang:
-  extends: test:centOS_mpich_legion
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:centOS_mpich_legion_clang
-
-test:centOS_mpich_legion_clang_release:
-  extends: test:centOS_mpich_legion_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpich_legion_clang_release
-
-test:centOS_mpich_legion_intel:
-  extends: test:centOS_mpich_legion
-  variables:
-    <<: *compiler_intel
-  dependencies:
-    - build:centOS_mpich_legion_intel
-
-test:centOS_mpich_legion_intel_release:
-  extends: test:centOS_mpich_legion_intel
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:centOS_mpich_legion_intel_release
-
-test:centOS_hpx:
-  extends: .test
-  <<: *shell_def
-  variables:
-    <<: *runtime_hpx
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  script:
-    - *test_script
-  dependencies:
-    - build:centOS_hpx
-  allow_failure: true
-
-test:centOS_mpich_hpx_clang:
-  extends: test:centOS_hpx
-  variables:
-    <<: *compiler_clang
-    <<: *mpich
-  dependencies:
-    - build:centOS_mpich_hpx_clang
-
-test:centOS_hpx_intel_release:
-  extends: test:centOS_hpx
-  variables:
-    <<: *buildtype_release
-    <<: *compiler_intel
-  dependencies:
-    - build:centOS_hpx_intel_release
-
-test:centOS_mpi.ignoreNoCI:
-  extends: test:centOS_mpi
-  variables:
-    <<: *ignore_noci
-  dependencies:
-    - build:centOS_mpi
-  allow_failure: true
-
-test:centOS_legion.ignoreNoCI:
-  extends: test:centOS_legion
-  variables:
-    <<: *ignore_noci
-  dependencies:
-    - build:centOS_legion
-  allow_failure: true
-
-test:centOS_hpx.ignoreNoCI:
-  extends: test:centOS_hpx
-  variables:
-    <<: *ignore_noci
-  dependencies:
-    - build:centOS_hpx
-  allow_failure: true
+#test:centOS_mpi:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_mpi
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *openmpi
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_mpi
+#
+#test:centOS_mpi_release:
+#  extends: test:centOS_mpi
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpi_release
+#
+#test:centOS_mpi_clang:
+#  extends: test:centOS_mpi
+#  variables:
+#    <<: *compiler_clang
+#  dependencies:
+#    - build:centOS_mpi_clang
+#
+#test:centOS_mpi_clang_release:
+#  extends: test:centOS_mpi_clang
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpi_clang_release
+#
+#test:centOS_mpi_intel:
+#  extends: test:centOS_mpi
+#  variables:
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_mpi_intel
+#
+#test:centOS_mpi_intel_release:
+#  extends: test:centOS_mpi_intel
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpi_intel_release
+#
+#test:centOS_mpich_mpi:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_mpi
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *mpich
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_mpich_mpi
+#
+#test:centOS_mpich_mpi_release:
+#  extends: test:centOS_mpich_mpi
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_mpi_release
+#
+#test:centOS_mpich_mpi_clang:
+#  extends: test:centOS_mpich_mpi
+#  variables:
+#    <<: *compiler_clang
+#  dependencies:
+#    - build:centOS_mpich_mpi_clang
+#
+#test:centOS_mpich_mpi_clang_release:
+#  extends: test:centOS_mpich_mpi_clang
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_mpi_clang_release
+#
+#test:centOS_mpich_mpi_intel:
+#  extends: test:centOS_mpich_mpi
+#  variables:
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_mpich_mpi_intel
+#
+#test:centOS_mpich_mpi_intel_release:
+#  extends: test:centOS_mpich_mpi_intel
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_mpi_intel_release
+#
+#test:centOS_legion:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_legion
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *openmpi
+#  allow_failure: true 
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_legion
+#
+#test:centOS_legion_release:
+#  extends: test:centOS_legion
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_legion_release
+#
+#test:centOS_legion_clang:
+#  extends: test:centOS_legion
+#  variables:
+#    <<: *compiler_clang
+#  dependencies:
+#    - build:centOS_legion_clang
+#
+#test:centOS_legion_clang_release:
+#  extends: test:centOS_legion_clang
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_legion_clang_release
+#
+#test:centOS_legion_intel:
+#  extends: test:centOS_legion
+#  variables:
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_legion_intel
+#
+#test:centOS_legion_intel_release:
+#  extends: test:centOS_legion_intel
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_legion_intel_release
+#
+#test:centOS_mpich_legion:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_legion
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *mpich
+#  allow_failure: true 
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_mpich_legion
+#
+#test:centOS_mpich_legion_release:
+#  extends: test:centOS_mpich_legion
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_legion_release
+#
+#test:centOS_mpich_legion_clang:
+#  extends: test:centOS_mpich_legion
+#  variables:
+#    <<: *compiler_clang
+#  dependencies:
+#    - build:centOS_mpich_legion_clang
+#
+#test:centOS_mpich_legion_clang_release:
+#  extends: test:centOS_mpich_legion_clang
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_legion_clang_release
+#
+#test:centOS_mpich_legion_intel:
+#  extends: test:centOS_mpich_legion
+#  variables:
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_mpich_legion_intel
+#
+#test:centOS_mpich_legion_intel_release:
+#  extends: test:centOS_mpich_legion_intel
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_legion_intel_release
+#
+#test:centOS_hpx:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_hpx
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *openmpi
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_hpx
+#  allow_failure: true
+#
+#test:centOS_mpich_hpx_clang:
+#  extends: test:centOS_hpx
+#  variables:
+#    <<: *compiler_clang
+#    <<: *mpich
+#  dependencies:
+#    - build:centOS_mpich_hpx_clang
+#
+#test:centOS_hpx_intel_release:
+#  extends: test:centOS_hpx
+#  variables:
+#    <<: *buildtype_release
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_hpx_intel_release
+#
+#test:centOS_mpi.ignoreNoCI:
+#  extends: test:centOS_mpi
+#  variables:
+#    <<: *ignore_noci
+#  dependencies:
+#    - build:centOS_mpi
+#  allow_failure: true
+#
+#test:centOS_legion.ignoreNoCI:
+#  extends: test:centOS_legion
+#  variables:
+#    <<: *ignore_noci
+#  dependencies:
+#    - build:centOS_legion
+#  allow_failure: true
+#
+#test:centOS_hpx.ignoreNoCI:
+#  extends: test:centOS_hpx
+#  variables:
+#    <<: *ignore_noci
+#  dependencies:
+#    - build:centOS_hpx
+#  allow_failure: true
 
 ##################
 # Tutorials Jobs #
