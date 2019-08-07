@@ -332,8 +332,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     for(auto const & [index_space, fids] : fidsInIndexSpace) {
 
-      const auto index_coloring = context_t::instance().coloring(index_space);
-
       int sumOfTemplateSizes = 0;
       for(auto const & fid : fids) {
 
@@ -349,14 +347,17 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       }
 
-      for(auto const & ghost : index_coloring.ghost) {
-        ghostSize[ghost.rank] += sumOfTemplateSizes;
-      }
+      for(auto const & fid : modifiedFields[index_space]) {
 
-      for(auto const & shared : index_coloring.shared) {
-        for(auto const & s : shared.shared) {
-          sharedSize[s] += sumOfTemplateSizes;
+        for(int rank = 0; rank < num_colors; ++rank) {
+          for(int ind = 0; ind < context.ghostIndices[fid][rank].size(); ++ind)
+            ghostSize[rank] += context.ghostIndices[fid][rank][ind][1]*sumOfTemplateSizes;
         }
+
+        for(int rank = 0; rank < num_colors; ++rank) {
+          sharedSize[rank] += context.sharedIndices[fid][rank].size()*sumOfTemplateSizes;
+        }
+
       }
 
     }
