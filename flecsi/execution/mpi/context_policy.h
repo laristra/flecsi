@@ -238,17 +238,31 @@ struct mpi_context_policy_t {
     sharedIndices[fid].resize(mpiSize);
     ghostIndices[fid].resize(mpiSize);
 
-    size_t ghost_cnt = 0;
+    std::vector<std::vector<int> > checker(mpiSize);
+    std::vector<std::array<int, 2> > current(mpiSize);
+
+    int ghost_cnt = 0;
     for(auto const & ghost : index_coloring.ghost) {
-      ghostIndices[fid][ghost.rank].push_back(ghost_cnt);
+      if(current[ghost.rank][1] == 0 || (checker[ghost.rank].size() > 0 && ghost_cnt-checker[ghost.rank].back() != 1)) {
+        if(current[ghost.rank][1] != 0)
+          ghostIndices[fid][ghost.rank].push_back(current[ghost.rank]);
+        current[ghost.rank][0] = ghost_cnt;
+        current[ghost.rank][1] = 1;
+        checker[ghost.rank].clear();
+      } else
+        ++current[ghost.rank][1];
+      checker[ghost.rank].push_back(ghost_cnt);
       ++ghost_cnt;
     }
 
-    for(auto const & shared : index_coloring.shared) {
-      for(auto const & s : shared.shared) {
+    for(int i = 0; i < mpiSize; ++i)
+      if(current[i][1] > 0)
+        ghostIndices[fid][i].push_back(current[i]);
+
+
+    for(auto const & shared : index_coloring.shared)
+      for(auto const & s : shared.shared)
         sharedIndices[fid][s].push_back(shared.offset);
-      }
-    }
 
     templateParamSize[fid] = sizeof(T);
 
@@ -538,7 +552,7 @@ struct mpi_context_policy_t {
 
   std::map<int, size_t> templateParamSize;
   std::map<int, std::vector<std::vector<int> > > sharedIndices;
-  std::map<int, std::vector<std::vector<int> > > ghostIndices;
+  std::map<int, std::vector<std::vector<std::array<int, 2> > > > ghostIndices;
 
 private:
   int color_ = 0;
