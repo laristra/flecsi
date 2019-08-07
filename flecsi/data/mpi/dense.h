@@ -154,8 +154,11 @@ struct storage_class_u<dense> {
                                         color_info.shared + color_info.ghost);
       // TODO: deal with VERSION
       context.register_field_data(field_info.fid, size);
+    }
+    auto fieldMetaDataIter = context.registered_field_metadata().find(field_info.fid);
+    if (fieldMetaDataIter == context.registered_field_metadata().end()) {
       context.register_field_metadata<DATA_TYPE>(
-        field_info.fid, color_info, index_coloring);
+          field_info.fid, color_info, index_coloring);
     }
 
     auto data = registered_field_data[field_info.fid].data();
