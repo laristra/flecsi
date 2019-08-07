@@ -238,31 +238,41 @@ struct mpi_context_policy_t {
     sharedIndices[fid].resize(mpiSize);
     ghostIndices[fid].resize(mpiSize);
 
-    std::vector<std::vector<int> > checker(mpiSize);
-    std::vector<std::array<int, 2> > current(mpiSize);
+    // indices are stored as vectors of pairs, each pair consisting of: starting index, how many consecutive indices
 
-    int ghost_cnt = 0;
+    size_t ghost_cnt = 0;
+
     for(auto const & ghost : index_coloring.ghost) {
-      if(current[ghost.rank][1] == 0 || (checker[ghost.rank].size() > 0 && ghost_cnt-checker[ghost.rank].back() != 1)) {
-        if(current[ghost.rank][1] != 0)
-          ghostIndices[fid][ghost.rank].push_back(current[ghost.rank]);
-        current[ghost.rank][0] = ghost_cnt;
-        current[ghost.rank][1] = 1;
-        checker[ghost.rank].clear();
-      } else
-        ++current[ghost.rank][1];
-      checker[ghost.rank].push_back(ghost_cnt);
+
+      if(ghostIndices[fid][ghost.rank].size() == 0 ||
+         ghost_cnt-(ghostIndices[fid][ghost.rank].back()[0]+ghostIndices[fid][ghost.rank].back()[1]) != 0)
+
+        ghostIndices[fid][ghost.rank].push_back({ghost_cnt, 1});
+
+      else
+
+        ++ghostIndices[fid][ghost.rank].back()[1];
+
       ++ghost_cnt;
+
     }
 
-    for(int i = 0; i < mpiSize; ++i)
-      if(current[i][1] > 0)
-        ghostIndices[fid][i].push_back(current[i]);
+    for(auto const & shared : index_coloring.shared) {
 
+      for(auto const & s : shared.shared) {
 
-    for(auto const & shared : index_coloring.shared)
-      for(auto const & s : shared.shared)
-        sharedIndices[fid][s].push_back(shared.offset);
+        if(sharedIndices[fid][s].size() == 0 ||
+           shared.offset != (sharedIndices[fid][s].back()[0]+sharedIndices[fid][s].back()[1]))
+
+          sharedIndices[fid][s].push_back({shared.offset, 1});
+
+        else
+
+          ++sharedIndices[fid][s].back()[1];
+
+      }
+
+    }
 
     templateParamSize[fid] = sizeof(T);
 
@@ -551,8 +561,8 @@ struct mpi_context_policy_t {
   std::map<size_t, std::map<field_id_t, bool> > hasBeenModified;
 
   std::map<int, size_t> templateParamSize;
-  std::map<int, std::vector<std::vector<int> > > sharedIndices;
-  std::map<int, std::vector<std::vector<std::array<int, 2> > > > ghostIndices;
+  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > sharedIndices;
+  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > ghostIndices;
 
 private:
   int color_ = 0;
