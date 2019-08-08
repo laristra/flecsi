@@ -237,7 +237,7 @@ before_script:
   script: &tutorials_script
     - echo 'Start tutorials checking'
     - cd ${CI_PROJECT_DIR}
-    - source ${CI_PROJECT_DIR}/build/install/usr/local/bin/flecsi-tutorial.sh
+    - source ${CI_PROJECT_DIR}/build/install/bin/flecsi-tutorial.sh
     - cd flecsi-tutorial
 
     # Tutorial 00-driver
