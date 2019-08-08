@@ -57,7 +57,7 @@ struct topology_interface_t {
    */
 
   template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
-  static decltype(auto) topology_reference(std::string const & name) {
+  static decltype(auto) reference(std::string const & name) {
     using Core = topology::core_t<TOPOLOGY_TYPE>;
     static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(Core),
       "Topologies may not add data members");
