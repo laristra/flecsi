@@ -235,75 +235,46 @@ struct mpi_context_policy_t {
     int mpiSize;
     MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
 
-    // we store datatypes and their sizes (in bytes)
-    ghostDatatypes[fid].resize(mpiSize);
-    ghostDatatypesSizes[fid].resize(mpiSize);
-    sharedDatatypes[fid].resize(mpiSize);
-    sharedDatatypesSizes[fid].resize(mpiSize);
+    sharedIndices[fid].resize(mpiSize);
+    ghostIndices[fid].resize(mpiSize);
 
-    // store values needed to create MPI derived datatype
-    std::vector<std::vector<int> > displacements(mpiSize);
-    std::vector<std::vector<int> > blocklenghts(mpiSize);
+    // indices are stored as vectors of pairs, each pair consisting of: starting index, how many consecutive indices
 
     size_t ghost_cnt = 0;
 
     for(auto const & ghost : index_coloring.ghost) {
 
-      if(displacements[ghost.rank].size() == 0 ||
-         ghost_cnt-(displacements[ghost.rank].back()+blocklenghts[ghost.rank].back()) != 0) {
+      if(ghostIndices[fid][ghost.rank].size() == 0 ||
+         ghost_cnt-(ghostIndices[fid][ghost.rank].back()[0]+ghostIndices[fid][ghost.rank].back()[1]) != 0)
 
-        displacements[ghost.rank].push_back(ghost_cnt*sizeof(T));
-        blocklenghts[ghost.rank].push_back(sizeof(T));
+        ghostIndices[fid][ghost.rank].push_back({ghost_cnt, 1});
 
-      } else
+      else
 
-        ++blocklenghts[ghost.rank].back();
+        ++ghostIndices[fid][ghost.rank].back()[1];
 
       ++ghost_cnt;
 
     }
 
-    // convert into derived datatypes
-    for(int rank = 0; rank < mpiSize; ++rank) {
-
-      MPI_Type_indexed(displacements[rank].size(), reinterpret_cast<int*>(blocklenghts[rank].data()), reinterpret_cast<int*>(displacements[rank].data()), MPI_CHAR, &ghostDatatypes[fid][rank]);
-      MPI_Type_commit(&ghostDatatypes[fid][rank]);
-      MPI_Type_size(ghostDatatypes[fid][rank], &ghostDatatypesSizes[fid][rank]);
-
-    }
-
-    // reset variables
-    displacements.clear();
-    blocklenghts.clear();
-    displacements.resize(mpiSize);
-    blocklenghts.resize(mpiSize);
-
     for(auto const & shared : index_coloring.shared) {
 
       for(auto const & s : shared.shared) {
 
-        if(displacements[s].size() == 0 ||
-           shared.offset != (displacements[s].back()+blocklenghts[s].back())) {
+        if(sharedIndices[fid][s].size() == 0 ||
+           shared.offset != (sharedIndices[fid][s].back()[0]+sharedIndices[fid][s].back()[1]))
 
-          displacements[s].push_back(shared.offset*sizeof(T));
-          blocklenghts[s].push_back(sizeof(T));
+          sharedIndices[fid][s].push_back({shared.offset, 1});
 
-        } else
+        else
 
-          blocklenghts[s].back() += sizeof(T);
+          ++sharedIndices[fid][s].back()[1];
 
       }
 
     }
 
-    // convert into derived datatypes
-    for(int rank = 0; rank < mpiSize; ++rank) {
-
-      MPI_Type_indexed(displacements[rank].size(), reinterpret_cast<int*>(blocklenghts[rank].data()), reinterpret_cast<int*>(displacements[rank].data()), MPI_CHAR, &sharedDatatypes[fid][rank]);
-      MPI_Type_commit(&sharedDatatypes[fid][rank]);
-      MPI_Type_size(sharedDatatypes[fid][rank], &sharedDatatypesSizes[fid][rank]);
-
-    }
+    templateParamSize[fid] = sizeof(T);
 
   }
 
@@ -589,10 +560,9 @@ struct mpi_context_policy_t {
 
   std::map<size_t, std::map<field_id_t, bool> > hasBeenModified;
 
-  std::map<int, std::vector<MPI_Datatype> > sharedDatatypes;
-  std::map<int, std::vector<int> > sharedDatatypesSizes;
-  std::map<int, std::vector<MPI_Datatype> > ghostDatatypes;
-  std::map<int, std::vector<int> > ghostDatatypesSizes;
+  std::map<int, size_t> templateParamSize;
+  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > sharedIndices;
+  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > ghostIndices;
 
 private:
   int color_ = 0;
