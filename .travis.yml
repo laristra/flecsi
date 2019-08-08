@@ -90,7 +90,8 @@ script:
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
   - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH//[^a-zA-Z0-9]/_}"; fi
   - travis_retry timeout 540 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
-  - docker build 
+  - docker build
+                --build-arg DISTRO=${DISTRO}
                 --build-arg LEGION=${LEGION} 
                 --build-arg BUILD_TYPE=${BUILD_TYPE}
                 --build-arg RUNTIME=${RUNTIME} 

@@ -172,8 +172,10 @@ before_script:
     # git config submodule.cinch.url https://github.com/laristra/cinch.git
     # git submodule update --init --recursive
     mkdir -p ${CI_PROJECT_DIR}/build
+    mkdir -p ${CI_PROJECT_DIR}/build/install
     cd ${CI_PROJECT_DIR}/build/
-    cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+    cmake -DCMAKE_INSTALL_PREFIX=${CI_PROJECT_DIR}/build/install
+        -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DFLECSI_RUNTIME_MODEL=$RUNTIME \
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
@@ -186,8 +188,8 @@ before_script:
         -DENABLE_COVERAGE_BUILD=ON \
         ..
     make -k VERBOSE=1 -j2 -l80
-    mkdir -p ${CI_PROJECT_DIR}/build/install
     make install DESTDIR=${CI_PROJECT_DIR}/build/install
+    make install
     ccache -s
 
 ##############
