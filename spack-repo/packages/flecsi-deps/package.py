@@ -30,8 +30,8 @@ class FlecsiDeps(Package):
     # Requires cinch > 1.0 due to cinchlog installation issue
     depends_on('cinch@1.01:', type='build')
     depends_on('mpi')
-    depends_on('gasnet@2019.3.0 ~pshm', when='backend=legion')
-    depends_on('legion@ctrl-rep +shared +mpi', when='backend=legion')
+    depends_on('gasnet@1.32.0 ~pshm', when='backend=legion')
+    depends_on('legion@ctrl-rep +shared +mpi +hdf5', when='backend=legion')
     depends_on('boost@1.59.0: cxxstd=11 +program_options')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
