@@ -49,36 +49,6 @@
 flog_register_tag(execution);
 
 namespace flecsi {
-namespace execution {
-
-//--------------------------------------------------------------------------//
-// Task interface.
-//--------------------------------------------------------------------------//
-
-/// Task ID for a native Legion task.
-/// \tparam F Legion task function
-/// \tparam A \c task_attributes_mask_t values
-template<auto & F, std::size_t A = loc | leaf>
-inline const std::size_t legion_task_id = context_t::instance().register_task(A,
-  utils::symbol<F>(),
-  legion::pure_task_wrapper_u<
-    typename utils::function_traits_u<decltype(F)>::return_type,
-    F>::registration_callback);
-
-/*!
-  Arbitrary index for each task.
-
-  @tparam F          The user task function.
-  @tparam ATTRIBUTES A size_t holding the mask of the task attributes mask
-                     \ref task_attributes_mask_t.
- */
-
-template<auto & F, size_t ATTRIBUTES>
-inline const size_t task_id = context_t::instance().register_task(ATTRIBUTES,
-  utils::symbol<F>(),
-  legion::task_wrapper_u<F>::registration_callback);
-
-} // namespace execution
 
 template<auto & F,
   size_t LAUNCH_DOMAIN,
@@ -105,7 +75,7 @@ reduce(ARGS &&... args) {
   context_t & flecsi_context = context_t::instance();
 
   // Get the processor type.
-  auto processor_type = mask_to_processor_type(ATTRIBUTES);
+  constexpr auto processor_type = mask_to_processor_type(ATTRIBUTES);
 
   // Get the Legion runtime and context from the current task.
   auto legion_runtime = Legion::Runtime::get_runtime();
@@ -124,7 +94,7 @@ reduce(ARGS &&... args) {
 
     Legion::ArgumentMap arg_map;
     Legion::IndexLauncher reduction_launcher(
-      legion_task_id<flog_reduction_task>,
+      legion::task_id<flog_reduction_task>,
       launch_domain,
       Legion::TaskArgument(NULL, 0),
       arg_map);
@@ -138,7 +108,7 @@ reduce(ARGS &&... args) {
       legion_context, reduction_launcher, reduction_id);
 
     if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
-      Legion::IndexLauncher flog_mpi_launcher(legion_task_id<flog_mpi_task>,
+      Legion::IndexLauncher flog_mpi_launcher(legion::task_id<flog_mpi_task>,
         launch_domain,
         Legion::TaskArgument(NULL, 0),
         arg_map);
@@ -180,7 +150,9 @@ reduce(ARGS &&... args) {
   // Single launch
   //------------------------------------------------------------------------//
 
-  const auto task = task_id<F, ATTRIBUTES>;
+  using wrap = legion::task_wrapper_u<F, processor_type>;
+  const auto task = legion::task_id<wrap::execute,
+    ATTRIBUTES & ~flecsi::mpi | 1 << wrap::LegionProcessor>;
   if constexpr(LAUNCH_DOMAIN == launch_identifier("single")) {
 
     static_assert(

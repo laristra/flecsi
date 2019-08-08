@@ -84,8 +84,7 @@ struct legion_context_policy_t {
      registration callbacks.
    */
 
-  using registration_function_t = void (*)(task_id_t, size_t);
-  using task_info_t = std::tuple<size_t, registration_function_t>;
+  using registration_function_t = void (*)();
 
   //--------------------------------------------------------------------------//
   //  Runtime.
@@ -353,55 +352,19 @@ struct legion_context_policy_t {
   /*!
     Register a task with the runtime.
 
-    @param attributes The task attributes mask.
     @param name       The task name string.
     @param callback   The registration call back function.
     \return task ID
    */
-  std::size_t register_task(size_t attributes,
-    std::string_view name,
+  std::size_t register_task(std::string_view name,
     const registration_function_t & callback) {
     flog_devel(info) << "Registering task callback: " << name << std::endl;
 
     flog_assert(
       task_registry_.size() < FLECSI_GENERATED_ID_MAX, "too many tasks");
-    task_registry_.emplace_back(attributes, callback);
+    task_registry_.push_back(callback);
     return task_registry_.size(); // 0 is the top-level task
   } // register_task
-
-  /*!
-    Return the task registration tuple.
-
-    @param key The task ID.
-   */
-
-  task_info_t & task_info(size_t key) {
-    flog_assert(key && key <= task_registry_.size(),
-      "task #" << key << " does not exist");
-
-    return task_registry_[key - 1];
-  } // task_info
-
-  /*!
-    Return task key information.
-
-    @param key The task hash key.
-   */
-
-#define task_info_method(name, return_type, index)                             \
-  return_type name(size_t key) {                                               \
-    {                                                                          \
-      flog_tag_guard(context);                                                 \
-      flog_devel(info) << "Returning task info" << std::endl                   \
-                       << "\tname: " << #name << std::endl                     \
-                       << "\thash: " << key << std::endl;                      \
-    }                                                                          \
-    return std::get<index>(task_info(key));                                    \
-  }
-
-  // clang-format off
-  task_info_method(task_attributes, size_t, 0);
-  // clang-format on
 
   //--------------------------------------------------------------------------//
   // Reduction interface.
@@ -455,7 +418,7 @@ private:
     Task data members.
    *--------------------------------------------------------------------------*/
 
-  std::vector<task_info_t> task_registry_;
+  std::vector<registration_function_t> task_registry_;
 
   /*--------------------------------------------------------------------------*
     Reduction data members.

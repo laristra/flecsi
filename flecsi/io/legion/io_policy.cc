@@ -454,10 +454,10 @@ legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file,
 
   auto task_id = 0;
   if(attach_flag == true) {
-    task_id = legion_task_id<checkpoint_with_attach_task, loc | inner>;
+    task_id = task_id<checkpoint_with_attach_task, loc | inner>;
   }
   else {
-    task_id = legion_task_id<checkpoint_without_attach_task>;
+    task_id = task_id<checkpoint_without_attach_task>;
   }
 
   IndexLauncher checkpoint_launcher(task_id,
@@ -650,10 +650,10 @@ legion_io_policy_t::recover_data(legion_hdf5_t & hdf5_file,
 
   auto task_id = 0;
   if(attach_flag == true) {
-    task_id = legion_task_id<recover_with_attach_task, loc | inner>;
+    task_id = task_id<recover_with_attach_task, loc | inner>;
   }
   else {
-    task_id = legion_task_id<recover_without_attach_task>;
+    task_id = task_id<recover_without_attach_task>;
   }
 
   IndexLauncher recover_launcher(task_id,

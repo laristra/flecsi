@@ -16,7 +16,7 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "execution_policy.hh"
+#include "enactment/task_wrapper.hh"
 #include <flecsi/data/legion/data_policy.hh>
 #include <flecsi/execution/common/command_line_options.hh>
 #include <flecsi/execution/common/launch.hh>
@@ -65,15 +65,8 @@ legion_context_policy_t::start(int argc, char ** argv, variables_map & vm) {
     flog_devel(info) << "Invoking task registration callbacks" << std::endl;
   }
 
-  // clang-format off
-  for(size_t i=0,n=task_registry_.size();i<n;++i) {
-    const auto &t=task_registry_[i];
-    std::get<1>(t)(
-      i+1,                      // 0 is the top-level task
-      std::get<0>(t) /* attributes */
-    );
-  } // for
-  // clang-format on
+  for(auto && p : task_registry_)
+    p();
 
   /*
     Arg 0: MPI has initial control (true).
@@ -170,7 +163,7 @@ legion_context_policy_t::unset_call_mpi(Legion::Context & ctx,
 
   Legion::ArgumentMap arg_map;
   // IRINA DEBUG check number of processors
-  Legion::IndexLauncher launcher(legion_task_id<unset_call_mpi_task>,
+  Legion::IndexLauncher launcher(legion::task_id<unset_call_mpi_task>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0),
     arg_map);
@@ -189,7 +182,7 @@ legion_context_policy_t::handoff_to_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
-    legion_task_id<handoff_to_mpi_task>,
+    legion::task_id<handoff_to_mpi_task>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0),
     arg_map);
@@ -208,7 +201,7 @@ Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(Legion::Context & ctx,
   Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher wait_on_mpi_launcher(legion_task_id<wait_on_mpi_task>,
+  Legion::IndexLauncher wait_on_mpi_launcher(legion::task_id<wait_on_mpi_task>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0),
     arg_map);
