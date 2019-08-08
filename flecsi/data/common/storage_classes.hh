@@ -41,7 +41,7 @@ struct storage_class_u {};
   Global Topology.
  *----------------------------------------------------------------------------*/
 
-namespace global_topology {
+namespace global_topo {
 
 /*!
   Forward accessor type for bind friend.
@@ -95,13 +95,13 @@ private:
 
 }; // struct accessor_u
 
-} // namespace global_topology
+} // namespace global_topo
 
 template<>
 struct storage_class_u<storage_label_t::dense, topology::global_topology_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using accessor = global_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+  using accessor = global_topo::accessor_u<DATA_TYPE, PRIVILEGES>;
 
 }; // struct storage_class_u
 
@@ -109,7 +109,7 @@ struct storage_class_u<storage_label_t::dense, topology::global_topology_t> {
   Index Topology.
  *----------------------------------------------------------------------------*/
 
-namespace index_topology {
+namespace index_topo {
 
 /*!
   Forward accessor type for bind friend.
@@ -159,13 +159,13 @@ private:
 
 }; // struct accessor_u
 
-} // namespace index_topology
+} // namespace index_topo
 
 template<>
 struct storage_class_u<storage_label_t::dense, topology::index_topology_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using accessor = index_topology::accessor_u<DATA_TYPE, PRIVILEGES>;
+  using accessor = index_topo::accessor_u<DATA_TYPE, PRIVILEGES>;
 
 }; // struct storage_class_u
 
@@ -173,25 +173,25 @@ struct storage_class_u<storage_label_t::dense, topology::index_topology_t> {
   NTree Topology.
  *----------------------------------------------------------------------------*/
 
-namespace ntree_topology {} // namespace ntree_topology
+namespace ntree_topo {} // namespace ntree_topo
 
 /*----------------------------------------------------------------------------*
   Set Topology.
  *----------------------------------------------------------------------------*/
 
-namespace set_topology {} // namespace set_topology
+namespace set_topo {} // namespace set_topo
 
 /*----------------------------------------------------------------------------*
   Structured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
-namespace structured_mesh_topology {} // namespace structured_mesh_topology
+namespace structured_mesh_topo {} // namespace structured_mesh_topo
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
-namespace unstructured_mesh_topology {
+namespace unstructured_mesh_topo {
 
 /*!
   Forward dense accessor type for bind friend.
@@ -242,7 +242,7 @@ private:
 
 }; // struct dense_accessor_u
 
-} // namespace unstructured_mesh_topology
+} // namespace unstructured_mesh_topo
 
 template<typename POLICY_TYPE>
 struct storage_class_u<storage_label_t::dense,
@@ -250,7 +250,7 @@ struct storage_class_u<storage_label_t::dense,
 }; // struct storage_class_u
 
 #if 0
-namespace unstructured_mesh_topology {
+namespace unstructured_mesh_topo {
 
 struct dense_handle_t {
 
@@ -314,7 +314,7 @@ private:
 
 }; // struct sparse_mutator_u
 
-} // namespace unstructured_mesh_topology
+} // namespace unstructured_mesh_topo
 #endif
 
 #if 0
@@ -323,13 +323,13 @@ struct storage_class_u<dense, flecsi::topology::mesh_topology_u<POLICY_TYPE>> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   using handle_t =
-    unstructured_mesh_topology::dense_handle_u<DATA_TYPE, PRIVILEGES>
+    unstructured_mesh_topo::dense_handle_u<DATA_TYPE, PRIVILEGES>
 
   template<typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static unstructured_mesh_topology::handle_t<DATA_TYPE, 0> get_reference(
+  static unstructured_mesh_topo::handle_t<DATA_TYPE, 0> get_reference(
     const client_handle_u<client_t, 0> & client_handle) {
   } // get_reference
 

@@ -76,7 +76,7 @@ struct bind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(global_topo::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
 
     Legion::Domain dom = legion_runtime_->get_index_space_domain(
       legion_context_, regions_[region].get_logical_region().get_index_space());
@@ -98,7 +98,7 @@ struct bind_accessors_t
 
     DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
 
-    global_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+    global_topo::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
 
     ++region;
   } // visit
@@ -108,7 +108,7 @@ struct bind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(index_topo::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
 
     Legion::Domain dom = legion_runtime_->get_index_space_domain(
       legion_context_, regions_[region].get_logical_region().get_index_space());
@@ -129,7 +129,7 @@ struct bind_accessors_t
 
     DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
 
-    index_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+    index_topo::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
 
     ++region;
   } // visit

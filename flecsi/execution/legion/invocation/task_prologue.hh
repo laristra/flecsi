@@ -61,7 +61,7 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(global_topo::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -69,7 +69,7 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(index_topo::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -79,7 +79,7 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
 #if 0
   template<typename DATA_TYPE, size_t PRIVILEGES>
   using dense_unstructured_mesh_accessor_u =
-    data::legion::unstructured_mesh_topology::dense_accessor_u<
+    data::legion::unstructured_mesh_topo::dense_accessor_u<
       DATA_TYPE, PRIVILEGES>;
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
