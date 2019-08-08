@@ -74,7 +74,7 @@ struct topology_registration_u<
       : public flecsi::utils::tuple_walker_u<entity_walker_t> {
 
     template<typename T, T V>
-    T value(topology::typeify<T, V>) {
+    T value(utils::typeify_u<T, V>) {
       return V;
     }
 
@@ -141,7 +141,7 @@ struct topology_registration_u<
       : public flecsi::utils::tuple_walker_u<connectivity_walker_u> {
 
     template<typename T, T V>
-    T value(topology::typeify<T, V>) {
+    T value(utils::typeify_u<T, V>) {
       return V;
     }
 
@@ -375,7 +375,7 @@ struct topology_registration_u<
       : public flecsi::utils::tuple_walker_u<entity_walker_t> {
 
     template<typename T, T V>
-    T value(topology::typeify<T, V>) {
+    T value(utils::typeify_u<T, V>) {
       return V;
     }
 

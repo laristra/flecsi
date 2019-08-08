@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/utils/common.hh>
+#include "flecsi/utils/typeify.hh"
 #endif
 
 namespace flecsi {
@@ -35,7 +35,7 @@ namespace topology {
  */
 
 template<size_t TOPOLOGICAL_DIMENSION>
-using topological_dimension = utils::typeify<size_t, TOPOLOGICAL_DIMENSION>;
+using topological_dimension = utils::typeify_u<size_t, TOPOLOGICAL_DIMENSION>;
 
 /*!
   Type to define different topological domain types from size_t ids.
@@ -44,7 +44,7 @@ using topological_dimension = utils::typeify<size_t, TOPOLOGICAL_DIMENSION>;
  */
 
 template<size_t TOPOLOGICAL_DOMAIN>
-using topological_domain = utils::typeify<size_t, TOPOLOGICAL_DOMAIN>;
+using topological_domain = utils::typeify_u<size_t, TOPOLOGICAL_DOMAIN>;
 
 /*!
   Type to define different index subspace types from size_t ids.
@@ -53,7 +53,7 @@ using topological_domain = utils::typeify<size_t, TOPOLOGICAL_DOMAIN>;
  */
 
 template<size_t INDEX_SUBSPACE>
-using index_subspace = utils::typeify<size_t, INDEX_SUBSPACE>;
+using index_subspace = utils::typeify_u<size_t, INDEX_SUBSPACE>;
 
 //----------------------------------------------------------------------------//
 // Simple Types.
