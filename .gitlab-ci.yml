@@ -787,6 +787,7 @@ tutorials:centOS_mpi:
     <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *openmpi
+  allow_failure: true 
   dependencies:
     - build:centOS_mpi
 
