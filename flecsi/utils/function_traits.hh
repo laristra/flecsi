@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include <functional>
 #include <tuple>
 
 namespace flecsi {
