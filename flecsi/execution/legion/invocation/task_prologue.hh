@@ -36,7 +36,7 @@ using namespace flecsi::data::legion;
  @ingroup execution
  */
 
-struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
+struct task_prologue_t : public flecsi::utils::tuple_walker<task_prologue_t> {
 
   /*!
    Construct a task_prologue_t instance.
@@ -61,7 +61,7 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -69,8 +69,7 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
-  } // visit
+  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Unstructured Mesh Topology
@@ -78,13 +77,13 @@ struct task_prologue_t : public flecsi::utils::tuple_walker_u<task_prologue_t> {
 
 #if 0
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using dense_unstructured_mesh_accessor_u =
-    data::legion::unstructured_mesh_topology::dense_accessor_u<
+  using dense_unstructured_mesh_accessor =
+    data::legion::unstructured_mesh_topo::dense_accessor<
       DATA_TYPE, PRIVILEGES>;
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-      dense_unstructured_mesh_accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+      dense_unstructured_mesh_accessor<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 #endif
 

@@ -55,6 +55,24 @@
  **/
 
 //----------------------------------------------------------------------------//
+// Runtime Model
+//----------------------------------------------------------------------------//
+
+/**
+ * The FleCSI runtime model maintains global context.
+ *
+ * \defgroup runtime Runtime Interface
+ **/
+
+/**
+ * This module contains the Legion backend implementation of the FleCSI
+ * runtime model.
+ *
+ * \defgroup legion-runtime Legion Runtime Backend
+ * \ingroup runtime
+ **/
+
+//----------------------------------------------------------------------------//
 // Data Model
 //----------------------------------------------------------------------------//
 

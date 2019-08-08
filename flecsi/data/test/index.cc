@@ -22,7 +22,7 @@ using namespace flecsi;
 using namespace flecsi::data;
 using namespace flecsi::topology;
 
-using index_field_t = index_field_member_u<double>;
+using index_field_t = index_field_member<double>;
 const index_field_t pressure_field;
 
 const auto pressure = pressure_field(flecsi_index_topology);

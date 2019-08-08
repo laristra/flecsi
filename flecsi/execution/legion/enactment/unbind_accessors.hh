@@ -20,9 +20,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/runtime/context.hh"
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/data/common/storage_classes.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
 #endif
@@ -47,7 +47,7 @@ using namespace flecsi::data::legion;
  */
 
 struct unbind_accessors_t
-  : public flecsi::utils::tuple_walker_u<unbind_accessors_t> {
+  : public flecsi::utils::tuple_walker<unbind_accessors_t> {
 
   /*!
     Construct an unbind_accessors_t instance.
@@ -73,7 +73,7 @@ struct unbind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -81,8 +81,7 @@ struct unbind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
-  } // visit
+  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types

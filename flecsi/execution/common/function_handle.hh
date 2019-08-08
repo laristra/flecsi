@@ -32,7 +32,7 @@ namespace execution {
  */
 
 template<typename RETURN, typename ARG_TUPLE>
-struct function_handle_u {
+struct function_handle {
   using return_t = RETURN;
   using arg_tuple_t = ARG_TUPLE;
 
@@ -42,7 +42,7 @@ struct function_handle_u {
     @param key A hash key identifier for the function.
    */
 
-  constexpr function_handle_u(const size_t key = 0) : key_(key) {}
+  constexpr function_handle(const size_t key = 0) : key_(key) {}
 
   /*!
     Execute the function.
@@ -54,7 +54,7 @@ struct function_handle_u {
     return user_function(std::forward<ARG_TUPLE>(args));
   } // operator ()
 
-  function_handle_u & operator=(const function_handle_u & fh) {
+  function_handle & operator=(const function_handle & fh) {
     this->key_ = fh.key_;
     return *this;
   } // operator =
@@ -79,7 +79,7 @@ struct function_handle_u {
 private:
   size_t key_;
 
-}; // class function_handle_u
+}; // class function_handle
 
 } // namespace execution
 } // namespace flecsi

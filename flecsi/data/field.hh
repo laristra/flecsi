@@ -15,22 +15,18 @@
 
 /*! @file */
 
-// This can move into the includes below as soon as storage_class_u is removed.
-#include <flecsi/runtime/data_policy.hh>
-
+#include "../topology/common/core.hh" // id
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/common/storage_label.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/utils/common.hh>
-#include <flecsi/utils/hash.hh>
 
 namespace flecsi {
 namespace data {
 
 /*!
-  The field_member_u type provides a mechanism to define and register
+  The field_member type provides a mechanism to define and register
   fundamental field types with the FleCSI runtime.
 
   @tparam DATA_TYPE     A compact type that will be defined at each index of
@@ -48,15 +44,21 @@ template<typename DATA_TYPE,
   storage_label_t STORAGE_CLASS,
   typename TOPOLOGY_TYPE,
   size_t INDEX_SPACE>
-struct field_member_u {
+struct field_member {
 
-  using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
+  using topology_reference_t = topology_reference<TOPOLOGY_TYPE>;
 
   template<size_t... PRIVILEGES>
-  using accessor = typename storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>::
-    template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES...>::value>;
+  using accessor = typename storage_class<STORAGE_CLASS, TOPOLOGY_TYPE>::
+    template accessor<DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
 
-  field_member_u() : fid_(register_field()) {}
+  field_member() : fid_(unique_fid_t::instance().next()) {
+
+    runtime::context_t::instance().add_field_info(topology::id<TOPOLOGY_TYPE>(),
+      STORAGE_CLASS,
+      {fid_, INDEX_SPACE, sizeof(DATA_TYPE)},
+      fid_);
+  }
 
   /*!
     Return a reference to the field instance associated with the given topology
@@ -65,33 +67,16 @@ struct field_member_u {
     @param topology_reference A reference to a valid topology instance.
    */
 
-  field_reference_t operator()(
+  field_reference<DATA_TYPE> operator()(
     topology_reference_t const & topology_reference) const {
 
     return {fid_, topology_reference.identifier()};
   } // operator()
 
 private:
-  /*!
-    Register this field definition with the runtime.
-   */
-
-  field_id_t register_field() const {
-
-    field_id_t fid = unique_fid_t::instance().next();
-
-    execution::context_t::instance().add_field_info(
-      TOPOLOGY_TYPE::type_identifier_hash,
-      STORAGE_CLASS,
-      {fid, INDEX_SPACE, sizeof(DATA_TYPE)},
-      fid);
-
-    return fid;
-  } // register_field
-
   field_id_t fid_;
 
-}; // struct field_member_u
+}; // struct field_member
 
 } // namespace data
 } // namespace flecsi

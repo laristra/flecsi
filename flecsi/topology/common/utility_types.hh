@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/utils/common.hh>
+#include "flecsi/utils/typeify.hh"
 #endif
 
 namespace flecsi {
@@ -45,15 +45,6 @@ using topological_dimension = utils::typeify<size_t, TOPOLOGICAL_DIMENSION>;
 
 template<size_t TOPOLOGICAL_DOMAIN>
 using topological_domain = utils::typeify<size_t, TOPOLOGICAL_DOMAIN>;
-
-/*!
-  Type to define different index space types from size_t ids.
-
-  @tparam INDEX_SPACE The size_t index space.
- */
-
-template<size_t INDEX_SPACE>
-using index_space = utils::typeify<size_t, INDEX_SPACE>;
 
 /*!
   Type to define different index subspace types from size_t ids.
@@ -94,8 +85,8 @@ using id_vector_map_t =
 
 using index_vector_t = std::vector<size_t>;
 //-----------------------------------------------------------------//
-//! \class entity_base_u types.h
-//! \brief entity_base_u defines a base class that stores the raw info that
+//! \class entity_base types.h
+//! \brief entity_base defines a base class that stores the raw info that
 //! a topology needs, i.e: id and rank data
 //!
 //! \tparam N The number of domains.
@@ -108,10 +99,10 @@ public:
 };
 
 template<size_t NUM_DOMAINS>
-class entity_base_u : public entity_base_
+class entity_base : public entity_base_
 {
 public:
-  ~entity_base_u() {}
+  ~entity_base() {}
 
   //-----------------------------------------------------------------//
   //! Return the id of this entity.
@@ -165,7 +156,7 @@ protected:
 private:
   std::array<id_t, NUM_DOMAINS> ids_;
 
-}; // class entity_base_u
+}; // class entity_base
 
 //-----------------------------------------------------------------//
 //! Define the vector type for storing entities.
@@ -173,7 +164,7 @@ private:
 //! \tparam NUM_DOMAINS The number of domains.
 //-----------------------------------------------------------------//
 template<size_t NUM_DOMAINS>
-using entity_vector_t = std::vector<entity_base_u<NUM_DOMAINS> *>;
+using entity_vector_t = std::vector<entity_base<NUM_DOMAINS> *>;
 
 } // namespace topology
 } // namespace flecsi

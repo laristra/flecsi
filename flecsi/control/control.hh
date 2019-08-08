@@ -32,12 +32,12 @@ namespace flecsi {
 namespace control {
 
 /*!
-  The control_u type provides a control model for specifying a
+  The control type provides a control model for specifying a
   set of control points as a coarse-grained control flow graph,
   with each node of the graph specifying a set of actions as a
   directed acyclic graph (DAG). The actions under a control point
   DAG are topologically sorted to respect dependency edges, which can
-  be specified through the dag_u interface.
+  be specified through the dag interface.
 
   If Graphviz support is enabled, the control flow graph and its DAG nodes
   can be written to a graphviz file that can be compiled and viewed using
@@ -47,19 +47,18 @@ namespace control {
  */
 
 template<typename CONTROL_POLICY>
-struct control_u : public CONTROL_POLICY {
+struct control : public CONTROL_POLICY {
 
-  using dag_t = flecsi::utils::dag_u<typename CONTROL_POLICY::node_t>;
+  using dag_t = flecsi::utils::dag<typename CONTROL_POLICY::node_t>;
   using node_t = typename dag_t::node_t;
-  using control_point_walker_t =
-    control_point_walker_u<control_u<CONTROL_POLICY>>;
+  using control_point_walker_t = control_point_walker<control<CONTROL_POLICY>>;
 
   /*!
     Meyer's singleton.
    */
 
-  static control_u & instance() {
-    static control_u c;
+  static control & instance() {
+    static control c;
     return c;
   } // instance
 
@@ -106,8 +105,7 @@ struct control_u : public CONTROL_POLICY {
   } // execute
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-  using control_point_writer_t =
-    control_point_writer_u<control_u<CONTROL_POLICY>>;
+  using control_point_writer_t = control_point_writer<control<CONTROL_POLICY>>;
   using graphviz_t = flecsi::utils::graphviz_t;
 
   /*!
@@ -173,7 +171,7 @@ private:
   std::map<size_t, dag_t> registry_;
   std::map<size_t, std::vector<node_t>> sorted_;
 
-}; // control_u
+}; // control
 
 } // namespace control
 } // namespace flecsi
@@ -189,7 +187,7 @@ private:
   visualize the control points and actions of an executable that
   uses the control type passed as an argument.
 
-  @param control_type A qualified specialization of control_u.
+  @param control_type A qualified specialization of control.
 
   @ingroup execution
  */

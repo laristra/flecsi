@@ -19,7 +19,7 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/execution/internal.hh>
 #include <flecsi/execution/task.hh>
 //#include <flecsi/execution/reduction.hh>
@@ -36,7 +36,7 @@ namespace flecsi {
 
 inline size_t
 process() {
-  return execution::context_t::instance().process();
+  return runtime::context_t::instance().process();
 }
 
 /*!
@@ -45,7 +45,7 @@ process() {
 
 inline size_t
 processes() {
-  return execution::context_t::instance().processes();
+  return runtime::context_t::instance().processes();
 }
 
 /*!
@@ -54,7 +54,7 @@ processes() {
 
 inline size_t
 threads_per_process() {
-  return execution::context_t::instance().threads_per_process();
+  return runtime::context_t::instance().threads_per_process();
 }
 
 /*!
@@ -67,7 +67,7 @@ threads_per_process() {
 
 inline size_t
 threads() {
-  return execution::context_t::instance().threads();
+  return runtime::context_t::instance().threads();
 }
 
 /*!
@@ -77,7 +77,7 @@ threads() {
 
 inline size_t
 color() {
-  return execution::context_t::instance().color();
+  return runtime::context_t::instance().color();
 }
 
 /*!
@@ -87,52 +87,7 @@ color() {
 
 inline size_t
 colors() {
-  return execution::context_t::instance().colors();
+  return runtime::context_t::instance().colors();
 }
 
 } // namespace flecsi
-
-/*----------------------------------------------------------------------------*
-  Global object interface.
- *----------------------------------------------------------------------------*/
-
-/*!
-  @def flecsi_add_global_object
-
-  Add a global object to the context. Global objects cannot be added
-  from within a task. Attempts to do so will generate a runtime error.
-
-  @param index  The size_t index of the global object within the given scope.
-  @param scope  The string scope of the global object.
-  @param type   The C++ type of the global object.
-  @param ...    A variadic argument list of the runtime arguments to the
-                constructor.
-
-  @ingroup execution
- */
-
-#define flecsi_add_global_object(index, scope, type, ...)                      \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  flecsi::execution::context_t::instance()                                     \
-    .template add_global_object<flecsi_internal_string_hash(scope), type>(     \
-      index, ##__VA_ARGS__);
-
-/*!
-  @def flecsi_get_global_object
-
-  Get a global object instance.
-
-  @param index  The size_t index of the global object within the given scope.
-  @param scope  The string scope of the global object.
-  @param type   The type of the global object.
-
-  @ingroup execution
- */
-
-#define flecsi_get_global_object(index, scope, type)                           \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  flecsi::execution::context_t::instance()                                     \
-    .template get_global_object<flecsi_internal_string_hash(scope), type>(     \
-      index);

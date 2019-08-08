@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/common/entity_storage.hh>
 #include <flecsi/topology/common/index_space.hh>
 #include <flecsi/topology/unstructured_mesh/storage.hh>
@@ -32,43 +32,39 @@ namespace flecsi {
 namespace topology {
 
 template<size_t, size_t>
-class mesh_entity_u;
+class mesh_entity;
 
 /*!
  */
 
 template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
-struct mesh_storage_u {
+struct mesh_storage {
   static constexpr size_t num_partitions = 5;
 
   using id_t = utils::id_t;
 
-  using index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
-                                      true,
-                                      true,
-                                      true,
-                                      void,
-                                      topology_storage_u>,
+  using index_spaces_t = std::array<
+    index_space<mesh_entity_base_ *, true, true, true, void, topology_storage>,
     NUM_DIMS + 1>;
 
-  using index_subspaces_t = std::array<index_space_u<mesh_entity_base_ *,
+  using index_subspaces_t = std::array<index_space<mesh_entity_base_ *,
                                          false,
                                          true,
                                          false,
                                          void,
-                                         topology_storage_u>,
+                                         topology_storage>,
     NUM_INDEX_SUBSPACES>;
 
-  using partition_index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
+  using partition_index_spaces_t = std::array<index_space<mesh_entity_base_ *,
                                                 false,
                                                 false,
                                                 true,
                                                 void,
-                                                topology_storage_u>,
+                                                topology_storage>,
     NUM_DIMS + 1>;
 
-  // array of array of domain_connectivity_u
-  std::array<std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMAINS>,
+  // array of array of domain_connectivity
+  std::array<std::array<domain_connectivity<NUM_DIMS>, NUM_DOMAINS>,
     NUM_DOMAINS>
     topology;
 
@@ -81,10 +77,10 @@ struct mesh_storage_u {
 
   size_t color;
 
-  mesh_storage_u() {
-    auto & context_ = flecsi::execution::context_t::instance();
+  mesh_storage() {
+    auto & context_ = flecsi::runtime::context_t::instance();
     color = context_.color();
-  } // mesh_storage_u
+  } // mesh_storage
 
   void init_entities(size_t domain,
     size_t dim,
@@ -105,9 +101,9 @@ struct mesh_storage_u {
     id_storage.set_buffer(ids, num_entities, true);
 
     for(auto & domain_connectivities : topology) {
-      auto & domain_connectivity_u = domain_connectivities[domain];
+      auto & domain_connectivity = domain_connectivities[domain];
       for(size_t d = 0; d <= NUM_DIMS; ++d) {
-        domain_connectivity_u.get(d, dim).set_entity_storage(s);
+        domain_connectivity.get(d, dim).set_entity_storage(s);
       } // for
     } // for
 
@@ -156,11 +152,11 @@ struct mesh_storage_u {
     size_t num_entities,
     bool read) {
 
-    auto & context_ = execution::context_t::instance();
+    auto & context_ = runtime::context_t::instance();
     auto & ssm = context_.index_subspace_info();
     auto itr = ssm.find(index_subspace);
     flog_assert(itr != ssm.end(), "invalid index subspace");
-    const execution::context_t::index_subspace_info_t & si = itr->second;
+    const runtime::context_t::index_subspace_info_t & si = itr->second;
 
     auto & is = index_spaces[domain][dim];
     auto & iss = index_subspaces[index_subspace];
@@ -204,7 +200,7 @@ struct mesh_storage_u {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
-    using dtype = domain_entity_u<DOM, T>;
+    using dtype = domain_entity<DOM, T>;
 
     auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
     size_t entity = is.size();
@@ -226,7 +222,7 @@ struct mesh_storage_u {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(const id_t & id, ARG_TYPES &&... args) {
-    using dtype = domain_entity_u<DOM, T>;
+    using dtype = domain_entity<DOM, T>;
 
     auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
 
@@ -246,7 +242,7 @@ struct mesh_storage_u {
     return ent;
   } // make
 
-}; // class mesh_storage_u
+}; // class mesh_storage
 
 } // namespace topology
 } // namespace flecsi

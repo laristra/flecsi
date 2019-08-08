@@ -36,7 +36,7 @@ using namespace flecsi::data::legion;
  @ingroup execution
  */
 
-struct task_epilogue_t : public flecsi::utils::tuple_walker_u<task_epilogue_t> {
+struct task_epilogue_t : public flecsi::utils::tuple_walker<task_epilogue_t> {
 
   /*!
    Construct a task_epilogue_t instance.
@@ -59,7 +59,7 @@ struct task_epilogue_t : public flecsi::utils::tuple_walker_u<task_epilogue_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -67,8 +67,7 @@ struct task_epilogue_t : public flecsi::utils::tuple_walker_u<task_epilogue_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
-  } // visit
+  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types

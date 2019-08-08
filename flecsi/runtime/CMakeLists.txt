@@ -13,16 +13,58 @@
 #------------------------------------------------------------------------------#
 
 set(runtime_HEADERS
-  context_policy.hh
-  data_policy.hh
-  execution_policy.hh
-  io_policy.hh
+  context.hh
   runtime.hh
   types.hh
-  PARENT_SCOPE
+  backend.hh
 )
 
 set(runtime_SOURCES
   runtime.cc
+)
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+  set(runtime_HEADERS
+    ${runtime_HEADERS}
+    legion/context.hh
+    legion/mapper.hh
+    legion/tasks.hh
+  )
+
+  set(runtime_SOURCES
+    ${runtime_SOURCES}
+    legion/context.cc
+  )
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+
+  set(runtime_HEADERS
+    ${runtime_HEADERS}
+    mpi/context.hh
+  )
+
+  set(runtime_SOURCES
+    ${runtime_SOURCES}
+    mpi/context.cc
+  )
+
+endif()
+
+#------------------------------------------------------------------------------#
+# Export header list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(runtime_HEADERS
+  ${runtime_HEADERS}
+  PARENT_SCOPE
+)
+
+#------------------------------------------------------------------------------#
+# Export source list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(runtime_SOURCES
+  ${runtime_SOURCES}
   PARENT_SCOPE
 )
