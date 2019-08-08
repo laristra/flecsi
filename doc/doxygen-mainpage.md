@@ -59,23 +59,18 @@ Documentation is also provide in the corresponding Doxygen
 
 ## Naming Conventions
 
-Because FleCSI makes extensive use of C++ templates, type names are
-designed to indicate whether or not a type is fully qualified (A fully
-qualified type is one for which all template parameters have been
-specified.) Fully qualified types are of the form *type_name_t*, where
-the underscore-t indicates that *type_name_t* is fully resolved. Types
-that are not fully qualified are of the form *type_name_u*, where the
-double-underscore indicates that the type still has unresolved
-parameters. The following code illustrates this convention:
+The suffix `_t` is often used to indicate the specialization of interest
+of a class template of the same name without the suffix:
+
 ```
 // Unqualified type.
 template<
   typename T
 >
-struct type_name_u {};
+struct type_name {};
 
 // Fully-qualified type.
-using type_name_t = type_name_u<double>;
+using type_name_t = type_name<double>;
 ```
 
 ## More Documentation

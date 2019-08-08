@@ -46,16 +46,16 @@ namespace topology {
 //! and entity types.
 //-----------------------------------------------------------------//
 template<typename POLICY_TYPE>
-struct ntree_topology_u : public ntree_topology_base_t,
-                          public data::data_reference_base_t {
+struct ntree_topology : public ntree_topology_base_t,
+                        public data::data_reference_base_t {
 
 public:
   using Policy = POLICY_TYPE;
 
   // tree storage type definition
-  using storage_t = ntree_storage_u<Policy>;
+  using storage_t = ntree_storage<Policy>;
   // tree topology base definition
-  using base_t = ntree_topology_base_u<storage_t>;
+  using base_t = ntree_topology_base<storage_t>;
   // entity ID type
   using id_t = utils::id_t;
   // offset type use by connectivities to give offsets and counts
@@ -75,8 +75,8 @@ public:
   using entity_t = typename Policy::tree_entity_;
   using entity_vector_t = std::vector<entity_t *>;
   using htable_t = std::unordered_map<key_t, branch_t>;
-  using entity_id_t = typename entity_base_u<0>::id_t;
-  using geometry_t = ntree_geometry_u<element_t, dimension>;
+  using entity_id_t = typename entity_base<0>::id_t;
+  using geometry_t = ntree_geometry<element_t, dimension>;
 
   static constexpr size_t hash_table_capacity_ = htable_t::hash_capacity_;
 
@@ -84,7 +84,7 @@ public:
     Constuct a tree topology with unit coordinates, i.e. each coordinate
     dimension is in range [0, 1].
    */
-  ntree_topology_u() {
+  ntree_topology() {
     max_depth_ = 0;
     // Init the new storage, for now without handler
     base_t::set_storage(new storage_t);
@@ -95,7 +95,7 @@ public:
     root_ = htable_t::find(base_t::ms_->branch_index_space, key_t::root());
   }
 
-  ntree_topology_u(const ntree_topology_u & s) : base_t(s) {}
+  ntree_topology(const ntree_topology & s) : base_t(s) {}
 
   /**
    * @brief Set the range of the current domain.
@@ -152,7 +152,7 @@ public:
    */
   template<class TREE_POLICY>
   friend std::ostream & operator<<(std::ostream & os,
-    const ntree_topology_u<TREE_POLICY> & t);
+    const ntree_topology<TREE_POLICY> & t);
 
   /**
    * @brief Build the tree topology in the branch_map_, insert all the local
@@ -505,7 +505,7 @@ private:
 
 template<class TREE_TYPE>
 std::ostream &
-operator<<(std::ostream & os, const ntree_topology_u<TREE_TYPE> & t) {
+operator<<(std::ostream & os, const ntree_topology<TREE_TYPE> & t) {
   os << "Tree: range: " << t.range_[0] << "-" << t.range_[1];
   return os;
 }

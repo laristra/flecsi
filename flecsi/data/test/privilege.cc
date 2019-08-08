@@ -18,10 +18,10 @@
 
 using namespace flecsi;
 
-constexpr size_t prvs1 = privilege_pack_u<rw>::value;
-constexpr size_t prvs2 = privilege_pack_u<wo, rw>::value;
-constexpr size_t prvs3 = privilege_pack_u<ro, wo, rw>::value;
-constexpr size_t prvs4 = privilege_pack_u<nu, ro, wo, rw>::value;
+constexpr size_t prvs1 = privilege_pack<rw>::value;
+constexpr size_t prvs2 = privilege_pack<wo, rw>::value;
+constexpr size_t prvs3 = privilege_pack<ro, wo, rw>::value;
+constexpr size_t prvs4 = privilege_pack<nu, ro, wo, rw>::value;
 
 int
 privilege(int argc, char ** argv) {

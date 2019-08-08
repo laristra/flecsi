@@ -23,7 +23,7 @@ namespace flecsi {
 namespace topology {
 
 /*!
-  The index_topology_u type allows users to register data on an
+  The index_topology type allows users to register data on an
   arbitrarily-sized set of indices that have an implicit one-to-one coloring.
 
   @ingroup topology
@@ -44,7 +44,7 @@ struct index_topology_t {
     size_t size_;
   };
 
-}; // struct index_topology_u
+}; // struct index_topology
 
 } // namespace topology
 } // namespace flecsi

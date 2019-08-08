@@ -18,7 +18,7 @@
 
   This file contains the C++ data model interface \em topology_interface_t
   for FleCSI topology data structures. The \em topology_interface_t type is
-  a specialization of the \em topology_interface_u type on the backend
+  a specialization of the \em topology_interface type on the backend
   runtime policy that is selected at compile time.
  */
 
@@ -37,7 +37,7 @@ namespace flecsi {
 namespace data {
 
 /*!
-  The topology_interface_u type defines a high-level topology
+  The topology_interface type defines a high-level topology
   interface that is implemented by the given data policy.
 
   @tparam DATA_POLICY The backend runtime policy.
@@ -62,9 +62,9 @@ struct topology_interface_t {
     static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(Core),
       "Topologies may not add data members");
 
-    using registration_t = topology_registration_u<Core, NAMESPACE, NAME>;
+    using registration_t = topology_registration<Core, NAMESPACE, NAME>;
 
-    using topology_reference_t = topology_reference_u<Core>;
+    using topology_reference_t = topology_reference<Core>;
 
     registration_t::register_fields();
 
@@ -91,7 +91,7 @@ struct topology_interface_t {
    */
 
   template<typename TOPOLOGY_TYPE>
-  void create(topology_reference_u<TOPOLOGY_TYPE> const & topology_reference,
+  void create(topology_reference<TOPOLOGY_TYPE> const & topology_reference,
     typename TOPOLOGY_TYPE::coloring_t const & coloring,
     std::string const & name) {
 
@@ -100,14 +100,14 @@ struct topology_interface_t {
   } // add_coloring
 
   template<typename TOPOLOGY_TYPE>
-  void destroy(topology_reference_u<TOPOLOGY_TYPE> const & topology_reference,
+  void destroy(topology_reference<TOPOLOGY_TYPE> const & topology_reference,
     std::string const & name) {
 
     data_policy_t::destroy<TOPOLOGY_TYPE>(topology_reference);
 
   } // destroy_coloring
 
-}; // struct topology_interface_u
+}; // struct topology_interface
 
 } // namespace data
 } // namespace flecsi

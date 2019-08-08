@@ -40,7 +40,7 @@
 
 namespace flecsi::execution {
 context_t &
-context_u::instance() {
+context::instance() {
   static context_t context;
   return context;
 } // instance

@@ -24,18 +24,18 @@
 namespace flecsi {
 
 /*----------------------------------------------------------------------------*
- * class filling_curve_u
+ * class filling_curve
  * @brief Basic functionality for a space filling curve.
  * The filling_curves are built using a CRTP pattern.
  * This base class features the generic function to generate filling curves
- * and is specialized but \ref hilbert_curve_u and \ref morton_curve_u
+ * and is specialized but \ref hilbert_curve and \ref morton_curve
  *----------------------------------------------------------------------------*/
 template<size_t DIM, typename T, class DERIVED>
-class filling_curve_u
+class filling_curve
 {
   static constexpr size_t dimension = DIM;
   using int_t = T;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using range_t = std::array<point_t, 2>;
 
 protected:
@@ -49,12 +49,12 @@ protected:
   static double min_, scale_;
   static range_t range_;
   int_t value_;
-  filling_curve_u(int_t value) : value_(value) {}
+  filling_curve(int_t value) : value_(value) {}
 
 public:
-  filling_curve_u() : value_(0) {}
-  filling_curve_u(const filling_curve_u & key) : value_(key) {}
-  ~filling_curve_u() {
+  filling_curve() : value_(0) {}
+  filling_curve(const filling_curve & key) : value_(key) {}
+  ~filling_curve() {
     value_ = 0;
   }
 
@@ -108,7 +108,7 @@ public:
   }
 
   //! Search for the depth were two keys are in conflict
-  int conflict_depth(filling_curve_u key_a, filling_curve_u key_b) {
+  int conflict_depth(filling_curve key_a, filling_curve key_b) {
     int conflict = max_depth_;
     while(key_a != key_b) {
       key_a.pop();
@@ -139,7 +139,7 @@ public:
   }
 
   //! Return the parent of this key (depth - 1)
-  constexpr filling_curve_u parent() const {
+  constexpr filling_curve parent() const {
     return DERIVED(value_ >> dimension);
   }
 
@@ -158,7 +158,7 @@ public:
     }
     else {
       std::string output;
-      filling_curve_u id = *this;
+      filling_curve id = *this;
       int poped;
       while(id != root()) {
         poped = id.pop_value();
@@ -176,32 +176,32 @@ public:
   virtual void coordinates(point_t & p) {}
 
   // Operators
-  filling_curve_u & operator=(const filling_curve_u & bid) {
+  filling_curve & operator=(const filling_curve & bid) {
     value_ = bid.value_;
     return *this;
   }
 
-  constexpr bool operator==(const filling_curve_u & bid) const {
+  constexpr bool operator==(const filling_curve & bid) const {
     return value_ == bid.value_;
   }
 
-  constexpr bool operator<=(const filling_curve_u & bid) const {
+  constexpr bool operator<=(const filling_curve & bid) const {
     return value_ <= bid.value_;
   }
 
-  constexpr bool operator>=(const filling_curve_u & bid) const {
+  constexpr bool operator>=(const filling_curve & bid) const {
     return value_ >= bid.value_;
   }
 
-  constexpr bool operator>(const filling_curve_u & bid) const {
+  constexpr bool operator>(const filling_curve & bid) const {
     return value_ > bid.value_;
   }
 
-  constexpr bool operator<(const filling_curve_u & bid) const {
+  constexpr bool operator<(const filling_curve & bid) const {
     return value_ < bid.value_;
   }
 
-  constexpr bool operator!=(const filling_curve_u & bid) const {
+  constexpr bool operator!=(const filling_curve & bid) const {
     return value_ != bid.value_;
   }
 
@@ -209,52 +209,50 @@ public:
     return value_;
   }
 
-}; // class filling_curve_u
+}; // class filling_curve
 
-//! output for filling_curve_u using output_ function defined in the class
+//! output for filling_curve using output_ function defined in the class
 template<size_t D, typename T, class DER>
 std::ostream &
-operator<<(std::ostream & ostr, const filling_curve_u<D, T, DER> & k) {
+operator<<(std::ostream & ostr, const filling_curve<D, T, DER> & k) {
   k.output_(ostr);
   return ostr;
 }
 
 /*----------------------------------------------------------------------------*
- * class hilbert_curve_u
+ * class hilbert_curve
  * @brief Implementation of the hilbert peano space filling curve in
  * 1, 2 and 3d
  *----------------------------------------------------------------------------*/
 template<size_t DIM, typename T>
-class hilbert_curve_u : public filling_curve_u<DIM, T, hilbert_curve_u<DIM, T>>
+class hilbert_curve : public filling_curve<DIM, T, hilbert_curve<DIM, T>>
 {
   using int_t = T;
   static constexpr size_t dimension = DIM;
   using coord_t = std::array<int_t, dimension>;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using range_t = std::array<point_t, 2>;
 
-  using filling_curve_u<DIM, T, hilbert_curve_u>::value_;
-  using filling_curve_u<DIM, T, hilbert_curve_u>::max_depth_;
-  using filling_curve_u<DIM, T, hilbert_curve_u>::max_value_;
+  using filling_curve<DIM, T, hilbert_curve>::value_;
+  using filling_curve<DIM, T, hilbert_curve>::max_depth_;
+  using filling_curve<DIM, T, hilbert_curve>::max_value_;
 
-  using filling_curve_u<DIM, T, hilbert_curve_u>::min_;
-  using filling_curve_u<DIM, T, hilbert_curve_u>::scale_;
-  using filling_curve_u<DIM, T, hilbert_curve_u>::range_;
+  using filling_curve<DIM, T, hilbert_curve>::min_;
+  using filling_curve<DIM, T, hilbert_curve>::scale_;
+  using filling_curve<DIM, T, hilbert_curve>::range_;
 
 public:
-  hilbert_curve_u() : filling_curve_u<DIM, T, hilbert_curve_u>() {}
-  hilbert_curve_u(const int_t & id)
-    : filling_curve_u<DIM, T, hilbert_curve_u>(id) {}
-  hilbert_curve_u(const hilbert_curve_u & bid)
-    : filling_curve_u<DIM, T, hilbert_curve_u>(bid.value_) {}
-  hilbert_curve_u(const point_t & p)
-    : hilbert_curve_u(p, filling_curve_u<DIM, T, hilbert_curve_u>::max_depth_) {
-  }
+  hilbert_curve() : filling_curve<DIM, T, hilbert_curve>() {}
+  hilbert_curve(const int_t & id) : filling_curve<DIM, T, hilbert_curve>(id) {}
+  hilbert_curve(const hilbert_curve & bid)
+    : filling_curve<DIM, T, hilbert_curve>(bid.value_) {}
+  hilbert_curve(const point_t & p)
+    : hilbert_curve(p, filling_curve<DIM, T, hilbert_curve>::max_depth_) {}
 
   //! Hilbert key is always generated to the max_depth_ and then truncated
   //! otherwise the keys will not be the same
-  hilbert_curve_u(const point_t & p, const size_t depth) {
-    *this = filling_curve_u<DIM, T, hilbert_curve_u>::min();
+  hilbert_curve(const point_t & p, const size_t depth) {
+    *this = filling_curve<DIM, T, hilbert_curve>::min();
     assert(depth <= max_depth_);
     std::array<int_t, dimension> coords;
     // Convert the position to integer
@@ -433,40 +431,39 @@ private:
 }; // class hilbert
 
 /*----------------------------------------------------------------------------*
- * class morton_curve_u
+ * class morton_curve
  * @brief Implementation of the Morton space filling curve (Z ordering)
  *----------------------------------------------------------------------------*/
 template<size_t DIM, typename T>
-class morton_curve_u : public filling_curve_u<DIM, T, morton_curve_u<DIM, T>>
+class morton_curve : public filling_curve<DIM, T, morton_curve<DIM, T>>
 {
 
   using int_t = T;
   static constexpr size_t dimension = DIM;
   using coord_t = std::array<int_t, dimension>;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using range_t = std::array<point_t, 2>;
 
-  using filling_curve_u<DIM, T, morton_curve_u>::value_;
-  using filling_curve_u<DIM, T, morton_curve_u>::max_depth_;
-  using filling_curve_u<DIM, T, morton_curve_u>::max_value_;
+  using filling_curve<DIM, T, morton_curve>::value_;
+  using filling_curve<DIM, T, morton_curve>::max_depth_;
+  using filling_curve<DIM, T, morton_curve>::max_value_;
 
-  using filling_curve_u<DIM, T, morton_curve_u>::bits_;
-  using filling_curve_u<DIM, T, morton_curve_u>::min_;
-  using filling_curve_u<DIM, T, morton_curve_u>::scale_;
-  using filling_curve_u<DIM, T, morton_curve_u>::range_;
+  using filling_curve<DIM, T, morton_curve>::bits_;
+  using filling_curve<DIM, T, morton_curve>::min_;
+  using filling_curve<DIM, T, morton_curve>::scale_;
+  using filling_curve<DIM, T, morton_curve>::range_;
 
 public:
-  morton_curve_u() : filling_curve_u<DIM, T, morton_curve_u>() {}
-  morton_curve_u(const int_t & id)
-    : filling_curve_u<DIM, T, morton_curve_u>(id) {}
-  morton_curve_u(const morton_curve_u & bid)
-    : filling_curve_u<DIM, T, morton_curve_u>(bid.value_) {}
-  morton_curve_u(const point_t & p)
-    : morton_curve_u(p, filling_curve_u<DIM, T, morton_curve_u>::max_depth_) {}
+  morton_curve() : filling_curve<DIM, T, morton_curve>() {}
+  morton_curve(const int_t & id) : filling_curve<DIM, T, morton_curve>(id) {}
+  morton_curve(const morton_curve & bid)
+    : filling_curve<DIM, T, morton_curve>(bid.value_) {}
+  morton_curve(const point_t & p)
+    : morton_curve(p, filling_curve<DIM, T, morton_curve>::max_depth_) {}
 
   //! Morton key can be generated directly up to the right depth
-  morton_curve_u(const point_t & p, const size_t depth) {
-    *this = filling_curve_u<DIM, T, morton_curve_u>::min();
+  morton_curve(const point_t & p, const size_t depth) {
+    *this = filling_curve<DIM, T, morton_curve>::min();
     assert(depth <= max_depth_);
     std::array<int_t, dimension> coords;
     for(size_t i = 0; i < dimension; ++i) {
@@ -481,7 +478,7 @@ public:
       } // for
       ++k;
     } // for
-  } // morton_curve_u
+  } // morton_curve
 
   static void set_range(const range_t & range) {
     range_ = range;
@@ -513,11 +510,11 @@ public:
 }; // class morton
 
 template<size_t DIM, typename T, class DERIVED>
-double filling_curve_u<DIM, T, DERIVED>::min_ = 0;
+double filling_curve<DIM, T, DERIVED>::min_ = 0;
 template<size_t DIM, typename T, class DERIVED>
-typename filling_curve_u<DIM, T, DERIVED>::range_t
-  filling_curve_u<DIM, T, DERIVED>::range_ = {};
+typename filling_curve<DIM, T, DERIVED>::range_t
+  filling_curve<DIM, T, DERIVED>::range_ = {};
 template<size_t DIM, typename T, class DERIVED>
-double filling_curve_u<DIM, T, DERIVED>::scale_ = 0;
+double filling_curve<DIM, T, DERIVED>::scale_ = 0;
 
 } // namespace flecsi

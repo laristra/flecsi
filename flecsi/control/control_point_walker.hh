@@ -33,7 +33,7 @@ namespace control {
  */
 
 template<size_t CONTROL_POINT>
-using control_point_ = flecsi::utils::typeify_u<size_t, CONTROL_POINT>;
+using control_point_ = flecsi::utils::typeify<size_t, CONTROL_POINT>;
 
 /*!
   Allow users to define cyclic control points. Cycles can be nested.
@@ -46,7 +46,7 @@ using control_point_ = flecsi::utils::typeify_u<size_t, CONTROL_POINT>;
  */
 
 template<bool (*PREDICATE)(), typename... CONTROL_POINTS>
-struct cycle_u {
+struct cycle {
 
   using TYPE = std::tuple<CONTROL_POINTS...>;
 
@@ -61,19 +61,19 @@ struct cycle_u {
     return PREDICATE();
   } // run
 
-}; // struct cycle_u
+}; // struct cycle
 
 /*!
-  The control_point_walker_u class allows execution of statically-defined
+  The control_point_walker class allows execution of statically-defined
   control points.
 
   @ingroup control
  */
 
 template<typename CONTROL_POLICY>
-struct control_point_walker_u : public flecsi::utils::tuple_walker_u<
-                                  control_point_walker_u<CONTROL_POLICY>> {
-  control_point_walker_u(int argc, char ** argv) : argc_(argc), argv_(argv) {}
+struct control_point_walker
+  : public flecsi::utils::tuple_walker<control_point_walker<CONTROL_POLICY>> {
+  control_point_walker(int argc, char ** argv) : argc_(argc), argv_(argv) {}
 
   /*!
     Handle the tuple type \em ELEMENT_TYPE.
@@ -105,7 +105,7 @@ struct control_point_walker_u : public flecsi::utils::tuple_walker_u<
       // This is a cycle -> create a new control point walker to recurse
       // the cycle.
       while(ELEMENT_TYPE::predicate()) {
-        control_point_walker_u control_point_walker(argc_, argv_);
+        control_point_walker control_point_walker(argc_, argv_);
         control_point_walker.template walk_types<typename ELEMENT_TYPE::TYPE>();
       } // while
     } // if
@@ -116,23 +116,23 @@ private:
   int argc_;
   char ** argv_;
 
-}; // struct control_point_walker_u
+}; // struct control_point_walker
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 
 /*!
-  The control_point_writer_u class allows execution of statically-defined
+  The control_point_writer class allows execution of statically-defined
   control points.
 
   @ingroup control
  */
 
 template<typename CONTROL_POLICY>
-struct control_point_writer_u : public flecsi::utils::tuple_walker_u<
-                                  control_point_writer_u<CONTROL_POLICY>> {
+struct control_point_writer
+  : public flecsi::utils::tuple_walker<control_point_writer<CONTROL_POLICY>> {
   using graphviz_t = flecsi::utils::graphviz_t;
 
-  control_point_writer_u(graphviz_t & gv) : gv_(gv) {}
+  control_point_writer(graphviz_t & gv) : gv_(gv) {}
 
   /*!
     Handle the tuple type \em ELEMENT_TYPE for type size_t.
@@ -176,7 +176,7 @@ struct control_point_writer_u : public flecsi::utils::tuple_walker_u<
   } // visit_type
 
   /*!
-    Handle the tuple type \em ELEMENT_TYPE for type cycle_u.
+    Handle the tuple type \em ELEMENT_TYPE for type cycle.
 
     @tparam ELEMENT_TYPE The tuple element type. This can either be a size_t
                          or a \em cycle. Cycles are defined by the
@@ -189,7 +189,7 @@ struct control_point_writer_u : public flecsi::utils::tuple_walker_u<
     !std::is_same<typename ELEMENT_TYPE::TYPE, size_t>::value>::type
   visit_type() {
 
-    control_point_writer_u control_point_writer(gv_);
+    control_point_writer control_point_writer(gv_);
     control_point_writer.template walk_types<typename ELEMENT_TYPE::TYPE>();
 
     // Add edges for cycles and beautify them...
@@ -213,7 +213,7 @@ struct control_point_writer_u : public flecsi::utils::tuple_walker_u<
 private:
   graphviz_t & gv_;
 
-}; // struct control_point_writer_u
+}; // struct control_point_writer
 
 #endif // FLECSI_ENABLE_GRAPHVIZ
 

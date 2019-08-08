@@ -35,7 +35,7 @@
 namespace flecsi {
 namespace execution {
 
-struct context_t : context_u<context_t> {
+struct context_t : context<context_t> {
 
   /*!
     Documnetation for this interface is in the top-level context type.

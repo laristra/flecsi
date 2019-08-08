@@ -37,16 +37,16 @@ namespace legion {
 using namespace topology;
 
 template<typename TOPOLOGY_TYPE>
-struct topology_instance_u;
+struct topology_instance;
 
 /*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_instance_u<index_topology_t> {
+struct topology_instance<index_topology_t> {
 
-  using topology_reference_t = topology_reference_u<index_topology_t>;
+  using topology_reference_t = topology_reference<index_topology_t>;
 
   static void create(topology_reference_t const & topology_reference,
     index_topology_t::coloring_t const & coloring) {
@@ -133,71 +133,69 @@ struct topology_instance_u<index_topology_t> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
+struct topology_instance<ntree_topology<POLICY_TYPE>> {
 
-  using topology_reference_t =
-    topology_reference_u<ntree_topology_u<POLICY_TYPE>>;
-  using coloring_t = typename ntree_topology_u<POLICY_TYPE>::coloring_t;
+  using topology_reference_t = topology_reference<ntree_topology<POLICY_TYPE>>;
+  using coloring_t = typename ntree_topology<POLICY_TYPE>::coloring_t;
 
   static void create(topology_reference_t const & topology_reference,
     coloring_t const & coloring) {}
 
   static void destroy(topology_reference_t const & topology_reference) {}
 
-}; // ntree_topology_u specialization
+}; // ntree_topology specialization
 
 /*----------------------------------------------------------------------------*
   Set Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<set_topology_u<POLICY_TYPE>> {
+struct topology_instance<set_topology<POLICY_TYPE>> {
 
-  using topology_reference_t =
-    topology_reference_u<set_topology_u<POLICY_TYPE>>;
+  using topology_reference_t = topology_reference<set_topology<POLICY_TYPE>>;
 
-}; // set_topology_u specialization
+}; // set_topology specialization
 
 /*----------------------------------------------------------------------------*
   Structured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<structured_mesh_topology_u<POLICY_TYPE>> {
+struct topology_instance<structured_mesh_topology<POLICY_TYPE>> {
 
   using topology_reference_t =
-    topology_reference_u<structured_mesh_topology_u<POLICY_TYPE>>;
+    topology_reference<structured_mesh_topology<POLICY_TYPE>>;
 
-}; // structured_mesh_topology_u specialization
+}; // structured_mesh_topology specialization
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance_u<unstructured_mesh_topology_u<POLICY_TYPE>> {
+struct topology_instance<unstructured_mesh_topology<POLICY_TYPE>> {
 
   using topology_reference_t =
-    topology_reference_u<unstructured_mesh_topology_u<POLICY_TYPE>>;
+    topology_reference<unstructured_mesh_topology<POLICY_TYPE>>;
 
-}; // unstructured_mesh_topology_u specialization
+}; // unstructured_mesh_topology specialization
 
 // NOTE THAT THE HANDLE TYPE FOR THIS TYPE WILL NEED TO CAPTURE THE
 // UNDERLYING TOPOLOGY TYPE, i.e., topology::mesh_topology_t<MESH_POLICY>
 
 #if 0
 template<typename MESH_POLICY>
-struct client_handle_specialization_u<topology::mesh_topology_t<MESH_POLICY>> {
+struct client_handle_specialization<topology::mesh_topology_t<MESH_POLICY>> {
 
   using client_t = topology::mesh_topology_t<MESH_POLICY>;
 
   template<size_t NAMESPACE, size_t NAME>
-  static client_handle_u<client_t, 0> get_client_handle() {
-    client_handle_u<client_t, 0> h;
+  static client_handle<client_t, 0> get_client_handle() {
+    client_handle<client_t, 0> h;
     return h;
   } // get_client_handle
 
-}; // client_handle_specialization_u<topology::mesh_topology_t<MESH_POLICY>>
+}; // client_handle_specialization<topology::mesh_topology_t<MESH_POLICY>>
 #endif
 
 } // namespace legion

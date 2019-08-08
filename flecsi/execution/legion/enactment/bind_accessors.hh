@@ -49,8 +49,7 @@ using namespace flecsi::data;
   buffers.
  */
 
-struct bind_accessors_t
-  : public flecsi::utils::tuple_walker_u<bind_accessors_t> {
+struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
 
   /*!
     Construct an bind_accessors_t instance.
@@ -76,7 +75,7 @@ struct bind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topo::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
 
     Legion::Domain dom = legion_runtime_->get_index_space_domain(
       legion_context_, regions_[region].get_logical_region().get_index_space());
@@ -108,7 +107,7 @@ struct bind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topo::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
 
     Legion::Domain dom = legion_runtime_->get_index_space_domain(
       legion_context_, regions_[region].get_logical_region().get_index_space());

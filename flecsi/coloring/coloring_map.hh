@@ -27,7 +27,7 @@ namespace flecsi {
 namespace coloring {
 
 template<typename TOPOLOGY_TYPE>
-struct coloring_map_u {
+struct coloring_map {
 
   using coloring_t = typename TOPOLOGY_TYPE::coloring_t;
 
@@ -61,11 +61,11 @@ struct coloring_map_u {
 private:
   instance_map_t instances_;
 
-}; // struct coloring_map_u
+}; // struct coloring_map
 
 #if 0
 context...
-using unstructured_mesh_colorings_t = coloring_map_u<...>;
+using unstructured_mesh_colorings_t = coloring_map<...>;
 
 template<typename TOPOLOGY_TYPE>
 register_coloring(typename TOPLO... & coloring) {

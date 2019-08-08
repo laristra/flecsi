@@ -56,7 +56,7 @@ const size_t FLECSI_MAPPER_COMPACTED_STORAGE = 0x00002000;
 const size_t FLECSI_MAPPER_SUBRANK_LAUNCH = 0x00003000;
 const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
-struct context_t : context_u {
+struct context_t : context {
 
   /*
     Friend declarations. Some parts of this interface are intentionally private

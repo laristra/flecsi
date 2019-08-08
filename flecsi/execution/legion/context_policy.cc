@@ -325,7 +325,7 @@ context_t::initialize_default_index_topology() {
                      << "\tidentifier: " << identifier << std::endl;
   }
 
-  data::topology_reference_u<topology::index_topology_t> reference(identifier);
+  data::topology_reference<topology::index_topology_t> reference(identifier);
   topology::index_topology_t::coloring_t coloring(processes_);
 
   data::legion_data_policy_t::create(reference, coloring);
@@ -348,7 +348,7 @@ context_t::finalize_default_index_topology() {
                      << "\tidentifier: " << identifier << std::endl;
   }
 
-  data::topology_reference_u<topology::index_topology_t> reference(identifier);
+  data::topology_reference<topology::index_topology_t> reference(identifier);
 
   data::legion_data_policy_t::destroy(reference);
 } // context_t::finalize_default_index_topology

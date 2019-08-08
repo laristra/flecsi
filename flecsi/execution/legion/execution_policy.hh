@@ -60,7 +60,7 @@ reduce(ARGS &&... args) {
   using namespace Legion;
   using namespace execution;
 
-  using traits_t = utils::function_traits_u<decltype(F)>;
+  using traits_t = utils::function_traits<decltype(F)>;
   using RETURN = typename traits_t::return_type;
   using ARG_TUPLE = typename traits_t::arguments_type;
 
@@ -68,7 +68,7 @@ reduce(ARGS &&... args) {
   flog_tag_guard(execution);
 
   // Make a tuple from the arugments passed by the user
-  // NB: conversions like field_reference -> accessor_u happen here
+  // NB: conversions like field_reference -> accessor happen here
   ARG_TUPLE task_args = std::forward_as_tuple(args...);
 
   // Get the FleCSI runtime context
@@ -150,7 +150,7 @@ reduce(ARGS &&... args) {
   // Single launch
   //------------------------------------------------------------------------//
 
-  using wrap = legion::task_wrapper_u<F, processor_type>;
+  using wrap = legion::task_wrapper<F, processor_type>;
   const auto task = legion::task_id<wrap::execute,
     ATTRIBUTES & ~flecsi::mpi | 1 << wrap::LegionProcessor>;
   if constexpr(LAUNCH_DOMAIN == launch_identifier("single")) {
@@ -183,7 +183,7 @@ reduce(ARGS &&... args) {
       case task_processor_type_t::loc: {
         auto future = legion_runtime->execute_task(legion_context, launcher);
 
-        return legion_future_u<RETURN, launch_type_t::single>(future);
+        return legion_future<RETURN, launch_type_t::single>(future);
       } // case task_processor_type_t::loc
 
       case task_processor_type_t::mpi: {
@@ -261,7 +261,7 @@ reduce(ARGS &&... args) {
           return 0;
 
           // FIXME
-          // return legion_future_u<RETURN, launch_type_t::single>(future);
+          // return legion_future<RETURN, launch_type_t::single>(future);
           return 0;
         }
         else {
@@ -275,7 +275,7 @@ reduce(ARGS &&... args) {
           task_epilogue.walk(task_args);
 
           // FIXME
-          // return legion_future_u<RETURN, launch_type_t::index>(future_map);
+          // return legion_future<RETURN, launch_type_t::index>(future_map);
           return 0;
         } // else
 
@@ -311,7 +311,7 @@ reduce(ARGS &&... args) {
         }
         else {
           // FIXME
-          // return legion_future_u<RETURN, launch_type_t::index>(future);
+          // return legion_future<RETURN, launch_type_t::index>(future);
           return 0;
         }
 
@@ -333,7 +333,7 @@ namespace execution {
 //------------------------------------------------------------------------//
 
 template<size_t HASH, typename TYPE>
-using reduction_wrapper_u = legion::reduction_wrapper_u<HASH, TYPE>;
+using reduction_wrapper = legion::reduction_wrapper<HASH, TYPE>;
 
 } // namespace execution
 } // namespace flecsi

@@ -48,16 +48,16 @@ private:
 }; // struct data_reference_base_t
 
 /*!
-  The topology_reference_u captures the topology type that is required for
+  The topology_reference captures the topology type that is required for
   dependent field references.
  */
 
 template<typename TOPOLOGY_TYPE>
-struct topology_reference_u : public data_reference_base_t {
+struct topology_reference : public data_reference_base_t {
   using topology_t = TOPOLOGY_TYPE;
 
-  topology_reference_u(size_t identifier) : data_reference_base_t(identifier) {}
-}; // struct topology_reference_u
+  topology_reference(size_t identifier) : data_reference_base_t(identifier) {}
+}; // struct topology_reference
 
 /*!
   The field_reference_t type is used to reference fields. It adds a \em

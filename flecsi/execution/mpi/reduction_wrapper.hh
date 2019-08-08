@@ -32,7 +32,7 @@ namespace execution {
 namespace mpi {
 
 template<size_t HASH, typename TYPE>
-struct reduction_wrapper_u {
+struct reduction_wrapper {
 
   using rhs_t = typename TYPE::RHS;
   using lhs_t = typename TYPE::LHS;
@@ -103,7 +103,7 @@ struct reduction_wrapper_u {
     reduction_ops[HASH] = mpiop;
   } // registration_callback
 
-}; // struct reduction_wrapper_u
+}; // struct reduction_wrapper
 
 } // namespace mpi
 } // namespace execution

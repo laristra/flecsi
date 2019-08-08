@@ -51,7 +51,7 @@ enum simulation_control_points_t : size_t {
 
 struct ftest_control_policy_t {
 
-  using control_t = flecsi::control::control_u<ftest_control_policy_t>;
+  using control_t = flecsi::control::control<ftest_control_policy_t>;
   using node_t = flecsi::utils::ftest::node_t;
 
 #define control_point(name) flecsi::control::control_point_<name>
@@ -65,12 +65,12 @@ struct ftest_control_policy_t {
 }; // struct ftest_control_policy_t
 
 using control_t =
-  flecsi::control::control_u<flecsi::control::ftest_control_policy_t>;
+  flecsi::control::control<flecsi::control::ftest_control_policy_t>;
 
 /*
   Register a command-line option "--control-model" to output a dot file
   that can be used to visualize the control points and actions of an
-  ftest executable. This macro can be used for any qualified control_u
+  ftest executable. This macro can be used for any qualified control
   specialization (not just the ftest example here).
  */
 

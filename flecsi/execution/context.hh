@@ -52,13 +52,13 @@ using namespace topology;
 struct context_t; // supplied by backend
 
 /*!
-  The context_u type provides a high-level execution context interface that
+  The context type provides a high-level execution context interface that
   is implemented by a specific backend.
 
   @ingroup execution
  */
 
-struct context_u {
+struct context {
 
   /*--------------------------------------------------------------------------*
     Public types.
@@ -107,10 +107,10 @@ struct context_u {
     Deleted contructor and assignment interfaces.
    *--------------------------------------------------------------------------*/
 
-  context_u(const context_u &) = delete;
-  context_u & operator=(const context_u &) = delete;
-  context_u(context_u &&) = delete;
-  context_u & operator=(context_u &&) = delete;
+  context(const context &) = delete;
+  context & operator=(const context &) = delete;
+  context(context &&) = delete;
+  context & operator=(context &&) = delete;
 
   /*!
     Meyer's singleton instance.
@@ -427,7 +427,7 @@ currently only for unstructured mesh topologies.
   } // tasks_executed
 
 protected:
-  context_u() = default;
+  context() = default;
 
 private:
 #ifdef DOXYGEN
@@ -497,7 +497,7 @@ private:
 
   size_t tasks_executed_ = 0;
 
-}; // struct context_u
+}; // struct context
 
 } // namespace execution
 } // namespace flecsi

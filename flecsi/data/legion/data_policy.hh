@@ -34,16 +34,16 @@ struct legion_data_policy_t {
 
   template<typename TOPOLOGY_TYPE>
   static void create(
-    topology_reference_u<TOPOLOGY_TYPE> const & topology_reference,
+    topology_reference<TOPOLOGY_TYPE> const & topology_reference,
     typename TOPOLOGY_TYPE::coloring_t const & coloring) {
-    legion::topology_instance_u<TOPOLOGY_TYPE>::create(
+    legion::topology_instance<TOPOLOGY_TYPE>::create(
       topology_reference, coloring);
   } // create
 
   template<typename TOPOLOGY_TYPE>
   static void destroy(
-    topology_reference_u<TOPOLOGY_TYPE> const & topology_reference) {
-    legion::topology_instance_u<TOPOLOGY_TYPE>::destroy(topology_reference);
+    topology_reference<TOPOLOGY_TYPE> const & topology_reference) {
+    legion::topology_instance<TOPOLOGY_TYPE>::destroy(topology_reference);
   } // destroy
 
   /*--------------------------------------------------------------------------*
@@ -57,20 +57,20 @@ struct legion_data_policy_t {
 #if 0
   // FIXME: These can move up into common
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using global_accessor_u = global_topo::accessor_u<DATA_TYPE, PRIVILEGES>;
+  using global_accessor = global_topo::accessor<DATA_TYPE, PRIVILEGES>;
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using index_accessor_u = index_topo::accessor_u<DATA_TYPE, PRIVILEGES>;
+  using index_accessor = index_topo::accessor<DATA_TYPE, PRIVILEGES>;
 #endif
 
 #if 0
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using dense_unstructured_mesh_accessor_u =
-    legion::unstructured_mesh_topo::dense_accessor_u<DATA_TYPE, PRIVILEGES>;
+  using dense_unstructured_mesh_accessor =
+    legion::unstructured_mesh_topo::dense_accessor<DATA_TYPE, PRIVILEGES>;
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  using dense_structured_mesh_accessor_u =
-    legion::structured_mesh_topo::dense_accessor_u<DATA_TYPE, PRIVILEGES>;
+  using dense_structured_mesh_accessor =
+    legion::structured_mesh_topo::dense_accessor<DATA_TYPE, PRIVILEGES>;
 #endif
 
 }; // struct legion_data_policy_t

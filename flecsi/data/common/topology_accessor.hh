@@ -33,13 +33,13 @@ namespace data {
  */
 
 template<typename TOPOLOGY_TYPE, size_t PRIVILEGES>
-struct topology_accessor_u : public TOPOLOGY_TYPE,
-                             public topology_reference_u<TOPOLOGY_TYPE> {
+struct topology_accessor : public TOPOLOGY_TYPE,
+                           public topology_reference<TOPOLOGY_TYPE> {
 
-  topology_accessor_u(topology_reference_u<TOPOLOGY_TYPE> const & reference)
-    : topology_reference_u<TOPOLOGY_TYPE>(reference) {}
+  topology_accessor(topology_reference<TOPOLOGY_TYPE> const & reference)
+    : topology_reference<TOPOLOGY_TYPE>(reference) {}
 
-}; // struct topology_accessor_u
+}; // struct topology_accessor
 
 } // namespace data
 } // namespace flecsi

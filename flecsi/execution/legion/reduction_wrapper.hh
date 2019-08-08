@@ -33,7 +33,7 @@ namespace execution {
 namespace legion {
 
 template<size_t HASH, typename TYPE>
-struct reduction_wrapper_u {
+struct reduction_wrapper {
 
   using rhs_t = typename TYPE::RHS;
   using lhs_t = typename TYPE::LHS;
@@ -66,7 +66,7 @@ struct reduction_wrapper_u {
 
   } // registration_callback
 
-}; // struct reduction_wrapper_u
+}; // struct reduction_wrapper
 
 } // namespace legion
 } // namespace execution

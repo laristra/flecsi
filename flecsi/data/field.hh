@@ -26,7 +26,7 @@ namespace flecsi {
 namespace data {
 
 /*!
-  The field_member_u type provides a mechanism to define and register
+  The field_member type provides a mechanism to define and register
   fundamental field types with the FleCSI runtime.
 
   @tparam DATA_TYPE     A compact type that will be defined at each index of
@@ -44,15 +44,15 @@ template<typename DATA_TYPE,
   storage_label_t STORAGE_CLASS,
   typename TOPOLOGY_TYPE,
   size_t INDEX_SPACE>
-struct field_member_u {
+struct field_member {
 
-  using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
+  using topology_reference_t = topology_reference<TOPOLOGY_TYPE>;
 
   template<size_t... PRIVILEGES>
-  using accessor = typename storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>::
-    template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES...>::value>;
+  using accessor = typename storage_class<STORAGE_CLASS, TOPOLOGY_TYPE>::
+    template accessor<DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
 
-  field_member_u() : fid_(unique_fid_t::instance().next()) {
+  field_member() : fid_(unique_fid_t::instance().next()) {
 
     execution::context_t::instance().add_field_info(
       topology::id<TOPOLOGY_TYPE>(),
@@ -77,7 +77,7 @@ struct field_member_u {
 private:
   field_id_t fid_;
 
-}; // struct field_member_u
+}; // struct field_member
 
 } // namespace data
 } // namespace flecsi

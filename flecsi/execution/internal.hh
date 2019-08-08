@@ -22,7 +22,7 @@
 #endif
 
 #define flecsi_internal_return_type(task)                                      \
-  typename flecsi::utils::function_traits_u<decltype(task)>::return_type
+  typename flecsi::utils::function_traits<decltype(task)>::return_type
 
 #define flecsi_internal_arguments_type(task)                                   \
-  typename flecsi::utils::function_traits_u<decltype(task)>::arguments_type
+  typename flecsi::utils::function_traits<decltype(task)>::arguments_type

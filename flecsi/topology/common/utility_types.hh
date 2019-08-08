@@ -35,7 +35,7 @@ namespace topology {
  */
 
 template<size_t TOPOLOGICAL_DIMENSION>
-using topological_dimension = utils::typeify_u<size_t, TOPOLOGICAL_DIMENSION>;
+using topological_dimension = utils::typeify<size_t, TOPOLOGICAL_DIMENSION>;
 
 /*!
   Type to define different topological domain types from size_t ids.
@@ -44,7 +44,7 @@ using topological_dimension = utils::typeify_u<size_t, TOPOLOGICAL_DIMENSION>;
  */
 
 template<size_t TOPOLOGICAL_DOMAIN>
-using topological_domain = utils::typeify_u<size_t, TOPOLOGICAL_DOMAIN>;
+using topological_domain = utils::typeify<size_t, TOPOLOGICAL_DOMAIN>;
 
 /*!
   Type to define different index subspace types from size_t ids.
@@ -53,7 +53,7 @@ using topological_domain = utils::typeify_u<size_t, TOPOLOGICAL_DOMAIN>;
  */
 
 template<size_t INDEX_SUBSPACE>
-using index_subspace = utils::typeify_u<size_t, INDEX_SUBSPACE>;
+using index_subspace = utils::typeify<size_t, INDEX_SUBSPACE>;
 
 //----------------------------------------------------------------------------//
 // Simple Types.
@@ -85,8 +85,8 @@ using id_vector_map_t =
 
 using index_vector_t = std::vector<size_t>;
 //-----------------------------------------------------------------//
-//! \class entity_base_u types.h
-//! \brief entity_base_u defines a base class that stores the raw info that
+//! \class entity_base types.h
+//! \brief entity_base defines a base class that stores the raw info that
 //! a topology needs, i.e: id and rank data
 //!
 //! \tparam N The number of domains.
@@ -99,10 +99,10 @@ public:
 };
 
 template<size_t NUM_DOMAINS>
-class entity_base_u : public entity_base_
+class entity_base : public entity_base_
 {
 public:
-  ~entity_base_u() {}
+  ~entity_base() {}
 
   //-----------------------------------------------------------------//
   //! Return the id of this entity.
@@ -156,7 +156,7 @@ protected:
 private:
   std::array<id_t, NUM_DOMAINS> ids_;
 
-}; // class entity_base_u
+}; // class entity_base
 
 //-----------------------------------------------------------------//
 //! Define the vector type for storing entities.
@@ -164,7 +164,7 @@ private:
 //! \tparam NUM_DOMAINS The number of domains.
 //-----------------------------------------------------------------//
 template<size_t NUM_DOMAINS>
-using entity_vector_t = std::vector<entity_base_u<NUM_DOMAINS> *>;
+using entity_vector_t = std::vector<entity_base<NUM_DOMAINS> *>;
 
 } // namespace topology
 } // namespace flecsi

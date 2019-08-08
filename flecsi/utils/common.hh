@@ -50,7 +50,7 @@ namespace utils {
 using id_t =
   id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
 
-using offset_t = offset_u<16>;
+using offset_t = offset<16>;
 
 //----------------------------------------------------------------------------//
 // Index type
@@ -91,7 +91,7 @@ square(const T & a) {
 #endif
 
 /*!
-  The unique_id_u type provides a utility to generate a series of unique ids.
+  The unique_id type provides a utility to generate a series of unique ids.
 
   @tparam UNIQUENESS_TYPE A dummy type to differentiate instances.
   @tparam COUNTER_TYPE    The underlying counter type.
@@ -101,13 +101,13 @@ square(const T & a) {
 template<typename UNIQUENESS_TYPE,
   typename COUNTER_TYPE = size_t,
   COUNTER_TYPE MAXIMUM = (std::numeric_limits<COUNTER_TYPE>::max)()>
-struct unique_id_u {
+struct unique_id {
 
   static_assert(std::is_integral<COUNTER_TYPE>::value,
     "COUNTER_TYPE must be an integral type");
 
-  static unique_id_u & instance() {
-    static unique_id_u u;
+  static unique_id & instance() {
+    static unique_id u;
     return u;
   } // instance
 
@@ -117,19 +117,19 @@ struct unique_id_u {
   } // next
 
 private:
-  unique_id_u() : id_(0) {}
-  unique_id_u(const unique_id_u &) {}
-  ~unique_id_u() {}
+  unique_id() : id_(0) {}
+  unique_id(const unique_id &) {}
+  ~unique_id() {}
 
   COUNTER_TYPE id_;
-}; // unique_id_u
+}; // unique_id
 
 //! Create a unique name from the type, address, and unique id
 template<typename T>
 std::string
 unique_name(const T * const t) {
   const void * const address = static_cast<const void *>(t);
-  const std::size_t id = unique_id_u<T>::instance().next();
+  const std::size_t id = unique_id<T>::instance().next();
   std::stringstream ss;
   ss << typeid(T).name() << "-" << address << "-" << id;
   return ss.str();

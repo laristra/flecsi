@@ -75,7 +75,7 @@ template<auto & F, size_t A = flecsi::loc | flecsi::leaf>
 inline const size_t task_id = context_t::instance().register_task(
   utils::symbol<F>(),
   detail::register_task<
-    typename utils::function_traits_u<decltype(F)>::return_type,
+    typename utils::function_traits<decltype(F)>::return_type,
     F,
     A>);
 
@@ -121,7 +121,7 @@ detail::register_task() {
 } // registration_callback
 
 /*!
- The task_wrapper_u type provides execution
+ The task_wrapper type provides execution
  functions for user and MPI tasks.
 
  \tparam F the user task
@@ -131,9 +131,9 @@ detail::register_task() {
  */
 
 template<auto & F, task_processor_type_t P> // P is for specialization only
-struct task_wrapper_u {
+struct task_wrapper {
 
-  using Traits = utils::function_traits_u<decltype(F)>;
+  using Traits = utils::function_traits<decltype(F)>;
   using RETURN = typename Traits::return_type;
   using ARG_TUPLE = typename Traits::arguments_type;
 
@@ -176,11 +176,11 @@ struct task_wrapper_u {
     } // if
   } // execute_user_task
 
-}; // struct task_wrapper_u
+}; // struct task_wrapper
 
 template<auto & F>
-struct task_wrapper_u<F, mpi> {
-  using Traits = utils::function_traits_u<decltype(F)>;
+struct task_wrapper<F, mpi> {
+  using Traits = utils::function_traits<decltype(F)>;
   using RETURN = typename Traits::return_type;
   using ARG_TUPLE = typename Traits::arguments_type;
 

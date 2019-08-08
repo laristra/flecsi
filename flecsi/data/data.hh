@@ -35,13 +35,13 @@ namespace flecsi {
 #endif
 
 template<typename DATA_TYPE>
-using global_field_member_u = data::field_member_u<DATA_TYPE,
+using global_field_member = data::field_member<DATA_TYPE,
   data::storage_label_t::dense,
   topology::global_topology_t,
   0>;
 
 template<typename DATA_TYPE>
-using index_field_member_u = data::field_member_u<DATA_TYPE,
+using index_field_member = data::field_member<DATA_TYPE,
   data::storage_label_t::dense,
   topology::index_topology_t,
   0>;

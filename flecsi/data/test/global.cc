@@ -32,13 +32,13 @@ struct test_policy {
   static void create_entity();
 };
 
-using u_base = unstructured_mesh_topology_u<test_policy>;
+using u_base = unstructured_mesh_topology<test_policy>;
 static_assert(std::is_same_v<core_t<u_base>, u_base>);
-struct test_u : u_base {};
-static_assert(std::is_same_v<core_t<test_u>, u_base>);
+struct test : u_base {};
+static_assert(std::is_same_v<core_t<test>, u_base>);
 } // namespace
 
-using global_field_t = global_field_member_u<double>;
+using global_field_t = global_field_member<double>;
 const global_field_t energy_field;
 
 const auto energy = energy_field(flecsi_global_topology);

@@ -32,7 +32,7 @@ namespace execution {
 
 /*!
   MPI backend task registration. For documentation on this
-  method please see task_u::register_task.
+  method please see task::register_task.
  */
 
 template<size_t TASK,
@@ -50,7 +50,7 @@ register_task(processor_type_t processor, launch_t launch, std::string name) {
 //--------------------------------------------------------------------------//
 
 template<size_t HASH, typename TYPE>
-using reduction_wrapper_u = mpi::reduction_wrapper_u<HASH, TYPE>;
+using reduction_wrapper = mpi::reduction_wrapper<HASH, TYPE>;
 
 } // namespace execution
 } // namespace flecsi

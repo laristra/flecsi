@@ -60,17 +60,17 @@ enum partition_privilege_t : size_t {
  */
 
 template<size_t... PRIVILEGES>
-struct privilege_pack_u {
-  using terminator_t = utils::typeify_u<size_t, 0x02>;
+struct privilege_pack {
+  using terminator_t = utils::typeify<size_t, 0x02>;
   using tuple_t =
-    std::tuple<terminator_t, utils::typeify_u<size_t, PRIVILEGES>...>;
+    std::tuple<terminator_t, utils::typeify<size_t, PRIVILEGES>...>;
   static constexpr size_t value = utils::shift_or<0, tuple_t, 2>();
-}; // struct privilege_pack_u
+}; // struct privilege_pack
 
 /*!
   Return the number of privileges stored in a privilege pack.
 
-  @tparam PACK  A valid size_t from a privilege_pack_u type.
+  @tparam PACK  A valid size_t from a privilege_pack type.
  */
 
 template<size_t PACK>
@@ -83,7 +83,7 @@ privilege_count() {
   Get a privilege out of a pack for the specified id.
 
   @tparam INDEX The index of the privilege to get.
-  @tparam PACK  A valid size_t from a privilege_pack_u type.
+  @tparam PACK  A valid size_t from a privilege_pack type.
  */
 
 template<size_t INDEX, size_t PACK>

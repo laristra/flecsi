@@ -56,7 +56,7 @@ using namespace flecsi::data::legion;
   @ingroup execution
 */
 
-struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
+struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   /*!
     Construct an init_args_t instance.
@@ -107,7 +107,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topo::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
     const auto fid =
       context_t::instance()
         .get_field_info_store(topology::id<topology::global_topology_t>(),
@@ -146,7 +146,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topo::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
     auto & flecsi_context = context_t::instance();
 
     const auto fid =
@@ -182,33 +182,32 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  using ntree_accessor_u =
-    topology_accessor_u<ntree_topology_u<POLICY_TYPE>, PRIVILEGES>;
+  using ntree_accessor =
+    topology_accessor<ntree_topology<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(ntree_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
+  void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Set Topology
    *--------------------------------------------------------------------------*/
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  using set_accessor_u =
-    topology_accessor_u<set_topology_u<POLICY_TYPE>, PRIVILEGES>;
+  using set_accessor = topology_accessor<set_topology<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(set_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
+  void visit(set_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Structured Mesh Topology
    *--------------------------------------------------------------------------*/
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  using structured_mesh_accessor_u =
-    topology_accessor_u<structured_mesh_topology_u<POLICY_TYPE>, PRIVILEGES>;
+  using structured_mesh_accessor =
+    topology_accessor<structured_mesh_topology<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(structured_mesh_accessor_u<POLICY_TYPE, PRIVILEGES> & accessor) {
+  void visit(structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
