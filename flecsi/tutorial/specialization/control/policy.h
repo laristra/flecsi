@@ -18,7 +18,6 @@
 
 #include <flecsi/tutorial/specialization/control/node_type.h>
 #include <flecsi/control/control.h>
-#include <flecsi/utils/typeify.h>
 
 namespace flecsi {
 namespace tutorial {

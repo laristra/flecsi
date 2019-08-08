@@ -15,7 +15,6 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/utils/ftest.hh>
-#include <flecsi/utils/typeify.hh>
 
 using namespace flecsi;
 
