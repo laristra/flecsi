@@ -332,7 +332,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     for(auto const & [index_space, fids] : fidsInIndexSpace) {
 
-      int sumOfTemplateSizes = 0;
       for(auto const & fid : fids) {
 
         if(context.hasBeenModified.count(index_space) &&
@@ -341,22 +340,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
           modifiedFields[index_space].push_back(fid);
 
-          sumOfTemplateSizes += context.templateParamSize[fid];
-
         }
 
       }
 
       for(auto const & fid : modifiedFields[index_space]) {
 
-        for(int rank = 0; rank < num_colors; ++rank) {
-          for(int ind = 0; ind < context.ghostIndices[fid][rank].size(); ++ind)
-            ghostSize[rank] += context.ghostIndices[fid][rank][ind][1]*sumOfTemplateSizes;
-        }
-
-        for(int rank = 0; rank < num_colors; ++rank) {
-          for(int ind = 0; ind < context.sharedIndices[fid][rank].size(); ++ind)
-            sharedSize[rank] += context.sharedIndices[fid][rank][ind][1]*sumOfTemplateSizes;
+        for(auto rank = 0; rank < num_colors; ++rank) {
+          ghostSize[rank] += context.ghostFieldSizes[fid][rank];
+          sharedSize[rank] += context.sharedFieldSizes[fid][rank];
         }
 
       }
@@ -420,10 +412,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
           for(auto const & ind : context.sharedIndices[fid][rank]) {
 
-            memcpy(&allSendBuffer[rank][sendBufferOffset],
-                    &sharedDataBuffers[index_space][fid][ind[0]*context.templateParamSize[fid]],
-                    ind[1]*context.templateParamSize[fid]);
-            sendBufferOffset += ind[1]*context.templateParamSize[fid];
+            memcpy(&allSendBuffer[rank][sendBufferOffset], &sharedDataBuffers[index_space][fid][ind[0]], ind[1]);
+            sendBufferOffset += ind[1];
 
           }
 
@@ -463,10 +453,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
           for(auto const & ind : context.ghostIndices[fid][rank]) {
 
-            memcpy(&ghostDataBuffers[index_space][fid][ind[0]*context.templateParamSize[fid]],
-                   &allRecvBuffer[rank][recvBufferOffset],
-                   ind[1]*context.templateParamSize[fid]);
-            recvBufferOffset += ind[1]*context.templateParamSize[fid];
+            memcpy(&ghostDataBuffers[index_space][fid][ind[0]], &allRecvBuffer[rank][recvBufferOffset], ind[1]);
+            recvBufferOffset += ind[1];
 
           }
 
