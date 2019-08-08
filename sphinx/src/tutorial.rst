@@ -66,7 +66,7 @@ provided a simple mesh interface as part of the tutorial. Users who are
 interested in the basic structure of a mesh_topology specialization are
 encouraged to examine the source code in the *specialization*
 subdirectory of this tutorial (The complete source code is in the
-*flecsi-tutorial/specialization* subdirectory of the main project.)
+*flecsi/tutorial/specialization* subdirectory of the main project.)
 
 Requirements
 ************
@@ -98,7 +98,7 @@ you can run the image like:
   $ docker run -it -h tutorialhost -u flecsi laristra/flecsi-tutorial:latest /bin/bash
 
 This will place you into a bash prompt, from which you can build and run
-the tutorial examples. The tutorials are in the *flecsi-tutorial*
+the tutorial examples. The tutorials are in the *tutorial*
 directory in the Docker container.
 
 **Note:** You can also pull a Docker image for a specific runtime, e.g.,

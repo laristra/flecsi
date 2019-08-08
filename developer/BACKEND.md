@@ -31,7 +31,7 @@ This design pattern is relatively simple, and has the form:
 
 ```cpp
 template<typename POLICY>
-struct interface_type_u : public POLICY
+struct interface_type : public POLICY
 {
   decltype(auto) method(parameter_1 && p1, parameter_2 && p2, ...) {
     return POLICY::method(std::forward<parameter_1>(p1), ...);
@@ -48,54 +48,10 @@ present a common interface with multiple implementations, i.e., each
 runtime implements a set of policies that are used to specialize the
 FleCSI runtime and library interfaces. Adding support for a new runtime
 is equivalent to implementing the required set of policies. FleCSI uses
-simple preprocessing to define types using whichever backend is being
-targeted. The preprocessor configuration files are located in the
-*flecsi/runtime* directory. As an example, the FleCSI runtime context_t
-type is configured in *flecsi/runtime/flecsi_runtime_context_policy.h*:
-
-```cpp
-// This code snippet shows type definition for the Legion runtime.
-
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-
-#include <flecsi/execution/legion/context_policy.h>
-
-namespace flecsi {
-namespace execution {
-
-using FLECSI_RUNTIME_CONTEXT_POLICY = legion_context_policy_t;
-
-} // namespace execution
-} // namespace flecsi
-
-#elif ...
-```
-
-This file is then included in the core interface in
-*flecsi/execution/context.h*:
-
-```cpp
-// This code snippet shows how the prprocessor-defined type
-// FLECSI_RUNTIME_CONTEXT_POLICY is used to specify the appropriate
-// policy, depending on how FleCSI has been configured.
-
-#include <flecsi/runtime/flecsi_runtime_context_policy.h>
-
-namespace flecsi {
-namespace execution {
-
-/*!
-  The context_t type is the high-level interface to the FleCSI runtime
-  context.
-
-  @ingroup execution
- */
-
-using context_t = context_u<FLECSI_RUNTIME_CONTEXT_POLICY>;
-
-} // namespace execution
-} // namespace flecsi
-```
+simple preprocessing to select the implementation provided by the
+targeted backend.  The preprocessor configuration files are named
+`backend.hh`.  They are included in the core interface files like
+`flecsi/runtime/context.hh`.
 
 The *context_t* type can then be used throughout the code and will
 correctly use the specified backend.
@@ -112,28 +68,13 @@ Runtime interoperability currently means interoperability with MPI,
 e.g., the Legion runtime must perform a handshake with MPI and make sure
 that all processes are synced before switching to MPI execution.
 
-**Interface File:** *flecsi/execution/context.h*
+**Interface File:** `flecsi/runtime/context.hh`
 
-**Legion Backend:** *flecsi/execution/legion/context_policy.{h,cc}*
+**Legion Backend:** `flecsi/runtime/legion/context.{hh,cc}`
 
-**MPI Backend:** *flecsi/execution/mpi/context_policy.{h,cc}*
+**MPI Backend:** `flecsi/runtime/mpi/context.{hh,cc}`
 
-**Preprocessor Variable:** *FLECSI_RUNTIME_CONTEXT_POLICY*
-
-### Storage Policy
-
-The storage policy defines how FleCSI registers fields and data clients.
-Data clients are described below in detail. Actual registration is
-handled via a callback function that is executed during runtime
-initialization.
-
-**Interface File:** *flecsi/execution/storage.h*
-
-**Legion Backend:** *flecsi/execution/legion/storage_policy.{h,cc}*
-
-**MPI Backend:** *flecsi/execution/mpi/storage_policy.{h,cc}*
-
-**Preprocessor Variable:** *FLECSI_RUNTIME_STORAGE_POLICY*
+**Type name:** `flecsi::runtime::context_t`
 
 ### Execution Policy
 
@@ -153,8 +94,8 @@ registered, invoked, and executed.
 
 From the point of view of the core FleCSI library, a data client is a
 type that defines one or more index spaces on which data may be
-registered. Examples of FleCSI data client types are: *mesh_topology_u*,
-*tree_topology_u*, and *set_topology_u*. Each of these types provide
+registered. Examples of FleCSI data client types are: *mesh_topology*,
+*tree_topology*, and *set_topology*. Each of these types provide
 interfaces to iterators over the various entity types that make up the
 elements of the topology. When a user registers a field, it is loosley
 equivalent to adding a data member to the client type. At runtime, an

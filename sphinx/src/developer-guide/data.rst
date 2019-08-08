@@ -16,20 +16,20 @@ Data Model
   This file contains the C++ data model interface *client_interface_t*
   for FleCSI topology data structures, which are also referred to as
   *data clients* in this context. The *client_interface_t* type is
-  a specialization of the *client_interface_u* type on the backend
+  a specialization of the *client_interface* type on the backend
   runtime policy that is selected at compile time.
 
 * **field.h** |br|
   This file contains the C++ data model interface *field_interface_t*
   for FleCSI field data structures. The *field_interface_t* type is a
-  specialization of the *field_interface_u* type on the backend runtimne
+  specialization of the *field_interface* type on the backend runtimne
   policy that is selected at compile time.
 
 **'flecsi/data/common'**
 
 * **client_handle.h** |br|
   This file defines the type identifier type *client_handle_base_t*, and
-  the basic client handle type *client_handle_u*, which is parameterized
+  the basic client handle type *client_handle*, which is parameterized
   on the *data client* type. These types provide the basic structure
   for implementing handles to the various FleCSI data client types.
 
@@ -37,15 +37,15 @@ Data Model
   that can be passed into a FleCSI task to allow access to a data client.
   Data clients are types that expose one or more index spaces that can
   have fields registered against them. Some examples are
-  *mesh_topology_u*, and *tree_topology_u*.
+  *mesh_topology*, and *tree_topology*.
 
 * **client_handler.h** |br|
-  This file defines the base \em client_handler_u type that is customized
+  This file defines the base \em client_handler type that is customized
   for each specific data client type using partial specialization.
 
 * **client_registration_wrapper.h** |br|
   This file contains specializations of the
-  *client_registration_wrapper_u* type for the various FleCSI
+  *client_registration_wrapper* type for the various FleCSI
   topology types. In general, the registration wrapper provides a
   mechanism for data clients to register meta data with the runtime.
 
@@ -54,12 +54,12 @@ Data Model
   *data_client_t*. All data client types should inherit from this type.
 
 * **field_registration_wrapper.h** |br|
-  This file contains the *field_registration_wrapper_u* type. This type
+  This file contains the *field_registration_wrapper* type. This type
   is currently used for all field registrations regardless of runtime or
   client type.
 
 * **field_registration_wrapper.h** |br|
-  This file defines the base *storage_class_u* type that can be
+  This file defines the base *storage_class* type that can be
   specialized by specific storage class, and by data client type.  This
   file also defines the storage classes for the internal *global* and
   *color* client types.

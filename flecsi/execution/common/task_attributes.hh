@@ -70,7 +70,7 @@ mask_to_task_type(size_t mask) {
   return static_cast<task_type_t>(flecsi::utils::debruijn32_t::index(mask));
 } // mask_to_task_type
 
-inline task_processor_type_t
+constexpr task_processor_type_t
 mask_to_processor_type(size_t mask) {
   const size_t processor_mask = mask >> task_type_bits;
 

@@ -312,7 +312,7 @@ public:
     offsets_.add_end(index_space_.size());
   } // end_from
 
-  index_space_u<entity_base_ *, false, true, false, void, array_buffer_u>
+  index_space<entity_base_ *, false, true, false, void, array_buffer>
     index_space_;
 
   offset_storage_t offsets_;

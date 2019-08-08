@@ -16,7 +16,7 @@
 /*!  @file */
 
 template<typename IO_POLICY>
-struct io_interface_u : public IO_POLICY {
+struct io_interface : public IO_POLICY {
   using hdf5_t = typename IO_POLICY::hdf5_t;
   using hdf5_region_t = typename IO_POLICY::hdf5_region_t;
   using launch_space_t = typename IO_POLICY::launch_space_t;
@@ -107,23 +107,23 @@ struct io_interface_u : public IO_POLICY {
     field_reference_t & fh) {
     return IO_POLICY::recover_index_topology_field(hdf5_file, fh);
   }
-}; // struct io_interface_u
+}; // struct io_interface
 
 //----------------------------------------------------------------------------//
 // This include file defines the FLECSI_RUNTIME_IO_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include <flecsi/runtime/io_policy.hh>
+#include "backend.hh"
 
 namespace flecsi {
 namespace io {
 
-using io_interface_t = io_interface_u<FLECSI_RUNTIME_IO_POLICY>;
-using hdf5_t = io_interface_u<FLECSI_RUNTIME_IO_POLICY>::hdf5_t;
-using hdf5_region_t = io_interface_u<FLECSI_RUNTIME_IO_POLICY>::hdf5_region_t;
-using launch_space_t = io_interface_u<FLECSI_RUNTIME_IO_POLICY>::launch_space_t;
+using io_interface_t = io_interface<FLECSI_RUNTIME_IO_POLICY>;
+using hdf5_t = io_interface<FLECSI_RUNTIME_IO_POLICY>::hdf5_t;
+using hdf5_region_t = io_interface<FLECSI_RUNTIME_IO_POLICY>::hdf5_region_t;
+using launch_space_t = io_interface<FLECSI_RUNTIME_IO_POLICY>::launch_space_t;
 using field_reference_t =
-  io_interface_u<FLECSI_RUNTIME_IO_POLICY>::field_reference_t;
+  io_interface<FLECSI_RUNTIME_IO_POLICY>::field_reference_t;
 
 } // namespace io
 } // namespace flecsi

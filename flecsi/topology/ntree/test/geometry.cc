@@ -29,8 +29,8 @@ rnd(const double & min, const double & max) {
          min;
 }
 
-using geo1d = flecsi::topology::ntree_geometry_u<double, 1>;
-using p1d = point_u<double, 1>;
+using geo1d = flecsi::topology::ntree_geometry<double, 1>;
+using p1d = point<double, 1>;
 
 int
 geometry_1d_sanity(int argc, char ** argv) {
@@ -143,8 +143,8 @@ geometry_1d_sanity(int argc, char ** argv) {
 }
 ftest_register_driver(geometry_1d_sanity);
 
-using geo2d = flecsi::topology::ntree_geometry_u<double, 2>;
-using p2d = point_u<double, 2>;
+using geo2d = flecsi::topology::ntree_geometry<double, 2>;
+using p2d = point<double, 2>;
 
 int
 geometry_2d_sanity(int argc, char ** argv) {
@@ -241,8 +241,8 @@ geometry_2d_sanity(int argc, char ** argv) {
 }
 ftest_register_driver(geometry_2d_sanity);
 
-using geo3d = flecsi::topology::ntree_geometry_u<double, 3>;
-using p3d = point_u<double, 3>;
+using geo3d = flecsi::topology::ntree_geometry<double, 3>;
+using p3d = point<double, 3>;
 
 int
 geometry_3d_sanity(int argc, char ** argv) {

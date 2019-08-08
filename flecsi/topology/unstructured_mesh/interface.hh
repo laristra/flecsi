@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/data_reference.hh>
-//#include <flecsi/execution/context.hh>
+//#include "flecsi/runtime/backend.hh"
 //#include <flecsi/topology/unstructured_mesh/partition.hh>
 #include <flecsi/topology/unstructured_mesh/storage.hh>
 #include <flecsi/topology/unstructured_mesh/types.hh>
@@ -62,7 +62,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 
 /*!
-  unstructured_mesh_topology_u is parameterized on a class (POLICY_TYPE) which
+  unstructured_mesh_topology is parameterized on a class (POLICY_TYPE) which
   gives information about its entity types, connectivities and more. the mesh
   topology is responsibly for computing connectivity info between entities of
   different topological dimension, e.g: vertex -> cell, cell -> edge, etc. and
@@ -111,8 +111,8 @@ FLECSI_MEMBER_CHECKER(create_entity);
  */
 
 template<typename POLICY_TYPE>
-struct unstructured_mesh_topology_u : public unstructured_mesh_topology_base_t,
-                                      public data::data_reference_base_t {
+struct unstructured_mesh_topology : public unstructured_mesh_topology_base_t,
+                                    public data::data_reference_base_t {
 
   //--------------------------------------------------------------------------//
   // static verification of mesh policy
@@ -154,30 +154,28 @@ struct unstructured_mesh_topology_u : public unstructured_mesh_topology_base_t,
     "mesh policy missing create_entity()");
 
 private:
-  mesh_storage_u<POLICY_TYPE::num_dimensions,
+  mesh_storage<POLICY_TYPE::num_dimensions,
     POLICY_TYPE::num_domains,
-    num_index_subspaces_u<POLICY_TYPE>::value>
+    num_index_subspaces<POLICY_TYPE>::value>
     ms_;
 
-}; // struct unstructured_mesh_topology_u
+}; // struct unstructured_mesh_topology
 
 #if 0
 template<class POLICY_TYPE>
-class unstructured_mesh_topology_u
-  : public mesh_topology_base_u<mesh_storage_u<POLICY_TYPE::num_dimensions,
+class unstructured_mesh_topology
+  : public mesh_topology_base<mesh_storage<POLICY_TYPE::num_dimensions,
       POLICY_TYPE::num_domains,
-      num_index_subspaces_u<POLICY_TYPE>::value>>
+      num_index_subspaces<POLICY_TYPE>::value>>
 {
 public:
-  constexpr size_t type_identifier_hash = POLICY_TYPE::type_identifier_hash;
-
   // mesh storage type definition
-  using storage_t = mesh_storage_u<POLICY_TYPE::num_dimensions,
+  using storage_t = mesh_storage<POLICY_TYPE::num_dimensions,
     POLICY_TYPE::num_domains,
-    num_index_subspaces_u<POLICY_TYPE>::value>;
+    num_index_subspaces<POLICY_TYPE>::value>;
 
   // mesh topology base definition
-  using base_t = mesh_topology_base_u<storage_t>;
+  using base_t = mesh_topology_base<storage_t>;
 
   // entity ID type
   using id_t = utils::id_t;
@@ -189,42 +187,33 @@ public:
   template<size_t DIM, size_t DOM = 0>
   using entity_type = typename find_entity_<POLICY_TYPE, DIM, DOM>::type;
 
-  /*
-    This type definition is needed so that data client handles can be
-    specialized for particular data client types, e.g., mesh topologies vs.
-    tree topologies. It is also useful for detecting illegal usage, such as
-    when a user adds data members.
-   */
-
-  using type_identifier_t = unstructured_mesh_topology_u;
-
   // Don't allow the mesh to be copied or copy constructed
 
-  // don't allow mesh to be assigned unstructured_mesh_topology_u & operator=(
-    const unstructured_mesh_topology_u &) = delete;
+  // don't allow mesh to be assigned unstructured_mesh_topology & operator=(
+    const unstructured_mesh_topology &) = delete;
 
-  Allow move operations unstructured_mesh_topology_u(
-    unstructured_mesh_topology_u && o) = default;
+  Allow move operations unstructured_mesh_topology(
+    unstructured_mesh_topology && o) = default;
 
-  override default move assignement unstructured_mesh_topology_u & operator=(
-    unstructured_mesh_topology_u && o) = default;
+  override default move assignement unstructured_mesh_topology & operator=(
+    unstructured_mesh_topology && o) = default;
 
   Constructor, takes as input a mesh storage or
-                 storage can later be set unstructured_mesh_topology_u(
+                 storage can later be set unstructured_mesh_topology(
                    storage_t * ms = nullptr)
     : base_t(ms) {
     if(ms != nullptr) {
       initialize_storage();
     } // if
-  } // unstructured_mesh_topology_u()
+  } // unstructured_mesh_topology()
 
-  Copy constructor : alias another mesh unstructured_mesh_topology_u(
-                       const unstructured_mesh_topology_u & m)
+  Copy constructor : alias another mesh unstructured_mesh_topology(
+                       const unstructured_mesh_topology & m)
     : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
-  virtual ~unstructured_mesh_topology_u() {}
+  virtual ~unstructured_mesh_topology() {}
 
   /*!
     Initialize the mesh storage after it has been set
@@ -354,10 +343,10 @@ public:
   void init() {
     // Compute mesh connectivity
     using TP = typename POLICY_TYPE::connectivities;
-    compute_connectivity_u<DOM, std::tuple_size<TP>::value, TP>::compute(*this);
+    compute_connectivity<DOM, std::tuple_size<TP>::value, TP>::compute(*this);
 
     using BT = typename POLICY_TYPE::bindings;
-    compute_bindings_u<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
+    compute_bindings<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
   /*!
@@ -371,7 +360,7 @@ public:
   template<size_t DOM = 0>
   void init_bindings() {
     using BT = typename POLICY_TYPE::bindings;
-    compute_bindings_u<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
+    compute_bindings<DOM, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
   /*!
@@ -607,7 +596,7 @@ public:
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
-    using dtype = domain_entity_u<TO_DOM, etype>;
+    using dtype = domain_entity<TO_DOM, etype>;
 
     return c.get_index_space().slice<dtype>(
       c.range(e->template id<FROM_DOM>()));
@@ -635,7 +624,7 @@ public:
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
-    using dtype = domain_entity_u<TO_DOM, etype>;
+    using dtype = domain_entity<TO_DOM, etype>;
 
     return c.get_index_space().slice<dtype>(
       c.range(e->template id<FROM_DOM>()));
@@ -657,7 +646,7 @@ public:
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
     class ENT_TYPE>
-  decltype(auto) entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) const {
+  decltype(auto) entities(domain_entity<FROM_DOM, ENT_TYPE> & e) const {
     return entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -677,7 +666,7 @@ public:
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
     class ENT_TYPE>
-  decltype(auto) entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
+  decltype(auto) entities(domain_entity<FROM_DOM, ENT_TYPE> & e) {
     return entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -692,7 +681,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto entities() const {
     using etype = entity_type<DIM, DOM>;
-    using dtype = domain_entity_u<DOM, etype>;
+    using dtype = domain_entity<DOM, etype>;
     return base_t::ms_->index_spaces[DOM][DIM].template slice<dtype>();
   } // entities
 
@@ -710,7 +699,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto entities(partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
-    using dtype = domain_entity_u<DOM, etype>;
+    using dtype = domain_entity<DOM, etype>;
     return base_t::ms_->partition_index_spaces[partition][DOM][DIM]
       .template slice<dtype>();
   } // entities
@@ -760,7 +749,7 @@ public:
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
     class ENT_TYPE>
-  decltype(auto) entity_ids(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
+  decltype(auto) entity_ids(domain_entity<FROM_DOM, ENT_TYPE> & e) {
     return entity_ids<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -826,7 +815,7 @@ public:
     size_t FROM_DOM = 0,
     size_t TO_DOM = FROM_DOM,
     class ENT_TYPE>
-  void reverse_entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e) {
+  void reverse_entities(domain_entity<FROM_DOM, ENT_TYPE> & e) {
     return reverse_entities<DIM, FROM_DOM, TO_DOM>(e.entity());
   } // entities
 
@@ -872,7 +861,7 @@ public:
     size_t TO_DOM = FROM_DOM,
     class ENT_TYPE,
     class U>
-  void reverse_entities(domain_entity_u<FROM_DOM, ENT_TYPE> & e, U && order) {
+  void reverse_entities(domain_entity<FROM_DOM, ENT_TYPE> & e, U && order) {
     return reorder_entities<DIM, FROM_DOM, TO_DOM>(
       e.entity(), std::forward<U>(order));
   } // entities
@@ -1121,10 +1110,10 @@ public:
   auto & get_index_subspace() {
     using entity_types_t = typename POLICY_TYPE::entity_types;
 
-    using index_subspaces = typename get_index_subspaces_u<POLICY_TYPE>::type;
+    using index_subspaces = typename get_index_subspaces<POLICY_TYPE>::type;
 
     constexpr size_t subspace_index =
-      find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
+      find_index_subspace_from_id<std::tuple_size<index_subspaces>::value,
         index_subspaces,
         INDEX_SUBSPACE>::find();
 
@@ -1137,7 +1126,7 @@ public:
       typename std::tuple_element<0, subspace_entry_t>::type;
 
     constexpr size_t index =
-      find_index_space_from_id_u<std::tuple_size<entity_types_t>::value,
+      find_index_space_from_id<std::tuple_size<entity_types_t>::value,
         entity_types_t,
         index_space_t::value>::find();
 
@@ -1151,17 +1140,17 @@ public:
     using entity_t = typename std::tuple_element<2, entry_t>::type;
 
     return base_t::ms_->index_subspaces[INDEX_SUBSPACE]
-      .template cast<domain_entity_u<domain_t::value, entity_t>>();
+      .template cast<domain_entity<domain_t::value, entity_t>>();
   }
 
   template<size_t INDEX_SUBSPACE>
   const auto & get_index_subspace() const {
     using entity_types_t = typename POLICY_TYPE::entity_types;
 
-    using index_subspaces = typename get_index_subspaces_u<POLICY_TYPE>::type;
+    using index_subspaces = typename get_index_subspaces<POLICY_TYPE>::type;
 
     constexpr size_t subspace_index =
-      find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
+      find_index_subspace_from_id<std::tuple_size<index_subspaces>::value,
         index_subspaces,
         INDEX_SUBSPACE>::find();
 
@@ -1174,7 +1163,7 @@ public:
       typename std::tuple_element<0, subspace_entry_t>::type;
 
     constexpr size_t index =
-      find_index_space_from_id_u<std::tuple_size<entity_types_t>::value,
+      find_index_space_from_id<std::tuple_size<entity_types_t>::value,
         entity_types_t,
         index_space_t::value>::find();
 
@@ -1188,7 +1177,7 @@ public:
     using entity_t = typename std::tuple_element<2, entry_t>::type;
 
     return base_t::ms_->index_subspaces[INDEX_SUBSPACE]
-      .template cast<domain_entity_u<domain_t::value, entity_t>>();
+      .template cast<domain_entity<domain_t::value, entity_t>>();
   }
 
   size_t get_index_subspace_size_(size_t index_subspace) {
@@ -1197,10 +1186,10 @@ public:
 
 private:
   template<size_t, size_t, class>
-  friend struct compute_connectivity_u;
+  friend struct compute_connectivity;
 
   template<size_t, size_t, class>
-  friend struct compute_bindings_u;
+  friend struct compute_bindings;
 
   template<size_t DOM, typename VERT_TYPE>
   void init_cell_(entity_type<POLICY_TYPE::num_dimensions, DOM> * cell,
@@ -1295,7 +1284,7 @@ private:
     // keep track of the local ids, since they may be added out of order
     std::vector<size_t> entity_ids;
 
-    domain_connectivity_u<POLICY_TYPE::num_dimensions> & dc =
+    domain_connectivity<POLICY_TYPE::num_dimensions> & dc =
       base_t::ms_->topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
@@ -1321,13 +1310,13 @@ private:
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
     auto & is = base_t::ms_->index_spaces[Domain][DimensionToBuild]
-                  .template cast<domain_entity_u<Domain, entity_type>>();
+                  .template cast<domain_entity<Domain, entity_type>>();
 
     auto & cis = base_t::ms_->index_spaces[Domain][UsingDimension]
-                   .template cast<domain_entity_u<Domain, cell_type>>();
+                   .template cast<domain_entity<Domain, cell_type>>();
 
     // Lookup the index space for the entity type being created.
-    constexpr size_t cell_index_space = find_index_space_from_dimension_u<
+    constexpr size_t cell_index_space = find_index_space_from_dimension<
       std::tuple_size<typename POLICY_TYPE::entity_types>::value,
       typename POLICY_TYPE::entity_types,
       UsingDimension,
@@ -1335,21 +1324,21 @@ private:
 
     // Lookup the index space for the vertices from the mesh
     // specialization.
-    constexpr size_t vertex_index_space = find_index_space_from_dimension_u<
+    constexpr size_t vertex_index_space = find_index_space_from_dimension<
       std::tuple_size<typename POLICY_TYPE::entity_types>::value,
       typename POLICY_TYPE::entity_types,
       0,
       Domain>::find();
 
     // Lookup the index space for the entity type being created.
-    constexpr size_t entity_index_space = find_index_space_from_dimension_u<
+    constexpr size_t entity_index_space = find_index_space_from_dimension<
       std::tuple_size<typename POLICY_TYPE::entity_types>::value,
       typename POLICY_TYPE::entity_types,
       DimensionToBuild,
       Domain>::find();
 
     // get the global to local index space map
-    auto & context_ = flecsi::execution::context_t::instance();
+    auto & context_ = flecsi::runtime::context_t::instance();
     size_t color = context_.color();
     auto & gis_to_cis = context_.reverse_index_map(cell_index_space);
 
@@ -1552,10 +1541,10 @@ private:
     //    in order of global id
 
     // we need the context to get the global-to-local mapping
-    const auto & context_ = flecsi::execution::context_t::instance();
+    const auto & context_ = flecsi::runtime::context_t::instance();
 
     // find the from index space and get the mapping from global to local
-    constexpr size_t to_index_space = find_index_space_from_dimension_u<
+    constexpr size_t to_index_space = find_index_space_from_dimension<
       std::tuple_size<typename POLICY_TYPE::entity_types>::value,
       typename POLICY_TYPE::entity_types,
       TO_DIM,
@@ -1929,15 +1918,15 @@ private:
     // get the cells from mesh storage
     auto & cell_storage =
       base_t::ms_->index_spaces[FROM_DOM][cell_dim]
-        .template cast<domain_entity_u<FROM_DOM, cell_type>>();
+        .template cast<domain_entity<FROM_DOM, cell_type>>();
 
     // get the entities from mesh storage
     auto & binding_storage =
       base_t::ms_->index_spaces[TO_DOM][TO_DIM]
-        .template cast<domain_entity_u<TO_DOM, binding_type>>();
+        .template cast<domain_entity<TO_DOM, binding_type>>();
 
     // Lookup the index space for the cell type.
-    constexpr auto cell_index_space = find_index_space_from_dimension_u<
+    constexpr auto cell_index_space = find_index_space_from_dimension<
       std::tuple_size<typename POLICY_TYPE::entity_types>::value,
       typename POLICY_TYPE::entity_types,
       cell_dim,
@@ -1945,23 +1934,23 @@ private:
 
     // lookup all primal index spaces in the FROM_DOM
     auto entity_index_spaces =
-      find_all_index_spaces_in_domain_u<POLICY_TYPE, FROM_DOM>();
+      find_all_index_spaces_in_domain<POLICY_TYPE, FROM_DOM>();
 
     // Lookup the index space for the entity type being created.
-    constexpr auto binding_index_space = find_index_space_from_dimension_u<
+    constexpr auto binding_index_space = find_index_space_from_dimension<
       std::tuple_size<typename POLICY_TYPE::entity_types>::value,
       typename POLICY_TYPE::entity_types,
       TO_DIM,
       TO_DOM>::find();
 
     // get the primal mesh connectivity and the domain connectivity
-    domain_connectivity_u<num_dims> & primal_conn =
+    domain_connectivity<num_dims> & primal_conn =
       base_t::ms_->topology[FROM_DOM][FROM_DOM];
-    domain_connectivity_u<num_dims> & domain_conn =
+    domain_connectivity<num_dims> & domain_conn =
       base_t::ms_->topology[FROM_DOM][TO_DOM];
 
     // get the global to local index space map
-    auto & context_ = flecsi::execution::context_t::instance();
+    auto & context_ = flecsi::runtime::context_t::instance();
     auto color = context_.color();
     const auto & cell_gis_to_cis = context_.reverse_index_map(cell_index_space);
     const auto & binding_gis_to_cis =
@@ -2264,7 +2253,7 @@ private:
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-}; // class unstructured_mesh_topology_u
+}; // class unstructured_mesh_topology
 #endif
 
 } // namespace topology

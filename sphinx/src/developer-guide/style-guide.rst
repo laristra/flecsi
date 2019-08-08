@@ -257,7 +257,7 @@ arguments:
 ## Type Names
 
 FleCSI follows a C-style naming convention of all lower-case letters
-with underscores. Fully-qualified types should also append an
+with underscores.  Non-template types should also append an
 underscore lower-case *t*, i.e., \_t to the end of the type name:
 
 .. code-block:: cpp
@@ -269,33 +269,6 @@ underscore lower-case *t*, i.e., \_t to the end of the type name:
 
 Type definitions should be terminated with a C-style comment indicating
 the type name.
-
-### Template Type Naming
-
-For templated types, use a double underscore for the unqualified type:
-
-.. code-block:: cpp
-
-  my_template_type_u
-
-
-This allows the type to be fully qualified using the normal type naming
-convention listed above, e.g.:
-
-.. code-block:: cpp
-
-  // Unqualified type definition
-  template<typename TYPENAME>
-  struct my_template_type_u
-  {
-    TYPENAME value;
-  }; // struct my_template_type_u
-
-  // Fully qualified type
-  using my_template_type_t = my_template_type_u<double>;
-
-The double underscore was chosen so that it does not conflict with
-member variable names, which use a single underscore.
 
 ### Template Parameter Names
 

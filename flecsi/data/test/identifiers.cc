@@ -24,9 +24,9 @@ identifiers(int argc, char ** argv) {
   FTEST();
 
   flog(info) << "global_topology_t: "
-             << topology::global_topology_t::type_identifier_hash << std::endl;
+             << topology::id<topology::global_topology_t>() << std::endl;
   flog(info) << "index_topology_t: "
-             << topology::index_topology_t::type_identifier_hash << std::endl;
+             << topology::id<topology::index_topology_t>() << std::endl;
 
   auto ih = flecsi_topology_reference(
     flecsi::topology::global_topology_t, "internal", "global_topology");

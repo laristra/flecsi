@@ -38,23 +38,23 @@ struct ntree_topology_base_t {
 }; // ntree_topology_base_t
 
 /*----------------------------------------------------------------------------*
- * class tree_entity_base_u
+ * class tree_entity_base
  *----------------------------------------------------------------------------*/
 template<class>
-class ntree_topology_base_u;
+class ntree_topology_base;
 
 // Aliases for backward compatibility
 using ntree_entity_base_ = entity_base_;
 
-using ntree_entity_base_t = entity_base_u<0>;
+using ntree_entity_base_t = entity_base<0>;
 
 /*----------------------------------------------------------------------------*
- * class tree_entity_u
+ * class tree_entity
  *----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------//
-//! \class tree_entity_u tree_types.h
-//! \brief tree_entity_u parameterizes a tree entity base with its dimension and
+//! \class tree_entity tree_types.h
+//! \brief tree_entity parameterizes a tree entity base with its dimension and
 //! number of domains
 //!
 //! \tparam DIM The dimension of the entity.
@@ -62,20 +62,20 @@ using ntree_entity_base_t = entity_base_u<0>;
 //-----------------------------------------------------------------//
 
 template<size_t DIM, class KEY>
-class ntree_entity_u : public ntree_entity_base_t
+class ntree_entity : public ntree_entity_base_t
 {
 public:
   enum LOCALITY : int { LOCAL = 0, NON_LOCAL = 1, SHARED = 2 };
 
   static constexpr size_t dimension = DIM;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using id_t = flecsi::utils::id_t;
   using key_t = KEY;
 
-  ntree_entity_u() : locality_(LOCAL) {}
-  ~ntree_entity_u() {}
+  ntree_entity() : locality_(LOCAL) {}
+  ~ntree_entity() {}
 
-  ntree_entity_u(const point_t & coordinates) : coordinates_(coordinates) {}
+  ntree_entity(const point_t & coordinates) : coordinates_(coordinates) {}
 
   // Setters
   void set_coordinates(const point_t & coordinates) {
@@ -113,7 +113,7 @@ public:
 
   template<size_t A, class B>
   friend std::ostream & operator<<(std::ostream & os,
-    const ntree_entity_u<A, B> & dt);
+    const ntree_entity<A, B> & dt);
 
 private:
   point_t coordinates_;
@@ -125,19 +125,19 @@ private:
 
   LOCALITY locality_;
 
-}; // class tree_entity_u
+}; // class tree_entity
 
 template<size_t DIM, class KEY>
 std::ostream &
-operator<<(std::ostream & os, const ntree_entity_u<DIM, KEY> & e) {
+operator<<(std::ostream & os, const ntree_entity<DIM, KEY> & e) {
   os << "Entity: p: " << e.coordinates_ << " m: " << e.mass_;
   os << " id: " << e.id_.entity() << " key: " << e.key_;
   return os;
 }
 
 //-----------------------------------------------------------------//
-//! \class tree_entity_holder_u tree_types.h
-//! \brief tree_entity_holder_u parameterizes a tree entity base with its
+//! \class tree_entity_holder tree_types.h
+//! \brief tree_entity_holder parameterizes a tree entity base with its
 //! dimension and number of domains
 //!
 //! \tparam DIM The dimension of the entity.
@@ -145,18 +145,18 @@ operator<<(std::ostream & os, const ntree_entity_u<DIM, KEY> & e) {
 //-----------------------------------------------------------------//
 
 template<size_t DIM, class KEY>
-class ntree_entity_holder_u : public ntree_entity_base_t
+class ntree_entity_holder : public ntree_entity_base_t
 {
 public:
   static constexpr size_t dimension = DIM;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using id_t = flecsi::utils::id_t;
   using key_t = KEY;
 
-  ntree_entity_holder_u() {}
-  ~ntree_entity_holder_u() {}
+  ntree_entity_holder() {}
+  ~ntree_entity_holder() {}
 
-  ntree_entity_holder_u(const point_t & p) : coordinates_(p) {}
+  ntree_entity_holder(const point_t & p) : coordinates_(p) {}
 
 private:
   point_t coordinates_;
@@ -164,16 +164,16 @@ private:
   double radius_;
   key_t key_;
   int owner_;
-}; // class tree_entity_u
+}; // class tree_entity
 
 /*----------------------------------------------------------------------------*
  * class tree_branch_t
  *----------------------------------------------------------------------------*/
 
 //----------------------------------------------------------------------------//
-//! \class tree_branch_u tree_types.h
+//! \class tree_branch tree_types.h
 //!
-//! \brief tree_branch_u parametrizes a tree ebranch base with its dimension
+//! \brief tree_branch parametrizes a tree ebranch base with its dimension
 //! and number of domain
 //!
 //! \tparam DIM Dimension
@@ -182,7 +182,7 @@ private:
 //----------------------------------------------------------------------------//
 
 template<size_t DIM, class TREE_ENTITY_TYPE, class KEY>
-class ntree_branch_u : public ntree_entity_base_t
+class ntree_branch : public ntree_entity_base_t
 {
 public:
   enum LOCALITY : int { LOCAL = 0, NON_LOCAL = 1, SHARED = 2 };
@@ -190,14 +190,14 @@ public:
   static constexpr size_t dimension = DIM;
   using entity_id_t = typename TREE_ENTITY_TYPE::id_t;
   using id_t = flecsi::utils::id_t;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using key_t = KEY;
 
-  ntree_branch_u() : size_(0), is_leaf_(true) {}
-  ntree_branch_u(const key_t & key) : size_(0), is_leaf_(true) {
+  ntree_branch() : size_(0), is_leaf_(true) {}
+  ntree_branch(const key_t & key) : size_(0), is_leaf_(true) {
     key_ = key;
   }
-  ~ntree_branch_u() {}
+  ~ntree_branch() {}
 
   // Setter
   void set_leaf(const bool & is_leaf) {

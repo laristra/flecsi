@@ -27,6 +27,7 @@ set(data_HEADERS
   common/topology_registration.hh
   field.hh
   topology_interface.hh
+  backend.hh
 )
 
 set(data_SOURCES

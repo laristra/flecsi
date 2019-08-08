@@ -37,9 +37,9 @@ struct mpi_data_policy_t {
    */
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE, size_t NAME>
-  static client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
-    using client_handle_specialization_t = mpi::client_handle_specialization_u<
-      typename DATA_CLIENT_TYPE::type_identifier_t>;
+  static client_handle<DATA_CLIENT_TYPE, 0> get_client_handle() {
+    using client_handle_specialization_t =
+      mpi::client_handle_specialization<DATA_CLIENT_TYPE>;
 
     return client_handle_specialization_t::template get_client_handle<NAMESPACE,
       NAME>();
@@ -55,7 +55,7 @@ struct mpi_data_policy_t {
    */
 
   template<size_t STORAGE_CLASS, typename CLIENT_TYPE>
-  using storage_class_u = mpi::storage_class_u<STORAGE_CLASS, CLIENT_TYPE>;
+  using storage_class = mpi::storage_class<STORAGE_CLASS, CLIENT_TYPE>;
 
 }; // struct mpi_data_policy_t
 

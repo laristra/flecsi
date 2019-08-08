@@ -24,7 +24,7 @@
 
 using namespace flecsi;
 
-using index_field_t = index_field_member_u<double>;
+using index_field_t = index_field_member<double>;
 const index_field_t test_value_1;
 const index_field_t test_value_2;
 const index_field_t test_value_3;

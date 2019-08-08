@@ -28,9 +28,9 @@
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! The point_u type defines an interface for storing and manipulating
-//! coordinate data. The point_u type is implemented using \ref
-//! dimensioned_array_u.
+//! The point type defines an interface for storing and manipulating
+//! coordinate data. The point type is implemented using \ref
+//! dimensioned_array.
 //!
 //! @tparam TYPE      The type to use to represent coordinate values.
 //! @tparam DIMENSION The dimension of the point.
@@ -39,7 +39,7 @@ namespace flecsi {
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-using point_u = utils::dimensioned_array_u<TYPE, DIMENSION, 1>;
+using point = utils::dimensioned_array<TYPE, DIMENSION, 1>;
 
 //----------------------------------------------------------------------------//
 //! Multiplication operator.
@@ -51,9 +51,9 @@ using point_u = utils::dimensioned_array_u<TYPE, DIMENSION, 1>;
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-point_u<TYPE, DIMENSION> operator*(TYPE const val,
-  point_u<TYPE, DIMENSION> const & p) {
-  point_u<TYPE, DIMENSION> tmp(p);
+point<TYPE, DIMENSION> operator*(TYPE const val,
+  point<TYPE, DIMENSION> const & p) {
+  point<TYPE, DIMENSION> tmp(p);
   for(size_t d(0); d < DIMENSION; ++d) {
     tmp[d] *= val;
   } // for
@@ -75,8 +75,7 @@ point_u<TYPE, DIMENSION> operator*(TYPE const val,
 
 template<typename TYPE, size_t DIMENSION>
 TYPE
-distance(point_u<TYPE, DIMENSION> const & a,
-  point_u<TYPE, DIMENSION> const & b) {
+distance(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
   TYPE sum(0);
   for(size_t d(0); d < DIMENSION; ++d) {
     sum += utils::square(a[d] - b[d]);
@@ -98,10 +97,9 @@ distance(point_u<TYPE, DIMENSION> const & a,
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-point_u<TYPE, DIMENSION>
-midpoint(point_u<TYPE, DIMENSION> const & a,
-  point_u<TYPE, DIMENSION> const & b) {
-  return point_u<TYPE, DIMENSION>((a + b) / 2.0);
+point<TYPE, DIMENSION>
+midpoint(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
+  return point<TYPE, DIMENSION>((a + b) / 2.0);
 } // midpoint
 
 //----------------------------------------------------------------------------//
@@ -117,8 +115,8 @@ midpoint(point_u<TYPE, DIMENSION> const & a,
 
 template<template<typename...> class CONTAINER, typename TYPE, size_t DIMENSION>
 auto
-centroid(CONTAINER<point_u<TYPE, DIMENSION>> const & points) {
-  point_u<TYPE, DIMENSION> tmp(0.0);
+centroid(CONTAINER<point<TYPE, DIMENSION>> const & points) {
+  point<TYPE, DIMENSION> tmp(0.0);
 
   for(auto p : points) {
     tmp += p;
@@ -142,8 +140,8 @@ centroid(CONTAINER<point_u<TYPE, DIMENSION>> const & points) {
 
 template<typename TYPE, size_t DIMENSION>
 auto
-centroid(std::initializer_list<point_u<TYPE, DIMENSION>> points) {
-  point_u<TYPE, DIMENSION> tmp(0.0);
+centroid(std::initializer_list<point<TYPE, DIMENSION>> points) {
+  point<TYPE, DIMENSION> tmp(0.0);
 
   for(auto p : points) {
     tmp += p;

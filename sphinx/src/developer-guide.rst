@@ -5,7 +5,7 @@
 FleCSI Developer Guide
 ======================
 
-.. .. doxygenstruct:: flecsi::control::control_u
+.. .. doxygenstruct:: flecsi::control::control
 
 .. toctree::
   :caption: User Guide:
