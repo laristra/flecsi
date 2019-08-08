@@ -50,6 +50,7 @@ before_script:
   - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   - spack load -r flecsi-deps%gcc@7.3.0 ~graphviz ^${MPI_PACKAGE} || /bin/true
   - module list
+  - export GASNET_BACKTRACE=1
 
 ##########################
 # Build Matrix Variables #
