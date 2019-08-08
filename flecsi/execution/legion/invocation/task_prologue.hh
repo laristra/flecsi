@@ -29,7 +29,7 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-using namespace flecsi::data::legion;
+using namespace flecsi::data;
 
 /*!
 

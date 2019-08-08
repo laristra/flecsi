@@ -46,7 +46,7 @@
 
 namespace flecsi::runtime {
 
-using namespace flecsi::data::legion;
+using namespace flecsi::data;
 using namespace boost::program_options;
 
 const size_t FLECSI_TOP_LEVEL_TASK_ID = 0;
@@ -172,7 +172,7 @@ struct context_t : context {
     Global topology instance.
    */
 
-  global_runtime_data_t & global_topology_instance() {
+  auto & global_topology_instance() {
     return global_topology_instance_;
   } // global_topology_instance
 
@@ -180,18 +180,33 @@ struct context_t : context {
     Index topology instances.
    */
 
-  index_runtime_data_t & index_topology_instance(size_t instance_identifier) {
+  auto & index_topology_instance(size_t instance_identifier) {
     return index_topology_instances_[instance_identifier];
   } // index_topology_instance
 
-  index_runtime_data_t index_topology_instance(
-    size_t instance_identifier) const {
+  auto index_topology_instance(size_t instance_identifier) const {
     auto ti = index_topology_instances_.find(instance_identifier);
     flog_assert(ti != index_topology_instances_.end(),
       "index topology instance does not exists");
 
     return ti->second;
   } // index_topology_instance
+
+  /*!
+    Unstructured mesh topology instances.
+   */
+
+  auto & unstructured_mesh_topology_instance(size_t instance_identifier) {
+    return unstructured_mesh_topology_instances_[instance_identifier];
+  } // unstructured_mesh_topology_instance
+
+  auto unstructured_mesh_topology_instance(size_t instance_identifier) const {
+    auto ti = unstructured_mesh_topology_instances_.find(instance_identifier);
+    flog_assert(ti != unstructured_mesh_topology_instances_.end(),
+      "umesh topology instance does not exists");
+
+    return ti->second;
+  } // unstructured_mesh_topology_instance
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -397,8 +412,11 @@ private:
     Runtime data.
    *--------------------------------------------------------------------------*/
 
-  global_runtime_data_t global_topology_instance_;
-  std::unordered_map<size_t, index_runtime_data_t> index_topology_instances_;
+  global_topology::runtime_data_t global_topology_instance_;
+  std::unordered_map<size_t, index_topology::runtime_data_t>
+    index_topology_instances_;
+  std::unordered_map<size_t, unstructured_mesh::runtime_data_t>
+    unstructured_mesh_topology_instances_;
 
   size_t process_ = std::numeric_limits<size_t>::max();
   size_t processes_ = std::numeric_limits<size_t>::max();
