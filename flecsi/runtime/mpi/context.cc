@@ -15,10 +15,9 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "context_policy.hh"
+#include "context.hh"
 
-namespace flecsi {
-namespace execution {
+namespace flecsi::runtime {
 
 int
 context_t::start(int argc, char ** argv) {
@@ -36,5 +35,4 @@ context_t::start(int argc, char ** argv) {
   return context_.top_level_action()(argc, argv);
 }
 
-} // namespace execution
-} // namespace flecsi
+} // namespace flecsi::runtime

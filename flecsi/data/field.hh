@@ -16,7 +16,7 @@
 /*! @file */
 
 #include "../topology/common/core.hh" // id
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/common/storage_label.hh>
@@ -54,8 +54,7 @@ struct field_member {
 
   field_member() : fid_(unique_fid_t::instance().next()) {
 
-    execution::context_t::instance().add_field_info(
-      topology::id<TOPOLOGY_TYPE>(),
+    runtime::context_t::instance().add_field_info(topology::id<TOPOLOGY_TYPE>(),
       STORAGE_CLASS,
       {fid_, INDEX_SPACE, sizeof(DATA_TYPE)},
       fid_);

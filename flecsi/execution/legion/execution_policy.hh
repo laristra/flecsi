@@ -20,10 +20,10 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
+#include "flecsi/runtime/legion/tasks.hh"
 #include "flecsi/utils/demangle.hh"
 #include "flecsi/utils/function_traits.hh"
-#include "tasks.hh"
 #include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/legion/enactment/task_wrapper.hh>
 #include <flecsi/execution/legion/future.hh>
@@ -72,7 +72,7 @@ reduce(ARGS &&... args) {
   ARG_TUPLE task_args = std::forward_as_tuple(args...);
 
   // Get the FleCSI runtime context
-  context_t & flecsi_context = context_t::instance();
+  auto & flecsi_context = runtime::context_t::instance();
 
   // Get the processor type.
   constexpr auto processor_type = mask_to_processor_type(ATTRIBUTES);
@@ -94,7 +94,7 @@ reduce(ARGS &&... args) {
 
     Legion::ArgumentMap arg_map;
     Legion::IndexLauncher reduction_launcher(
-      legion::task_id<flog_reduction_task>,
+      legion::task_id<runtime::flog_reduction_task>,
       launch_domain,
       Legion::TaskArgument(NULL, 0),
       arg_map);
@@ -108,12 +108,13 @@ reduce(ARGS &&... args) {
       legion_context, reduction_launcher, reduction_id);
 
     if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
-      Legion::IndexLauncher flog_mpi_launcher(legion::task_id<flog_mpi_task>,
+      Legion::IndexLauncher flog_mpi_launcher(
+        legion::task_id<runtime::flog_mpi_task>,
         launch_domain,
         Legion::TaskArgument(NULL, 0),
         arg_map);
 
-      flog_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
+      flog_mpi_launcher.tag = runtime::FLECSI_MAPPER_FORCE_RANK_MATCH;
 
       // Launch the MPI task
       auto future_mpi =
@@ -141,7 +142,7 @@ reduce(ARGS &&... args) {
                                      flecsi_context.threads_per_process()
                                  : domain_size;
 
-  context_t::instance().tasks_executed()++;
+  ++flecsi_context.tasks_executed();
 
   legion::init_args_t init_args(legion_runtime, legion_context, domain_size);
   init_args.walk(task_args);
@@ -282,7 +283,7 @@ reduce(ARGS &&... args) {
       } // case task_processor_type_t::loc
 
       case task_processor_type_t::mpi: {
-        launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
+        launcher.tag = runtime::FLECSI_MAPPER_FORCE_RANK_MATCH;
 
         // Launch the MPI task
         auto future =

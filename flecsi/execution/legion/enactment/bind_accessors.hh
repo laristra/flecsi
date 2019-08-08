@@ -20,7 +20,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include "flecsi/topology/common/core.hh"
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/data/common/storage_classes.hh>
@@ -82,7 +82,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
     Legion::Domain::DomainPointIterator itr(dom);
 
     const auto fid =
-      context_t::instance()
+      runtime::context_t::instance()
         .get_field_info_store(topology::id<topology::global_topology_t>(),
           data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
@@ -114,7 +114,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
     Legion::Domain::DomainPointIterator itr(dom);
 
     const auto fid =
-      context_t::instance()
+      runtime::context_t::instance()
         .get_field_info_store(topology::id<topology::index_topology_t>(),
           data::storage_label_t::dense)
         .get_field_info(accessor.identifier())

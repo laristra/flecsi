@@ -20,7 +20,7 @@
 #include <flecsi/utils/flog.hh>
 #endif
 
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/execution/common/command_line_options.hh>
 #include <flecsi/runtime/runtime.hh>
 
@@ -141,7 +141,7 @@ flecsi_append_runtime_handler(flecsi_legion_handler);
 
 int
 flecsi_legion_runtime_driver(int argc, char ** argv, variables_map & vm) {
-  return flecsi::execution::context_t::instance().start(argc, argv, vm);
+  return flecsi::runtime::context_t::instance().start(argc, argv, vm);
 }
 
 bool

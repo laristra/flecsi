@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/common/connectivity.hh>
 #include <flecsi/topology/common/utility_types.hh>
 #include <flecsi/topology/unstructured_mesh/partition.hh>
@@ -419,7 +419,7 @@ unserialize_dimension_(mesh_topology_base<STORAGE_TYPE> & mesh,
   ents.reserve(num_entities);
   ids.reserve(num_entities);
 
-  auto & context_ = flecsi::execution::context_t::instance();
+  auto & context_ = flecsi::runtime::context_t::instance();
 
   size_t partition_id = context_.color();
 

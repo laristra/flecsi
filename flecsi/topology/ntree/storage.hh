@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/common/entity_storage.hh>
 #include <flecsi/topology/common/index_space.hh>
 #include <flecsi/topology/ntree/storage.hh>
@@ -81,11 +81,11 @@ struct ntree_storage {
     branch_partition_index_spaces;
 
   ntree_storage() {
-    auto & context_ = flecsi::execution::context_t::instance();
+    auto & context_ = flecsi::runtime::context_t::instance();
   }
 
   void finalize_storage() {
-    auto & context = execution::context_t::instance();
+    auto & context = runtime::context_t::instance();
   }
 
   /**

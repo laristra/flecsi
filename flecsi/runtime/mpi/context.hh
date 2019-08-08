@@ -32,8 +32,7 @@
 
 #include <map>
 
-namespace flecsi {
-namespace execution {
+namespace flecsi::runtime {
 
 struct context_t : context<context_t> {
 
@@ -119,5 +118,4 @@ private:
   std::map<size_t, MPI_Op> reduction_ops_;
 };
 
-} // namespace execution
-} // namespace flecsi
+} // namespace flecsi::runtime

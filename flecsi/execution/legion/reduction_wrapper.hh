@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/flog.hh>
@@ -45,7 +45,8 @@ struct reduction_wrapper {
   static void registration_callback() {
 
     // Get the map of registered operations
-    auto & reduction_ops = context_t::instance().reduction_operations();
+    auto & reduction_ops =
+      runtime::context_t::instance().reduction_operations();
 
     flog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
       typeid(TYPE).name() << " has already been registered with this name");

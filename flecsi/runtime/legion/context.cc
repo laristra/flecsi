@@ -16,18 +16,19 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "context_policy.hh"
-#include "enactment/task_wrapper.hh"
+#include "context.hh"
+#include "flecsi/execution/legion/enactment/task_wrapper.hh"
+#include "mapper.hh"
+#include "tasks.hh"
 #include <flecsi/data/legion/data_policy.hh>
 #include <flecsi/execution/common/command_line_options.hh>
 #include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/legion/mapper.hh>
-#include <flecsi/execution/legion/tasks.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/const_string.hh>
 
-namespace flecsi {
-namespace execution {
+namespace flecsi::runtime {
+
+using execution::legion::task_id;
 
 int
 context_t::start(int argc, char ** argv, variables_map & vm) {
@@ -162,7 +163,7 @@ context_t::unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
 
   Legion::ArgumentMap arg_map;
   // IRINA DEBUG check number of processors
-  Legion::IndexLauncher launcher(legion::task_id<unset_call_mpi_task>,
+  Legion::IndexLauncher launcher(task_id<unset_call_mpi_task>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0),
     arg_map);
@@ -179,8 +180,7 @@ context_t::unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
 void
 context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher handoff_to_mpi_launcher(
-    legion::task_id<handoff_to_mpi_task>,
+  Legion::IndexLauncher handoff_to_mpi_launcher(task_id<handoff_to_mpi_task>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0),
     arg_map);
@@ -198,7 +198,7 @@ context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
 Legion::FutureMap
 context_t::wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher wait_on_mpi_launcher(legion::task_id<wait_on_mpi_task>,
+  Legion::IndexLauncher wait_on_mpi_launcher(task_id<wait_on_mpi_task>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0),
     arg_map);
@@ -353,5 +353,4 @@ context_t::finalize_default_index_topology() {
   data::legion_data_policy_t::destroy(reference);
 } // context_t::finalize_default_index_topology
 
-} // namespace execution
-} // namespace flecsi
+} // namespace flecsi::runtime

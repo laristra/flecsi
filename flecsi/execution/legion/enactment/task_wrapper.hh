@@ -20,7 +20,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include "flecsi/utils/function_traits.hh"
 #include <flecsi/execution/common/task_attributes.hh>
 #include <flecsi/execution/legion/enactment/bind_accessors.hh>
@@ -72,7 +72,7 @@ void register_task();
  */
 
 template<auto & F, size_t A = flecsi::loc | flecsi::leaf>
-inline const size_t task_id = context_t::instance().register_task(
+inline const size_t task_id = runtime::context_t::instance().register_task(
   utils::symbol<F>(),
   detail::register_task<
     typename utils::function_traits<decltype(F)>::return_type,
@@ -204,8 +204,9 @@ struct task_wrapper<F, mpi> {
     // init_handles.walk(mpi_task_args);
 
     // Set the MPI function and make the runtime active.
-    context_t::instance().set_mpi_task([=] { apply(F, mpi_task_args); });
-    context_t::instance().set_mpi_state(true);
+    auto & c = runtime::context_t::instance();
+    c.set_mpi_task([=] { apply(F, mpi_task_args); });
+    c.set_mpi_state(true);
 
     // FIXME: Refactor
     // finalize_handles_t finalize_handles;

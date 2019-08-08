@@ -22,12 +22,12 @@ set(execution_HEADERS
   common/function_handle.hh
   common/launch.hh
   common/task_attributes.hh
-  context.hh
   execution.hh
   internal.hh
   kernel_interface.hh
   reduction.hh
   task.hh
+  backend.hh
 )
 
 set(execution_SOURCES
@@ -38,7 +38,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(execution_HEADERS
     ${execution_HEADERS}
-    legion/context_policy.hh
     legion/enactment/bind_accessors.hh
     legion/enactment/task_wrapper.hh
     legion/enactment/unbind_accessors.hh
@@ -47,14 +46,11 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/invocation/init_args.hh
     legion/invocation/task_epilogue.hh
     legion/invocation/task_prologue.hh
-    legion/mapper.hh
     legion/reduction_wrapper.hh
-    legion/tasks.hh
   )
 
   set(execution_SOURCES
     ${execution_SOURCES}
-    legion/context_policy.cc
     legion/runtime.cc
   )
 
@@ -62,14 +58,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
     ${execution_HEADERS}
-    mpi/context_policy.hh
     mpi/execution_policy.hh
     mpi/reduction_wrapper.hh
   )
 
   set(execution_SOURCES
     ${execution_SOURCES}
-    mpi/context_policy.cc
     mpi/runtime.cc
   )
 

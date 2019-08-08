@@ -20,8 +20,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
-#include <flecsi/execution/legion/tasks.hh>
+#include "../backend.hh"
+#include "tasks.hh"
 #endif
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -34,14 +34,13 @@
 
 flog_register_tag(legion_mapper);
 
-namespace flecsi {
-namespace execution {
+namespace flecsi::runtime {
 
 /*
  The mpi_mapper_t - is a custom mapper that handles mpi-legion
  interoperability in FLeCSI
 
- @ingroup legion-execution
+ @ingroup legion-runtime
 */
 
 class mpi_mapper_t : public Legion::Mapping::DefaultMapper
@@ -300,7 +299,7 @@ private:
  mapper_registration is used to replace DefaultMapper with mpi_mapper_t in
  FLeCSI
 
- @ingroup legion-execution
+ @ingroup legion-runtime
  */
 
 inline void
@@ -315,5 +314,4 @@ mapper_registration(Legion::Machine machine,
   }
 } // mapper registration
 
-} // namespace execution
-} // namespace flecsi
+} // namespace flecsi::runtime

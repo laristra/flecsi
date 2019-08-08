@@ -113,8 +113,8 @@ flecsi_register_control_options(control_t);
 #define ftest_add_finalize_dependency(to, from)                                \
   ftest_add_dependency(finalize, to, from)
 
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context.hh"
 
 inline bool unit_tla_registered =
-  flecsi::execution::context_t::instance().register_top_level_action(
+  flecsi::runtime::context_t::instance().register_top_level_action(
     flecsi::control::control_t::execute);

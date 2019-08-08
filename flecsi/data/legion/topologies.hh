@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include "flecsi/topology/common/core.hh"
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/runtime/types.hh>
@@ -59,7 +59,7 @@ struct topology_instance<index_topology_t> {
 
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
-    auto & flecsi_context = execution::context_t::instance();
+    auto & flecsi_context = runtime::context_t::instance();
 
     auto & runtime_data =
       flecsi_context.index_topology_instance(topology_reference.identifier());
@@ -110,7 +110,7 @@ struct topology_instance<index_topology_t> {
 
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
-    auto & flecsi_context = execution::context_t::instance();
+    auto & flecsi_context = runtime::context_t::instance();
 
     auto & runtime_data =
       flecsi_context.index_topology_instance(topology_reference.identifier());

@@ -20,7 +20,7 @@
 #include <flecsi/utils/flog.hh>
 #endif
 
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/execution/common/command_line_options.hh>
 #include <flecsi/runtime/runtime.h>
 
@@ -69,8 +69,8 @@ flecsi_mpi_initialize(int argc, char ** argv, variables_map & vm) {
   int size{0};
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  flecsi::execution::context_t::instance().set_color(rank);
-  flecsi::execution::context_t::instance().set_colors(size);
+  flecsi::runtime::context_t::instance().set_color(rank);
+  flecsi::runtime::context_t::instance().set_colors(size);
 
 #if defined(FLECSI_ENABLE_FLOG)
   flog_initialize(__flog_tags);
@@ -99,7 +99,7 @@ flecsi_append_runtime_handler(flecsi_mpi_handler);
 
 int
 flecsi_mpi_runtime_driver(int argc, char ** argv) {
-  return flecsi::execution::context_t::instance().start(argc, argv);
+  return flecsi::runtime::context_t::instance().start(argc, argv);
 } // runtime_driver
 
 flecsi_register_runtime_driver(flecsi_mpi_runtime_driver);

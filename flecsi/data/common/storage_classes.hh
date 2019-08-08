@@ -22,9 +22,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/runtime/context.hh"
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/storage_label.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/structured_mesh/interface.hh>

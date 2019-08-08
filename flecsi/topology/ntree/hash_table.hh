@@ -1,6 +1,6 @@
 #pragma omp
 
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context.hh"
 #include <flecsi/topology/ntree/types.hh>
 
 namespace flecsi {

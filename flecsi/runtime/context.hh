@@ -43,8 +43,7 @@
 
 flog_register_tag(context);
 
-namespace flecsi {
-namespace execution {
+namespace flecsi::runtime {
 
 using namespace boost::program_options;
 using namespace topology;
@@ -55,7 +54,7 @@ struct context_t; // supplied by backend
   The context type provides a high-level execution context interface that
   is implemented by a specific backend.
 
-  @ingroup execution
+  @ingroup runtime
  */
 
 struct context {
@@ -499,5 +498,4 @@ private:
 
 }; // struct context
 
-} // namespace execution
-} // namespace flecsi
+} // namespace flecsi::runtime

@@ -13,7 +13,7 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context.hh"
 #include <flecsi/utils/ftest.hh>
 #include <flecsi/utils/serialize.hh>
 

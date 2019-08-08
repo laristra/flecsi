@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #else
 #include <flecsi/data/common/data_reference.hh>
-//#include "flecsi/runtime/context_policy.hh"
+//#include "flecsi/runtime/backend.hh"
 //#include <flecsi/topology/unstructured_mesh/partition.hh>
 #include <flecsi/topology/unstructured_mesh/storage.hh>
 #include <flecsi/topology/unstructured_mesh/types.hh>
@@ -1338,7 +1338,7 @@ private:
       Domain>::find();
 
     // get the global to local index space map
-    auto & context_ = flecsi::execution::context_t::instance();
+    auto & context_ = flecsi::runtime::context_t::instance();
     size_t color = context_.color();
     auto & gis_to_cis = context_.reverse_index_map(cell_index_space);
 
@@ -1541,7 +1541,7 @@ private:
     //    in order of global id
 
     // we need the context to get the global-to-local mapping
-    const auto & context_ = flecsi::execution::context_t::instance();
+    const auto & context_ = flecsi::runtime::context_t::instance();
 
     // find the from index space and get the mapping from global to local
     constexpr size_t to_index_space = find_index_space_from_dimension<
@@ -1950,7 +1950,7 @@ private:
       base_t::ms_->topology[FROM_DOM][TO_DOM];
 
     // get the global to local index space map
-    auto & context_ = flecsi::execution::context_t::instance();
+    auto & context_ = flecsi::runtime::context_t::instance();
     auto color = context_.color();
     const auto & cell_gis_to_cis = context_.reverse_index_map(cell_index_space);
     const auto & binding_gis_to_cis =

@@ -26,22 +26,22 @@
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include <flecsi/execution/legion/context_policy.hh>
+#include "legion/context.hh"
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include <flecsi/execution/mpi/context_policy.hh>
+#include "mpi/context.hh"
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
 
-#include <flecsi/execution/hpx/context_policy.hh>
+#include "hpx/context.hh"
 
 #endif // FLECSI_RUNTIME_MODEL
 
-namespace flecsi::execution {
+namespace flecsi::runtime {
 context_t &
 context::instance() {
   static context_t context;
   return context;
 } // instance
-} // namespace flecsi::execution
+} // namespace flecsi::runtime

@@ -44,8 +44,7 @@
 #include <map>
 #include <unordered_map>
 
-namespace flecsi {
-namespace execution {
+namespace flecsi::runtime {
 
 using namespace flecsi::data::legion;
 using namespace boost::program_options;
@@ -428,5 +427,4 @@ private:
   std::map<size_t, size_t> reduction_ops_;
 };
 
-} // namespace execution
-} // namespace flecsi
+} // namespace flecsi::runtime

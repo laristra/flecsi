@@ -20,7 +20,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/common/topology_accessor.hh>
@@ -108,15 +108,14 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+    auto & c = runtime::context_t::instance();
     const auto fid =
-      context_t::instance()
-        .get_field_info_store(topology::id<topology::global_topology_t>(),
-          data::storage_label_t::dense)
+      c.get_field_info_store(topology::id<topology::global_topology_t>(),
+         data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 
-    Legion::LogicalRegion region =
-      context_t::instance().global_topology_instance().logical_region;
+    Legion::LogicalRegion region = c.global_topology_instance().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
       "global topology accessor type only takes one privilege");
@@ -147,7 +146,7 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
-    auto & flecsi_context = context_t::instance();
+    auto & flecsi_context = runtime::context_t::instance();
 
     const auto fid =
       flecsi_context

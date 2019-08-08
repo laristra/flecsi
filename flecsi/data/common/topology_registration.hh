@@ -25,7 +25,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include "flecsi/topology/common/core.hh"
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/internal/global.hh>
@@ -118,7 +118,7 @@ struct topology_registration<
           NAMESPACE, NAME, INDEX_TYPE::value>() << std::endl;
       } // scope
 
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, field_key, registration_t::register_callback);
 
       using id_registration_t = field_registration<CLIENT_TYPE,
@@ -130,7 +130,7 @@ struct topology_registration<
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, id_key, id_registration_t::register_callback);
 
     } // visit_type
@@ -188,7 +188,7 @@ struct topology_registration<
           INDEX_TYPE::value
         >();
       int ispace = INDEX_TYPE::value;
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, index_key, index_registration_t::register_callback);
 
       using offset_registration_t =
@@ -206,7 +206,7 @@ struct topology_registration<
           INDEX_TYPE::value
         >();
 
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, offset_key, offset_registration_t::register_callback);
     } // visit_type
 
@@ -258,7 +258,7 @@ struct topology_registration<
           INDEX_TYPE::value
         >();
       int ispace = INDEX_TYPE::value;
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, index_key, index_registration_t::register_callback);
 
       using offset_registration_t =
@@ -276,7 +276,7 @@ struct topology_registration<
           INDEX_TYPE::value
         >();
 
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, offset_key, offset_registration_t::register_callback);
 
     } // visit_type
@@ -312,7 +312,7 @@ struct topology_registration<
           INDEX_SUBSPACE_TYPE::value
         >();
 
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, field_key, registration_t::register_callback);
 
     } // visit_type
@@ -335,7 +335,7 @@ struct topology_registration<
 
     // Only register field attributes if this is the first time
     // that we have seen this type.
-    if(!execution::context_t::instance().client_fields_registered(type_hash, instance_hash)) {
+    if(!runtime::context_t::instance().client_fields_registered(type_hash, instance_hash)) {
       entity_walker_t entity_walker;
       entity_walker.template walk_types<entity_types_t>();
 
@@ -401,7 +401,7 @@ struct topology_registration<
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, field_key, registration_t::register_callback);
 
       const size_t active_key = utils::hash::client_internal_field_hash<
@@ -409,7 +409,7 @@ struct topology_registration<
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, active_key, registration_t::register_callback);
 
       const size_t migrate_key = utils::hash::client_internal_field_hash<
@@ -417,7 +417,7 @@ struct topology_registration<
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
-      execution::context_t::instance().register_field(
+      runtime::context_t::instance().register_field(
         type_key, migrate_key, registration_t::register_callback);
 
     } // visit_type

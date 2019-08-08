@@ -19,7 +19,7 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/execution/internal.hh>
 #include <flecsi/execution/task.hh>
 //#include <flecsi/execution/reduction.hh>
@@ -36,7 +36,7 @@ namespace flecsi {
 
 inline size_t
 process() {
-  return execution::context_t::instance().process();
+  return runtime::context_t::instance().process();
 }
 
 /*!
@@ -45,7 +45,7 @@ process() {
 
 inline size_t
 processes() {
-  return execution::context_t::instance().processes();
+  return runtime::context_t::instance().processes();
 }
 
 /*!
@@ -54,7 +54,7 @@ processes() {
 
 inline size_t
 threads_per_process() {
-  return execution::context_t::instance().threads_per_process();
+  return runtime::context_t::instance().threads_per_process();
 }
 
 /*!
@@ -67,7 +67,7 @@ threads_per_process() {
 
 inline size_t
 threads() {
-  return execution::context_t::instance().threads();
+  return runtime::context_t::instance().threads();
 }
 
 /*!
@@ -77,7 +77,7 @@ threads() {
 
 inline size_t
 color() {
-  return execution::context_t::instance().color();
+  return runtime::context_t::instance().color();
 }
 
 /*!
@@ -87,7 +87,7 @@ color() {
 
 inline size_t
 colors() {
-  return execution::context_t::instance().colors();
+  return runtime::context_t::instance().colors();
 }
 
 } // namespace flecsi

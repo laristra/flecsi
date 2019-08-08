@@ -19,11 +19,10 @@
 #error Do not include this file directly!
 #else
 //#include <flecsi/execution/common/launch.hh>
-#include "flecsi/runtime/context_policy.hh"
+#include "../backend.hh"
 #endif
 
-namespace flecsi {
-namespace execution {
+namespace flecsi::runtime {
 
 /*----------------------------------------------------------------------------*
   Legion top-level task.
@@ -105,7 +104,7 @@ top_level_task(const Legion::Task * task,
 /*!
  Interprocess communication to pass control to MPI runtime.
 
- @ingroup legion-execution
+ @ingroup legion-runtime
  */
 
 inline void
@@ -120,7 +119,7 @@ handoff_to_mpi_task(const Legion::Task * task,
  Interprocess communication to wait for control to pass back to the Legion
  runtime.
 
- @ingroup legion-execution
+ @ingroup legion-runtime
  */
 
 inline void
@@ -134,7 +133,7 @@ wait_on_mpi_task(const Legion::Task * task,
 /*!
  Interprocess communication to unset mpi execute state.
 
- @ingroup legion-execution
+ @ingroup legion-runtime
 */
 
 inline void
@@ -171,5 +170,4 @@ flog_mpi_task(const Legion::Task * task,
 
 #endif // FLECSI_ENABLE_FLOG
 
-} // namespace execution
-} // namespace flecsi
+} // namespace flecsi::runtime

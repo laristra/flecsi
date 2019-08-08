@@ -19,7 +19,7 @@ namespace flecsi {
 namespace tutorial {
 
 static const bool specialization_control_registered =
-  flecsi::execution::context_t::instance().register_top_level_driver(
+  flecsi::runtime::context_t::instance().register_top_level_driver(
     control_t::execute);
 
 } // namespace tutorial

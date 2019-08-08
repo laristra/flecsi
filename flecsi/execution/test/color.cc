@@ -17,8 +17,6 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution/execution.hh>
 
-using namespace flecsi::execution;
-
 flog_register_tag(color);
 
 /*
@@ -31,10 +29,11 @@ color_raw(int argc, char ** argv) {
 
   FTEST();
 
-  auto depth = context_t::instance().task_depth();
-  auto process = context_t::instance().process();
-  auto processes = context_t::instance().processes();
-  auto tpp = context_t::instance().threads_per_process();
+  auto & c = flecsi::runtime::context_t::instance();
+  auto depth = c.task_depth();
+  auto process = c.process();
+  auto processes = c.processes();
+  auto tpp = c.threads_per_process();
 
   {
     flog_tag_guard(color);

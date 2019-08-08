@@ -37,7 +37,7 @@ specialization_tlt_init(int argc, char ** argv) {
 
   flecsi_execute_mpi_task(add_colorings, flecsi::tutorial, map);
 
-  auto & context{execution::context_t::instance()};
+  auto & context{runtime::context_t::instance()};
 
   auto & vinfo{context.coloring_info(index_spaces::vertices)};
   auto & cinfo{context.coloring_info(index_spaces::cells)};
@@ -59,7 +59,7 @@ specialization_tlt_init(int argc, char ** argv) {
   context.add_adjacency(ai);
 
   // Add sparse support for cells
-  execution::context_t::sparse_index_space_info_t isi;
+  runtime::context_t::sparse_index_space_info_t isi;
   isi.index_space = index_spaces::cells;
   isi.max_entries_per_index = 5;
   isi.exclusive_reserve = 8192;

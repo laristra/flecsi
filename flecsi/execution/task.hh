@@ -26,9 +26,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "backend.hh"
 #include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/common/task_attributes.hh>
-#include <flecsi/runtime/execution_policy.hh>
 #endif
 
 namespace flecsi {

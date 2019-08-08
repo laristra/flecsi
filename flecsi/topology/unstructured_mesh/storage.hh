@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/runtime/context_policy.hh"
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/common/entity_storage.hh>
 #include <flecsi/topology/common/index_space.hh>
 #include <flecsi/topology/unstructured_mesh/storage.hh>
@@ -78,7 +78,7 @@ struct mesh_storage {
   size_t color;
 
   mesh_storage() {
-    auto & context_ = flecsi::execution::context_t::instance();
+    auto & context_ = flecsi::runtime::context_t::instance();
     color = context_.color();
   } // mesh_storage
 
@@ -152,11 +152,11 @@ struct mesh_storage {
     size_t num_entities,
     bool read) {
 
-    auto & context_ = execution::context_t::instance();
+    auto & context_ = runtime::context_t::instance();
     auto & ssm = context_.index_subspace_info();
     auto itr = ssm.find(index_subspace);
     flog_assert(itr != ssm.end(), "invalid index subspace");
-    const execution::context_t::index_subspace_info_t & si = itr->second;
+    const runtime::context_t::index_subspace_info_t & si = itr->second;
 
     auto & is = index_spaces[domain][dim];
     auto & iss = index_subspaces[index_subspace];
