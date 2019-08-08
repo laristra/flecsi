@@ -269,8 +269,9 @@ before_script:
     - git checkout ${CI_COMMIT_REF_NAME}
     - git submodule update --init --recursive
     - cd ../
-    - mkdir build
+    - mkdir -p build
     - cd build
+    - pwd
     - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
         -DFLECSI_RUNTIME_MODEL=${RUNTIME} \
         -DENABLE_UNIT_TESTS=ON \
@@ -813,6 +814,7 @@ apps:centOS_mpi:
     <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *openmpi
+  allow_failure: true 
   dependencies:
     - build:centOS_mpi
 
