@@ -363,8 +363,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     }
 
-    std::vector<std::vector<unsigned char> > allSendBuffer(num_colors);
-    std::vector<std::vector<unsigned char> > allRecvBuffer(num_colors);
+    std::vector<unsigned char*> allSendBuffer(num_colors);
+    std::vector<unsigned char*> allRecvBuffer(num_colors);
 
     std::vector<MPI_Request> allSendRequests(num_colors);
     std::vector<MPI_Request> allRecvRequests(num_colors);
@@ -381,11 +381,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         continue;
       }
 
-      allRecvBuffer[rank].resize(bufSize);
+      const int resultAlloc = MPI_Alloc_mem(bufSize, MPI_INFO_NULL, &allRecvBuffer[rank]);
+      if(resultAlloc != MPI_SUCCESS) {
+        std::cerr << "ERROR: MPI_Alloc_mem of rank " << my_color << " for receiving data from rank " << rank << " failed with error code: " << resultAlloc << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+      }
 
-      const int result = MPI_Irecv(&allRecvBuffer[rank].data()[0], bufSize, MPI_CHAR, rank, rank, MPI_COMM_WORLD, &allRecvRequests[rank]);
-      if(result != MPI_SUCCESS) {
-        std::cerr << "ERROR: MPI_Irecv of rank " << my_color << " for receiving data from rank " << rank << " failed with error code: " << result << std::endl;
+      const int resultRecv = MPI_Irecv(allRecvBuffer[rank], bufSize, MPI_CHAR, rank, rank, MPI_COMM_WORLD, &allRecvRequests[rank]);
+      if(resultRecv != MPI_SUCCESS) {
+        std::cerr << "ERROR: MPI_Irecv of rank " << my_color << " for receiving data from rank " << rank << " failed with error code: " << resultRecv << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
       }
 
@@ -402,7 +406,11 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         continue;
       }
 
-      allSendBuffer[rank].resize(bufSize);
+      const int resultAlloc = MPI_Alloc_mem(bufSize, MPI_INFO_NULL, &allSendBuffer[rank]);
+      if(resultAlloc != MPI_SUCCESS) {
+        std::cerr << "ERROR: MPI_Alloc_mem of rank " << my_color << " for data sent to " << rank << " failed with error code: " << resultAlloc << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+      }
 
       size_t sendBufferOffset = 0;
 
@@ -423,9 +431,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       }
 
-      const int result = MPI_Isend(allSendBuffer[rank].data(), bufSize, MPI_CHAR, rank, my_color, MPI_COMM_WORLD, &allSendRequests[rank]);
-      if(result != MPI_SUCCESS) {
-        std::cerr << "ERROR: MPI_Isend of rank " << my_color << " for data sent to " << rank << " failed with error code: " << result << std::endl;
+      const int resultSend = MPI_Isend(allSendBuffer[rank], bufSize, MPI_CHAR, rank, my_color, MPI_COMM_WORLD, &allSendRequests[rank]);
+      if(resultSend != MPI_SUCCESS) {
+        std::cerr << "ERROR: MPI_Isend of rank " << my_color << " for data sent to " << rank << " failed with error code: " << resultSend << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
       }
 
@@ -466,10 +474,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       }
 
+      MPI_Free_mem(allRecvBuffer[rank]);
+
     }
 
     // ensure all send are completed
     MPI_Waitall(allSendRequests.size(), allSendRequests.data(), MPI_STATUSES_IGNORE);
+
+    for(int rank = 0; rank < num_colors; ++rank)
+      MPI_Free_mem(allSendBuffer[rank]);
 
   }
 
