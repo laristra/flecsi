@@ -47,15 +47,6 @@ template<size_t TOPOLOGICAL_DOMAIN>
 using topological_domain = utils::typeify<size_t, TOPOLOGICAL_DOMAIN>;
 
 /*!
-  Type to define different index space types from size_t ids.
-
-  @tparam INDEX_SPACE The size_t index space.
- */
-
-template<size_t INDEX_SPACE>
-using index_space = utils::typeify<size_t, INDEX_SPACE>;
-
-/*!
   Type to define different index subspace types from size_t ids.
 
   @tparam INDEX_SUBSPACE The size_t index subspace.
