@@ -348,8 +348,7 @@ legion_context_policy_t::initialize_default_index_topology() {
   data::topology_reference_u<topology::index_topology_t> reference(identifier);
   topology::index_topology_t::coloring_t coloring(processes_);
 
-  data::legion_data_policy_t::template create<topology::index_topology_t>(
-    reference, coloring);
+  data::legion_data_policy_t::create(reference, coloring);
 } // legion_context_policy_t::initialize_default_index_topology
 
 //----------------------------------------------------------------------------//
@@ -371,8 +370,7 @@ legion_context_policy_t::finalize_default_index_topology() {
 
   data::topology_reference_u<topology::index_topology_t> reference(identifier);
 
-  data::legion_data_policy_t::template destroy<topology::index_topology_t>(
-    reference);
+  data::legion_data_policy_t::destroy(reference);
 } // legion_context_policy_t::finalize_default_index_topology
 
 } // namespace execution

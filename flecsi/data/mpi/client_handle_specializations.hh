@@ -22,18 +22,6 @@
 #include <flecsi/data/common/client_handle.hh>
 
 namespace flecsi {
-
-/*----------------------------------------------------------------------------*
-  Forward topology types.
- *----------------------------------------------------------------------------*/
-
-namespace topology {
-struct global_topology_t;
-struct index_topology_t;
-template<typename>
-class mesh_topology_u;
-} // namespace topology
-
 namespace data {
 namespace mpi {
 

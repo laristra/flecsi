@@ -38,8 +38,8 @@ struct mpi_data_policy_t {
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE, size_t NAME>
   static client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
-    using client_handle_specialization_t = mpi::client_handle_specialization_u<
-      typename DATA_CLIENT_TYPE::type_identifier_t>;
+    using client_handle_specialization_t =
+      mpi::client_handle_specialization_u<DATA_CLIENT_TYPE>;
 
     return client_handle_specialization_t::template get_client_handle<NAMESPACE,
       NAME>();

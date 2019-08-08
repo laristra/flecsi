@@ -24,6 +24,7 @@
 
 #include <flecsi/runtime/data_policy.hh>
 
+#include "../topology/common/core.hh"
 #include <flecsi/data/common/topology_registration.hh>
 #include <flecsi/execution/context.hh>
 #include <flecsi/topology/base_topology_types.hh>
@@ -57,17 +58,13 @@ struct topology_interface_t {
 
   template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
   static decltype(auto) topology_reference(std::string const & name) {
-    static_assert(sizeof(TOPOLOGY_TYPE) ==
-                    sizeof(typename TOPOLOGY_TYPE::type_identifier_t),
+    using Core = topology::core_t<TOPOLOGY_TYPE>;
+    static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(Core),
       "Topologies may not add data members");
 
-    using registration_t =
-      topology_registration_u<typename TOPOLOGY_TYPE::type_identifier_t,
-        NAMESPACE,
-        NAME>;
+    using registration_t = topology_registration_u<Core, NAMESPACE, NAME>;
 
-    using topology_reference_t =
-      topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t>;
+    using topology_reference_t = topology_reference_u<Core>;
 
     registration_t::register_fields();
 
@@ -94,10 +91,8 @@ struct topology_interface_t {
    */
 
   template<typename TOPOLOGY_TYPE>
-  void create(
-    topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
-      topology_reference,
-    typename TOPOLOGY_TYPE::type_identifier_t::coloring_t const & coloring,
+  void create(topology_reference_u<TOPOLOGY_TYPE> const & topology_reference,
+    typename TOPOLOGY_TYPE::coloring_t const & coloring,
     std::string const & name) {
 
     data_policy_t::create<TOPOLOGY_TYPE>(topology_reference, coloring);
@@ -105,9 +100,7 @@ struct topology_interface_t {
   } // add_coloring
 
   template<typename TOPOLOGY_TYPE>
-  void destroy(
-    topology_reference_u<typename TOPOLOGY_TYPE::type_identifier_t> const &
-      topology_reference,
+  void destroy(topology_reference_u<TOPOLOGY_TYPE> const & topology_reference,
     std::string const & name) {
 
     data_policy_t::destroy<TOPOLOGY_TYPE>(topology_reference);

@@ -29,30 +29,6 @@
 flog_register_tag(topologies);
 
 namespace flecsi {
-
-/*----------------------------------------------------------------------------*
-  Forward topology types.
- *----------------------------------------------------------------------------*/
-
-namespace topology {
-
-struct global_topology_t;
-struct index_topology_t;
-
-template<typename>
-class ntree_topology_u;
-
-template<typename>
-class set_topology_u;
-
-template<typename>
-class structured_mesh_topology_u;
-
-template<typename>
-class unstructured_mesh_topology_u;
-
-} // namespace topology
-
 namespace data {
 // FIXME: get rid of this namespace
 namespace legion {

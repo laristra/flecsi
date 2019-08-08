@@ -61,8 +61,6 @@ public:
   // offset type use by connectivities to give offsets and counts
   using offset_t = utils::offset_t;
 
-  using type_identifier_t = ntree_topology_u;
-
   // ------- Basic declarations: types and subtypes
   static constexpr size_t dimension = Policy::dimension;
   using element_t = typename Policy::element_t;

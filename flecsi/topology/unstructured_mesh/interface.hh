@@ -189,15 +189,6 @@ public:
   template<size_t DIM, size_t DOM = 0>
   using entity_type = typename find_entity_<POLICY_TYPE, DIM, DOM>::type;
 
-  /*
-    This type definition is needed so that data client handles can be
-    specialized for particular data client types, e.g., mesh topologies vs.
-    tree topologies. It is also useful for detecting illegal usage, such as
-    when a user adds data members.
-   */
-
-  using type_identifier_t = unstructured_mesh_topology_u;
-
   // Don't allow the mesh to be copied or copy constructed
 
   // don't allow mesh to be assigned unstructured_mesh_topology_u & operator=(
