@@ -183,7 +183,7 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using ntree_accessor =
-    topology_accessor<ntree_topology<POLICY_TYPE>, PRIVILEGES>;
+    topology_accessor<topology::ntree_topology<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
@@ -193,7 +193,8 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  using set_accessor = topology_accessor<set_topology<POLICY_TYPE>, PRIVILEGES>;
+  using set_accessor =
+    topology_accessor<topology::set_topology<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(set_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
@@ -204,7 +205,8 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using structured_mesh_accessor =
-    topology_accessor<structured_mesh_topology<POLICY_TYPE>, PRIVILEGES>;
+    topology_accessor<topology::structured_mesh_topology<POLICY_TYPE>,
+      PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {
