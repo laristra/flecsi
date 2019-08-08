@@ -34,16 +34,6 @@
 
 flog_register_tag(legion_mapper);
 
-/*!
- Mapper ID
-
- @ingroup legion-execution
- */
-
-enum {
-  MPI_MAPPER_ID = 1,
-};
-
 namespace flecsi {
 namespace execution {
 
