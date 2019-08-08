@@ -21,7 +21,6 @@
 #include <flecsi/data/common/field_info.hh>
 #include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/common/task_attributes.hh>
-#include <flecsi/execution/global_object_wrapper.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/base_topology_types.hh>
 #include <flecsi/utils/common.hh>
@@ -245,103 +244,6 @@ struct context_u : public CONTEXT_POLICY {
   } // reduction_registry
 
   /*--------------------------------------------------------------------------*
-    Global object interface.
-   *--------------------------------------------------------------------------*/
-
-  /*!
-    Add a global object to the context. Global objects cannot be added
-    from within a task. Attempts to do so will generate a runtime error.
-
-    The intent of the global object interface is to allow users
-    to use normal C++ inheritance patterns (with virtual functions)
-    for \b globally-constant objects within the FleCSI task system.
-    That said, this interface should be used with care, e.g., it is
-    expensive to add global objects because it requires synchronization
-    across runtime threads. Additionally, this interface also uses simple
-    type erasure so that all added global objects can be stored in a
-    single unordered map. Therefore, the user is responsible for
-    correctly specifying the OBJECT_TYPE parameter to this method,
-    and to the \ref get_global_object method.
-
-    In normal usage, the user should call this method with a derived
-    type, and the \ref get_global_object method should be called with
-    a base type (assuming a common base type for all global objects
-    added within the NAMESPACE).
-
-    @tparam NAMESPACE   A unique hash that identifies the object.
-    @tparam OBJECT_TYPE The C++ type of the object.
-
-    @param index The index of the global object within the given namespace.
-    @param args  A variadic argument list to be passed to the constructor
-                 of the global object.
-
-    @return A pointer to the newly allocated object.
-
-    @note The global object instance will automatically be deleted by
-          the runtime at shutdown.
-   */
-
-  template<size_t NAMESPACE, typename OBJECT_TYPE, typename... ARGS>
-  OBJECT_TYPE * add_global_object(size_t index, ARGS &&... args) {
-    size_t KEY = NAMESPACE ^ index;
-
-    flog_assert(
-      task_depth() == 0, "you cannot add global objects from within a task");
-
-    flog_assert(
-      global_object_registry_.find(KEY) == global_object_registry_.end(),
-      "global key already exists");
-
-    auto ptr = new OBJECT_TYPE(std::forward<ARGS>(args)...);
-
-    flog_devel(info) << "Adding global object" << std::endl
-                     << "\tindex: " << index << std::endl
-                     << "\thash: " << NAMESPACE << std::endl
-                     << "\ttype: "
-                     << utils::demangle(typeid(OBJECT_TYPE).name()) << std::endl
-                     << "\taddress: " << ptr << std::endl;
-
-    std::get<0>(global_object_registry_[KEY]) =
-      reinterpret_cast<uintptr_t>(ptr);
-
-    using wrapper_t = global_object_wrapper_u<OBJECT_TYPE>;
-    std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
-
-    return ptr;
-  } // add_global_object
-
-  /*!
-    Get a global object instance.
-
-    @tparam NAMESPACE   A unique hash that identifies the object.
-    @tparam OBJECT_TYPE The C++ type of the object.
-
-    @param index The index of the global object within the given namespace.
-
-    @return A pointer to the object.
-   */
-
-  template<size_t NAMESPACE, typename OBJECT_TYPE>
-  OBJECT_TYPE * get_global_object(size_t index) {
-    size_t KEY = NAMESPACE ^ index;
-    flog_assert(
-      global_object_registry_.find(KEY) != global_object_registry_.end(),
-      "key does not exist");
-
-    auto ptr = reinterpret_cast<OBJECT_TYPE *>(
-      std::get<0>(global_object_registry_[KEY]));
-
-    flog_devel(info) << "Getting global object" << std::endl
-                     << "\tindex: " << index << std::endl
-                     << "\thash: " << NAMESPACE << std::endl
-                     << "\ttype: "
-                     << utils::demangle(typeid(OBJECT_TYPE).name()) << std::endl
-                     << "\taddress: " << ptr << std::endl;
-
-    return ptr;
-  } // get_global_object
-
-  /*--------------------------------------------------------------------------*
     Function interface.
    *--------------------------------------------------------------------------*/
 
@@ -549,13 +451,6 @@ private:
 
   context_u() : CONTEXT_POLICY() {}
 
-  ~context_u() {
-    // Cleanup the global objects
-    for(auto & go : global_object_registry_) {
-      std::get<1>(go.second)(std::get<0>(go.second));
-    } // for
-  } // ~context_u
-
   /*
     Clear the runtime state of the context.
 
@@ -578,15 +473,6 @@ private:
    *--------------------------------------------------------------------------*/
 
   std::map<size_t, std::function<void()>> reduction_registry_;
-
-  /*--------------------------------------------------------------------------*
-    Global object data members.
-   *--------------------------------------------------------------------------*/
-
-  using global_object_data_t =
-    std::pair<uintptr_t, std::function<void(uintptr_t)>>;
-
-  std::unordered_map<size_t, global_object_data_t> global_object_registry_;
 
   /*--------------------------------------------------------------------------*
     Function data members.

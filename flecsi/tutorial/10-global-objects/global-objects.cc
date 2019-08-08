@@ -21,6 +21,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <optional>
 
 #include <flecsi/data/data.h>
 #include <flecsi/execution/execution.h>
@@ -46,10 +47,10 @@ template<size_t SHARED_PRIVILEGES>
 using cell_data = dense_accessor<data_t, rw, SHARED_PRIVILEGES, ro>;
 
 // This is a simple base type with one pure virtual method that we will
-// use to demonstrate the global object interface.
+// use to demonstrate global object usage.
 
 struct base_t {
-  virtual ~base_t() {}
+  virtual ~base_t() {} // good practice, but not required with std::optional
 
   virtual double compute(double x, double y) = 0;
 
@@ -82,6 +83,8 @@ struct type_2_t : public base_t {
 }; // struct type_2_t
 
 namespace example {
+std::optional<type_1_t> t1;
+std::optional<type_2_t> t2;
 
 // Define a task to initialize the cell data. This will randomly pick
 // one of the integer ids for each cell.
@@ -105,9 +108,9 @@ print(mesh<ro> m, cell_data<ro> cd) {
     // This call gets the global object associated with the id we
     // randomly set in the update task.
 
-    auto derived = flecsi_get_global_object(cd(c).id, derived, base_t);
+    auto & derived = cd(c).id == type_1 ? *t1 : *t2;
 
-    std::cout << "compute: " << derived->compute(5.0, 1.0) << std::endl;
+    std::cout << "compute: " << derived.compute(5.0, 1.0) << std::endl;
   } // for
 } // print
 
@@ -119,12 +122,6 @@ flecsi_register_task(print, example, loc, single);
 
 flecsi_register_field(mesh_t, example, cell_data, data_t, dense, 1, cells);
 
-// Register the derived object instances that we will initialize and
-// use in the example.
-
-flecsi_register_global_object(type_1, derived, base_t);
-flecsi_register_global_object(type_2, derived, base_t);
-
 namespace flecsi {
 namespace execution {
 
@@ -133,12 +130,9 @@ driver(int argc, char ** argv) {
 
   // Initialization of the object instances. In a real code, this would
   // need to occur in the specialization initialization control point.
-  //
-  // Notice that the interface call accepts a variadic argument list
-  // that is passed to the constructor of the particular type.
 
-  flecsi_initialize_global_object(type_1, derived, type_1_t, 1.0, 2.0);
-  flecsi_initialize_global_object(type_2, derived, type_2_t);
+  example::t1.emplace(1, 2);
+  example::t2.emplace();
 
   // Get client and data handles as usual.
 

@@ -24,7 +24,6 @@ set(execution_HEADERS
   common/task_attributes.hh
   context.hh
   execution.hh
-  global_object_wrapper.hh
   internal.hh
   kernel_interface.hh
   reduction.hh
@@ -110,11 +109,6 @@ ftest_add_unit(color
     test/color.cc
   THREADS
     4 # Warning: This number is hard-coded into the the test.
-)
-
-ftest_add_unit(global-object
-  SOURCES
-    test/global-object.cc
 )
 
 if(ENABLE_KOKKOS)
