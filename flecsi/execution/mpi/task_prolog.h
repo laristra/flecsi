@@ -332,7 +332,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     for(auto const & [index_space, fids] : fidsInIndexSpace) {
 
-      int sumOfTemplateSizes = 0;
       for(auto const & fid : fids) {
 
         if(context.hasBeenModified.count(index_space) &&
@@ -341,23 +340,17 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
           modifiedFields[index_space].push_back(fid);
 
-          sumOfTemplateSizes += context.templateParamSize[fid];
-
         }
 
       }
 
       for(auto const & fid : modifiedFields[index_space]) {
 
-        for(int rank = 0; rank < num_colors; ++rank) {
-          for(int ind = 0; ind < context.ghostIndices[fid][rank].size(); ++ind)
-            ghostSize[rank] += context.ghostIndices[fid][rank][ind][1]*sumOfTemplateSizes;
-        }
+        for(int rank = 0; rank < num_colors; ++rank)
+          ghostSize[rank] += context.ghostDatatypesSizes[fid][rank];
 
-        for(int rank = 0; rank < num_colors; ++rank) {
-          for(int ind = 0; ind < context.sharedIndices[fid][rank].size(); ++ind)
-            sharedSize[rank] += context.sharedIndices[fid][rank][ind][1]*sumOfTemplateSizes;
-        }
+        for(int rank = 0; rank < num_colors; ++rank)
+          sharedSize[rank] += context.sharedDatatypesSizes[fid][rank];
 
       }
 
@@ -412,20 +405,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         MPI_Abort(MPI_COMM_WORLD, 1);
       }
 
-      size_t sendBufferOffset = 0;
+      int sendBufferOffset = 0;
 
       for(auto const & [index_space, fids] : modifiedFields) {
 
         for(auto const & fid : fids) {
 
-          for(auto const & ind : context.sharedIndices[fid][rank]) {
-
-            memcpy(&allSendBuffer[rank][sendBufferOffset],
-                    &sharedDataBuffers[index_space][fid][ind[0]*context.templateParamSize[fid]],
-                    ind[1]*context.templateParamSize[fid]);
-            sendBufferOffset += ind[1]*context.templateParamSize[fid];
-
-          }
+          int position = 0;
+          MPI_Pack(sharedDataBuffers[index_space][fid], 1, context.sharedDatatypes[fid][rank], &allSendBuffer[rank][sendBufferOffset], context.sharedDatatypesSizes[fid][rank], &position, MPI_COMM_WORLD);
+          sendBufferOffset += position;
 
         }
 
@@ -461,14 +449,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
         for(auto const & fid : fids) {
 
-          for(auto const & ind : context.ghostIndices[fid][rank]) {
-
-            memcpy(&ghostDataBuffers[index_space][fid][ind[0]*context.templateParamSize[fid]],
-                   &allRecvBuffer[rank][recvBufferOffset],
-                   ind[1]*context.templateParamSize[fid]);
-            recvBufferOffset += ind[1]*context.templateParamSize[fid];
-
-          }
+          int position = 0;
+          MPI_Unpack(&allRecvBuffer[rank][recvBufferOffset], context.ghostDatatypesSizes[fid][rank], &position, ghostDataBuffers[index_space][fid], 1, context.ghostDatatypes[fid][rank], MPI_COMM_WORLD);
+          recvBufferOffset += position;
 
         }
 
