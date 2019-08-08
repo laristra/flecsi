@@ -31,7 +31,7 @@ with a few differences:
   #include <cstdlib>
   #include <iostream>
 
-  #include<flecsi-tutorial/specialization/mesh/mesh.h>
+  #include<flecsi/tutorial/specialization/mesh/mesh.h>
   #include<flecsi/data/data.h>
   #include<flecsi/execution/execution.h>
 
