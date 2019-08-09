@@ -178,25 +178,20 @@ reduce(ARGS &&... args) {
     prologue.walk(task_args);
     prologue.update_state();
 
-    switch(processor_type) {
+    if constexpr(processor_type == task_processor_type_t::toc ||
+                 processor_type == task_processor_type_t::loc) {
+      auto future = legion_runtime->execute_task(legion_context, launcher);
 
-      case task_processor_type_t::toc:
-      case task_processor_type_t::loc: {
-        auto future = legion_runtime->execute_task(legion_context, launcher);
-
-        return legion_future<RETURN, launch_type_t::single>(future);
-      } // case task_processor_type_t::loc
-
-      case task_processor_type_t::mpi: {
-        flog_fatal("Invalid launch type!"
-                   << std::endl
-                   << "Legion backend does not support 'single' launch"
-                   << " for MPI tasks yet");
-      } // case task_processor_type_t::mpi
-
-      default:
-        flog_fatal("Unknown processor type: " << processor_type);
-    } // switch
+      return legion_future<RETURN, launch_type_t::single>(future);
+    }
+    else {
+      static_assert(
+        processor_type == task_processor_type_t::mpi, "Unknown launch type");
+      flog_fatal("Invalid launch type!"
+                 << std::endl
+                 << "Legion backend does not support 'single' launch"
+                 << " for MPI tasks yet");
+    }
 
     legion::task_epilogue_t epilogue(legion_runtime, legion_context);
     epilogue.walk(task_args);
@@ -233,95 +228,85 @@ reduce(ARGS &&... args) {
     prologue.walk(task_args);
     prologue.update_state();
 
-    switch(processor_type) {
+    if constexpr(processor_type == task_processor_type_t::toc ||
+                 processor_type == task_processor_type_t::loc) {
+      flog_devel(info) << "Executing index launch on loc" << std::endl;
 
-      case task_processor_type_t::toc:
-      case task_processor_type_t::loc: {
-        flog_devel(info) << "Executing index launch on loc" << std::endl;
+      if constexpr(REDUCTION != ZERO) {
+        flog_devel(info) << "executing reduction logic for " << REDUCTION
+                         << std::endl;
+        auto reduction_op =
+          flecsi_context.reduction_operations().find(REDUCTION);
 
-        if constexpr(REDUCTION != ZERO) {
-          flog_devel(info) << "executing reduction logic for " << REDUCTION
-                           << std::endl;
-          auto reduction_op =
-            flecsi_context.reduction_operations().find(REDUCTION);
+        flog_assert(reduction_op != flecsi_context.reduction_operations().end(),
+          "invalid reduction operation");
 
-          flog_assert(
-            reduction_op != flecsi_context.reduction_operations().end(),
-            "invalid reduction operation");
+        Legion::Future future;
 
-          Legion::Future future;
+        size_t reduction_id = flecsi_context.reduction_operations()[REDUCTION];
+        future = legion_runtime->execute_index_space(
+          legion_context, launcher, reduction_id);
 
-          size_t reduction_id =
-            flecsi_context.reduction_operations()[REDUCTION];
-          future = legion_runtime->execute_index_space(
-            legion_context, launcher, reduction_id);
+        // Enqueue the epilog.
+        legion::task_epilogue_t task_epilogue(legion_runtime, legion_context);
+        task_epilogue.walk(task_args);
+        return 0;
 
-          // Enqueue the epilog.
-          legion::task_epilogue_t task_epilogue(legion_runtime, legion_context);
-          task_epilogue.walk(task_args);
-          return 0;
-
-          // FIXME
-          // return legion_future<RETURN, launch_type_t::single>(future);
-          return 0;
-        }
-        else {
-          // Enqueue the task.
-          Legion::FutureMap future_map =
-            legion_runtime->execute_index_space(legion_context, launcher);
-
-          // Execute a tuple walker that applies the task epilog operations
-          // on the mapped handles
-          legion::task_epilogue_t task_epilogue(legion_runtime, legion_context);
-          task_epilogue.walk(task_args);
-
-          // FIXME
-          // return legion_future<RETURN, launch_type_t::index>(future_map);
-          return 0;
-        } // else
-
-      } // case task_processor_type_t::loc
-
-      case task_processor_type_t::mpi: {
-        launcher.tag = runtime::FLECSI_MAPPER_FORCE_RANK_MATCH;
-
-        // Launch the MPI task
-        auto future =
+        // FIXME
+        // return legion_future<RETURN, launch_type_t::single>(future);
+        return 0;
+      }
+      else {
+        // Enqueue the task.
+        Legion::FutureMap future_map =
           legion_runtime->execute_index_space(legion_context, launcher);
-        // Force synchronization
-        future.wait_all_results(true);
-
-        // Handoff to the MPI runtime.
-        flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
-
-        // Wait for MPI to finish execution (synchronous).
-        flecsi_context.wait_on_mpi(legion_context, legion_runtime);
-
-        // Reset the calling state to false.
-        flecsi_context.unset_call_mpi(legion_context, legion_runtime);
 
         // Execute a tuple walker that applies the task epilog operations
         // on the mapped handles
         legion::task_epilogue_t task_epilogue(legion_runtime, legion_context);
         task_epilogue.walk(task_args);
 
-        if constexpr(REDUCTION != ZERO) {
-          // FIXME implement logic for reduction MPI task
-          flog_fatal("there is no implementation for the mpi"
-                     " reduction task");
-        }
-        else {
-          // FIXME
-          // return legion_future<RETURN, launch_type_t::index>(future);
-          return 0;
-        }
+        // FIXME
+        // return legion_future<RETURN, launch_type_t::index>(future_map);
+        return 0;
+      } // else
+    }
+    else {
+      static_assert(
+        processor_type == task_processor_type_t::mpi, "Unknown launch type");
+      launcher.tag = runtime::FLECSI_MAPPER_FORCE_RANK_MATCH;
 
-      } // case task_processor_type_t::mpi
+      // Launch the MPI task
+      auto future =
+        legion_runtime->execute_index_space(legion_context, launcher);
+      // Force synchronization
+      future.wait_all_results(true);
 
-      default:
-        flog_fatal("Unknown processor type: " << processor_type);
+      // Handoff to the MPI runtime.
+      flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
 
-    } // switch
+      // Wait for MPI to finish execution (synchronous).
+      flecsi_context.wait_on_mpi(legion_context, legion_runtime);
+
+      // Reset the calling state to false.
+      flecsi_context.unset_call_mpi(legion_context, legion_runtime);
+
+      // Execute a tuple walker that applies the task epilog operations
+      // on the mapped handles
+      legion::task_epilogue_t task_epilogue(legion_runtime, legion_context);
+      task_epilogue.walk(task_args);
+
+      if constexpr(REDUCTION != ZERO) {
+        // FIXME implement logic for reduction MPI task
+        flog_fatal("there is no implementation for the mpi"
+                   " reduction task");
+      }
+      else {
+        // FIXME
+        // return legion_future<RETURN, launch_type_t::index>(future);
+        return 0;
+      }
+    }
   } // if constexpr
 
   return 0;
