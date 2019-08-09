@@ -71,7 +71,7 @@ void register_task();
                      \ref task_attributes_mask_t.
  */
 
-template<auto & F, size_t A = flecsi::loc | flecsi::leaf>
+template<auto & F, size_t A = loc | leaf>
 inline const size_t task_id = runtime::context_t::instance().register_task(
   utils::symbol<F>(),
   detail::register_task<
@@ -88,7 +88,8 @@ template<typename RETURN,
 void
 detail::register_task() {
   constexpr auto processor_type = mask_to_processor_type(A);
-  static_assert(processor_type != mpi, "Legion tasks cannot use MPI");
+  static_assert(processor_type != task_processor_type_t::mpi,
+    "Legion tasks cannot use MPI");
 
   const std::string name = utils::symbol<*TASK>();
   {
@@ -179,12 +180,12 @@ struct task_wrapper {
 }; // struct task_wrapper
 
 template<auto & F>
-struct task_wrapper<F, mpi> {
+struct task_wrapper<F, task_processor_type_t::mpi> {
   using Traits = utils::function_traits<decltype(F)>;
   using RETURN = typename Traits::return_type;
   using ARG_TUPLE = typename Traits::arguments_type;
 
-  static constexpr task_processor_type_t LegionProcessor = loc;
+  static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
   static void execute(const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions,

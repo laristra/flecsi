@@ -153,7 +153,7 @@ reduce(ARGS &&... args) {
 
   using wrap = legion::task_wrapper<F, processor_type>;
   const auto task = legion::task_id<wrap::execute,
-    ATTRIBUTES & ~flecsi::mpi | 1 << wrap::LegionProcessor>;
+    ATTRIBUTES & ~mpi | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
   if constexpr(LAUNCH_DOMAIN == launch_identifier("single")) {
 
     static_assert(
