@@ -64,12 +64,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     auto rank = context_t::instance().color();
 
-    if(context.hasBeenModified.count(h.index_space) == 0 ||
-       context.hasBeenModified[h.index_space].count(h.fid) == 0 ||
-       !context.hasBeenModified[h.index_space][h.fid])
+    if(context.hasBeenModified.count(h.fid) == 0 || !context.hasBeenModified[h.fid])
       return;
 
-    fidsInIndexSpace[h.index_space].push_back(h.fid);
+    listAllFids.push_back(h.fid);
 
     auto & my_coloring_info = context.coloring_info(h.index_space).at(context.color());
 
@@ -77,8 +75,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     auto shared_data = data + my_coloring_info.exclusive * sizeof(T);
     auto ghost_data = shared_data + my_coloring_info.shared * sizeof(T);
 
-    sharedDataBuffers[h.index_space][h.fid] = shared_data;
-    ghostDataBuffers[h.index_space][h.fid] = ghost_data;
+    sharedDataBuffers[h.fid] = shared_data;
+    ghostDataBuffers[h.fid] = ghost_data;
 
   }
 
@@ -328,23 +326,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     std::vector<int> sharedSize(num_colors, 0);
     std::vector<int> ghostSize(num_colors, 0);
 
-    std::map<int, std::vector<int> > modifiedFields;
+    std::vector<int> modifiedFields;
 
-    for(auto const & [index_space, fids] : fidsInIndexSpace) {
+    for(int fidInd = 0; fidInd < listAllFids.size(); ++fidInd) {
 
-      for(auto const & fid : fids) {
+      const int fid = listAllFids[fidInd];
 
-        if(context.hasBeenModified.count(index_space) &&
-           context.hasBeenModified[index_space].count(fid) &&
-           context.hasBeenModified[index_space][fid]) {
+      if(context.hasBeenModified.count(fid) && context.hasBeenModified[fid]) {
 
-          modifiedFields[index_space].push_back(fid);
-
-        }
-
-      }
-
-      for(auto const & fid : modifiedFields[index_space]) {
+        modifiedFields.push_back(fid);
 
         for(auto rank = 0; rank < num_colors; ++rank) {
           ghostSize[rank] += context.ghostFieldSizes[fid][rank];
@@ -406,16 +396,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       size_t sendBufferOffset = 0;
 
-      for(auto const & [index_space, fids] : modifiedFields) {
+      for(int fidInd = 0; fidInd < modifiedFields.size(); ++fidInd) {
 
-        for(auto const & fid : fids) {
+        const int fid = modifiedFields[fidInd];
 
-          for(auto const & ind : context.sharedIndices[fid][rank]) {
+        for(auto const & ind : context.sharedIndices[fid][rank]) {
 
-            memcpy(&allSendBuffer[rank][sendBufferOffset], &sharedDataBuffers[index_space][fid][ind[0]], ind[1]);
-            sendBufferOffset += ind[1];
-
-          }
+          memcpy(&allSendBuffer[rank][sendBufferOffset], &sharedDataBuffers[fid][ind[0]], ind[1]);
+          sendBufferOffset += ind[1];
 
         }
 
@@ -447,16 +435,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       size_t recvBufferOffset = 0;
 
-      for(auto const & [index_space, fids] : modifiedFields) {
+      for(int fidInd = 0; fidInd < modifiedFields.size(); ++fidInd) {
 
-        for(auto const & fid : fids) {
+        const int fid = modifiedFields[fidInd];
 
-          for(auto const & ind : context.ghostIndices[fid][rank]) {
+        for(auto const & ind : context.ghostIndices[fid][rank]) {
 
-            memcpy(&ghostDataBuffers[index_space][fid][ind[0]], &allRecvBuffer[rank][recvBufferOffset], ind[1]);
-            recvBufferOffset += ind[1];
-
-          }
+          memcpy(&ghostDataBuffers[fid][ind[0]], &allRecvBuffer[rank][recvBufferOffset], ind[1]);
+          recvBufferOffset += ind[1];
 
         }
 
@@ -474,9 +460,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   }
 
-  std::map<size_t, std::map<field_id_t, unsigned char*> > sharedDataBuffers;
-  std::map<size_t, std::map<field_id_t, unsigned char*> > ghostDataBuffers;
-  std::map<size_t, std::vector<size_t> > fidsInIndexSpace;
+  std::map<field_id_t, unsigned char*> sharedDataBuffers;
+  std::map<field_id_t, unsigned char*> ghostDataBuffers;
+  std::vector<size_t> listAllFids;
 
 }; // struct task_prolog_t
 

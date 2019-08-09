@@ -565,7 +565,7 @@ struct mpi_context_policy_t {
 
   int rank;
 
-  std::map<size_t, std::map<field_id_t, bool> > hasBeenModified;
+  std::map<field_id_t, bool> hasBeenModified;
 
   std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > sharedIndices;
   std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > ghostIndices;
