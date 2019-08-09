@@ -46,7 +46,7 @@
   #if !defined(REALM_USE_CMAKE)
     #define REALM_USE_CMAKE
   #endif
-  
+
   #if !defined(ENABLE_LEGION_TLS)
     #define ENABLE_LEGION_TLS
   #endif
@@ -59,6 +59,13 @@
   #endif
 
 #endif
+
+//----------------------------------------------------------------------------//
+// Use Tausch for dense halo exchanges
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_USE_TAUSCH_AGGCOMM
+
 
 //----------------------------------------------------------------------------//
 // Process id bits

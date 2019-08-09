@@ -31,6 +31,10 @@ All rights reserved.
 
 #include <flecsi/utils/tuple_walker.h>
 
+#ifdef FLECSI_USE_TAUSCH_AGGCOMM
+#include "tausch.h"
+#endif
+
 namespace flecsi {
 namespace execution {
 
@@ -323,6 +327,65 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     const int my_color = context.color();
     const int num_colors = context.colors();
 
+#ifdef FLECSI_USE_TAUSCH_AGGCOMM
+
+    // create vectors of halo indices (compressed) for fields that have changed
+    std::vector<std::vector<int> > modifiedFields(num_colors);
+    std::vector<std::vector<std::vector<std::array<int, 4> > > > useThisLocalHaloInfo(num_colors);
+    std::vector<std::vector<std::vector<std::array<int, 4> > > > useThisRemoteHaloInfo(num_colors);
+
+    for(int fidInd = 0; fidInd < listAllFids.size(); ++fidInd) {
+
+      const int fid = listAllFids[fidInd];
+
+      if(context.hasBeenModified.count(fid) && context.hasBeenModified[fid]) {
+
+        for(int rank = 0; rank < num_colors; ++rank) {
+          if(context.sharedIndices[fid][rank].size() > 0) {
+            useThisLocalHaloInfo[rank].push_back(context.sharedIndices[fid][rank]);
+            modifiedFields[rank].push_back(fid);
+          }
+        }
+        for(int rank = 0; rank < num_colors; ++rank)
+          if(context.ghostIndices[fid][rank].size() > 0)
+            useThisRemoteHaloInfo[rank].push_back(context.ghostIndices[fid][rank]);
+
+      }
+
+    }
+
+    Tausch<unsigned char> *tausch = new Tausch<unsigned char>(MPI_CHAR, MPI_COMM_WORLD, false);
+
+    for(int rank = 0; rank < num_colors; ++rank) {
+
+      tausch->addLocalHaloInfo(useThisLocalHaloInfo[rank], modifiedFields[rank].size(), rank);
+      tausch->addRemoteHaloInfo(useThisRemoteHaloInfo[rank], modifiedFields[rank].size(), rank);
+
+    }
+
+    for(int rank = 0; rank < num_colors; ++rank) {
+
+      for(int fidInd = 0; fidInd < modifiedFields[rank].size(); ++fidInd)
+        tausch->packSendBuffer(rank, fidInd, sharedDataBuffers[modifiedFields[rank][fidInd]]);
+
+      tausch->send(rank, my_color, rank);
+
+    }
+
+    for(int rank = 0; rank < num_colors; ++rank) {
+
+      tausch->recv(rank, rank, rank);
+
+      for(int fidInd = 0; fidInd < modifiedFields[rank].size(); ++fidInd)
+        tausch->unpackRecvBuffer(rank, fidInd, ghostDataBuffers[modifiedFields[rank][fidInd]]);
+
+    }
+
+
+
+
+#else
+
     std::vector<int> sharedSize(num_colors, 0);
     std::vector<int> ghostSize(num_colors, 0);
 
@@ -457,6 +520,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     for(int rank = 0; rank < num_colors; ++rank)
       MPI_Free_mem(allSendBuffer[rank]);
+
+#endif
 
   }
 
