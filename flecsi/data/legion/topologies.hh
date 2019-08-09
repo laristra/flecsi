@@ -190,7 +190,7 @@ struct topology_instance<topology::unstructured_mesh_topology<POLICY_TYPE>> {
     auto & flecsi_context = runtime::context_t::instance();
 
     auto & dense_field_info_store = flecsi_context.get_field_info_store(
-      POLICY_TYPE::type_identifier_hash, storage_label_t::dense);
+      topology::id<topology_t>, storage_label_t::dense);
 
 #if 0
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
