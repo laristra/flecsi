@@ -45,9 +45,6 @@ flog_register_tag(context);
 
 namespace flecsi::runtime {
 
-using namespace boost::program_options;
-using namespace topology;
-
 struct context_t; // supplied by backend
 
 /*!

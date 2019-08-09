@@ -29,8 +29,6 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-using namespace flecsi::data;
-
 /*!
 
  @ingroup execution
@@ -61,7 +59,7 @@ struct task_prologue_t : public flecsi::utils::tuple_walker<task_prologue_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -69,7 +67,8 @@ struct task_prologue_t : public flecsi::utils::tuple_walker<task_prologue_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {} // visit
+  void visit(data::index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Unstructured Mesh Topology

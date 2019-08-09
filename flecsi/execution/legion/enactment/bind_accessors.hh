@@ -40,8 +40,6 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-using namespace flecsi::data;
-
 /*!
   The bind_accessors_t type is called to walk the user task arguments inside of
   an executing legion task to properly complete the users accessors, i.e., by
@@ -75,7 +73,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
 
     Legion::Domain dom = legion_runtime_->get_index_space_domain(
       legion_context_, regions_[region].get_logical_region().get_index_space());
@@ -97,7 +95,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
 
     DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
 
-    global_topo::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+    data::global_topo::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
 
     ++region;
   } // visit
@@ -107,7 +105,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
 
     Legion::Domain dom = legion_runtime_->get_index_space_domain(
       legion_context_, regions_[region].get_logical_region().get_index_space());
@@ -128,7 +126,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
 
     DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
 
-    index_topo::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+    data::index_topo::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
 
     ++region;
   } // visit

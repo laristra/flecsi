@@ -44,8 +44,6 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-using namespace flecsi::data;
-
 /*!
   The init_args_t type can be called to walk task args before the
   task launcher is created. This allows us to gather region requirements
@@ -106,7 +104,7 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
     auto & c = runtime::context_t::instance();
     const auto fid =
       c.get_field_info_store(topology::id<topology::global_topology_t>(),
@@ -144,7 +142,7 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
     auto & flecsi_context = runtime::context_t::instance();
 
     const auto fid =
@@ -181,7 +179,7 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using ntree_accessor =
-    topology_accessor<topology::ntree_topology<POLICY_TYPE>, PRIVILEGES>;
+    data::topology_accessor<topology::ntree_topology<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
@@ -192,7 +190,7 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using set_accessor =
-    topology_accessor<topology::set_topology<POLICY_TYPE>, PRIVILEGES>;
+    data::topology_accessor<topology::set_topology<POLICY_TYPE>, PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(set_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
@@ -203,7 +201,7 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using structured_mesh_accessor =
-    topology_accessor<topology::structured_mesh_topology<POLICY_TYPE>,
+    data::topology_accessor<topology::structured_mesh_topology<POLICY_TYPE>,
       PRIVILEGES>;
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>

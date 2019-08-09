@@ -39,8 +39,6 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-using namespace flecsi::data;
-
 /*!
   The unbind_accessors_t type is called to walk the user task arguments inside
   of an executing legion task to properly unbind the user's accessors.
@@ -73,7 +71,7 @@ struct unbind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -81,7 +79,8 @@ struct unbind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {} // visit
+  void visit(data::index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
