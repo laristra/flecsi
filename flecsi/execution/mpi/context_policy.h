@@ -281,6 +281,8 @@ struct mpi_context_policy_t {
 
 #else
 
+  // FIXME: Do this per index_space instead of per field id
+
     sharedIndices[fid].resize(mpiSize);
     ghostIndices[fid].resize(mpiSize);
     ghostFieldSizes[fid].resize(mpiSize);
