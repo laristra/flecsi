@@ -150,6 +150,7 @@ public:
   virtual void vertex(size_t id, real_t * coord ) const {};
   
   virtual const std::vector<size_t> & face_owners() const {};
+  virtual const std::vector<size_t> & region_ids() const {};
 
 }; // class mesh_definition_u
 
