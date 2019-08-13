@@ -1,0 +1,175 @@
+--------------------------------------------------------------------------------
+Command
+--------------------------------------------------------------------------------
+
+Note:
+   Queueing JSON file mismatching-name.json.
+
+--------------------------------------------------------------------------------
+Compilation
+--------------------------------------------------------------------------------
+
+File:
+   mismatching-name.json
+
+File:
+   mismatching-name.json: mismatching-name.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_data_client
+   Args: mesh_t, clients, mesh
+   File: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/mesh.h
+   Line: 71
+
+Macro:
+   Name: flecsi_register_field
+   Args: mesh_t, example, pressure, double, dense, 1, cells
+   File: mismatching-name.cc
+   Line: 16
+
+Macro:
+   Name: flecsi_get_client_handle
+   Args: mesh_t, clients, mesh
+   File: mismatching-name.cc
+   Line: 23
+
+Macro:
+   Name: flecsi_get_handle
+   Args: m, example, presure, double, dense, 0
+   File: mismatching-name.cc
+   Line: 26
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::data::data_client_interface_u::register_data_client
+   Matches macro: flecsi_register_data_client (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/mesh.h, line 71)
+
+Link:
+   Function call: flecsi::data::field_interface_u::register_field
+   Matches macro: flecsi_register_field (file mismatching-name.cc, line 16)
+
+Link:
+   Function call: flecsi::data::data_client_interface_u::get_client_handle
+   Matches macro: flecsi_get_client_handle (file mismatching-name.cc, line 23)
+
+Link:
+   Function call: flecsi::data::field_interface_u::get_handle
+   Matches macro: flecsi_get_handle (file mismatching-name.cc, line 26)
+
+File:
+   mismatching-name.json: /home/staley/flecsi/flecsi-tutorial/specialization/control/control.cc
+
+Scanning for FleCSI macros...
+
+Visiting the C++ abstract syntax tree...
+
+File:
+   mismatching-name.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_mpi_task
+   Args: add_colorings, flecsi::tutorial
+   File: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h
+   Line: 29
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_mpi_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h, line 29)
+
+File:
+   mismatching-name.json: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc
+
+Scanning for FleCSI macros...
+
+Macro:
+   Name: flecsi_register_mpi_task
+   Args: add_colorings, flecsi::tutorial
+   File: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h
+   Line: 29
+
+Macro:
+   Name: flecsi_register_data_client
+   Args: mesh_t, clients, mesh
+   File: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/mesh.h
+   Line: 71
+
+Macro:
+   Name: flecsi_register_task
+   Args: initialize_mesh, flecsi::tutorial, loc, index
+   File: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/tasks.h
+   Line: 78
+
+Macro:
+   Name: flecsi_execute_mpi_task
+   Args: add_colorings, flecsi::tutorial, map
+   File: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc
+   Line: 36
+
+Macro:
+   Name: flecsi_get_client_handle
+   Args: mesh_t, clients, mesh
+   File: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc
+   Line: 77
+
+Macro:
+   Name: flecsi_execute_task
+   Args: initialize_mesh, flecsi::tutorial, index, mh
+   File: /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc
+   Line: 78
+
+Visiting the C++ abstract syntax tree...
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_mpi_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.h, line 29)
+
+Link:
+   Function call: flecsi::data::data_client_interface_u::register_data_client
+   Matches macro: flecsi_register_data_client (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/mesh.h, line 71)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::register_task
+   Matches macro: flecsi_register_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/tasks.h, line 78)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_mpi_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc, line 36)
+
+Link:
+   Function call: flecsi::data::data_client_interface_u::get_client_handle
+   Matches macro: flecsi_get_client_handle (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc, line 77)
+
+Link:
+   Function call: flecsi::execution::task_interface_u::execute_task
+   Matches macro: flecsi_execute_task (file /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc, line 78)
+
+--------------------------------------------------------------------------------
+Analysis
+--------------------------------------------------------------------------------
+
+Error:
+   The flecsi_get_handle() macro call here:
+      file mismatching-name.cc, line 26
+   with:
+      namespace = "example"
+      name      = "presure"
+   does not match with namespace + name in any flecsi_register_field() call.
+   Check if either is misspelled, or misspelled in a flecsi_register_field(),
+   or not registered in any flecsi_register_field() at all.
+
+Synopsis:
+   1 error
+
+--------------------------------------------------------------------------------
+Summary
+--------------------------------------------------------------------------------
+
+Warning:
+   FleCSI static analysis may be incomplete; errors occurred.

@@ -1,0 +1,26 @@
+[31;21mError:[0m
+   [31;21mThe flecsi_get_handle() macro call here:[0m
+   [31;21m   file type-data-range.cc, line 24[0m
+   [31;21mis inconsistent with the matching flecsi_register_field() call here:[0m
+   [31;21m   file type-data-range.cc, line 16[0m
+   [31;21mbecause the data type was registered as double,[0m
+   [31;21mbut retrieved as int.[0m
+
+[31;21mError:[0m
+   [31;21mThe flecsi_get_handle() macro call here:[0m
+   [31;21m   file type-data-range.cc, line 24[0m
+   [31;21mis inconsistent with the matching flecsi_register_field() call here:[0m
+   [31;21m   file type-data-range.cc, line 16[0m
+   [31;21mbecause the storage class was registered as dense,[0m
+   [31;21mbut retrieved as sparse.[0m
+
+[31;21mError:[0m
+   [31;21mThe flecsi_get_handle() macro call here:[0m
+   [31;21m   file type-data-range.cc, line 24[0m
+   [31;21mis inconsistent with the matching flecsi_register_field() call here:[0m
+   [31;21m   file type-data-range.cc, line 16[0m
+   [31;21mbecause 2 versions (indices [0]..[1]) were registered,[0m
+   [31;21mbut version [4] was retrieved.[0m
+
+[34;1mSynopsis:[0m
+   [36;1m3 errors[0m

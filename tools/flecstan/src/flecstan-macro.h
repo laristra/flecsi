@@ -491,6 +491,7 @@ std::string data_type;
 std::string storage_class;
 std::uint32_t versions;
 std::uint32_t index_space;
+std::string type;
 flecstan_class_done
 
   flecstan_maptraits(flecsi_register_field) flecstan_map(client_type);
@@ -500,6 +501,7 @@ flecstan_map(data_type);
 flecstan_map(storage_class);
 flecstan_map(versions);
 flecstan_map(index_space);
+flecstan_map(type);
 flecstan_maptraits_done
 
   // flecsi_register_global ( nspace, name, data_type, versions)
@@ -541,6 +543,7 @@ std::string name;
 std::string data_type;
 std::string storage_class;
 std::uint32_t version;
+std::string type;
 flecstan_class_done
 
   flecstan_maptraits(flecsi_get_handle) flecstan_map(client_handle);
@@ -549,6 +552,7 @@ flecstan_map(name);
 flecstan_map(data_type);
 flecstan_map(storage_class);
 flecstan_map(version);
+flecstan_map(type);
 flecstan_maptraits_done
 
   // flecsi_get_client_handle ( client_type, nspace, name )
