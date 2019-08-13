@@ -42,6 +42,7 @@
 #include <mpi.h>
 
 #include <map>
+#include <string_view>
 #include <unordered_map>
 
 namespace flecsi::runtime {
