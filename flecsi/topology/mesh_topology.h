@@ -277,6 +277,16 @@ public:
     init_entity_<DOM, FROM_DIM, TO_DIM>(super, std::forward<ENT_TYPE2>(subs));
   } // init_entity
 
+  template<size_t FROM_DOM,
+    size_t TO_DOM,
+    size_t FROM_DIM,
+    size_t TO_DIM,
+    class ENT_TYPE1,
+    class ENT_TYPE2>
+  void init_entity(ENT_TYPE1 * super, ENT_TYPE2 && subs) {
+    init_entity_<FROM_DOM, TO_DOM, FROM_DIM, TO_DIM>(super, std::forward<ENT_TYPE2>(subs));
+  } // init_entity
+
   //--------------------------------------------------------------------------//
   //! Initialize an entities connectivity with a subset of another.
   //!
@@ -466,6 +476,13 @@ public:
     return base_t::ms_->partition_index_spaces[partition][DOM][dim];
   } // get_entities_
 
+  template<size_t DIM, size_t DOM = 0>
+  auto get_entities() const {
+    using etype = entity_type<DIM, DOM>;
+    return static_cast<etype *>(
+      base_t::ms_->index_spaces[DOM][DIM][0]);
+  } // get_entity
+
   //--------------------------------------------------------------------------//
   //! Get an entity in domain DOM of topological dimension DIM with specified
   //! id.
@@ -558,7 +575,7 @@ public:
     using dtype = domain_entity_u<TO_DOM, etype>;
 
     return c.get_index_space().slice<dtype>(
-      c.range(e->template id<FROM_DOM>()));
+      c.range(e->id()));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -585,7 +602,7 @@ public:
     using dtype = domain_entity_u<TO_DOM, etype>;
 
     return c.get_index_space().slice<dtype>(
-      c.range(e->template id<FROM_DOM>()));
+      c.range(e->id()));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -724,7 +741,7 @@ public:
     const connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
-    return c.get_index_space().ids(c.range(e->template id<FROM_DOM>()));
+    return c.get_index_space().ids(c.range(e->id()));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -745,7 +762,7 @@ public:
   void reverse_entities(ENT_TYPE * e) {
     auto & c = get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
-    c.reverse_entities(e->template id<FROM_DOM>());
+    c.reverse_entities(e->id());
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -787,7 +804,7 @@ public:
   void reorder_entities(ENT_TYPE * e, U && order) {
     auto & c = get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
-    c.reorder_entities(e->template id<FROM_DOM>(), std::forward<U>(order));
+    c.reorder_entities(e->id(), std::forward<U>(order));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -1125,10 +1142,10 @@ private:
     VERT_TYPE && verts) {
     auto & c = get_connectivity_(DOM, MESH_TYPE::num_dimensions, 0);
 
-    assert(cell->template id<DOM>() == c.from_size() && "id mismatch");
+    assert(cell->id() == c.from_size() && "id mismatch");
 
     for(entity_type<0, DOM> * v : std::forward<VERT_TYPE>(verts)) {
-      c.push(v->template global_id<DOM>());
+      c.push(v->global_id());
     } // for
 
     c.add_count(static_cast<std::uint32_t>(verts.size()));
@@ -1138,10 +1155,24 @@ private:
   void init_entity_(entity_type<FROM_DIM, DOM> * super, ENT_TYPE2 && subs) {
     auto & c = get_connectivity_(DOM, FROM_DIM, TO_DIM);
 
-    assert(super->template id<DOM>() == c.from_size() && "id mismatch");
+    assert(super->id() == c.from_size() && "id mismatch");
 
     for(auto e : std::forward<ENT_TYPE2>(subs)) {
-      c.push(e->template global_id<DOM>());
+      c.push(e->global_id());
+    } // for
+
+    c.add_count(subs.size());
+  } // init_entity
+
+  template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM,
+    class ENT_TYPE2>
+  void init_entity_(entity_type<FROM_DIM, FROM_DOM> * super, ENT_TYPE2 && subs) {
+    auto & c = get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
+
+    assert(super->id() == c.from_size() && "id mismatch");
+
+    for(auto e : std::forward<ENT_TYPE2>(subs)) {
+      c.push(e->global_id());
     } // for
 
     c.add_count(subs.size());
@@ -1187,7 +1218,7 @@ private:
   typename std::enable_if<(
     UsingDimension > 1 && UsingDimension <= MESH_TYPE::num_dimensions)>::type
   build_connectivity() {
-    // std::cerr << "build: " << DimensionToBuild
+    // std::cout << "build: " << DimensionToBuild
     // << " using " << UsingDimension << std::endl;
 
     // Sanity check
@@ -1285,7 +1316,7 @@ private:
 
       // Get the cell object
       auto cell = static_cast<cell_type *>(cis[c]);
-      id_t cell_id = cell->template global_id<Domain>();
+      id_t cell_id = cell->global_id();
 
       // Get storage reference.
       id_vector_t & conns = cell_entity_conn[c];
@@ -1452,7 +1483,7 @@ private:
       for(auto from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
         auto from_lid = from_id.entity();
         out_conn.set(
-          from_lid, to_entity->template global_id<TO_DOM>(), pos[from_lid]++);
+          from_lid, to_entity->global_id(), pos[from_lid]++);
       }
     }
 
@@ -1505,9 +1536,10 @@ private:
     size_t TO_DOM,
     size_t FROM_DIM,
     size_t TO_DIM,
-    size_t DIM>
+    size_t DIM,
+    size_t DOM = FROM_DOM>
   void intersect() {
-    // std::cerr << "intersect: " << FROM_DIM << " -> " << TO_DIM << std::endl;
+    // std::cout << "intersect: " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // The connectivity we will be populating
     connectivity_t & out_conn =
@@ -1539,7 +1571,7 @@ private:
     // Iterate through entities in "from" topological dimension
     for(auto from_entity : entities<FROM_DIM, FROM_DOM>()) {
 
-      id_t from_id = from_entity->template global_id<FROM_DOM>();
+      id_t from_id = from_entity->global_id();
       id_vector_t & ents = conns[from_id.entity()];
       ents.reserve(max_size);
 
@@ -1606,9 +1638,10 @@ private:
 
       max_size = std::max(ents.size(), max_size);
     } // for
-
+    
     // Finally create the connection from the temporary conns
     out_conn.init(conns);
+
   } // intersect
 
   //--------------------------------------------------------------------------//
@@ -1621,7 +1654,7 @@ private:
   //--------------------------------------------------------------------------//
   template<size_t DOM, size_t FROM_DIM, size_t TO_DIM>
   void compute_connectivity() {
-    // std::cerr << "compute: " << FROM_DIM << " -> " << TO_DIM << std::endl;
+    // std::cout << "compute: " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // Get the output connectivity
     connectivity_t & out_conn = get_connectivity_(DOM, FROM_DIM, TO_DIM);
@@ -1776,7 +1809,7 @@ private:
   //--------------------------------------------------------------------------//
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   void compute_bindings() {
-    // std::cerr << "compute: , dom " << FROM_DOM << " -> " << TO_DOM
+    // std::cout << "compute: , dom " << FROM_DOM << " -> " << TO_DOM
     //           <<  ", dim " << FROM_DIM << " -> " << TO_DIM << std::endl;
 
     // check if requested connectivity is already there, nothing to do
@@ -1898,7 +1931,7 @@ private:
       // Get the cell object
       auto c = cell_itr.second;
       auto cell = static_cast<cell_type *>(cell_storage[c]);
-      auto cell_id = cell->template global_id<FROM_DOM>();
+      auto cell_id = cell->global_id();
 
       // This call allows the users specialization to create
       // whatever entities are needed to complete the mesh.

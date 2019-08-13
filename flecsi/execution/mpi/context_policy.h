@@ -42,6 +42,10 @@
 
 #include <flecsi/utils/const_string.h>
 
+#ifdef FLECSI_USE_TAUSCH_AGGCOMM
+#include "tausch.h"
+#endif
+
 namespace flecsi {
 namespace execution {
 
@@ -206,21 +210,6 @@ struct mpi_context_policy_t {
    Field metadata is used maintain MPI information and data types for
    MPI windows/one-sided communication to perform ghost copies.
    */
-  struct field_metadata_t {
-
-    MPI_Group shared_users_grp;
-    MPI_Group ghost_owners_grp;
-
-    std::map<int, MPI_Datatype> origin_types;
-    std::map<int, MPI_Datatype> target_types;
-
-    MPI_Win win;
-  };
-
-  /*!
-   Field metadata is used maintain MPI information and data types for
-   MPI windows/one-sided communication to perform ghost copies.
-   */
   struct sparse_field_metadata_t {
     MPI_Group shared_users_grp;
     MPI_Group ghost_owners_grp;
@@ -246,43 +235,104 @@ struct mpi_context_policy_t {
   void register_field_metadata(const field_id_t fid,
     const coloring_info_t & coloring_info,
     const index_coloring_t & index_coloring) {
-    std::map<int, std::vector<int>> compact_origin_lengs;
-    std::map<int, std::vector<int>> compact_origin_disps;
 
-    std::map<int, std::vector<int>> compact_target_lengs;
-    std::map<int, std::vector<int>> compact_target_disps;
+    int mpiSize;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
 
-    field_metadata_t metadata;
+#ifdef FLECSI_USE_TAUSCH_AGGCOMM
 
-    register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
-      compact_origin_lengs, compact_origin_disps, compact_target_lengs,
-      compact_target_disps);
+    sharedIndices[fid].resize(mpiSize);
+    ghostIndices[fid].resize(mpiSize);
 
-    for(auto ghost_owner : coloring_info.ghost_owners) {
-      MPI_Datatype origin_type;
-      MPI_Datatype target_type;
+    // we extract the indices as plain arrays first...
 
-      MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
-        compact_origin_lengs[ghost_owner].data(),
-        compact_origin_disps[ghost_owner].data(),
-        flecsi::utils::mpi_typetraits_u<T>::type(), &origin_type);
-      MPI_Type_commit(&origin_type);
-      metadata.origin_types.insert({ghost_owner, origin_type});
+    std::vector<std::vector<int> > tmpSharedIndices(mpiSize);
+    std::vector<std::vector<int> > tmpGhostIndices(mpiSize);
 
-      MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
-        compact_target_lengs[ghost_owner].data(),
-        compact_target_disps[ghost_owner].data(),
-        flecsi::utils::mpi_typetraits_u<T>::type(), &target_type);
-      MPI_Type_commit(&target_type);
-      metadata.target_types.insert({ghost_owner, target_type});
+    size_t ghost_cnt = 0;
+
+    for(auto const & ghost : index_coloring.ghost) {
+
+      for(size_t i = 0; i < sizeof(T); ++i)
+        tmpGhostIndices[ghost.rank].push_back(ghost_cnt*sizeof(T) + i);
+
+      ++ghost_cnt;
+
     }
 
-    auto data = field_data[fid].data();
-    auto shared_data = data + coloring_info.exclusive * sizeof(T);
-    MPI_Win_create(shared_data, coloring_info.shared * sizeof(T), sizeof(T),
-      MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
+    for(auto const & shared : index_coloring.shared) {
 
-    field_metadata.insert({fid, metadata});
+      for(auto const & s : shared.shared) {
+
+        for(size_t i = 0; i < sizeof(T); ++i)
+          tmpSharedIndices[s].push_back(shared.offset*sizeof(T)+i);
+
+      }
+
+    }
+
+    // ... and then we store them already in compressed form
+
+    Tausch<unsigned char> tausch(MPI_CHAR, MPI_COMM_WORLD, false);
+    for(int rank = 0; rank < mpiSize; ++rank) {
+      sharedIndices[fid][rank] = tausch.extractHaloIndicesWithStride(tmpSharedIndices[rank]);
+      ghostIndices[fid][rank] = tausch.extractHaloIndicesWithStride(tmpGhostIndices[rank]);
+    }
+
+#else
+
+  // FIXME: Do this per index_space instead of per field id
+
+    sharedIndices[fid].resize(mpiSize);
+    ghostIndices[fid].resize(mpiSize);
+    ghostFieldSizes[fid].resize(mpiSize);
+    sharedFieldSizes[fid].resize(mpiSize);
+
+    // indices are stored as vectors of pairs, each pair consisting of: starting index, how many consecutive indices
+
+    size_t ghost_cnt = 0;
+
+    for(auto const & ghost : index_coloring.ghost) {
+
+      if(ghostIndices[fid][ghost.rank].size() == 0 ||
+         ghost_cnt*sizeof(T) != (ghostIndices[fid][ghost.rank].back()[0]+ghostIndices[fid][ghost.rank].back()[1]))
+
+        ghostIndices[fid][ghost.rank].push_back({ghost_cnt*sizeof(T), sizeof(T)});
+
+      else
+
+        ghostIndices[fid][ghost.rank].back()[1] += sizeof(T);
+
+      ++ghost_cnt;
+
+    }
+
+    for(auto const & shared : index_coloring.shared) {
+
+      for(auto const & s : shared.shared) {
+
+        if(sharedIndices[fid][s].size() == 0 ||
+           shared.offset*sizeof(T) != (sharedIndices[fid][s].back()[0]+sharedIndices[fid][s].back()[1]))
+
+          sharedIndices[fid][s].push_back({shared.offset*sizeof(T), sizeof(T)});
+
+        else
+
+          sharedIndices[fid][s].back()[1] += sizeof(T);
+
+      }
+
+    }
+
+    for(int rank = 0; rank < mpiSize; ++rank) {
+      for(auto const & ind : ghostIndices[fid][rank])
+        ghostFieldSizes[fid][rank] += ind[1];
+      for(auto const & ind : sharedIndices[fid][rank])
+        sharedFieldSizes[fid][rank] += ind[1];
+    }
+
+#endif
+
   }
 
   /*!
@@ -514,10 +564,6 @@ struct mpi_context_policy_t {
 #endif
   } // register_field_metadata_
 
-  std::map<field_id_t, field_metadata_t> & registered_field_metadata() {
-    return field_metadata;
-  };
-
   /*!
    Register new field data, i.e. allocate a new buffer for the specified field
    ID.
@@ -569,6 +615,18 @@ struct mpi_context_policy_t {
 
   int rank;
 
+  std::map<field_id_t, bool> hasBeenModified;
+
+#ifdef FLECSI_USE_TAUSCH_AGGCOMM
+  std::map<int, std::vector<std::vector<std::array<int, 4> > > > sharedIndices;
+  std::map<int, std::vector<std::vector<std::array<int, 4> > > > ghostIndices;
+#else
+  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > sharedIndices;
+  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > ghostIndices;
+  std::map<int, std::vector<size_t> > sharedFieldSizes;
+  std::map<int, std::vector<size_t> > ghostFieldSizes;
+#endif
+
 private:
   int color_ = 0;
   int colors_ = 0;
@@ -588,7 +646,6 @@ private:
   //  > task_registry_;
 
   std::map<field_id_t, std::vector<uint8_t>> field_data;
-  std::map<field_id_t, field_metadata_t> field_metadata;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;

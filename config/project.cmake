@@ -419,6 +419,13 @@ endif()
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
 
 #------------------------------------------------------------------------------#
+# Use Tausch for dense halo exchanges
+#------------------------------------------------------------------------------#
+option(FLECSI_USE_TAUSCH_AGGCOMM
+       "Use Tausch for aggregated communication (dense handle)"
+       OFF)
+
+#------------------------------------------------------------------------------#
 # Process id bits
 #------------------------------------------------------------------------------#
 
