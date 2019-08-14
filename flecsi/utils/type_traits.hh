@@ -26,9 +26,8 @@ namespace utils {
 
 namespace detail {
 
-//! \brief A helper type to check if a particular type is a container.
 template<typename... Ts>
-struct is_container {};
+struct hold {};
 
 // Adapted from https://stackoverflow.com/questions/25845536/
 template<template<class...> class B, class D>
@@ -49,6 +48,10 @@ struct nonvoid<void> {};
 
 } // namespace detail
 
+// Workaround for Clang's eager reduction of void_t (see also CWG1980)
+template<class... TT>
+using voided = std::conditional_t<false, detail::hold<TT...>, void>;
+
 template<template<class...> class B, class D>
 struct base_specialization
   : detail::nonvoid<typename detail::base_specialization<B, D>::type> {};
@@ -66,19 +69,17 @@ struct is_container : std::false_type {};
 //! \remark This version adheres to the strict requirements of an STL container.
 template<typename T>
 struct is_container<T,
-  std::conditional_t<false,
-    detail::is_container<typename T::value_type,
-      typename T::size_type,
-      typename T::allocator_type,
-      typename T::iterator,
-      typename T::const_iterator,
-      decltype(std::declval<T>().size()),
-      decltype(std::declval<T>().begin()),
-      decltype(std::declval<T>().end()),
-      decltype(std::declval<T>().cbegin()),
-      decltype(std::declval<T>().cend()),
-      decltype(std::declval<T>().data())>,
-    void>> : public std::true_type {};
+  voided<typename T::value_type,
+    typename T::size_type,
+    typename T::allocator_type,
+    typename T::iterator,
+    typename T::const_iterator,
+    decltype(std::declval<T>().size()),
+    decltype(std::declval<T>().begin()),
+    decltype(std::declval<T>().end()),
+    decltype(std::declval<T>().cbegin()),
+    decltype(std::declval<T>().cend()),
+    decltype(std::declval<T>().data())>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version adheres to the strict requirements of an STL container.
@@ -103,10 +104,8 @@ struct is_minimal_container : std::false_type {};
 //! \remark This version uses to a reduced set of requirements for a container.
 template<typename T>
 struct is_minimal_container<T,
-  std::conditional_t<false,
-    is_container<decltype(std::declval<T>().size()),
-      decltype(std::declval<T>().data())>,
-    void>> : public std::true_type {};
+  voided<decltype(std::declval<T>().size()),
+    decltype(std::declval<T>().data())>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version uses to a reduced set of requirements for a container.
@@ -131,10 +130,8 @@ struct is_iterative_container : std::false_type {};
 //! \remark This version uses to a reduced set of requirements for a container.
 template<typename T>
 struct is_iterative_container<T,
-  std::conditional_t<false,
-    is_container<decltype(std::declval<T>().begin()),
-      decltype(std::declval<T>().end())>,
-    void>> : public std::true_type {};
+  voided<decltype(std::declval<T>().begin()),
+    decltype(std::declval<T>().end())>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version uses to a reduced set of requirements for a container.
