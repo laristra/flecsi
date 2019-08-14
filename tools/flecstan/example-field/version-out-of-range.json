@@ -1,0 +1,44 @@
+[
+   {
+      "directory" : ".",
+      "command"   : "/usr/local/bin/clang++ -std=c++17 -DDEBUG -DFleCSI_Tut_EXPORTS -DMPICH_SKIP_MPICXX -DOMPI_SKIP_MPICXX -I/home/staley/flecsi -I/home/staley/flecsi/build -I/home/staley/code/mpich-install/include -I/home/staley/flecsi/cinch/logging -I/home/staley/flecsi-third-party-debug/include -I/home/staley/flecsi/flecsi -I/home/staley/flecsi/build/flecsi -I/home/staley/flecsi/flecsi/.. -I/home/staley/flecsi/build/flecsi/.. -I/home/staley/flecsi/flecsi-tutorial/specialization -I/home/staley/flecsi/build/flecsi-tutorial/specialization -I/home/staley/flecsi/flecsi-tutorial/specialization/.. -I/home/staley/flecsi/build/flecsi-tutorial/specialization/.. -g -fPIC -o CMakeFiles/FleCSI-Tut.dir/flecsi-tutorial/specialization/control/control.cc.o -c /home/staley/flecsi/flecsi-tutorial/specialization/control/control.cc",
+      "file"      : "/home/staley/flecsi/flecsi-tutorial/specialization/control/control.cc"
+   },
+   {
+      "directory" : ".",
+      "command"   : "/usr/local/bin/clang++ -std=c++17 -DDEBUG -DFleCSI_Tut_EXPORTS -DMPICH_SKIP_MPICXX -DOMPI_SKIP_MPICXX -I/home/staley/flecsi -I/home/staley/flecsi/build -I/home/staley/code/mpich-install/include -I/home/staley/flecsi/cinch/logging -I/home/staley/flecsi-third-party-debug/include -I/home/staley/flecsi/flecsi -I/home/staley/flecsi/build/flecsi -I/home/staley/flecsi/flecsi/.. -I/home/staley/flecsi/build/flecsi/.. -I/home/staley/flecsi/flecsi-tutorial/specialization -I/home/staley/flecsi/build/flecsi-tutorial/specialization -I/home/staley/flecsi/flecsi-tutorial/specialization/.. -I/home/staley/flecsi/build/flecsi-tutorial/specialization/.. -g -fPIC -o CMakeFiles/FleCSI-Tut.dir/flecsi-tutorial/specialization/mesh/coloring.cc.o -c /home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.cc",
+      "file"      : "/home/staley/flecsi/flecsi-tutorial/specialization/mesh/coloring.cc"
+   },
+   {
+      "directory" : ".",
+      "command"   : "/usr/local/bin/clang++ -std=c++17 -DDEBUG -DFleCSI_Tut_EXPORTS -DMPICH_SKIP_MPICXX -DOMPI_SKIP_MPICXX -I/home/staley/flecsi -I/home/staley/flecsi/build -I/home/staley/code/mpich-install/include -I/home/staley/flecsi/cinch/logging -I/home/staley/flecsi-third-party-debug/include -I/home/staley/flecsi/flecsi -I/home/staley/flecsi/build/flecsi -I/home/staley/flecsi/flecsi/.. -I/home/staley/flecsi/build/flecsi/.. -I/home/staley/flecsi/flecsi-tutorial/specialization -I/home/staley/flecsi/build/flecsi-tutorial/specialization -I/home/staley/flecsi/flecsi-tutorial/specialization/.. -I/home/staley/flecsi/build/flecsi-tutorial/specialization/.. -g -fPIC -o CMakeFiles/FleCSI-Tut.dir/flecsi-tutorial/specialization/mesh/control_points.cc.o -c /home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc",
+      "file"      : "/home/staley/flecsi/flecsi-tutorial/specialization/mesh/control_points.cc"
+   },
+   {
+     "directory" :
+        "/home/staley/flecstan/marc",
+
+     "command" :
+        "/usr/local/bin/clang++ \
+        -DDEBUG -DOMPI_SKIP_MPICXX -DMPICH_SKIP_MPICXX \
+        -I/home/staley/flecsi \
+        -I/home/staley/flecsi/build \
+        -I/home/staley/code/mpich-install/include \
+        -I/home/staley/flecsi/cinch/logging \
+        -I/home/staley/flecsi-third-party-debug/include \
+        -I/home/staley/flecsi/flecsi \
+        -I/home/staley/flecsi/build/flecsi \
+        -I/home/staley/flecsi/flecsi/.. \
+        -I/home/staley/flecsi/build/flecsi/.. \
+        -I/home/staley/flecsi/flecsi-tutorial/specialization \
+        -I/home/staley/flecsi/build/flecsi-tutorial/specialization \
+        -I/home/staley/flecsi/flecsi-tutorial/specialization/.. \
+        -I/home/staley/flecsi/build/flecsi-tutorial/specialization/.. \
+        -std=c++17 \
+        -Wno-deprecated-declarations \
+        -c version-out-of-range.cc"
+
+     "file" :
+        "version-out-of-range.cc"
+   }
+]
