@@ -48,8 +48,10 @@ struct field_member {
   using topology_reference_t = topology_reference<TOPOLOGY_TYPE>;
 
   template<size_t... PRIVILEGES>
-  using accessor = typename storage_class<STORAGE_CLASS, TOPOLOGY_TYPE>::
-    template accessor<DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
+  using accessor = accessor<STORAGE_CLASS,
+    TOPOLOGY_TYPE,
+    DATA_TYPE,
+    privilege_pack<PRIVILEGES...>::value>;
 
   field_member() : fid_(unique_fid_t::instance().next()) {
 

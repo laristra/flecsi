@@ -104,7 +104,10 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::accessor<data::dense,
+    topology::global_topology_t,
+    DATA_TYPE,
+    PRIVILEGES> & accessor) {
     auto & c = runtime::context_t::instance();
     const auto fid =
       c.get_field_info_store(topology::id<topology::global_topology_t>(),
@@ -142,7 +145,9 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::
+      accessor<data::dense, topology::index_topology_t, DATA_TYPE, PRIVILEGES> &
+        accessor) {
     auto & flecsi_context = runtime::context_t::instance();
 
     const auto fid =

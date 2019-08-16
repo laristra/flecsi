@@ -49,29 +49,6 @@ struct legion_data_policy_t {
     Topology Accessor Interface.
    *--------------------------------------------------------------------------*/
 
-  /*--------------------------------------------------------------------------*
-    Field Accessor Interface.
-   *--------------------------------------------------------------------------*/
-
-#if 0
-  // FIXME: These can move up into common
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  using global_accessor = global_topo::accessor<DATA_TYPE, PRIVILEGES>;
-
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  using index_accessor = index_topo::accessor<DATA_TYPE, PRIVILEGES>;
-#endif
-
-#if 0
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  using dense_unstructured_mesh_accessor =
-    legion::unstructured_mesh_topo::dense_accessor<DATA_TYPE, PRIVILEGES>;
-
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  using dense_structured_mesh_accessor =
-    legion::structured_mesh_topo::dense_accessor<DATA_TYPE, PRIVILEGES>;
-#endif
-
 }; // struct legion_data_policy_t
 
 } // namespace data
