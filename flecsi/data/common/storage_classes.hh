@@ -227,9 +227,10 @@ bind(dense_accessor<DATA_TYPE, PRIVILEGES> & a, size_t size, DATA_TYPE * data) {
 } // bind
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct dense_accessor : public field_reference_t {
+struct dense_accessor : public field_reference<DATA_TYPE> {
 
-  dense_accessor(field_reference_t const & ref) : field_reference_t(ref) {}
+  using Base = field_reference<DATA_TYPE>;
+  dense_accessor(Base const & ref) : Base(ref) {}
 
   /*!
     Provide logical array-based access to the data referenced by this
