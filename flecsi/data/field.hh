@@ -19,7 +19,6 @@
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/storage_classes.hh>
-#include <flecsi/data/common/storage_label.hh>
 #include <flecsi/runtime/types.hh>
 
 namespace flecsi {
