@@ -13,12 +13,11 @@
                                                                               */
 #include <fstream>
 #define __FLECSI_PRIVATE__
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/field_info.hh>
 #include <flecsi/data/data.hh>
 #include <flecsi/data/legion/runtime_data_types.hh>
-#include <flecsi/execution/context.hh>
-#include <flecsi/execution/legion/internal_task.hh>
 #include <flecsi/io/legion/io_policy.hh>
 #include <flecsi/utils/const_string.hh>
 
@@ -27,7 +26,6 @@
 
 namespace flecsi {
 namespace io {
-
 
 void
 checkpoint_with_attach_task(const Legion::Task * task,
@@ -321,15 +319,6 @@ recover_without_attach_task(const Legion::Task * task,
       getpid());
   }
 } // recover_without_attach_task
-
-flecsi_internal_register_legion_task(checkpoint_with_attach_task, loc | inner);
-
-flecsi_internal_register_legion_task(checkpoint_without_attach_task,
-  loc | leaf);
-
-flecsi_internal_register_legion_task(recover_with_attach_task, loc | inner);
-
-flecsi_internal_register_legion_task(recover_without_attach_task, loc | leaf);
 
 } // namespace io
 } // namespace flecsi

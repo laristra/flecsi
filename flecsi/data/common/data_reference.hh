@@ -38,9 +38,6 @@ struct data_reference_base_t {
 
   data_reference_base_t(size_t identifier) : identifier_(identifier) {}
 
-  data_reference_base_t(data_reference_base_t const & ref)
-    : identifier_(ref.identifier_) {}
-
   size_t identifier() const {
     return identifier_;
   } // identifier
@@ -51,20 +48,16 @@ private:
 }; // struct data_reference_base_t
 
 /*!
-  The topology_reference_u captures the topology type that is required for
+  The topology_reference captures the topology type that is required for
   dependent field references.
  */
 
 template<typename TOPOLOGY_TYPE>
-struct topology_reference_u : public data_reference_base_t {
+struct topology_reference : public data_reference_base_t {
   using topology_t = TOPOLOGY_TYPE;
 
-  topology_reference_u(size_t identifier) : data_reference_base_t(identifier) {}
-
-  topology_reference_u(topology_reference_u const & ref)
-    : data_reference_base_t(ref) {}
-
-}; // struct topology_reference_u
+  topology_reference(size_t identifier) : data_reference_base_t(identifier) {}
+}; // struct topology_reference
 
 /*!
   The field_reference_t type is used to reference fields. It adds a \em
@@ -86,6 +79,13 @@ private:
   size_t topology_identifier_;
 
 }; // struct field_reference_t
+
+/// A \c field_reference is a \c field_reference_t tagged with a data type.
+/// \tparam T data type (merely for type safety)
+template<class T>
+struct field_reference : field_reference_t {
+  using field_reference_t::field_reference_t;
+};
 
 } // namespace data
 } // namespace flecsi

@@ -30,7 +30,30 @@ namespace detail {
 template<typename... Ts>
 struct is_container {};
 
+// Adapted from https://stackoverflow.com/questions/25845536/
+template<template<class...> class B, class D>
+struct base_specialization {
+  template<class... AA>
+  static B<AA...> test(B<AA...> *);
+  static void test(void *);
+
+  using type = decltype(test(static_cast<D *>(nullptr)));
+};
+
+template<class T>
+struct nonvoid {
+  using type = T;
+};
+template<>
+struct nonvoid<void> {};
+
 } // namespace detail
+
+template<template<class...> class B, class D>
+struct base_specialization
+  : detail::nonvoid<typename detail::base_specialization<B, D>::type> {};
+template<template<class...> class B, class D>
+using base_specialization_t = typename base_specialization<B, D>::type;
 
 //! \brief Check if a particular type T is a container.
 //! \remark If T is not, this version is instantiated.

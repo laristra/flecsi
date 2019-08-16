@@ -62,37 +62,37 @@ parallel_for(ITERATOR const iterator,
 } // parallel_for
 
 /*!
-  The forall_u type provides a pretty interface for invoking data-parallel
+  The forall type provides a pretty interface for invoking data-parallel
   execution.
  */
 
 // We will need this when/if we begin to customize behavior based on
 // ITERATOR type.
-// template<typename ITERATOR> struct forall_u {};
+// template<typename ITERATOR> struct forall {};
 
 template<typename ITERATOR>
-struct forall_u {
+struct forall {
 
   /*!
-    Construct a forall_u instance.
+    Construct a forall instance.
 
     @param iterator A valid C++ RandomAccess iterator.
     @param name     An optional name that can be used for debugging.
    */
 
-  forall_u(ITERATOR iterator, std::string const & name = "")
+  forall(ITERATOR iterator, std::string const & name = "")
     : iterator_(iterator), name_(name) {}
 
   /*!
-    The functor_u type wraps FleCSI iterators that have indirection.
+    The functor type wraps FleCSI iterators that have indirection.
 
     @tparam LAMBDA The user-defined lambda function.
    */
 
   template<typename LAMBDA>
-  struct functor_u {
+  struct functor {
 
-    functor_u(ITERATOR iterator, LAMBDA lambda, std::string const & name)
+    functor(ITERATOR iterator, LAMBDA lambda, std::string const & name)
       : iterator_(iterator), lambda_(lambda), name_(name) {}
 
     void operator()(int64_t i) const {
@@ -123,7 +123,7 @@ private:
   ITERATOR iterator_;
   std::string & const name_;
 
-}; // struct forall_u
+}; // struct forall
 
 } // namespace execution
 } // namespace flecsi

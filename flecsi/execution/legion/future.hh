@@ -73,7 +73,7 @@ public:
 */
 
 template<typename RETURN, launch_type_t launch>
-struct legion_future_u {};
+struct legion_future {};
 
 /*! Partial specialization for the Legion:Future
 
@@ -83,9 +83,9 @@ struct legion_future_u {};
  */
 
 template<typename RETURN>
-struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
+struct legion_future<RETURN, launch_type_t::single> : public future_base_t {
 
-  legion_future_u(const legion_future_u & f) {
+  legion_future(const legion_future & f) {
     data_ = f.data_;
     initialized_ = f.initialized_;
     auto legion_runtime = Legion::Runtime::get_runtime();
@@ -101,7 +101,7 @@ struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
     @param legion_future The Legion future instance.
    */
 
-  legion_future_u(const Legion::Future & legion_future)
+  legion_future(const Legion::Future & legion_future)
     : legion_future_(legion_future) {}
 
   /*!
@@ -144,7 +144,7 @@ struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
     initialized_ = false;
   }
 
-  RETURN & operator=(legion_future_u const & f) {
+  RETURN & operator=(legion_future const & f) {
     return data_;
   }
 
@@ -157,7 +157,7 @@ struct legion_future_u<RETURN, launch_type_t::single> : public future_base_t {
   }
 
   friend std::ostream & operator<<(std::ostream & stream,
-    const legion_future_u & f) {
+    const legion_future & f) {
     stream << f.data_;
     return stream;
   } // switch
@@ -179,7 +179,7 @@ private:
  */
 
 template<>
-struct legion_future_u<void, launch_type_t::single> : public future_base_t {
+struct legion_future<void, launch_type_t::single> : public future_base_t {
 
   /*!
     Construct a future from a Legion future.
@@ -187,7 +187,7 @@ struct legion_future_u<void, launch_type_t::single> : public future_base_t {
     @param legion_future The Legion future instance.
    */
 
-  legion_future_u(const Legion::Future & legion_future)
+  legion_future(const Legion::Future & legion_future)
     : legion_future_(legion_future) {}
 
   /*!
@@ -224,7 +224,7 @@ private:
  */
 
 template<typename RETURN>
-struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
+struct legion_future<RETURN, launch_type_t::index> : public future_base_t {
 
   /*!
     Construct a future from a Legion future map.
@@ -232,7 +232,7 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
     @param legion_future The Legion FutureMap instance.
    */
 
-  legion_future_u(const Legion::FutureMap & legion_future)
+  legion_future(const Legion::FutureMap & legion_future)
     : legion_future_(legion_future) {}
 
   /*!
@@ -241,7 +241,7 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
    @param legion_future The Legion future instance.
   */
 
-  legion_future_u(const Legion::Future & legion_future) {
+  legion_future(const Legion::Future & legion_future) {
     legion_future_[0] = legion_future;
   }
 
@@ -286,7 +286,7 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
 private:
   Legion::FutureMap legion_future_;
 
-}; // struct legion_future_u
+}; // struct legion_future
 
 /*!
  Explicit specialization for index launch FutureMap and void.
@@ -297,7 +297,7 @@ private:
  */
 
 template<>
-struct legion_future_u<void, launch_type_t::index> : public future_base_t {
+struct legion_future<void, launch_type_t::index> : public future_base_t {
 
   /*!
       Construct a future from a Legion future map.
@@ -305,10 +305,10 @@ struct legion_future_u<void, launch_type_t::index> : public future_base_t {
       @param legion_future The Legion future instance.
      */
 
-  legion_future_u(const Legion::FutureMap & legion_future)
+  legion_future(const Legion::FutureMap & legion_future)
     : legion_future_(legion_future) {}
 
-  legion_future_u(const Legion::Future & legion_future) {
+  legion_future(const Legion::Future & legion_future) {
     legion_future_[0] = legion_future;
   }
 
@@ -340,7 +340,7 @@ private:
 }; // legion_future
 
 template<typename RETURN, launch_type_t launch>
-using flecsi_future = legion_future_u<RETURN, launch>;
+using flecsi_future = legion_future<RETURN, launch>;
 
 } // namespace execution
 } // namespace flecsi

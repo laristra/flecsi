@@ -21,6 +21,8 @@
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
+#include "flecsi/runtime/backend.hh"
+
 #include <hdf5.h>
 #include <legion.h>
 
@@ -459,15 +461,15 @@ struct legion_io_policy_t {
       utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
         flecsi_internal_string_hash("index_topology")>();
 
-    auto & flecsi_context = execution::context_t::instance();
-    data::legion::index_runtime_data_t & index_runtime_data =
+    auto & flecsi_context = runtime::context_t::instance();
+    data::index_topology::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     std::map<FieldID, std::string> field_string_map;
 
     std::vector<data::field_info_t> const & fid_vector =
       flecsi_context
-        .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+        .get_field_info_store(topology::id<topology::index_topology_t>(),
           data::storage_label_t::dense)
         .field_info();
     printf("add fid vector size %ld\n", fid_vector.size());
@@ -527,10 +529,10 @@ struct legion_io_policy_t {
 // Implementation of legion_io_policy_t::checkpoint_default_index_topology.
 //----------------------------------------------------------------------------//  
   void checkpoint_default_index_topology(legion_hdf5_t & hdf5_file) {
-    auto & flecsi_context = execution::context_t::instance();
+    auto & flecsi_context = runtime::context_t::instance();
     std::vector<data::field_info_t> const & fid_vector =
       flecsi_context
-        .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+        .get_field_info_store(topology::id<topology::index_topology_t>(),
           data::storage_label_t::dense)
         .field_info();
     printf("checkpoint fid vector size %ld\n", fid_vector.size());
@@ -539,7 +541,7 @@ struct legion_io_policy_t {
       utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
         flecsi_internal_string_hash("index_topology")>();
 
-    data::legion::index_runtime_data_t & index_runtime_data =
+    data::index_topology::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
@@ -565,10 +567,10 @@ struct legion_io_policy_t {
 //----------------------------------------------------------------------------//
   void checkpoint_default_index_topology_field(hdf5_t & hdf5_file, 
     const data::field_reference_t & fh) {
-    auto & flecsi_context = execution::context_t::instance();
+    auto & flecsi_context = runtime::context_t::instance();
     const data::field_info_t & fid =
       flecsi_context
-        .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+        .get_field_info_store(topology::id<topology::index_topology_t>(),
           data::storage_label_t::dense)
         .get_field_info(fh.identifier());
     printf("checkpoint fid %ld\n", fid.fid);
@@ -577,7 +579,7 @@ struct legion_io_policy_t {
       utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
         flecsi_internal_string_hash("index_topology")>();
 
-    data::legion::index_runtime_data_t & index_runtime_data =
+    data::index_topology::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
@@ -595,10 +597,10 @@ struct legion_io_policy_t {
 // Implementation of legion_io_policy_t::recover_default_index_topology.
 //----------------------------------------------------------------------------//  
   void recover_default_index_topology(legion_hdf5_t & hdf5_file) {
-    auto & flecsi_context = execution::context_t::instance();
+    auto & flecsi_context = runtime::context_t::instance();
     std::vector<data::field_info_t> const & fid_vector =
       flecsi_context
-        .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+        .get_field_info_store(topology::id<topology::index_topology_t>(),
           data::storage_label_t::dense)
         .field_info();
     printf("recover fid vector size %ld\n", fid_vector.size());
@@ -609,7 +611,7 @@ struct legion_io_policy_t {
       
         printf("idf %ld\n", identifier);
 
-    data::legion::index_runtime_data_t & index_runtime_data =
+    data::index_topology::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
@@ -633,10 +635,10 @@ struct legion_io_policy_t {
 //----------------------------------------------------------------------------//
   void recover_default_index_topology_field(hdf5_t & hdf5_file, 
     const data::field_reference_t & fh) {
-    auto & flecsi_context = execution::context_t::instance();
+    auto & flecsi_context = runtime::context_t::instance();
     const data::field_info_t & fid =
       flecsi_context
-        .get_field_info_store(topology::index_topology_t::type_identifier_hash,
+        .get_field_info_store(topology::id<topology::index_topology_t>(),
           data::storage_label_t::dense)
         .get_field_info(fh.identifier());
     printf("recover fid %ld\n", fid.fid);
@@ -645,7 +647,7 @@ struct legion_io_policy_t {
       utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
         flecsi_internal_string_hash("index_topology")>();
 
-    data::legion::index_runtime_data_t & index_runtime_data =
+    data::index_topology::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
@@ -692,15 +694,15 @@ struct legion_io_policy_t {
       dbs.detach_buffer(),
       task_argument.field_map_size);
 
-    execution::context_t & context_ = execution::context_t::instance();
+    runtime::context_t & context_ = runtime::context_t::instance();
     auto task_id = 0;
     if(attach_flag == true) {
       task_id =
-        context_.task_id<flecsi_internal_hash(checkpoint_with_attach_task)>();
+        execution::legion::task_id<flecsi_internal_hash(checkpoint_with_attach_task)>();
     }
     else {
       task_id =
-        context_.task_id<flecsi_internal_hash(checkpoint_without_attach_task)>();
+        execution::legion::task_id<flecsi_internal_hash(checkpoint_without_attach_task)>();
     }
 
     IndexLauncher checkpoint_launcher(task_id,
@@ -766,15 +768,15 @@ struct legion_io_policy_t {
       dbs.detach_buffer(),
       task_argument.field_map_size);
 
-    execution::context_t & context_ = execution::context_t::instance();
+    runtime::context_t & context_ = runtime::context_t::instance();
     auto task_id = 0;
     if(attach_flag == true) {
       task_id =
-        context_.task_id<flecsi_internal_hash(recover_with_attach_task)>();
+        execution::legion::task_id<flecsi_internal_hash(recover_with_attach_task)>();
     }
     else {
       task_id =
-        context_.task_id<flecsi_internal_hash(recover_without_attach_task)>();
+        execution::legion::task_id<flecsi_internal_hash(recover_without_attach_task)>();
     }
 
     IndexLauncher recover_launcher(task_id,

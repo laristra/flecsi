@@ -20,9 +20,10 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/runtime/backend.hh"
+#include "flecsi/topology/common/core.hh"
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/data/common/storage_classes.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
 #endif
@@ -48,8 +49,7 @@ using namespace flecsi::data;
   buffers.
  */
 
-struct bind_accessors_t
-  : public flecsi::utils::tuple_walker_u<bind_accessors_t> {
+struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
 
   /*!
     Construct an bind_accessors_t instance.
@@ -75,16 +75,16 @@ struct bind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(global_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
 
     Legion::Domain dom = legion_runtime_->get_index_space_domain(
       legion_context_, regions_[region].get_logical_region().get_index_space());
     Legion::Domain::DomainPointIterator itr(dom);
 
     const auto fid =
-      context_t::instance()
-        .get_field_info_store(
-          global_topology_t::type_identifier_hash, data::storage_label_t::dense)
+      runtime::context_t::instance()
+        .get_field_info_store(topology::id<topology::global_topology_t>(),
+          data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 
@@ -97,7 +97,7 @@ struct bind_accessors_t
 
     DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
 
-    global_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+    global_topo::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
 
     ++region;
   } // visit
@@ -107,16 +107,16 @@ struct bind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(index_topo::accessor<DATA_TYPE, PRIVILEGES> & accessor) {
 
     Legion::Domain dom = legion_runtime_->get_index_space_domain(
       legion_context_, regions_[region].get_logical_region().get_index_space());
     Legion::Domain::DomainPointIterator itr(dom);
 
     const auto fid =
-      context_t::instance()
-        .get_field_info_store(
-          index_topology_t::type_identifier_hash, data::storage_label_t::dense)
+      runtime::context_t::instance()
+        .get_field_info_store(topology::id<topology::index_topology_t>(),
+          data::storage_label_t::dense)
         .get_field_info(accessor.identifier())
         .fid;
 
@@ -128,7 +128,7 @@ struct bind_accessors_t
 
     DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
 
-    index_topology::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
+    index_topo::bind<DATA_TYPE, PRIVILEGES>(accessor, ac_ptr);
 
     ++region;
   } // visit
