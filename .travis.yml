@@ -51,14 +51,9 @@ jobs:
     - env: DISTRO=fedora_mpich RUNTIME=hpx BUILD_TYPE=Release
       compiler: clang
 
-    - env: DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
+    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-      compiler: clang
-
-    - env: DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora RUNTIME=npi BUILD_TYPE=Release
+    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
       compiler: clang
 
 compiler:
