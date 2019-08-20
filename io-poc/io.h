@@ -11,13 +11,16 @@
 #endif
 
 #include <io-poc/control/control.h>
-#include <unistd.h>
+
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 using namespace io_poc;
 
 int
 restart_dump(int argc, char ** argv) {
-  usleep(200000);
+  std::this_thread::sleep_for(std::chrono::microseconds(200));
   std::cout << "io: restart_dump" << std::endl;
   return 0;
 } // restart_dump
@@ -30,7 +33,7 @@ int
 output_final(int argc, char ** argv) {
 
 #if defined(RISTRA_UTILS_ENABLE_GRAPHVIZ)
-  usleep(200000);
+  std::this_thread::sleep_for(std::chrono::microseconds(200));
   std::cout << "finalize: output_final" << std::endl;
 
   int rank;

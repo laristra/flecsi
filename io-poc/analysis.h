@@ -1,13 +1,16 @@
 #pragma once
 
 #include <io-poc/control/control.h>
-#include <unistd.h>
+
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 using namespace io_poc;
 
 int
 poynting_flux(int argc, char ** argv) {
-  usleep(200000);
+  std::this_thread::sleep_for(std::chrono::microseconds(200));
   std::cout << "analyze: poynting_flux" << std::endl;
   return 0;
 } // poynting_flux
