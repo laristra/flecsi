@@ -317,7 +317,6 @@ canary:centOS_legion:
   variables:
     <<: *runtime_legion
     <<: *mpich
-  allow_failure: true 
 
 canary:centOS_hpx:
   extends: .canary
@@ -413,7 +412,6 @@ build:centOS_legion:
     <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *openmpi
-  allow_failure: true 
   script:
     - *build_script
     - *test_script
@@ -451,7 +449,6 @@ build:centOS_mpich_legion:
     <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *mpich
-  allow_failure: true 
   script:
     - *build_script
     - *test_script
