@@ -29,11 +29,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     ${io_HEADERS}
   )
 
-  set(io_SOURCES
-    legion/io_policy.cc
-    ${io_SOURCES}
-  )
-
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(io_HEADERS
