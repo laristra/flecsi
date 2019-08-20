@@ -66,7 +66,7 @@ index_driver(int argc, char ** argv) {
   execute<assign>(fh2);
   execute<assign>(fh3);
 
-  auto & flecsi_context = execution::context_t::instance();
+  auto & flecsi_context = runtime::context_t::instance();
   int my_rank = flecsi_context.process();
   int num_files = 4;
   io::io_interface_t cp_io;

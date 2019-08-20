@@ -32,6 +32,30 @@ namespace flecsi {
 namespace io {
   
 #define SERIALIZATION_BUFFER_SIZE 4096
+  
+void
+checkpoint_with_attach_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
+  
+void
+checkpoint_without_attach_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
+  
+void
+recover_with_attach_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
+  
+void
+recover_without_attach_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
 
 /*----------------------------------------------------------------------------*
   Argumemt of Legion checkpoint and recover tasks, not called by users.
@@ -696,13 +720,16 @@ struct legion_io_policy_t {
 
     runtime::context_t & context_ = runtime::context_t::instance();
     auto task_id = 0;
+    auto task_id_attach =
+      execution::legion::task_id<checkpoint_with_attach_task, loc | inner>;
+    auto task_id_without_attach =
+      execution::legion::task_id<checkpoint_without_attach_task, loc | leaf>;
+    
     if(attach_flag == true) {
-      task_id =
-        execution::legion::task_id<flecsi_internal_hash(checkpoint_with_attach_task)>();
+      task_id = task_id_attach;
     }
     else {
-      task_id =
-        execution::legion::task_id<flecsi_internal_hash(checkpoint_without_attach_task)>();
+      task_id = task_id_without_attach;
     }
 
     IndexLauncher checkpoint_launcher(task_id,
@@ -770,13 +797,16 @@ struct legion_io_policy_t {
 
     runtime::context_t & context_ = runtime::context_t::instance();
     auto task_id = 0;
+    auto task_id_attach =
+        execution::legion::task_id<recover_with_attach_task, loc | inner>;
+    auto task_id_without_attach =
+      execution::legion::task_id<recover_without_attach_task, loc | leaf>;
+    
     if(attach_flag == true) {
-      task_id =
-        execution::legion::task_id<flecsi_internal_hash(recover_with_attach_task)>();
+      task_id = task_id_attach;
     }
     else {
-      task_id =
-        execution::legion::task_id<flecsi_internal_hash(recover_without_attach_task)>();
+      task_id = task_id_without_attach;
     }
 
     IndexLauncher recover_launcher(task_id,

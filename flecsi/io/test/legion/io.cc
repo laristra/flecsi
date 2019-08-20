@@ -36,7 +36,7 @@ check() {
 } // check
 
 enum FieldIDs {
-  FID_X,
+  FID_X=0,
   FID_Y,
 };
 

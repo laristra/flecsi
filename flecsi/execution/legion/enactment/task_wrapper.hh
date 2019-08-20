@@ -103,6 +103,7 @@ detail::register_task() {
   registrar.add_constraint(Legion::ProcessorConstraint(kind));
   registrar.set_leaf(leaf_task(A));
   registrar.set_inner(inner_task(A));
+  std::cout<<"register task"<<name<<leaf_task(A)<<inner_task(A)<<std::endl;
   registrar.set_idempotent(idempotent_task(A));
 
   /*
