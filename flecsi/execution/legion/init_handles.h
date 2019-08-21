@@ -667,16 +667,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 #endif
     region += num_regions;
 
-    h.offsets = new offset_t[h.offsets_size];
-    size_t n = md->num_exclusive;
-    size_t off = 0;
-    for(size_t i = 0; i < n; ++i) {
-      int count = h.new_entries[i].size();
-      h.offsets[i].set_count(count);
-      h.offsets[i].set_offset(off);
-      off += count;
-    }
-
   } // handle
 
   template<typename T,
@@ -837,22 +827,10 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     }
 
     h.entries = reinterpret_cast<uint8_t *>(entries);
-    h.entries_ = entries;
 #else
     h.entries = reinterpret_cast<uint8_t *>(h.entries_data[0]);
-    h.entries_ = reinterpret_cast<value_t *>(h.entries_data[0]);
 #endif
     region += num_regions;
-
-    h.offsets = new offset_t[h.offsets_size];
-    h.offsets_ = h.offsets;
-    size_t n = md->num_exclusive;
-    size_t off = 0;
-    for(size_t i = 0; i < n; ++i) {
-      int count = h.new_entries_[i].size();
-      h.offsets[i].set_offset(off);
-      off += count;
-    }
 
   } // handle
 

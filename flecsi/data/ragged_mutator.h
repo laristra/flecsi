@@ -53,7 +53,6 @@ template<typename T>
 struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
                                     public ragged_mutator_base_t {
   using handle_t = mutator_handle_u<T>;
-  using offset_t = typename handle_t::offset_t;
   using value_t = T;
 
   using index_space_t =
@@ -71,12 +70,9 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(h_.new_entries_ && "uninitialized ragged_mutator");
     assert(index < h_.num_entries_);
 
-    size_t nnew = h_.new_count(index);
-    assert(ragged_index < nnew);
-
-    auto & overflow = h_.new_entries_[index];
-    assert(ragged_index < overflow.size());
-    return overflow[ragged_index];
+    auto & row = h_.new_entries_[index];
+    assert(ragged_index < row.size());
+    return row[ragged_index];
 
   } // operator ()
 
@@ -141,35 +137,32 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   void resize(size_t index, size_t size) {
     assert(index < h_.num_entries_);
 
-    assert(size <= h_.max_entries_per_index_ &&
-           "resize length exceeds max entries per index");
-
-    auto & overflow = h_.new_entries_[index];
-    overflow.resize(size);
+    auto & row = h_.new_entries_[index];
+    row.resize(size);
   } // resize
 
   void erase(size_t index, size_t ragged_index) {
     assert(index < h_.num_entries_);
 
-    auto & overflow = h_.new_entries_[index];
-    assert(ragged_index < overflow.size());
-    overflow.erase(overflow.begin() + ragged_index);
+    auto & row = h_.new_entries_[index];
+    assert(ragged_index < row.size());
+    row.erase(row.begin() + ragged_index);
   } // erase
 
   void push_back(size_t index, const T & value) {
     assert(index < h_.num_entries_);
 
-    auto & overflow = h_.new_entries_[index];
-    overflow.push_back(value);
+    auto & row = h_.new_entries_[index];
+    row.push_back(value);
   } // push_back
 
   // insert BEFORE ragged index
   T * insert(size_t index, size_t ragged_index, const T & value) {
     assert(index < h_.num_entries_);
 
-    auto & overflow = h_.new_entries_[index];
-    assert(ragged_index <= overflow.size());
-    auto itr = overflow.insert(overflow.begin() + ragged_index, value);
+    auto & row = h_.new_entries_[index];
+    assert(ragged_index <= row.size());
+    auto itr = row.insert(row.begin() + ragged_index, value);
     return &(*itr);
   } // insert
 

@@ -555,6 +555,8 @@ public:
           case sparse:
             if(fi.index_space == is.index_space_id) {
               if(utils::hash::is_internal(fi.key)) {
+                // CRF:  I don't think this is correct -
+                // but it also appears to be unused currently
                 allocator.allocate_field(fi.size, fi.fid);
               }
               else {

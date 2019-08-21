@@ -73,18 +73,8 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
   }
 
   void commit(bool read_only) {
-    if (!read_only) {
-      for(size_t index = 0; index < num_total_; ++index) {
-        offset_t & coi = offsets[index];
-        vector_t & ne = new_entries[index];
-        value_type * eptr = entries + coi.start();
-        const auto & row = new_entries[index];
-        size_t count = row.size();
 
-//        std::copy_n(row.begin(), count, eptr);
-        ne.tmpoffset = coi.start();
-      }
-    }
+    // no longer needed
 
   }
 

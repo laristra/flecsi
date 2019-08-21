@@ -156,7 +156,6 @@ struct accessor_u<data::sparse,
     auto & handle = base_t::handle;
     assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
 
-//    entry_value_t * end = start + oi.count();
     vector_t & row = handle.new_entries[index];
     auto start = row.begin();
     auto end = row.end();

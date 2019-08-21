@@ -48,9 +48,7 @@ public:
   static size_t serialize(const vector_t & val, void * buffer) {
     char * buf = (char *)buffer;
     int count = val.size();
-//    memcpy(buf, &count, sizeof(int));
-    int count2 = count | (val.tmpoffset << 16);
-    memcpy(buf, &count2, sizeof(int));
+    memcpy(buf, &count, sizeof(int));
     buf += sizeof(int);
     int s = count * sizeof(T);
     if (s && val.data) memcpy(buf, val.data, s);
@@ -61,13 +59,10 @@ public:
     const char * buf = (char *)buffer;
     int count;
     memcpy(&count, buf, sizeof(int));
-    int tmpoffset = count >> 16;
-    count &= 0xFFFF;
     buf += sizeof(int);
     // some C++ magic to construct object in uninitialized memory
     // CRF:  this assumes val is always uninitialized - need to verify
     new (&val) vector_t(count);
-    val.tmpoffset = tmpoffset;
     int s = count * sizeof(T);
     if (s && val.data) memcpy(val.data, buf, s);
     return s + sizeof(int);

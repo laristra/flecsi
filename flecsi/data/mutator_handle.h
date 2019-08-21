@@ -117,56 +117,9 @@ public:
 
     size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
 
-    value_t * entries = ci->entries[0];
-    offset_t * offsets = ci->offsets;
+    // no longer needed - but return a reasonable value just in case
 
-    value_t * cbuf = new value_t[num_exclusive_entries];
-
-    value_t * cptr = cbuf;
-    value_t * eptr = entries;
-
-    size_t offset = 0;
-
-    for(size_t index = 0; index < num_exclusive_; ++index) {
-      offset_t & coi = offsets[index];
-      vector_t & ne = new_entries_[index];
-
-      size_t count = new_count(index);
-      const auto & overflow = new_entries_[index];
-
-//      std::copy_n(overflow.begin(), count, cptr);
-      cptr += count;
-
-      offset += count;
-      ne.tmpoffset = offset;
-    }
-
-    size_t num_exclusive_filled = cptr - cbuf;
-
-    std::copy_n(cbuf, num_exclusive_entries, entries);
-    delete[] cbuf;
-
-    size_t start = num_exclusive_;
-    size_t end = start + pi_.count[1] + pi_.count[2];
-
-    for(size_t index = start; index < end; ++index) {
-      offset_t & coi = offsets[index];
-      vector_t & ne = new_entries_[index];
-
-      size_t count = new_count(index);
-      value_t * eptr = entries + coi.start();
-      const auto & overflow = new_entries_[index];
-
-//      std::copy_n(overflow.begin(), count, eptr);
-
-      ne.tmpoffset = coi.start();
-    } // for index
-
-    entries_ = nullptr;
-
-    offsets_ = nullptr;
-
-    return num_exclusive_filled;
+    return num_exclusive_entries;
   } // commit
 
   size_t num_exclusive() const {

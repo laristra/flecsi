@@ -70,10 +70,6 @@ struct finalize_handles_t
     auto & h = a.handle;
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 
-    h.commit(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro);
-
-    delete [] h.offsets;
-
 #ifndef MAPPER_COMPACTION
     std::memcpy(
       h.entries_data[0], h.entries, md->num_exclusive_filled * sizeof(value_t));
@@ -116,8 +112,6 @@ struct finalize_handles_t
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 
     md->num_exclusive_filled = h.commit(&ci);
-
-    delete [] h.offsets;
 
 #ifndef MAPPER_COMPACTION
     std::memcpy(
