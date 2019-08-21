@@ -17,10 +17,9 @@
   @file
 
   This file is really just a conduit to capture the different
-  specializations for data clients and storage classes.
+  specializations for accessors and topologies.
  */
 
-#include <flecsi/data/common/storage_classes.hh>
 #include <flecsi/data/legion/topologies.hh>
 
 namespace flecsi {

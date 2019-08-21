@@ -28,6 +28,7 @@
 
 namespace flecsi::runtime {
 
+using namespace boost::program_options;
 using execution::legion::task_id;
 
 int
@@ -273,7 +274,8 @@ context_t::initialize_global_topology() {
    */
 
   auto & field_info_store = context_t::instance().get_field_info_store(
-    id<global_topology_t>(), flecsi::data::storage_label_t::dense);
+    topology::id<topology::global_topology_t>(),
+    flecsi::data::storage_label_t::dense);
 
   for(auto const & fi : field_info_store.field_info()) {
     allocator.allocate_field(fi.type_size, fi.fid);

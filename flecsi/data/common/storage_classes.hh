@@ -207,9 +207,7 @@ struct dense_accessor;
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 void
-bind(dense_accessor<DATA_TYPE, PRIVILEGES> & a,
-  size_t size,
-  DATA_TYPE * data) {
+bind(dense_accessor<DATA_TYPE, PRIVILEGES> & a, size_t size, DATA_TYPE * data) {
   a.size_ = size;
   a.data_ = data;
 } // bind
