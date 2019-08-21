@@ -182,6 +182,21 @@ struct topology_instance<topology::unstructured_mesh_topology<POLICY_TYPE>> {
   using coloring_t =
     typename topology::unstructured_mesh_topology_base_t::coloring_t;
 
+#if 0
+  struct entity_walker_t : public utils::tuple_walker<index_walker_t> {
+
+    entity_walker_t(coloring_t const & coloring) : coloring_(coloring) {}
+
+    template<typename ENTITY_TYPE>
+    void visit_type() {
+    } // visit_type
+
+  private:
+    coloring_t coloring_;
+
+  }; // struct entity_walker_t
+#endif
+
   static void create(topology_reference_t const & topology_reference,
     coloring_t const & coloring) {
 
@@ -190,7 +205,7 @@ struct topology_instance<topology::unstructured_mesh_topology<POLICY_TYPE>> {
     auto & flecsi_context = runtime::context_t::instance();
 
     auto & dense_field_info_store = flecsi_context.get_field_info_store(
-      topology::id<topology_t>, storage_label_t::dense);
+      topology::id<topology_t>(), storage_label_t::dense);
 
 #if 0
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
