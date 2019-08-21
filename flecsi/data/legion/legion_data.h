@@ -24,6 +24,8 @@
 #include <flecsi/coloring/adjacency_types.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
+#include <flecsi/data/common/serdez.h>
+#include <flecsi/data/common/simple_vector.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/internal_index_space.h>
 #include <flecsi/execution/legion/helper.h>
@@ -556,8 +558,9 @@ public:
                 allocator.allocate_field(fi.size, fi.fid);
               }
               else {
-                // this is a sparse offset
-                allocator.allocate_field(sizeof(utils::offset_t), fi.fid);
+                // CRF hack - use lowest bits of name_hash as serdez id
+                int sid = fi.name_hash & 0x7FFFFFFF;
+                allocator.allocate_field(sizeof(data::simple_vector_u<uint8_t>), fi.fid, sid);
               }
             }
             break;

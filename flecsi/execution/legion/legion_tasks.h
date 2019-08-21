@@ -303,7 +303,7 @@ flecsi_internal_legion_task(owner_pos_compaction_task, void) {
  */
 
 flecsi_internal_legion_task(ghost_copy_task, void) {
-  using offset_t = data::sparse_data_offset_t;
+  using vector_t = data::simple_vector_u<uint8_t>;
 
   const int my_color = runtime->find_local_MPI_rank();
 
@@ -401,10 +401,10 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
 
       const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
-        owner_offset_acc(regions[0], fid, sizeof(offset_t));
+        owner_offset_acc(regions[0], fid, sizeof(vector_t));
       const Legion::FieldAccessor<READ_WRITE, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
-        ghost_offset_acc(regions[1], fid, sizeof(offset_t));
+        ghost_offset_acc(regions[1], fid, sizeof(vector_t));
       const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         owner_acc(regions[2], fid, field_info.size);
@@ -430,13 +430,13 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
         auto & ghost_ptr = itr.p;
         LegionRuntime::Arrays::Point<2> owner_location =
           position_ref_acc.read(ghost_ptr);
-        offset_t * ghost_start_and_count_location =
-          reinterpret_cast<offset_t *>(ghost_offset_acc.ptr(itr.p));
-        const offset_t * owner_start_and_count_location =
-          reinterpret_cast<const offset_t *>(owner_offset_acc.ptr(
+        vector_t * ghost_start_and_count_location =
+          reinterpret_cast<vector_t *>(ghost_offset_acc.ptr(itr.p));
+        const vector_t * owner_start_and_count_location =
+          reinterpret_cast<const vector_t *>(owner_offset_acc.ptr(
             Legion::DomainPoint::from_point<2>(owner_location)));
-        ghost_start_and_count_location->set_count(
-          owner_start_and_count_location->count());
+        memcpy(ghost_start_and_count_location,
+               owner_start_and_count_location, sizeof(vector_t));
 
       } // for ghost_domain
     } // for fids
@@ -445,7 +445,7 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
 } // ghost_copy_task
 
 flecsi_internal_legion_task(sparse_set_owner_position_task, void) {
-  using offset_t = data::sparse_data_offset_t;
+  using vector_t = data::simple_vector_u<uint8_t>;
 
   const int my_color = runtime->find_local_MPI_rank();
 
@@ -482,9 +482,9 @@ flecsi_internal_legion_task(sparse_set_owner_position_task, void) {
 
     Legion::FieldID fid = *(task->regions[1].privilege_fields.begin());
 
-    const Legion::FieldAccessor<READ_ONLY, offset_t, 2, Legion::coord_t,
-      Realm::AffineAccessor<offset_t, 2, Legion::coord_t>>
-      owner_offset_acc(regions[1], fid, sizeof(offset_t));
+    const Legion::FieldAccessor<READ_ONLY, vector_t, 2, Legion::coord_t,
+      Realm::AffineAccessor<vector_t, 2, Legion::coord_t>>
+      owner_offset_acc(regions[1], fid, sizeof(vector_t));
 
     Legion::FieldAccessor<READ_WRITE, LegionRuntime::Arrays::Point<2>, 2,
       Legion::coord_t,
@@ -498,14 +498,14 @@ flecsi_internal_legion_task(sparse_set_owner_position_task, void) {
     for(Legion::Domain::DomainPointIterator itr(ghost_domain); itr; itr++) {
       LegionRuntime::Arrays::Point<2> owner_location =
         position_ref_acc.read(itr.p);
-      const offset_t * owner_start_and_count_location =
-        reinterpret_cast<const offset_t *>(owner_offset_acc.ptr(
+      const vector_t * owner_start_and_count_location =
+        reinterpret_cast<const vector_t *>(owner_offset_acc.ptr(
           Legion::DomainPoint::from_point<2>(owner_location)));
 
       for(size_t count = 0; count < max_entries_per_index; count++) {
         LegionRuntime::Arrays::Point<2> owner_point =
           LegionRuntime::Arrays::make_point(
-            owner_location[0], owner_start_and_count_location->start() + count);
+            owner_location[0], owner_start_and_count_location->tmpoffset + count);
         owner_points.push_back(owner_point);
       } // for
     } // for

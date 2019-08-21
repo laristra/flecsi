@@ -536,6 +536,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     constexpr size_t num_regions = 3;
 
     using value_t = T;
+    using vector_t = data::simple_vector_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
@@ -582,14 +583,15 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::IndexSpace is = lr.get_index_space();
 
       auto ac =
-        offsets_prs[r].get_field_accessor(h.fid).template typeify<offset_t>();
+        offsets_prs[r].get_field_accessor(h.fid).template typeify<vector_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
       LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
-      offsets_data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+      // CRF - this probably should go away entirely
+      offsets_data[r] = (offset_t *) ac.template raw_rect_ptr<2>(dr, sr, bo);
       offsets_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.offsets_size += offsets_sizes[r];
     } // for
@@ -613,12 +615,12 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     Legion::LogicalRegion lr_s = regions[region].get_logical_region();
     Legion::IndexSpace is_s = lr_s.get_index_space();
     auto ac =
-      regions[region].get_field_accessor(h.fid).template typeify<offset_t>();
+      regions[region].get_field_accessor(h.fid).template typeify<vector_t>();
     Legion::Domain domain_s = runtime->get_index_space_domain(context, is_s);
     LegionRuntime::Arrays::Rect<2> dr = domain_s.get_rect<2>();
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
-    h.offsets = ac.template raw_rect_ptr<2>(dr, sr, bo);
+    h.new_entries = ac.template raw_rect_ptr<2>(dr, sr, bo);
 
 #endif
 
@@ -665,12 +667,14 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 #endif
     region += num_regions;
 
-    for(size_t e = 0; e < h.num_total_; ++e) {
-      int start = h.offsets[e].start();
-      int count = h.offsets[e].count();
-      auto & entry = h.new_entries[e];
-      entry.resize(count);
-      std::copy_n(h.entries + start, count, entry.begin());
+    h.offsets = new offset_t[h.offsets_size];
+    size_t n = md->num_exclusive;
+    size_t off = 0;
+    for(size_t i = 0; i < n; ++i) {
+      int count = h.new_entries[i].size();
+      h.offsets[i].set_count(count);
+      h.offsets[i].set_offset(off);
+      off += count;
     }
 
   } // handle
@@ -695,6 +699,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     constexpr size_t num_regions = 3;
 
     using value_t = T;
+    using vector_t = data::simple_vector_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
     using offset_t = data::sparse_data_offset_t;
 
@@ -743,15 +748,16 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::IndexSpace is = lr.get_index_space();
 
       auto ac =
-        offsets_prs[r].get_field_accessor(h.fid).template typeify<offset_t>();
+        offsets_prs[r].get_field_accessor(h.fid).template typeify<vector_t>();
 
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
 
       LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
+      // CRF - can this go away?
       h.offsets_data[r] = offsets_data[r] =
-        ac.template raw_rect_ptr<2>(dr, sr, bo);
+        (offset_t *) ac.template raw_rect_ptr<2>(dr, sr, bo);
       offsets_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.offsets_size += offsets_sizes[r];
     } // for
@@ -781,21 +787,12 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     Legion::LogicalRegion lr_s = regions[region].get_logical_region();
     Legion::IndexSpace is_s = lr_s.get_index_space();
     auto ac =
-      regions[region].get_field_accessor(h.fid).template typeify<offset_t>();
+      regions[region].get_field_accessor(h.fid).template typeify<vector_t>();
     Legion::Domain domain_s = runtime->get_index_space_domain(context, is_s);
     LegionRuntime::Arrays::Rect<2> dr = domain_s.get_rect<2>();
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
-    h.offsets = ac.template raw_rect_ptr<2>(dr, sr, bo);
-
-    if(!md->initialized) {
-      size_t n = md->num_shared + md->num_ghost;
-
-      for(size_t i = 0; i < n; ++i) {
-        h.offsets[md->num_exclusive + i].set_offset(
-          h.reserve + i * md->max_entries_per_index);
-      }
-    }
+    h.new_entries_ = ac.template raw_rect_ptr<2>(dr, sr, bo);
 
 #endif
 
@@ -847,15 +844,14 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 #endif
     region += num_regions;
 
+    h.offsets = new offset_t[h.offsets_size];
     h.offsets_ = h.offsets;
-
-    for(size_t e = 0; e < h.num_entries_; ++e) {
-      int start = h.offsets_[e].start();
-      int count = h.offsets_[e].count();
-      auto & entry = h.new_entries_[e];
-      entry.resize(count);
-      std::copy_n(h.entries_ + start, count, entry.begin());
-      h.offsets_[e].set_count(0);
+    size_t n = md->num_exclusive;
+    size_t off = 0;
+    for(size_t i = 0; i < n; ++i) {
+      int count = h.new_entries_[i].size();
+      h.offsets[i].set_offset(off);
+      off += count;
     }
 
   } // handle

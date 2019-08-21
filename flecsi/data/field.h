@@ -15,7 +15,10 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/registration_wrapper.h>
+#include <flecsi/data/common/serdez.h>
+#include <flecsi/data/common/simple_vector.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/utils/hash.h>
 
@@ -87,6 +90,19 @@ struct field_interface_u {
         return false;
       } // if
     } // for
+
+    // CRF:  this works for legion only - fix for mpi
+    if constexpr (STORAGE_CLASS == ragged || STORAGE_CLASS == sparse) {
+      using namespace Legion;
+      // CRF hack - for now, use lowest bits of name_hash as serdez id
+      int sid = NAME_HASH & 0x7FFFFFFF;
+      if constexpr (STORAGE_CLASS == sparse) {
+        Runtime::register_custom_serdez_op<serdez_u<simple_vector_u<sparse_entry_value_u<DATA_TYPE>>>>(sid);
+      }
+      else {
+        Runtime::register_custom_serdez_op<serdez_u<simple_vector_u<DATA_TYPE>>>(sid);
+      }
+    }  // if
 
     return true;
   } // register_field

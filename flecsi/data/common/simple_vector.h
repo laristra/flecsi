@@ -114,6 +114,8 @@ struct simple_vector_u {
   uint32_t count = 0;
   uint32_t capacity = 0;
   T* data = nullptr;
+  // CRF temp
+  uint64_t tmpoffset = 0;
 
 };  // simple_vector_u
 

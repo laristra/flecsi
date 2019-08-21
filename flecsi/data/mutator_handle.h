@@ -110,7 +110,6 @@ public:
   }
 
   void init() {
-    new_entries_ = new vector_t[num_entries_];
   }
 
   size_t commit(commit_info_t * ci) {
@@ -130,16 +129,16 @@ public:
 
     for(size_t index = 0; index < num_exclusive_; ++index) {
       offset_t & coi = offsets[index];
+      vector_t & ne = new_entries_[index];
 
       size_t count = new_count(index);
       const auto & overflow = new_entries_[index];
 
-      std::copy_n(overflow.begin(), count, cptr);
+//      std::copy_n(overflow.begin(), count, cptr);
       cptr += count;
 
-      coi.set_offset(offset);
-      coi.set_count(count);
       offset += count;
+      ne.tmpoffset = offset;
     }
 
     size_t num_exclusive_filled = cptr - cbuf;
@@ -152,22 +151,20 @@ public:
 
     for(size_t index = start; index < end; ++index) {
       offset_t & coi = offsets[index];
+      vector_t & ne = new_entries_[index];
 
       size_t count = new_count(index);
       value_t * eptr = entries + coi.start();
       const auto & overflow = new_entries_[index];
 
-      std::copy_n(overflow.begin(), count, eptr);
+//      std::copy_n(overflow.begin(), count, eptr);
 
-      coi.set_count(count);
+      ne.tmpoffset = coi.start();
     } // for index
 
     entries_ = nullptr;
 
     offsets_ = nullptr;
-
-    delete [] new_entries_;
-    new_entries_ = nullptr;
 
     return num_exclusive_filled;
   } // commit
