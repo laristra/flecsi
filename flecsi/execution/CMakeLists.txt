@@ -19,7 +19,6 @@
 
 set(execution_HEADERS
   common/command_line_options.hh
-  common/function_handle.hh
   common/launch.hh
   common/task_attributes.hh
   execution.hh

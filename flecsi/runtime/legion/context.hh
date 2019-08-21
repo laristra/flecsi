@@ -42,12 +42,10 @@
 #include <mpi.h>
 
 #include <map>
+#include <string_view>
 #include <unordered_map>
 
 namespace flecsi::runtime {
-
-using namespace flecsi::data;
-using namespace boost::program_options;
 
 const size_t FLECSI_TOP_LEVEL_TASK_ID = 0;
 const size_t FLECSI_MAPPER_FORCE_RANK_MATCH = 0x00001000;
@@ -94,7 +92,7 @@ struct context_t : context {
     Documentation for this interface is in the top-level context type.
    */
 
-  int start(int argc, char ** argv, variables_map & vm);
+  int start(int argc, char ** argv, boost::program_options::variables_map & vm);
 
   /*
     Documentation for this interface is in the top-level context type.
@@ -412,10 +410,10 @@ private:
     Runtime data.
    *--------------------------------------------------------------------------*/
 
-  global_topology::runtime_data_t global_topology_instance_;
-  std::unordered_map<size_t, index_topology::runtime_data_t>
+  data::global_topo::runtime_data_t global_topology_instance_;
+  std::unordered_map<size_t, data::index_topo::runtime_data_t>
     index_topology_instances_;
-  std::unordered_map<size_t, unstructured_mesh::runtime_data_t>
+  std::unordered_map<size_t, data::unstructured_mesh::runtime_data_t>
     unstructured_mesh_topology_instances_;
 
   size_t process_ = std::numeric_limits<size_t>::max();

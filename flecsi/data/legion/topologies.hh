@@ -35,8 +35,6 @@ namespace data {
 // FIXME: get rid of this namespace
 namespace legion {
 
-using namespace topology;
-
 template<typename TOPOLOGY_TYPE>
 struct topology_instance;
 
@@ -45,12 +43,13 @@ struct topology_instance;
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_instance<index_topology_t> {
+struct topology_instance<topology::index_topology_t> {
 
-  using topology_reference_t = topology_reference<index_topology_t>;
+  using topology_t = topology::index_topology_t;
+  using topology_reference_t = topology_reference<topology_t>;
 
   static void create(topology_reference_t const & topology_reference,
-    index_topology_t::coloring_t const & coloring) {
+    topology_t::coloring_t const & coloring) {
 
     {
       flog_tag_guard(topologies);
@@ -134,10 +133,11 @@ struct topology_instance<index_topology_t> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance<ntree_topology<POLICY_TYPE>> {
+struct topology_instance<topology::ntree_topology<POLICY_TYPE>> {
 
-  using topology_reference_t = topology_reference<ntree_topology<POLICY_TYPE>>;
-  using coloring_t = typename ntree_topology<POLICY_TYPE>::coloring_t;
+  using topology_t = topology::ntree_topology<POLICY_TYPE>;
+  using topology_reference_t = topology_reference<topology_t>;
+  using coloring_t = typename topology_t::coloring_t;
 
   static void create(topology_reference_t const & topology_reference,
     coloring_t const & coloring) {} // create
@@ -151,9 +151,10 @@ struct topology_instance<ntree_topology<POLICY_TYPE>> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance<set_topology<POLICY_TYPE>> {
+struct topology_instance<topology::set_topology<POLICY_TYPE>> {
 
-  using topology_reference_t = topology_reference<set_topology<POLICY_TYPE>>;
+  using topology_t = topology::set_topology<POLICY_TYPE>;
+  using topology_reference_t = topology_reference<topology_t>;
 
 }; // set_topology specialization
 
@@ -162,10 +163,10 @@ struct topology_instance<set_topology<POLICY_TYPE>> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance<structured_mesh_topology<POLICY_TYPE>> {
+struct topology_instance<topology::structured_mesh_topology<POLICY_TYPE>> {
 
-  using topology_reference_t =
-    topology_reference<structured_mesh_topology<POLICY_TYPE>>;
+  using topology_t = topology::structured_mesh_topology<POLICY_TYPE>;
+  using topology_reference_t = topology_reference<topology_t>;
 
 }; // structured_mesh_topology specialization
 
@@ -174,7 +175,7 @@ struct topology_instance<structured_mesh_topology<POLICY_TYPE>> {
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_instance<unstructured_mesh_topology<POLICY_TYPE>> {
+struct topology_instance<topology::unstructured_mesh_topology<POLICY_TYPE>> {
 
   using topology_t = topology::unstructured_mesh_topology<POLICY_TYPE>;
   using topology_reference_t = topology_reference<topology_t>;
@@ -217,10 +218,10 @@ struct topology_instance<unstructured_mesh_topology<POLICY_TYPE>> {
     } // for
 
     auto & ragged_field_info_store = flecsi_context.get_field_info_store(
-      /* unstructured_mesh_topology<POLICY_TYPE> */, storage_label_t::ragged);
+      /* topology_t */, storage_label_t::ragged);
 
     auto & sparse_field_info_store = flecsi_context.get_field_info_store(
-      /* unstructured_mesh_topology<POLICY_TYPE> */, storage_label_t::sparse);
+      /* topology_t */, storage_label_t::sparse);
 
 #endif
   } // create

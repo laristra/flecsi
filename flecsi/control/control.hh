@@ -195,15 +195,14 @@ private:
 #define flecsi_register_control_options(control_type)                          \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  using namespace boost::program_options;                                      \
-                                                                               \
-  inline void flecsi_control_add_options(options_description & desc) {         \
+  inline void flecsi_control_add_options(                                      \
+    boost::program_options::options_description & desc) {                      \
     desc.add_options()(                                                        \
       "control-model", "Output the current control model and exit.");          \
   }                                                                            \
                                                                                \
   inline int flecsi_control_initialize(                                        \
-    int argc, char ** argv, variables_map & vm) {                              \
+    int argc, char ** argv, boost::program_options::variables_map & vm) {      \
     if(vm.count("control-model")) {                                            \
       flecsi::utils::graphviz_t gv;                                            \
       control_type::instance().write(gv);                                      \
