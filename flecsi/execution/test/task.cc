@@ -30,6 +30,23 @@ simple(TYPE arg) {
   flog(info) << "arg(" << arg << ")\n";
 } // simple
 
+template<class T>
+void
+seq(const T & s) {
+  flog_tag_guard(task);
+  [&s](auto && log) {
+    bool first = true;
+    for(auto & x : s) {
+      if(first)
+        first = false;
+      else
+        log << ',';
+      log << x;
+    }
+    log << ")\n";
+  }(flog_info("s(")); // keep temporary alive throughout
+}
+
 } // namespace hydro
 
 int
@@ -41,6 +58,8 @@ test_driver(int argc, char ** argv) {
   execute<hydro::simple<double>>(5.3);
   execute<hydro::simple<const float &>>(4.4);
   execute<hydro::simple<const double &>>(3.5);
+  using V = std::vector<std::string>;
+  execute<hydro::seq<V>>(V{"Elementary", " Dear Data"});
 
   return FTEST_RESULT();
 }

@@ -14,9 +14,13 @@
 #pragma once
 
 #include <cstddef>
+#include <cstring> // memcpy
+#include <map>
+#include <set>
 #include <sstream>
 #include <tuple>
 #include <type_traits>
+#include <unordered_map>
 #include <utility> // declval
 #include <vector>
 
@@ -183,6 +187,24 @@ T serial_get1(const std::byte * p) { // for a single object
   return serial_get<T>(p);
 }
 
+namespace detail {
+template<class T>
+struct serial_container {
+  template<class P>
+  static void put(P & p, const T & c) {
+    serial_put(p, c.size());
+    for(auto & t : c)
+      serial_put(p, t);
+  }
+  static T get(const std::byte *& p) {
+    T ret;
+    for(auto n = serial_get<typename T::size_type>(p); n--;)
+      ret.insert(serial_get<typename T::value_type>(p));
+    return ret;
+  }
+};
+} // namespace detail
+
 template<class T>
 constexpr bool memcpyable_v =
   std::is_default_constructible_v<T> && std::is_trivially_move_assignable_v<T>;
@@ -202,7 +224,20 @@ struct serial<T, std::enable_if_t<memcpyable_v<T>>> {
   }
 };
 // To allow convenient serial_put(std::tie(...)), it is part of the interface
-// that tuple elements are just concatenated.
+// that pair and tuple elements are just concatenated.
+template<class T, class U>
+struct serial<std::pair<T, U>,
+  std::enable_if_t<!memcpyable_v<std::pair<T, U>>>> {
+  using type = std::pair<T, U>;
+  template<class P>
+  static void put(P & p, const type & v) {
+    serial_put(p, v.first);
+    serial_put(p, v.second);
+  }
+  static type get(const std::byte *& p) {
+    return {serial_get<T>(p), serial_get<U>(p)};
+  }
+};
 template<class... TT>
 struct serial<std::tuple<TT...>,
   std::enable_if_t<!memcpyable_v<std::tuple<TT...>>>> {
@@ -213,6 +248,46 @@ struct serial<std::tuple<TT...>,
   }
   static type get(const std::byte *& p) {
     return type{serial_get<TT>(p)...};
+  }
+};
+template<class T>
+struct serial<std::vector<T>> {
+  using type = std::vector<T>;
+  template<class P>
+  static void put(P & p, const type & v) {
+    serial_put(p, v.size());
+    for(auto & t : v)
+      serial_put(p, t);
+  }
+  static type get(const std::byte *& p) {
+    auto n = serial_get<typename type::size_type>(p);
+    type ret;
+    ret.reserve(n);
+    while(n--)
+      ret.push_back(serial_get<T>(p));
+    return ret;
+  }
+};
+template<class T>
+struct serial<std::set<T>> : detail::serial_container<std::set<T>> {};
+template<class K, class V>
+struct serial<std::map<K, V>> : detail::serial_container<std::map<K, V>> {};
+template<class K, class V>
+struct serial<std::unordered_map<K, V>>
+  : detail::serial_container<std::unordered_map<K, V>> {};
+template<>
+struct serial<std::string> {
+  template<class P>
+  static void put(P & p, const std::string & s) {
+    const auto n = s.size();
+    serial_put(p, n);
+    mempcpy(p, s.data(), n);
+  }
+  static std::string get(const std::byte *& p) {
+    const auto n = serial_get<std::string::size_type>(p);
+    const auto d = p;
+    p += n;
+    return {reinterpret_cast<const char *>(d), n};
   }
 };
 
