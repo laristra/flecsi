@@ -37,21 +37,21 @@ struct core<T, std::enable_if_t<std::is_base_of_v<index_topology_t, T>>> {
   using type = index_topology_t;
 };
 template<class T>
-struct core<T, std::void_t<utils::base_specialization_t<ntree_topology, T>>> {
+struct core<T, utils::voided<utils::base_specialization_t<ntree_topology, T>>> {
   using type = utils::base_specialization_t<ntree_topology, T>;
 };
 template<class T>
-struct core<T, std::void_t<utils::base_specialization_t<set_topology, T>>> {
+struct core<T, utils::voided<utils::base_specialization_t<set_topology, T>>> {
   using type = utils::base_specialization_t<set_topology, T>;
 };
 template<class T>
 struct core<T,
-  std::void_t<utils::base_specialization_t<structured_mesh_topology, T>>> {
+  utils::voided<utils::base_specialization_t<structured_mesh_topology, T>>> {
   using type = utils::base_specialization_t<structured_mesh_topology, T>;
 };
 template<class T>
 struct core<T,
-  std::void_t<utils::base_specialization_t<unstructured_mesh_topology, T>>> {
+  utils::voided<utils::base_specialization_t<unstructured_mesh_topology, T>>> {
   using type = utils::base_specialization_t<unstructured_mesh_topology, T>;
 };
 

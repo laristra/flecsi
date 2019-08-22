@@ -23,8 +23,6 @@
 #include <boost/program_options.hpp>
 #endif
 
-using namespace boost::program_options;
-
 #if defined(FLECSI_RUNTIME_DEBUG)
 #include <iostream>
 #endif
@@ -49,15 +47,18 @@ enum exit_mode_t : size_t {
   option_exit
 }; // enum exit_mode_t
 
+using driver_function_t =
+  std::function<int(int, char **, boost::program_options::variables_map &)>;
+
 /*!
   Type to define runtime handlers.
  */
 
 struct runtime_handler_t {
-  std::function<int(int, char **, variables_map &)> initialize;
+  driver_function_t initialize;
   std::function<int(int, char **, exit_mode_t)> finalize;
-  std::function<void(options_description &)> add_options =
-    [](options_description &) {};
+  std::function<void(boost::program_options::options_description &)>
+    add_options = [](boost::program_options::options_description &) {};
 }; // struct runtime_handler_t
 
 /*!
@@ -81,7 +82,6 @@ struct runtime_t {
     return program_;
   }
 
-  using driver_function_t = std::function<int(int, char **, variables_map &)>;
   using output_function_t = std::function<bool()>;
 
   bool register_driver(driver_function_t const & driver) {
@@ -137,7 +137,7 @@ struct runtime_t {
     Invoke runtime options callbacks.
    */
 
-  void add_options(options_description & desc) {
+  void add_options(boost::program_options::options_description & desc) {
     runtime_function();
     for(auto r : handlers_) {
       r.add_options(desc);
@@ -148,7 +148,9 @@ struct runtime_t {
     Invoke runtime intiailzation callbacks.
    */
 
-  int initialize_runtimes(int argc, char ** argv, variables_map & vm) {
+  int initialize_runtimes(int argc,
+    char ** argv,
+    boost::program_options::variables_map & vm) {
     runtime_function();
     int result{0};
 

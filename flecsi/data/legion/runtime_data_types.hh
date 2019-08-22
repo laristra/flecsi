@@ -36,7 +36,7 @@ namespace data {
   Global Topology.
  *----------------------------------------------------------------------------*/
 
-namespace global_topology {
+namespace global_topo {
 
 struct runtime_data_t {
   size_t index_space_id;
@@ -45,13 +45,13 @@ struct runtime_data_t {
   Legion::LogicalRegion logical_region;
 }; // struct runtime_data_t
 
-} // namespace global_topology
+} // namespace global_topo
 
 /*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/
 
-namespace index_topology {
+namespace index_topo {
 
 struct runtime_data_t {
   size_t colors;
@@ -62,7 +62,7 @@ struct runtime_data_t {
   Legion::LogicalPartition color_partition;
 }; // struct runtime_data_t
 
-} // namespace index_topology
+} // namespace index_topo
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.
