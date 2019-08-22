@@ -486,7 +486,7 @@ struct legion_io_policy_t {
         flecsi_internal_string_hash("index_topology")>();
 
     auto & flecsi_context = runtime::context_t::instance();
-    data::index_topology::runtime_data_t & index_runtime_data =
+    data::index_topo::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     std::map<FieldID, std::string> field_string_map;
@@ -565,7 +565,7 @@ struct legion_io_policy_t {
       utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
         flecsi_internal_string_hash("index_topology")>();
 
-    data::index_topology::runtime_data_t & index_runtime_data =
+    data::index_topo::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
@@ -603,7 +603,7 @@ struct legion_io_policy_t {
       utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
         flecsi_internal_string_hash("index_topology")>();
 
-    data::index_topology::runtime_data_t & index_runtime_data =
+    data::index_topo::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
@@ -635,7 +635,7 @@ struct legion_io_policy_t {
       
         printf("idf %ld\n", identifier);
 
-    data::index_topology::runtime_data_t & index_runtime_data =
+    data::index_topo::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
@@ -671,7 +671,7 @@ struct legion_io_policy_t {
       utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
         flecsi_internal_string_hash("index_topology")>();
 
-    data::index_topology::runtime_data_t & index_runtime_data =
+    data::index_topo::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
     legion_hdf5_region_t cp_test_data(index_runtime_data.logical_region,
