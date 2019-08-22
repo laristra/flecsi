@@ -35,7 +35,7 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12.4',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
-    depends_on('cinch@1.01:', type='build')
+    #depends_on('cinch@1.01:', type='build')
     depends_on('mpi')
     depends_on('legion@ctrl-rep +shared +mpi +hdf5', when='backend=legion')
     depends_on('boost@1.59.0: cxxstd=11 +program_options')

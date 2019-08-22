@@ -48,9 +48,6 @@ before_script:
   #- spack load -r flecsi-deps%gcc@7.3.0 ~graphviz ^${MPI_PACKAGE} || /bin/true
   - source ${SPACK_ROOT}/ci_env_setup/flecsi-deps-${MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}.sh || /bin/true
   - module list
-  - echo ${CC}
-  - echo ${CXX}
-  - echo ${MPI_CXX}
 
 ##########################
 # Build Matrix Variables #
@@ -311,6 +308,7 @@ canary:centOS_mpi:
   <<: *shell_def
   variables:
     <<: *runtime_mpi
+    <<: *compiler_gcc
     <<: *mpich
 
 canary:centOS_legion:
@@ -318,6 +316,7 @@ canary:centOS_legion:
   <<: *shell_def
   variables:
     <<: *runtime_legion
+    <<: *compiler_gcc
     <<: *mpich
 
 canary:centOS_hpx:
@@ -325,6 +324,7 @@ canary:centOS_hpx:
   <<: *shell_def
   variables:
     <<: *runtime_hpx
+    <<: *compiler_gcc
     <<: *mpich
   allow_failure: true 
 
