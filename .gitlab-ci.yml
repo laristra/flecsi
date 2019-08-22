@@ -47,7 +47,7 @@ before_script:
   - module unload gcc
   #- source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   #- spack load -r flecsi-deps%gcc@7.3.0 ~graphviz ^${MPI_PACKAGE} || /bin/true
-  - source ${CI_PROJECT_DIR}/build/flecsi-deps-${MPI_PACKAGE}.sh || /bin/true
+  - source ${SPACK_ROOT}/ci_env_setup/flecsi-deps-${MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}.sh || /bin/true
   - module list
 
 ##########################
@@ -133,7 +133,7 @@ before_script:
   <<: *job_def
   stage: Env
   script: &env_script
-    - mkdir -p build
+    - mkdir -p ${SPACK_ROOT}/ci_env_setup
     - cd ${CI_PROJECT_DIR}/build/
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
@@ -153,8 +153,8 @@ before_script:
       spack repo list;
       spack install flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi;
       spack install flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich;
-      spack build-env --dump ${CI_PROJECT_DIR}/build/flecsi-deps-openmpi.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi";
-      spack build-env --dump ${CI_PROJECT_DIR}/build/flecsi-deps-mpich.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich";
+      spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-openmpi-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi";
+      spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-mpich${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich";
       ) 200>${DEPS_LOCK}
 
 ###############
