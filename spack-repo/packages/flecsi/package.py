@@ -4,11 +4,10 @@
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
 
-import os
 from spack import *
 
 
-class FlecsiDeps(Package):
+class Flecsi(CMakePackage):
     '''
        FleCSI is a compile-time configurable framework designed to support
        multi-physics application development. As such, FleCSI attempts to
