@@ -48,6 +48,35 @@ flog_register_tag(execution);
 
 namespace flecsi {
 
+namespace detail {
+// Remove const from under a reference, if there is one.
+template<class T>
+struct nonconst_ref {
+  using type = T;
+};
+template<class T>
+struct nonconst_ref<const T &> {
+  using type = T &;
+};
+template<class T>
+using nonconst_ref_t = typename nonconst_ref<T>::type;
+
+// Serialize a tuple of converted arguments (or references to existing
+// arguments where possible).  Note that is_constructible_v<const
+// float&,const double&> is true, so we have to check
+// is_constructible_v<float&,double&> instead.
+template<class... PP, class... AA>
+auto
+serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
+  static_assert((std::is_const_v<std::remove_reference_t<const PP>> && ...),
+    "Tasks cannot accept non-const references");
+  return utils::serial_put(std::tuple<std::conditional_t<
+      std::is_constructible_v<nonconst_ref_t<PP> &, nonconst_ref_t<AA>>,
+      const PP &,
+      PP>...>(std::forward<AA>(aa)...));
+}
+} // namespace detail
+
 template<auto & F,
   size_t LAUNCH_DOMAIN,
   size_t REDUCTION,
@@ -64,10 +93,6 @@ reduce(ARGS &&... args) {
 
   // This will guard the entire method
   flog_tag_guard(execution);
-
-  // Make a tuple from the arugments passed by the user
-  // NB: conversions like field_reference -> accessor happen here
-  ARG_TUPLE task_args = std::forward_as_tuple(args...);
 
   // Get the FleCSI runtime context
   auto & flecsi_context = runtime::context_t::instance();
@@ -143,7 +168,9 @@ reduce(ARGS &&... args) {
   ++flecsi_context.tasks_executed();
 
   legion::init_args_t init_args(legion_runtime, legion_context, domain_size);
-  init_args.walk(task_args);
+  init_args.walk<ARG_TUPLE>(args...);
+  auto buf = detail::serial_arguments(
+    static_cast<ARG_TUPLE *>(nullptr), std::forward<ARGS>(args)...);
 
   //------------------------------------------------------------------------//
   // Single launch
@@ -163,7 +190,7 @@ reduce(ARGS &&... args) {
       flog_devel(info) << "Executing single task" << std::endl;
     }
 
-    TaskLauncher launcher(task, TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+    TaskLauncher launcher(task, TaskArgument(buf.data(), buf.size()));
 
     for(auto & req : init_args.region_requirements()) {
       launcher.add_region_requirement(req);
@@ -205,10 +232,8 @@ reduce(ARGS &&... args) {
     Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
     Legion::ArgumentMap arg_map;
-    Legion::IndexLauncher launcher(task,
-      launch_domain,
-      TaskArgument(&task_args, sizeof(ARG_TUPLE)),
-      arg_map);
+    Legion::IndexLauncher launcher(
+      task, launch_domain, TaskArgument(buf.data(), buf.size()), arg_map);
 
     for(auto & req : init_args.region_requirements()) {
       launcher.add_region_requirement(req);

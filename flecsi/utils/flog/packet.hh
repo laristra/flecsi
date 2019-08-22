@@ -19,7 +19,7 @@
 
 #if defined(FLECSI_ENABLE_FLOG)
 
-#include <flecsi/utils/serialize.hh>
+#include <boost/serialization/serialization.hpp> // access
 
 #if defined(FLOG_ENABLE_MPI)
 #include <mpi.h>

@@ -38,6 +38,9 @@ test_driver(int argc, char ** argv) {
   FTEST();
 
   execute<hydro::simple<float>>(6.2);
+  execute<hydro::simple<double>>(5.3);
+  execute<hydro::simple<const float &>>(4.4);
+  execute<hydro::simple<const double &>>(3.5);
 
   return FTEST_RESULT();
 }

@@ -12,6 +12,7 @@
    All rights reserved.
                                                                               */
 
+#include "../serialize.hh"
 #include <flecsi/utils/flog/packet.hh>
 #include <flecsi/utils/flog/state.hh>
 #include <flecsi/utils/flog/utils.hh>

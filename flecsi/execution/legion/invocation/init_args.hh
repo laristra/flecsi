@@ -53,7 +53,7 @@ namespace legion {
   @ingroup execution
 */
 
-struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
+struct init_args_t {
 
   /*!
     Construct an init_args_t instance.
@@ -94,6 +94,11 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
     return NO_ACCESS;
   } // privilege_mode
 
+  template<class P, class... AA>
+  void walk(const AA &... aa) {
+    walk(static_cast<P *>(nullptr), aa...);
+  }
+
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and client
     type, potentially for every permutation thereof.
@@ -105,14 +110,15 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-    topology::global_topology_t,
-    DATA_TYPE,
-    PRIVILEGES> & accessor) {
+               topology::global_topology_t,
+               DATA_TYPE,
+               PRIVILEGES> * /* parameter */,
+    const data::field_reference<DATA_TYPE> & ref) {
     auto & c = runtime::context_t::instance();
     const auto fid =
       c.get_field_info_store(topology::id<topology::global_topology_t>(),
          data::storage_label_t::dense)
-        .get_field_info(accessor.identifier())
+        .get_field_info(ref.identifier())
         .fid;
 
     Legion::LogicalRegion region = c.global_topology_instance().logical_region;
@@ -145,20 +151,22 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::
-      accessor<data::dense, topology::index_topology_t, DATA_TYPE, PRIVILEGES> &
-        accessor) {
+  void visit(data::accessor<data::dense,
+               topology::index_topology_t,
+               DATA_TYPE,
+               PRIVILEGES> * /* parameter */,
+    const data::field_reference<DATA_TYPE> & ref) {
     auto & flecsi_context = runtime::context_t::instance();
 
     const auto fid =
       flecsi_context
         .get_field_info_store(topology::id<topology::index_topology_t>(),
           data::storage_label_t::dense)
-        .get_field_info(accessor.identifier())
+        .get_field_info(ref.identifier())
         .fid;
 
     auto instance_data =
-      flecsi_context.index_topology_instance(accessor.topology_identifier());
+      flecsi_context.index_topology_instance(ref.topology_identifier());
 
     flog_assert(instance_data.colors = domain_,
       "attempting to pass index topology reference with size "
@@ -186,8 +194,9 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
   using ntree_accessor =
     data::topology_accessor<topology::ntree_topology<POLICY_TYPE>, PRIVILEGES>;
 
-  template<typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
+  template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
+  void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<T> & ref) {} // visit
 
   /*--------------------------------------------------------------------------*
     Set Topology
@@ -197,8 +206,9 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
   using set_accessor =
     data::topology_accessor<topology::set_topology<POLICY_TYPE>, PRIVILEGES>;
 
-  template<typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(set_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {} // visit
+  template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
+  void visit(set_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<T> & ref) {} // visit
 
   /*--------------------------------------------------------------------------*
     Structured Mesh Topology
@@ -209,18 +219,19 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
     data::topology_accessor<topology::structured_mesh_topology<POLICY_TYPE>,
       PRIVILEGES>;
 
-  template<typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> & accessor) {
-  } // visit
+  template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
+  void visit(
+    structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<T> & ref) {} // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
    *--------------------------------------------------------------------------*/
 
-  template<typename DATA_TYPE>
+  template<class P, typename DATA_TYPE>
   static typename std::enable_if_t<
     !std::is_base_of_v<data::data_reference_base_t, DATA_TYPE>>
-  visit(DATA_TYPE &) {
+  visit(P *, DATA_TYPE &) {
     {
       flog_tag_guard(init_args);
       flog_devel(info) << "Skipping argument with type "
@@ -229,6 +240,11 @@ struct init_args_t : public flecsi::utils::tuple_walker<init_args_t> {
   } // visit
 
 private:
+  template<class... PP, class... AA>
+  void walk(std::tuple<PP...> * /* to deduce PP */, const AA &... aa) {
+    (visit(static_cast<std::decay_t<PP> *>(nullptr), aa), ...);
+  }
+
   Legion::Runtime * runtime_;
   Legion::Context & context_;
   size_t domain_;
