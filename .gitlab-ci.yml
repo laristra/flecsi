@@ -153,7 +153,7 @@ before_script:
       spack install flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi;
       spack install flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich;
       spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-openmpi-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi";
-      spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-mpich${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich";
+      spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-mpich-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich";
       ) 200>${DEPS_LOCK}
 
 ###############
