@@ -40,7 +40,7 @@ options, but is not necessary for a particular build:
   We currently require CMake version 3.12 or greater.
 
 * **Boost** |br|
-  We require *program_options*, *serialization*, and *stacktrace*.
+  We require *program_options* and *stacktrace*.
 
 * **Doxygen** |br|
   Doxygen is only required to build the interface documentation.

@@ -35,11 +35,10 @@ send_to_one() {
                     ? new int[flog_t::instance().processes()]
                     : nullptr;
 
-    binary_serializer_t serializer;
-    serializer << flog_t::instance().packets();
-    serializer.flush();
+    std::vector<std::byte> data = serial_put(flog_t::instance().packets()),
+                           buffer;
 
-    int bytes = serializer.bytes();
+    const int bytes = data.size();
 
     MPI_Gather(&bytes, 1, MPI_INT, sizes, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
@@ -53,14 +52,14 @@ send_to_one() {
         offsets[p] = sum;
         sum += sizes[p];
       } // for
+
+      buffer.resize(sum);
     } // if
 
-    char * buffer = flog_t::instance().process() == 0 ? new char[sum] : nullptr;
-
-    MPI_Gatherv(serializer.data(),
+    MPI_Gatherv(data.data(),
       bytes,
       MPI_CHAR,
-      buffer,
+      buffer.data(),
       sizes,
       offsets,
       MPI_CHAR,
@@ -73,23 +72,10 @@ send_to_one() {
 
       for(size_t p{0}; p < flog_t::instance().processes(); ++p) {
 
-        if(flog_t::instance().one_process()) {
-          if(p == flog_t::instance().output_process()) {
-            binary_deserializer_t deserializer(&buffer[offsets[p]], sizes[p]);
-            std::vector<packet_t> remote_packets;
-            deserializer >> remote_packets;
-
-            std::vector<packet_t> & packets = flog_t::instance().packets();
-
-            packets.reserve(packets.size() + remote_packets.size());
-            packets.insert(
-              packets.end(), remote_packets.begin(), remote_packets.end());
-          } // if
-        }
-        else {
-          binary_deserializer_t deserializer(&buffer[offsets[p]], sizes[p]);
-          std::vector<packet_t> remote_packets;
-          deserializer >> remote_packets;
+        if(!flog_t::instance().one_process() ||
+           p == flog_t::instance().output_process()) {
+          const auto remote_packets =
+            serial_get1<std::vector<packet_t>>(buffer.data() + offsets[p]);
 
           std::vector<packet_t> & packets = flog_t::instance().packets();
 
@@ -101,7 +87,6 @@ send_to_one() {
 
       delete[] sizes;
       delete[] offsets;
-      delete[] buffer;
     }
     else {
       flog_t::instance().packets().clear();

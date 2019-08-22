@@ -23,7 +23,6 @@ if(ENABLE_BOOST)
     atomic
     filesystem
     regex
-    serialization
     system)
 
   include_directories(${Boost_INCLUDE_DIRS})

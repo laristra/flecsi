@@ -19,8 +19,6 @@
 
 #if defined(FLECSI_ENABLE_FLOG)
 
-#include <boost/serialization/serialization.hpp> // access
-
 #if defined(FLOG_ENABLE_MPI)
 #include <mpi.h>
 #endif
@@ -115,13 +113,6 @@ struct packet_t {
   } // operator <
 
 private:
-  friend class boost::serialization::access;
-
-  template<typename ARCHIVE_TYPE>
-  void serialize(ARCHIVE_TYPE & ar, const unsigned int version) {
-    ar & bytes_;
-  } // serialize
-
   std::array<char, packet_bytes> bytes_;
 
 }; // packet_t
