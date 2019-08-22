@@ -52,6 +52,7 @@ before_script:
   - module list
   - echo ${CC}
   - echo ${CXX}
+  - echo ${MPI_CXX}
 
 ##########################
 # Build Matrix Variables #
