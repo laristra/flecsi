@@ -50,6 +50,8 @@ before_script:
   #- spack load -r flecsi-deps%gcc@7.3.0 ~graphviz ^${MPI_PACKAGE} || /bin/true
   - source ${SPACK_ROOT}/ci_env_setup/flecsi-deps-${MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}.sh || /bin/true
   - module list
+  - echo ${CC}
+  - echo ${CXX}
 
 ##########################
 # Build Matrix Variables #
