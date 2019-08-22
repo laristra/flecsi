@@ -309,7 +309,7 @@ reduce(ARGS &&... args) {
     }
   } // if constexpr
 
-  return 0;
+  //return 0;
 } // execute_task
 
 namespace execution {

@@ -93,6 +93,7 @@ set(data_SOURCES
 ftest_add_unit(global
   SOURCES
     test/global.cc
+  THREADS 2
 )
 
 ftest_add_unit(identifiers
@@ -103,6 +104,7 @@ ftest_add_unit(identifiers
 ftest_add_unit(index
   SOURCES
     test/index.cc
+  THREADS 2
 )
 
 ftest_add_unit(privilege

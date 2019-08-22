@@ -28,7 +28,7 @@ const index_field_t pressure_field;
 const auto pressure = pressure_field(flecsi_index_topology);
 
 void
-assign(index_field_t::accessor<rw> p) {
+assign(index_field_t::accessor<wo> p) {
   flog(info) << "assign on " << color() << std::endl;
   p = color();
 } // assign
