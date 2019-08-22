@@ -26,8 +26,6 @@
 #include <hdf5.h>
 #include <legion.h>
 
-using namespace Legion;
-
 namespace flecsi {
 namespace io {
   
@@ -70,36 +68,36 @@ struct checkpoint_task_args_s {
   HDF5 descriptor of one logical region, not called by users.
  *----------------------------------------------------------------------------*/
 struct legion_hdf5_region_t {
-  legion_hdf5_region_t(LogicalRegion lr,
-    LogicalPartition lp,
+  legion_hdf5_region_t(Legion::LogicalRegion lr,
+    Legion::LogicalPartition lp,
     std::string lr_name,
-    std::map<FieldID, std::string> & field_string_map)
+    std::map<Legion::FieldID, std::string> & field_string_map)
     : logical_region(lr), logical_partition(lp), logical_region_name(lr_name),
         field_string_map(field_string_map) {    
-    Runtime * runtime = Runtime::get_runtime();
-    Context ctx = Runtime::get_context();
+    Legion::Runtime * runtime = Legion::Runtime::get_runtime();
+    Legion::Context ctx = Legion::Runtime::get_context();
     if(lr.get_dim() == 1) {
-      Domain domain = runtime->get_index_space_domain(ctx, lr.get_index_space());
+      Legion::Domain domain = runtime->get_index_space_domain(ctx, lr.get_index_space());
       dim_size[0] = domain.get_volume();
       printf("ID logical region size %ld\n", dim_size[0]);
     }
     else {
-      Domain domain = runtime->get_index_space_domain(ctx, lr.get_index_space());
+      Legion::Domain domain = runtime->get_index_space_domain(ctx, lr.get_index_space());
       dim_size[0] = domain.get_volume();
       printf("2D ID logical region size %ld\n", dim_size[0]);
     }
   }
 
-  legion_hdf5_region_t(LogicalRegion lr,
-    LogicalPartition lp,
+  legion_hdf5_region_t(Legion::LogicalRegion lr,
+    Legion::LogicalPartition lp,
     std::string lr_name)
     : logical_region(lr), logical_partition(lp), logical_region_name(lr_name) {
   }
 
-  LogicalRegion logical_region;
-  LogicalPartition logical_partition;
+  Legion::LogicalRegion logical_region;
+  Legion::LogicalPartition logical_partition;
   std::string logical_region_name;
-  std::map<FieldID, std::string> field_string_map;
+  std::map<Legion::FieldID, std::string> field_string_map;
   size_t dim_size[3];
 };
 
@@ -272,10 +270,10 @@ struct legion_hdf5_t {
 //----------------------------------------------------------------------------//
 // Implementation of legion_hdf5_t::add_logical_region.
 //----------------------------------------------------------------------------//    
-  void add_logical_region(LogicalRegion lr,
-    LogicalPartition lp,
+  void add_logical_region(Legion::LogicalRegion lr,
+    Legion::LogicalPartition lp,
     std::string lr_name,
-    std::map<FieldID, std::string> field_string_map) {
+    std::map<Legion::FieldID, std::string> field_string_map) {
     legion_hdf5_region_t h5_lr(lr, lp, lr_name, field_string_map);
     hdf5_region_vector.push_back(h5_lr);    
   }
@@ -294,8 +292,8 @@ struct legion_hdf5_t {
     assert(hdf5_region_vector.size() > 0);
     assert(hdf5_file_id >= 0);
 
-    Runtime * runtime = Runtime::get_runtime();
-    Context ctx = Runtime::get_context();
+    Legion::Runtime * runtime = Legion::Runtime::get_runtime();
+    Legion::Context ctx = Legion::Runtime::get_context();
 
     for(std::vector<legion_hdf5_region_t>::iterator lr_it =
           hdf5_region_vector.begin();
@@ -303,18 +301,18 @@ struct legion_hdf5_t {
         ++lr_it) {
       hid_t dataspace_id = -1;
       if((*lr_it).logical_region.get_index_space().get_dim() == 1) {
-        LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+        Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
           ctx, (*lr_it).logical_partition, file_idx);
-        Domain domain =
+        Legion::Domain domain =
           runtime->get_index_space_domain(ctx, sub_lr.get_index_space());
         hsize_t dims[1];
         dims[0] = domain.get_volume();
         dataspace_id = H5Screate_simple(1, dims, NULL);
       }
       else {
-        LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
+        Legion::LogicalRegion sub_lr = runtime->get_logical_subregion_by_color(
           ctx, (*lr_it).logical_partition, file_idx);
-        Domain domain =
+        Legion::Domain domain =
           runtime->get_index_space_domain(ctx, sub_lr.get_index_space());
         hsize_t dims[1];
         dims[0] = domain.get_volume();
@@ -334,7 +332,7 @@ struct legion_hdf5_t {
         return false;
       }
   #endif
-      for(std::map<FieldID, std::string>::iterator it =
+      for(std::map<Legion::FieldID, std::string>::iterator it =
             (*lr_it).field_string_map.begin();
           it != (*lr_it).field_string_map.end();
           ++it) {
@@ -375,7 +373,7 @@ struct legion_hdf5_t {
 struct legion_io_policy_t {
   using hdf5_t = legion_hdf5_t;
   using hdf5_region_t = legion_hdf5_region_t;
-  using launch_space_t = IndexSpace;
+  using launch_space_t = Legion::IndexSpace;
   using field_reference_t = data::field_reference_t;
 
 //----------------------------------------------------------------------------//
@@ -391,12 +389,12 @@ struct legion_io_policy_t {
 // Implementation of legion_io_policy_t::~legion_io_policy_t.
 //----------------------------------------------------------------------------//   
   ~legion_io_policy_t() {
-    Runtime * runtime = Runtime::get_runtime();
-    Context ctx = Runtime::get_context();
-    for (std::map<size_t, IndexSpace>::iterator it = file_is_map.begin();
+    Legion::Runtime * runtime = Legion::Runtime::get_runtime();
+    Legion::Context ctx = Legion::Runtime::get_context();
+    for (std::map<size_t, Legion::IndexSpace>::iterator it = file_is_map.begin();
          it != file_is_map.end(); 
          ++it) {
-      if(it->second != IndexSpace::NO_SPACE) {
+      if(it->second != Legion::IndexSpace::NO_SPACE) {
         printf("clean up default_index_topology_file_is hash %ld\n", it->first);
         runtime->destroy_index_space(ctx, it->second);
       }   
@@ -489,7 +487,7 @@ struct legion_io_policy_t {
     data::index_topo::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
 
-    std::map<FieldID, std::string> field_string_map;
+    std::map<Legion::FieldID, std::string> field_string_map;
 
     std::vector<data::field_info_t> const & fid_vector =
       flecsi_context
@@ -505,10 +503,10 @@ struct legion_io_policy_t {
       printf("add fid %ld\n", (*it).fid);
     }
 
-    Runtime * runtime = Runtime::get_runtime();
-    Context ctx = Runtime::get_context();
-    Rect<1> file_color_bounds(0, hdf5_file.num_files - 1);
-    IndexSpace default_index_topology_file_is =
+    Legion::Runtime * runtime = Legion::Runtime::get_runtime();
+    Legion::Context ctx = Legion::Runtime::get_context();
+    Legion::Rect<1> file_color_bounds(0, hdf5_file.num_files - 1);
+    Legion::IndexSpace default_index_topology_file_is =
       runtime->create_index_space(ctx, file_color_bounds);
 #if 0 
     default_index_topology_file_ip = runtime->create_pending_partition(ctx, index_runtime_data.index_space, default_index_topology_file_is);
@@ -523,10 +521,10 @@ struct legion_io_policy_t {
       runtime->create_index_space_union(ctx, default_index_topology_file_ip, point, subspaces);
     }
 #else
-    IndexPartition default_index_topology_file_ip = runtime->create_equal_partition(
+    Legion::IndexPartition default_index_topology_file_ip = runtime->create_equal_partition(
       ctx, index_runtime_data.index_space, default_index_topology_file_is);
 #endif
-    LogicalPartition default_index_topology_file_lp = runtime->get_logical_partition(
+    Legion::LogicalPartition default_index_topology_file_lp = runtime->get_logical_partition(
       ctx, index_runtime_data.logical_region, default_index_topology_file_ip);
     hdf5_file.add_logical_region(index_runtime_data.logical_region,
       default_index_topology_file_lp,
@@ -689,15 +687,15 @@ struct legion_io_policy_t {
 // Implementation of legion_io_policy_t::checkpoint_data.
 //----------------------------------------------------------------------------//  
   void checkpoint_data(legion_hdf5_t & hdf5_file, 
-    IndexSpace launch_space, 
+    Legion::IndexSpace launch_space, 
     std::vector<legion_hdf5_region_t> & hdf5_region_vector, 
     bool attach_flag) {
     std::string file_name = hdf5_file.file_name;
     
-    Runtime * runtime = Runtime::get_runtime();
-    Context ctx = Runtime::get_context();
+    Legion::Runtime * runtime = Legion::Runtime::get_runtime();
+    Legion::Context ctx = Legion::Runtime::get_context();
 
-    std::vector<std::map<FieldID, std::string>> field_string_map_vector;
+    std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
     for(std::vector<legion_hdf5_region_t>::iterator it =
           hdf5_region_vector.begin();
         it != hdf5_region_vector.end();
@@ -732,10 +730,10 @@ struct legion_io_policy_t {
       task_id = task_id_without_attach;
     }
 
-    IndexLauncher checkpoint_launcher(task_id,
+    Legion::IndexLauncher checkpoint_launcher(task_id,
       launch_space,
-      TaskArgument(&task_argument, sizeof(task_argument)),
-      ArgumentMap());
+      Legion::TaskArgument(&task_argument, sizeof(task_argument)),
+      Legion::ArgumentMap());
 
     int idx = 0;
     for(std::vector<legion_hdf5_region_t>::iterator it =
@@ -743,21 +741,21 @@ struct legion_io_policy_t {
         it != hdf5_region_vector.end();
         ++it) {
       checkpoint_launcher.add_region_requirement(
-        RegionRequirement((*it).logical_partition,
+        Legion::RegionRequirement((*it).logical_partition,
           0 /*projection ID*/,
           READ_ONLY,
           EXCLUSIVE,
           (*it).logical_region));
 
-      std::map<FieldID, std::string> & field_string_map = (*it).field_string_map;
-      for(std::map<FieldID, std::string>::iterator it = field_string_map.begin();
+      std::map<Legion::FieldID, std::string> & field_string_map = (*it).field_string_map;
+      for(std::map<Legion::FieldID, std::string>::iterator it = field_string_map.begin();
           it != field_string_map.end();
           ++it) {
         checkpoint_launcher.region_requirements[idx].add_field(it->first);
       }
       idx++;
     }
-    FutureMap fumap = runtime->execute_index_space(ctx, checkpoint_launcher);
+    Legion::FutureMap fumap = runtime->execute_index_space(ctx, checkpoint_launcher);
     fumap.wait_all_results();
   } // checkpoint_data
 
@@ -765,16 +763,16 @@ struct legion_io_policy_t {
 // Implementation of legion_io_policy_t::recover_data.
 //----------------------------------------------------------------------------//  
   void recover_data(legion_hdf5_t & hdf5_file, 
-    IndexSpace launch_space, 
+    Legion::IndexSpace launch_space, 
     std::vector<legion_hdf5_region_t> & hdf5_region_vector, 
     bool attach_flag) {
     std::string file_name = hdf5_file.file_name;
     printf("Start recover, %s\n", file_name.c_str());
 
-    Runtime * runtime = Runtime::get_runtime();
-    Context ctx = Runtime::get_context();
+    Legion::Runtime * runtime = Legion::Runtime::get_runtime();
+    Legion::Context ctx = Legion::Runtime::get_context();
 
-    std::vector<std::map<FieldID, std::string>> field_string_map_vector;
+    std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
     for(std::vector<legion_hdf5_region_t>::iterator it =
           hdf5_region_vector.begin();
         it != hdf5_region_vector.end();
@@ -809,24 +807,24 @@ struct legion_io_policy_t {
       task_id = task_id_without_attach;
     }
 
-    IndexLauncher recover_launcher(task_id,
+    Legion::IndexLauncher recover_launcher(task_id,
       launch_space,
-      TaskArgument(&task_argument, sizeof(task_argument)),
-      ArgumentMap());
+      Legion::TaskArgument(&task_argument, sizeof(task_argument)),
+      Legion::ArgumentMap());
     int idx = 0;
     for(std::vector<legion_hdf5_region_t>::iterator it =
           hdf5_region_vector.begin();
         it != hdf5_region_vector.end();
         ++it) {
       recover_launcher.add_region_requirement(
-        RegionRequirement((*it).logical_partition,
+        Legion::RegionRequirement((*it).logical_partition,
           0 /*projection ID*/,
           WRITE_DISCARD,
           EXCLUSIVE,
           (*it).logical_region));
 
-      std::map<FieldID, std::string> & field_string_map = (*it).field_string_map;
-      for(std::map<FieldID, std::string>::iterator it = field_string_map.begin();
+      std::map<Legion::FieldID, std::string> & field_string_map = (*it).field_string_map;
+      for(std::map<Legion::FieldID, std::string>::iterator it = field_string_map.begin();
           it != field_string_map.end();
           ++it) {
         recover_launcher.region_requirements[idx].add_field(it->first);
@@ -834,14 +832,14 @@ struct legion_io_policy_t {
       idx++;
     }
 
-    FutureMap fumap = runtime->execute_index_space(ctx, recover_launcher);
+    Legion::FutureMap fumap = runtime->execute_index_space(ctx, recover_launcher);
     fumap.wait_all_results();
   } // recover_data
   
 private:  
-  std::map<size_t, IndexSpace> file_is_map;
-  std::map<size_t, IndexPartition> file_ip_map;
-  std::map<size_t, LogicalPartition> file_lp_map;
+  std::map<size_t, Legion::IndexSpace> file_is_map;
+  std::map<size_t, Legion::IndexPartition> file_ip_map;
+  std::map<size_t, Legion::LogicalPartition> file_lp_map;
   
 }; // struct legion_io_policy_t
 
@@ -855,7 +853,7 @@ checkpoint_with_attach_task(const Legion::Task * task,
 
   const int point = task->index_point.point_data[0];
 
-  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
+  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
   Realm::Serialization::FixedBufferDeserializer fdb(
     task_arg.field_map_serial, task_arg.field_map_size);
   bool ok = fdb >> field_string_map_vector;
@@ -868,16 +866,16 @@ checkpoint_with_attach_task(const Legion::Task * task,
   char * file_name = const_cast<char *>(fname.c_str());
 
   for(unsigned int rid = 0; rid < regions.size(); rid++) {
-    PhysicalRegion cp_pr;
-    LogicalRegion input_lr = regions[rid].get_logical_region();
-    LogicalRegion cp_lr = runtime->create_logical_region(
+    Legion::PhysicalRegion cp_pr;
+    Legion::LogicalRegion input_lr = regions[rid].get_logical_region();
+    Legion::LogicalRegion cp_lr = runtime->create_logical_region(
       ctx, input_lr.get_index_space(), input_lr.get_field_space());
 
-    AttachLauncher hdf5_attach_launcher(EXTERNAL_HDF5_FILE, cp_lr, cp_lr);
-    std::map<FieldID, const char *> field_map;
-    std::set<FieldID> field_set = task->regions[rid].privilege_fields;
-    std::map<FieldID, std::string>::iterator map_it;
-    for(std::set<FieldID>::iterator it = field_set.begin();
+    Legion::AttachLauncher hdf5_attach_launcher(EXTERNAL_HDF5_FILE, cp_lr, cp_lr);
+    std::map<Legion::FieldID, const char *> field_map;
+    std::set<Legion::FieldID> field_set = task->regions[rid].privilege_fields;
+    std::map<Legion::FieldID, std::string>::iterator map_it;
+    for(std::set<Legion::FieldID>::iterator it = field_set.begin();
         it != field_set.end();
         ++it) {
       map_it = field_string_map_vector[rid].find(*it);
@@ -900,11 +898,11 @@ checkpoint_with_attach_task(const Legion::Task * task,
     cp_pr = runtime->attach_external_resource(ctx, hdf5_attach_launcher);
     // cp_pr.wait_until_valid();
 
-    CopyLauncher copy_launcher1;
+    Legion::CopyLauncher copy_launcher1;
     copy_launcher1.add_copy_requirements(
-      RegionRequirement(input_lr, READ_ONLY, EXCLUSIVE, input_lr),
-      RegionRequirement(cp_lr, WRITE_DISCARD, EXCLUSIVE, cp_lr));
-    for(std::set<FieldID>::iterator it = field_set.begin();
+      Legion::RegionRequirement(input_lr, READ_ONLY, EXCLUSIVE, input_lr),
+      Legion::RegionRequirement(cp_lr, WRITE_DISCARD, EXCLUSIVE, cp_lr));
+    for(std::set<Legion::FieldID>::iterator it = field_set.begin();
         it != field_set.end();
         ++it) {
       copy_launcher1.add_src_field(0, *it);
@@ -912,7 +910,7 @@ checkpoint_with_attach_task(const Legion::Task * task,
     }
     runtime->issue_copy_operation(ctx, copy_launcher1);
 
-    Future fu = runtime->detach_external_resource(ctx, cp_pr, true);
+    Legion::Future fu = runtime->detach_external_resource(ctx, cp_pr, true);
     fu.wait();
     runtime->destroy_logical_region(ctx, cp_lr);
   }
@@ -928,7 +926,7 @@ checkpoint_without_attach_task(const Legion::Task * task,
 
   const int point = task->index_point.point_data[0];
 
-  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
+  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
   Realm::Serialization::FixedBufferDeserializer fdb(
     task_arg.field_map_serial, task_arg.field_map_size);
   bool ok = fdb >> field_string_map_vector;
@@ -948,22 +946,22 @@ checkpoint_without_attach_task(const Legion::Task * task,
   }
 
   for(unsigned int rid = 0; rid < regions.size(); rid++) {
-    LogicalRegion input_lr = regions[rid].get_logical_region();
+    Legion::LogicalRegion input_lr = regions[rid].get_logical_region();
 
-    std::set<FieldID> field_set = task->regions[rid].privilege_fields;
-    std::map<FieldID, std::string>::iterator map_it;
-    for(std::set<FieldID>::iterator it = field_set.begin();
+    std::set<Legion::FieldID> field_set = task->regions[rid].privilege_fields;
+    std::map<Legion::FieldID, std::string>::iterator map_it;
+    for(std::set<Legion::FieldID>::iterator it = field_set.begin();
         it != field_set.end();
         ++it) {
       map_it = field_string_map_vector[rid].find(*it);
       if(map_it != field_string_map_vector[rid].end()) {
-        const FieldAccessor<READ_ONLY,
+        const Legion::FieldAccessor<READ_ONLY,
           double,
           1,
-          coord_t,
-          Realm::AffineAccessor<double, 1, coord_t>>
+          Legion::coord_t,
+          Realm::AffineAccessor<double, 1, Legion::coord_t>>
           acc_fid(regions[rid], *it);
-        Rect<1> rect = runtime->get_index_space_domain(
+        Legion::Rect<1> rect = runtime->get_index_space_domain(
           ctx, task->regions[rid].region.get_index_space());
         const double * dset_data = acc_fid.ptr(rect.lo);
         hid_t dataset_id =
@@ -1003,7 +1001,7 @@ recover_with_attach_task(const Legion::Task * task,
 
   struct checkpoint_task_args_s task_arg =
     *(struct checkpoint_task_args_s *)task->args;
-  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
+  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
   Realm::Serialization::FixedBufferDeserializer fdb(
     task_arg.field_map_serial, task_arg.field_map_size);
   bool ok = fdb >> field_string_map_vector;
@@ -1016,17 +1014,17 @@ recover_with_attach_task(const Legion::Task * task,
   char * file_name = const_cast<char *>(fname.c_str());
 
   for(unsigned int rid = 0; rid < regions.size(); rid++) {
-    PhysicalRegion restart_pr;
-    LogicalRegion input_lr2 = regions[rid].get_logical_region();
-    LogicalRegion restart_lr = runtime->create_logical_region(
+    Legion::PhysicalRegion restart_pr;
+    Legion::LogicalRegion input_lr2 = regions[rid].get_logical_region();
+    Legion::LogicalRegion restart_lr = runtime->create_logical_region(
       ctx, input_lr2.get_index_space(), input_lr2.get_field_space());
 
-    AttachLauncher hdf5_attach_launcher(
+    Legion::AttachLauncher hdf5_attach_launcher(
       EXTERNAL_HDF5_FILE, restart_lr, restart_lr);
-    std::map<FieldID, const char *> field_map;
-    std::set<FieldID> field_set = task->regions[rid].privilege_fields;
-    std::map<FieldID, std::string>::iterator map_it;
-    for(std::set<FieldID>::iterator it = field_set.begin();
+    std::map<Legion::FieldID, const char *> field_map;
+    std::set<Legion::FieldID> field_set = task->regions[rid].privilege_fields;
+    std::map<Legion::FieldID, std::string>::iterator map_it;
+    for(std::set<Legion::FieldID>::iterator it = field_set.begin();
         it != field_set.end();
         ++it) {
       map_it = field_string_map_vector[rid].find(*it);
@@ -1048,11 +1046,11 @@ recover_with_attach_task(const Legion::Task * task,
       file_name, field_map, LEGION_FILE_READ_WRITE);
     restart_pr = runtime->attach_external_resource(ctx, hdf5_attach_launcher);
 
-    CopyLauncher copy_launcher2;
+    Legion::CopyLauncher copy_launcher2;
     copy_launcher2.add_copy_requirements(
-      RegionRequirement(restart_lr, READ_ONLY, EXCLUSIVE, restart_lr),
-      RegionRequirement(input_lr2, WRITE_DISCARD, EXCLUSIVE, input_lr2));
-    for(std::set<FieldID>::iterator it = field_set.begin();
+      Legion::RegionRequirement(restart_lr, READ_ONLY, EXCLUSIVE, restart_lr),
+      Legion::RegionRequirement(input_lr2, WRITE_DISCARD, EXCLUSIVE, input_lr2));
+    for(std::set<Legion::FieldID>::iterator it = field_set.begin();
         it != field_set.end();
         ++it) {
       copy_launcher2.add_src_field(0, *it);
@@ -1060,7 +1058,7 @@ recover_with_attach_task(const Legion::Task * task,
     }
     runtime->issue_copy_operation(ctx, copy_launcher2);
 
-    Future fu = runtime->detach_external_resource(ctx, restart_pr, true);
+    Legion::Future fu = runtime->detach_external_resource(ctx, restart_pr, true);
     fu.wait();
     runtime->destroy_logical_region(ctx, restart_lr);
   }
@@ -1075,7 +1073,7 @@ recover_without_attach_task(const Legion::Task * task,
 
   struct checkpoint_task_args_s task_arg =
     *(struct checkpoint_task_args_s *)task->args;
-  std::vector<std::map<FieldID, std::string>> field_string_map_vector;
+  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
   Realm::Serialization::FixedBufferDeserializer fdb(
     task_arg.field_map_serial, task_arg.field_map_size);
   bool ok = fdb >> field_string_map_vector;
@@ -1095,22 +1093,22 @@ recover_without_attach_task(const Legion::Task * task,
   }
 
   for(unsigned int rid = 0; rid < regions.size(); rid++) {
-    LogicalRegion input_lr2 = regions[rid].get_logical_region();
+    Legion::LogicalRegion input_lr2 = regions[rid].get_logical_region();
 
-    std::set<FieldID> field_set = task->regions[rid].privilege_fields;
-    std::map<FieldID, std::string>::iterator map_it;
-    for(std::set<FieldID>::iterator it = field_set.begin();
+    std::set<Legion::FieldID> field_set = task->regions[rid].privilege_fields;
+    std::map<Legion::FieldID, std::string>::iterator map_it;
+    for(std::set<Legion::FieldID>::iterator it = field_set.begin();
         it != field_set.end();
         ++it) {
       map_it = field_string_map_vector[rid].find(*it);
       if(map_it != field_string_map_vector[rid].end()) {
-        const FieldAccessor<WRITE_DISCARD,
+        const Legion::FieldAccessor<WRITE_DISCARD,
           double,
           1,
-          coord_t,
-          Realm::AffineAccessor<double, 1, coord_t>>
+          Legion::coord_t,
+          Realm::AffineAccessor<double, 1, Legion::coord_t>>
           acc_fid(regions[rid], *it);
-        Rect<1> rect = runtime->get_index_space_domain(
+        Legion::Rect<1> rect = runtime->get_index_space_domain(
           ctx, task->regions[rid].region.get_index_space());
         double * dset_data = acc_fid.ptr(rect.lo);
         hid_t dataset_id =
