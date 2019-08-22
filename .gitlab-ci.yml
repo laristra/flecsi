@@ -134,7 +134,6 @@ before_script:
   stage: Env
   script: &env_script
     - mkdir -p ${SPACK_ROOT}/ci_env_setup
-    - cd ${CI_PROJECT_DIR}/build/
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
       then
