@@ -35,6 +35,7 @@ WORKDIR /home/flecsi/flecsi
 RUN mkdir build
 
 WORKDIR build
+RUN ${CC} --version
 RUN ccache -z
 RUN cmake -DMPIEXEC_PREFLAGS=$([ "$DISTRO" = "fedora" ] || [ "$DISTRO" = "ubuntu" ] && echo '--oversubscribe -mca pml ^ucx') \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
