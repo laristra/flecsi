@@ -28,6 +28,7 @@
 #include <flecsi/coloring/crs.h>
 #include <flecsi/topology/closure_utils.h>
 #include <flecsi/topology/mesh_definition.h>
+#include <flecsi/topology/parallel_mesh_definition.h>
 #include <flecsi/utils/mpi_type_traits.h>
 
 #include <flecsi/coloring/coloring_types.h>
@@ -374,7 +375,7 @@ void subdivide( size_t nelem, size_t npart, Vector<T> & dist ) {
 ////////////////////////////////////////////////////////////////////////////////
 template<std::size_t MESH_DIMENSION>
 void make_dcrs_distributed(
-  const typename flecsi::topology::mesh_definition_u<MESH_DIMENSION> & md,
+  const typename flecsi::topology::parallel_mesh_definition_u<MESH_DIMENSION> & md,
   size_t from_dimension,
   size_t to_dimension,
   size_t min_connections,
@@ -704,7 +705,7 @@ void migrate(
   size_t dimension,
   const std::vector<size_t> & partitioning,
   dcrs_t & dcrs,
-  typename topology::mesh_definition_u<DIMENSION> & md
+  typename topology::parallel_mesh_definition_u<DIMENSION> & md
 ) {
   
   int comm_size, comm_rank;
@@ -720,7 +721,7 @@ void migrate(
   // want to send.
   //----------------------------------------------------------------------------
 
-  using byte_t = typename topology::mesh_definition_u<DIMENSION>::byte_t;
+  using byte_t = typename topology::parallel_mesh_definition_u<DIMENSION>::byte_t;
   std::vector<size_t> sendcounts(comm_size, 0);
   std::vector<size_t> senddispls(comm_size+1);
   std::vector<byte_t> sendbuf;
@@ -1442,7 +1443,7 @@ void color_entities(
 ////////////////////////////////////////////////////////////////////////////////
 template<std::size_t MESH_DIMENSION>
 void match_ids(
-  const typename flecsi::topology::mesh_definition_u<MESH_DIMENSION> & md,
+  const typename flecsi::topology::parallel_mesh_definition_u<MESH_DIMENSION> & md,
   size_t dimension,
   std::vector<size_t> & local2global,
   std::map<size_t,size_t> & global2local
@@ -1842,7 +1843,7 @@ void ghost_connectivity(
 
 template<std::size_t MESH_DIMENSION>
 void ghost_connectivity(
-  const typename flecsi::topology::mesh_definition_u<MESH_DIMENSION> & md,
+  const typename flecsi::topology::parallel_mesh_definition_u<MESH_DIMENSION> & md,
   size_t from_dimension,
   size_t to_dimension,
   const flecsi::coloring::index_coloring_t & from_entities,
