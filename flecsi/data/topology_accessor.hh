@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/data/common/data_reference.hh>
+#include "data_reference.hh"
 #endif
 
 namespace flecsi {

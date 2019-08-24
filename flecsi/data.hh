@@ -20,7 +20,7 @@
   data model.
  */
 
-#include <flecsi/data/common/privilege.hh>
+#include "data/privilege.hh"
 #include <flecsi/data/field.hh>
 #include <flecsi/data/topology_interface.hh>
 #include <flecsi/topology/internal/global.hh>

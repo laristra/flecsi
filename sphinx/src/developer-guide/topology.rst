@@ -145,7 +145,7 @@ Adding New Topologies
 
 2. **Topology Registration**: Define a partial specialization of the
    *topology_registration* type in
-   *flecsi/data/common/topology_registration.h*. This type must
+   *flecsi/data/topology_registration.h*. This type must
    implement a *register_fields* method that adds the fields required to
    represent the meta data associated with an instance of the new
    topology type.

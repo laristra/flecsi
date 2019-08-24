@@ -20,11 +20,11 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "../launch.hh"
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/runtime/legion/tasks.hh"
 #include "flecsi/utils/demangle.hh"
 #include "flecsi/utils/function_traits.hh"
-#include <flecsi/execution/common/launch.hh>
 #include <flecsi/execution/legion/enactment/task_wrapper.hh>
 #include <flecsi/execution/legion/future.hh>
 #include <flecsi/execution/legion/invocation/init_args.hh>

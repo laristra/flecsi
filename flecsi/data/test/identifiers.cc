@@ -13,7 +13,7 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/data/data.hh>
+#include <flecsi/data.hh>
 #include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;

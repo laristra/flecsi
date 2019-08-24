@@ -166,8 +166,8 @@ particular.
 #include <iostream>
 #include <string>
 
-#include <flecsi/execution/common/launch.h>
-#include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/launch.h>
+#include <flecsi/execution/processor.h>
 #include <flecsi/utils/static_verify.h>
 
 namespace flecsi {

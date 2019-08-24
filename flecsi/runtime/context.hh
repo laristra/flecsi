@@ -18,9 +18,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/data/common/field_info.hh>
-#include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/common/task_attributes.hh>
+#include "flecsi/data/field_info.hh"
+#include "flecsi/execution/launch.hh"
+#include "flecsi/execution/task_attributes.hh"
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/base_topology_types.hh>
 #include <flecsi/utils/common.hh>

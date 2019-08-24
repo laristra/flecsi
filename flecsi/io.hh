@@ -113,7 +113,7 @@ struct io_interface : public IO_POLICY {
 // This include file defines the FLECSI_RUNTIME_IO_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "backend.hh"
+#include "io/backend.hh"
 
 namespace flecsi {
 namespace io {

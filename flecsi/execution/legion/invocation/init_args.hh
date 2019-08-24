@@ -20,10 +20,10 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/data/privilege.hh"
+#include "flecsi/data/storage_classes.hh"
+#include "flecsi/data/topology_accessor.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/data/common/privilege.hh>
-#include <flecsi/data/common/storage_classes.hh>
-#include <flecsi/data/common/topology_accessor.hh>
 #include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/set/interface.hh>
 #include <flecsi/topology/structured_mesh/interface.hh>

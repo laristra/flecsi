@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/data/common/data_reference.hh>
+#include "flecsi/data/data_reference.hh"
 #include <flecsi/topology/ntree/geometry.hh>
 #include <flecsi/topology/ntree/storage.hh>
 #include <flecsi/topology/ntree/types.hh>

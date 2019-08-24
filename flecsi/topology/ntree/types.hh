@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/topology/common/utility_types.hh>
+#include "../utility_types.hh"
 #include <flecsi/utils/geometry/point.hh>
 #endif
 

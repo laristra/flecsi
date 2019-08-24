@@ -18,10 +18,9 @@
 #------------------------------------------------------------------------------#
 
 set(execution_HEADERS
-  common/command_line_options.hh
-  common/launch.hh
-  common/task_attributes.hh
-  execution.hh
+  command_line_options.hh
+  launch.hh
+  task_attributes.hh
   internal.hh
   kernel_interface.hh
   reduction.hh
@@ -29,7 +28,7 @@ set(execution_HEADERS
 )
 
 set(execution_SOURCES
-  common/launch.cc
+  launch.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")

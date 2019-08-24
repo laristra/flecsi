@@ -22,8 +22,8 @@
 #else
 #include "../context.hh"
 #include <flecsi/data/legion/runtime_data_types.hh>
-//#include <flecsi/execution/common/launch.hh>
-//#include <flecsi/execution/common/processor.hh>
+//#include "flecsi/execution/launch.hh"
+//#include "flecsi/execution/processor.hh"
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
 #endif

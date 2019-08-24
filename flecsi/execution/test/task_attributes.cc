@@ -15,7 +15,7 @@
 #include <flecsi/utils/ftest.hh>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/common/task_attributes.hh>
+#include <flecsi/execution/task_attributes.hh>
 
 flog_register_tag(task_attributes);
 

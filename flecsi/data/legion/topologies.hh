@@ -15,9 +15,9 @@
 
 /*! @file */
 
+#include "../data_reference.hh"
 #include "flecsi/runtime/backend.hh"
-#include "flecsi/topology/common/core.hh"
-#include <flecsi/data/common/data_reference.hh>
+#include "flecsi/topology/core.hh"
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/unstructured_mesh/types.hh>
 #include <flecsi/utils/flog.hh>
