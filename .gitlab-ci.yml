@@ -23,6 +23,7 @@ variables:
   https_proxy: "http://proxyout.lanl.gov:8080"
   ftp_proxy: "http://proxyout.lanl.gov:8080"
   no_proxy: "lanl.gov"
+  ENV_SOURCE_FILE: "${SPACK_ROOT}/ci_env_setup/flecsi-deps-${MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_RUNNER_ID}.sh"
   SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
   DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
   lock_fd: 314
@@ -43,7 +44,9 @@ before_script:
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
   - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   #- spack load -r flecsi-deps%gcc@7.3.0 ~graphviz ^${MPI_PACKAGE} || /bin/true
-  - source ${SPACK_ROOT}/ci_env_setup/flecsi-deps-${MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}.sh || /bin/true
+  - echo ${ENV_SOURCE_FILE}
+  - spack build-env --dump ${ENV_SOURCE_FILE} "flecsi%gcc@7.3.0 ~graphviz backend=legion ^${MPI_PACKAGE}" || /bin/true
+  - source ${ENV_SOURCE_FILE} || /bin/true
   #- module load clang/7.0.0
   #- module load intel/19.0.2
   #- module load python/3.5.1
@@ -151,8 +154,8 @@ before_script:
       spack repo list;
       spack install flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi;
       spack install flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich;
-      spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-openmpi-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi";
-      spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-mpich-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich";
+      #spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-openmpi-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi";
+      #spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-mpich-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich";
       ) 200>${DEPS_LOCK}
 
 ###############
