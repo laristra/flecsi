@@ -27,7 +27,7 @@ namespace flecsi {
 namespace coloring {
 
 /*!
-  Local coloring information for a topological index space.  
+  Local coloring information for a topological index space.
  */
 
 struct index_coloring_t {
@@ -80,12 +80,34 @@ struct index_coloring_t {
 }; // struct index_coloring_t
 
 /*!
-  
+  Aggregate coloring information for a topological index space.
  */
 
-struct coloring_t {
-  std::map<size_t, index_coloring_t> index_colorings;
-}; // struct coloring_t
+struct aggregate_coloring_info_t {
+  size_t exclusive;
+  size_t shared;
+  size_t ghost;
+
+  std::vector<size_t> dependent_colors;
+  std::vector<size_t> owner_colors;
+}; // struct aggregate_coloring_info_t
+
+/*!
+  Define the coloring type.
+
+  The map key is the index space identifier.
+ */
+
+using coloring_t = std::map<size_t, index_coloring_t>;
+
+/*!
+  Type for holding aggregated (from all colors) coloring info.
+
+  The map key is the color and index space.
+ */
+
+using aggergate_coloring_t =
+  std::map<std::pair<size_t, size_t>, aggregate_coloring_info_t>;
 
 } // namespace coloring
 } // namespace flecsi
