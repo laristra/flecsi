@@ -64,6 +64,7 @@ before_script:
   - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   #- spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
   - echo ${FLECSI_ENV_SOURCE_FILE}
+  - echo ${FLECSI_SPACK_SPEC}
   - spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - module list
