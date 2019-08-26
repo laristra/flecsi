@@ -42,14 +42,15 @@ before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
+  - module load python/3.5.1
+  - module load gcc/7.3.0
+  - module load clang/7.0.0
+  - module load intel/19.0.2
   - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   #- spack load -r flecsi-deps%gcc@7.3.0 ~graphviz ^${MPI_PACKAGE} || /bin/true
   - echo ${ENV_SOURCE_FILE}
   - spack build-env --dump ${ENV_SOURCE_FILE} "flecsi%gcc@7.3.0 ~graphviz backend=legion ^${MPI_PACKAGE}" || /bin/true
   - source ${ENV_SOURCE_FILE} || /bin/true
-  - module load clang/7.0.0
-  - module load intel/19.0.2
-  - module load python/3.5.1
   - module list
 
 ##########################
