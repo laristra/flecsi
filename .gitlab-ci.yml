@@ -47,9 +47,9 @@ before_script:
   - echo ${ENV_SOURCE_FILE}
   - spack build-env --dump ${ENV_SOURCE_FILE} "flecsi%gcc@7.3.0 ~graphviz backend=legion ^${MPI_PACKAGE}" || /bin/true
   - source ${ENV_SOURCE_FILE} || /bin/true
-  #- module load clang/7.0.0
-  #- module load intel/19.0.2
-  #- module load python/3.5.1
+  - module load clang/7.0.0
+  - module load intel/19.0.2
+  - module load python/3.5.1
   - module list
 
 ##########################
