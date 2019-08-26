@@ -43,8 +43,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/execution_policy.hh
     legion/future.hh
     legion/invocation/init_args.hh
-    legion/invocation/task_epilogue.hh
-    legion/invocation/task_prologue.hh
     legion/reduction_wrapper.hh
   )
 

@@ -172,25 +172,15 @@ Adding New Topologies
 
      }; // topology_instance<ntree_topology<POLICY_TYPE>>
 
-4. **Initialize Arguments** (Legion Only): Define a template function
+4. **Initialize Arguments**: Define a template function
    overload of the *init_args_t* type in
-   *flecsi/execution/legion/incovation/init_args.h* that adds the region
-   requirements for the given type instance.
-
-5. **Task Prologue**: Define a template function overload of the
-   *task_prologue_t* type in
-   *flecsi/execution/runtime/incovation/task_prologue.h*, where
-   *runtime* is implemented for each backend runtime. This function
-   updates distributed-memory data dependencies.
-
-6. **Task Epilogue**: Define a template function overload of the
-   *task_epilogue_t* type in
-   *flecsi/execution/runtime/incovation/task_epilogue.h*, where
-   *runtime* is implemented for each backend runtime. This function
+   *flecsi/execution/.../invocation/init_args.h* that adds the region
+   requirements for the given type instance (for Legion only),
+   updates distributed-memory data dependencies, and
    sets a dirty (modified) bit for any fields or topologies that were
    accessed with write privileges (write-only, or read-write).
 
-7. **Bind Accessors**: Define a template function overload of the
+5. **Bind Accessors**: Define a template function overload of the
    *bind_accessors_t* type in
    *flecsi/execution/runtime/enactment/bind_accessors.h*, where
    *runtime* is implmented for each backend runtime. This function binds
@@ -198,7 +188,7 @@ Adding New Topologies
    is defined as part of the topology type, and implements a
    *proxy* `pattern <https://en.wikipedia.org/wiki/Proxy_pattern>`_.
 
-8. **Unbind Accessors**: Define a template function overload of the
+6. **Unbind Accessors**: Define a template function overload of the
    *unbind_accessors_t* type in
    *flecsi/execution/runtime/enactment/unbind_accessors.h*, where
    *runtime* is implmented for each backend runtime. This function unbinds

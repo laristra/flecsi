@@ -22,7 +22,6 @@ set(data_HEADERS
   common/field_info.hh
   common/privilege.hh
   common/storage_classes.hh
-  common/storage_label.hh
   common/topology_accessor.hh
   common/topology_registration.hh
   field.hh
