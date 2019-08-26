@@ -25,7 +25,6 @@ set(execution_HEADERS
   internal.hh
   kernel_interface.hh
   reduction.hh
-  task.hh
   backend.hh
 )
 
