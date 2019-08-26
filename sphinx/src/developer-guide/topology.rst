@@ -74,13 +74,13 @@ template specialization, template function overload, and tuple walkers.
   time) and dynamic (variable information, available at runtime) state.
 
   An example of FleCSI's use of the tuple walker idiom, applied to
-  dynamic tuple values, is the *init_args* type, used to add region
+  dynamic tuple values, is the *task_prologue_t* type, used to add region
   requirements for the Legion implementation of *flecsi_execute_task*:
 
   .. code-block:: cpp
 
-    struct init_args_t : public
-    flecsi::utils::tuple_walker<init_args_t> {
+    struct task_prologue_t : public
+    flecsi::utils::tuple_walker<task_prologue_t> {
 
       template<typename DATA_TYPE, size_t PRIVILEGES>
       void visit(index_topology::accessor<DATA_TYPE, PRIVILEGES> &
@@ -89,7 +89,7 @@ template specialization, template function overload, and tuple walkers.
         // index_topology::accessor<DATA_TYPE, PRIVILEGES>.
       } // visit
 
-    }; // struct init_args_t
+    }; // struct task_prologue_t
 
   You may notice that I lied to you before about there only being three
   idioms: Our tuple walker type also uses the CRTP idiom documented
@@ -173,8 +173,8 @@ Adding New Topologies
      }; // topology_instance<ntree_topology<POLICY_TYPE>>
 
 4. **Initialize Arguments**: Define a template function
-   overload of the *init_args_t* type in
-   *flecsi/execution/.../invocation/init_args.h* that adds the region
+   overload of the *task_prologue_t* type in
+   *flecsi/execution/.../task_prologue.h* that adds the region
    requirements for the given type instance (for Legion only),
    updates distributed-memory data dependencies, and
    sets a dirty (modified) bit for any fields or topologies that were
@@ -182,7 +182,7 @@ Adding New Topologies
 
 5. **Bind Accessors**: Define a template function overload of the
    *bind_accessors_t* type in
-   *flecsi/execution/runtime/enactment/bind_accessors.h*, where
+   *flecsi/execution/runtime/bind_accessors.h*, where
    *runtime* is implmented for each backend runtime. This function binds
    backend data buffers into the topology accesor instance. The accessor
    is defined as part of the topology type, and implements a
@@ -190,7 +190,7 @@ Adding New Topologies
 
 6. **Unbind Accessors**: Define a template function overload of the
    *unbind_accessors_t* type in
-   *flecsi/execution/runtime/enactment/unbind_accessors.h*, where
+   *flecsi/execution/runtime/unbind_accessors.h*, where
    *runtime* is implmented for each backend runtime. This function unbinds
    backend data buffers, and does any cleanup operations that are
    necessary to complete task execution, e.g., committing changes to

@@ -19,7 +19,7 @@
 #include "context.hh"
 #include "flecsi/execution/command_line_options.hh"
 #include "flecsi/execution/launch.hh"
-#include "flecsi/execution/legion/enactment/task_wrapper.hh"
+#include "flecsi/execution/legion/task_wrapper.hh"
 #include "mapper.hh"
 #include "tasks.hh"
 #include <flecsi/data/legion/data_policy.hh>
