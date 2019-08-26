@@ -51,6 +51,12 @@ before_script:
   - module load clang/${FLECSI_CLANG_VERSION}
   - module unload gcc
   - module load gcc/${FLECSI_GCC_VERSION}
+  - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
+  #- spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
+  - echo ${FLECSI_ENV_SOURCE_FILE}
+  - echo ${FLECSI_SPACK_SPEC}
+  - spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true
+  - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
     if [[ ${CI_JOB_NAME} =~ "clang" ]];
     then
@@ -61,12 +67,6 @@ before_script:
       export CC=icc;
       export CXX=icpc;
     fi
-  - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
-  #- spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
-  - echo ${FLECSI_ENV_SOURCE_FILE}
-  - echo ${FLECSI_SPACK_SPEC}
-  - spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true
-  - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - module list
   - echo $CC;
   - echo $CXX;
