@@ -139,10 +139,25 @@ struct topology_instance<topology::ntree_topology<POLICY_TYPE>> {
   using topology_reference_t = topology_reference<topology_t>;
   using coloring_t = typename topology_t::coloring_t;
 
+  // Distribute the entities on the different processes 
+  // Create the tree data structure locally 
   static void create(topology_reference_t const & topology_reference,
-    coloring_t const & coloring) {} // create
+    coloring_t const & coloring) {
+    
+    // Use MPI to share the entities and create the tree topology 
+    
 
-  static void destroy(topology_reference_t const & topology_reference) {}
+  } // create
+
+  // Update the entities position in the tree  
+  static void update(topology_reference_t const& topology_reference, 
+    coloring_t const& coloring) {
+
+  } // update 
+
+  static void destroy(topology_reference_t const & topology_reference) {
+
+  } // destroy
 
 }; // ntree_topology specialization
 

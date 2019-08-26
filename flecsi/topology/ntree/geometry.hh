@@ -20,6 +20,11 @@
 
 #pragma once
 
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#else
+#endif
+
 #include <flecsi/utils/geometry/point.hh>
 
 #include <array>
