@@ -103,10 +103,10 @@ before_script:
   BUILD_TYPE: "Release"
 
 .openmpi: &openmpi
-  MPI_PACKAGE: "openmpi"
+  FLECSI_MPI_PACKAGE: "openmpi"
 
 .mpich: &mpich
-  MPI_PACKAGE: "mpich"
+  FLECSI_MPI_PACKAGE: "mpich"
 
 .ignore_noci: &ignore_noci
   IGNORE_NOCI: "TRUE"
@@ -170,12 +170,8 @@ before_script:
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      export FLECSI_MPI_PACKAGE="openmpi";
-      echo $FLECSI_MPI_PACKAGE;
-      spack install $FLECSI_SPACK_SPEC;
-      export FLECSI_MPI_PACKAGE="mpich";
-      echo $FLECSI_MPI_PACKAGE;
-      spack install $FLECSI_SPACK_SPEC;
+      spack install ${FLECSI_SPACK_SPEC}openmpi;
+      spack install ${FLECSI_SPACK_SPEC}mpich;
       ) 200>${DEPS_LOCK}
 
 ###############
