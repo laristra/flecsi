@@ -64,7 +64,7 @@ before_script:
   - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   #- spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
   - echo ${FLECSI_ENV_SOURCE_FILE}
-  - spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} ${FLECSI_SPACK_SPEC} || /bin/true
+  - spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - module list
   - echo $CC;
@@ -170,9 +170,9 @@ before_script:
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
       export FLECSI_MPI_PACKAGE=openmpi;
-      spack install ${FLECSI_SPACK_SPEC};
+      spack install "${FLECSI_SPACK_SPEC}";
       export FLECSI_MPI_PACKAGE=mpich;
-      spack install ${FLECSI_SPACK_SPEC};
+      spack install "${FLECSI_SPACK_SPEC}";
       ) 200>${DEPS_LOCK}
 
 ###############
