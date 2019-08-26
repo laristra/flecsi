@@ -23,7 +23,7 @@ variables:
   https_proxy: "http://proxyout.lanl.gov:8080"
   ftp_proxy: "http://proxyout.lanl.gov:8080"
   no_proxy: "lanl.gov"
-  ENV_SOURCE_FILE: "${SPACK_ROOT}/ci_env_setup/flecsi-deps-${MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_RUNNER_ID}.sh"
+  ENV_SOURCE_FILE: "${SPACK_ROOT}/ci_env_setup/flecsi-deps-${MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
   SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
   DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
   lock_fd: 314
