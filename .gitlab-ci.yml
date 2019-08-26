@@ -172,10 +172,10 @@ before_script:
       spack repo list;
       export FLECSI_MPI_PACKAGE="openmpi";
       echo $FLECSI_MPI_PACKAGE;
-      spack install ${FLECSI_SPACK_SPEC};
+      spack install $FLECSI_SPACK_SPEC;
       export FLECSI_MPI_PACKAGE="mpich";
       echo $FLECSI_MPI_PACKAGE;
-      spack install ${FLECSI_SPACK_SPEC};
+      spack install $FLECSI_SPACK_SPEC;
       ) 200>${DEPS_LOCK}
 
 ###############
