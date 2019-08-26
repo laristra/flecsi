@@ -322,27 +322,30 @@ env:
 # Canary Jobs #
 ###############
 
-canary:centOS_mpi:
+canary:centOS_mpich_mpi:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_mpi
+    <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *mpich
 
-canary:centOS_legion:
+canary:centOS_mpich_legion:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_legion
+    <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *mpich
 
-canary:centOS_hpx:
+canary:centOS_mpich_hpx:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_hpx
+    <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *mpich
   allow_failure: true 
