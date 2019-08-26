@@ -32,6 +32,7 @@ set(topology_HEADERS
   set/types.hh
   structured_mesh/interface.hh
   structured_mesh/types.hh
+  unstructured_mesh/coloring.hh
   unstructured_mesh/interface.hh
   unstructured_mesh/partition.hh
   unstructured_mesh/storage.hh
@@ -96,10 +97,18 @@ set(topology_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-#--------------------------------  NTREE  -------------------------------------#
+#---------------------------   Unstructured Mesh  -----------------------------#
+
+ftest_add_unit(umesh_coloring
+  SOURCES unstructured_mesh/test/coloring.cc
+)
+
+#----------------------------------  NTREE  -----------------------------------#
+
 ftest_add_unit(ntree
   SOURCES ntree/test/ntree.cc
 )
+
 ftest_add_unit(ntree_geometry
   SOURCES ntree/test/geometry.cc
 )
