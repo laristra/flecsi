@@ -11,48 +11,64 @@ stages:
   - Apps
 
 variables:
+  #CI_DEBUG_TRACE: "true"
   GET_SOURCES_ATTEMPTS: 10
   ARTIFACT_DOWNLOAD_ATTEMPTS: 10
   RESTORE_CACHE_ATTEMPTS: 10
   GIT_STRATEGY: fetch
   GLOBAL_CI_VARIABLE: "global_ci_value"
-  CI_JOB_NAME_TMP: ${CI_JOB_NAME}
-  CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME_TMP#*:}
-  #CI_DEBUG_TRACE: "true"
   http_proxy: "http://proxyout.lanl.gov:8080"
   https_proxy: "http://proxyout.lanl.gov:8080"
   ftp_proxy: "http://proxyout.lanl.gov:8080"
   no_proxy: "lanl.gov"
-  ENV_SOURCE_FILE: "${SPACK_ROOT}/ci_env_setup/flecsi-deps-${MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
-  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
-  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
-  lock_fd: 314
   GIT_SUBMODULE_STRATEGY: recursive
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   CCACHE_UMASK: 000
   DISTRO: "centOS"
   RUNTIME: "mpi"
   BUILD_TYPE: "Debug"
-  MPI_PACKAGE: ""
   CC: "gcc"
   CXX: "g++"
   CXXFLAGS: "-Werror -Wno-deprecated-declarations"
   IGNORE_NOCI: "FALSE"
+  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
+  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
+  lock_fd: 314
+  FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
+  FLECSI_MPI_PACKAGE: ""
+  FLECSI_INTEL_COMPILER: "intel/19.0.2"
+  FLECSI_CLANG_COMPILER: "clang/7.0.0"
+  FLECSI_GCC_COMPILER: "gcc/7.3.0"
+  FLECSI_PYTHON_PACKAGE: "python/3.5.1"
+  FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/flecsi-deps-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
+  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz backend=legion ^${FLECSI_MPI_PACKAGE}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
-  - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
-  #- spack load -r flecsi-deps%gcc@7.3.0 ~graphviz ^${MPI_PACKAGE} || /bin/true
-  - echo ${ENV_SOURCE_FILE}
-  - spack build-env --dump ${ENV_SOURCE_FILE} "flecsi%gcc@7.3.0 ~graphviz backend=legion ^${MPI_PACKAGE}" || /bin/true
-  - module load python/3.5.1
-  - module load intel/19.0.2
-  - module load clang/7.0.0
+  - module load ${FLECSI_PYTHON_PACKAGE}
+  - module load ${FLECSI_INTEL_COMPILER}
+  - module load ${FLECSI_CLANG_COMPILER}
   - module unload gcc
-  - module load gcc/7.3.0
-  - source ${ENV_SOURCE_FILE} || /bin/true
+  - module load ${FLECSI_GCC_COMPILER}
+  - |
+    if [[ ${CI_JOB_NAME} =~ "clang" ]];
+    then
+      export CC=clang;
+      export CXX=clang++;
+    elif [[ ${CI_JOB_NAME} =~ "intel" ]];
+    then
+      export CC=icc;
+      export CXX=icpc;
+    fi
+  - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
+  #- spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
+  - echo ${FLECSI_ENV_SOURCE_FILE}
+  - spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} ${FLECSI_SPACK_SPEC} || /bin/true
+  - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - module list
+  - echo $CC;
+  - echo $CXX;
 
 ##########################
 # Build Matrix Variables #
@@ -137,7 +153,6 @@ before_script:
   <<: *job_def
   stage: Env
   script: &env_script
-    - mkdir -p ${SPACK_ROOT}/ci_env_setup
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
       then
@@ -154,10 +169,10 @@ before_script:
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi;
-      spack install flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich;
-      #spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-openmpi-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^openmpi";
-      #spack build-env --dump ${SPACK_ROOT}/ci_env_setup/flecsi-deps-mpich-${CI_COMMIT_REF_SLUG}.sh "flecsi%gcc@7.3.0 ~graphviz backend=legion ^mpich";
+      export FLECSI_MPI_PACKAGE=openmpi;
+      spack install ${FLECSI_SPACK_SPEC};
+      export FLECSI_MPI_PACKAGE=mpich;
+      spack install ${FLECSI_SPACK_SPEC};
       ) 200>${DEPS_LOCK}
 
 ###############
