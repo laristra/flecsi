@@ -144,8 +144,11 @@ struct topology_instance<topology::ntree_topology<POLICY_TYPE>> {
   static void create(topology_reference_t const & topology_reference,
     coloring_t const & coloring) {
     
-    // Use MPI to share the entities and create the tree topology 
-    
+    {
+      flog_tag_guard(topologies);
+      flog_devel(info) << "Set coloring for " << topology_reference.identifier()
+                       << std::endl;
+    }
 
   } // create
 
@@ -153,9 +156,21 @@ struct topology_instance<topology::ntree_topology<POLICY_TYPE>> {
   static void update(topology_reference_t const& topology_reference, 
     coloring_t const& coloring) {
 
+    {
+      flog_tag_guard(topologies);
+      flog_devel(info) << "Update coloring for " << topology_reference.identifier()
+                       << std::endl;
+    }
+
   } // update 
 
   static void destroy(topology_reference_t const & topology_reference) {
+
+    {
+      flog_tag_guard(topologies);
+      flog_devel(info) << "Destroy coloring for " << topology_reference.identifier()
+                       << std::endl;
+    }
 
   } // destroy
 

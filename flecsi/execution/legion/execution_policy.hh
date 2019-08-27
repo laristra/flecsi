@@ -28,8 +28,6 @@
 #include <flecsi/execution/legion/enactment/task_wrapper.hh>
 #include <flecsi/execution/legion/future.hh>
 #include <flecsi/execution/legion/invocation/init_args.hh>
-#include <flecsi/execution/legion/invocation/task_epilogue.hh>
-#include <flecsi/execution/legion/invocation/task_prologue.hh>
 #include <flecsi/execution/legion/reduction_wrapper.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/flog.hh>
@@ -153,7 +151,8 @@ reduce(ARGS &&... args) {
 
   using wrap = legion::task_wrapper<F, processor_type>;
   const auto task = legion::task_id<wrap::execute,
-    ATTRIBUTES & ~mpi | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
+    (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
+
   if constexpr(LAUNCH_DOMAIN == launch_identifier("single")) {
 
     static_assert(
@@ -173,11 +172,6 @@ reduce(ARGS &&... args) {
     LegionRuntime::Arrays::Rect<1> launch_bounds(0, 1);
     Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
-    legion::task_prologue_t prologue(
-      legion_runtime, legion_context, launch_domain);
-    prologue.walk(task_args);
-    prologue.update_state();
-
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {
       auto future = legion_runtime->execute_task(legion_context, launcher);
@@ -192,9 +186,6 @@ reduce(ARGS &&... args) {
                  << "Legion backend does not support 'single' launch"
                  << " for MPI tasks yet");
     }
-
-    legion::task_epilogue_t epilogue(legion_runtime, legion_context);
-    epilogue.walk(task_args);
   }
 
   //------------------------------------------------------------------------//
@@ -223,11 +214,6 @@ reduce(ARGS &&... args) {
       launcher.add_region_requirement(req);
     } // for
 
-    legion::task_prologue_t prologue(
-      legion_runtime, legion_context, launch_domain);
-    prologue.walk(task_args);
-    prologue.update_state();
-
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {
       flog_devel(info) << "Executing index launch on loc" << std::endl;
@@ -247,11 +233,6 @@ reduce(ARGS &&... args) {
         future = legion_runtime->execute_index_space(
           legion_context, launcher, reduction_id);
 
-        // Enqueue the epilog.
-        legion::task_epilogue_t task_epilogue(legion_runtime, legion_context);
-        task_epilogue.walk(task_args);
-        return 0;
-
         // FIXME
         // return legion_future<RETURN, launch_type_t::single>(future);
         return 0;
@@ -260,11 +241,6 @@ reduce(ARGS &&... args) {
         // Enqueue the task.
         Legion::FutureMap future_map =
           legion_runtime->execute_index_space(legion_context, launcher);
-
-        // Execute a tuple walker that applies the task epilog operations
-        // on the mapped handles
-        legion::task_epilogue_t task_epilogue(legion_runtime, legion_context);
-        task_epilogue.walk(task_args);
 
         // FIXME
         // return legion_future<RETURN, launch_type_t::index>(future_map);
@@ -291,11 +267,6 @@ reduce(ARGS &&... args) {
       // Reset the calling state to false.
       flecsi_context.unset_call_mpi(legion_context, legion_runtime);
 
-      // Execute a tuple walker that applies the task epilog operations
-      // on the mapped handles
-      legion::task_epilogue_t task_epilogue(legion_runtime, legion_context);
-      task_epilogue.walk(task_args);
-
       if constexpr(REDUCTION != ZERO) {
         // FIXME implement logic for reduction MPI task
         flog_fatal("there is no implementation for the mpi"
@@ -309,7 +280,7 @@ reduce(ARGS &&... args) {
     }
   } // if constexpr
 
-  return 0;
+  //return 0;
 } // execute_task
 
 namespace execution {

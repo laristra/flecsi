@@ -22,7 +22,6 @@ set(data_HEADERS
   common/field_info.hh
   common/privilege.hh
   common/storage_classes.hh
-  common/storage_label.hh
   common/topology_accessor.hh
   common/topology_registration.hh
   field.hh
@@ -93,6 +92,7 @@ set(data_SOURCES
 ftest_add_unit(global
   SOURCES
     test/global.cc
+  THREADS 2
 )
 
 ftest_add_unit(identifiers
@@ -103,6 +103,7 @@ ftest_add_unit(identifiers
 ftest_add_unit(index
   SOURCES
     test/index.cc
+  THREADS 2
 )
 
 ftest_add_unit(privilege

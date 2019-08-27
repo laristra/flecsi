@@ -35,7 +35,7 @@ class filling_curve
 {
   static constexpr size_t dimension = DIM;
   using int_t = T;
-  using point_t = point<double, dimension>;
+  using point_t = point_u<double, dimension>;
   using range_t = std::array<point_t, 2>;
 
 protected:
@@ -230,7 +230,7 @@ class hilbert_curve : public filling_curve<DIM, T, hilbert_curve<DIM, T>>
   using int_t = T;
   static constexpr size_t dimension = DIM;
   using coord_t = std::array<int_t, dimension>;
-  using point_t = point<double, dimension>;
+  using point_t = point_u<double, dimension>;
   using range_t = std::array<point_t, 2>;
 
   using filling_curve<DIM, T, hilbert_curve>::value_;
@@ -441,7 +441,7 @@ class morton_curve : public filling_curve<DIM, T, morton_curve<DIM, T>>
   using int_t = T;
   static constexpr size_t dimension = DIM;
   using coord_t = std::array<int_t, dimension>;
-  using point_t = point<double, dimension>;
+  using point_t = point_u<double, dimension>;
   using range_t = std::array<point_t, 2>;
 
   using filling_curve<DIM, T, morton_curve>::value_;

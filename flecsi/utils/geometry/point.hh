@@ -28,32 +28,32 @@
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! The point type defines an interface for storing and manipulating
-//! coordinate data. The point type is implemented using \ref
+//! The point_u type defines an interface for storing and manipulating
+//! coordinate data. The point_u type is implemented using \ref
 //! dimensioned_array.
 //!
 //! @tparam TYPE      The type to use to represent coordinate values.
-//! @tparam DIMENSION The dimension of the point.
+//! @tparam DIMENSION The dimension of the point_u.
 //!
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-using point = utils::dimensioned_array<TYPE, DIMENSION, 1>;
+using point_u = utils::dimensioned_array<TYPE, DIMENSION, 1>;
 
 //----------------------------------------------------------------------------//
 //! Multiplication operator.
 //!
 //! @tparam TYPE      The type to use to represent coordinate values.
-//! @tparam DIMENSION The dimension of the point.
+//! @tparam DIMENSION The dimension of the point_u.
 //!
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-point<TYPE, DIMENSION> operator*(TYPE const val,
-  point<TYPE, DIMENSION> const & p) {
-  point<TYPE, DIMENSION> tmp(p);
+point_u<TYPE, DIMENSION> operator*(TYPE const val,
+  point_u<TYPE, DIMENSION> const & p) {
+  point_u<TYPE, DIMENSION> tmp(p);
   for(size_t d(0); d < DIMENSION; ++d) {
     tmp[d] *= val;
   } // for
@@ -65,17 +65,17 @@ point<TYPE, DIMENSION> operator*(TYPE const val,
 //! Return the distance between the given points.
 //!
 //! @tparam TYPE      The type to use to represent coordinate values.
-//! @tparam DIMENSION The dimension of the point.
+//! @tparam DIMENSION The dimension of the point_u.
 //!
-//! @param a The first point.
-//! @param b The second point.
+//! @param a The first point_u.
+//! @param b The second point_u.
 //!
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
 TYPE
-distance(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
+distance(point_u<TYPE, DIMENSION> const & a, point_u<TYPE, DIMENSION> const & b) {
   TYPE sum(0);
   for(size_t d(0); d < DIMENSION; ++d) {
     sum += utils::square(a[d] - b[d]);
@@ -88,25 +88,25 @@ distance(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
 //! Return the midpoint between two points.
 //!
 //! @tparam TYPE      The type to use to represent coordinate values.
-//! @tparam DIMENSION The dimension of the point.
+//! @tparam DIMENSION The dimension of the point_u.
 //!
-//! @param a The first point.
-//! @param b The second point.
+//! @param a The first point_u.
+//! @param b The second point_u.
 //!
 //! @ingroup geometry
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-point<TYPE, DIMENSION>
-midpoint(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
-  return point<TYPE, DIMENSION>((a + b) / 2.0);
+point_u<TYPE, DIMENSION>
+midpoint(point_u<TYPE, DIMENSION> const & a, point_u<TYPE, DIMENSION> const & b) {
+  return point_u<TYPE, DIMENSION>((a + b) / 2.0);
 } // midpoint
 
 //----------------------------------------------------------------------------//
 //! Return the centroid of the given set of points.
 //!
 //! @tparam TYPE      The type to use to represent coordinate values.
-//! @tparam DIMENSION The dimension of the point.
+//! @tparam DIMENSION The dimension of the point_u.
 //!
 //! @param points The points for which to find the centroid.
 //!
@@ -115,8 +115,8 @@ midpoint(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
 
 template<template<typename...> class CONTAINER, typename TYPE, size_t DIMENSION>
 auto
-centroid(CONTAINER<point<TYPE, DIMENSION>> const & points) {
-  point<TYPE, DIMENSION> tmp(0.0);
+centroid(CONTAINER<point_u<TYPE, DIMENSION>> const & points) {
+  point_u<TYPE, DIMENSION> tmp(0.0);
 
   for(auto p : points) {
     tmp += p;
@@ -140,8 +140,8 @@ centroid(CONTAINER<point<TYPE, DIMENSION>> const & points) {
 
 template<typename TYPE, size_t DIMENSION>
 auto
-centroid(std::initializer_list<point<TYPE, DIMENSION>> points) {
-  point<TYPE, DIMENSION> tmp(0.0);
+centroid(std::initializer_list<point_u<TYPE, DIMENSION>> points) {
+  point_u<TYPE, DIMENSION> tmp(0.0);
 
   for(auto p : points) {
     tmp += p;

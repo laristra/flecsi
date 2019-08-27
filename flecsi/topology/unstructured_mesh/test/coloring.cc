@@ -7,34 +7,20 @@
    /@@       /@@/@@//// //@@    @@       /@@/@@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
-   Copyright (c) 2016, Los Alamos National Security, LLC
+
+   Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#pragma once
 
-/*! @file */
+#define __FLECSI_PRIVATE__
+#include <flecsi/topology/unstructured_mesh/coloring.hh>
+#include <flecsi/utils/ftest.hh>
 
-#if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
-#else
-#endif
+int sanity(int argc, char ** argv) {
 
-#include <map>
-#include <vector>
+  FTEST();
 
-namespace flecsi {
-namespace coloring {
+  return FTEST_RESULT();
+}
 
-
-struct index_coloring_t{
-    /*! 
-        Set of entities for each rank  
-    */ 
-    std::vector<size_t> primary ; 
-}; // struct index_coloring_t 
-
-
-using coloring_t = std::map<size_t,index_coloring_t>; 
-
-} // coloring 
-} // flecsi 
+ftest_register_driver(sanity);

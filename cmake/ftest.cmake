@@ -167,8 +167,6 @@ function(ftest_add_unit name)
 
   add_executable(${name}
     ${unit_SOURCES}
-    ${CMAKE_SOURCE_DIR}/flecsi/utils/flog/packet.cc
-    ${CMAKE_SOURCE_DIR}/flecsi/runtime/runtime.cc
     ${_OUTPUT_DIR}/${_TARGET_MAIN}
   )
   

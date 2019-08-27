@@ -15,39 +15,26 @@
 
 /*! @file */
 
-#include <vector>
-
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/static_verify.hh>
+
+#include <vector>
 
 namespace flecsi {
 namespace topology {
 
-/*----------------------------------------------------------------------------*
- * Tuple search utilities.
- *----------------------------------------------------------------------------*/
-
-//----------------------------------------------------------------------------//
-//!
-//----------------------------------------------------------------------------//
-
 template<size_t I, class T, size_t DIM, size_t DOM>
 struct find_entity {
 
-  //--------------------------------------------------------------------------//
-  //!
-  //!
-  //--------------------------------------------------------------------------//
+  /*!
+    Find the position index of a type that matches the
+    given domain and dimension.
 
-  //--------------------------------------------------------------------------//
-  //! Find the position index of a type that matches the
-  //! given domain and dimension.
-  //!
-  //! @tparam I The current index in tuple.
-  //! @tparam T The tuple type.
-  //! @tparam DIM The dimension to match.
-  //! @tparam DOM The domain to match.
-  //--------------------------------------------------------------------------//
+    @tparam I The current index in tuple.
+    @tparam T The tuple type.
+    @tparam DIM The dimension to match.
+    @tparam DOM The domain to match.
+   */
 
   static constexpr size_t find() {
     // grab current types
@@ -68,18 +55,22 @@ struct find_entity {
 //! \struct find_entity mesh_utils.h
 //! \brief find_entity provides a specialization for the root recursion.
 //-----------------------------------------------------------------//
+
 template<class T, size_t DIM, size_t DOM>
 struct find_entity<0, T, DIM, DOM> {
-  //-----------------------------------------------------------------//
-  //! Search last tuple element.
-  //!
-  //! @tparam T The tuple type.
-  //! @tparam DIM The dimension to match.
-  //! @tparam DOM The domain to match.
-  //-----------------------------------------------------------------//
+
+  /*!
+    Search last tuple element.
+
+    @tparam T The tuple type.
+    @tparam DIM The dimension to match.
+    @tparam DOM The domain to match.
+   */
+
   static constexpr size_t find() {
     return 1;
   } // find
+
 }; // struct find_entity
 
 //-----------------------------------------------------------------//
@@ -89,8 +80,10 @@ struct find_entity<0, T, DIM, DOM> {
 //! Top-level interface for recursive type search matching dimension and
 //! domain.
 //-----------------------------------------------------------------//
+
 template<class MESH_TYPE, size_t DIM, size_t DOM>
 struct find_entity_ {
+
   using entity_types = typename MESH_TYPE::entity_types;
 
   using pair_ = typename std::tuple_element<
@@ -99,11 +92,13 @@ struct find_entity_ {
       1,
     entity_types>::type;
 
-  //-----------------------------------------------------------------//
-  //! Define the type returned by searching the tuple for matching
-  //! dimension and domain.
-  //-----------------------------------------------------------------//
+  /*!
+    Define the type returned by searching the tuple for matching
+    dimension and domain.
+   */
+
   using type = typename std::tuple_element<2, pair_>::type;
+
 };
 
 template<size_t INDEX, class TUPLE, class ENTITY>
