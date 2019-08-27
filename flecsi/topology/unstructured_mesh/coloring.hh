@@ -40,7 +40,7 @@ struct index_coloring_t {
     size_t id;
     size_t color;
     size_t offset;
-    std::vector<size_t> dependent_colors;
+    std::vector<size_t> used_by_colors;
   }; // struct shared_info_t
 
   /*!
@@ -88,8 +88,8 @@ struct coloring_info_t {
   size_t shared;
   size_t ghost;
 
-  std::vector<size_t> dependent_colors;
-  std::vector<size_t> owner_colors;
+  std::vector<size_t> used_by_colors;
+  std::vector<size_t> owned_by_colors;
 }; // struct coloring_info_t
 
 /*!

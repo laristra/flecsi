@@ -45,10 +45,6 @@ struct legion_data_policy_t {
     legion::topology_instance<TOPOLOGY_TYPE>::destroy(topology_reference);
   } // destroy
 
-  /*--------------------------------------------------------------------------*
-    Topology Accessor Interface.
-   *--------------------------------------------------------------------------*/
-
 }; // struct legion_data_policy_t
 
 } // namespace data
