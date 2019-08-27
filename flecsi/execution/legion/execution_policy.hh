@@ -73,7 +73,7 @@ serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
   return utils::serial_put(std::tuple<std::conditional_t<
       std::is_constructible_v<nonconst_ref_t<PP> &, nonconst_ref_t<AA>>,
       const PP &,
-      PP>...>(std::forward<AA>(aa)...));
+      std::decay_t<PP>>...>(std::forward<AA>(aa)...));
 }
 } // namespace detail
 
