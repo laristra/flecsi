@@ -64,20 +64,20 @@ using ntree_entity_base_t = entity_base<0>;
 //-----------------------------------------------------------------//
 
 template<size_t DIM, class KEY>
-class ntree_entity_u : public ntree_entity_base_t
+class ntree_entity : public ntree_entity_base_t
 {
 public:
   enum LOCALITY : int { LOCAL = 0, NON_LOCAL = 1, SHARED = 2 };
 
   static constexpr size_t dimension = DIM;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using id_t = flecsi::utils::id_t;
   using key_t = KEY;
 
-  ntree_entity_u() : locality_(LOCAL) {}
-  ~ntree_entity_u() {}
+  ntree_entity() : locality_(LOCAL) {}
+  ~ntree_entity() {}
 
-  ntree_entity_u(const point_t & coordinates) : coordinates_(coordinates) {}
+  ntree_entity(const point_t & coordinates) : coordinates_(coordinates) {}
 
   // Setters
   void set_coordinates(const point_t & coordinates) {
@@ -115,7 +115,7 @@ public:
 
   template<size_t A, class B>
   friend std::ostream & operator<<(std::ostream & os,
-    const ntree_entity_u<A, B> & dt);
+    const ntree_entity<A, B> & dt);
 
 private:
   point_t coordinates_;
@@ -131,7 +131,7 @@ private:
 
 template<size_t DIM, class KEY>
 std::ostream &
-operator<<(std::ostream & os, const ntree_entity_u<DIM, KEY> & e) {
+operator<<(std::ostream & os, const ntree_entity<DIM, KEY> & e) {
   os << "Entity: p: " << e.coordinates_ << " m: " << e.mass_;
   os << " id: " << e.id_.entity() << " key: " << e.key_;
   return os;
@@ -147,18 +147,18 @@ operator<<(std::ostream & os, const ntree_entity_u<DIM, KEY> & e) {
 //-----------------------------------------------------------------//
 
 template<size_t DIM, class KEY>
-class ntree_entity_holder_u : public ntree_entity_base_t
+class ntree_entity_holder : public ntree_entity_base_t
 {
 public:
   static constexpr size_t dimension = DIM;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using id_t = flecsi::utils::id_t;
   using key_t = KEY;
 
-  ntree_entity_holder_u() {}
-  ~ntree_entity_holder_u() {}
+  ntree_entity_holder() {}
+  ~ntree_entity_holder() {}
 
-  ntree_entity_holder_u(const point_t & p) : coordinates_(p) {}
+  ntree_entity_holder(const point_t & p) : coordinates_(p) {}
 
 private:
   point_t coordinates_;
@@ -184,7 +184,7 @@ private:
 //----------------------------------------------------------------------------//
 
 template<size_t DIM, class TREE_ENTITY_TYPE, class KEY>
-class ntree_node_u : public ntree_entity_base_t
+class ntree_node : public ntree_entity_base_t
 {
 public:
   enum LOCALITY : int { LOCAL = 0, NON_LOCAL = 1, SHARED = 2 };
@@ -192,14 +192,14 @@ public:
   static constexpr size_t dimension = DIM;
   using entity_id_t = typename TREE_ENTITY_TYPE::id_t;
   using id_t = flecsi::utils::id_t;
-  using point_t = point_u<double, dimension>;
+  using point_t = point<double, dimension>;
   using key_t = KEY;
 
-  ntree_node_u() : size_(0), is_leaf_(true) {}
-  ntree_node_u(const key_t & key) : size_(0), is_leaf_(true) {
+  ntree_node() : size_(0), is_leaf_(true) {}
+  ntree_node(const key_t & key) : size_(0), is_leaf_(true) {
     key_ = key;
   }
-  ~ntree_node_u() {}
+  ~ntree_node() {}
 
   // Setter
   void set_leaf(const bool & is_leaf) {
@@ -308,7 +308,7 @@ private:
   bool ghosts_local_;
 
   LOCALITY locality_;
-}; // class ntree_node_u
+}; // class ntree_node
 
 } // namespace topology
 } // namespace flecsi

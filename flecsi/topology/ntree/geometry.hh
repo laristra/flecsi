@@ -51,7 +51,7 @@ struct ntree_geometry {};
 template<typename T>
 struct ntree_geometry<T, 1> {
 
-  using point_t = point_u<T, 1>;
+  using point_t = point<T, 1>;
   using element_t = T;
   //! Tolerance for the computations
   static constexpr element_t tol =
@@ -128,7 +128,7 @@ struct ntree_geometry<T, 1> {
  *-----------------------------------------------------------------------------*/
 template<typename T>
 struct ntree_geometry<T, 2> {
-  using point_t = point_u<T, 2>;
+  using point_t = point<T, 2>;
   using element_t = T;
 
   //! Tolerance for the computations
@@ -208,7 +208,7 @@ struct ntree_geometry<T, 2> {
  *-----------------------------------------------------------------------------*/
 template<typename T>
 struct ntree_geometry<T, 3> {
-  using point_t = point_u<T, 3>;
+  using point_t = point<T, 3>;
   using element_t = T;
   //! Tolerance for the computations
   static constexpr element_t tol =

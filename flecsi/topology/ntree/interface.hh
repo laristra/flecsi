@@ -65,7 +65,7 @@ public:
   // ------- Basic declarations: types and subtypes
   static constexpr size_t dimension = Policy::dimension;
   using element_t = typename Policy::element_t;
-  using point_t = point_u<element_t,dimension>;
+  using point_t = point<element_t,dimension>;
   using range_t = std::array<point_t, 2>;
   // ------- Space filling curve
   using key_t = typename Policy::filling_curve_t;
