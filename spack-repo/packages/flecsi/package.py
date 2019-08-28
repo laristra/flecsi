@@ -48,7 +48,7 @@ class Flecsi(CMakePackage):
 
     def cmake_args(self):
         options = ['-DCMAKE_BUILD_TYPE=debug']
-        options.append('-DCINCH_SOURCE_DIR=' + self.spec['cinch'].prefix)
+        #options.append('-DCINCH_SOURCE_DIR=' + self.spec['cinch'].prefix)
 
         if self.spec.variants['backend'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
