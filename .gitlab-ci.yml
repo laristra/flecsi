@@ -50,17 +50,17 @@ before_script:
   - module load clang/7.0.0 # for formatting purpose
   - module unload gcc
   - module load gcc/${FLECSI_GCC_VERSION}
-  - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
-  #- spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
   - echo ${FLECSI_ENV_SOURCE_FILE}
   - echo ${FLECSI_SPACK_SPEC}
-  - exec {lock_fd}>${DEPS_LOCK} || exit 1
-  - flock -n "$lock_fd" || { echo "ERROR: flock() failed." >&2; exit 1; }
-  - spack repo rm laristra_flecsi || /bin/true ;
-  - spack repo add ${CI_PROJECT_DIR}/spack-repo;
-  - spack repo list;
-  - spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true;
-  - flock -u "$lock_fd"
+  - |
+    ( flock -e 200
+    source ${SPACK_ROOT}/share/spack/setup-env.sh
+    # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
+    spack repo rm laristra_flecsi || /bin/true ;
+    spack repo add ${CI_PROJECT_DIR}/spack-repo;
+    spack repo list;
+    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true;
+    ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
     if [[ ${CI_JOB_NAME} =~ "clang" ]];
@@ -166,36 +166,20 @@ before_script:
       then
         rm -rf ${SPACK_ROOT}/*;
       fi
-    - exec {lock_fd}>${DEPS_LOCK} || exit 1
-    - flock -n "$lock_fd" || { echo "ERROR: flock() failed." >&2; exit 1; }
-    # ... commands executed under lock ...
     - |
+      ( flock -e 200
       if [[ ! -d ${SPACK_ROOT} ]];
       then
         git init --shared=group ${SPACK_ROOT};
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
-      fi
-    - source ${SPACK_ROOT}/share/spack/setup-env.sh
-    - spack repo rm laristra_flecsi || /bin/true ;
-    - spack repo add ${CI_PROJECT_DIR}/spack-repo;
-    - spack repo list;
-    - spack install ${FLECSI_SPACK_SPEC}openmpi;
-    - spack install ${FLECSI_SPACK_SPEC}mpich;
-    - flock -u "$lock_fd"
-    #- |
-    #  ( flock -s 200
-    #  if [[ ! -d ${SPACK_ROOT} ]];
-    #  then
-    #    git init --shared=group ${SPACK_ROOT};
-    #    git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
-    #  fi;
-    #  source ${SPACK_ROOT}/share/spack/setup-env.sh
-    #  spack repo rm laristra_flecsi || /bin/true ;
-    #  spack repo add ${CI_PROJECT_DIR}/spack-repo;
-    #  spack repo list;
-    #  spack install ${FLECSI_SPACK_SPEC}openmpi;
-    #  spack install ${FLECSI_SPACK_SPEC}mpich;
-    #  ) 200>${DEPS_LOCK}
+      fi;
+      source ${SPACK_ROOT}/share/spack/setup-env.sh
+      spack repo rm laristra_flecsi || /bin/true ;
+      spack repo add ${CI_PROJECT_DIR}/spack-repo;
+      spack repo list;
+      spack install ${FLECSI_SPACK_SPEC}openmpi;
+      spack install ${FLECSI_SPACK_SPEC}mpich;
+      ) 200>${DEPS_LOCK}
 
 ###############
 # Build Stage #
