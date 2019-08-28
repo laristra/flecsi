@@ -98,7 +98,6 @@ struct find_entity_ {
    */
 
   using type = typename std::tuple_element<2, pair_>::type;
-
 };
 
 template<size_t INDEX, class TUPLE, class ENTITY>

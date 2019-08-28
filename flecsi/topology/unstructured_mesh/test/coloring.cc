@@ -16,7 +16,8 @@
 #include <flecsi/topology/unstructured_mesh/coloring.hh>
 #include <flecsi/utils/ftest.hh>
 
-int sanity(int argc, char ** argv) {
+int
+sanity(int argc, char ** argv) {
 
   FTEST();
 

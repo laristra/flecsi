@@ -22,6 +22,7 @@
 #else
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/utils/function_traits.hh"
+#include "flecsi/utils/serialize.hh"
 #include <flecsi/execution/common/task_attributes.hh>
 #include <flecsi/execution/legion/enactment/bind_accessors.hh>
 #include <flecsi/execution/legion/enactment/unbind_accessors.hh>
@@ -40,6 +41,22 @@
 flog_register_tag(task_wrapper);
 
 namespace flecsi {
+
+// Send and receive only the field_reference_t portion:
+template<data::storage_label_t L, class Topo, class T, std::size_t Priv>
+struct utils::serial_convert<data::accessor<L, Topo, T, Priv>> {
+  using type = data::accessor<L, Topo, T, Priv>;
+  struct Rep { // trivial
+    std::size_t id, top;
+  };
+  static Rep put(const type & r) {
+    return {r.identifier(), r.topology_identifier()};
+  }
+  static type get(const Rep & r) {
+    return typename type::Base(r.id, r.top);
+  }
+};
+
 namespace execution {
 namespace legion {
 
@@ -61,6 +78,27 @@ template<typename RETURN,
     Legion::Runtime *),
   std::size_t A>
 void register_task();
+
+template<class T>
+struct decay : std::decay<T> {};
+template<class... TT>
+struct decay<std::tuple<TT...>> {
+  using type = std::tuple<std::decay_t<TT>...>;
+};
+
+template<class T>
+auto
+tuple_get(const Legion::Task & t) {
+  struct Check {
+    const std::byte *b, *e;
+    Check(const Legion::Task & t)
+      : b(static_cast<const std::byte *>(t.args)), e(b + t.arglen) {}
+    ~Check() {
+      flog_assert(b == e, "Bad Task::arglen");
+    }
+  } ch(t);
+  return utils::serial_get<typename decay<T>::type>(ch.b);
+}
 } // namespace detail
 
 /*!
@@ -154,7 +192,9 @@ struct task_wrapper {
     }
 
     // Unpack task arguments
-    ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
+    // TODO: Can we deserialize directly into the user's parameters (i.e., do
+    // without finalize_handles)?
+    auto task_args = detail::tuple_get<ARG_TUPLE>(*task);
 
     bind_accessors_t bind_accessors(runtime, context, regions, task->futures);
     bind_accessors.walk(task_args);
@@ -198,7 +238,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     //    }
 
     // Unpack task arguments.
-    ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
+    auto mpi_task_args = detail::tuple_get<ARG_TUPLE>(*task);
 
     // FIXME: Refactor
     // init_handles_t init_handles(runtime, context, regions, task->futures);
