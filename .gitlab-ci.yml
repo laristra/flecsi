@@ -33,7 +33,7 @@ variables:
   IGNORE_NOCI: "FALSE"
   SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
   DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
-  lock_fd: 314
+  #lock_fd: 314
   FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
   FLECSI_MPI_PACKAGE: ""
   FLECSI_INTEL_VERSION: "19.0.2"
@@ -47,31 +47,32 @@ before_script:
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
   - module load python/${FLECSI_PYTHON_VERSION}
-  - module load intel/${FLECSI_INTEL_VERSION}
-  - module load clang/${FLECSI_CLANG_VERSION}
+  - module load clang/7.0.0 # for formatting purpose
   - module unload gcc
   - module load gcc/${FLECSI_GCC_VERSION}
   - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
   #- spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
   - echo ${FLECSI_ENV_SOURCE_FILE}
   - echo ${FLECSI_SPACK_SPEC}
-  - |
-    ( flock -s 200
-      spack repo rm laristra_flecsi || /bin/true ;
-      spack repo add ${CI_PROJECT_DIR}/spack-repo;
-      spack repo list;
-      spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true;
-    ) 200>${DEPS_LOCK}
+  - exec {lock_fd}>${DEPS_LOCK} || exit 1
+  - flock -n "$lock_fd" || { echo "ERROR: flock() failed." >&2; exit 1; }
+  - spack repo rm laristra_flecsi || /bin/true ;
+  - spack repo add ${CI_PROJECT_DIR}/spack-repo;
+  - spack repo list;
+  - spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true;
+  - flock -u "$lock_fd"
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
     if [[ ${CI_JOB_NAME} =~ "clang" ]];
     then
-      export CC=clang;
-      export CXX=clang++;
+      module load clang/${FLECSI_CLANG_VERSION};
+      #export CC=clang;
+      #export CXX=clang++;
     elif [[ ${CI_JOB_NAME} =~ "intel" ]];
     then
-      export CC=icc;
-      export CXX=icpc;
+      module load intel/${FLECSI_INTEL_VERSION};
+      #export CC=icc;
+      #export CXX=icpc;
     fi
   - module list
   - echo $CC;
@@ -165,20 +166,36 @@ before_script:
       then
         rm -rf ${SPACK_ROOT}/*;
       fi
+    - exec {lock_fd}>${DEPS_LOCK} || exit 1
+    - flock -n "$lock_fd" || { echo "ERROR: flock() failed." >&2; exit 1; }
+    # ... commands executed under lock ...
     - |
-      ( flock -s 200
       if [[ ! -d ${SPACK_ROOT} ]];
       then
         git init --shared=group ${SPACK_ROOT};
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
-      fi;
-      source ${SPACK_ROOT}/share/spack/setup-env.sh
-      spack repo rm laristra_flecsi || /bin/true ;
-      spack repo add ${CI_PROJECT_DIR}/spack-repo;
-      spack repo list;
-      spack install ${FLECSI_SPACK_SPEC}openmpi;
-      spack install ${FLECSI_SPACK_SPEC}mpich;
-      ) 200>${DEPS_LOCK}
+      fi
+    - source ${SPACK_ROOT}/share/spack/setup-env.sh
+    - spack repo rm laristra_flecsi || /bin/true ;
+    - spack repo add ${CI_PROJECT_DIR}/spack-repo;
+    - spack repo list;
+    - spack install ${FLECSI_SPACK_SPEC}openmpi;
+    - spack install ${FLECSI_SPACK_SPEC}mpich;
+    - flock -u "$lock_fd"
+    #- |
+    #  ( flock -s 200
+    #  if [[ ! -d ${SPACK_ROOT} ]];
+    #  then
+    #    git init --shared=group ${SPACK_ROOT};
+    #    git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
+    #  fi;
+    #  source ${SPACK_ROOT}/share/spack/setup-env.sh
+    #  spack repo rm laristra_flecsi || /bin/true ;
+    #  spack repo add ${CI_PROJECT_DIR}/spack-repo;
+    #  spack repo list;
+    #  spack install ${FLECSI_SPACK_SPEC}openmpi;
+    #  spack install ${FLECSI_SPACK_SPEC}mpich;
+    #  ) 200>${DEPS_LOCK}
 
 ###############
 # Build Stage #
