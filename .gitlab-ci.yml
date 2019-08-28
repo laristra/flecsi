@@ -54,8 +54,8 @@ before_script:
   - echo ${FLECSI_SPACK_SPEC}
   - |
     ( flock -e 200
-    source ${SPACK_ROOT}/share/spack/setup-env.sh
-    # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true
+    source ${SPACK_ROOT}/share/spack/setup-env.sh;
+    # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true;
     spack repo rm laristra_flecsi || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
@@ -173,7 +173,7 @@ before_script:
         git init --shared=group ${SPACK_ROOT};
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
       fi;
-      source ${SPACK_ROOT}/share/spack/setup-env.sh
+      source ${SPACK_ROOT}/share/spack/setup-env.sh;
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
