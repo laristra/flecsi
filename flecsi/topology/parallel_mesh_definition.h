@@ -40,8 +40,7 @@ public:
   entities(size_t from_dimension, size_t to_dimension, size_t id) const = 0;
   
   virtual const flecsi::coloring::crs_t &
-  entities_crs(size_t from_dim, size_t to_dim) const {
-  }
+  entities_crs(size_t from_dim, size_t to_dim) const = 0;
   
   virtual const std::vector<size_t> &
   local_to_global(size_t dim) const = 0;
