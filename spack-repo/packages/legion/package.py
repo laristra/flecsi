@@ -57,7 +57,7 @@ class Legion(CMakePackage):
             '-DLEGION_USE_CUDA=OFF',
             '-DLEGION_USE_OPENMP=OFF',
             '-DLegion_BUILD_EXAMPLES=ON',
-            '-DCMAKE_CXX_FLAGS=-DPRIVILEGE_CHECKS -DDEBUG_REALM -DDEBUG_LEGION -DBOUNDS_CHECKS -DENABLE_LEGION_TLS -ggdb',
+            '-DCMAKE_CXX_FLAGS=-DPRIVILEGE_CHECKS -DBOUNDS_CHECKS -DENABLE_LEGION_TLS',
             '-DBUILD_SHARED_LIBS=%s' % ('+shared' in self.spec)]
 
         if '+mpi' in self.spec:
