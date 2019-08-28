@@ -57,7 +57,6 @@ before_script:
   - echo ${FLECSI_SPACK_SPEC}
   - |
     ( flock -s 200
-      rm -rf ~/.spack;
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
