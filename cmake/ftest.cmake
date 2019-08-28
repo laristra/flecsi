@@ -106,7 +106,7 @@ function(ftest_add_unit name)
     set(unit_policy_libraries ${MPI_${MPI_LANGUAGE}_LIBRARIES})
     set(unit_policy_exec ${MPIEXEC})
     set(unit_policy_exec_threads ${MPIEXEC_NUMPROC_FLAG})
-    set(unit_policy_exec_preflags "--oversubscribe" ${MPIEXEC_PREFLAGS})
+    set(unit_policy_exec_preflags ${MPIEXEC_PREFLAGS})
     set(unit_policy_exec_postflags ${MPIEXEC_POSTFLAGS})
 
   elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion"
@@ -123,7 +123,7 @@ function(ftest_add_unit name)
       ${MPI_${MPI_LANGUAGE}_LIBRARIES})
     set(unit_policy_exec ${MPIEXEC})
     set(unit_policy_exec_threads ${MPIEXEC_NUMPROC_FLAG})
-    set(unit_policy_exec_preflags "--oversubscribe" ${MPIEXEC_PREFLAGS})
+    set(unit_policy_exec_preflags ${MPIEXEC_PREFLAGS})
     set(unit_policy_exec_postflags ${MPIEXEC_POSTFLAGS})
 
   else()
