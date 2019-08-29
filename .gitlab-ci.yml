@@ -29,7 +29,7 @@ variables:
   BUILD_TYPE: "Debug"
   CC: "gcc"
   CXX: "g++"
-  CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+  CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
   IGNORE_NOCI: "FALSE"
   SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
   DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
