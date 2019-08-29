@@ -212,7 +212,7 @@ before_script:
         -DENABLE_DOCUMENTATION=OFF \
         -DENABLE_COVERAGE_BUILD=ON \
         ..
-    make -k VERBOSE=1 -j2 -l80
+    make -k VERBOSE=1 -j2 -l40
     make install DESTDIR=${CI_PROJECT_DIR}/build/install
     make install
     ccache -s
