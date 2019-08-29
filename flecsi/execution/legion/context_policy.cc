@@ -128,9 +128,6 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
     strcpy( new_argv[argc], "-ll:gsize" );
     new_argv[argc+1] = new char[2];
     strcpy( new_argv[argc+1], "0" );
-    for ( int i=0; i<new_argc; ++i ) {
-      std::cout << "new_argv["<<i<<"] = " << new_argv[i] << std::endl;
-    }
 
     // Start the Legion runtime
     Runtime::start(new_argc, new_argv, true);
