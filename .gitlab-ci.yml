@@ -11,64 +11,72 @@ stages:
   - Apps
 
 variables:
+  #CI_DEBUG_TRACE: "true"
   GET_SOURCES_ATTEMPTS: 10
   ARTIFACT_DOWNLOAD_ATTEMPTS: 10
   RESTORE_CACHE_ATTEMPTS: 10
   GIT_STRATEGY: fetch
   GLOBAL_CI_VARIABLE: "global_ci_value"
-  CI_JOB_NAME_TMP: ${CI_JOB_NAME}
-  CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME_TMP#*:}
-  #CI_DEBUG_TRACE: "true"
   http_proxy: "http://proxyout.lanl.gov:8080"
   https_proxy: "http://proxyout.lanl.gov:8080"
   ftp_proxy: "http://proxyout.lanl.gov:8080"
   no_proxy: "lanl.gov"
-  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
-  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
   GIT_SUBMODULE_STRATEGY: recursive
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   CCACHE_UMASK: 000
-  DISTRO: "fedora"
+  DISTRO: "centOS"
   RUNTIME: "mpi"
   BUILD_TYPE: "Debug"
   CC: "gcc"
   CXX: "g++"
   CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
   IGNORE_NOCI: "FALSE"
+  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
+  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
+  lock_fd: 314
+  FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
+  FLECSI_MPI_PACKAGE: ""
+  FLECSI_INTEL_VERSION: "19.0.2"
+  FLECSI_CLANG_VERSION: "8.0.1"
+  FLECSI_GCC_VERSION: "7.3.0"
+  FLECSI_PYTHON_VERSION: "3.5.1"
+  FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/flecsi-deps-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
+  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz backend=legion ^${FLECSI_MPI_PACKAGE}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
-  - echo ${CI_RUNNER_TAGS}
+  - module load python/${FLECSI_PYTHON_VERSION}
+  - module load clang/7.0.0 # for formatting purpose
+  - module unload gcc
+  - module load gcc/${FLECSI_GCC_VERSION}
+  - echo ${FLECSI_ENV_SOURCE_FILE}
+  - echo ${FLECSI_SPACK_SPEC}
   - |
-    if [[ ${CI_RUNNER_TAGS} = "shell" ]];
+    ( flock -e 200
+    source ${SPACK_ROOT}/share/spack/setup-env.sh;
+    # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true;
+    spack repo rm laristra_flecsi || /bin/true ;
+    spack repo add ${CI_PROJECT_DIR}/spack-repo;
+    spack repo list;
+    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true;
+    ) 200>${DEPS_LOCK}
+  - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
+  - |
+    if [[ ${CI_JOB_NAME} =~ "clang" ]];
     then
-      module load python/3.5.1;
-      module load cmake/3.12.4;
-      module load gcc/7.3.0;
-      source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true;
-      spack load -r flecsi-deps%gcc@7.3.0 backend=$RUNTIME || /bin/true;
-      module list;
+      module load clang/${FLECSI_CLANG_VERSION};
+    elif [[ ${CI_JOB_NAME} =~ "intel" ]];
+    then
+      module load intel/${FLECSI_INTEL_VERSION};
     fi
+  - module list
+  - echo $CC;
+  - echo $CXX;
 
 ##########################
 # Build Matrix Variables #
 ##########################
-
-.distro_centOS: &distro_centOS
-  DISTRO: "centOS"
-
-.distro_fedora: &distro_fedora
-  DISTRO: "fedora"
-
-.distro_fedora_mpich: &distro_fedora_mpich
-  DISTRO: "fedora_mpich"
-
-.distro_ubuntu: &distro_ubuntu
-  DISTRO: "ubuntu"
-
-.distro_ubuntu_mpich: &distro_ubuntu_mpich
-  DISTRO: "ubuntu_mpich"
 
 .runtime_mpi: &runtime_mpi
   RUNTIME: "mpi"
@@ -96,6 +104,12 @@ before_script:
 
 .buildtype_release: &buildtype_release
   BUILD_TYPE: "Release"
+
+.openmpi: &openmpi
+  FLECSI_MPI_PACKAGE: "openmpi"
+
+.mpich: &mpich
+  FLECSI_MPI_PACKAGE: "mpich"
 
 .ignore_noci: &ignore_noci
   IGNORE_NOCI: "TRUE"
@@ -127,12 +141,6 @@ before_script:
   tags: &shell_tags
     - shell
 
-.docker_template: &docker_def
-  tags: &docker_tags
-    - docker
-  image:
-    name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
-
 .batch_template: &batch_def
   tags: &batch_tags
     - darwin-slurm
@@ -149,26 +157,24 @@ before_script:
   <<: *job_def
   stage: Env
   script: &env_script
-    - mkdir -p build
-    - cd ${CI_PROJECT_DIR}/build/
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
       then
         rm -rf ${SPACK_ROOT}/*;
       fi
     - |
-      ( flock -s 200
+      ( flock -e 200
       if [[ ! -d ${SPACK_ROOT} ]];
       then
         git init --shared=group ${SPACK_ROOT};
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
       fi;
       source ${SPACK_ROOT}/share/spack/setup-env.sh;
-      spack repo rm laristra_flecsi;
+      spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install flecsi-deps~graphviz%gcc@7.3.0 backend=mpi;
-      spack install flecsi-deps~graphviz%gcc@7.3.0 backend=legion;
+      spack install ${FLECSI_SPACK_SPEC}openmpi;
+      spack install ${FLECSI_SPACK_SPEC}mpich;
       ) 200>${DEPS_LOCK}
 
 ###############
@@ -186,25 +192,22 @@ before_script:
     # git submodule init
     # git config submodule.cinch.url https://github.com/laristra/cinch.git
     # git submodule update --init --recursive
-    mkdir -p build
+    mkdir -p ${CI_PROJECT_DIR}/build
+    mkdir -p ${CI_PROJECT_DIR}/build/install
     cd ${CI_PROJECT_DIR}/build/
-    cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-          -DFLECSI_RUNTIME_MODEL=$RUNTIME \
-          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
-          -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
-          -DENABLE_FLECSTAN=$([ "$CI_RUNNER_TAGS" = "shell" ] && echo OFF || echo ON) \
-          -DENABLE_FLOG=ON \
-          -DENABLE_DOXYGEN=ON \
-          -DENABLE_DOCUMENTATION=OFF \
-          -DENABLE_COVERAGE_BUILD=ON \
-          ..
-    make -k VERBOSE=1 -j2 -l80
-    mkdir -p install
-    make install DESTDIR=install
-    if [[ ${CI_RUNNER_TAGS} = "docker" ]];
-    then
-      sudo make install;
-    fi
+    cmake -DCMAKE_INSTALL_PREFIX=${CI_PROJECT_DIR}/build/install \
+        -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+        -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+        ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
+        -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
+        -DENABLE_FLOG=ON \
+        -DENABLE_DOXYGEN=ON \
+        -DENABLE_DOCUMENTATION=OFF \
+        -DENABLE_COVERAGE_BUILD=ON \
+        ..
+    make -k VERBOSE=1 -j2 -l40
+    make install DESTDIR=${CI_PROJECT_DIR}/build/install
+    make install
     ccache -s
 
 ##############
@@ -220,7 +223,7 @@ before_script:
   script: &test_script |-
     echo 'Start testing'
     cd ${CI_PROJECT_DIR}/build/
-    make test ARGS="-V"
+    make test || make test ARGS="-V"
     gcovr .
 
 ################
@@ -236,6 +239,8 @@ before_script:
   script: &format_script |-
     echo 'Start format checking'
     cd ${CI_PROJECT_DIR}/build/
+    clang-format -version
+    make format && git diff --exit-code --ignore-submodules
 
 ###################
 # Tutorials Stage #
@@ -249,10 +254,9 @@ before_script:
     - .build_template
   script: &tutorials_script
     - echo 'Start tutorials checking'
-    - cd ${CI_PROJECT_DIR}/build/
-    - sudo make install
-    - source /usr/local/bin/flecsi-tutorial.sh
-    - cd ../flecsi-tutorial
+    - cd ${CI_PROJECT_DIR}
+    - source ${CI_PROJECT_DIR}/build/install/bin/flecsi-tutorial.sh
+    - cd flecsi-tutorial
 
     # Tutorial 00-driver
     - cd 00-driver
@@ -276,17 +280,19 @@ before_script:
     - .build_template
   script: &apps_script
     - echo 'Start apps checking'
-    - cd ${CI_PROJECT_DIR}/build/
+    - cd ${CI_PROJECT_DIR}
     - git clone --recursive https://github.com/laristra/flecsale.git
     - cd flecsale/flecsi
     - git fetch
     - git checkout ${CI_COMMIT_REF_NAME}
     - git submodule update --init --recursive
     - cd ../
-    - mkdir build
+    - mkdir -p build
     - cd build
-    - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-        -DFLECSI_RUNTIME_MODEL=mpi \
+    - pwd
+    - |-
+      cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+        -DFLECSI_RUNTIME_MODEL=${RUNTIME} \
         -DENABLE_UNIT_TESTS=ON \
         ..
     - make -j2 || make VERBOSE=1
@@ -316,681 +322,539 @@ env:
 # Canary Jobs #
 ###############
 
-canary:fedora_mpi:
+canary:centOS_mpich_mpi:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_mpi
+    <<: *buildtype_debug
+    <<: *compiler_gcc
+    <<: *mpich
+  allow_failure: true 
 
-canary:fedora_legion:
+canary:centOS_mpich_legion:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_legion
+    <<: *buildtype_debug
+    <<: *compiler_gcc
+    <<: *mpich
 
-canary:fedora_hpx:
+canary:centOS_mpich_hpx:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_hpx
+    <<: *buildtype_debug
+    <<: *compiler_gcc
+    <<: *mpich
   allow_failure: true 
-
-#canary:centOS_mpi:
-#  extends: .canary
-#  <<: *shell_def
-#  variables:
-#    <<: *distro_centOS
-#    <<: *runtime_mpi
 
 ##############
 # Build Jobs #
 ##############
 
-build:ubuntu_mpi:
+build:centOS_mpi:
   extends: .build
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_ubuntu
     <<: *runtime_mpi
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *openmpi
   script:
     - *build_script
+    - *test_script
+  allow_failure: true 
 
-build:ubuntu_mpi_release:
-  extends: build:ubuntu_mpi
+build:centOS_mpi_release:
+  extends: build:centOS_mpi
   variables:
     <<: *buildtype_release
 
-build:ubuntu_mpi_clang:
-  extends: build:ubuntu_mpi
+build:centOS_mpi_clang:
+  extends: build:centOS_mpi
   variables:
     <<: *compiler_clang
 
-build:ubuntu_mpi_clang_release:
-  extends: build:ubuntu_mpi_clang
+build:centOS_mpi_clang_release:
+  extends: build:centOS_mpi_clang
   variables:
     <<: *buildtype_release
 
-build:ubuntu_mpich_mpi:
-  extends: .build
-  <<: *docker_def
+build:centOS_mpi_intel:
+  extends: build:centOS_mpi
   variables:
-    <<: *distro_ubuntu_mpich
+    <<: *compiler_intel
+
+build:centOS_mpi_intel_release:
+  extends: build:centOS_mpi_intel
+  variables:
+    <<: *buildtype_release
+
+build:centOS_mpich_mpi:
+  extends: .build
+  <<: *shell_def
+  variables:
     <<: *runtime_mpi
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *mpich
   script:
     - *build_script
+    - *test_script
+  allow_failure: true 
 
-build:ubuntu_mpich_mpi_release:
-  extends: build:ubuntu_mpich_mpi
+build:centOS_mpich_mpi_release:
+  extends: build:centOS_mpich_mpi
   variables:
     <<: *buildtype_release
 
-build:ubuntu_mpich_mpi_clang:
-  extends: build:ubuntu_mpich_mpi
+build:centOS_mpich_mpi_clang:
+  extends: build:centOS_mpich_mpi
   variables:
     <<: *compiler_clang
 
-build:ubuntu_mpich_mpi_clang_release:
-  extends: build:ubuntu_mpich_mpi_clang
+build:centOS_mpich_mpi_clang_release:
+  extends: build:centOS_mpich_mpi_clang
   variables:
     <<: *buildtype_release
 
-.build:fedora_mpi:
+build:centOS_mpich_mpi_intel:
+  extends: build:centOS_mpich_mpi
+  variables:
+    <<: *compiler_intel
+
+build:centOS_mpich_mpi_intel_release:
+  extends: build:centOS_mpich_mpi_intel
+  variables:
+    <<: *buildtype_release
+
+build:centOS_legion:
   extends: .build
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_fedora
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *build_script
-
-build:fedora_mpi_release:
-  extends: .build:fedora_mpi
-  variables:
-    <<: *buildtype_release
-
-build:fedora_mpi_clang:
-  extends: .build:fedora_mpi
-  variables:
-    <<: *compiler_clang
-
-build:fedora_mpi_clang_release:
-  extends: build:fedora_mpi_clang
-  variables:
-    <<: *buildtype_release
-
-build:fedora_mpich_mpi:
-  extends: .build
-  <<: *docker_def
-  variables:
-    <<: *distro_fedora_mpich
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *build_script
-
-build:fedora_mpich_mpi_release:
-  extends: build:fedora_mpich_mpi
-  variables:
-    <<: *buildtype_release
-
-build:fedora_mpich_mpi_clang:
-  extends: build:fedora_mpich_mpi
-  variables:
-    <<: *compiler_clang
-
-build:fedora_mpich_mpi_clang_release:
-  extends: build:fedora_mpich_mpi_clang
-  variables:
-    <<: *buildtype_release
-
-build:ubuntu_legion:
-  extends: .build
-  <<: *docker_def
-  variables:
-    <<: *distro_ubuntu
     <<: *runtime_legion
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *openmpi
   script:
     - *build_script
+    - *test_script
 
-build:ubuntu_legion_release:
-  extends: build:ubuntu_legion
+build:centOS_legion_release:
+  extends: build:centOS_legion
   variables:
     <<: *buildtype_release
 
-build:ubuntu_legion_clang:
-  extends: build:ubuntu_legion
+build:centOS_legion_clang:
+  extends: build:centOS_legion
   variables:
     <<: *compiler_clang
 
-build:ubuntu_legion_clang_release:
-  extends: build:ubuntu_legion_clang
+build:centOS_legion_clang_release:
+  extends: build:centOS_legion_clang
   variables:
     <<: *buildtype_release
 
-build:ubuntu_mpich_legion:
-  extends: .build
-  <<: *docker_def
+build:centOS_legion_intel:
+  extends: build:centOS_legion
   variables:
-    <<: *distro_ubuntu_mpich
+    <<: *compiler_intel
+
+build:centOS_legion_intel_release:
+  extends: build:centOS_legion_intel
+  variables:
+    <<: *buildtype_release
+
+build:centOS_mpich_legion:
+  extends: .build
+  <<: *shell_def
+  variables:
     <<: *runtime_legion
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *mpich
   script:
     - *build_script
+    - *test_script
 
-build:ubuntu_mpich_legion_release:
-  extends: build:ubuntu_mpich_legion
+build:centOS_mpich_legion_release:
+  extends: build:centOS_mpich_legion
   variables:
     <<: *buildtype_release
 
-build:ubuntu_mpich_legion_clang:
-  extends: build:ubuntu_mpich_legion
+build:centOS_mpich_legion_clang:
+  extends: build:centOS_mpich_legion
   variables:
     <<: *compiler_clang
 
-build:ubuntu_mpich_legion_clang_release:
-  extends: build:ubuntu_mpich_legion_clang
+build:centOS_mpich_legion_clang_release:
+  extends: build:centOS_mpich_legion_clang
   variables:
     <<: *buildtype_release
 
-.build:fedora_legion:
+build:centOS_mpich_legion_intel:
+  extends: build:centOS_mpich_legion
+  variables:
+    <<: *compiler_intel
+
+build:centOS_mpich_legion_intel_release:
+  extends: build:centOS_mpich_legion_intel
+  variables:
+    <<: *buildtype_release
+
+build:centOS_hpx:
   extends: .build
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_fedora
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *build_script
-
-build:fedora_legion_release:
-  extends: .build:fedora_legion
-  variables:
-    <<: *buildtype_release
-
-build:fedora_legion_clang:
-  extends: .build:fedora_legion
-  variables:
-    <<: *compiler_clang
-
-build:fedora_legion_clang_release:
-  extends: build:fedora_legion_clang
-  variables:
-    <<: *buildtype_release
-
-build:fedora_mpich_legion:
-  extends: .build
-  <<: *docker_def
-  variables:
-    <<: *distro_fedora_mpich
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *build_script
-
-build:fedora_mpich_legion_release:
-  extends: build:fedora_mpich_legion
-  variables:
-    <<: *buildtype_release
-
-build:fedora_mpich_legion_clang:
-  extends: build:fedora_mpich_legion
-  variables:
-    <<: *compiler_clang
-
-build:fedora_mpich_legion_clang_release:
-  extends: build:fedora_mpich_legion_clang
-  variables:
-    <<: *buildtype_release
-
-build:ubuntu_hpx:
-  extends: .build
-  <<: *docker_def
-  variables:
-    <<: *distro_ubuntu
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *openmpi
   script:
     - *build_script
+    - *test_script
   allow_failure: true
 
-build:ubuntu_hpx_clang:
-  extends: build:ubuntu_hpx
+build:centOS_mpich_hpx_clang:
+  extends: build:centOS_hpx
   variables:
     <<: *compiler_clang
+    <<: *mpich
 
-build:centOS_mpi_intel:
-  extends: .build
-  <<: *shell_def
+build:centOS_hpx_intel_release:
+  extends: build:centOS_hpx
   variables:
-    <<: *distro_centOS
-    <<: *runtime_mpi
-    <<: *buildtype_debug
+    <<: *buildtype_release
     <<: *compiler_intel
-  script:
-    - *build_script
 
-build:centOS_legion_intel:
-  extends: .build
-  <<: *shell_def
+build:centOS_mpi.ignoreNoCI:
+  extends: build:centOS_mpi
   variables:
-    <<: *distro_centOS
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_intel
-  script:
-    - *build_script
+    <<: *ignore_noci
+  allow_failure: true
+
+build:centOS_legion.ignoreNoCI:
+  extends: build:centOS_legion
+  variables:
+    <<: *ignore_noci
+  allow_failure: true
+
+build:centOS_hpx.ignoreNoCI:
+  extends: build:centOS_hpx
+  variables:
+    <<: *ignore_noci
+  allow_failure: true
 
 #############
 # Test Jobs #
 #############
 
-test:ubuntu_mpi:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_ubuntu
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:ubuntu_mpi
-
-test:ubuntu_mpi_release:
-  extends: test:ubuntu_mpi
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:ubuntu_mpi_release
-
-test:ubuntu_mpi_clang:
-  extends: test:ubuntu_mpi
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:ubuntu_mpi_clang
-
-test:ubuntu_mpi_clang_release:
-  extends: test:ubuntu_mpi_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:ubuntu_mpi_clang_release
-
-test:ubuntu_mpich_mpi:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_ubuntu_mpich
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:ubuntu_mpich_mpi
-
-test:ubuntu_mpich_mpi_release:
-  extends: test:ubuntu_mpich_mpi
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:ubuntu_mpich_mpi_release
-
-test:ubuntu_mpich_mpi_clang:
-  extends: test:ubuntu_mpich_mpi
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:ubuntu_mpich_mpi_clang
-
-test:ubuntu_mpich_mpi_clang_release:
-  extends: test:ubuntu_mpich_mpi_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:ubuntu_mpich_mpi_clang_release
-
-.test:fedora_mpi:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_fedora
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:fedora_mpi
-
-test:fedora_mpi_release:
-  extends: .test:fedora_mpi
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:fedora_mpi_release
-
-test:fedora_mpi_clang:
-  extends: .test:fedora_mpi
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:fedora_mpi_clang
-
-test:fedora_mpi_clang_release:
-  extends: test:fedora_mpi_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:fedora_mpi_clang_release
-
-test:fedora_mpich_mpi:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_fedora_mpich
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:fedora_mpich_mpi
-
-test:fedora_mpich_mpi_release:
-  extends: test:fedora_mpich_mpi
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:fedora_mpich_mpi_release
-
-test:fedora_mpich_mpi_clang:
-  extends: test:fedora_mpich_mpi
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:fedora_mpich_mpi_clang
-
-test:fedora_mpich_mpi_clang_release:
-  extends: test:fedora_mpich_mpi_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:fedora_mpich_mpi_clang_release
-
-test:ubuntu_legion:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_ubuntu
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:ubuntu_legion
-
-test:ubuntu_legion_release:
-  extends: test:ubuntu_legion
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:ubuntu_legion_release
-
-test:ubuntu_legion_clang:
-  extends: test:ubuntu_legion
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:ubuntu_legion_clang
-
-test:ubuntu_legion_clang_release:
-  extends: test:ubuntu_legion_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:ubuntu_legion_clang_release
-
-test:ubuntu_mpich_legion:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_ubuntu_mpich
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:ubuntu_mpich_legion
-
-test:ubuntu_mpich_legion_release:
-  extends: test:ubuntu_mpich_legion
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:ubuntu_mpich_legion_release
-
-test:ubuntu_mpich_legion_clang:
-  extends: test:ubuntu_mpich_legion
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:ubuntu_mpich_legion_clang
-
-test:ubuntu_mpich_legion_clang_release:
-  extends: test:ubuntu_mpich_legion_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:ubuntu_mpich_legion_clang_release
-
-.test:fedora_legion:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_fedora
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:fedora_legion
-
-test:fedora_legion_release:
-  extends: .test:fedora_legion
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:fedora_legion_release
-
-test:fedora_legion_clang:
-  extends: .test:fedora_legion
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:fedora_legion_clang
-
-test:fedora_legion_clang_release:
-  extends: test:fedora_legion_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:fedora_legion_clang_release
-
-test:fedora_mpich_legion:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_fedora_mpich
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:fedora_mpich_legion
-
-test:fedora_mpich_legion_release:
-  extends: test:fedora_mpich_legion
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:fedora_mpich_legion_release
-
-test:fedora_mpich_legion_clang:
-  extends: test:fedora_mpich_legion
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:fedora_mpich_legion_clang
-
-test:fedora_mpich_legion_clang_release:
-  extends: test:fedora_mpich_legion_clang
-  variables:
-    <<: *buildtype_release
-  dependencies:
-    - build:fedora_mpich_legion_clang_release
-
-test:ubuntu_hpx:
-  extends: .test
-  <<: *docker_def
-  variables:
-    <<: *distro_ubuntu
-    <<: *runtime_hpx
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-  script:
-    - *test_script
-  dependencies:
-    - build:ubuntu_hpx
-  allow_failure: true
-
-test:ubuntu_hpx_clang:
-  extends: test:ubuntu_hpx
-  variables:
-    <<: *compiler_clang
-  dependencies:
-    - build:ubuntu_hpx_clang
-
-test:ubuntu_mpi.ignoreNoCI:
-  extends: test:ubuntu_mpi
-  variables:
-    <<: *ignore_noci
-  dependencies:
-    - build:ubuntu_mpi
-  allow_failure: true
-
-test:ubuntu_legion.ignoreNoCI:
-  extends: test:ubuntu_legion
-  variables:
-    <<: *ignore_noci
-  dependencies:
-    - build:ubuntu_legion
-  allow_failure: true
-
-test:ubuntu_hpx.ignoreNoCI:
-  extends: test:ubuntu_hpx
-  variables:
-    <<: *ignore_noci
-  dependencies:
-    - build:ubuntu_hpx
-  allow_failure: true
-
-test:centOS_mpi_intel:
-  extends: .test
-  <<: *shell_def
-  variables:
-    <<: *distro_centOS
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_intel
-  script:
-    - *test_script
-  dependencies:
-    - build:centOS_mpi_intel
-
-test:centOS_legion_intel:
-  extends: .test
-  <<: *shell_def
-  variables:
-    <<: *distro_centOS
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_intel
-  script:
-    - *test_script
-  dependencies:
-    - build:centOS_legion_intel
+#test:centOS_mpi:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_mpi
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *openmpi
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_mpi
+#
+#test:centOS_mpi_release:
+#  extends: test:centOS_mpi
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpi_release
+#
+#test:centOS_mpi_clang:
+#  extends: test:centOS_mpi
+#  variables:
+#    <<: *compiler_clang
+#  dependencies:
+#    - build:centOS_mpi_clang
+#
+#test:centOS_mpi_clang_release:
+#  extends: test:centOS_mpi_clang
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpi_clang_release
+#
+#test:centOS_mpi_intel:
+#  extends: test:centOS_mpi
+#  variables:
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_mpi_intel
+#
+#test:centOS_mpi_intel_release:
+#  extends: test:centOS_mpi_intel
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpi_intel_release
+#
+#test:centOS_mpich_mpi:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_mpi
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *mpich
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_mpich_mpi
+#
+#test:centOS_mpich_mpi_release:
+#  extends: test:centOS_mpich_mpi
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_mpi_release
+#
+#test:centOS_mpich_mpi_clang:
+#  extends: test:centOS_mpich_mpi
+#  variables:
+#    <<: *compiler_clang
+#  dependencies:
+#    - build:centOS_mpich_mpi_clang
+#
+#test:centOS_mpich_mpi_clang_release:
+#  extends: test:centOS_mpich_mpi_clang
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_mpi_clang_release
+#
+#test:centOS_mpich_mpi_intel:
+#  extends: test:centOS_mpich_mpi
+#  variables:
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_mpich_mpi_intel
+#
+#test:centOS_mpich_mpi_intel_release:
+#  extends: test:centOS_mpich_mpi_intel
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_mpi_intel_release
+#
+#test:centOS_legion:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_legion
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *openmpi
+#  allow_failure: true 
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_legion
+#
+#test:centOS_legion_release:
+#  extends: test:centOS_legion
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_legion_release
+#
+#test:centOS_legion_clang:
+#  extends: test:centOS_legion
+#  variables:
+#    <<: *compiler_clang
+#  dependencies:
+#    - build:centOS_legion_clang
+#
+#test:centOS_legion_clang_release:
+#  extends: test:centOS_legion_clang
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_legion_clang_release
+#
+#test:centOS_legion_intel:
+#  extends: test:centOS_legion
+#  variables:
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_legion_intel
+#
+#test:centOS_legion_intel_release:
+#  extends: test:centOS_legion_intel
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_legion_intel_release
+#
+#test:centOS_mpich_legion:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_legion
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *mpich
+#  allow_failure: true 
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_mpich_legion
+#
+#test:centOS_mpich_legion_release:
+#  extends: test:centOS_mpich_legion
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_legion_release
+#
+#test:centOS_mpich_legion_clang:
+#  extends: test:centOS_mpich_legion
+#  variables:
+#    <<: *compiler_clang
+#  dependencies:
+#    - build:centOS_mpich_legion_clang
+#
+#test:centOS_mpich_legion_clang_release:
+#  extends: test:centOS_mpich_legion_clang
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_legion_clang_release
+#
+#test:centOS_mpich_legion_intel:
+#  extends: test:centOS_mpich_legion
+#  variables:
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_mpich_legion_intel
+#
+#test:centOS_mpich_legion_intel_release:
+#  extends: test:centOS_mpich_legion_intel
+#  variables:
+#    <<: *buildtype_release
+#  dependencies:
+#    - build:centOS_mpich_legion_intel_release
+#
+#test:centOS_hpx:
+#  extends: .test
+#  <<: *shell_def
+#  variables:
+#    <<: *runtime_hpx
+#    <<: *buildtype_debug
+#    <<: *compiler_gcc
+#    <<: *openmpi
+#  script:
+#    - *test_script
+#  dependencies:
+#    - build:centOS_hpx
+#  allow_failure: true
+#
+#test:centOS_mpich_hpx_clang:
+#  extends: test:centOS_hpx
+#  variables:
+#    <<: *compiler_clang
+#    <<: *mpich
+#  dependencies:
+#    - build:centOS_mpich_hpx_clang
+#
+#test:centOS_hpx_intel_release:
+#  extends: test:centOS_hpx
+#  variables:
+#    <<: *buildtype_release
+#    <<: *compiler_intel
+#  dependencies:
+#    - build:centOS_hpx_intel_release
+#
+#test:centOS_mpi.ignoreNoCI:
+#  extends: test:centOS_mpi
+#  variables:
+#    <<: *ignore_noci
+#  dependencies:
+#    - build:centOS_mpi
+#  allow_failure: true
+#
+#test:centOS_legion.ignoreNoCI:
+#  extends: test:centOS_legion
+#  variables:
+#    <<: *ignore_noci
+#  dependencies:
+#    - build:centOS_legion
+#  allow_failure: true
+#
+#test:centOS_hpx.ignoreNoCI:
+#  extends: test:centOS_hpx
+#  variables:
+#    <<: *ignore_noci
+#  dependencies:
+#    - build:centOS_hpx
+#  allow_failure: true
 
 ##################
 # Tutorials Jobs #
 ##################
 
-tutorials:ubuntu_mpi:
+tutorials:centOS_mpi:
   extends: .tutorials
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_ubuntu
     <<: *runtime_mpi
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *openmpi
+  allow_failure: true 
   dependencies:
-    - build:ubuntu_mpi
+    - build:centOS_mpi
 
-tutorials:ubuntu_legion:
+tutorials:centOS_legion:
   extends: .tutorials
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_ubuntu
     <<: *runtime_legion
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *openmpi
+  allow_failure: true 
   dependencies:
-    - build:ubuntu_legion
+    - build:centOS_legion
 
 #############
 # Apps Jobs #
 #############
 
-apps:ubuntu_mpi:
+apps:centOS_mpi:
   extends: .apps
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_ubuntu
     <<: *runtime_mpi
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *openmpi
+  allow_failure: true 
   dependencies:
-    - build:ubuntu_mpi
+    - build:centOS_mpi
 
-apps:ubuntu_legion:
+apps:centOS_legion:
   extends: .apps
-  <<: *docker_def
+  <<: *shell_def
   variables:
-    <<: *distro_ubuntu
     <<: *runtime_legion
     <<: *buildtype_debug
     <<: *compiler_gcc
+    <<: *openmpi
+  allow_failure: true 
   dependencies:
-    - build:ubuntu_legion
+    - build:centOS_legion
 
 #######################################################################################
 #######################################################################################
