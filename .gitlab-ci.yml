@@ -173,8 +173,8 @@ before_script:
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install –only dependencies ${FLECSI_SPACK_SPEC}openmpi;
-      spack install –only dependencies ${FLECSI_SPACK_SPEC}mpich;
+      spack install -–only dependencies ${FLECSI_SPACK_SPEC}openmpi;
+      spack install –-only dependencies ${FLECSI_SPACK_SPEC}mpich;
       ) 200>${DEPS_LOCK}
 
 ###############
