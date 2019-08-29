@@ -1,21 +1,21 @@
 #include <flecsi/utils/tuple_walker.hh>
 
 // struct once
-struct once : public flecsi::utils::tuple_walker_u<once> {
+struct once : public flecsi::utils::tuple_walker<once> {
   void handle(const double d) const {
     CINCH_CAPTURE() << d << std::endl;
   }
 };
 
 // struct twice
-struct twice : public flecsi::utils::tuple_walker_u<twice> {
+struct twice : public flecsi::utils::tuple_walker<twice> {
   void handle(const double d) {
     CINCH_CAPTURE() << 2 * d << std::endl;
   }
 };
 
 // struct thrice
-struct thrice : public flecsi::utils::tuple_walker_u<thrice> {
+struct thrice : public flecsi::utils::tuple_walker<thrice> {
   void handle(double d) const {
     CINCH_CAPTURE() << 3 * d << std::endl;
   }

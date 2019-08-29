@@ -22,13 +22,13 @@ using namespace flecsi;
 using namespace flecsi::data;
 using namespace flecsi::topology;
 
-using index_field_t = index_field_member_u<double>;
-const index_field_t field(1);
+using index_field_t = index_field_member<double>;
+const index_field_t pressure_field;
 
-const auto pressure = field(flecsi_index_topology);
+const auto pressure = pressure_field(flecsi_index_topology);
 
 void
-assign(index_field_t::accessor<rw> p) {
+assign(index_field_t::accessor<wo> p) {
   flog(info) << "assign on " << color() << std::endl;
   p = color();
 } // assign

@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/common/entity_storage.hh>
 #include <flecsi/topology/common/index_space.hh>
 #include <flecsi/topology/ntree/storage.hh>
@@ -32,7 +32,7 @@ namespace flecsi {
 namespace topology {
 
 template<class TREE_TYPE>
-struct ntree_storage_u {
+struct ntree_storage {
 
   using id_t = utils::id_t;
   static constexpr size_t num_partitions = 5;
@@ -43,11 +43,11 @@ struct ntree_storage_u {
 
   // entity index spaces
   using entity_index_space_t =
-    index_space_u<entity_t *, true, true, true, void, topology_storage_u>;
+    index_space<entity_t *, true, true, true, void, topology_storage>;
   using entity_index_subspaces_t =
-    index_space_u<entity_t *, false, true, false, void, topology_storage_u>;
+    index_space<entity_t *, false, true, false, void, topology_storage>;
   using entity_partition_index_spaces_t =
-    index_space_u<entity_t *, false, false, true, void, topology_storage_u>;
+    index_space<entity_t *, false, false, true, void, topology_storage>;
 
   entity_index_space_t entity_index_space;
   entity_index_subspaces_t entity_index_subspaces;
@@ -56,19 +56,11 @@ struct ntree_storage_u {
 
   // Tree entity index space
   using tree_entity_index_space_t =
-    index_space_u<tree_entity_t *, true, true, true, void, topology_storage_u>;
-  using tree_entity_index_subspaces_t = index_space_u<tree_entity_t *,
-    false,
-    true,
-    false,
-    void,
-    topology_storage_u>;
-  using tree_entity_partition_index_spaces_t = index_space_u<tree_entity_t *,
-    false,
-    false,
-    true,
-    void,
-    topology_storage_u>;
+    index_space<tree_entity_t *, true, true, true, void, topology_storage>;
+  using tree_entity_index_subspaces_t =
+    index_space<tree_entity_t *, false, true, false, void, topology_storage>;
+  using tree_entity_partition_index_spaces_t =
+    index_space<tree_entity_t *, false, false, true, void, topology_storage>;
 
   tree_entity_index_space_t tree_entity_index_space;
   tree_entity_index_subspaces_t tree_entity_index_subspaces;
@@ -77,23 +69,23 @@ struct ntree_storage_u {
 
   // Branches index space
   using branch_index_space_t =
-    index_space_u<branch_t *, true, true, true, void, topology_storage_u>;
+    index_space<branch_t *, true, true, true, void, topology_storage>;
   using branch_index_subspaces_t =
-    index_space_u<branch_t *, false, true, false, void, topology_storage_u>;
+    index_space<branch_t *, false, true, false, void, topology_storage>;
   using branch_partition_index_spaces_t =
-    index_space_u<branch_t *, false, false, true, void, topology_storage_u>;
+    index_space<branch_t *, false, false, true, void, topology_storage>;
 
   branch_index_space_t branch_index_space;
   branch_index_subspaces_t branch_index_subspaces;
   std::array<branch_partition_index_spaces_t, num_partitions>
     branch_partition_index_spaces;
 
-  ntree_storage_u() {
-    auto & context_ = flecsi::execution::context_t::instance();
+  ntree_storage() {
+    auto & context_ = flecsi::runtime::context_t::instance();
   }
 
   void finalize_storage() {
-    auto & context = execution::context_t::instance();
+    auto & context = runtime::context_t::instance();
   }
 
   /**
@@ -136,7 +128,7 @@ struct ntree_storage_u {
     return ent;
   } // make
 
-}; // class mpi_topology_storage_policy_u
+}; // class mpi_topology_storage_policy
 
 } // namespace topology
 } // namespace flecsi

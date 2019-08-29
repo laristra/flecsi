@@ -20,9 +20,9 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/runtime/context.hh"
 #include <flecsi/data/common/privilege.hh>
 #include <flecsi/data/common/storage_classes.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
 #endif
@@ -39,15 +39,13 @@ namespace flecsi {
 namespace execution {
 namespace legion {
 
-using namespace flecsi::data::legion;
-
 /*!
   The unbind_accessors_t type is called to walk the user task arguments inside
   of an executing legion task to properly unbind the user's accessors.
  */
 
 struct unbind_accessors_t
-  : public flecsi::utils::tuple_walker_u<unbind_accessors_t> {
+  : public flecsi::utils::tuple_walker<unbind_accessors_t> {
 
   /*!
     Construct an unbind_accessors_t instance.
@@ -73,16 +71,19 @@ struct unbind_accessors_t
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(global_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
-  } // visit
+  void visit(data::accessor<data::dense,
+    topology::global_topology_t,
+    DATA_TYPE,
+    PRIVILEGES> & accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Index Topology
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> & accessor) {
-  } // visit
+  void visit(data::
+      accessor<data::dense, topology::index_topology_t, DATA_TYPE, PRIVILEGES> &
+        accessor) {} // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types

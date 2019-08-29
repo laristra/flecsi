@@ -51,13 +51,17 @@ namespace execution {
   Enumeration of task types.
  */
 
-enum task_type_t : size_t { leaf, inner, idempotent }; // task_type_t
+enum class task_type_t : size_t { leaf, inner, idempotent }; // task_type_t
 
 /*!
   Enumeration of processor types.
  */
 
-enum task_processor_type_t : size_t { loc, toc, mpi }; // task_processor_type_t
+enum class task_processor_type_t : size_t {
+  loc,
+  toc,
+  mpi
+}; // task_processor_type_t
 
 // Bits for representing task attributes
 constexpr size_t task_attributes_bits = 8;
@@ -70,7 +74,7 @@ mask_to_task_type(size_t mask) {
   return static_cast<task_type_t>(flecsi::utils::debruijn32_t::index(mask));
 } // mask_to_task_type
 
-inline task_processor_type_t
+constexpr task_processor_type_t
 mask_to_processor_type(size_t mask) {
   const size_t processor_mask = mask >> task_type_bits;
 

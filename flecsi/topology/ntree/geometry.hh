@@ -20,6 +20,11 @@
 
 #pragma once
 
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#else
+#endif
+
 #include <flecsi/utils/geometry/point.hh>
 
 #include <array>
@@ -35,18 +40,18 @@ namespace flecsi {
 namespace topology {
 
 /*-----------------------------------------------------------------------------*
- * class ntree_geometry_u
+ * class ntree_geometry
  *-----------------------------------------------------------------------------*/
 template<typename T, size_t D>
-struct ntree_geometry_u {};
+struct ntree_geometry {};
 
 /*-----------------------------------------------------------------------------*
- * class ntree_geometry_u 1D specification
+ * class ntree_geometry 1D specification
  *-----------------------------------------------------------------------------*/
 template<typename T>
-struct ntree_geometry_u<T, 1> {
+struct ntree_geometry<T, 1> {
 
-  using point_t = point_u<T, 1>;
+  using point_t = point<T, 1>;
   using element_t = T;
   //! Tolerance for the computations
   static constexpr element_t tol =
@@ -119,11 +124,11 @@ struct ntree_geometry_u<T, 1> {
 }; // class ntree_geometry specification for 1D
 
 /*-----------------------------------------------------------------------------*
- * class ntree_geometry_u 2D specification
+ * class ntree_geometry 2D specification
  *-----------------------------------------------------------------------------*/
 template<typename T>
-struct ntree_geometry_u<T, 2> {
-  using point_t = point_u<T, 2>;
+struct ntree_geometry<T, 2> {
+  using point_t = point<T, 2>;
   using element_t = T;
 
   //! Tolerance for the computations
@@ -199,11 +204,11 @@ struct ntree_geometry_u<T, 2> {
 }; // class tree_geometry specification for 2D
 
 /*-----------------------------------------------------------------------------*
- * class tree_geometry_u 3D specification
+ * class tree_geometry 3D specification
  *-----------------------------------------------------------------------------*/
 template<typename T>
-struct ntree_geometry_u<T, 3> {
-  using point_t = point_u<T, 3>;
+struct ntree_geometry<T, 3> {
+  using point_t = point<T, 3>;
   using element_t = T;
   //! Tolerance for the computations
   static constexpr element_t tol =

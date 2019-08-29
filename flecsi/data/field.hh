@@ -15,22 +15,17 @@
 
 /*! @file */
 
-// This can move into the includes below as soon as storage_class_u is removed.
-#include <flecsi/runtime/data_policy.hh>
-
+#include "../topology/common/core.hh" // id
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/data/common/data_reference.hh>
 #include <flecsi/data/common/storage_classes.hh>
-#include <flecsi/data/common/storage_label.hh>
-#include <flecsi/execution/context.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/utils/common.hh>
-#include <flecsi/utils/hash.hh>
 
 namespace flecsi {
 namespace data {
 
 /*!
-  The field_member_u type provides a mechanism to define and register
+  The field_member type provides a mechanism to define and register
   fundamental field types with the FleCSI runtime.
 
   @tparam DATA_TYPE     A compact type that will be defined at each index of
@@ -48,74 +43,41 @@ template<typename DATA_TYPE,
   storage_label_t STORAGE_CLASS,
   typename TOPOLOGY_TYPE,
   size_t INDEX_SPACE>
-struct field_member_u {
+struct field_member {
 
-  using topology_reference_t = topology_reference_u<TOPOLOGY_TYPE>;
+  using topology_reference_t = topology_reference<TOPOLOGY_TYPE>;
 
-  template<size_t ... PRIVILEGES>
-  using accessor = typename storage_class_u<STORAGE_CLASS, TOPOLOGY_TYPE>::
-    template accessor<DATA_TYPE, privilege_pack_u<PRIVILEGES ...>::value>;
+  template<size_t... PRIVILEGES>
+  using accessor = accessor<STORAGE_CLASS,
+    TOPOLOGY_TYPE,
+    DATA_TYPE,
+    privilege_pack<PRIVILEGES...>::value>;
 
-  field_member_u(size_t versions = 1)
-    : versions_(versions), fid_(register_field()) {}
+  field_member() : fid_(unique_fid_t::instance().next()) {
+
+    runtime::context_t::instance().add_field_info(topology::id<TOPOLOGY_TYPE>(),
+      STORAGE_CLASS,
+      {fid_, INDEX_SPACE, sizeof(DATA_TYPE)},
+      fid_);
+  }
 
   /*!
     Return a reference to the field instance associated with the given topology
     reference.
 
     @param topology_reference A reference to a valid topology instance.
-    @param version            The field version.
    */
 
-  field_reference_t operator()(topology_reference_t const & topology_reference,
-    size_t version = 0) const {
+  field_reference<DATA_TYPE> operator()(
+    topology_reference_t const & topology_reference) const {
 
-    flog_assert(version < versions_,
-      "no such version #" << version << " in " << versions_ << " versions");
-
-    return {fid_ + version, topology_reference.identifier()};
+    return {fid_, topology_reference.identifier()};
   } // operator()
 
 private:
-  /*!
-    Register this field definition with the runtime.
-   */
-
-  field_id_t register_field() const {
-
-    constexpr auto max = utils::hash::field_max_versions;
-
-    flog_assert(versions_ <= max,
-      "can't have " << versions_ << '>' << max << " versions");
-
-    field_id_t fid;
-
-    for(size_t v{0}; v < versions_; ++v) {
-      const auto unique = unique_fid_t::instance().next();
-
-      if(v) {
-        flog_assert(unique == fid + v,
-          "version id " << unique << " is not consecutive to fid " << fid
-                        << " with versions " << versions_);
-      }
-      else {
-        fid = unique;
-      } // if
-
-      execution::context_t::instance().add_field_info(
-        TOPOLOGY_TYPE::type_identifier_hash,
-        STORAGE_CLASS,
-        {unique, INDEX_SPACE, versions_, sizeof(DATA_TYPE)},
-        unique);
-    } // for
-
-    return fid;
-  } // register_field
-
-  size_t versions_;
   field_id_t fid_;
 
-}; // struct field_member_u
+}; // struct field_member
 
 } // namespace data
 } // namespace flecsi

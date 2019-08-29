@@ -1,6 +1,25 @@
+
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
 #pragma omp
 
-#include <flecsi/execution/context.hh>
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#else
+#endif
+
+#include "flecsi/runtime/context.hh"
 #include <flecsi/topology/ntree/types.hh>
 
 namespace flecsi {
@@ -12,7 +31,7 @@ namespace topology {
 //----------------------------------------------------------------------------//
 
 template<class KEY, class TYPE>
-struct hash_table_u {
+struct hash_table {
 
   using id_t = utils::id_t;
   using key_t = KEY;
@@ -73,10 +92,10 @@ struct hash_table_u {
   static size_t hash(const key_t & key) {
     return key & hash_mask_;
   }
-}; // class hash_table_u
+}; // class hash_table
 
 template<class K, class T>
-size_t hash_table_u<K, T>::collision = 0;
+size_t hash_table<K, T>::collision = 0;
 
 } // namespace topology
 } // namespace flecsi

@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/common/connectivity.hh>
 #include <flecsi/topology/common/utility_types.hh>
 #include <flecsi/topology/unstructured_mesh/partition.hh>
@@ -35,25 +35,25 @@ namespace flecsi {
 namespace topology {
 
 /*----------------------------------------------------------------------------*
- * class mesh_entity_base_u
+ * class mesh_entity_base
  *----------------------------------------------------------------------------*/
 
 template<class>
-class mesh_topology_base_u;
+class mesh_topology_base;
 
 // Aliases for backward compatibility
 using mesh_entity_base_ = entity_base_;
 
 template<size_t NUM_DOMAINS>
-using mesh_entity_base_u = entity_base_u<NUM_DOMAINS>;
+using mesh_entity_base = entity_base<NUM_DOMAINS>;
 
 /*----------------------------------------------------------------------------*
- * class mesh_entity_u
+ * class mesh_entity
  *----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------//
-//! \class mesh_entity_u mesh_types.h
-//! \brief mesh_entity_u parameterizes a mesh entity base with its dimension and
+//! \class mesh_entity mesh_types.h
+//! \brief mesh_entity parameterizes a mesh entity base with its dimension and
 //! number of domains
 //!
 //! \tparam DIM The dimension of the entity.
@@ -61,27 +61,27 @@ using mesh_entity_base_u = entity_base_u<NUM_DOMAINS>;
 //-----------------------------------------------------------------//
 
 template<size_t DIM, size_t NUM_DOMAINS>
-class mesh_entity_u : public entity_base_u<NUM_DOMAINS>
+class mesh_entity : public entity_base<NUM_DOMAINS>
 {
 public:
   static constexpr size_t dimension = DIM;
 
-  mesh_entity_u() {}
-  ~mesh_entity_u() {}
-}; // class mesh_entity_u
+  mesh_entity() {}
+  ~mesh_entity() {}
+}; // class mesh_entity
 
 // Redecalre the dimension.  This is redundant, and no longer needed in C++17.
 template<size_t DIM, size_t NUM_DOMAINS>
-constexpr size_t mesh_entity_u<DIM, NUM_DOMAINS>::dimension;
+constexpr size_t mesh_entity<DIM, NUM_DOMAINS>::dimension;
 
 /*----------------------------------------------------------------------------*
  * class domain_entity_t
  *----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------//
-//! \class domain_entity_u mesh_types.h
+//! \class domain_entity mesh_types.h
 //!
-//! \brief domain_entity_u is a simple wrapper to mesh entity that
+//! \brief domain_entity is a simple wrapper to mesh entity that
 //! associates with its a domain id
 //!
 //! \tparam DOM Domain
@@ -89,7 +89,7 @@ constexpr size_t mesh_entity_u<DIM, NUM_DOMAINS>::dimension;
 //-----------------------------------------------------------------//
 
 template<size_t DOM, class ENTITY_TYPE>
-class domain_entity_u
+class domain_entity
 {
 public:
   using id_t = typename ENTITY_TYPE::id_t;
@@ -97,8 +97,8 @@ public:
 
   // implicit type conversions are evil.  This one tries to convert
   // all pointers to domain_entities
-  explicit domain_entity_u(ENTITY_TYPE * entity) : entity_(entity) {}
-  domain_entity_u & operator=(const domain_entity_u & e) {
+  explicit domain_entity(ENTITY_TYPE * entity) : entity_(entity) {}
+  domain_entity & operator=(const domain_entity & e) {
     entity_ = e.entity_;
     return *this;
   }
@@ -143,15 +143,15 @@ public:
     return entity_->template id<DOM>();
   }
 
-  bool operator==(domain_entity_u e) const {
+  bool operator==(domain_entity e) const {
     return entity_ == e.entity_;
   }
 
-  bool operator!=(domain_entity_u e) const {
+  bool operator!=(domain_entity e) const {
     return entity_ != e.entity_;
   }
 
-  bool operator<(domain_entity_u e) const {
+  bool operator<(domain_entity e) const {
     return entity_ < e.entity_;
   }
 
@@ -169,7 +169,7 @@ private:
 //-----------------------------------------------------------------//
 
 template<size_t DIM>
-class domain_connectivity_u
+class domain_connectivity
 {
 public:
   using id_t = flecsi::utils::id_t;
@@ -220,13 +220,13 @@ public:
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  id_t * get_entities(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
+  id_t * get_entities(mesh_entity<FROM_DIM, NUM_DOMAINS> * from_ent,
     size_t to_dim) {
     return get<FROM_DIM>(to_dim).get_entities(from_ent->id(from_domain_));
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  id_t * get_entities(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
+  id_t * get_entities(mesh_entity<FROM_DIM, NUM_DOMAINS> * from_ent,
     size_t to_dim,
     size_t & count) {
     return get<FROM_DIM>(to_dim).get_entities(
@@ -243,7 +243,7 @@ public:
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  auto get_entity_vec(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
+  auto get_entity_vec(mesh_entity<FROM_DIM, NUM_DOMAINS> * from_ent,
     size_t to_dim) const {
     auto & conn = get<FROM_DIM>(to_dim);
     return conn.get_entity_vec(from_ent->id(from_domain_));
@@ -279,11 +279,11 @@ private:
 };
 
 /*----------------------------------------------------------------------------*
- * class mesh_topology_base_u
+ * class mesh_topology_base
  *----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------//
-//! \class mesh_topology_base_u mesh_topology.h
+//! \class mesh_topology_base mesh_topology.h
 //! \brief contains methods and data about the mesh topology that do not depend
 //! on type parameterization, e.g: entity types, domains, etc.
 //-----------------------------------------------------------------//
@@ -299,25 +299,25 @@ struct unstructured_mesh_topology_base_t {
 
 #if 0
 template<class STORAGE_TYPE>
-class mesh_topology_base_u : public data::data_client_t,
+class mesh_topology_base : public data::data_client_t,
                              public unstructured_mesh_topology_base_t
 {
 public:
   using id_t = utils::id_t;
 
   // Default constructor
-  mesh_topology_base_u(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
+  mesh_topology_base(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
 
   // Don't allow the mesh to be copied or copy constructed
-  mesh_topology_base_u(const mesh_topology_base_u & m) : ms_(m.ms_) {}
+  mesh_topology_base(const mesh_topology_base & m) : ms_(m.ms_) {}
 
-  mesh_topology_base_u & operator=(const mesh_topology_base_u &) = delete;
+  mesh_topology_base & operator=(const mesh_topology_base &) = delete;
 
   /// Allow move operations
-  mesh_topology_base_u(mesh_topology_base_u &&) = default;
+  mesh_topology_base(mesh_topology_base &&) = default;
 
   //! override default move assignement
-  mesh_topology_base_u & operator=(mesh_topology_base_u && o) {
+  mesh_topology_base & operator=(mesh_topology_base && o) {
     // call base_t move operator
     data::data_client_t::operator=(std::move(o));
     // return a reference to the object
@@ -397,7 +397,7 @@ public:
 protected:
   STORAGE_TYPE * ms_ = nullptr;
 
-}; // mesh_topology_base_u
+}; // mesh_topology_base
 #endif
 
 template<class MESH_TYPE, size_t DIM, size_t DOM>
@@ -405,7 +405,7 @@ using entity_type_ = typename find_entity_<MESH_TYPE, DIM, DOM>::type;
 
 template<class STORAGE_TYPE, class MESH_TYPE, size_t NM, size_t DOM, size_t DIM>
 void
-unserialize_dimension_(mesh_topology_base_u<STORAGE_TYPE> & mesh,
+unserialize_dimension_(mesh_topology_base<STORAGE_TYPE> & mesh,
   char * buf,
   uint64_t & pos) {
   uint64_t num_entities;
@@ -419,7 +419,7 @@ unserialize_dimension_(mesh_topology_base_u<STORAGE_TYPE> & mesh,
   ents.reserve(num_entities);
   ids.reserve(num_entities);
 
-  auto & context_ = flecsi::execution::context_t::instance();
+  auto & context_ = flecsi::runtime::context_t::instance();
 
   size_t partition_id = context_.color();
 
@@ -443,7 +443,7 @@ template<class STORAGE_TYPE,
   size_t DIM>
 struct unserialize_dimensions_ {
 
-  static void unserialize(mesh_topology_base_u<STORAGE_TYPE> & mesh,
+  static void unserialize(mesh_topology_base<STORAGE_TYPE> & mesh,
     char * buf,
     uint64_t & pos) {
     unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, DIM>(
@@ -469,7 +469,7 @@ struct unserialize_dimensions_<STORAGE_TYPE,
   DOM,
   NUM_DIMS> {
 
-  static void unserialize(mesh_topology_base_u<STORAGE_TYPE> & mesh,
+  static void unserialize(mesh_topology_base<STORAGE_TYPE> & mesh,
     char * buf,
     uint64_t & pos) {
     unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, NUM_DIMS>(
@@ -484,7 +484,7 @@ template<class STORAGE_TYPE,
   size_t DOM>
 struct unserialize_domains_ {
 
-  static void unserialize(mesh_topology_base_u<STORAGE_TYPE> & mesh,
+  static void unserialize(mesh_topology_base<STORAGE_TYPE> & mesh,
     char * buf,
     uint64_t & pos) {
     unserialize_dimensions_<STORAGE_TYPE,
@@ -511,7 +511,7 @@ struct unserialize_domains_<STORAGE_TYPE,
   NUM_DIMS,
   NUM_DOMAINS> {
 
-  static void unserialize(mesh_topology_base_u<STORAGE_TYPE> & mesh,
+  static void unserialize(mesh_topology_base<STORAGE_TYPE> & mesh,
     char * buf,
     uint64_t & pos) {}
 };

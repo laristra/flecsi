@@ -33,13 +33,13 @@ namespace flecsi {
 namespace data {
 
 /*!
-
+  The field_info_t type provides a structure for capturing runtime field
+  information.
  */
 
 struct field_info_t {
   field_id_t fid = FIELD_ID_MAX;
   size_t index_space = std::numeric_limits<size_t>::max();
-  size_t versions = std::numeric_limits<size_t>::max();
   size_t type_size = std::numeric_limits<size_t>::max();
 }; // struct field_info_t
 
@@ -54,7 +54,7 @@ struct field_info_t {
 
 struct field_info_store_t {
 
-  void add_field_info(field_info_t const & fi, std::size_t key) {
+  void add_field_info(field_info_t const & fi, size_t key) {
     flog_devel(info) << "Registering field info" << std::endl
                      << "\tkey: " << key << std::endl
                      << "\tfid: " << fi.fid << std::endl
@@ -67,22 +67,6 @@ struct field_info_store_t {
   /*!
     Lookup field info using a hash key.
 
-    @param KEY The hash key that uniquely identifies this field.
-   */
-
-  template<size_t KEY>
-  field_info_t const & get_field_info() const {
-
-    const auto ita = key_lookup_.find(KEY);
-    flog_assert(
-      ita != key_lookup_.end(), "identifier lookup failed for " << KEY);
-
-    return data_[ita->second];
-  } // get_field_info
-
-  /*!
-    Lookup field info using a hash key.
-
     @param key The hash key that uniquely identifies this field.
    */
 
@@ -90,25 +74,6 @@ struct field_info_store_t {
 
     const auto ita = key_lookup_.find(key);
     flog_assert(ita != key_lookup_.end(), "fid lookup failed for " << key);
-
-    return data_[ita->second];
-  } // get_field_info
-
-  /*!
-    Lookup field info using the namespace, name, and version.
-
-    @tparam NAMESPACE The namespace of the field.
-    @tparam NAME      The name of the field.
-    @tparam VERSION   The version of the field.
-   */
-
-  template<size_t NAMESPACE, size_t NAME, size_t VERSION>
-  field_info_t const & get_field_info() const {
-
-    constexpr size_t key =
-      flecsi::utils::hash::field_hash<NAMESPACE, NAME, VERSION>();
-    const auto ita = key_lookup_.find(key);
-    flog_assert(ita != key_lookup_.end(), "key lookup failed for " << key);
 
     return data_[ita->second];
   } // get_field_info

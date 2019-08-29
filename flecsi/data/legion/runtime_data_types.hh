@@ -31,35 +31,41 @@
 
 namespace flecsi {
 namespace data {
-namespace legion {
 
 /*----------------------------------------------------------------------------*
   Global Topology.
  *----------------------------------------------------------------------------*/
 
-struct global_runtime_data_t {
+namespace global_topo {
+
+struct runtime_data_t {
   size_t index_space_id;
   Legion::IndexSpace index_space;
   Legion::FieldSpace field_space;
   Legion::LogicalRegion logical_region;
-}; // struct global_runtime_data_t
+}; // struct runtime_data_t
+
+} // namespace global_topo
 
 /*----------------------------------------------------------------------------*
-  Color Topology.
+  Index Topology.
  *----------------------------------------------------------------------------*/
 
-struct index_runtime_data_t {
+namespace index_topo {
+
+struct runtime_data_t {
   size_t colors;
   size_t index_space_id;
   Legion::IndexSpace index_space;
   Legion::FieldSpace field_space;
   Legion::LogicalRegion logical_region;
   Legion::LogicalPartition color_partition;
-}; // struct index_runtime_data_t
+}; // struct runtime_data_t
+
+} // namespace index_topo
 
 /*----------------------------------------------------------------------------*
-  Unstructured mesh.
-  FIXME: This will need a structure per storage class.
+  Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
 #if 0
@@ -73,6 +79,13 @@ struct unstructured_mesh_runtime_data_t {
 }; // struct unstructured_mesh_runtime_data_t
 #endif
 
+namespace unstructured_mesh {
+
+struct runtime_data_t {}; // struct runtime_data_t
+
+} // namespace unstructured_mesh
+
+#if 0
 struct unstructured_mesh_dense_runtime_data_t {
 }; // struct unstructured_mesh_dense_runtime_data_t
 
@@ -87,7 +100,7 @@ struct unstructured_mesh_subspace_runtime_data_t {
 
 struct structured_mesh_runtime_data_t {
 }; // struct structured_mesh_runtime_data_t
+#endif
 
-} // namespace legion
 } // namespace data
 } // namespace flecsi

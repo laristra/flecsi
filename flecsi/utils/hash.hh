@@ -26,9 +26,6 @@ namespace hash {
 // Helper functions.
 ////////////////////////////////////////////////////////////////////////////////
 
-constexpr size_t field_hash_version_bits = 3;
-constexpr size_t field_max_versions = 1 << 3;
-
 /*!
   Hashing function for topology registration.
 
@@ -60,60 +57,6 @@ inline constexpr size_t
 topology_hash() {
   return NAMESPACE ^ NAME;
 } // topology_hash
-
-////////////////////////////////////////////////////////////////////////////////
-// Field data hash interface.
-////////////////////////////////////////////////////////////////////////////////
-
-/*!
-  Create a hash key suitable for registering a field with the low-level
-  field registry.
-
-  \note This hash sets the most significant bit to '0' to be used as
-        a boolean that distinguishes normal fields from internal
-        topology fields.
-
-  @tparam NAMESPACE A namespace identifier.
-  @tparam NAME      A name identifier.
-
-  @ingroup utils
- */
-
-template<size_t NAMESPACE, size_t NAME, size_t VERSION>
-inline constexpr size_t
-field_hash() {
-  return ((NAMESPACE ^ NAME) << field_hash_version_bits | VERSION) &
-         ~(1ul << 63);
-} // field_hash
-
-template<size_t NAMESPACE, size_t NAME>
-inline constexpr size_t
-field_hash(size_t version) {
-  return ((NAMESPACE ^ NAME) << field_hash_version_bits | version) &
-         ~(1ul << 63);
-} // field_hash
-
-inline size_t
-field_hash(size_t nspace, size_t name, size_t version) {
-  return ((nspace ^ name) << field_hash_version_bits | version) & ~(1ull << 63);
-} // field_hash
-
-inline constexpr size_t
-field_hash_version(size_t key) {
-  return bit_range<(1ul << field_hash_version_bits) - 1, 0>(key);
-} // field_hash_version
-
-/*!
-  Check if the given key identifies an internal field.
-
-  @param key The hash key.
-
-  @ingroup utils
- */
-
-bool inline is_internal(size_t key) {
-  return key & (1ull << 63);
-} // is_internal
 
 ////////////////////////////////////////////////////////////////////////////////
 // Client entities hash interface.

@@ -24,24 +24,22 @@
 #include <hdf5.h>
 #include <legion.h>
 
-using namespace Legion;
-
 namespace flecsi {
 namespace io {
 
 struct legion_hdf5_region_t {
-  legion_hdf5_region_t(LogicalRegion lr,
-    LogicalPartition lp,
+  legion_hdf5_region_t(Legion::LogicalRegion lr,
+    Legion::LogicalPartition lp,
     std::string lr_name,
-    std::map<FieldID, std::string> & field_string_map);
-  legion_hdf5_region_t(LogicalRegion lr,
-    LogicalPartition lp,
+    std::map<Legion::FieldID, std::string> & field_string_map);
+  legion_hdf5_region_t(Legion::LogicalRegion lr,
+    Legion::LogicalPartition lp,
     std::string lr_name);
 
-  LogicalRegion logical_region;
-  LogicalPartition logical_partition;
+  Legion::LogicalRegion logical_region;
+  Legion::LogicalPartition logical_partition;
   std::string logical_region_name;
-  std::map<FieldID, std::string> field_string_map;
+  std::map<Legion::FieldID, std::string> field_string_map;
   size_t dim_size[3];
 };
 
@@ -58,10 +56,10 @@ struct legion_hdf5_t {
   bool read_string_from_hdf5_file(const char * group_name,
     const char * dataset_name,
     std::string & str);
-  void add_logical_region(LogicalRegion lr,
-    LogicalPartition lp,
+  void add_logical_region(Legion::LogicalRegion lr,
+    Legion::LogicalPartition lp,
     std::string lr_name,
-    std::map<FieldID, std::string> field_string_map);
+    std::map<Legion::FieldID, std::string> field_string_map);
   void add_hdf5_region(const legion_hdf5_region_t & hdf5_region);
   bool create_datasets_for_regions(int file_idx);
 
@@ -75,7 +73,7 @@ struct legion_hdf5_t {
 struct legion_io_policy_t {
   using hdf5_t = legion_hdf5_t;
   using hdf5_region_t = legion_hdf5_region_t;
-  using launch_space_t = IndexSpace;
+  using launch_space_t = Legion::IndexSpace;
   using field_reference_t = data::field_reference_t;
 
   legion_io_policy_t() {}
@@ -113,17 +111,17 @@ struct legion_io_policy_t {
   void generate_hdf5_files(legion_hdf5_t & hdf5_file);
 
   void checkpoint_data(legion_hdf5_t & hdf5_file,
-    IndexSpace launch_space,
+    Legion::IndexSpace launch_space,
     std::vector<legion_hdf5_region_t> & hdf5_region_vector,
     bool attach_flag);
 
   void checkpoint_default_index_topology(legion_hdf5_t & hdf5_file);
 
   void checkpoint_index_topology_field(hdf5_t & hdf5_file,
-    data::field_reference_t & fh);
+    data::field_reference_t const & fh);
 
   void recover_data(legion_hdf5_t & hdf5_file,
-    IndexSpace launch_space,
+    Legion::IndexSpace launch_space,
     std::vector<legion_hdf5_region_t> & hdf5_region_vector,
     bool attach_flag);
 
@@ -133,9 +131,9 @@ struct legion_io_policy_t {
     data::field_reference_t & fh);
 
 private:
-  IndexSpace default_index_topology_file_is;
-  IndexPartition default_index_topology_file_ip;
-  LogicalPartition default_index_topology_file_lp;
+  Legion::IndexSpace default_index_topology_file_is;
+  Legion::IndexPartition default_index_topology_file_ip;
+  Legion::LogicalPartition default_index_topology_file_lp;
 
 }; // struct legion_io_policy_t
 

@@ -29,12 +29,13 @@
 #include <fstream>
 #include <iostream>
 #include <stack>
+#include <unordered_map>
 
 namespace flecsi {
 namespace topology {
 
 //----------------------------------------------------------------------------//
-// Mesh topology.
+// NTree topology.
 //----------------------------------------------------------------------------//
 
 /*!
@@ -42,62 +43,56 @@ namespace topology {
  */
 
 //-----------------------------------------------------------------//
-//! The tree topology is parameterized on a policy P which defines its branch
+//! The tree topology is parameterized on a policy P which defines its nodes
 //! and entity types.
 //-----------------------------------------------------------------//
 template<typename POLICY_TYPE>
-struct ntree_topology_u : public ntree_topology_base_t,
-                          public data::data_reference_base_t {
+struct ntree_topology : public ntree_topology_base_t,
+                        public data::data_reference_base_t {
 
 public:
   using Policy = POLICY_TYPE;
 
   // tree storage type definition
-  using storage_t = ntree_storage_u<Policy>;
+  using storage_t = ntree_storage<Policy>;
   // tree topology base definition
-  using base_t = ntree_topology_base_u<storage_t>;
+  using base_t = ntree_topology_base<storage_t>;
   // entity ID type
   using id_t = utils::id_t;
   // offset type use by connectivities to give offsets and counts
   using offset_t = utils::offset_t;
 
-  using type_identifier_t = ntree_topology_u;
-
   // ------- Basic declarations: types and subtypes
   static constexpr size_t dimension = Policy::dimension;
   using element_t = typename Policy::element_t;
-  using point_t = typename Policy::point_t;
+  using point_t = point<element_t,dimension>;
   using range_t = std::array<point_t, 2>;
   // ------- Space filling curve
   using key_t = typename Policy::filling_curve_t;
   // ------- Tree topology
-  using branch_t = typename Policy::tree_branch_;
-  using branch_vector_t = std::vector<branch_t *>;
+  using node_t = typename Policy::tree_node_;
   using tree_entity_t = typename Policy::tree_entity_holder_;
   using entity_t = typename Policy::tree_entity_;
-  using entity_vector_t = std::vector<entity_t *>;
-  using htable_t = std::unordered_map<key_t, branch_t>;
-  using entity_id_t = typename entity_base_u<0>::id_t;
-  using geometry_t = ntree_geometry_u<element_t, dimension>;
+  using entity_id_t = typename entity_base<0>::id_t;
+  using geometry_t = ntree_geometry<element_t, dimension>;
 
-  static constexpr size_t hash_table_capacity_ = htable_t::hash_capacity_;
+public: 
 
   /*!
     Constuct a tree topology with unit coordinates, i.e. each coordinate
     dimension is in range [0, 1].
    */
-  ntree_topology_u() {
+  ntree_topology() {
     max_depth_ = 0;
     // Init the new storage, for now without handler
     base_t::set_storage(new storage_t);
-    // Init the branch hash table
-    base_t::ms_->init_branches(branch_map_, hash_table_capacity_);
-    // Add the root in the branch_map_
-    htable_t::insert(base_t::ms_->branch_index_space, key_t::root());
-    root_ = htable_t::find(base_t::ms_->branch_index_space, key_t::root());
+    // Add the root in the node_map_ 
+    node_map_.emplace(key_t::root(), key_t::root());
+    root_ = node_map_.find(key_t::root());
+    assert(root_ != node_map_.end());
   }
 
-  ntree_topology_u(const ntree_topology_u & s) : base_t(s) {}
+  ntree_topology(const ntree_topology & s) : base_t(s) {}
 
   /**
    * @brief Set the range of the current domain.
@@ -114,14 +109,14 @@ public:
    */
   template<class... S>
   entity_t * make_entity(S &&... args) {
-    return base_t::ms_->template make_entity(std::forward<S>(args)...);
+    return base_t::nts_->template make_entity(std::forward<S>(args)...);
   }
 
   /**
    * @brief Make the keys for all the enities present in the tree
    */
   void generate_keys() {
-    for(auto & ent : *(base_t::ms_->entity_index_space.storage())) {
+    for(auto & ent : *(base_t::nts_->entity_index_space.storage())) {
       ent.set_key(key_t(range_, ent.coordinates()));
     }
   }
@@ -136,8 +131,8 @@ public:
   /**
    * Return the root from the hash table
    */
-  branch_t * root() {
-    return base_t::ms_->branch_index_space.storage()->begin() + root_id_;
+  node_t * root() {
+    return root_; //base_t::nts_->node_index_space.storage()->begin() + root_id_;
   }
 
   /**
@@ -146,7 +141,7 @@ public:
    */
   template<class... S>
   entity_t * make_tree_entity(S &&... args) {
-    return base_t::ms_->template make_tree_entity(std::forward<S>(args)...);
+    return base_t::nts_->template make_tree_entity(std::forward<S>(args)...);
   }
 
   /**
@@ -154,14 +149,14 @@ public:
    */
   template<class TREE_POLICY>
   friend std::ostream & operator<<(std::ostream & os,
-    const ntree_topology_u<TREE_POLICY> & t);
+    const ntree_topology<TREE_POLICY> & t);
 
   /**
-   * @brief Build the tree topology in the branch_map_, insert all the local
+   * @brief Build the tree topology in the node_map_, insert all the local
    * particles of the tree in a serial way
    */
   void build_tree() {
-    for(auto & ent : *(base_t::ms_->entity_index_space.storage())) {
+    for(auto & ent : *(base_t::nts_->entity_index_space.storage())) {
       insert(ent);
     }
   }
@@ -172,21 +167,21 @@ public:
    */
   void insert(entity_t & ent) {
     // Find parent closest of the entity
-    key_t branch_key = ent.key();
-    branch_t * parent = find_parent(branch_key);
+    key_t node_key = ent.key();
+    node_t * parent = find_parent(node_key);
     assert(parent != nullptr);
 
-    // It is not a leaf, need to insert intermediate branch
+    // It is not a leaf, need to insert intermediate node
     if(!parent->is_leaf()) {
-      // Create the missing branch
+      // Create the missing node
       int depth = parent->key().depth() + 1;
-      branch_key.truncate(depth);
-      int bit = branch_key.last_value();
+      node_key.truncate(depth);
+      int bit = node_key.last_value();
       parent->add_bit_child(bit);
 
-      // Insert this branch and reinsert
-      auto new_parent =
-        htable_t::insert(base_t::ms_->branch_index_space, branch_key);
+      // Insert this node and reinsert
+      node_map_.emplace_back(node_key,node_key); 
+      auto* new_parent = &(node_map_.find(node_key)->second);
       new_parent->set_leaf(true);
       new_parent->insert(ent.global_id());
     }
@@ -200,23 +195,23 @@ public:
         parent->insert(ent.global_id());
       }
     }
-    parent = find_parent(branch_key);
+    parent = find_parent(node_key);
   }
 
   /**
    * @brief get an entity from the storage
    */
   entity_t & get(const entity_id_t & id) {
-    return *(base_t::ms_->entity_index_space.storage()->begin() + id.entity());
+    return *(base_t::nts_->entity_index_space.storage()->begin() + id.entity());
   }
 
   /**
    * @brief Find the closest parent of a key
    */
-  branch_t * find_parent(key_t key) {
+  node_t * find_parent(key_t key) {
     key.truncate(max_depth_);
     while(key != root()->key()) {
-      auto br = htable_t::find(base_t::ms_->branch_index_space, key);
+      auto br = &(node_map_.find(key)->second); 
       if(br != nullptr) {
         return br;
       }
@@ -228,17 +223,17 @@ public:
   /**
    * @brief Compute the cofm data for the tree using double stack
    */
-  void cofm(branch_t * b = nullptr, bool local = false) {
+  void cofm(node_t * b = nullptr, bool local = false) {
     if(b == nullptr)
       b = root();
     // Find the sub particles on which we want to work
-    std::vector<branch_t *> working_branches;
-    std::stack<branch_t *> stk_remaining;
+    std::vector<node_t *> working_branches;
+    std::stack<node_t *> stk_remaining;
     int level = 5;
-    std::stack<branch_t *> stk;
+    std::stack<node_t *> stk;
     stk.push(b);
     while(!stk.empty()) {
-      branch_t * c = stk.top();
+      node_t * c = stk.top();
       int cur_level = c->key().depth();
       stk.pop();
       if(c->is_leaf()) {
@@ -267,11 +262,11 @@ public:
 #pragma omp parallel for
     for(int b = 0; b < nwork; ++b) {
       // Find the leave in order in these sub branches
-      std::stack<branch_t *> stk1;
-      std::stack<branch_t *> stk2;
+      std::stack<node_t *> stk1;
+      std::stack<node_t *> stk2;
       stk1.push(working_branches[b]);
       while(!stk1.empty()) {
-        branch_t * cur = stk1.top();
+        node_t * cur = stk1.top();
         stk1.pop();
         stk2.push(cur);
         // Push children to stk1
@@ -279,21 +274,21 @@ public:
           for(int i = 0; i < (1 << dimension); ++i) {
             if(!cur->as_child(i))
               continue;
-            branch_t * next = child_(cur, i);
+            node_t * next = child_(cur, i);
             stk1.push(next);
           }
         }
       }
       // Finish the highest part of the tree in serial
       while(!stk2.empty()) {
-        branch_t * cur = stk2.top();
+        node_t * cur = stk2.top();
         stk2.pop();
         update_COM(cur, local);
       }
     }
     // Finish the high part of the tree on one thread
     while(!stk_remaining.empty()) {
-      branch_t * cur = stk_remaining.top();
+      node_t * cur = stk_remaining.top();
       stk_remaining.pop();
       update_COM(cur, local);
     }
@@ -302,7 +297,7 @@ public:
   /**
    * @brief Compute the COFM information for a dedicated branch
    */
-  void update_COM(branch_t * b, bool local_only = false) {
+  void update_COM(node_t * b, bool local_only = false) {
     // Starting branch
     element_t mass = 0;
     point_t bmax{}, bmin{};
@@ -335,18 +330,18 @@ public:
     }
     else {
       for(int i = 0; i < (1 << dimension); ++i) {
-        auto branch = child_(b, i);
-        if(branch == nullptr)
+        auto node = child_(b, i);
+        if(node == nullptr)
           continue;
-        nchildren += branch->sub_entities();
-        mass += branch->mass();
-        if(branch->mass() > 0) {
+        nchildren += node->sub_entities();
+        mass += node->mass();
+        if(node->mass() > 0) {
           for(size_t d = 0; d < dimension; ++d) {
-            bmax[d] = std::max(bmax[d], branch->bmax()[d]);
-            bmin[d] = std::min(bmin[d], branch->bmin()[d]);
+            bmax[d] = std::max(bmax[d], node->bmax()[d]);
+            bmin[d] = std::min(bmin[d], node->bmin()[d]);
           }
         }
-        coordinates += branch->mass() * branch->coordinates();
+        coordinates += node->mass() * node->coordinates();
       }
       if(mass > element_t(0))
         coordinates /= mass;
@@ -374,17 +369,17 @@ public:
     output << "digraph G {" << std::endl << "forcelabels=true;" << std::endl;
 
     // Add the legend
-    output << "branch [label=\"branch\" xlabel=\"sub_entities,owner,requested,"
+    output << "node [label=\"node\" xlabel=\"sub_entities,owner,requested,"
               "ghosts_local\"]"
            << std::endl;
 
-    std::stack<branch_t *> stk;
+    std::stack<node_t *> stk;
     // Get root
     auto rt = root();
     stk.push(rt);
 
     while(!stk.empty()) {
-      branch_t * cur = stk.top();
+      node_t * cur = stk.top();
       stk.pop();
       if(!cur->is_leaf()) {
         output << cur->key() << " [label=\"" << cur->key() << "\", xlabel=\""
@@ -469,16 +464,16 @@ private:
   /**
    * @brief Return the child i of a key
    */
-  branch_t * child_(branch_t * b, const int & i) {
+  node_t * child_(node_t * b, const int & i) {
     key_t key = b->key();
     key.push(i);
-    return htable_t::find(base_t::ms_->branch_index_space, key);
+    return &(node_map_.find(key)->second);
   }
 
   /**
-   * @brief Refine a branch in the tree during creation of the tree
+   * @brief Refine a node in the tree during creation of the tree
    */
-  void refine_(branch_t * b) {
+  void refine_(node_t * b) {
     key_t pid = b->key();
     size_t depth = pid.depth() + 1;
     // For every children
@@ -487,7 +482,7 @@ private:
       key_t k = get(ent).key();
       k.truncate(depth);
       bit_child |= 1 << k.last_value();
-      htable_t::insert(base_t::ms_->branch_index_space, k);
+      node_map_.emplace_back(k,k);
     }
     max_depth_ = std::max(max_depth_, depth);
     for(auto ent : *b) {
@@ -498,16 +493,23 @@ private:
     b->set_bit_child(bit_child);
   }
 
-  size_t max_depth_; //! Current max depth of the tree: deepest branch
+  size_t max_depth_; //! Current max depth of the tree: deepest node
   range_t range_; //! Range of the domain to generate the keys
-  branch_t branch_map_[hash_table_capacity_]; // Hash table of branches
-  static constexpr size_t root_id_ = 1; // Id of the roort in the hashtable
-  branch_t * root_ = nullptr;
+  
+
+  // Hasher for the node id used in the unordered_map data structure
+  template <class K> struct node_key_hasher__ {
+    size_t operator()(const K &k) const noexcept {
+      return k.value() & ((1 << 22) - 1);
+    }
+  };
+  std::unordered_map<key_t,node_t,node_key_hasher__<key_t>> node_map_; 
+  typename std::unordered_map<key_t,node_t,node_key_hasher__<key_t>>::iterator root_; 
 };
 
 template<class TREE_TYPE>
 std::ostream &
-operator<<(std::ostream & os, const ntree_topology_u<TREE_TYPE> & t) {
+operator<<(std::ostream & os, const ntree_topology<TREE_TYPE> & t) {
   os << "Tree: range: " << t.range_[0] << "-" << t.range_[1];
   return os;
 }

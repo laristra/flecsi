@@ -18,25 +18,25 @@ template specialization, template function overload, and tuple walkers.
 
     // Unspecialized (default) behavior.
     template<typename TYPE>
-    struct type_u {};
+    struct type {};
 
     template<>
-    struct type_u<match_type_one_t> {
+    struct type<match_type_one_t> {
 
       static void method() {
         // Implementation for type one.
       } // method
 
-    }; // struct type_u
+    }; // struct type
 
     template<>
-    struct type_u<match_type_two_t> {
+    struct type<match_type_two_t> {
 
       static void method() {
         // Implementation for type two.
       } // method
 
-    }; // struct type_u
+    }; // struct type
 
   The distinction between *explicit* and *partial* specialization is
   whether or not the specialized type is fully (explicit) or partially
@@ -52,12 +52,12 @@ template specialization, template function overload, and tuple walkers.
     struct enclosing_type_t {
 
       template<typename TYPE>
-      void method(type_one_u<TYPE> & arg) {
+      void method(type_one<TYPE> & arg) {
         // Implementation for type one.
       } // method
 
       template<typename TYPE>
-      void method(type_two_u<TYPE> & arg) {
+      void method(type_two<TYPE> & arg) {
         // Implementation for type two.
       } // method
 
@@ -80,13 +80,13 @@ template specialization, template function overload, and tuple walkers.
   .. code-block:: cpp
 
     struct init_args_t : public
-    flecsi::utils::tuple_walker_u<init_args_t> {
+    flecsi::utils::tuple_walker<init_args_t> {
 
       template<typename DATA_TYPE, size_t PRIVILEGES>
-      void visit(index_topology::accessor_u<DATA_TYPE, PRIVILEGES> &
+      void visit(index_topology::accessor<DATA_TYPE, PRIVILEGES> &
       accessor) {
         // Implmentation for type
-        // index_topology::accessor_u<DATA_TYPE, PRIVILEGES>.
+        // index_topology::accessor<DATA_TYPE, PRIVILEGES>.
       } // visit
 
     }; // struct init_args_t
@@ -111,11 +111,11 @@ Adding New Topologies
        namespace topology {
 
        template<typename POLICY_TYPE>
-       struct ntree_topology_u : public ntree_topology_base_t {
+       struct ntree_topology : public ntree_topology_base_t {
 
          // interface ...
 
-       }; // struct ntree_topology_u
+       }; // struct ntree_topology
 
        } // namespace flecsi
        } // namespace topology
@@ -144,7 +144,7 @@ Adding New Topologies
      type must define the public *coloring_t* type.
 
 2. **Topology Registration**: Define a partial specialization of the
-   *topology_registration_u* type in
+   *topology_registration* type in
    *flecsi/data/common/topology_registration.h*. This type must
    implement a *register_fields* method that adds the fields required to
    represent the meta data associated with an instance of the new
@@ -161,36 +161,26 @@ Adding New Topologies
    .. code-block:: cpp
 
      template<typename POLICY_TYPE>
-     struct  topology_instance_u<ntree_topology_u<POLICY_TYPE>> {
+     struct  topology_instance<ntree_topology<POLICY_TYPE>> {
 
        using topology_reference_t =
-         topology_reference_u<ntree_topology_u<POLICY_TYPE>>;
+         topology_reference<ntree_topology<POLICY_TYPE>>;
 
        static void set_coloring(topology_reference_t const & topology_reference,
-         ntree_topology_u<POLICY_TYPE>::coloring_t const & colorint) {
+         ntree_topology<POLICY_TYPE>::coloring_t const & colorint) {
        } // set_coloring
 
-     }; // topology_instance_u<ntree_topology_u<POLICY_TYPE>>
+     }; // topology_instance<ntree_topology<POLICY_TYPE>>
 
-4. **Initialize Arguments** (Legion Only): Define a template function
+4. **Initialize Arguments**: Define a template function
    overload of the *init_args_t* type in
-   *flecsi/execution/legion/incovation/init_args.h* that adds the region
-   requirements for the given type instance.
-
-5. **Task Prologue**: Define a template function overload of the
-   *task_prologue_t* type in
-   *flecsi/execution/runtime/incovation/task_prologue.h*, where
-   *runtime* is implemented for each backend runtime. This function
-   updates distributed-memory data dependencies.
-
-6. **Task Epilogue**: Define a template function overload of the
-   *task_epilogue_t* type in
-   *flecsi/execution/runtime/incovation/task_epilogue.h*, where
-   *runtime* is implemented for each backend runtime. This function
+   *flecsi/execution/.../invocation/init_args.h* that adds the region
+   requirements for the given type instance (for Legion only),
+   updates distributed-memory data dependencies, and
    sets a dirty (modified) bit for any fields or topologies that were
    accessed with write privileges (write-only, or read-write).
 
-7. **Bind Accessors**: Define a template function overload of the
+5. **Bind Accessors**: Define a template function overload of the
    *bind_accessors_t* type in
    *flecsi/execution/runtime/enactment/bind_accessors.h*, where
    *runtime* is implmented for each backend runtime. This function binds
@@ -198,7 +188,7 @@ Adding New Topologies
    is defined as part of the topology type, and implements a
    *proxy* `pattern <https://en.wikipedia.org/wiki/Proxy_pattern>`_.
 
-8. **Unbind Accessors**: Define a template function overload of the
+6. **Unbind Accessors**: Define a template function overload of the
    *unbind_accessors_t* type in
    *flecsi/execution/runtime/enactment/unbind_accessors.h*, where
    *runtime* is implmented for each backend runtime. This function unbinds

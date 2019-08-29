@@ -18,15 +18,15 @@
 
 using namespace flecsi;
 
-using point_t = point_u<double, 3>;
+using point_t = point<double, 3>;
 using range_t = std::array<point_t, 2>;
-using hc = hilbert_curve_u<3, uint64_t>;
-using mc = morton_curve_u<3, uint64_t>;
+using hc = hilbert_curve<3, uint64_t>;
+using mc = morton_curve<3, uint64_t>;
 
-using point_2d = point_u<double, 2>;
+using point_2d = point<double, 2>;
 using range_2d = std::array<point_2d, 2>;
-using hc_2d = hilbert_curve_u<2, uint64_t>;
-using mc_2d = morton_curve_u<2, uint64_t>;
+using hc_2d = hilbert_curve<2, uint64_t>;
+using mc_2d = morton_curve<2, uint64_t>;
 
 int
 hilbert_sanity(int argc, char ** argv) {

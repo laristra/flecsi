@@ -13,7 +13,7 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/context.hh>
+#include "flecsi/runtime/context.hh"
 #include <flecsi/utils/ftest.hh>
 #include <flecsi/utils/serialize.hh>
 
@@ -30,8 +30,7 @@ sanity(int argc, char ** argv) {
 
   FTEST();
 
-  char * data{nullptr};
-  size_t size{0};
+  std::vector<std::byte> data;
 
   {
     std::vector<double> v{0.0, 1.0, 2.0, 3.0, 4.0};
@@ -39,56 +38,34 @@ sanity(int argc, char ** argv) {
     std::unordered_map<size_t, size_t> um{{2, 1}, {3, 2}};
     std::set<size_t> s{0, 1, 2, 3, 4};
 
-    binary_serializer_t serializer;
-
-    serializer << v;
-    serializer << m;
-    serializer << um;
-    serializer << s;
-
-    serializer.flush();
-
-    size = serializer.bytes();
-    data = new char[size];
-    memcpy(data, serializer.data(), size);
+    data = serial_put(std::tie(v, m, um, s));
   } // scope
 
   {
-    std::vector<double> v;
-    std::map<size_t, size_t> m;
-    std::unordered_map<size_t, size_t> um;
-    std::set<size_t> s;
+    const auto * p = data.data();
 
-    binary_deserializer_t deserializer(data, size);
-
-    deserializer >> v;
-
+    const auto v = serial_get<std::vector<double>>(p);
     ASSERT_EQ(v[0], 0.0);
     ASSERT_EQ(v[1], 1.0);
     ASSERT_EQ(v[2], 2.0);
     ASSERT_EQ(v[3], 3.0);
     ASSERT_EQ(v[4], 4.0);
 
-    deserializer >> m;
+    const auto m = serial_get<std::map<size_t, size_t>>(p);
+    ASSERT_EQ(m.at(0), 1);
+    ASSERT_EQ(m.at(1), 0);
 
-    ASSERT_EQ(m[0], 1);
-    ASSERT_EQ(m[1], 0);
+    const auto um = serial_get<std::unordered_map<size_t, size_t>>(p);
+    ASSERT_EQ(um.at(2), 1);
+    ASSERT_EQ(um.at(3), 2);
 
-    deserializer >> um;
-
-    ASSERT_EQ(um[2], 1);
-    ASSERT_EQ(um[3], 2);
-
-    deserializer >> s;
-
+    const auto s = serial_get<std::set<size_t>>(p);
     ASSERT_NE(s.find(0), s.end());
     ASSERT_NE(s.find(1), s.end());
     ASSERT_NE(s.find(2), s.end());
     ASSERT_NE(s.find(3), s.end());
     ASSERT_NE(s.find(4), s.end());
   } // scope
-
-  delete[] data;
 
   return 0;
 } // sanity
@@ -107,13 +84,6 @@ struct type_t {
   }
 
 private:
-  friend class boost::serialization::access;
-
-  template<typename ARCHIVE_TYPE>
-  void serialize(ARCHIVE_TYPE & ar, const unsigned int version) {
-    ar & id_;
-  } // serialize
-
   size_t id_;
 
 }; // struct type_t
@@ -123,8 +93,7 @@ user_type(int argc, char ** argv) {
 
   FTEST();
 
-  char * data{nullptr};
-  size_t size{0};
+  std::vector<std::byte> data;
 
   {
     type_t t0(0);
@@ -133,40 +102,17 @@ user_type(int argc, char ** argv) {
     type_t t3(3);
     type_t t4(4);
 
-    binary_serializer_t serializer;
-
-    serializer << t0;
-    serializer << t1;
-    serializer << t2;
-    serializer << t3;
-    serializer << t4;
-
-    serializer.flush();
-
-    size = serializer.bytes();
-    data = new char[size];
-    memcpy(data, serializer.data(), size);
+    data = serial_put(std::tie(t0, t1, t2, t3, t4));
   } // scope
 
   {
-    type_t t;
+    const auto * p = data.data();
 
-    binary_deserializer_t deserializer(data, size);
-
-    deserializer >> t;
-    ASSERT_EQ(t.id(), 0);
-
-    deserializer >> t;
-    ASSERT_EQ(t.id(), 1);
-
-    deserializer >> t;
-    ASSERT_EQ(t.id(), 2);
-
-    deserializer >> t;
-    ASSERT_EQ(t.id(), 3);
-
-    deserializer >> t;
-    ASSERT_EQ(t.id(), 4);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 0);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 1);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 2);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 3);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 4);
   } // scope
 
   return 0;
@@ -182,12 +128,6 @@ struct simple_context_t {
 
   struct element_info_t {
     size_t id;
-
-    template<typename ARCHIVE_TYPE>
-    void serialize(ARCHIVE_TYPE & ar, const unsigned int version) {
-      ar & id;
-    } // serialize
-
   }; // struct element_info_t
 
   using map_element_t = std::unordered_map<size_t, element_info_t>;
@@ -216,24 +156,31 @@ struct simple_context_t {
   } // clear
 
 private:
-  friend class boost::serialization::access;
-
-  template<typename ARCHIVE_TYPE>
-  void serialize(ARCHIVE_TYPE & ar, const unsigned int version) {
-    ar & element_map_;
-  } // serialize
+  friend serial_convert<simple_context_t>;
 
   std::unordered_map<size_t, map_element_t> element_map_;
 
 }; // struct simple_context_t
+
+template<>
+struct flecsi::utils::serial_convert<simple_context_t> {
+  using Rep = decltype(simple_context_t::element_map_);
+  static const Rep & put(const simple_context_t & c) {
+    return c.element_map_;
+  }
+  static simple_context_t get(Rep m) {
+    simple_context_t ret;
+    ret.element_map_.swap(m);
+    return ret;
+  }
+};
 
 int
 simple_context(int argc, char ** argv) {
 
   FTEST();
 
-  char * data{nullptr};
-  size_t size{0};
+  std::vector<std::byte> data;
 
   simple_context_t & context = simple_context_t::instance();
 
@@ -270,23 +217,13 @@ simple_context(int argc, char ** argv) {
     info.id = 24;
     context.add_map_element_info(1, 4, info);
 
-    binary_serializer_t serializer;
-
-    serializer << context;
-
-    serializer.flush();
-
-    size = serializer.bytes();
-    data = new char[size];
-    memcpy(data, serializer.data(), size);
+    data = serial_put(context);
   } // scope
 
   context.clear();
 
   {
-    binary_deserializer_t deserializer(data, size);
-
-    deserializer >> context;
+    context = serial_get1<simple_context_t>(data.data());
 
     auto & element_map = context.element_map();
 
@@ -326,8 +263,6 @@ simple_context(int argc, char ** argv) {
 #undef check_entry
 
   } // scope
-
-  delete[] data;
 
   return 0;
 } // simple_context

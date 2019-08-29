@@ -12,12 +12,12 @@ that specializes the *execute* method:
 .. code-block:: cpp
 
   template<typename POLICY>
-  struct host_u : public POLICY
+  struct host : public POLICY
   {
     decltype(auto) execute() {
       return POLICY::execute();
     } // execute
-  }; // struct host_u
+  }; // struct host
 
 This pattern is something like a static version of dynamic polymorphism,
 i.e., the *host* type defines an interface that is implemented by the
@@ -125,7 +125,7 @@ used to *close* the type:
     @ingroup execution
    */
 
-  using context_t = context_u<FLECSI_RUNTIME_CONTEXT_POLICY>;
+  using context_t = context<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
 The *context_t* can then be used by the core FleCSI library, regardless
 of the particular runtime. Additionally, in code sections that are
