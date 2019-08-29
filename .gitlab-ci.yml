@@ -41,7 +41,7 @@ variables:
   FLECSI_GCC_VERSION: "7.3.0"
   FLECSI_PYTHON_VERSION: "3.5.1"
   FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/flecsi-deps-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
-  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz backend=legion ^${FLECSI_MPI_PACKAGE}"
+  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz runtime=legion ^${FLECSI_MPI_PACKAGE}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
