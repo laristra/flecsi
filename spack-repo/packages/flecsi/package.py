@@ -39,7 +39,7 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12:', type='build')
     depends_on('mpi')
-    depends_on('legion@ctrl-rep +shared +mpi +hdf5', when='runtime=legion')
+    depends_on('legion@ctrl-rep +shared +mpi', when='runtime=legion')
     depends_on('boosti@1.59.0: cxxstd=11 +program_options')
     depends_on('parmetis@4.0.3:')
     depends_on('caliper', when='+caliper')
