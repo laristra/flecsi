@@ -107,6 +107,7 @@ ftest_add_unit(umesh_coloring
 
 ftest_add_unit(ntree
   SOURCES ntree/test/ntree.cc
+  INPUTS ntree/test/coordinates.blessed
 )
 
 ftest_add_unit(ntree_geometry

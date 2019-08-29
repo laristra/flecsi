@@ -139,10 +139,40 @@ struct topology_instance<topology::ntree_topology<POLICY_TYPE>> {
   using topology_reference_t = topology_reference<topology_t>;
   using coloring_t = typename topology_t::coloring_t;
 
+  // Distribute the entities on the different processes 
+  // Create the tree data structure locally 
   static void create(topology_reference_t const & topology_reference,
-    coloring_t const & coloring) {} // create
+    coloring_t const & coloring) {
+    
+    {
+      flog_tag_guard(topologies);
+      flog_devel(info) << "Set coloring for " << topology_reference.identifier()
+                       << std::endl;
+    }
 
-  static void destroy(topology_reference_t const & topology_reference) {}
+  } // create
+
+  // Update the entities position in the tree  
+  static void update(topology_reference_t const& topology_reference, 
+    coloring_t const& coloring) {
+
+    {
+      flog_tag_guard(topologies);
+      flog_devel(info) << "Update coloring for " << topology_reference.identifier()
+                       << std::endl;
+    }
+
+  } // update 
+
+  static void destroy(topology_reference_t const & topology_reference) {
+
+    {
+      flog_tag_guard(topologies);
+      flog_devel(info) << "Destroy coloring for " << topology_reference.identifier()
+                       << std::endl;
+    }
+
+  } // destroy
 
 }; // ntree_topology specialization
 
