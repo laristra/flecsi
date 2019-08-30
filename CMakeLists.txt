@@ -28,6 +28,7 @@ project(FleCSI LANGUAGES CXX C)
 
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 #------------------------------------------------------------------------------#
 # Version.
@@ -467,8 +468,12 @@ install(
 
 if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   add_target_link_libraries(
-    FleCSI ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
-  )
+    FleCSI PUBLIC ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES})
+endif()
+
+if (FLECSI_ENABLE_KOKKOS)
+  add_target_link_libraries(
+    FleCSI PUBLIC Kokkos::kokkos Kokkos::kokkoscore)
 endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
@@ -604,8 +609,8 @@ summary_option("ENABLE_UNIT_TESTS" ${ENABLE_UNIT_TESTS} "")
 summary_option("ENABLE_FLECSI_TUTORIAL" ${ENABLE_FLECSI_TUTORIAL} "")
 summary_option("ENABLE_FLECSIT" ${ENABLE_FLECSIT} "")
 string(APPEND _summary "\n")
-summary_option("ENABLE_KOKKOS" ${ENABLE_KOKKOS}
-  " (${FLECSI_NODE_PLATFORM} platform)")
+summary_option("ENABLE_KOKKOS" ${FLECSI_ENABLE_KOKKOS}
+  " (${Kokkos_ARCH} platform)")
 summary_option("ENABLE_DOXYGEN" ${ENABLE_DOXYGEN} "")
 summary_option("ENABLE_GRAPHVIZ" ${ENABLE_GRAPHVIZ} "")
 summary_option("ENABLE_OPENMP" ${ENABLE_OPENMP} "")

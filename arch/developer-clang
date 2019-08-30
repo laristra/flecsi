@@ -25,6 +25,7 @@ fi
 cmake_mode=cmake
 runtime=mpi
 cmake_args=""
+kokkos=OFF
 
 while [[ $# -gt 0 ]]
 do
@@ -64,7 +65,7 @@ echo ""
 
 $cmake_mode \
   -DCMAKE_CXX_COMPILER=clang++ \
-  -DCMAKE_CXX_FLAGS="-fcolor-diagnostics" \
+  -DCMAKE_CXX_FLAGS="-fcolor-diagnostics  -fPIC -D__STRICT_ANSI__" \
   -DCMAKE_C_COMPILER=clang \
   -DCMAKE_C_FLAGS="-fcolor-diagnostics" \
   -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
@@ -73,6 +74,7 @@ $cmake_mode \
   -DENABLE_UNIT_TESTS=ON \
   -DENABLE_FLECSIT=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
+  -DFLECSI_ENABLE_KOKKOS=$kokkos \
   $cmake_args \
   $cinch_dir
 

@@ -23,7 +23,7 @@
 #error FLECSI_ENABLE_KOKKOS not defined! This file depends on Kokkos!
 #endif
 
-#include <kokkos.h>
+#include <Kokkos_Core.hpp>
 
 #include <string>
 
@@ -38,9 +38,8 @@ namespace execution {
  */
 
 template<typename ITERATOR, typename LAMBDA>
-parallel_for(ITERATOR const iterator,
-  LAMBDA const lambda,
-  std::string const & name = "") {
+void
+parallel_for(ITERATOR iterator, LAMBDA lambda, std::string const & name = "") {
 
   struct functor_t {
 
@@ -48,7 +47,7 @@ parallel_for(ITERATOR const iterator,
       : iterator_(iterator), lambda_(lambda) {}
 
     KOKKOS_INLINE_FUNCTION void operator()(int i) const {
-      lambda(iterator[i]);
+      lambda_(iterator_[i]);
     } // operator()
 
   private:
@@ -60,7 +59,6 @@ parallel_for(ITERATOR const iterator,
   Kokkos::parallel_for(name, iterator.size(), functor_t{iterator, lambda});
 
 } // parallel_for
-
 /*!
   The forall type provides a pretty interface for invoking data-parallel
   execution.
@@ -71,7 +69,7 @@ parallel_for(ITERATOR const iterator,
 // template<typename ITERATOR> struct forall {};
 
 template<typename ITERATOR>
-struct forall {
+struct forall_t {
 
   /*!
     Construct a forall instance.
@@ -80,7 +78,7 @@ struct forall {
     @param name     An optional name that can be used for debugging.
    */
 
-  forall(ITERATOR iterator, std::string const & name = "")
+  forall_t(ITERATOR iterator, std::string const & name = "")
     : iterator_(iterator), name_(name) {}
 
   /*!
@@ -102,7 +100,7 @@ struct forall {
   private:
     ITERATOR iterator_;
     LAMBDA lambda_;
-    std::string & const name_;
+    std::string const & name_;
 
   }; // struct functor_t
 
@@ -116,14 +114,16 @@ struct forall {
   template<typename CALLABLE>
   void operator<<(CALLABLE l) {
     Kokkos::parallel_for(
-      name_, iterator_.size(), functor_t{iterator_, lambda_});
+      name_, iterator_.size(), functor<CALLABLE>{iterator_, l, name_});
   } // operator<<
 
 private:
   ITERATOR iterator_;
-  std::string & const name_;
+  std::string const& name_;
 
-}; // struct forall
+}; // struct forall_t
+
+#define forall(iterator, name) forall_t{iterator, name} << KOKKOS_LAMBDA(auto i)
 
 } // namespace execution
 } // namespace flecsi

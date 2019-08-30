@@ -28,6 +28,7 @@
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/structured_mesh/interface.hh>
 #include <flecsi/topology/unstructured_mesh/interface.hh>
+#include <flecsi/utils/target.hh>
 #endif
 
 namespace flecsi {
@@ -111,24 +112,29 @@ struct accessor<storage_label_t::dense,
   using Base = field_reference<DATA_TYPE>;
   accessor(Base const & ref) : Base(ref) {}
 
+  FLECSI_INLINE_TARGET
   operator DATA_TYPE &() {
     return *data_;
   } // value
 
+  FLECSI_INLINE_TARGET
   operator DATA_TYPE const &() const {
     return *data_;
   } // value
 
+  FLECSI_INLINE_TARGET
   DATA_TYPE * data() {
     return data_;
   } // data
 
+  FLECSI_INLINE_TARGET
   accessor & operator=(const DATA_TYPE & value) {
     *data_ = value;
     return *this;
   } // operator=
 
 private:
+  FLECSI_INLINE_TARGET
   friend void bind(accessor & a, DATA_TYPE * data) {
     a.data_ = data;
   }

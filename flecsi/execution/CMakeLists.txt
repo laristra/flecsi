@@ -102,8 +102,8 @@ ftest_add_unit(color
     4 # Warning: This number is hard-coded into the the test.
 )
 
-if(ENABLE_KOKKOS)
-  ftest_add_unit(kokkos
+if(FLECSI_ENABLE_KOKKOS)
+  ftest_add_unit(kokkos_test
     SOURCES
       test/kokkos.cc
   )

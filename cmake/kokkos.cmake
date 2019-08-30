@@ -12,9 +12,9 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-option(ENABLE_KOKKOS "Enable Kokkos" OFF)
+option(FLECSI_ENABLE_KOKKOS "Enable Kokkos" OFF)
 
-if(ENABLE_KOKKOS)
+if(FLECSI_ENABLE_KOKKOS)
 
   if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND
     NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 8)
@@ -23,8 +23,10 @@ if(ENABLE_KOKKOS)
 
   find_package(Kokkos REQUIRED)
 
-  include_directories(${KOKKOS_INCLUDE_DIR})
-  link_directories(${KOKKOS_LIBRARY_DIRS})
 
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${KOKKOS_CORE_LIBRARY})
+  link_directories(${Kokkos_LIBRARY_DIRS})
+
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES Kokkos::kokkos)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES Kokkos::kokkoscore)
+
 endif()

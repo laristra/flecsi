@@ -26,7 +26,7 @@
 //----------------------------------------------------------------------------//
 
 #if defined(FLECSI_ENABLE_KOKKOS)
-#include <Kokkos.hpp>
+#include <Kokkos_Core.hpp>
 
 #define FLECSI_TARGET KOKKOS_FUNCTION
 #define FLECSI_INLINE_TARGET KOKKOS_INLINE_FUNCTION
