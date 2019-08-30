@@ -36,7 +36,7 @@ namespace topology {
 struct ntree_topology_base_t {
   using coloring_t = size_t;
 
-  // add storage 
+  // add storage
 }; // ntree_topology_base_t
 
 /*----------------------------------------------------------------------------*

@@ -65,7 +65,7 @@ public:
   // ------- Basic declarations: types and subtypes
   static constexpr size_t dimension = Policy::dimension;
   using element_t = typename Policy::element_t;
-  using point_t = point<element_t,dimension>;
+  using point_t = point<element_t, dimension>;
   using range_t = std::array<point_t, 2>;
   // ------- Space filling curve
   using key_t = typename Policy::filling_curve_t;
@@ -76,8 +76,7 @@ public:
   using entity_id_t = typename entity_base<0>::id_t;
   using geometry_t = ntree_geometry<element_t, dimension>;
 
-public: 
-
+public:
   /*!
     Constuct a tree topology with unit coordinates, i.e. each coordinate
     dimension is in range [0, 1].
@@ -86,7 +85,7 @@ public:
     max_depth_ = 0;
     // Init the new storage, for now without handler
     base_t::set_storage(new storage_t);
-    // Add the root in the node_map_ 
+    // Add the root in the node_map_
     node_map_.emplace(key_t::root(), key_t::root());
     root_ = node_map_.find(key_t::root());
     assert(root_ != node_map_.end());
@@ -132,7 +131,8 @@ public:
    * Return the root from the hash table
    */
   node_t * root() {
-    return root_; //base_t::nts_->node_index_space.storage()->begin() + root_id_;
+    return root_; // base_t::nts_->node_index_space.storage()->begin() +
+                  // root_id_;
   }
 
   /**
@@ -180,8 +180,8 @@ public:
       parent->add_bit_child(bit);
 
       // Insert this node and reinsert
-      node_map_.emplace_back(node_key,node_key); 
-      auto* new_parent = &(node_map_.find(node_key)->second);
+      node_map_.emplace_back(node_key, node_key);
+      auto * new_parent = &(node_map_.find(node_key)->second);
       new_parent->set_leaf(true);
       new_parent->insert(ent.global_id());
     }
@@ -211,7 +211,7 @@ public:
   node_t * find_parent(key_t key) {
     key.truncate(max_depth_);
     while(key != root()->key()) {
-      auto br = &(node_map_.find(key)->second); 
+      auto br = &(node_map_.find(key)->second);
       if(br != nullptr) {
         return br;
       }
@@ -482,7 +482,7 @@ private:
       key_t k = get(ent).key();
       k.truncate(depth);
       bit_child |= 1 << k.last_value();
-      node_map_.emplace_back(k,k);
+      node_map_.emplace_back(k, k);
     }
     max_depth_ = std::max(max_depth_, depth);
     for(auto ent : *b) {
@@ -495,16 +495,17 @@ private:
 
   size_t max_depth_; //! Current max depth of the tree: deepest node
   range_t range_; //! Range of the domain to generate the keys
-  
 
   // Hasher for the node id used in the unordered_map data structure
-  template <class K> struct node_key_hasher__ {
-    size_t operator()(const K &k) const noexcept {
+  template<class K>
+  struct node_key_hasher__ {
+    size_t operator()(const K & k) const noexcept {
       return k.value() & ((1 << 22) - 1);
     }
   };
-  std::unordered_map<key_t,node_t,node_key_hasher__<key_t>> node_map_; 
-  typename std::unordered_map<key_t,node_t,node_key_hasher__<key_t>>::iterator root_; 
+  std::unordered_map<key_t, node_t, node_key_hasher__<key_t>> node_map_;
+  typename std::unordered_map<key_t, node_t, node_key_hasher__<key_t>>::iterator
+    root_;
 };
 
 template<class TREE_TYPE>
