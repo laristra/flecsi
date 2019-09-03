@@ -19,9 +19,9 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "backend.hh"
-#include "common/launch.hh"
-#include "common/task_attributes.hh"
+#include "execution/backend.hh"
+#include "execution/launch.hh"
+#include "execution/task_attributes.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/execution/internal.hh>
 //#include <flecsi/execution/reduction.hh>

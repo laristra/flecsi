@@ -20,14 +20,14 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "../launch.hh"
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/runtime/legion/tasks.hh"
 #include "flecsi/utils/demangle.hh"
 #include "flecsi/utils/function_traits.hh"
-#include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/legion/enactment/task_wrapper.hh>
+#include "task_prologue.hh"
+#include "task_wrapper.hh"
 #include <flecsi/execution/legion/future.hh>
-#include <flecsi/execution/legion/invocation/init_args.hh>
 #include <flecsi/execution/legion/reduction_wrapper.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/flog.hh>
@@ -167,8 +167,8 @@ reduce(ARGS &&... args) {
 
   ++flecsi_context.tasks_executed();
 
-  legion::init_args_t init_args(legion_runtime, legion_context, domain_size);
-  init_args.walk<ARG_TUPLE>(args...);
+  legion::task_prologue_t pro(legion_runtime, legion_context, domain_size);
+  pro.walk<ARG_TUPLE>(args...);
   auto buf = detail::serial_arguments(
     static_cast<ARG_TUPLE *>(nullptr), std::forward<ARGS>(args)...);
 
@@ -192,7 +192,7 @@ reduce(ARGS &&... args) {
 
     TaskLauncher launcher(task, TaskArgument(buf.data(), buf.size()));
 
-    for(auto & req : init_args.region_requirements()) {
+    for(auto & req : pro.region_requirements()) {
       launcher.add_region_requirement(req);
     } // for
 
@@ -235,7 +235,7 @@ reduce(ARGS &&... args) {
     Legion::IndexLauncher launcher(
       task, launch_domain, TaskArgument(buf.data(), buf.size()), arg_map);
 
-    for(auto & req : init_args.region_requirements()) {
+    for(auto & req : pro.region_requirements()) {
       launcher.add_region_requirement(req);
     } // for
 

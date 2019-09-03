@@ -19,9 +19,9 @@
 #include <cstdint>
 #include <iostream>
 
-#include <flecsi/topology/common/entity_storage.hh>
-#include <flecsi/topology/common/index_space.hh>
-#include <flecsi/topology/common/utility_types.hh>
+#include "entity_storage.hh"
+#include "index_space.hh"
+#include "utility_types.hh"
 #include <flecsi/utils/array_ref.hh>
 #include <flecsi/utils/reorder.hh>
 

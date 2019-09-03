@@ -16,8 +16,8 @@
 #define __FLECSI_PRIVATE__
 #endif
 
+#include "launch.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/execution/common/launch.hh>
 
 namespace flecsi {
 namespace execution {

@@ -20,10 +20,10 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "flecsi/data/privilege.hh"
+#include "flecsi/data/storage_classes.hh"
+#include "flecsi/data/topology_accessor.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/data/common/privilege.hh>
-#include <flecsi/data/common/storage_classes.hh>
-#include <flecsi/data/common/topology_accessor.hh>
 #include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/set/interface.hh>
 #include <flecsi/topology/structured_mesh/interface.hh>
@@ -38,14 +38,14 @@
 
 #include <legion.h>
 
-flog_register_tag(init_args);
+flog_register_tag(task_prologue);
 
 namespace flecsi {
 namespace execution {
 namespace legion {
 
 /*!
-  The init_args_t type can be called to walk task args before the
+  The task_prologue_t type can be called to walk task args before the
   task launcher is created. This allows us to gather region requirements
   and to set state on the associated data handles \em before Legion gets
   the task arguments tuple.
@@ -53,16 +53,16 @@ namespace legion {
   @ingroup execution
 */
 
-struct init_args_t {
+struct task_prologue_t {
 
   /*!
-    Construct an init_args_t instance.
+    Construct an task_prologue_t instance.
 
     @param runtime The Legion task runtime.
     @param context The Legion task runtime context.
    */
 
-  init_args_t(Legion::Runtime * runtime,
+  task_prologue_t(Legion::Runtime * runtime,
     Legion::Context & context,
     const size_t & domain)
     : runtime_(runtime), context_(context), domain_(domain) {}
@@ -233,7 +233,7 @@ struct init_args_t {
     !std::is_base_of_v<data::data_reference_base_t, DATA_TYPE>>
   visit(P *, DATA_TYPE &) {
     {
-      flog_tag_guard(init_args);
+      flog_tag_guard(task_prologue);
       flog_devel(info) << "Skipping argument with type "
                        << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }
@@ -251,7 +251,7 @@ private:
 
   std::vector<Legion::RegionRequirement> region_reqs_;
 
-}; // init_args_t
+}; // task_prologue_t
 
 } // namespace legion
 } // namespace execution
