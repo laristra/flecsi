@@ -19,11 +19,11 @@
 
 set(topology_HEADERS
   base_topology_types.hh
-  common/array_buffer.hh
-  common/connectivity.hh
-  common/entity_storage.hh
-  common/index_space.hh
-  common/utility_types.hh
+  array_buffer.hh
+  connectivity.hh
+  entity_storage.hh
+  index_space.hh
+  utility_types.hh
   internal/global.hh
   internal/index.hh
   ntree/interface.hh
@@ -107,6 +107,7 @@ ftest_add_unit(umesh_coloring
 
 ftest_add_unit(ntree
   SOURCES ntree/test/ntree.cc
+  INPUTS ntree/test/coordinates.blessed
 )
 
 ftest_add_unit(ntree_geometry

@@ -22,9 +22,9 @@
   runtime policy that is selected at compile time.
  */
 
-#include "../topology/common/core.hh"
+#include "../topology/core.hh"
 #include "backend.hh"
-#include <flecsi/data/common/topology_registration.hh>
+#include "topology_registration.hh"
 #include <flecsi/topology/base_topology_types.hh>
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/hash.hh>

@@ -19,9 +19,11 @@
 #define __FLECSI_PRIVATE__
 #endif
 
+#include "execution/backend.hh"
+#include "execution/launch.hh"
+#include "execution/task_attributes.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/execution/internal.hh>
-#include <flecsi/execution/task.hh>
 //#include <flecsi/execution/reduction.hh>
 
 /*----------------------------------------------------------------------------*
@@ -89,5 +91,41 @@ inline size_t
 colors() {
   return runtime::context_t::instance().colors();
 }
+
+/*!
+  Execute a reduction task.
+
+  @tparam TASK                The user task.
+  @tparam LAUNCH_DOMAIN       The launch domain.
+  @tparam REDUCTION_OPERATION The reduction operation.
+  @tparam ATTRIBUTES          The task attributes mask.
+  @tparam ARGS                The user-specified task arguments.
+ */
+
+template<auto & TASK,
+  size_t LAUNCH_DOMAIN,
+  size_t REDUCTION_OPERATION,
+  size_t ATTRIBUTES,
+  typename... ARGS>
+decltype(auto) reduce(ARGS &&... args);
+
+/*!
+  Execute a task.
+
+  @tparam TASK          The user task.
+  @tparam LAUNCH_DOMAIN The launch domain id.
+  @tparam ATTRIBUTES    The task attributes mask.
+  @tparam ARGS          The user-specified task arguments.
+ */
+
+template<auto & TASK,
+  size_t LAUNCH_DOMAIN = flecsi::index,
+  size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
+  typename... ARGS>
+decltype(auto)
+execute(ARGS &&... args) {
+  return reduce<TASK, LAUNCH_DOMAIN, flecsi_internal_hash(0), ATTRIBUTES>(
+    std::forward<ARGS>(args)...);
+} // execute
 
 } // namespace flecsi

@@ -18,31 +18,29 @@
 #------------------------------------------------------------------------------#
 
 set(execution_HEADERS
-  common/command_line_options.hh
-  common/launch.hh
-  common/task_attributes.hh
-  execution.hh
+  command_line_options.hh
+  launch.hh
+  task_attributes.hh
   internal.hh
   kernel_interface.hh
   reduction.hh
-  task.hh
   backend.hh
 )
 
 set(execution_SOURCES
-  common/launch.cc
+  launch.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(execution_HEADERS
     ${execution_HEADERS}
-    legion/enactment/bind_accessors.hh
-    legion/enactment/task_wrapper.hh
-    legion/enactment/unbind_accessors.hh
+    legion/bind_accessors.hh
+    legion/task_wrapper.hh
+    legion/unbind_accessors.hh
     legion/execution_policy.hh
     legion/future.hh
-    legion/invocation/init_args.hh
+    legion/task_prologue.hh
     legion/reduction_wrapper.hh
   )
 

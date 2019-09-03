@@ -13,12 +13,10 @@
                                                                               */
 #include <fstream>
 #define __FLECSI_PRIVATE__
+#include "flecsi/data/data_reference.hh"
+#include "flecsi/data/field_info.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/data/common/data_reference.hh>
-#include <flecsi/data/common/field_info.hh>
-#include <flecsi/data/data.hh>
 #include <flecsi/data/legion/runtime_data_types.hh>
-#include <flecsi/execution/legion/enactment/task_wrapper.hh>
 #include <flecsi/io/legion/io_policy.hh>
 #include <flecsi/utils/const_string.hh>
 

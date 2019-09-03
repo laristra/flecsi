@@ -458,7 +458,7 @@ else()
 endif()
 
 install(
-  FILES ${PROJECT_SOURCE_DIR}/flecsi/tutorial/specialization/inputs/simple2d-16x16.msh
+  FILES ${PROJECT_SOURCE_DIR}/tutorial/specialization/inputs/simple2d-16x16.msh
   DESTINATION share/FleCSI-Tut/inputs)
 
 #------------------------------------------------------------------------------#

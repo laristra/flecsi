@@ -44,6 +44,20 @@ function(add_library_target target directory)
     include(${_SOURCE_DIR}/library.cmake)
   endif()
 
+  foreach(_HEADER ${${directory}_HEADERS})
+    if(NOT EXISTS ${_SOURCE_DIR}/${_HEADER})
+      message(FATAL_ERROR "Header '${_HEADER}' from ${directory}_HEADERS does not exist.")
+    endif()
+    list(APPEND HEADERS
+      ${_HEADER})
+    list(APPEND GLOBAL_HEADERS ${_SOURCE_DIR}/${_HEADER})
+  endforeach()
+
+  foreach(_SOURCE ${${directory}_SOURCES})
+    list(APPEND SOURCES
+      ${_SOURCE_DIR}/${_SOURCE})
+  endforeach()
+
   #----------------------------------------------------------------------------#
   # Add top-level source directory.
   #----------------------------------------------------------------------------#

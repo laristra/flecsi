@@ -7,8 +7,7 @@
    /@@       /@@/@@//// //@@    @@       /@@/@@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
-
-   Copyright (c) 2016, Triad National Security, LLC
+   Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
 #pragma once
@@ -18,23 +17,22 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-//#include "flecsi/data/data_reference.hh"
 #endif
 
+#include <map>
+#include <vector>
+
 namespace flecsi {
-namespace topology {
+namespace coloring {
 
-//----------------------------------------------------------------------------//
-// Mesh topology.
-//----------------------------------------------------------------------------//
+struct index_coloring_t {
+  /*!
+      Set of entities for each rank
+  */
+  std::vector<size_t> primary;
+}; // struct index_coloring_t
 
-/*!
-  @ingroup topology
- */
+using coloring_t = std::map<size_t, index_coloring_t>;
 
-struct structured_mesh_topology_base_t {
-  using coloring_t = size_t;
-}; // structured_mesh_topology_base_t
-
-} // namespace topology
+} // namespace coloring
 } // namespace flecsi

@@ -15,7 +15,7 @@
 #include <flecsi/utils/ftest.hh>
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.hh>
+#include <flecsi/execution.hh>
 
 flog_register_tag(color);
 

@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/topology/common/utility_types.hh>
+#include "../utility_types.hh"
 #include <flecsi/utils/geometry/point.hh>
 #endif
 
@@ -26,7 +26,7 @@ namespace flecsi {
 namespace topology {
 
 //----------------------------------------------------------------------------//
-// Mesh topology.
+// NTree topology.
 //----------------------------------------------------------------------------//
 
 /*!
@@ -35,6 +35,8 @@ namespace topology {
 
 struct ntree_topology_base_t {
   using coloring_t = size_t;
+
+  // add storage
 }; // ntree_topology_base_t
 
 /*----------------------------------------------------------------------------*
@@ -167,22 +169,22 @@ private:
 }; // class tree_entity
 
 /*----------------------------------------------------------------------------*
- * class tree_branch_t
+ * class tree_node_t
  *----------------------------------------------------------------------------*/
 
 //----------------------------------------------------------------------------//
-//! \class tree_branch tree_types.h
+//! \class tree_node tree_types.h
 //!
-//! \brief tree_branch parametrizes a tree ebranch base with its dimension
+//! \brief tree_node parametrizes a tree node base with its dimension
 //! and number of domain
 //!
 //! \tparam DIM Dimension
-//! \tparam TREE_ENTITY_TYPE The type of entities stored in the branches
-//! \tparam KEY The type of key to represent this branch
+//! \tparam TREE_ENTITY_TYPE The type of entities stored in the nodes
+//! \tparam KEY The type of key to represent this node
 //----------------------------------------------------------------------------//
 
 template<size_t DIM, class TREE_ENTITY_TYPE, class KEY>
-class ntree_branch : public ntree_entity_base_t
+class ntree_node : public ntree_entity_base_t
 {
 public:
   enum LOCALITY : int { LOCAL = 0, NON_LOCAL = 1, SHARED = 2 };
@@ -193,11 +195,11 @@ public:
   using point_t = point<double, dimension>;
   using key_t = KEY;
 
-  ntree_branch() : size_(0), is_leaf_(true) {}
-  ntree_branch(const key_t & key) : size_(0), is_leaf_(true) {
+  ntree_node() : size_(0), is_leaf_(true) {}
+  ntree_node(const key_t & key) : size_(0), is_leaf_(true) {
     key_ = key;
   }
-  ~ntree_branch() {}
+  ~ntree_node() {}
 
   // Setter
   void set_leaf(const bool & is_leaf) {
@@ -266,7 +268,7 @@ public:
   }
 
   /**
-   * Add an entity in this branch entities
+   * Add an entity in this node entities
    */
   void insert(const entity_id_t & id) {
     entities_[size_++] = id;
@@ -306,7 +308,7 @@ private:
   bool ghosts_local_;
 
   LOCALITY locality_;
-};
+}; // class ntree_node
 
 } // namespace topology
 } // namespace flecsi

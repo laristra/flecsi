@@ -13,9 +13,9 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/data/data.hh>
-#include <flecsi/execution/execution.hh>
-#include <flecsi/io/io_interface.hh>
+#include <flecsi/data.hh>
+#include <flecsi/execution.hh>
+#include <flecsi/io.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/ftest.hh>
 

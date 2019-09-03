@@ -15,8 +15,8 @@
 #include <flecsi/utils/ftest.hh>
 
 #define __FLECSI_PRIVATE__
-//#include <flecsi/execution/common/launch.hh>
-#include <flecsi/execution/execution.hh>
+//#include <flecsi/execution/launch.hh>
+#include <flecsi/execution.hh>
 
 #define THREADS_PER_BLOCK 128
 #define MIN_CTAS_PER_SM 4

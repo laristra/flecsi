@@ -20,7 +20,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include <flecsi/execution/common/launch.hh>
+#include "../launch.hh"
 #endif
 
 #if !defined(FLECSI_ENABLE_LEGION)

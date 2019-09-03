@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include <flecsi/data/common/client_handle.hh>
-#include <flecsi/data/common/client_handle_specialization.hh>
+#include "../client_handle.hh"
+#include "../client_handle_specialization.hh"
 
 namespace flecsi {
 namespace data {
