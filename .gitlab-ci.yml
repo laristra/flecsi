@@ -52,6 +52,7 @@ before_script:
   - module load gcc/${FLECSI_GCC_VERSION}
   - echo ${FLECSI_ENV_SOURCE_FILE}
   - echo ${FLECSI_SPACK_SPEC}
+  - rm ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
     ( flock -e 200
     source ${SPACK_ROOT}/share/spack/setup-env.sh;
@@ -205,12 +206,6 @@ before_script:
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_UNIT_TESTS=ON \
-        -DENABLE_PARMETIS=ON \
-        -DENABLE_COLORING=ON \
-        -DENABLE_DOXYGEN=OFF \
-        -DENABLE_FLECSTAN=$([ "$CI_RUNNER_TAGS" = "shell" ] && echo OFF || echo ON) \
-        -DENABLE_DOCUMENTATION=OFF \
-        -DENABLE_COVERAGE_BUILD=ON \
         ..
     make -k VERBOSE=1 -j2 -l40
     make install DESTDIR=${CI_PROJECT_DIR}/build/install
