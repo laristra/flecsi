@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include <flecsi/topology/common/array_buffer.hh>
-#include <flecsi/topology/common/index_space.hh>
+#include "array_buffer.hh"
+#include "index_space.hh"
 #include <flecsi/utils/offset.hh>
 
 namespace flecsi {

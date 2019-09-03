@@ -14,13 +14,11 @@
 
 set(runtime_HEADERS
   context.hh
-  runtime.hh
   types.hh
   backend.hh
 )
 
 set(runtime_SOURCES
-  runtime.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")

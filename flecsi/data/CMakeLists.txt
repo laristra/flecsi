@@ -18,12 +18,12 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
-  common/data_reference.hh
-  common/field_info.hh
-  common/privilege.hh
-  common/storage_classes.hh
-  common/topology_accessor.hh
-  common/topology_registration.hh
+  data_reference.hh
+  field_info.hh
+  privilege.hh
+  storage_classes.hh
+  topology_accessor.hh
+  topology_registration.hh
   field.hh
   topology_interface.hh
   backend.hh

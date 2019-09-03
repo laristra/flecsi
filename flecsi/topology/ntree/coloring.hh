@@ -25,16 +25,14 @@
 namespace flecsi {
 namespace coloring {
 
+struct index_coloring_t {
+  /*!
+      Set of entities for each rank
+  */
+  std::vector<size_t> primary;
+}; // struct index_coloring_t
 
-struct index_coloring_t{
-    /*! 
-        Set of entities for each rank  
-    */ 
-    std::vector<size_t> primary ; 
-}; // struct index_coloring_t 
+using coloring_t = std::map<size_t, index_coloring_t>;
 
-
-using coloring_t = std::map<size_t,index_coloring_t>; 
-
-} // coloring 
-} // flecsi 
+} // namespace coloring
+} // namespace flecsi

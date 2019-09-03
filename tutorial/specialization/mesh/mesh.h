@@ -18,7 +18,7 @@
 #include <vector>
 
 #include <flecsi/tutorial/specialization/mesh/policy.h>
-#include <flecsi/data/common/privilege.h>
+#include <flecsi/data/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/data/ragged_accessor.h>

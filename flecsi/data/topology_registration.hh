@@ -25,8 +25,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include "../topology/core.hh"
 #include "flecsi/runtime/backend.hh"
-#include "flecsi/topology/common/core.hh"
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
