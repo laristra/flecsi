@@ -64,6 +64,12 @@ fixdir(const std::string & in) {
   return in.substr(b, e - b);
 }
 
+// filename_queueing
+inline std::string
+filename_queueing(const std::string & name) {
+  return name == "-" ? stdin : quote(stripdir(name));
+}
+
 // ------------------------
 // macros
 // ------------------------
@@ -166,12 +172,12 @@ option_file_long(const std::string & opt) {
   flecstan_setnfind("-file-long", "--file-long");
 }
 bool
-option_file_short(const std::string & opt) {
-  flecstan_setnfind("-file-short", "--file-short");
+option_file_medium(const std::string & opt) {
+  flecstan_setnfind("-file-medium", "--file-medium");
 }
 bool
-option_file_shorter(const std::string & opt) {
-  flecstan_setnfind("-file-shorter", "--file-shorter");
+option_file_short(const std::string & opt) {
+  flecstan_setnfind("-file-short", "--file-short");
 }
 
 bool
@@ -181,6 +187,28 @@ option_file_full(const std::string & opt) {
 bool
 option_file_strip(const std::string & opt) {
   flecstan_setnfind("-file-strip", "--file-strip");
+}
+
+// re: markup
+bool
+option_markup_ansi(const std::string & opt) {
+  flecstan_setnfind("-markup-ansi", "--markup-ansi");
+}
+bool
+option_markup_html(const std::string & opt) {
+  flecstan_setnfind("-markup-html", "--markup-html");
+}
+bool
+option_markup_rst(const std::string & opt) {
+  flecstan_setnfind("-markup-rst", "--markup-rst");
+}
+bool
+option_markup_tex(const std::string & opt) {
+  flecstan_setnfind("-markup-tex", "--markup-tex");
+}
+bool
+option_markup_tex_listing(const std::string & opt) {
+  flecstan_setnfind("-markup-tex-listing", "--markup-tex-listing");
 }
 
 // ------------------------
@@ -310,9 +338,13 @@ option_any(const std::string & opt) {
          option_verbose(opt) || option_short(opt) || option_long(opt) ||
          option_print(opt) || option_debug(opt) ||
 
-         option_file_long(opt) || option_file_short(opt) ||
-         option_file_shorter(opt) || option_file_full(opt) ||
+         option_file_long(opt) || option_file_medium(opt) ||
+         option_file_short(opt) || option_file_full(opt) ||
          option_file_strip(opt) ||
+
+         option_markup_ansi(opt) || option_markup_html(opt) ||
+         option_markup_rst(opt) || option_markup_tex(opt) ||
+         option_markup_tex_listing(opt) ||
 
          option_title(opt) || option_no_title(opt) || option_file(opt) ||
          option_no_file(opt) || option_report(opt) || option_no_report(opt) ||
@@ -351,7 +383,7 @@ endsin_json(const std::string & str) {
 
 inline bool
 endsin_make(const std::string & str) {
-  // Interpret .txt as our make-output files. :-/ I may or may not
+  // Interpret .txt as our make-verbose files. :-/ I may or may not
   // wish to stick with this scheme, but it's serviceable for now.
   return endsin(str, ".txt");
 }
@@ -544,7 +576,7 @@ one_json(const char * const * const argv, const std::size_t i, CmdArgs & com) {
   }
 
   // Save
-  note("Queueing JSON file " + quote(full) + ".");
+  note("Queueing JSON file " + filename_queueing(full) + ".");
   com.jsonfile.push_back(std::make_pair(stdin ? "-" : full, found));
   com.type.push_back(CmdArgs::file_t::json_t);
 
@@ -565,7 +597,7 @@ process_json(const int argc,
   while(true) {
     if(int(++i) == argc || // no more arguments, or...
        option_any(argv[i]) || // looks like another flag
-       endsin_make(argv[i]) || // looks like a make-output text file
+       endsin_make(argv[i]) || // looks like a make-verbose file
        endsin_cc(argv[i]) || // looks like a C++ file
        endsin_yaml(argv[i]) // looks like a YAML file
     ) {
@@ -641,7 +673,7 @@ one_make(const char * const * const argv, const std::size_t i, CmdArgs & com) {
       // File not found; try to be smart...
       if(txt)
         // Name ends in .txt; there's nothing more to try
-        warning("Could not find make-output text file " + quote(full) + ".");
+        warning("Could not find make-verbose file " + quote(full) + ".");
       else {
         // Name doesn't end in .txt; try appending
         std::ifstream ifs((full + ".txt").c_str());
@@ -650,14 +682,14 @@ one_make(const char * const * const argv, const std::size_t i, CmdArgs & com) {
           full += ".txt";
         else
           // Still not found; oh well
-          warning("Could not find make-output text file " + quote(full) +
-                  " or " + quote(full + ".txt") + ".");
+          warning("Could not find make-verbose file " + quote(full) + " or " +
+                  quote(full + ".txt") + ".");
       }
     }
   }
 
   // Save
-  note("Queueing make-output text file " + quote(full) + ".");
+  note("Queueing make-verbose file " + filename_queueing(full) + ".");
   com.makeinfo.push_back(std::make_pair(stdin ? "-" : full, found));
   com.type.push_back(CmdArgs::file_t::make_t);
 
@@ -689,7 +721,7 @@ process_make(const int argc,
                ? status
                // Had no arguments
                : error("The " + opt +
-                       " option (make-output text file(s)) "
+                       " option (make-verbose file(s)) "
                        "expects one or more arguments.\n"
                        "Example: " +
                        opt + " foo.txt bar.txt");
@@ -777,7 +809,7 @@ one_cc(const char * const * const argv, const std::size_t i, CmdArgs & com) {
 
   // Note
   std::ostringstream oss;
-  oss << "Queueing C++ file " << quote(full) << ".";
+  oss << "Queueing C++ file " << filename_queueing(full) << ".";
   if(emit_ccdetail) {
     std::string str;
     for(std::size_t s = 0; s < ctcc.CommandLine.size(); ++s)
@@ -809,7 +841,7 @@ process_cc(const int argc,
     if(int(++i) == argc || // no more arguments, or...
        option_any(argv[i]) || // looks like another flag
        endsin_json(argv[i]) || // looks like a JSON file
-       endsin_make(argv[i]) || // looks like a make-output text file
+       endsin_make(argv[i]) || // looks like a make-verbose file
        endsin_yaml(argv[i]) // looks like a YAML file
     ) {
       // No more arguments to the current option, so we're done
@@ -946,7 +978,7 @@ default_json(CmdArgs & com) {
     return false;
 
   // Save
-  note("Queueing JSON file " + quote(full) + ".");
+  note("Queueing JSON file " + filename_queueing(full) + ".");
   com.jsonfile.push_back(std::make_pair(full, true));
   com.type.push_back(CmdArgs::file_t::json_t);
   return true;
@@ -1021,19 +1053,35 @@ option_toggle(const std::string & opt) {
 
   // re: file printing
   else if(option_file_long(opt)) {
-    file_short = file_shorter = false;
+    file_medium = file_short = false;
+  }
+  else if(option_file_medium(opt)) {
+    file_medium = true;
   }
   else if(option_file_short(opt)) {
     file_short = true;
-  }
-  else if(option_file_shorter(opt)) {
-    file_shorter = true;
   }
   else if(option_file_full(opt)) {
     file_strip = false;
   }
   else if(option_file_strip(opt)) {
     file_strip = true;
+  }
+
+  else if(option_markup_ansi(opt)) {
+    markup.ansi();
+  }
+  else if(option_markup_html(opt)) {
+    markup.html();
+  }
+  else if(option_markup_rst(opt)) {
+    markup.rst();
+  }
+  else if(option_markup_tex(opt)) {
+    markup.tex();
+  }
+  else if(option_markup_tex_listing(opt)) {
+    markup.tex_listing();
   }
 
   else if(option_title(opt)) {
@@ -1054,6 +1102,7 @@ option_toggle(const std::string & opt) {
   else if(option_no_report(opt)) {
     emit_report = false;
   }
+
   else if(option_note(opt)) {
     emit_note = true;
   }
@@ -1194,7 +1243,7 @@ initial(
 
   // output
   CmdArgs & com) {
-  // These just shouldn't happen
+  // These shouldn't happen
   if(argc <= 0)
     return interr("argc <= 0. This shouldn't happen.");
   if(argv == nullptr)
@@ -1279,7 +1328,7 @@ arguments(
     }
 #undef ARGS
 
-    // Direct-specified JSON, make-output, or C++ file?
+    // Direct-specified JSON, make-verbose, or C++ file?
     else if(endsin_json(opt)) {
       if(one_json(argv, i, com) == exit_fatal)
         return bail();
@@ -1295,7 +1344,7 @@ arguments(
 
     // Direct-specified YAML file? This is an error, actually, because
     // we wouldn't know if it's an input or output YAML file. (Contrast
-    // this with JSON, make-output, and C++ files, which can only be input.)
+    // this with JSON, make-verbose, and C++ files, which can only be input.)
     else if(endsin_yaml(opt)) {
       error("Ambiguous command-line argument: " + quote(opt) +
             "."
@@ -1315,7 +1364,7 @@ arguments(
               : error("Ambiguous command-line argument: " + quote(opt) +
                       "."
                       "\nIf a JSON file, use -json or suffix file with .json."
-                      "\nIf a make-output text file, use -make "
+                      "\nIf a make-verbose file, use -make "
                       "or suffix file with .txt."
                       "\nIf a C++ file, use -cc "
                       "or suffix file with .cc, .cpp, .cxx, or .C."
@@ -1330,13 +1379,13 @@ arguments(
 
   // Implicit problem (no input files were given, or found!)
   if(!(com.jsonfile.size() || // no given JSON
-       com.makeinfo.size() || // no given make-output
+       com.makeinfo.size() || // no given make-verbose
        com.commands.size() || // no given C++
        default_json(com))) // no default JSON
-    return error(
-      "No input file(s) specified, and default (" + default_json_file +
-      ") not found.\n"
-      "You can provide JSON, make-output text, and C++ input files.");
+    return error("No input file(s) specified, and default (" +
+                 default_json_file +
+                 ") not found.\n"
+                 "You can provide JSON, make-verbose, and C++ input files.");
 
   // No problem
   return exit_clean;

@@ -102,10 +102,12 @@ match(const clang::CallExpr *& call, // output
   if(call) {
     mc.ast = true;
     if(emit_link)
-      report("Link", "Function call: " + theclass + "::" + thefunction +
-                       "\n"
-                       "Matches macro: " +
-                       mc.macname + " (" + mc.flc() + ")");
+      report("Link",
+        "Function call: " + theclass + "::" + thefunction +
+          "\n"
+          "Matches macro: " +
+          mc.macname + " (" + mc.flc() + ")",
+        true);
   }
   return call;
 }
@@ -340,6 +342,7 @@ Visitor::VisitVarDecl(const clang::VarDecl * const var) {
     c.storage_class = mc.str(sema, pos++);
     c.versions = getUIntArg(ta, 5); // 5 = template argument position
     c.index_space = getUIntArg(ta, 6);
+    c.type = (*ta)[0].getAsType().getAsString();
     yaml.push(c, scp);
   }
 
@@ -599,6 +602,7 @@ Visitor::VisitCallExpr(const clang::CallExpr * const expr) {
     c.data_type = mc.str(sema, pos++);
     c.storage_class = mc.str(sema, pos++);
     c.version = getUIntArg(ta, 5); // 5 = template argument position
+    c.type = (*ta)[0].getAsType().getAsString();
     yaml.push(c);
   }
 
@@ -735,11 +739,12 @@ Visitor::VisitTypeAliasDecl(const clang::TypeAliasDecl * const tad) {
     yaml.push(c, scp);
 
     if(emit_link)
-      report("Link", "Function type: " + tad->getNameAsString() + " = " +
-                       thetype +
-                       "\n"
-                       "Matches macro: " +
-                       mc.macname + " (" + mc.flc() + ")");
+      report("Link",
+        "Function type: " + tad->getNameAsString() + " = " + thetype +
+          "\n"
+          "Matches macro: " +
+          mc.macname + " (" + mc.flc() + ")",
+        true);
   }
 
   return true;
