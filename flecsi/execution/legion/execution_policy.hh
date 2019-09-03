@@ -168,7 +168,7 @@ reduce(ARGS &&... args) {
   ++flecsi_context.tasks_executed();
 
   legion::task_prologue_t pro(legion_runtime, legion_context, domain_size);
-  pro.walk<ARG_TUPLE>(task_args);
+  pro.walk<ARG_TUPLE>(args...);
   auto buf = detail::serial_arguments(
     static_cast<ARG_TUPLE *>(nullptr), std::forward<ARGS>(args)...);
 
