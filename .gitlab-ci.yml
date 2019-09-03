@@ -191,6 +191,7 @@ before_script:
   <<: *artifacts_def
   stage: Build
   script: &build_script |-
+    printenv
     echo 'Start building'
     ccache -z
     nproc
