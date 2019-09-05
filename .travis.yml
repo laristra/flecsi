@@ -56,6 +56,13 @@ jobs:
       compiler: gcc
     - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
       compiler: clang
+      
+    - env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release CLANG_FORMAT=yes
+      compiler: gcc
+    - env: DISTRO=fedora_mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora_mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+      compiler: clang
 
 compiler:
   - gcc
@@ -64,13 +71,13 @@ compiler:
 env:
   matrix:
     - DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
+    #- DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
+    #- DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
+    #- DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
+    #- DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=fedora_mpich RUNTIME=hpx BUILD_TYPE=Release
 
 before_install:
