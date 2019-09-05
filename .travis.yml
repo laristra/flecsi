@@ -23,9 +23,9 @@ jobs:
   fast_finish: true
   include:
     - stage: canary
-      env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
+      env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: gcc
-    - env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
+    - env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: gcc
 
     - stage: coverage
