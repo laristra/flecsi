@@ -69,14 +69,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
     h.init();
-
-    for(size_t e = 0; e < h.num_total_; ++e) {
-      int start = h.offsets[e].start();
-      int count = h.offsets[e].count();
-      auto & entry = h.new_entries[e];
-      entry.resize(count);
-      std::copy_n(h.entries + start, count, entry.begin());
-    }
   } // handle
 
   template<typename T,
@@ -94,23 +86,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
-    using value_t = typename mutator_handle_u<T>::value_t;
-
     auto & h = m.h_;
     h.init();
-
-    h.entries_ = reinterpret_cast<value_t *>(&(*h.entries)[0]);
-    h.offsets_ = &(*h.offsets)[0];
-
-    for(size_t e = 0; e < h.num_entries_; ++e) {
-      int start = h.offsets_[e].start();
-      int count = h.offsets_[e].count();
-      auto & entry = h.new_entries_[e];
-      entry.resize(count);
-      std::copy_n(h.entries_ + start, count, entry.begin());
-      h.offsets_[e].set_count(0);
-    }
-
   } // handle
 
   template<typename T>

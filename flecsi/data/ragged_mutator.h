@@ -62,9 +62,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
-  mutator_u(const mutator_handle_u<T> & h) : h_(h) {
-    assert(!h_.new_entries_ && "expected null new_entries");
-  }
+  mutator_u(const mutator_handle_u<T> & h) : h_(h) {}
 
   T & operator()(size_t index, size_t ragged_index) {
     assert(h_.new_entries_ && "uninitialized ragged_mutator");

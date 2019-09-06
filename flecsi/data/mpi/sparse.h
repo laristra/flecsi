@@ -160,6 +160,8 @@ struct storage_class_u<ragged> {
     hb.data_client_hash = field_info.data_client_hash;
 
     hb.entries = reinterpret_cast<DATA_TYPE *>(&fd.entries[0]);
+    using vector_t = typename ragged_data_handle_u<DATA_TYPE, 0, 0, 0>::vector_t;
+    hb.new_entries = reinterpret_cast<vector_t *>(&fd.new_entries[0]);
 
     hb.offsets = &fd.offsets[0];
     hb.max_entries_per_index = fd.max_entries_per_index;
@@ -223,6 +225,8 @@ struct storage_class_u<ragged> {
 
     h.offsets = &fd.offsets;
     h.entries = &fd.entries;
+    using vector_t = typename mutator_handle_u<DATA_TYPE>::vector_t;
+    h.new_entries_ = reinterpret_cast<vector_t *>(&fd.new_entries[0]);
     h.reserve = &fd.reserve;
     h.exclusive_reserve = fd.exclusive_reserve;
     h.num_exclusive_entries = &fd.num_exclusive_entries;

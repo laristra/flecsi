@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <stdint.h>
 #include <functional>
 #include <map>
 #include <unordered_map>
@@ -32,6 +33,7 @@
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/simple_vector.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/mpi/future.h>
@@ -68,7 +70,8 @@ struct mpi_context_policy_t {
         num_total(num_exclusive + num_shared + num_ghost),
         max_entries_per_index(max_entries_per_index),
         exclusive_reserve(exclusive_reserve), reserve(exclusive_reserve),
-        offsets(num_total), num_exclusive_entries(0) {
+        offsets(num_total), new_entries(num_total),
+        num_exclusive_entries(0) {
 
       size_t n = num_total - num_exclusive;
 
@@ -96,6 +99,7 @@ struct mpi_context_policy_t {
 
     std::vector<offset_t> offsets;
     std::vector<uint8_t> entries;
+    std::vector<data::simple_vector_u<uint8_t>> new_entries;
   }; // sparse_field_data_t
 
   /*!
