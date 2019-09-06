@@ -18,6 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
+#include <flecsi/topology/internal/canonical.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/ntree/types.hh>
 #include <flecsi/topology/set/types.hh>

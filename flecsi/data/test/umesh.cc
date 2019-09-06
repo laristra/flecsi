@@ -13,27 +13,24 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/data/data.hh>
-#include <flecsi/execution/execution.hh>
+#include <flecsi/data.hh>
+#include <flecsi/execution.hh>
 #include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 using namespace flecsi::data;
 using namespace flecsi::topology;
 
-using mesh = topology<mesh_t>;
-const mesh mesh0;
-const mesh mesh1;
-
-const mesh::coloring coloring;
-
+#if 0
 using cell_field_t = field_member<double, dense, mesh_t, cells>;
 const cell_field_t cell_field;
 auto pressure = cell_field(m);
+#endif
 
 int
 index_driver(int argc, char ** argv) {
 
+#if 0
   coloring.create(/* arg list */);
 
   mesh0.create(coloring);
@@ -44,6 +41,7 @@ index_driver(int argc, char ** argv) {
 
   mesh0.destroy();
   mesh1.destroy();
+#endif
 
   return 0;
 } // index

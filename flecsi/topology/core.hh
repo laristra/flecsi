@@ -1,14 +1,33 @@
-/// \file
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef FLECSI_TOPOLOGY_CORE_HH
-#define FLECSI_TOPOLOGY_CORE_HH
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-#include "flecsi/utils/type_traits.hh"
+/*! file */
+
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#endif
+
+#include <flecsi/utils/type_traits.hh>
 
 namespace flecsi {
 namespace topology {
 
 // Declarations for the base topology types.
+
+template<typename>
+struct canonical_topology;
 
 struct global_topology_t;
 struct index_topology_t;
@@ -26,29 +45,42 @@ template<typename>
 class unstructured_mesh_topology;
 
 namespace detail {
+
 template<class, class = void>
 struct core;
+
+template<class T>
+struct core<T,
+  utils::voided<utils::base_specialization_t<canonical_topology, T>>> {
+  using type = utils::base_specialization_t<canonical_topology, T>;
+};
+
 template<class T>
 struct core<T, std::enable_if_t<std::is_base_of_v<global_topology_t, T>>> {
   using type = global_topology_t;
 };
+
 template<class T>
 struct core<T, std::enable_if_t<std::is_base_of_v<index_topology_t, T>>> {
   using type = index_topology_t;
 };
+
 template<class T>
 struct core<T, utils::voided<utils::base_specialization_t<ntree_topology, T>>> {
   using type = utils::base_specialization_t<ntree_topology, T>;
 };
+
 template<class T>
 struct core<T, utils::voided<utils::base_specialization_t<set_topology, T>>> {
   using type = utils::base_specialization_t<set_topology, T>;
 };
+
 template<class T>
 struct core<T,
   utils::voided<utils::base_specialization_t<structured_mesh_topology, T>>> {
   using type = utils::base_specialization_t<structured_mesh_topology, T>;
 };
+
 template<class T>
 struct core<T,
   utils::voided<utils::base_specialization_t<unstructured_mesh_topology, T>>> {
@@ -76,5 +108,3 @@ id() {
 
 } // namespace topology
 } // namespace flecsi
-
-#endif
