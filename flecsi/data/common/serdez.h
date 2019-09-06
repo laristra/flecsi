@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include <stdint.h>
 #include <algorithm>
+#include <stdint.h>
 
 #include <flecsi/data/common/simple_vector.h>
 
@@ -28,7 +28,6 @@ class serdez_u
 {
   // not implemented for general case
 };
-
 
 template<typename T>
 class serdez_u<simple_vector_u<T>>
@@ -51,7 +50,8 @@ public:
     memcpy(buf, &count, sizeof(int));
     buf += sizeof(int);
     int s = count * sizeof(T);
-    if (s && val.data) memcpy(buf, val.data, s);
+    if(s && val.data)
+      memcpy(buf, val.data, s);
     return s + sizeof(int);
   }
 
@@ -62,9 +62,10 @@ public:
     buf += sizeof(int);
     // some C++ magic to construct object in uninitialized memory
     // CRF:  this assumes val is always uninitialized - need to verify
-    new (&val) vector_t(count);
+    new(&val) vector_t(count);
     int s = count * sizeof(T);
-    if (s && val.data) memcpy(val.data, buf, s);
+    if(s && val.data)
+      memcpy(val.data, buf, s);
     return s + sizeof(int);
   }
 
@@ -73,7 +74,5 @@ public:
   }
 };
 
-
 } // namespace data
 } // namespace flecsi
-

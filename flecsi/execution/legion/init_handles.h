@@ -591,7 +591,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
       // CRF - this probably should go away entirely
-      offsets_data[r] = (offset_t *) ac.template raw_rect_ptr<2>(dr, sr, bo);
+      offsets_data[r] = (offset_t *)ac.template raw_rect_ptr<2>(dr, sr, bo);
       offsets_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.offsets_size += offsets_sizes[r];
     } // for
@@ -747,7 +747,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       LegionRuntime::Accessor::ByteOffset bo[2];
       // CRF - can this go away?
       h.offsets_data[r] = offsets_data[r] =
-        (offset_t *) ac.template raw_rect_ptr<2>(dr, sr, bo);
+        (offset_t *)ac.template raw_rect_ptr<2>(dr, sr, bo);
       offsets_sizes[r] = sr.hi[1] - sr.lo[1] + 1;
       h.offsets_size += offsets_sizes[r];
     } // for

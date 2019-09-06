@@ -416,7 +416,6 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
 flecsi_internal_legion_task(sparse_set_owner_position_task, void) {
 
   // no longer needed
-
 }
 
 /*!

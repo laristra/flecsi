@@ -84,16 +84,14 @@ struct accessor_u<data::ragged,
 
   T & operator()(size_t index, size_t ragged_index) {
     vector_t & row = handle.new_entries[index];
-    assert(
-      ragged_index < row.size() && "ragged accessor: index out of range");
+    assert(ragged_index < row.size() && "ragged accessor: index out of range");
 
     return row[ragged_index];
   } // operator ()
 
   const T & operator()(size_t index, size_t ragged_index) const {
     const vector_t & row = handle.new_entries[index];
-    assert(
-      ragged_index < row.size() && "ragged accessor: index out of range");
+    assert(ragged_index < row.size() && "ragged accessor: index out of range");
 
     return row[ragged_index];
   } // operator ()

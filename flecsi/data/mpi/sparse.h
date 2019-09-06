@@ -160,7 +160,8 @@ struct storage_class_u<ragged> {
     hb.data_client_hash = field_info.data_client_hash;
 
     hb.entries = reinterpret_cast<DATA_TYPE *>(&fd.entries[0]);
-    using vector_t = typename ragged_data_handle_u<DATA_TYPE, 0, 0, 0>::vector_t;
+    using vector_t =
+      typename ragged_data_handle_u<DATA_TYPE, 0, 0, 0>::vector_t;
     hb.new_entries = reinterpret_cast<vector_t *>(&fd.new_entries[0]);
 
     hb.offsets = &fd.offsets[0];

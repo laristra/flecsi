@@ -182,9 +182,9 @@ struct accessor_u<data::sparse,
 
     // find where entry should be
     auto itr = std::lower_bound(start, end, entry_value_t(entry),
-        [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
-          return k1.entry < k2.entry;
-        });
+      [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
+        return k1.entry < k2.entry;
+      });
 
     return (itr == end ? nullptr : itr);
 
@@ -281,8 +281,7 @@ struct accessor_u<data::sparse,
       const auto & row = handle.new_entries[index];
       std::cout << "index: " << i << std::endl;
       for(size_t j = 0; j < row.size(); ++j) {
-        std::cout << "  " << row[j].entry << " = "
-                  << row[j].value << std::endl;
+        std::cout << "  " << row[j].entry << " = " << row[j].value << std::endl;
       }
     }
   }

@@ -173,9 +173,9 @@ struct mutator_u<data::sparse, T>
 
     // find where entry should be
     auto itr = std::lower_bound(start, end, entry_value_t(entry),
-        [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
-          return e1.entry < e2.entry;
-        });
+      [](const entry_value_t & e1, const entry_value_t & e2) -> bool {
+        return e1.entry < e2.entry;
+      });
 
     return (itr == end ? nullptr : &(*itr));
 

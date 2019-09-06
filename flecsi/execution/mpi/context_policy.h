@@ -15,9 +15,9 @@
 
 /*! @file */
 
-#include <stdint.h>
 #include <functional>
 #include <map>
+#include <stdint.h>
 #include <unordered_map>
 
 #include <cinchlog.h>
@@ -70,8 +70,7 @@ struct mpi_context_policy_t {
         num_total(num_exclusive + num_shared + num_ghost),
         max_entries_per_index(max_entries_per_index),
         exclusive_reserve(exclusive_reserve), reserve(exclusive_reserve),
-        offsets(num_total), new_entries(num_total),
-        num_exclusive_entries(0) {
+        offsets(num_total), new_entries(num_total), num_exclusive_entries(0) {
 
       size_t n = num_total - num_exclusive;
 

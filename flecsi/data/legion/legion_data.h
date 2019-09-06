@@ -562,7 +562,8 @@ public:
               else {
                 // CRF hack - use lowest bits of name_hash as serdez id
                 int sid = fi.name_hash & 0x7FFFFFFF;
-                allocator.allocate_field(sizeof(data::simple_vector_u<uint8_t>), fi.fid, sid);
+                allocator.allocate_field(
+                  sizeof(data::simple_vector_u<uint8_t>), fi.fid, sid);
               }
             }
             break;

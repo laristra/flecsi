@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include <stdint.h>
 #include <algorithm>
+#include <stdint.h>
 
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/simple_vector.h>
@@ -109,8 +109,7 @@ public:
     init();
   }
 
-  void init() {
-  }
+  void init() {}
 
   size_t commit(commit_info_t * ci) {
     assert(new_entries_ && "uninitialized mutator");

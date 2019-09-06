@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include <stdint.h>
 #include <cstring>
+#include <stdint.h>
 #include <vector>
 
 #include "mpi.h"
@@ -56,16 +56,18 @@ struct finalize_handles_t
     auto & sparse_field_metadata =
       context.registered_sparse_field_metadata().at(h.fid);
 
-    value_t * shared_data = new value_t[h.num_shared() * h.max_entries_per_index()];
-    value_t * ghost_data = new value_t[h.num_ghost() * h.max_entries_per_index()];
+    value_t * shared_data =
+      new value_t[h.num_shared() * h.max_entries_per_index()];
+    value_t * ghost_data =
+      new value_t[h.num_ghost() * h.max_entries_per_index()];
 
     // Load data into shared data buffer
     for(int i = 0; i < h.num_shared(); ++i) {
       int r = h.num_exclusive_ + i;
       const auto & row = h.new_entries_[r];
       size_t count = row.size();
-      std::memcpy(&shared_data[i * h.max_entries_per_index()],
-                  row.begin(), count * sizeof(value_t));
+      std::memcpy(&shared_data[i * h.max_entries_per_index()], row.begin(),
+        count * sizeof(value_t));
     } // for i
 
     // Get entry_values
@@ -153,15 +155,15 @@ struct finalize_handles_t
       auto & row = h.new_entries_[r];
       int count = recv_count_buf[i];
       // CRF:  hack for uninitialized data
-      row.data = nullptr; row.clear();
+      row.data = nullptr;
+      row.clear();
       row.resize(count);
-      std::memcpy(row.begin(),
-                  &ghost_data[i * h.max_entries_per_index()],
-                  count * sizeof(value_t));
+      std::memcpy(row.begin(), &ghost_data[i * h.max_entries_per_index()],
+        count * sizeof(value_t));
     }
 
-    delete [] shared_data;
-    delete [] ghost_data;
+    delete[] shared_data;
+    delete[] ghost_data;
 
   } // handle
 

@@ -27,8 +27,8 @@
  @date Initial file creation: May 19, 2017
  */
 
-#include <stdint.h>
 #include <cstring>
+#include <stdint.h>
 #include <vector>
 
 #include "mpi.h"
@@ -144,7 +144,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     auto & sparse_field_metadata =
       context.registered_sparse_field_metadata().at(h.fid);
 
-    value_t * shared_data = new value_t[h.num_shared_ * h.max_entries_per_index];
+    value_t * shared_data =
+      new value_t[h.num_shared_ * h.max_entries_per_index];
     value_t * ghost_data = new value_t[h.num_ghost_ * h.max_entries_per_index];
 
     // Load data into shared data buffer
@@ -152,8 +153,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       int r = i + h.num_exclusive_;
       const auto & row = h.new_entries[r];
       size_t count = row.size();
-      std::memcpy(&shared_data[i * h.max_entries_per_index],
-                  row.begin(), count * sizeof(value_t));
+      std::memcpy(&shared_data[i * h.max_entries_per_index], row.begin(),
+        count * sizeof(value_t));
     }
 
     // Get entry_values
@@ -236,15 +237,15 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       auto & row = h.new_entries[r];
       int count = recv_count_buf[i];
       // CRF:  hack for uninitialized data
-      row.data = nullptr; row.clear();
+      row.data = nullptr;
+      row.clear();
       row.resize(count);
-      std::memcpy(row.begin(),
-                  &ghost_data[i * h.max_entries_per_index],
-                  count * sizeof(value_t));
+      std::memcpy(row.begin(), &ghost_data[i * h.max_entries_per_index],
+        count * sizeof(value_t));
     }
 
-    delete [] shared_data;
-    delete [] ghost_data;
+    delete[] shared_data;
+    delete[] ghost_data;
 
   } // handle
 
@@ -262,9 +263,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   } // handle
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-
-  } // handle
+  void handle(ragged_mutator<T> & m) {} // handle
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {

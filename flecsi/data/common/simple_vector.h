@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include <stdint.h>
 #include <algorithm>
+#include <stdint.h>
 
 namespace flecsi {
 namespace data {
@@ -35,16 +35,24 @@ struct simple_vector_u {
     data = new T[count];
   }
 
-  simple_vector_u(const simple_vector_u<T>& rhs) = default;
+  simple_vector_u(const simple_vector_u<T> & rhs) = default;
 
   ~simple_vector_u() = default;
 
-  simple_vector_u<T>& operator=(const simple_vector_u<T>& rhs) = default;
+  simple_vector_u<T> & operator=(const simple_vector_u<T> & rhs) = default;
 
-  iterator begin() { return data; }
-  iterator end() { return data + count; }
-  const_iterator begin() const { return data; }
-  const_iterator end() const { return data + count; }
+  iterator begin() {
+    return data;
+  }
+  iterator end() {
+    return data + count;
+  }
+  const_iterator begin() const {
+    return data;
+  }
+  const_iterator end() const {
+    return data + count;
+  }
 
   T & operator[](size_t index) {
     assert(index < count);
@@ -56,12 +64,14 @@ struct simple_vector_u {
     return data[index];
   } // operator ()
 
-  uint32_t size() const { return count; }
+  uint32_t size() const {
+    return count;
+  }
 
   void clear() {
     count = 0;
     capacity = 0;
-    delete [] data;
+    delete[] data;
     data = nullptr;
   }
 
@@ -73,7 +83,7 @@ struct simple_vector_u {
 
     auto new_data = new T[new_count];
     std::copy_n(data, count, new_data);
-    delete [] data;
+    delete[] data;
     count = new_count;
     capacity = new_count;
     data = new_data;
@@ -113,11 +123,9 @@ struct simple_vector_u {
 
   uint32_t count = 0;
   uint32_t capacity = 0;
-  T* data = nullptr;
+  T * data = nullptr;
 
-};  // simple_vector_u
-
+}; // simple_vector_u
 
 } // namespace data
 } // namespace flecsi
-
