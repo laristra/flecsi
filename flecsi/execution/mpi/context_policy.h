@@ -18,7 +18,7 @@
 #include <functional>
 #include <map>
 #include <stdint.h>
-#include <unordered_map>
+#include <vector>
 
 #include <cinchlog.h>
 #include <flecsi-config.h>
@@ -69,18 +69,7 @@ struct mpi_context_policy_t {
         num_shared(num_shared), num_ghost(num_ghost),
         num_total(num_exclusive + num_shared + num_ghost),
         max_entries_per_index(max_entries_per_index),
-        exclusive_reserve(exclusive_reserve), reserve(exclusive_reserve),
-        offsets(num_total), new_entries(num_total), num_exclusive_entries(0) {
-
-      size_t n = num_total - num_exclusive;
-
-      for(size_t i = 0; i < n; ++i) {
-        offsets[num_exclusive + i].set_offset(
-          reserve + i * max_entries_per_index);
-      }
-
-      entries.resize(type_size * (reserve + ((num_shared + num_ghost) *
-                                              max_entries_per_index)));
+        new_entries(num_total), num_exclusive_entries(0) {
     }
 
     size_t type_size;
@@ -92,12 +81,8 @@ struct mpi_context_policy_t {
     size_t num_total = 0;
 
     size_t max_entries_per_index;
-    size_t exclusive_reserve;
-    size_t reserve;
     size_t num_exclusive_entries;
 
-    std::vector<offset_t> offsets;
-    std::vector<uint8_t> entries;
     std::vector<data::simple_vector_u<uint8_t>> new_entries;
   }; // sparse_field_data_t
 
@@ -330,19 +315,6 @@ struct mpi_context_policy_t {
       metadata.target_types.insert({ghost_owner, target_type});
     }
 
-    // create the initial MPI Window for the shared cells. The window should
-    // be updated in the tuple walker when the number of entries in exclusive
-    // part changes.
-    auto entry_value_size = (sizeof(size_t) + sizeof(T));
-    auto data = sparse_field_data[fid].entries.data();
-    auto shared_data = data + sparse_field_data[fid].reserve *
-                                sparse_field_data[fid].max_entries_per_index *
-                                entry_value_size;
-    MPI_Win_create_dynamic(MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
-
-    //    MPI_Win_create(shared_data, coloring_info.shared * entry_value_size,
-    //                   entry_value_size, MPI_INFO_NULL, MPI_COMM_WORLD,
-    //                   &metadata.win);
     sparse_field_metadata.insert({fid, metadata});
   }
 

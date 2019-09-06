@@ -65,15 +65,6 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
     num_shared_ = num_shared;
     num_ghost_ = num_ghost;
     num_total_ = num_exclusive_ + num_shared_ + num_ghost_;
-
-    init();
-  }
-
-  void init() {}
-
-  void commit(bool read_only) {
-
-    // no longer needed
   }
 
   size_t num_exclusive() const {

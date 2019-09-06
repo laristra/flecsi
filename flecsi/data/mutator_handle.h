@@ -105,11 +105,7 @@ public:
 
     pi_.start[2] = pi_.end[1];
     pi_.end[2] = pi_.end[1] + num_ghost;
-
-    init();
   }
-
-  void init() {}
 
   size_t commit(commit_info_t * ci) {
     assert(new_entries_ && "uninitialized mutator");
@@ -158,8 +154,6 @@ public:
   size_t max_entries_per_index_;
   size_t num_slots_;
   size_t num_entries_;
-  offset_t * offsets_ = nullptr;
-  value_t * entries_ = nullptr;
   vector_t * new_entries_ = nullptr;
   commit_info_t ci_;
 
