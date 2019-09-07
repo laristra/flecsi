@@ -519,10 +519,7 @@ struct legion_io_policy_t {
 // Implementation of legion_io_policy_t::add_default_index_topology.
 //----------------------------------------------------------------------------//  
   void add_default_index_topology(legion_hdf5_t & hdf5_file) {
-    constexpr size_t identifier =
-      utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-        flecsi_internal_string_hash("index_topology")>();
-
+    size_t identifier = flecsi_index_topology.identifier();
     auto & flecsi_context = runtime::context_t::instance();
     data::index_topo::runtime_data_t & index_runtime_data =
       flecsi_context.index_topology_instance(identifier);
@@ -596,10 +593,7 @@ struct legion_io_policy_t {
           data::storage_label_t::dense)
         .field_info();
 
-    constexpr size_t identifier =
-      utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-        flecsi_internal_string_hash("index_topology")>();
-
+    size_t identifier = flecsi_index_topology.identifier();
     {
       flog_tag_guard(io);
       flog_devel(info) << "Checkpoint default index topology, fields size "
@@ -640,9 +634,7 @@ struct legion_io_policy_t {
           data::storage_label_t::dense)
         .get_field_info(fh.identifier());
 
-    constexpr size_t identifier =
-      utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-        flecsi_internal_string_hash("index_topology")>();
+    size_t identifier = flecsi_index_topology.identifier();
 
     {
       flog_tag_guard(io);
@@ -677,9 +669,7 @@ struct legion_io_policy_t {
           data::storage_label_t::dense)
         .field_info();
 
-    constexpr size_t identifier =
-      utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-        flecsi_internal_string_hash("index_topology")>();
+    size_t identifier = flecsi_index_topology.identifier();
 
     {
       flog_tag_guard(io);
@@ -719,9 +709,7 @@ struct legion_io_policy_t {
           data::storage_label_t::dense)
         .get_field_info(fh.identifier());
 
-    constexpr size_t identifier =
-      utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-        flecsi_internal_string_hash("index_topology")>();
+    size_t identifier = flecsi_index_topology.identifier();
 
     {
       flog_tag_guard(io);
