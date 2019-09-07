@@ -24,6 +24,7 @@ set(topology_HEADERS
   entity_storage.hh
   index_space.hh
   utility_types.hh
+  internal/canonical.hh
   internal/global.hh
   internal/index.hh
   ntree/interface.hh

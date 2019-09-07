@@ -51,7 +51,7 @@ namespace data {
 
  */
 
-template<typename TOPOLOGY_TYPE, size_t NAMESPACE, size_t NAME>
+template<typename TOPOLOGY_TYPE>
 struct topology_registration;
 
 #if 0
@@ -440,6 +440,21 @@ struct topology_registration<
 }; // class topology_registration
 #endif
 
+/*!
+ */
+
+template<typename POLICY_TYPE>
+struct topology_registration<
+  flecsi::topology::canonical_topology<POLICY_TYPE>> {
+
+  using TOPOLOGY_TYPE = flecsi::topology::canonical_topology<POLICY_TYPE>;
+
+  static void register_fields() {
+    flog(info) << "topology_registration::register_fields()" << std::endl;
+  } // register_fields
+
+}; // class topology_registration
+
 //----------------------------------------------------------------------------//
 // Global.
 //----------------------------------------------------------------------------//
@@ -449,10 +464,8 @@ struct topology_registration<
   type is essentially empty.
  */
 
-template<size_t NAMESPACE, size_t NAME>
-struct topology_registration<flecsi::topology::global_topology_t,
-  NAMESPACE,
-  NAME> {
+template<>
+struct topology_registration<flecsi::topology::global_topology_t> {
 
   using TOPOLOGY_TYPE = flecsi::topology::global_topology_t;
 
@@ -468,10 +481,8 @@ struct topology_registration<flecsi::topology::global_topology_t,
 
  */
 
-template<size_t NAMESPACE, size_t NAME>
-struct topology_registration<flecsi::topology::index_topology_t,
-  NAMESPACE,
-  NAME> {
+template<>
+struct topology_registration<flecsi::topology::index_topology_t> {
 
   using TOPOLOGY_TYPE = flecsi::topology::index_topology_t;
 

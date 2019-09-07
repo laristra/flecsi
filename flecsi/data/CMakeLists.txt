@@ -18,15 +18,15 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
+  backend.hh
   data_reference.hh
+  field.hh
   field_info.hh
   privilege.hh
   storage_classes.hh
   topology_accessor.hh
   topology_registration.hh
-  field.hh
-  topology_interface.hh
-  backend.hh
+  topology.hh
 )
 
 set(data_SOURCES
@@ -89,6 +89,13 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+ftest_add_unit(canonical
+  SOURCES
+    test/canonical.cc
+  THREADS 2
+)
+
+
 ftest_add_unit(global
   SOURCES
     test/global.cc
@@ -109,4 +116,10 @@ ftest_add_unit(index
 ftest_add_unit(privilege
   SOURCES
     test/privilege.cc
+)
+
+ftest_add_unit(umesh
+  SOURCES
+    test/umesh.cc
+  THREADS 2
 )

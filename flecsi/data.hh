@@ -20,25 +20,42 @@
   data model.
  */
 
-#include "data/privilege.hh"
 #include <flecsi/data/field.hh>
-#include <flecsi/data/topology_interface.hh>
+#include <flecsi/data/topology.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
-#include <flecsi/utils/const_string.hh>
 
 namespace flecsi {
 
-#if 0 // working to fix this
-  flecsi_topology_reference(                                                   \
-    flecsi::topology::index_topology_t, "internal", "index_topology")
-#endif
+/*
+  Default global topology instance.
+ */
+
+inline const data::topology_need_name<topology::global_topology_t>
+  global_topology_definition;
+inline auto flecsi_global_topology = global_topology_definition();
+
+/*
+  Convenience type for global field members.
+ */
 
 template<typename DATA_TYPE>
 using global_field_member = data::field_member<DATA_TYPE,
   data::storage_label_t::dense,
   topology::global_topology_t,
   0>;
+
+/*
+  Default index topology instance.
+ */
+
+inline const data::topology_need_name<topology::index_topology_t>
+  index_topology_definition;
+inline auto flecsi_index_topology = index_topology_definition();
+
+/*
+  Convenience type for index field members.
+ */
 
 template<typename DATA_TYPE>
 using index_field_member = data::field_member<DATA_TYPE,
@@ -47,38 +64,3 @@ using index_field_member = data::field_member<DATA_TYPE,
   0>;
 
 } // namespace flecsi
-
-/*----------------------------------------------------------------------------*
-  General Topology Interface.
- *----------------------------------------------------------------------------*/
-
-/*!
-  @def flecsi_topology_reference
-
-  Declare a variable of type \em type with namespace \em nspace
-  and name \em name.
-
-  This macro returns a reference to a topology instance. This call does not
-  necessarily cause memory to be allocated. It's primary function is to
-  describe the topology type to the runtime. Memory allocation will likely be
-  deferred.
-
-  @param type   The topology type.
-  @param nspace The string namespace to use to register the variable.
-  @param name   The string name to use to register the variable.
-
-  @ingroup data
- */
-
-#define flecsi_topology_reference(type, nspace, name)                          \
-  flecsi::data::topology_interface_t::reference<type,                          \
-    flecsi_internal_string_hash(nspace),                                       \
-    flecsi_internal_string_hash(name)>({flecsi_internal_stringify(name)})
-
-#define flecsi_index_topology                                                  \
-  flecsi_topology_reference(                                                   \
-    flecsi::topology::index_topology_t, "internal", "index_topology")
-
-#define flecsi_global_topology                                                 \
-  flecsi_topology_reference(                                                   \
-    flecsi::topology::global_topology_t, "internal", "global_topology")

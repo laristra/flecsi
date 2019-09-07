@@ -7,5 +7,5 @@ set(flecsi_HEADERS
 )
 
 set(flecsi_SOURCES
-  runtime.cc
+  runtime/runtime.cc
 )

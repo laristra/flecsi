@@ -49,15 +49,18 @@ flog_register_tag(execution);
 namespace flecsi {
 
 namespace detail {
+
 // Remove const from under a reference, if there is one.
 template<class T>
 struct nonconst_ref {
   using type = T;
 };
+
 template<class T>
 struct nonconst_ref<const T &> {
   using type = T &;
 };
+
 template<class T>
 using nonconst_ref_t = typename nonconst_ref<T>::type;
 
@@ -75,6 +78,7 @@ serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
       const PP &,
       std::decay_t<PP>>...>(std::forward<AA>(aa)...));
 }
+
 } // namespace detail
 
 template<auto & F,

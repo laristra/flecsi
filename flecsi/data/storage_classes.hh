@@ -21,14 +21,13 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
-#include "data_reference.hh"
-#include "flecsi/runtime/context.hh"
+#endif
+
+#include <flecsi/data/data_reference.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/structured_mesh/interface.hh>
 #include <flecsi/topology/unstructured_mesh/interface.hh>
-#endif
 
 namespace flecsi {
 namespace data {
