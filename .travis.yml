@@ -15,42 +15,53 @@ cache:
 stages:
   - name: canary
   - name: coverage
+    if: type = pull_request
   - name: test
-    if: type != pull_request && branch != feature/refactor
+    if: type != pull_request
 
 jobs:
   fast_finish: true
   include:
     - stage: canary
-      env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
+      env: DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release CLANG_FORMAT=yes
+      compiler: gcc
+    - env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: gcc
 
     - stage: coverage
-      env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
+      env: DISTRO=fedora_mpich RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+    - env: DISTRO=fedora_mpich RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
-    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+    - env: DISTRO=fedora_mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
-    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: clang
   allow_failures:
-    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
-      compiler: clang
-    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
       compiler: clang
 
-    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=hpx BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=fedora_mpich RUNTIME=hpx BUILD_TYPE=Release
+      compiler: clang
+      
+    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
+      compiler: clang
+      
+    - env: DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release CLANG_FORMAT=yes
+      compiler: gcc
+    - env: DISTRO=fedora_mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
+      compiler: gcc
+    - env: DISTRO=fedora_mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
 
 compiler:
@@ -60,14 +71,14 @@ compiler:
 env:
   matrix:
     - DISTRO=ubuntu RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
+    #- DISTRO=ubuntu RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
+    #- DISTRO=ubuntu_mpich RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
+    #- DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=fedora_mpich RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
-    - DISTRO=fedora RUNTIME=hpx BUILD_TYPE=Release
+    #- DISTRO=fedora_mpich RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=fedora_mpich RUNTIME=hpx BUILD_TYPE=Release
 
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
@@ -83,8 +94,9 @@ script:
   - if [[ ${TRAVIS_BRANCH} != stable ]]; then TAG="${TAG}_${TRAVIS_BRANCH//[^a-zA-Z0-9]/_}"; fi
   - travis_retry timeout 540 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
   - docker build
+                --build-arg DISTRO=${DISTRO}
                 --build-arg BUILD_TYPE=${BUILD_TYPE}
-                --build-arg RUNTIME=${RUNTIME}
+                --build-arg RUNTIME=${RUNTIME} 
                 --build-arg CXXFLAGS="-Wno-deprecated-declarations"
                 --build-arg COVERAGE=${COVERAGE}
                 --build-arg MINIMAL=${MINIMAL}
@@ -107,18 +119,32 @@ after_success:
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
     fi
-  - if [[ ${TRAVIS_BRANCH} = feature/refactor && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
-      cd $HOME/docker/flecsi;
-      rm -rf cinch;
-      git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
-      rm -rf doxygen _images _sources _static src assets/doxygen;
-      CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
-      for i in doc/*.pdf; do mv ${i} ${i%-0.1*}.pdf; done;
-      mv doc/doxygen/html doxygen;
-      mv doc/sphinx/* . ;
-      rm -rf doc;
-      git add --all . ;
-      if [[ ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} ]]; then
+  - if [[ ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_JOB_NUMBER} = *.1 && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} ]]; then
+      if [[ ${TRAVIS_BRANCH} = master ]]; then
+        git config --global user.name "Automatic Cleanup (Travis CI)";
+        git config --global user.email "flecsi-commit@lanl.gov";
+        git commit -m "PR Branches Cleanup";
+        openssl aes-256-cbc -K $encrypted_5669a181ba27_key -iv $encrypted_5669a181ba27_iv -in deploy.enc -out ~/.ssh/id_rsa -d;
+        chmod 600 ~/.ssh/id_rsa;
+        for k in $(git branch | sed /\*/d); do 
+          if [ -z "$(git log -1 --since='1 year ago' -s $k)" ]; then
+            if [ ${k%_*} == "PR" ]; then
+              git push --delete origin $k;
+              git branch -d $k;
+            fi;
+          fi;
+        done;
+      elif [[ ${TRAVIS_BRANCH} = feature/refactor ]]; then
+        cd $HOME/docker/flecsi;
+        rm -rf cinch;
+        git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
+        rm -rf doxygen _images _sources _static src assets/doxygen;
+        CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
+        for i in doc/*.pdf; do mv ${i} ${i%-0.1*}.pdf; done;
+        mv doc/doxygen/html doxygen;
+        mv doc/sphinx/* . ;
+        rm -rf doc;
+        git add --all . ;
         git config --global user.name "Automatic Deployment (Travis CI)";
         git config --global user.email "flecsi-commit@lanl.gov";
         git commit -m "Documentation Update";
