@@ -29,15 +29,9 @@ struct policy_t {
   template<size_t VALUE>
   using typeify = flecsi::utils::typeify<size_t, VALUE>;
 
-  enum index_spaces_t {
-    vertices,
-    cells
-  }; // enum index_spaces_t
+  enum index_spaces_t { vertices, cells }; // enum index_spaces_t
 
-  using entity_types = std::tuple<
-    typeify<vertices>,
-    typeify<cells>
-  >;
+  using entity_types = std::tuple<typeify<vertices>, typeify<cells>>;
 
 }; // struct policy_t
 

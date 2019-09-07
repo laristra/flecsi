@@ -34,7 +34,7 @@ struct topology_need_name {
   static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
     "topologies may not add data members");
 
-  topology_need_name()  {
+  topology_need_name() {
     topology_registration<TOPOLOGY_TYPE>::register_fields();
   } // topology
 
