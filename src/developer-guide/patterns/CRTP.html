@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Curiously Recurring Template Pattern (CRTP) &mdash; FleCSI 1.0 documentation</title>
+  <title>Curiously Recurring Template Pattern (CRTP) &mdash; FleCSI  documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -197,23 +197,23 @@ derived class that specializes the base class with its own type:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span>
   <span class="k">typename</span> <span class="n">CRTP_TYPE</span>
 <span class="o">&gt;</span>
-<span class="k">struct</span> <span class="n">base_u</span> <span class="p">{</span>
-<span class="p">};</span> <span class="c1">// struct base_u</span>
+<span class="k">struct</span> <span class="n">base</span> <span class="p">{</span>
+<span class="p">};</span> <span class="c1">// struct base</span>
 
-<span class="k">struct</span> <span class="nl">derived_u</span> <span class="p">:</span> <span class="k">public</span> <span class="n">base_u</span><span class="o">&lt;</span><span class="n">derived_u</span><span class="o">&gt;</span> <span class="c1">// This is the important bit.</span>
+<span class="k">struct</span> <span class="nl">derived</span> <span class="p">:</span> <span class="k">public</span> <span class="n">base</span><span class="o">&lt;</span><span class="n">derived</span><span class="o">&gt;</span> <span class="c1">// This is the important bit.</span>
 <span class="p">{</span>
-<span class="p">};</span> <span class="c1">// struct derived_u</span>
+<span class="p">};</span> <span class="c1">// struct derived</span>
 </pre></div>
 </div>
 <p>One use of this pattern in FleCSI is for static polymorphism. In
 particular, by statically casting the base type to the derived type, we
 can allow the derived type to specialize the behavior of the base class
-interface. In the following code example, <em>tuple_walker_u</em> is the base
+interface. In the following code example, <em>tuple_walker</em> is the base
 class for a derived type identified by <em>CRTP_TYPE</em>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span>
   <span class="k">typename</span> <span class="n">CRTP_TYPE</span>
 <span class="o">&gt;</span>
-<span class="k">struct</span> <span class="n">tuple_walker_u</span>
+<span class="k">struct</span> <span class="n">tuple_walker</span>
 <span class="p">{</span>
   <span class="c1">// In this example, we employ a helper type to walk a tuple and</span>
   <span class="c1">// apply the handler method defined by the derived type.</span>
@@ -225,7 +225,7 @@ class for a derived type identified by <em>CRTP_TYPE</em>:</p>
   <span class="p">)</span>
   <span class="p">{</span>
     <span class="k">using</span> <span class="n">HELPER_TYPE</span> <span class="o">=</span>
-      <span class="n">tuple_walker_helper_u</span><span class="o">&lt;</span>
+      <span class="n">tuple_walker_helper</span><span class="o">&lt;</span>
         <span class="n">std</span><span class="o">::</span><span class="n">tuple_size</span><span class="o">&lt;</span><span class="n">TUPLE_TYPE</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">,</span>
         <span class="n">TUPLE_TYPE</span><span class="p">,</span>
         <span class="n">CRTP_TYPE</span>
@@ -235,7 +235,7 @@ class for a derived type identified by <em>CRTP_TYPE</em>:</p>
     <span class="c1">// for this static cast.</span>
     <span class="n">HELPER_TYPE</span><span class="o">::</span><span class="n">walk</span><span class="p">(</span><span class="o">*</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">CRTP_TYPE</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">),</span> <span class="n">t</span><span class="p">);</span>
   <span class="p">}</span> <span class="c1">// walk</span>
-<span class="p">};</span> <span class="c1">// struct tuple_walker_u</span>
+<span class="p">};</span> <span class="c1">// struct tuple_walker</span>
 </pre></div>
 </div>
 <p>The helper class calls the handle method:</p>
@@ -244,7 +244,7 @@ class for a derived type identified by <em>CRTP_TYPE</em>:</p>
   <span class="k">typename</span> <span class="n">TUPLE_TYPE</span><span class="p">,</span>
   <span class="k">typename</span> <span class="n">CRTP_TYPE</span>
 <span class="o">&gt;</span>
-<span class="k">struct</span> <span class="n">tuple_walker_helper_u</span>
+<span class="k">struct</span> <span class="n">tuple_walker_helper</span>
 <span class="p">{</span>
   <span class="c1">// The walk method of the helper class calls the CRTP type&#39;s</span>
   <span class="c1">// handle method.</span>
@@ -258,7 +258,7 @@ class for a derived type identified by <em>CRTP_TYPE</em>:</p>
     <span class="n">p</span><span class="p">.</span><span class="n">handle</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">CURRENT</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">));</span>
     <span class="k">return</span> <span class="n">HELPER_TYPE</span><span class="o">::</span><span class="n">walk</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
   <span class="p">}</span> <span class="c1">// walk</span>
-<span class="p">};</span> <span class="c1">// tuple_walker_helper_u</span>
+<span class="p">};</span> <span class="c1">// tuple_walker_helper</span>
 </pre></div>
 </div>
 <p>The <em>p.handle</em> method, defined by the <em>CRTP_TYPE</em>, allows the derived

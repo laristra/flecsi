@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building FleCSI &mdash; FleCSI 1.0 documentation</title>
+  <title>Building FleCSI &mdash; FleCSI  documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -95,12 +95,14 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Building FleCSI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements-prerequisites">Requirements &amp; Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spack">Spack</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#flecsi-third-party-libraries-project">FleCSI Third Party Libraries Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#build-environment">Build Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#getting-the-code">Getting The Code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-build">Configuration &amp; Build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-the-unit-tests">Building the Unit Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#building-the-documentation">Building the Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#building-the-documentation">Building the Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced">Advanced</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="build/options.html">CMake Configuration Options</a></li>
 </ul>
 </li>
@@ -201,15 +203,13 @@ branch.</p></li>
 <li><p><strong>GASNet</strong> <br />
 GASNet is only required if Legion support is enabled.</p></li>
 <li><p><strong>CMake</strong> <br />
-We currently require CMake version 3.9 or greater.</p></li>
+We currently require CMake version 3.12 or greater.</p></li>
 <li><p><strong>Boost</strong> <br />
-Boost is only required if you wish to enable program options support
-in the FleCSI unit test and tutorial executables. Please read this
-explanation for more information.</p></li>
+We require <em>program_options</em> and <em>stacktrace</em>.</p></li>
 <li><p><strong>Doxygen</strong> <br />
 Doxygen is only required to build the interface documentation.</p></li>
 <li><p><strong>Sphinx</strong> <br />
-Sphinx only required to build the web-based documentation. We are
+Sphinx is only required to build the web-based documentation. We are
 currently using Sphinx 1.1.0. We also require the Sphinx RTD Theme
 (using version 0.4.2). These can be installed on most Linux systems
 using pip.</p></li>
@@ -217,8 +217,45 @@ using pip.</p></li>
 We currently require Python 2.7 or greater.</p></li>
 </ul>
 </div>
+<div class="section" id="spack">
+<h2>Spack<a class="headerlink" href="#spack" title="Permalink to this headline">¶</a></h2>
+<p>The preferred method for installing FleCSI is to use the
+<a class="reference external" href="https://github.com/spack/spack">spack</a> package:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack install flecsi
+<span class="gp">$</span> spack load -r flecsi
+</pre></div>
+</div>
+<p>FleCSI supports several different versions and variants, e.g.:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack install flecsi@1.0 +legion +graphviz
+</pre></div>
+</div>
+<p>For a complete list of versions and variants, type:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack info flecsi
+</pre></div>
+</div>
+<p>Currently, FleCSI depends on the following spack packages:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack install cmake
+<span class="gp">$</span> spack install boost@1.68.0
+<span class="gp">$</span> spack install parmetis
+<span class="gp">$</span> spack install hdf5
+<span class="gp">$</span> spack install kokkos
+<span class="gp">$</span> spack install legion@ctrl-rep
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Users of spack can safely ignore the remaining sections on this page.
+Loading the flecsi spack package will properly configure your
+environment.</p>
+</div>
+</div>
 <div class="section" id="flecsi-third-party-libraries-project">
 <h2>FleCSI Third Party Libraries Project<a class="headerlink" href="#flecsi-third-party-libraries-project" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The FleCSI superbuild project is deprecated in favor of Spack, and
+will eventually be removed.</p>
+</div>
 <p>To facilitate FleCSI adoption by a broad set of users, we have provided
 a superbuild project that can build many of the libraries and tools
 required to build and use FleCSI. The FleCSI Third Party Libraries (TPL)
@@ -366,8 +403,10 @@ page will be located at <em>‘doc/sphinx/index.html’</em>. You can open these
 your browser with
 <em>file:///path/to/your/build/directory/doc/doxygen/html/index.html</em>, and
 <em>file:///path/to/your/build/directory/doc/sphinx/index.html</em>.</p>
+</div>
+<div class="section" id="advanced">
+<h2>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Advanced:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="build/options.html">CMake Configuration Options</a></li>
 </ul>

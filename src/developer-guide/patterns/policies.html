@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Policy-Based Design &mdash; FleCSI 1.0 documentation</title>
+  <title>Policy-Based Design &mdash; FleCSI  documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -195,12 +195,12 @@ parameter that is used to customize the behavior of a <em>wrapper</em> or
 <p>Consider this simple definition of a <em>host</em> type that takes a <em>policy</em>
 that specializes the <em>execute</em> method:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">POLICY</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="nl">host_u</span> <span class="p">:</span> <span class="k">public</span> <span class="n">POLICY</span>
+<span class="k">struct</span> <span class="nl">host</span> <span class="p">:</span> <span class="k">public</span> <span class="n">POLICY</span>
 <span class="p">{</span>
   <span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span> <span class="n">execute</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">POLICY</span><span class="o">::</span><span class="n">execute</span><span class="p">();</span>
   <span class="p">}</span> <span class="c1">// execute</span>
-<span class="p">};</span> <span class="c1">// struct host_u</span>
+<span class="p">};</span> <span class="c1">// struct host</span>
 </pre></div>
 </div>
 <p>This pattern is something like a static version of dynamic polymorphism,
@@ -298,7 +298,7 @@ used to <em>close</em> the type:</p>
 <span class="cm">  @ingroup execution</span>
 <span class="cm"> */</span>
 
-<span class="k">using</span> <span class="n">context_t</span> <span class="o">=</span> <span class="n">context_u</span><span class="o">&lt;</span><span class="n">FLECSI_RUNTIME_CONTEXT_POLICY</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">context_t</span> <span class="o">=</span> <span class="n">context</span><span class="o">&lt;</span><span class="n">FLECSI_RUNTIME_CONTEXT_POLICY</span><span class="o">&gt;</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>The <em>context_t</em> can then be used by the core FleCSI library, regardless

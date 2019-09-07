@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Topology Design Idioms &mdash; FleCSI 1.0 documentation</title>
+  <title>Topology Design Idioms &mdash; FleCSI  documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -189,25 +189,25 @@ allowing users to customize the behavior of a class or struct
 depending on the type of the parameter that is passed:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Unspecialized (default) behavior.</span>
 <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPE</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="n">type_u</span> <span class="p">{};</span>
+<span class="k">struct</span> <span class="n">type</span> <span class="p">{};</span>
 
 <span class="k">template</span><span class="o">&lt;&gt;</span>
-<span class="k">struct</span> <span class="n">type_u</span><span class="o">&lt;</span><span class="n">match_type_one_t</span><span class="o">&gt;</span> <span class="p">{</span>
+<span class="k">struct</span> <span class="n">type</span><span class="o">&lt;</span><span class="n">match_type_one_t</span><span class="o">&gt;</span> <span class="p">{</span>
 
   <span class="k">static</span> <span class="kt">void</span> <span class="n">method</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">// Implementation for type one.</span>
   <span class="p">}</span> <span class="c1">// method</span>
 
-<span class="p">};</span> <span class="c1">// struct type_u</span>
+<span class="p">};</span> <span class="c1">// struct type</span>
 
 <span class="k">template</span><span class="o">&lt;&gt;</span>
-<span class="k">struct</span> <span class="n">type_u</span><span class="o">&lt;</span><span class="n">match_type_two_t</span><span class="o">&gt;</span> <span class="p">{</span>
+<span class="k">struct</span> <span class="n">type</span><span class="o">&lt;</span><span class="n">match_type_two_t</span><span class="o">&gt;</span> <span class="p">{</span>
 
   <span class="k">static</span> <span class="kt">void</span> <span class="n">method</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">// Implementation for type two.</span>
   <span class="p">}</span> <span class="c1">// method</span>
 
-<span class="p">};</span> <span class="c1">// struct type_u</span>
+<span class="p">};</span> <span class="c1">// struct type</span>
 </pre></div>
 </div>
 <p>The distinction between <em>explicit</em> and <em>partial</em> specialization is
@@ -221,12 +221,12 @@ but allow specialization of a method or function:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">enclosing_type_t</span> <span class="p">{</span>
 
   <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPE</span><span class="o">&gt;</span>
-  <span class="kt">void</span> <span class="n">method</span><span class="p">(</span><span class="n">type_one_u</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">method</span><span class="p">(</span><span class="n">type_one</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Implementation for type one.</span>
   <span class="p">}</span> <span class="c1">// method</span>
 
   <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPE</span><span class="o">&gt;</span>
-  <span class="kt">void</span> <span class="n">method</span><span class="p">(</span><span class="n">type_two_u</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">method</span><span class="p">(</span><span class="n">type_two</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Implementation for type two.</span>
   <span class="p">}</span> <span class="c1">// method</span>
 
@@ -244,19 +244,19 @@ distinction between tuple types and values is an important one, as it
 distinguishes between static (type information, available at compile
 time) and dynamic (variable information, available at runtime) state.</p>
 <p>An example of FleCSI’s use of the tuple walker idiom, applied to
-dynamic tuple values, is the <em>init_args</em> type, used to add region
+dynamic tuple values, is the <em>task_prologue_t</em> type, used to add region
 requirements for the Legion implementation of <em>flecsi_execute_task</em>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nl">init_args_t</span> <span class="p">:</span> <span class="k">public</span>
-<span class="n">flecsi</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">tuple_walker_u</span><span class="o">&lt;</span><span class="n">init_args_t</span><span class="o">&gt;</span> <span class="p">{</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nl">task_prologue_t</span> <span class="p">:</span> <span class="k">public</span>
+<span class="n">flecsi</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">tuple_walker</span><span class="o">&lt;</span><span class="n">task_prologue_t</span><span class="o">&gt;</span> <span class="p">{</span>
 
   <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">DATA_TYPE</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">PRIVILEGES</span><span class="o">&gt;</span>
-  <span class="kt">void</span> <span class="n">visit</span><span class="p">(</span><span class="n">index_topology</span><span class="o">::</span><span class="n">accessor_u</span><span class="o">&lt;</span><span class="n">DATA_TYPE</span><span class="p">,</span> <span class="n">PRIVILEGES</span><span class="o">&gt;</span> <span class="o">&amp;</span>
+  <span class="kt">void</span> <span class="n">visit</span><span class="p">(</span><span class="n">index_topology</span><span class="o">::</span><span class="n">accessor</span><span class="o">&lt;</span><span class="n">DATA_TYPE</span><span class="p">,</span> <span class="n">PRIVILEGES</span><span class="o">&gt;</span> <span class="o">&amp;</span>
   <span class="n">accessor</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Implmentation for type</span>
-    <span class="c1">// index_topology::accessor_u&lt;DATA_TYPE, PRIVILEGES&gt;.</span>
+    <span class="c1">// index_topology::accessor&lt;DATA_TYPE, PRIVILEGES&gt;.</span>
   <span class="p">}</span> <span class="c1">// visit</span>
 
-<span class="p">};</span> <span class="c1">// struct init_args_t</span>
+<span class="p">};</span> <span class="c1">// struct task_prologue_t</span>
 </pre></div>
 </div>
 <p>You may notice that I lied to you before about there only being three
@@ -277,11 +277,11 @@ directory named for the new topology type, e.g., <em>ntree</em>.</p>
 <span class="k">namespace</span> <span class="n">topology</span> <span class="p">{</span>
 
 <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">POLICY_TYPE</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="nl">ntree_topology_u</span> <span class="p">:</span> <span class="k">public</span> <span class="n">ntree_topology_base_t</span> <span class="p">{</span>
+<span class="k">struct</span> <span class="nl">ntree_topology</span> <span class="p">:</span> <span class="k">public</span> <span class="n">ntree_topology_base_t</span> <span class="p">{</span>
 
   <span class="c1">// interface ...</span>
 
-<span class="p">};</span> <span class="c1">// struct ntree_topology_u</span>
+<span class="p">};</span> <span class="c1">// struct ntree_topology</span>
 
 <span class="p">}</span> <span class="c1">// namespace flecsi</span>
 <span class="p">}</span> <span class="c1">// namespace topology</span>
@@ -312,8 +312,8 @@ type must define the public <em>coloring_t</em> type.</p>
 </ul>
 </li>
 <li><p><strong>Topology Registration</strong>: Define a partial specialization of the
-<em>topology_registration_u</em> type in
-<em>flecsi/data/common/topology_registration.h</em>. This type must
+<em>topology_registration</em> type in
+<em>flecsi/data/topology_registration.h</em>. This type must
 implement a <em>register_fields</em> method that adds the fields required to
 represent the meta data associated with an instance of the new
 topology type.</p></li>
@@ -324,44 +324,36 @@ supported backend runtime type, e.g., Legion, MPI, and HPX
 <p>The new type must define a <em>set_coloring</em> method that takes the
 <em>coloring_t</em> type defined in assocaited <em>types.h</em> file:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">POLICY_TYPE</span><span class="o">&gt;</span>
-<span class="k">struct</span>  <span class="n">topology_instance_u</span><span class="o">&lt;</span><span class="n">ntree_topology_u</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+<span class="k">struct</span>  <span class="n">topology_instance</span><span class="o">&lt;</span><span class="n">ntree_topology</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
 
   <span class="k">using</span> <span class="n">topology_reference_t</span> <span class="o">=</span>
-    <span class="n">topology_reference_u</span><span class="o">&lt;</span><span class="n">ntree_topology_u</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+    <span class="n">topology_reference</span><span class="o">&lt;</span><span class="n">ntree_topology</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 
   <span class="k">static</span> <span class="kt">void</span> <span class="nf">set_coloring</span><span class="p">(</span><span class="n">topology_reference_t</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">topology_reference</span><span class="p">,</span>
-    <span class="n">ntree_topology_u</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;::</span><span class="n">coloring_t</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">colorint</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ntree_topology</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;::</span><span class="n">coloring_t</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">colorint</span><span class="p">)</span> <span class="p">{</span>
   <span class="p">}</span> <span class="c1">// set_coloring</span>
 
-<span class="p">};</span> <span class="c1">// topology_instance_u&lt;ntree_topology_u&lt;POLICY_TYPE&gt;&gt;</span>
+<span class="p">};</span> <span class="c1">// topology_instance&lt;ntree_topology&lt;POLICY_TYPE&gt;&gt;</span>
 </pre></div>
 </div>
 </li>
-<li><p><strong>Initialize Arguments</strong> (Legion Only): Define a template function
-overload of the <em>init_args_t</em> type in
-<em>flecsi/execution/legion/incovation/init_args.h</em> that adds the region
-requirements for the given type instance.</p></li>
-<li><p><strong>Task Prologue</strong>: Define a template function overload of the
-<em>task_prologue_t</em> type in
-<em>flecsi/execution/runtime/incovation/task_prologue.h</em>, where
-<em>runtime</em> is implemented for each backend runtime. This function
-updates distributed-memory data dependencies.</p></li>
-<li><p><strong>Task Epilogue</strong>: Define a template function overload of the
-<em>task_epilogue_t</em> type in
-<em>flecsi/execution/runtime/incovation/task_epilogue.h</em>, where
-<em>runtime</em> is implemented for each backend runtime. This function
+<li><p><strong>Initialize Arguments</strong>: Define a template function
+overload of the <em>task_prologue_t</em> type in
+<em>flecsi/execution/…/task_prologue.h</em> that adds the region
+requirements for the given type instance (for Legion only),
+updates distributed-memory data dependencies, and
 sets a dirty (modified) bit for any fields or topologies that were
 accessed with write privileges (write-only, or read-write).</p></li>
 <li><p><strong>Bind Accessors</strong>: Define a template function overload of the
 <em>bind_accessors_t</em> type in
-<em>flecsi/execution/runtime/enactment/bind_accessors.h</em>, where
+<em>flecsi/execution/runtime/bind_accessors.h</em>, where
 <em>runtime</em> is implmented for each backend runtime. This function binds
 backend data buffers into the topology accesor instance. The accessor
 is defined as part of the topology type, and implements a
 <em>proxy</em> <a class="reference external" href="https://en.wikipedia.org/wiki/Proxy_pattern">pattern</a>.</p></li>
 <li><p><strong>Unbind Accessors</strong>: Define a template function overload of the
 <em>unbind_accessors_t</em> type in
-<em>flecsi/execution/runtime/enactment/unbind_accessors.h</em>, where
+<em>flecsi/execution/runtime/unbind_accessors.h</em>, where
 <em>runtime</em> is implmented for each backend runtime. This function unbinds
 backend data buffers, and does any cleanup operations that are
 necessary to complete task execution, e.g., committing changes to

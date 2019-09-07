@@ -24,7 +24,7 @@
   <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: 1.0</span>
+		<span id="projectnumber">Version:</span>
    </div>
   </td>
  </tr>
@@ -86,7 +86,8 @@ $(function() {
 </ul>
 <p>Each of these is described in more detail in the developer guide. Documentation is also provide in the corresponding Doxygen <a href="modules.html">modules</a>.</p>
 <h2>Naming Conventions</h2>
-<p>Because FleCSI makes extensive use of C++ templates, type names are designed to indicate whether or not a type is fully qualified (A fully qualified type is one for which all template parameters have been specified.) Fully qualified types are of the form <em>type_name_t</em>, where the underscore-t indicates that <em>type_name_t</em> is fully resolved. Types that are not fully qualified are of the form <em>type_name_u</em>, where the double-underscore indicates that the type still has unresolved parameters. The following code illustrates this convention: </p><div class="fragment"><div class="line">// Unqualified type.</div><div class="line">template&lt;</div><div class="line">  typename T</div><div class="line">&gt;</div><div class="line">struct type_name_u {};</div><div class="line"></div><div class="line">// Fully-qualified type.</div><div class="line">using type_name_t = type_name_u&lt;double&gt;;</div></div><!-- fragment --><h2>More Documentation</h2>
+<p>The suffix <code>_t</code> is often used to indicate the specialization of interest of a class template of the same name without the suffix:</p>
+<div class="fragment"><div class="line">// Unqualified type.</div><div class="line">template&lt;</div><div class="line">  typename T</div><div class="line">&gt;</div><div class="line">struct type_name {};</div><div class="line"></div><div class="line">// Fully-qualified type.</div><div class="line">using type_name_t = type_name&lt;double&gt;;</div></div><!-- fragment --><h2>More Documentation</h2>
 <p>This document is intended only as documentation for the FleCSI C++ interface. The FleCSI Developer and User Guides are available <a href="https://flecsi.org">here</a>. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->

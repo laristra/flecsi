@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Style Guide &mdash; FleCSI 1.0 documentation</title>
+  <title>Style Guide &mdash; FleCSI  documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 1.0
+                Version: 
               </div>
             
           
@@ -383,7 +383,7 @@ arguments:</p>
 </div>
 <p>## Type Names</p>
 <p>FleCSI follows a C-style naming convention of all lower-case letters
-with underscores. Fully-qualified types should also append an
+with underscores.  Non-template types should also append an
 underscore lower-case <em>t</em>, i.e., _t to the end of the type name:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">my_type_t</span>
 <span class="p">{</span>
@@ -393,26 +393,6 @@ underscore lower-case <em>t</em>, i.e., _t to the end of the type name:</p>
 </div>
 <p>Type definitions should be terminated with a C-style comment indicating
 the type name.</p>
-<p>### Template Type Naming</p>
-<p>For templated types, use a double underscore for the unqualified type:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">my_template_type_u</span>
-</pre></div>
-</div>
-<p>This allows the type to be fully qualified using the normal type naming
-convention listed above, e.g.:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Unqualified type definition</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">TYPENAME</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="n">my_template_type_u</span>
-<span class="p">{</span>
-  <span class="n">TYPENAME</span> <span class="n">value</span><span class="p">;</span>
-<span class="p">};</span> <span class="c1">// struct my_template_type_u</span>
-
-<span class="c1">// Fully qualified type</span>
-<span class="k">using</span> <span class="n">my_template_type_t</span> <span class="o">=</span> <span class="n">my_template_type_u</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">;</span>
-</pre></div>
-</div>
-<p>The double underscore was chosen so that it does not conflict with
-member variable names, which use a single underscore.</p>
 <p>### Template Parameter Names</p>
 <p>Template parameters should use descriptive, uppercase names:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//------------------------------------------------------------------------//</span>
