@@ -18,7 +18,7 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "runtime.hh"
+#include <flecsi/runtime.hh>
 
 #include <iostream>
 #include <string>

@@ -15,11 +15,12 @@
 
 /*! @file */
 
-#include "../topology/core.hh" // id
-#include "data_reference.hh"
-#include "flecsi/runtime/backend.hh"
-#include "storage_classes.hh"
+#include <flecsi/data/data_reference.hh>
+#include <flecsi/data/privilege.hh>
+#include <flecsi/data/storage_classes.hh>
+#include <flecsi/runtime/backend.hh>
 #include <flecsi/runtime/types.hh>
+#include <flecsi/topology/core.hh>
 
 namespace flecsi {
 namespace data {
