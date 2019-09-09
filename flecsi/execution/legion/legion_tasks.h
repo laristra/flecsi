@@ -405,6 +405,8 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
           reinterpret_cast<vector_t *>(ghost_acc.ptr(itr.p));
         const vector_t * ptr_owner_acc =
           reinterpret_cast<const vector_t *>(owner_acc.ptr(owner_ptr));
+        // Clear old contents of ghost cell
+        ptr_ghost_acc->clear();
         memcpy(ptr_ghost_acc, ptr_owner_acc, sizeof(vector_t));
 
       } // for ghost_domain

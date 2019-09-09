@@ -154,9 +154,6 @@ struct finalize_handles_t
       int r = h.num_exclusive_ + h.num_shared() + i;
       auto & row = h.new_entries_[r];
       int count = recv_count_buf[i];
-      // CRF:  hack for uninitialized data
-      row.data = nullptr;
-      row.clear();
       row.resize(count);
       std::memcpy(row.begin(), &ghost_data[i * h.max_entries_per_index()],
         count * sizeof(value_t));
