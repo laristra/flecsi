@@ -1,36 +1,50 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/iterator.h>
-#include <flecsi/utils/test/print_type.h>
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
 
-// includes: C++
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/iterator.hh>
+
 #include <array>
 #include <iostream>
 #include <vector>
 
-// includes: other
-#include <cinchtest.h>
+/*
+   Test various aspects of flecsi::utils::iterator
+ */
+int
+iterator(int argc, char ** argv) {
 
-// =============================================================================
-// Test various aspects of flecsi::utils::iterator
-// =============================================================================
+  FTEST();
 
-TEST(iterator, all) {
   // some containers
   std::vector<int> veci{1, 2, 3, 5, 7, 11, 13, 17}; // we'll start at [1] :-)
   std::array<double, 5> vecd{{1.234, 5.678, 3.1416, 2.7183, 1.414}}; // at [2]
 
   // test: types (container_t and type_t)
-  print_type<flecsi::utils::iterator<std::vector<int>, int>::container_t>();
-  print_type<flecsi::utils::iterator<std::vector<int>, int>::type_t>();
-  print_type<
-    flecsi::utils::iterator<std::array<double, 5>, double>::container_t>();
-  print_type<flecsi::utils::iterator<std::array<double, 5>, double>::type_t>();
+  using vector_int_container_t =
+    flecsi::utils::iterator<std::vector<int>, int>::container_t;
+  FTEST_CAPTURE() << FTEST_TTYPE(vector_int_container_t) << std::endl;
+  using vector_int_type_t =
+    flecsi::utils::iterator<std::vector<int>, int>::type_t;
+  FTEST_CAPTURE() << FTEST_TTYPE(vector_int_type_t) << std::endl;
+  using array_double_container_t =
+    flecsi::utils::iterator<std::array<double, 5>, double>::container_t;
+  FTEST_CAPTURE() << FTEST_TTYPE(array_double_container_t) << std::endl;
+  using array_double_type_t =
+    flecsi::utils::iterator<std::array<double, 5>, double>::type_t;
+  FTEST_CAPTURE() << FTEST_TTYPE(array_double_type_t) << std::endl;
 
   // test: constructor from container and index
   flecsi::utils::iterator<std::vector<int>, int> i(veci, 1);
@@ -53,9 +67,9 @@ TEST(iterator, all) {
 
   // test: pre-increment
   ++i;
-  CINCH_CAPTURE() << "The second prime is: " << *i << std::endl; // should be 3
+  FTEST_CAPTURE() << "The second prime is: " << *i << std::endl; // should be 3
   ++(++i); // works, because return is &
-  CINCH_CAPTURE() << "The fourth prime is: " << *i << std::endl; // should be 7
+  FTEST_CAPTURE() << "The fourth prime is: " << *i << std::endl; // should be 7
 
   // test: dereference
   EXPECT_EQ(*i, 7);
@@ -71,15 +85,14 @@ TEST(iterator, all) {
 
   // compare
 #ifdef __GNUG__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.gnug"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("iterator.blessed.gnug"));
 #elif defined(_MSC_VER)
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed.msvc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("iterator.blessed.msvc"));
 #else
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("iterator.blessed"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("iterator.blessed"));
 #endif
+
+  return 0;
 } // TEST
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_driver(iterator);

@@ -1,50 +1,41 @@
-/*~-------------------------------------------------------------------------~~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2017 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/id.h>
-#include <flecsi/utils/test/print_type.h>
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
 
-// includes: C++
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/id.hh>
+
 #include <vector>
 
-// includes: other
-#include <cinchtest.h>
-
-// =============================================================================
-// Helper constructs
-// =============================================================================
-
-// print
-// Print a flecsi::utils::id_.
 template<std::size_t P, std::size_t E, std::size_t F, std::size_t G>
 void
 print(const flecsi::utils::id_<P, E, F, G> & value) {
-  CINCH_CAPTURE() << "\ndimension == " << value.dimension();
-  CINCH_CAPTURE() << "\ndomain    == " << value.domain();
-  CINCH_CAPTURE() << "\npartition == " << value.partition();
-  CINCH_CAPTURE() << "\nentity    == " << value.entity();
-  CINCH_CAPTURE() << "\nflags     == " << value.flags();
-  CINCH_CAPTURE() << "\nglobal    == " << value.global();
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << "\ndimension == " << value.dimension();
+  FTEST_CAPTURE() << "\ndomain    == " << value.domain();
+  FTEST_CAPTURE() << "\npartition == " << value.partition();
+  FTEST_CAPTURE() << "\nentity    == " << value.entity();
+  FTEST_CAPTURE() << "\nflags     == " << value.flags();
+  FTEST_CAPTURE() << "\nglobal    == " << value.global();
+  FTEST_CAPTURE() << std::endl;
 }
 
-// binary
-// Write parameter as binary.
-// Assumes parameter is of an unsigned integral type.
-// Second parameter is number of bits to print.
+/*
+  Write parameter as binary.
+  Assumes parameter is of an unsigned integral type.
+  Second parameter is number of bits to print.
+ */
+
 template<class T>
 std::string
 binary(const T value, const std::size_t nbit = sizeof(T) * CHAR_BIT) {
@@ -54,10 +45,11 @@ binary(const T value, const std::size_t nbit = sizeof(T) * CHAR_BIT) {
   return s;
 }
 
-// identical
-// Check that the two id_s have identical content.
-// This isn't equivalent to id_'s operator==, which at the time of this
-// writing does the comparison by using local_id() and FLAGS_UNMASK.
+/*
+  Check that the two id_s have identical content.
+  This isn't equivalent to id_'s operator==, which at the time of this
+  writing does the comparison by using local_id() and FLAGS_UNMASK.
+ */
 template<std::size_t PBITS,
   std::size_t EBITS,
   std::size_t FBITS,
@@ -70,10 +62,6 @@ identical(const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
          lhs.flags() == rhs.flags() && lhs.global() == rhs.global();
 }
 
-// =============================================================================
-// Exercise all of id.h's constructs
-// =============================================================================
-
 // Numbers of bits for our tests.
 // Note: we really should test with far more than just one set of these.
 #define PBITS 20 /* for partition */
@@ -81,8 +69,10 @@ identical(const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
 #define FBITS 4 /* for flags     */
 #define GBITS 60 /* for global    */
 
-// TEST
-TEST(id, all) {
+int
+id(int argc, char ** argv) {
+
+  FTEST();
 
   // type: id == id_<PBITS,EBITS,FBITS,GBITS>
   using id = flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS>;
@@ -93,26 +83,26 @@ TEST(id, all) {
   // ------------------------
 
   // local_id_t
-  print_type<flecsi::utils::local_id_t>();
-  CINCH_CAPTURE() << "sizeof(flecsi::utils::local_id_t) == "
+  FTEST_CAPTURE() << FTEST_TTYPE(flecsi::utils::local_id_t) << std::endl;
+  FTEST_CAPTURE() << "sizeof(flecsi::utils::local_id_t) == "
                   << sizeof(flecsi::utils::local_id_t) << std::endl;
 
   // id::FLAGS_UNMASK
-  CINCH_CAPTURE() << "FLAGS_UNMASK == " << id::FLAGS_UNMASK << '\n';
-  CINCH_CAPTURE() << "FLAGS_UNMASK == " << binary(id::FLAGS_UNMASK) << '\n';
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << "FLAGS_UNMASK == " << id::FLAGS_UNMASK << '\n';
+  FTEST_CAPTURE() << "FLAGS_UNMASK == " << binary(id::FLAGS_UNMASK) << '\n';
+  FTEST_CAPTURE() << std::endl;
 
   // These here just exercise my binary() function...
-  CINCH_CAPTURE() << binary(0u) << std::endl;
-  CINCH_CAPTURE() << binary(1u) << std::endl;
-  CINCH_CAPTURE() << binary(2u) << std::endl;
-  CINCH_CAPTURE() << binary(3u) << std::endl;
-  CINCH_CAPTURE() << binary(4u) << std::endl;
-  CINCH_CAPTURE() << binary(5u) << std::endl;
-  CINCH_CAPTURE() << binary(6u) << std::endl;
-  CINCH_CAPTURE() << binary(7u) << std::endl;
-  CINCH_CAPTURE() << binary(8u) << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << binary(0u) << std::endl;
+  FTEST_CAPTURE() << binary(1u) << std::endl;
+  FTEST_CAPTURE() << binary(2u) << std::endl;
+  FTEST_CAPTURE() << binary(3u) << std::endl;
+  FTEST_CAPTURE() << binary(4u) << std::endl;
+  FTEST_CAPTURE() << binary(5u) << std::endl;
+  FTEST_CAPTURE() << binary(6u) << std::endl;
+  FTEST_CAPTURE() << binary(7u) << std::endl;
+  FTEST_CAPTURE() << binary(8u) << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // ------------------------
   // constructors
@@ -169,20 +159,20 @@ TEST(id, all) {
     const id a = id::make<1, 2>(3, 4, 5, 6);
     print(a);
 
-    CINCH_CAPTURE() << std::endl;
-    CINCH_CAPTURE() << "entity    : " << binary(a.entity(), EBITS) << std::endl;
-    CINCH_CAPTURE() << "partition : " << binary(a.partition(), PBITS)
+    FTEST_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << "entity    : " << binary(a.entity(), EBITS) << std::endl;
+    FTEST_CAPTURE() << "partition : " << binary(a.partition(), PBITS)
                     << std::endl;
-    CINCH_CAPTURE() << "domain    : " << binary(a.domain(), 2) << std::endl;
-    CINCH_CAPTURE() << "dimension : " << binary(a.dimension(), 2) << std::endl;
+    FTEST_CAPTURE() << "domain    : " << binary(a.domain(), 2) << std::endl;
+    FTEST_CAPTURE() << "dimension : " << binary(a.dimension(), 2) << std::endl;
 
-    CINCH_CAPTURE() << "\nlocal_id(): "
+    FTEST_CAPTURE() << "\nlocal_id(): "
                     << binary(a.local_id(), EBITS + PBITS + 2 + 2) << std::endl;
 
-    CINCH_CAPTURE() << std::endl;
-    CINCH_CAPTURE() << "local_id()  == " << a.local_id() << std::endl;
-    CINCH_CAPTURE() << "global_id() == " << a.global_id() << std::endl;
-    CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << "local_id()  == " << a.local_id() << std::endl;
+    FTEST_CAPTURE() << "global_id() == " << a.global_id() << std::endl;
+    FTEST_CAPTURE() << std::endl;
   }
 
   // ------------------------
@@ -216,13 +206,13 @@ TEST(id, all) {
   {
     id a = id::make<1, 2>(3, 4, 5, 6);
 
-    CINCH_CAPTURE() << a.dimension() << std::endl;
-    CINCH_CAPTURE() << a.domain() << std::endl;
-    CINCH_CAPTURE() << a.partition() << std::endl;
-    CINCH_CAPTURE() << a.entity() << std::endl;
-    CINCH_CAPTURE() << a.flags() << std::endl;
-    CINCH_CAPTURE() << a.global() << std::endl;
-    CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << a.dimension() << std::endl;
+    FTEST_CAPTURE() << a.domain() << std::endl;
+    FTEST_CAPTURE() << a.partition() << std::endl;
+    FTEST_CAPTURE() << a.entity() << std::endl;
+    FTEST_CAPTURE() << a.flags() << std::endl;
+    FTEST_CAPTURE() << a.global() << std::endl;
+    FTEST_CAPTURE() << std::endl;
 
     EXPECT_EQ(a.entity(), a.index_space_index());
   }
@@ -250,9 +240,9 @@ TEST(id, all) {
     const id b = id::make<2, 3>(50, 60, 70, 80);
     const id c = id::make<2, 3>(50, 60, 7000, 8000);
 
-    CINCH_CAPTURE() << a.local_id() << std::endl;
-    CINCH_CAPTURE() << b.local_id() << std::endl;
-    CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << a.local_id() << std::endl;
+    FTEST_CAPTURE() << b.local_id() << std::endl;
+    FTEST_CAPTURE() << std::endl;
 
     // <
     EXPECT_TRUE(a < b);
@@ -264,15 +254,15 @@ TEST(id, all) {
     // Note: my (Martin's) analysis suggests that large values of entity have
     // high-order bits that would run into the FBITS 0s in FLAGS_UNMASK. So,
     // I should clarify if the definition is really as it was intended.
-    CINCH_CAPTURE() << binary(a.local_id()) << std::endl;
-    CINCH_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
-    CINCH_CAPTURE() << binary(a.local_id() & id::FLAGS_UNMASK) << std::endl;
-    CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << binary(a.local_id()) << std::endl;
+    FTEST_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
+    FTEST_CAPTURE() << binary(a.local_id() & id::FLAGS_UNMASK) << std::endl;
+    FTEST_CAPTURE() << std::endl;
 
-    CINCH_CAPTURE() << binary(b.local_id()) << std::endl;
-    CINCH_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
-    CINCH_CAPTURE() << binary(b.local_id() & id::FLAGS_UNMASK) << std::endl;
-    CINCH_CAPTURE() << std::endl;
+    FTEST_CAPTURE() << binary(b.local_id()) << std::endl;
+    FTEST_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
+    FTEST_CAPTURE() << binary(b.local_id() & id::FLAGS_UNMASK) << std::endl;
+    FTEST_CAPTURE() << std::endl;
 
     // Not really fully testing the operator here...
     EXPECT_FALSE(a == b);
@@ -293,8 +283,8 @@ TEST(id, all) {
 
   {
     flecsi::utils::local_id_t a = 1, b = 2;
-    CINCH_CAPTURE() << a << std::endl;
-    CINCH_CAPTURE() << b << std::endl;
+    FTEST_CAPTURE() << a << std::endl;
+    FTEST_CAPTURE() << b << std::endl;
   }
 
   // ------------------------
@@ -302,15 +292,14 @@ TEST(id, all) {
   // ------------------------
 
 #ifdef __GNUG__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed.gnug"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("id.blessed.gnug"));
 #elif defined(_MSC_VER)
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed.msvc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("id.blessed.msvc"));
 #else
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("id.blessed"));
 #endif
-} // TEST
 
-/*~------------------------------------------------------------------------~--*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/
+  return 0;
+}
+
+ftest_register_driver(id);

@@ -17,5 +17,6 @@ FleCSI Team
   team/oleg
   team/ollie
   team/karen
+  team/wei
 
 .. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

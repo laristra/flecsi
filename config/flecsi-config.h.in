@@ -1,13 +1,4 @@
 /*
-    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-   /@@/////  /@@          @@////@@ @@////// /@@
-   /@@       /@@  @@@@@  @@    // /@@       /@@
-   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-   /@@       /@@/@@//// //@@    @@       /@@/@@
-   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-   //       ///  //////   //////  ////////  //
-
    Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
@@ -30,12 +21,6 @@
 #cmakedefine FLECSI_ENABLE_LEGION
 
 //----------------------------------------------------------------------------//
-// Control Model
-//----------------------------------------------------------------------------//
-
-#cmakedefine FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
-
-//----------------------------------------------------------------------------//
 // Enable Legion thread-local storage interface
 //----------------------------------------------------------------------------//
 
@@ -46,10 +31,7 @@
   #if !defined(REALM_USE_CMAKE)
     #define REALM_USE_CMAKE
   #endif
-  
-  #if !defined(ENABLE_LEGION_TLS)
-    #define ENABLE_LEGION_TLS
-  #endif
+  #define ENABLE_LEGION_TLS
 
   #if !defined(MAPPER_COMPACTION)
     #cmakedefine MAPPER_COMPACTION
@@ -59,6 +41,12 @@
   #endif
 
 #endif
+
+//----------------------------------------------------------------------------//
+// Mapper options
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_MAPPER_COMPACTION
 
 //----------------------------------------------------------------------------//
 // Process id bits
@@ -82,6 +70,20 @@
 #cmakedefine FLECSI_ENABLE_BOOST
 
 //----------------------------------------------------------------------------//
+// FLOG
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_FLOG
+#define FLOG_STRIP_LEVEL @FLOG_STRIP_LEVEL@
+#cmakedefine FLOG_ENABLE_COLOR_OUTPUT
+#cmakedefine FLOG_ENABLE_TAGS
+#cmakedefine FLOG_ENABLE_DEBUG
+#define FLOG_TAG_BITS @FLOG_TAG_BITS@
+#cmakedefine FLOG_ENABLE_EXTERNAL
+#cmakedefine FLOG_ENABLE_DEVELOPER_MODE
+#cmakedefine FLOG_ENABLE_MPI
+
+//----------------------------------------------------------------------------//
 // Enable coloring
 //----------------------------------------------------------------------------//
 
@@ -93,3 +95,15 @@
 //----------------------------------------------------------------------------//
 
 #cmakedefine FLECSI_ENABLE_GRAPHVIZ
+
+//----------------------------------------------------------------------------//
+// Enable HDF5
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_HDF5
+
+//----------------------------------------------------------------------------//
+// Enable OpenSSL
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_ENABLE_OPENSSL

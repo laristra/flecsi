@@ -1,34 +1,41 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#include <cinchtest.h>
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
 
-#include <flecsi/utils/hash.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/hash.hh>
 
-// =============================================================================
-// Test various aspects of flecsi::utils::hash
-// =============================================================================
+int
+hash(int argc, char ** argv) {
 
-TEST(hash, all) {
+  FTEST();
 
   using flecsi::utils::string_hash;
 
   if(sizeof(std::size_t) == 8) {
-    EXPECT_EQ(string_hash<std::size_t>("", 0), 0UL);
-    EXPECT_EQ(string_hash<std::size_t>("a", 1), 579863930UL);
-    EXPECT_EQ(string_hash<std::size_t>("bc", 2), 1804308674789032UL);
-    EXPECT_EQ(string_hash<std::size_t>("def", 3), 17347935192790221998UL);
-    EXPECT_EQ(string_hash<std::size_t>("ghij", 4), 2206241549843021049UL);
-    EXPECT_EQ(string_hash<std::size_t>("klmno", 5), 12445193748225208824UL);
+    ASSERT_EQ(string_hash<std::size_t>("", 0), 0UL);
+    ASSERT_EQ(string_hash<std::size_t>("a", 1), 579863930UL);
+    ASSERT_EQ(string_hash<std::size_t>("bc", 2), 1804308674789032UL);
+    ASSERT_EQ(string_hash<std::size_t>("def", 3), 17347935192790221998UL);
+    ASSERT_EQ(string_hash<std::size_t>("ghij", 4), 2206241549843021049UL);
+    ASSERT_EQ(string_hash<std::size_t>("klmno", 5), 12445193748225208824UL);
 
-    EXPECT_EQ(string_hash<std::size_t>("", 0), 0UL);
-    EXPECT_EQ(string_hash<std::size_t>("1", 1), 344982506UL);
-    EXPECT_EQ(string_hash<std::size_t>("12", 2), 1085224634034564UL);
-    EXPECT_EQ(string_hash<std::size_t>("123", 3), 1185801406734518843UL);
-    EXPECT_EQ(string_hash<std::size_t>("1234", 4), 13378554461280252461UL);
-    EXPECT_EQ(string_hash<std::size_t>("12345", 5), 5585044181051024734UL);
+    ASSERT_EQ(string_hash<std::size_t>("", 0), 0UL);
+    ASSERT_EQ(string_hash<std::size_t>("1", 1), 344982506UL);
+    ASSERT_EQ(string_hash<std::size_t>("12", 2), 1085224634034564UL);
+    ASSERT_EQ(string_hash<std::size_t>("123", 3), 1185801406734518843UL);
+    ASSERT_EQ(string_hash<std::size_t>("1234", 4), 13378554461280252461UL);
+    ASSERT_EQ(string_hash<std::size_t>("12345", 5), 5585044181051024734UL);
   }
 
   // A list of strings that are used in FleCSI projects and that have previously
@@ -325,20 +332,19 @@ TEST(hash, all) {
     // compute hash of string s and check whether it's already in the list
     auto hash = flecsi::utils::string_hash<std::size_t>(s, s.size());
     if(hashes.count(hash) > 0) {
-      printf("COLLISION: '%s' collides with '%s'\n", s.c_str(),
+      printf("COLLISION: '%s' collides with '%s'\n",
+        s.c_str(),
         hashes.at(hash).c_str());
       ++num_collisions;
     }
     else {
       hashes.insert({hash, s});
-    }
-  }
+    } // if
+  } // for
 
-  EXPECT_EQ(num_collisions, 0);
+  ASSERT_EQ(num_collisions, 0);
 
-} // TEST
+  return 0;
+}
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_driver(hash);

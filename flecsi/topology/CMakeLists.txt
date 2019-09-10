@@ -8,7 +8,7 @@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
 # //       ///  //////   //////  ////////  //
 #
-# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# Copyright (c) 2016, Triad National Security, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
 
@@ -18,66 +18,61 @@
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
-  closure_utils.h
-  color_topology.h
-  common/array_buffer.h
-  common/entity_storage.h
-  connectivity.h
-  entity_storage.h
-  index_space.h
-  mesh_definition.h
-  mesh.h
-  mesh_storage.h
-  mesh_topology.h
-  global_topology.h
-  mesh_types.h
-  mesh_utils.h
-  partition.h
-  set_storage.h
-  set_topology.h
-  set_types.h
-  set_utils.h
-  structured_mesh_topology.h
-  tree_topology.h
-  types.h
+  base_topology_types.hh
+  array_buffer.hh
+  connectivity.hh
+  entity_storage.hh
+  index_space.hh
+  utility_types.hh
+  internal/canonical.hh
+  internal/global.hh
+  internal/index.hh
+  ntree/interface.hh
+  ntree/types.hh
+  set/interface.hh
+  set/types.hh
+  structured_mesh/interface.hh
+  structured_mesh/types.hh
+  unstructured_mesh/coloring.hh
+  unstructured_mesh/interface.hh
+  unstructured_mesh/partition.hh
+  unstructured_mesh/storage.hh
+  unstructured_mesh/types.hh
+  unstructured_mesh/utils.hh
 )
 
-#------------------------------------------------------------------------------#
-# Runtime-specific files.
-#
-# UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
-# runtime specific and can be configured for whichever runtime is active.
-#------------------------------------------------------------------------------#
+set(topology_SOURCES
+)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  set(UNIT_POLICY LEGION)
-  set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
   set(topology_HEADERS
     ${topology_HEADERS}
-    legion/set_storage_policy.h
-    legion/storage_policy.h
+  )
+
+  set(topology_SOURCES
+    ${topology_SOURCES}
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+
   set(topology_HEADERS
     ${topology_HEADERS}
-    mpi/set_storage_policy.h
-    mpi/storage_policy.h
-    )
+  )
 
-  set(UNIT_POLICY MPI)
-  set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+  set(topology_SOURCES
+    ${topology_SOURCES}
+  )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   set(topology_HEADERS
     ${topology_HEADERS}
-    hpx/storage_policy.h
-    )
+  )
 
-  set(UNIT_POLICY HPX)
-  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
+  set(topology_SOURCES
+    ${topology_SOURCES}
+  )
 
 endif()
 
@@ -86,8 +81,8 @@ endif()
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
-    ${topology_HEADERS}
-    PARENT_SCOPE
+  ${topology_HEADERS}
+  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
@@ -95,121 +90,27 @@ set(topology_HEADERS
 #------------------------------------------------------------------------------#
 
 set(topology_SOURCES
-    ${topology_SOURCES}
-    PARENT_SCOPE
+  ${topology_SOURCES}
+  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
-# Mesh unit tests.
+# Unit tests.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+#---------------------------   Unstructured Mesh  -----------------------------#
 
-  cinch_add_unit(traversal
-   SOURCES
-     test/traversal.cc
-   INPUTS
-     test/traversal.blessed
-   LIBRARIES
-     FleCSI
-  )
-
-  cinch_add_unit(bindings
-   SOURCES
-     test/bindings.cc
-   INPUTS
-     test/bindings.blessed
-   LIBRARIES
-     FleCSI
-  )
-
-endif()
-
-cinch_add_unit(dual
-  SOURCES
-    test/dual.cc
-  INPUTS
-    test/dual.blessed
+ftest_add_unit(umesh_coloring
+  SOURCES unstructured_mesh/test/coloring.cc
 )
 
-#------------------------------------------------------------------------------#
-# N-Tree unit tests.
-#------------------------------------------------------------------------------#
+#----------------------------------  NTREE  -----------------------------------#
 
-#cinch_add_unit(tree
-#  SOURCES
-#    test/tree.cc
-#    test/pseudo_random.h
-#  INPUTS
-#    test/tree.blessed
-#  LIBRARIES
-#    FleCSI
-#)
-
-#cinch_add_unit(tree1d
-#  SOURCES
-#    test/tree1d.cc
-#  LIBRARIES
-#    FleCSI
-#)
-
-#cinch_add_unit(tree3d
-#  SOURCES
-#    test/tree3d.cc
-#  LIBRARIES
-#    FleCSI
-#)
-
-#cinch_add_unit(gravity
-#  SOURCES
-#    test/gravity.cc test/pseudo_random.h
-#  LIBRARIES
-#    FleCSI
-#)
-
-# FIXME: Broken by refactor
-#cinch_add_unit(gravity-state
-#  SOURCES
-#    test/gravity-state.cc
-#    test/pseudo_random.h
-#  LIBRARIES
-#    FleCSI
-#    ${CINCH_RUNTIME_LIBRARIES}
-#)
-
-cinch_add_unit(structured
-  SOURCES
-    test/structured.cc
+ftest_add_unit(ntree
+  SOURCES ntree/test/ntree.cc
+  INPUTS ntree/test/coordinates.blessed
 )
 
-#------------------------------------------------------------------------------#
-# Set unit tests.
-#------------------------------------------------------------------------------#
-
-# cinch_add_unit(set_topology
-#   SOURCES
-#     test/set_topology.cc
-# )
-
-#------------------------------------------------------------------------------#
-# Misc. unit tests.
-#------------------------------------------------------------------------------#
-
-cinch_add_unit(closure
-  SOURCES
-    test/closure.cc
+ftest_add_unit(ntree_geometry
+  SOURCES ntree/test/geometry.cc
 )
-
-cinch_add_unit(devel-closure
-  SOURCES
-    test/devel-closure.cc
-  POLICY
-    SERIAL_DEVEL
-)
-
-# FIXME: Check this with refactor
-#cinch_add_unit(index-space
-#  SOURCES
-#    test/index-space.cc test/pseudo_random.h
-#)
-

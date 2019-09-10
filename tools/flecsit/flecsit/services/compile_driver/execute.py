@@ -3,8 +3,6 @@
 # All rights reserved.
 #------------------------------------------------------------------------------#
 
-from cmakelists import cmakelists_template
-
 import os
 import shutil
 import subprocess
@@ -70,19 +68,19 @@ def execute(verbose, debug, build):
 
     # Echo the subprocess call
     if verbose:
-        print 'Invoking:'
-        print 'cmake ' + cxx_compiler + ' ' + cxx_flags + ' ' + \
-            cxx_debug_flags + ' .'
+        print('Invoking:')
+        print('cmake ' + cxx_compiler + ' ' + cxx_flags + ' ' + \
+            cxx_debug_flags + ' .')
 
     # Call CMake and make to build the example
     subprocess.call(['cmake', cxx_compiler, cxx_flags,
         cxx_debug_flags, '.'], stdout=devnull)
 
     if verbose:
-        print 'Invoking:'
-        print 'make VERBOSE=1'
+        print('Invoking:')
+        print('make VERBOSE=1')
         subprocess.call(['/usr/bin/make', 'VERBOSE=1'])
-        print 'make install VERBOSE=1'
+        print('make install VERBOSE=1')
         subprocess.call(['make', 'install', 'VERBOSE=1'],
             stdout=devnull)
     else:

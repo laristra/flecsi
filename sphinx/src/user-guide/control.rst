@@ -1,3 +1,6 @@
+
+.. _control-model:
+
 Control Model
 =============
 

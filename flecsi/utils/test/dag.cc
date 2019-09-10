@@ -1,16 +1,9 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/const_string.hh>
+#include <flecsi/utils/dag.hh>
+#include <flecsi/utils/ftest.hh>
 
 #include <bitset>
-
-#include <cinchtest.h>
-
-#include <flecsi-config.h>
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/const_string.h>
-#include <flecsi/utils/dag.h>
 
 struct node_policy_t {
 
@@ -43,7 +36,7 @@ operator<<(std::ostream & stream, node_policy_t const & node) {
   return stream;
 } // operator <<
 
-using dag_t = flecsi::utils::dag_u<node_policy_t>;
+using dag_t = flecsi::utils::dag<node_policy_t>;
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 using graphviz_t = flecsi::utils::graphviz_t;
@@ -60,7 +53,10 @@ const size_t e = flecsi_hash(e);
 const size_t f = flecsi_hash(f);
 const size_t g = flecsi_hash(g);
 
-TEST(dag, sanity) {
+int
+dag(int argc, char ** argv) {
+
+  FTEST();
 
   dag_t dag;
 
@@ -93,4 +89,7 @@ TEST(dag, sanity) {
   gv.write("dag.gv");
 #endif
 
-} // TEST
+  return 0;
+}
+
+ftest_register_driver(dag);

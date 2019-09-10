@@ -45,7 +45,7 @@ Introduction
   src/tutorial
   src/user-guide
   src/developer-guide
-  src/doxygen
+  FleCSI API Reference <http://flecsi.org/doxygen>
   src/team
 
 .. Not sure exactly why, but this seems to do what I want at the

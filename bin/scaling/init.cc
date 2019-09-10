@@ -18,9 +18,11 @@
 
       mesh->add_entity<2, $DOMAIN>(c);
 
-      mesh->init_cell<$DOMAIN>(
-        c, {vs[i + j * width1], vs[i + (j + 1) * width1],
-             vs[i + 1 + j * width1], vs[i + 1 + (j + 1) * width1]});
+      mesh->init_cell<$DOMAIN>(c,
+        {vs[i + j * width1],
+          vs[i + (j + 1) * width1],
+          vs[i + 1 + j * width1],
+          vs[i + 1 + (j + 1) * width1]});
     }
   }
 

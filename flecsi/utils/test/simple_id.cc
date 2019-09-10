@@ -1,30 +1,29 @@
-/*~-------------------------------------------------------------------------~~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2017 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
-#include <flecsi/utils/simple_id.h>
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
 
-// includes: other
-#include <cinchtest.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/simple_id.hh>
 
 using namespace flecsi::utils;
 
 using id_types_t = std::tuple<int, int, int>;
 using my_id_t = simple_id_t<id_types_t, lexical_comparison<id_types_t>>;
 
-// TEST
-TEST(simple_id, all) {
+int
+simple_id(int argc, char ** argv) {
+
+  FTEST();
 
   auto a = my_id_t{1, 2, 3};
   auto b = my_id_t{4, 5, 6};
@@ -45,4 +44,7 @@ TEST(simple_id, all) {
   EXPECT_TRUE((d < c));
   EXPECT_TRUE((d < e));
 
-} // TEST
+  return 0;
+}
+
+ftest_register_driver(simple_id);

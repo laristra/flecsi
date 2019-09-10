@@ -1,36 +1,31 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
-
-#include <iostream>
-
-#include <cinchtest.h>
-
-#include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/tuple_walker.hh>
 
 // struct once
-struct once : public flecsi::utils::tuple_walker_u<once> {
+struct once : public flecsi::utils::tuple_walker<once> {
   void handle(const double d) const {
     CINCH_CAPTURE() << d << std::endl;
   }
 };
 
 // struct twice
-struct twice : public flecsi::utils::tuple_walker_u<twice> {
+struct twice : public flecsi::utils::tuple_walker<twice> {
   void handle(const double d) {
     CINCH_CAPTURE() << 2 * d << std::endl;
   }
 };
 
 // struct thrice
-struct thrice : public flecsi::utils::tuple_walker_u<thrice> {
+struct thrice : public flecsi::utils::tuple_walker<thrice> {
   void handle(double d) const {
     CINCH_CAPTURE() << 3 * d << std::endl;
   }
 };
 
-TEST(tuple_walker, all) {
+int
+tuple_walker(int argc, char ** argv) {
+
+  FTEST();
+
   std::tuple<> nothing;
   std::tuple<int, float, double> t(1, float(2), double(3));
 
@@ -54,9 +49,7 @@ TEST(tuple_walker, all) {
   // compare
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("tuple_walker.blessed"));
 
-} // TEST
+  return 0;
+}
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_driver(tuple_walker);

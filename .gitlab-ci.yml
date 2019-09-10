@@ -7,7 +7,6 @@ stages:
   - Build
   - Test
   - Format
-  - Apps
 
 variables:
   GET_SOURCES_ATTEMPTS: 10
@@ -41,14 +40,12 @@ before_script:
     RUNTIME: ""
     CC: "gcc"
     CXX: "g++"
-    CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+    CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
     BUILD_TYPE: "Debug"
     IGNORE_NOCI: "FALSE"
   image:
     name: laristra/flecsi-third-party:${DISTRO} #user: flecsi
   stage: Canary
-  tags:
-    - docker
   cache:
     #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
     #key: ${CI_COMMIT_REF_SLUG}
@@ -76,9 +73,7 @@ before_script:
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
           -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
-          -DENABLE_UNIT_TESTS=ON \
-          -DENABLE_PARMETIS=ON \
-          -DENABLE_COLORING=ON \
+          -DENABLE_FLOG=ON \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_DOCUMENTATION=OFF \
           -DENABLE_COVERAGE_BUILD=ON \
@@ -105,11 +100,11 @@ before_script:
         make format && git diff --exit-code --ignore-submodules;
       fi;
     - |
-      if [[ ${CI_JOB_STAGE} = "Canary" ]];
+      if [[ ${CI_JOB_STAGE} = "Apps" ]];
       then
+        cd ${CI_PROJECT_DIR}/build/;
         git clone --recursive https://github.com/laristra/flecsale.git;
         cd flecsale/flecsi;
-        git fetch;
         git checkout ${CI_COMMIT_REF_NAME};
         git submodule update --init --recursive;
         cd ../;
@@ -169,6 +164,7 @@ canary:fedora_mpi:
   variables:
     DISTRO: "fedora"
     RUNTIME: "mpi"
+  allow_failure: true
 
 canary:fedora_legion:
   extends: .canary
@@ -185,6 +181,7 @@ build:ubuntu_mpi:
   variables:
     DISTRO: "ubuntu"
     RUNTIME: "mpi"
+  allow_failure: true
 
 build:ubuntu_mpi_release:
   extends: build:ubuntu_mpi
@@ -210,6 +207,7 @@ build:ubuntu_mpich_mpi:
   variables:
     DISTRO: "ubuntu_mpich"
     RUNTIME: "mpi"
+  allow_failure: true
 
 build:ubuntu_mpich_mpi_release:
   extends: build:ubuntu_mpich_mpi
@@ -232,6 +230,7 @@ build:fedora_mpi:
   variables:
     DISTRO: "fedora"
     RUNTIME: "mpi"
+  allow_failure: true
 
 build:fedora_mpi_release:
   extends: build:fedora_mpi
@@ -254,6 +253,7 @@ build:fedora_mpich_mpi:
   variables:
     DISTRO: "fedora_mpich"
     RUNTIME: "mpi"
+  allow_failure: true
 
 build:fedora_mpich_mpi_release:
   extends: build:fedora_mpich_mpi
@@ -382,6 +382,7 @@ test:ubuntu_mpi:
     - build:ubuntu_mpi
   variables:
     DISTRO: "ubuntu"
+  allow_failure: true
 
 test:ubuntu_mpi_release:
   extends: test:ubuntu_mpi
@@ -404,6 +405,7 @@ test:ubuntu_mpich_mpi:
     - build:ubuntu_mpich_mpi
   variables:
     DISTRO: "ubuntu_mpich"
+  allow_failure: true
 
 test:ubuntu_mpich_mpi_release:
   extends: test:ubuntu_mpich_mpi
@@ -426,6 +428,7 @@ test:fedora_mpi:
     - build:fedora_mpi
   variables:
     DISTRO: "fedora"
+  allow_failure: true
 
 test:fedora_mpi_release:
   extends: test:fedora_mpi
@@ -448,6 +451,7 @@ test:fedora_mpich_mpi:
     - build:fedora_mpich_mpi
   variables:
     DISTRO: "fedora_mpich"
+  allow_failure: true
 
 test:fedora_mpich_mpi_release:
   extends: test:fedora_mpich_mpi
@@ -599,6 +603,7 @@ format:fedora_mpi:
     - build:fedora_mpi
   variables:
     DISTRO: "fedora"
+  allow_failure: true
 
 format:fedora_legion:
   extends: .format
@@ -607,15 +612,6 @@ format:fedora_legion:
   variables:
     DISTRO: "fedora"
 
-format:fedora_hpx:
-  extends: .format
-  dependencies:
-    - build:fedora_hpx
-  variables:
-    DISTRO: "fedora"
-  allow_failure: true
-
 ###############
 ###############
 ###############
-

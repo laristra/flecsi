@@ -1,15 +1,20 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
-#include <flecsi/utils/set_intersection.h>
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
 
-// includes: other
-#include <cinchtest.h>
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/set_intersection.hh>
 
-// intersects
 template<class CONTAINER>
 inline bool
 intersects(const CONTAINER & one, const CONTAINER & two) {
@@ -17,12 +22,11 @@ intersects(const CONTAINER & one, const CONTAINER & two) {
     one.begin(), one.end(), two.begin(), two.end());
 }
 
-// =============================================================================
-// Test flecsi::utils::set_intersection()
-// =============================================================================
+int
+set_intersection(int argc, char ** argv) {
 
-// TEST
-TEST(set_intersection, all) {
+  FTEST();
+
   std::vector<int> a = {1, 3, 5, 7, 10, 11};
   std::vector<int> b = {2, 4, 6, 8, 10, 12};
   std::vector<int> c = {0, 20};
@@ -49,9 +53,7 @@ TEST(set_intersection, all) {
   EXPECT_EQ(intersects(a, e), false);
   EXPECT_EQ(intersects(e, f), false);
 
-} // TEST
+  return 0;
+}
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_driver(set_intersection);

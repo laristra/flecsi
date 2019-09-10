@@ -1,19 +1,11 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+#include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/tuple_wrapper.hh>
 
-#include <cinchtest.h>
+int
+tuple_wrapper(int argc, char ** argv) {
 
-#include <flecsi/utils/demangle.h>
-#include <flecsi/utils/tuple_wrapper.h>
+  FTEST();
 
-// =============================================================================
-// Test various constructs in tuple_wrapper.h
-// =============================================================================
-
-// TEST
-TEST(tuple_wrapper, all) {
   // generic_tuple_t
   flecsi::utils::generic_tuple_t a;
   (void)a;
@@ -41,9 +33,7 @@ TEST(tuple_wrapper, all) {
   EXPECT_EQ(e.get<1>(), 'x');
   EXPECT_EQ(e.get<2>(), 2);
 
-} // TEST
+  return 0;
+}
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ftest_register_driver(tuple_wrapper);

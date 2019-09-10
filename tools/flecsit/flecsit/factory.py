@@ -1,6 +1,15 @@
 #------------------------------------------------------------------------------#
-# Copyright (c) 2014 Los Alamos National Security, LLC
-# All rights reserved.
+#  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+# /@@/////  /@@          @@////@@ @@////// /@@
+# /@@       /@@  @@@@@  @@    // /@@       /@@
+# /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+# /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+# /@@       /@@/@@//// //@@    @@       /@@/@@
+# /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+# //       ///  //////   //////  ////////  //
+#
+# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# All rights reserved
 #------------------------------------------------------------------------------#
 
 from flecsit.services import *
@@ -42,7 +51,7 @@ class ServiceFactory:
         """
 
         # If we haven't seen this class, add it to the dict
-        if not ServiceFactory.factories.has_key(id):
+        if not id in ServiceFactory.factories:
             ServiceFactory.factories[id] = \
                 eval(id + '.Factory()')
 
@@ -55,8 +64,3 @@ class ServiceFactory:
     create_service = staticmethod(create_service)
 
 # class ServiceFactory
-
-#------------------------------------------------------------------------------#
-# Formatting options for emacs and vim.
-# vim: set tabstop=4 shiftwidth=4 expandtab :
-#------------------------------------------------------------------------------#

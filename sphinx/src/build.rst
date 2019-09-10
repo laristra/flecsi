@@ -9,9 +9,9 @@ Building FleCSI
 
 FleCSI can be configured to run with different distributed-memory
 runtimes, including Legion, and MPI. FleCSI also has support for various
-fine-grained, node-level runtimes, including OpenMP, Kokkos, Agency, and
-the C++17 extensions for parallelism.  Full documentation of FleCSI
-requires both Pandoc and Doxygen. These configuration options are listed
+fine-grained, node-level runtimes, including OpenMP, Kokkos, and
+the C++17 extensions for parallelism. Full documentation of FleCSI
+requires both Sphinx and Doxygen. These configuration options are listed
 to convey to the reader that the FleCSI build system has several paths
 that can be taken to tailor FleCSI to a given system and architecture.
 
@@ -36,22 +36,71 @@ options, but is not necessary for a particular build:
 * **GASNet** |br|
   GASNet is only required if Legion support is enabled.
 
-* **Pandoc** |br|
-  Pandoc is only required to build the FleCSI guide documentation.
-  Pandoc is a format conversion tool. More information is available
-  at `http://pandoc.org <http://pandoc.org>`_.
+* **CMake** |br|
+  We currently require CMake version 3.12 or greater.
+
+* **Boost** |br|
+  We require *program_options* and *stacktrace*.
 
 * **Doxygen** |br|
   Doxygen is only required to build the interface documentation.
 
-* **CMake** |br|
-  We currently require CMake version 2.8 or greater.
+* **Sphinx** |br|
+  Sphinx is only required to build the web-based documentation. We are
+  currently using Sphinx 1.1.0. We also require the Sphinx RTD Theme
+  (using version 0.4.2). These can be installed on most Linux systems
+  using pip.
 
 * **Python** |br|
   We currently require Python 2.7 or greater.
 
+Spack
+*****
+
+The preferred method for installing FleCSI is to use the
+`spack <https://github.com/spack/spack>`_ package:
+
+.. code-block:: console
+
+  $ spack install flecsi
+  $ spack load -r flecsi
+
+FleCSI supports several different versions and variants, e.g.:
+
+.. code-block:: console
+
+  $ spack install flecsi@1.0 +legion +graphviz
+
+For a complete list of versions and variants, type:
+
+.. code-block:: console
+
+  $ spack info flecsi
+
+Currently, FleCSI depends on the following spack packages:
+
+.. code-block:: console
+
+  $ spack install cmake
+  $ spack install boost@1.68.0
+  $ spack install parmetis
+  $ spack install hdf5
+  $ spack install kokkos
+  $ spack install legion@ctrl-rep
+
+.. note::
+
+  Users of spack can safely ignore the remaining sections on this page.
+  Loading the flecsi spack package will properly configure your
+  environment.
+
 FleCSI Third Party Libraries Project
 ************************************
+
+.. warning::
+
+  The FleCSI superbuild project is deprecated in favor of Spack, and
+  will eventually be removed.
 
 To facilitate FleCSI adoption by a broad set of users, we have provided
 a superbuild project that can build many of the libraries and tools
@@ -61,7 +110,7 @@ project is available from github at
 <https://github.com/laristra/flecsi-third-party>`_.
 Note that a suitable version of MPI is required for the superbuild.
 
-.. topic:: Admonishment
+.. admonition:: Admonishment
 
   Users should note that, while this approach is easier, it may not
   provide as robust a solution as individually building each dependency,
@@ -82,10 +131,10 @@ Build instructions for the TPLs:
   $ cd build
   $ cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/directory ..
   $ make
+  $ make install
 
-The *make* command will also install the TPLs in the specified install
-directory. **It is recommended that users remove the install directory
-before updating or re-compiling the TPLs.**
+**It is recommended that users remove the install directory before
+updating or re-compiling the TPLs to insure a clean build.**
 
 Build Environment
 *****************
@@ -148,32 +197,25 @@ Example configuration: **MPI**
 
 .. code-block:: console
 
-  $ cmake -DFLECSI_RUNTIME_MODEL=mpi -DENABLE_MPI -DENABLE_COLORING ..
+  $ cmake -DFLECSI_RUNTIME_MODEL=mpi ..
 
 Example configuration: **MPI + OpenMP**
 
 .. code-block:: console
 
-  $ cmake -DFLECSI_RUNTIME_MODEL=mpi -DENABLE_MPI -DENABLE_COLORING -DENABLE_OPENMP ..
+  $ cmake -DFLECSI_RUNTIME_MODEL=mpi -DENABLE_OPENMP ..
 
 Example configuration: **Legion**
 
 .. code-block:: console
 
-  $ cmake -DFLECSI_RUNTIME_MODEL=legion -DENABLE_MPI -DENABLE_COLORING ..
+  $ cmake -DFLECSI_RUNTIME_MODEL=legion ..
 
 After configuration is complete, just use *make* to build:
 
 .. code-block:: console
 
   $ make -j 16
-
-This will build all targets *except* for the Doxygen documentation, which
-can be built with:
-
-.. code-block:: console
-
-  $ make doxygen
 
 Installation uses the normal *make install*, and will install FleCSI in
 the directory specified by CMAKE_INSTALL_PREFIX:
@@ -182,8 +224,70 @@ the directory specified by CMAKE_INSTALL_PREFIX:
 
   $ make install
 
+Building the Unit Tests
+***********************
+
+To build FleCSI unit test suite, enable the option for the FleCSI
+logging utility (flog). **By default, this will also enable the unit
+tests.**
+
+.. code-block:: console
+
+  $ cmake .. -DENABLE_FLOG
+
+After building FleCSI, you can run the unit tests like:
+
+.. code-block:: console
+
+  $ make test
+
+Building the Documentation
+**************************
+
+FleCSI uses Doxygen for its API reference, and Sphinx for user and
+developer documentation.
+
+Doxygen can be installed with most Linux package managers.  To install
+Sphinx, you can install pip3, and use it to install *Sphinx*,
+*recommonmark*, and *sphinx_rtd_theme*. Your package manager should also
+have pip3, e.g., on Ubuntu, you can install all of these requirements
+like:
+
+.. code-block:: console
+
+  $ sudo apt install doxygen
+  $ sudo apt install python3-pip
+  $ sudo apt install python3-breathe
+  $ pip3 install Sphinx
+  $ pip3 install recommonmark
+  $ pip3 install sphinx_rtd_theme
+
+To enable Doxygen and Sphinx, these options need to be enabled in CMake:
+
+.. code-block:: console
+
+  $ cmake -DENABLE_DOXYGEN=ON -DENABLE_SPHINX=ON ..
+
+Once you have properly configured FleCSI, you can build the
+documentation like:
+
+.. code-block:: console
+
+  $ make doxygen
+  $ make sphinx
+
+Both of these targets will be built in your build directory under *doc*,
+e.g., the main Doxygen index.html page will be located at
+*'doc/doxygen/html/index.html'*. Similarly, the Sphinx main index.html
+page will be located at *'doc/sphinx/index.html'*. You can open these in
+your browser with
+*file:///path/to/your/build/directory/doc/doxygen/html/index.html*, and
+*file:///path/to/your/build/directory/doc/sphinx/index.html*.
+
+Advanced
+********
+
 .. toctree::
-  :caption: Advanced:
 
   build/options
 

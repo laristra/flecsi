@@ -8,7 +8,7 @@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
 # //       ///  //////   //////  ////////  //
 #
-# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# Copyright (c) 2016, Triad National Security, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
 
@@ -18,43 +18,54 @@
 #------------------------------------------------------------------------------#
 
 set(utils_HEADERS
-  array_ref.h
-  bit_buffer.h
-  checksum.h
-  common.h
-  const_string.h
-  dag.h
-  debruijn.h
-  demangle.h
-  dimensioned_array.h
-  export_definitions.h
-  factory.h
-  fixed_vector.h
-  function_traits.h
-  graphviz.h
-  hash.h
-  humble.h
-  id.h
-  index_space.h
-  iterator.h
-  logging.h
-  macros.h
-  mpi_type_traits.h
-  offset.h
-  reorder.h
-  set_intersection.h
-  set_utils.h
-  simple_id.h
-  static_verify.h
-  tuple_function.h
-  tuple_type_converter.h
-  tuple_visit.h
-  tuple_walker.h
-  tuple_wrapper.h
-  type_traits.h
-  typeify.h
-  uint128.h
-  utility.h
+  array_ref.hh
+  bit_buffer.hh
+  bitutils.hh
+  checksum.hh
+  common.hh
+  const_string.hh
+  dag.hh
+  debruijn.hh
+  demangle.hh
+  export_definitions.hh
+  factory.hh
+  flog.hh
+  flog/message.hh
+  flog/packet.hh
+  flog/state.hh
+  flog/tag_scope.hh
+  flog/types.hh
+  flog/utils.hh
+  ftest.hh
+  ftest/node.hh
+  ftest/output.hh
+  ftest/types.hh
+  function_traits.hh
+  geometry/filling_curve.hh
+  geometry/point.hh
+  graphviz.hh
+  hash.hh
+  id.hh
+  index_space.hh
+  iterator.hh
+  macros.hh
+  mpi_type_traits.hh
+  offset.hh
+  reorder.hh
+  serialize.hh
+  set_intersection.hh
+  set_utils.hh
+  simple_id.hh
+  static_verify.hh
+  target.hh
+  tuple_function.hh
+  tuple_type_converter.hh
+  tuple_visitor.hh
+  tuple_walker.hh
+  tuple_wrapper.hh
+  type_traits.hh
+  typeify.hh
+  uint128.hh
 )
 
 #------------------------------------------------------------------------------#
@@ -65,36 +76,9 @@ set(utils_HEADERS
 set(utils_SOURCES
   debruijn.cc
   demangle.cc
+  flog/packet.cc
+  flog/utils.cc
 )
-
-#------------------------------------------------------------------------------#
-# Runtime-specific files for unit tests.
-#
-# UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
-# runtime specific and can be configured for whichever runtime is active.
-#------------------------------------------------------------------------------#
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-  set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-
-  set(UNIT_POLICY LEGION)
-  set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-
-  set(UNIT_POLICY MPI)
-  set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
-  set(UNIT_POLICY HPX)
-  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
-
-endif()
 
 #------------------------------------------------------------------------------#
 # Export header list to parent scope.
@@ -114,137 +98,13 @@ set(utils_SOURCES
   PARENT_SCOPE
 )
 
-#------------------------------------------------------------------------------#
+################################################################################
 # Unit tests.
+################################################################################
+
 #------------------------------------------------------------------------------#
-
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-cinch_add_devel_target(clog
-  SOURCES
-    test/clog.cc
-  POLICY ${UNIT_POLICY}
-)
-endif()
-
-set(factory_blessed_input test/factory.blessed.gnug)
-
-if(MSVC)
-  set(factory_blessed_input test/factory.blessed.msvc)
-endif()
-
-cinch_add_unit(factory
-  SOURCES
-    demangle.cc
-    test/factory.cc
-  INPUTS
-    test/factory.blessed
-    ${factory_blessed_input}
-)
-
-cinch_add_unit(fixed_vector
-  SOURCES
-    test/fixed_vector.cc
-)
-
-
-cinch_add_unit(reorder
-  SOURCES
-    test/reorder.cc
-)
-
-cinch_add_unit(humble
-  SOURCES
-    test/humble.cc
-)
-
-set(iterator_blessed_input test/iterator.blessed.gnug)
-
-if(MSVC)
-  set(iterator_blessed_input test/iterator.blessed.msvc)
-endif()
-
-cinch_add_unit(utils_iterator
-  SOURCES
-    demangle.cc
-    test/iterator.cc
-  INPUTS
-    test/iterator.blessed
-    ${iterator_blessed_input}
-)
-
-cinch_add_unit(logging
-  SOURCES
-    test/logging.cc
-)
-
-cinch_add_unit(set_intersection
-  SOURCES
-    test/set_intersection.cc
-)
-
-cinch_add_unit(set_utils
-  SOURCES
-    test/set_utils.cc
-  INPUTS
-    test/set_utils.blessed
-)
-
-cinch_add_unit(simple_id
-  SOURCES
-    test/simple_id.cc
-)
-
-cinch_add_unit(static_verify
-  SOURCES
-    test/static_verify.cc
-)
-
-cinch_add_unit(test_utility
-  SOURCES
-    demangle.cc
-    test/utility.cc
-  INPUTS
-    test/utility.blessed.gnug
-)
-
-set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
-
-if(MSVC)
-  set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.msvc)
-endif()
-
-cinch_add_unit(tuple_type_converter
-  SOURCES
-    demangle.cc
-    test/tuple_type_converter.cc
-  INPUTS
-    ${tuple_type_converter_blessed_input}
-)
-
-cinch_add_unit(tuple_wrapper
-  SOURCES
-    demangle.cc
-    test/tuple_wrapper.cc
-)
-
-cinch_add_unit(tuple_function
-  SOURCES
-    test/tuple_function.cc
-)
-
-set(index_space_blessed_input test/index_space.blessed.gnug)
-
-if(MSVC)
-  set(index_space_blessed_input test/index_space.blessed.msvc)
-endif()
-
-cinch_add_unit(index_space
-  SOURCES
-    demangle.cc
-    test/index_space.cc
-  INPUTS
-    test/index_space.blessed ${index_space_blessed_input}
-)
+# array_ref
+#------------------------------------------------------------------------------#
 
 set(array_ref_blessed_input test/array_ref.blessed.gnug)
 
@@ -252,13 +112,17 @@ if(MSVC)
   set(array_ref_blessed_input test/array_ref.blessed.msvc)
 endif()
 
-cinch_add_unit(array_ref
+ftest_add_unit(array_ref
   SOURCES
-    demangle.cc
     test/array_ref.cc
   INPUTS
-    test/array_ref.blessed ${array_ref_blessed_input}
+    test/array_ref.blessed
+    ${array_ref_blessed_input}
 )
+
+#------------------------------------------------------------------------------#
+# common
+#------------------------------------------------------------------------------#
 
 set(common_blessed_input test/common.blessed.gnug)
 
@@ -266,13 +130,74 @@ if(MSVC)
   set(common_blessed_input test/common.blessed.msvc)
 endif()
 
-cinch_add_unit(common
+ftest_add_unit(common
   SOURCES
-    demangle.cc
     test/common.cc
   INPUTS
-    test/common.blessed.ppc test/common.blessed ${common_blessed_input}
+    test/common.blessed.ppc
+    test/common.blessed
+    ${common_blessed_input}
 )
+
+#------------------------------------------------------------------------------#
+# demangle
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(demangle
+  SOURCES
+    test/demangle.cc
+)
+
+#------------------------------------------------------------------------------#
+# factory
+#------------------------------------------------------------------------------#
+
+set(factory_blessed_input test/factory.blessed.gnug)
+
+if(MSVC)
+  set(factory_blessed_input test/factory.blessed.msvc)
+endif()
+
+ftest_add_unit(factory
+  SOURCES
+    test/factory.cc
+  INPUTS
+    test/factory.blessed
+    ${factory_blessed_input}
+)
+
+#------------------------------------------------------------------------------#
+# ftest
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(ftest
+  SOURCES
+    test/ftest.cc
+  THREADS
+    1 2 4
+)
+
+#------------------------------------------------------------------------------#
+# function_traits
+#------------------------------------------------------------------------------#
+
+set(function_traits_input test/function_traits.blessed.gnug)
+
+if(MSVC)
+  set(function_traits_input test/function_traits.blessed.msvc)
+endif()
+
+ftest_add_unit(function_traits
+  SOURCES
+    test/function_traits.cc
+  INPUTS
+    test/function_traits.blessed
+    ${function_traits_input}
+)
+
+#------------------------------------------------------------------------------#
+# id
+#------------------------------------------------------------------------------#
 
 set(id_blessed_input test/id.blessed.gnug)
 
@@ -280,32 +205,132 @@ if(MSVC)
   set(id_blessed_input test/id.blessed.msvc)
 endif()
 
-cinch_add_unit(id
+ftest_add_unit(id
   SOURCES
-    demangle.cc
     test/id.cc
   INPUTS
-    test/id.blessed ${id_blessed_input}
+    test/id.blessed
+    ${id_blessed_input}
 )
 
-if(ENABLE_OPENSSL)
-  cinch_add_unit(checksum
-    SOURCES
-      test/checksum.cc
-    LIBRARIES
-      ${OPENSSL_LIBRARIES}
-  )
+#------------------------------------------------------------------------------#
+# index_space
+#------------------------------------------------------------------------------#
+
+set(index_space_blessed_input test/index_space.blessed.gnug)
+
+if(MSVC)
+  set(index_space_blessed_input test/index_space.blessed.msvc)
 endif()
 
-cinch_add_unit(debruijn
+ftest_add_unit(index_space
   SOURCES
-    debruijn.cc
-    test/debruijn.cc
+    test/index_space.cc
+  INPUTS
+    test/index_space.blessed
+    ${index_space_blessed_input}
 )
 
-cinch_add_unit(tuple_walker
+#------------------------------------------------------------------------------#
+# hash
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(hash
   SOURCES
-    test/tuple_walker.cc
+    test/hash.cc
+)
+
+#------------------------------------------------------------------------------#
+# serialize
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(serialize
+  SOURCES
+    test/serialize.cc
+)
+
+#------------------------------------------------------------------------------#
+# set_intersection
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(set_intersection
+  SOURCES
+    test/set_intersection.cc
+)
+
+#------------------------------------------------------------------------------#
+# set_utils
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(set_utils
+  SOURCES
+    test/set_utils.cc
   INPUTS
-    test/tuple_walker.blessed
+    test/set_utils.blessed
+)
+
+#------------------------------------------------------------------------------#
+# simple_id
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(simple_id
+  SOURCES
+    test/simple_id.cc
+)
+
+#------------------------------------------------------------------------------#
+# static_verify
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(static_verify
+  SOURCES
+    test/static_verify.cc
+)
+
+#------------------------------------------------------------------------------#
+# tuple_type_converter
+#------------------------------------------------------------------------------#
+
+set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
+
+if(MSVC)
+  set(tuple_type_converter_blessed_input
+    test/tuple_type_converter.blessed.msvc)
+endif()
+
+ftest_add_unit(tuple_type_converter
+  SOURCES
+    test/tuple_type_converter.cc
+  INPUTS
+    ${tuple_type_converter_blessed_input}
+)
+
+#------------------------------------------------------------------------------#
+# utils_iterator
+#------------------------------------------------------------------------------#
+
+set(iterator_blessed_input test/iterator.blessed.gnug)
+
+if(MSVC)
+  set(iterator_blessed_input test/iterator.blessed.msvc)
+endif()
+
+ftest_add_unit(utils_iterator
+  SOURCES
+    test/iterator.cc
+  INPUTS
+    test/iterator.blessed
+    ${iterator_blessed_input}
+)
+
+#------------------------------------------------------------------------------#
+# geometry
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(point
+  SOURCES geometry/test/point.cc
+)
+
+ftest_add_unit(filling_curve
+  SOURCES geometry/test/filling_curve.cc
 )

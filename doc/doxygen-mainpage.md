@@ -41,14 +41,11 @@ The FleCSI code base is divided into several namespaces:
 * **flecsi::execution**<br>
   FleCSI execution model types and interfaces.
 
+* **flecsi::control**<br>
+  FleCSI control model types and interfaces.
+
 * **flecsi::topology**<br>
   FleCSI graph, mesh, and tree topology data structures and interfaces.
-
-* **flecsi::geometry**<br>
-  FleCSI geometry types and interfaces.
-
-* **flecsi::dmp**<br>
-  FleCSI distributed-memory parallel types and interfaces.
 
 * **flecsi::io**<br>
   FleCSI I/O types and interfaces.
@@ -62,35 +59,24 @@ Documentation is also provide in the corresponding Doxygen
 
 ## Naming Conventions
 
-Because FleCSI makes extensive use of C++ templates, type names are
-designed to indicate whether or not a type is fully qualified (A fully
-qualified type is one for which all template parameters have been
-specified.) Fully qualified types are of the form *type_name_t*, where
-the underscore-t indicates that *type_name_t* is fully resolved. Types
-that are not fully qualified are of the form *type_name_u*, where the
-double-underscore indicates that the type still has unresolved
-parameters. The following code illustrates this convention:
+The suffix `_t` is often used to indicate the specialization of interest
+of a class template of the same name without the suffix:
+
 ```
 // Unqualified type.
 template<
   typename T
 >
-struct type_name_u {};
+struct type_name {};
 
 // Fully-qualified type.
-using type_name_t = type_name_u<double>;
+using type_name_t = type_name<double>;
 ```
-
-## Design Patterns
-
-FleCSI makes use of several formal design patterns. Many of these are
-documented in the [Related Pages](pages.html) section of the documentation.
-
 
 ## More Documentation
 
 This document is intended only as documentation for the FleCSI C++
 interface. The FleCSI Developer and User Guides are available
-[here](https://flecsi.lanl.gov).
+[here](https://flecsi.org).
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

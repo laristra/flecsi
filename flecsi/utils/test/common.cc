@@ -1,20 +1,20 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/test/print_type.h>
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
 
-// includes: other
-#include <cinchtest.h>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/ftest.hh>
 
-// =============================================================================
-// For testing flecsi::utils::function_traits_u
-// =============================================================================
-
-// a class...
 struct MyClass {
   int operator()(float, double, long double) const {
     return 0;
@@ -26,34 +26,33 @@ struct MyClass {
   void memcv(char, int) const volatile {}
 };
 
-// a function...
 inline float
 MyFun(double, int, long) {
   return float(0);
 }
 
-// =============================================================================
-// Test various constructs in flecsi::utils::common.*
-// =============================================================================
+int
+common(int argc, char ** argv) {
 
-TEST(common, all) {
+  FTEST();
+
   // *BITS #defines
-  CINCH_CAPTURE() << FLECSI_ID_PBITS << std::endl;
-  CINCH_CAPTURE() << FLECSI_ID_EBITS << std::endl;
-  CINCH_CAPTURE() << FLECSI_ID_FBITS << std::endl;
-  CINCH_CAPTURE() << FLECSI_ID_GBITS << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << FLECSI_ID_PBITS << std::endl;
+  FTEST_CAPTURE() << FLECSI_ID_EBITS << std::endl;
+  FTEST_CAPTURE() << FLECSI_ID_FBITS << std::endl;
+  FTEST_CAPTURE() << FLECSI_ID_GBITS << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // types
-  print_type<flecsi::utils::id_t>();
-  print_type<FLECSI_COUNTER_TYPE>();
-  print_type<flecsi::utils::counter_t>();
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(flecsi::utils::id_t) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(FLECSI_COUNTER_TYPE) << std::endl;
+  FTEST_CAPTURE() << FTEST_TTYPE(flecsi::utils::counter_t) << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // square
-  CINCH_CAPTURE() << flecsi::utils::square(10) << std::endl;
-  CINCH_CAPTURE() << flecsi::utils::square(20.0) << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << flecsi::utils::square(10) << std::endl;
+  FTEST_CAPTURE() << flecsi::utils::square(20.0) << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // ------------------------
   // Unique ID constructs
@@ -65,19 +64,20 @@ TEST(common, all) {
   EXPECT_TRUE(FLECSI_GENERATED_ID_MAX > 0);
 
   // unique_id_t
-  auto & a = flecsi::utils::unique_id_t<int, 10>::instance();
-  auto & b = flecsi::utils::unique_id_t<int, 10>::instance();
+  struct unique_type_t {};
+  auto & a = flecsi::utils::unique_id<unique_type_t, int, 10>::instance();
+  auto & b = flecsi::utils::unique_id<unique_type_t, int, 10>::instance();
   EXPECT_EQ(&a, &b); // because type is a singleton
 
-  auto & c = flecsi::utils::unique_id_t<int>::instance();
-  auto & d = flecsi::utils::unique_id_t<int>::instance();
+  auto & c = flecsi::utils::unique_id<unique_type_t, int>::instance();
+  auto & d = flecsi::utils::unique_id<unique_type_t, int>::instance();
   EXPECT_EQ(&c, &d); // singleton again
   EXPECT_NE((void *)&c, (void *)&a); // != (different template specializations)
 
-  CINCH_CAPTURE() << a.next() << std::endl;
-  CINCH_CAPTURE() << a.next() << std::endl;
-  CINCH_CAPTURE() << a.next() << std::endl;
-  CINCH_CAPTURE() << std::endl;
+  FTEST_CAPTURE() << a.next() << std::endl;
+  FTEST_CAPTURE() << a.next() << std::endl;
+  FTEST_CAPTURE() << a.next() << std::endl;
+  FTEST_CAPTURE() << std::endl;
 
   // unique_name
   // Just exercise; return value generally changes between runs
@@ -94,18 +94,17 @@ TEST(common, all) {
 
 #ifdef __GNUG__
 #ifdef __PPC64__
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.ppc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.ppc"));
 #else
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.gnug"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.gnug"));
 #endif
 #elif defined(_MSC_VER)
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed.msvc"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.msvc"));
 #else
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("common.blessed"));
+  EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed"));
 #endif
-} // TEST
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+  return 0;
+}
+
+ftest_register_driver(common);

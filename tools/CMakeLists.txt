@@ -134,15 +134,15 @@ if(ENABLE_FLECSIT)
     # FleCSIT dependencies
     #--------------------------------------------------------------------------#
 
-    set(PythonInterp_FIND_VERSION TRUE) # unknown hack to search for versions
-    find_package(PythonInterp 2.7 REQUIRED)
+    find_package(Python REQUIRED COMPONENTS Interpreter)
 
-    if(${PYTHON_VERSION_MAJOR} LESS 3)
-      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(${Python_VERSION_MAJOR} LESS 3)
+      execute_process(COMMAND ${Python_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
     else()
-      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+      execute_process(COMMAND ${Python_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
     endif()
 
+    message(STATUS "PYTHON: ${PYTHON_INSTDIR}")
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
         DESTINATION ${PYTHON_INSTDIR}
         FILES_MATCHING PATTERN "*.py")
@@ -169,41 +169,6 @@ if(ENABLE_FLECSIT)
     )
 
 endif()
-
-#------------------------------------------------------------------------------#
-# Handle script and source files for FleCSIT tool
-#------------------------------------------------------------------------------#
-
-# Copy the auxiliary files for local development
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
-  COMMAND ${CMAKE_COMMAND} -E copy
-    ${_runtime_path}/runtime_main.cc
-    ${CMAKE_BINARY_DIR}/share/runtime_main.cc
-    DEPENDS ${_runtime_path}/runtime_main.cc
-    COMMENT "Copying runtime main file")
-
-add_custom_target(runtime_main ALL
-  DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_main.cc)
-
-set_target_properties(runtime_main PROPERTIES FOLDER "Dependencies")
-
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
-  COMMAND ${CMAKE_COMMAND} -E copy
-    ${_runtime_path}/runtime_driver.cc
-    ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
-    DEPENDS ${_runtime_path}/runtime_driver.cc
-    COMMENT "Copying runtime driver file")
-
-add_custom_target(runtime_driver ALL
-  DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_driver.cc)
-
-set_target_properties(runtime_driver PROPERTIES FOLDER "Dependencies")
-
-# Install the auxiliary files
-install(FILES ${_runtime_path}/runtime_main.cc
-  DESTINATION ${FLECSI_SHARE_DIR}/runtime)
-install(FILES ${_runtime_path}/runtime_driver.cc
-  DESTINATION ${FLECSI_SHARE_DIR}/runtime)
 
 #------------------------------------------------------------------------------#
 # FleCSI environment module

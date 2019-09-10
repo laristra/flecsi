@@ -1,49 +1,25 @@
-/*~-------------------------------------------------------------------------~~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2017 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-// includes: flecsi
-#include <flecsi/utils/common.h>
-#include <flecsi/utils/const_string.h>
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
 
-// includes: C++
-#include <iostream>
+#include <flecsi/utils/common.hh>
+#include <flecsi/utils/const_string.hh>
+#include <flecsi/utils/ftest.hh>
 
-// includes: other
-#include <cinchtest.h>
+int
+const_string(int argc, char ** argv) {
 
-// =============================================================================
-// Sanity check
-// =============================================================================
-
-// print_test
-int32_t
-print_test(flecsi::utils::const_string_t && s) {
-  std::cout << "hash: " << s.hash() << std::endl;
-  return 0;
-} // print_test
-
-// TEST
-TEST(const_string, sanity) {
-  print_test("hello world");
-} // TEST
-
-// =============================================================================
-// More-complete exercising of const_string.h's constructs
-// =============================================================================
-
-// TEST
-TEST(const_string, all) {
+  FTEST();
 
   // ------------------------
   // const_string_t
@@ -103,52 +79,7 @@ TEST(const_string, all) {
   const flecsi::utils::const_string_hasher_t hasher{};
   EXPECT_EQ(const_string_t("abc").hash(), hasher(const_string_t("abc")));
 
-} // TEST
+  return 0;
+}
 
-/*----------------------------------------------------------------------------*
- * Cinch test Macros
- *
- *  ==== I/O ====
- *  CINCH_CAPTURE()              : Insertion stream for capturing output.
- *                                 Captured output can be written or
- *                                 compared using the macros below.
- *
- *    EXAMPLE:
- *      CINCH_CAPTURE() << "My value equals: " << myvalue << std::endl;
- *
- *  CINCH_COMPARE_BLESSED(file); : Compare captured output with
- *                                 contents of a blessed file.
- *
- *  CINCH_WRITE(file);           : Write captured output to file.
- *
- * Google Test Macros
- *
- * Basic Assertions:
- *
- *  ==== Fatal ====             ==== Non-Fatal ====
- *  ASSERT_TRUE(condition);     EXPECT_TRUE(condition)
- *  ASSERT_FALSE(condition);    EXPECT_FALSE(condition)
- *
- * Binary Comparison:
- *
- *  ==== Fatal ====             ==== Non-Fatal ====
- *  ASSERT_EQ(val1, val2);      EXPECT_EQ(val1, val2)
- *  ASSERT_NE(val1, val2);      EXPECT_NE(val1, val2)
- *  ASSERT_LT(val1, val2);      EXPECT_LT(val1, val2)
- *  ASSERT_LE(val1, val2);      EXPECT_LE(val1, val2)
- *  ASSERT_GT(val1, val2);      EXPECT_GT(val1, val2)
- *  ASSERT_GE(val1, val2);      EXPECT_GE(val1, val2)
- *
- * String Comparison:
- *
- *  ==== Fatal ====                     ==== Non-Fatal ====
- *  ASSERT_STREQ(expected, actual);     EXPECT_STREQ(expected, actual)
- *  ASSERT_STRNE(expected, actual);     EXPECT_STRNE(expected, actual)
- *  ASSERT_STRCASEEQ(expected, actual); EXPECT_STRCASEEQ(expected, actual)
- *  ASSERT_STRCASENE(expected, actual); EXPECT_STRCASENE(expected, actual)
- *----------------------------------------------------------------------------*/
-
-/*~------------------------------------------------------------------------~--*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/
+ftest_register_driver(const_string);

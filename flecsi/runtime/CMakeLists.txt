@@ -8,24 +8,61 @@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
 # //       ///  //////   //////  ////////  //
 #
-# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# Copyright (c) 2016, Triad National Security, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
 
 set(runtime_HEADERS
-  flecsi_runtime_execution_policy.h
-  flecsi_runtime_context_policy.h
-  flecsi_runtime_entity_storage_policy.h
-  flecsi_runtime_storage_policy.h
-  flecsi_runtime_data_handle_policy.h
-  flecsi_runtime_data_client_handle_policy.h
-  flecsi_runtime_data_policy.h
-  flecsi_runtime_topology_policy.h
-  flecsi_runtime_set_topology_policy.h
-  types.h
-  PARENT_SCOPE
+  context.hh
+  types.hh
+  backend.hh
 )
 
 set(runtime_SOURCES
+)
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+  set(runtime_HEADERS
+    ${runtime_HEADERS}
+    legion/context.hh
+    legion/mapper.hh
+    legion/tasks.hh
+  )
+
+  set(runtime_SOURCES
+    ${runtime_SOURCES}
+    legion/context.cc
+  )
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+
+  set(runtime_HEADERS
+    ${runtime_HEADERS}
+    mpi/context.hh
+  )
+
+  set(runtime_SOURCES
+    ${runtime_SOURCES}
+    mpi/context.cc
+  )
+
+endif()
+
+#------------------------------------------------------------------------------#
+# Export header list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(runtime_HEADERS
+  ${runtime_HEADERS}
+  PARENT_SCOPE
+)
+
+#------------------------------------------------------------------------------#
+# Export source list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(runtime_SOURCES
+  ${runtime_SOURCES}
   PARENT_SCOPE
 )

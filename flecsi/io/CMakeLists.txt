@@ -8,47 +8,49 @@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
 # //       ///  //////   //////  ////////  //
 #
-# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# Copyright (c) 2016, Triad National Security, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------#
-# Add header files. Note that these will be "exported" to the parent
-# scope below.
-#------------------------------------------------------------------------------#
+if(ENABLE_HDF5)
 
 set(io_HEADERS
-  io.h
-  io_base.h
-  simple_definition.h
+  backend.hh
 )
 
-#------------------------------------------------------------------------------#
-# Runtime-specific files.
-#
-# UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
-# runtime specific and can be configured for whichever runtime is active.
-#------------------------------------------------------------------------------#
+set(io_SOURCES
+)
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  set(UNIT_POLICY SERIAL)
-  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
+  set(io_HEADERS
+    legion/io_policy.hh
+    ${io_HEADERS}
+  )
 
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-
-  set(UNIT_POLICY LEGION)
-  set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
+  set(io_SOURCES
+    legion/io_policy.cc
+    ${io_SOURCES}
+  )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-  set(UNIT_POLICY LEGION)
-  set(RUNTIME_DRIVER mpi/runtime_driver.cc)
+  set(io_HEADERS
+    ${io_HEADERS}
+  )
+
+  set(io_SOURCES
+    ${io_SOURCES}
+  )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
-  set(UNIT_POLICY HPX)
-  set(RUNTIME_DRIVER hpx/runtime_driver.cc)
+  set(io_HEADERS ${io_HEADERS}
+  )
+
+  set(io_SOURCES
+    ${io_SOURCES}
+  )
 
 endif()
 
@@ -57,8 +59,8 @@ endif()
 #------------------------------------------------------------------------------#
 
 set(io_HEADERS
-    ${io_HEADERS}
-    PARENT_SCOPE
+  ${io_HEADERS}
+  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
@@ -66,29 +68,30 @@ set(io_HEADERS
 #------------------------------------------------------------------------------#
 
 set(io_SOURCES
-    ${io_SOURCES}
-    PARENT_SCOPE
+  ${io_SOURCES}
+  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(simple_definition
-  SOURCES test/simple_definition.cc
-  INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+ftest_add_unit(io
+  SOURCES
+    test/legion/io.cc
+)
+endif()
+        
+ftest_add_unit(io_index
+  SOURCES
+    test/io_index.cc
 )
 
-set(io_HEADERS
-  ${io_HEADERS}
-  io_exodus.h
-  PARENT_SCOPE
+ftest_add_unit(io_metadata
+  SOURCES
+    test/io_metadata.cc
 )
-
-cinch_add_unit(io
-  SOURCES test/io.cc
-)
-
-set(io_SOURCES
-  PARENT_SCOPE
-  )
+                
+endif()
