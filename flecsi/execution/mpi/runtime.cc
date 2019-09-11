@@ -75,7 +75,7 @@ flecsi_mpi_initialize(int argc, char ** argv, variables_map & vm) {
   flecsi::runtime::context_t::instance().set_colors(size);
 
 #if defined(FLECSI_ENABLE_FLOG)
-  flog_initialize(__flog_tags);
+  flog_initialize(__flog_tags, __flog_verbose, __flog_process);
 #endif
 
   return 0;
