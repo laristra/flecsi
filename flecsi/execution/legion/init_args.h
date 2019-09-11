@@ -128,20 +128,10 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     auto & h = a.handle;
 
     // FIXME this no longer does anything under control replication
-    if(h.state < SPECIALIZATION_SPMD_INIT) {
-      Legion::RegionRequirement rr(h.entire_region, privilege_mode(PERMISSIONS),
-        EXCLUSIVE, h.entire_region);
-      rr.add_field(h.fid);
-      region_reqs.push_back(rr);
-    }
-    else {
-      clog_assert(PERMISSIONS == size_t(ro), "you are not allowed  \
-            to modify global data in specialization_spmd_init or driver");
-      Legion::RegionRequirement rr(
-        h.entire_region, READ_ONLY, EXCLUSIVE, h.entire_region);
-      rr.add_field(h.fid);
-      region_reqs.push_back(rr);
-    } // if
+    Legion::RegionRequirement rr(
+      h.entire_region, privilege_mode(PERMISSIONS), EXCLUSIVE, h.entire_region);
+    rr.add_field(h.fid);
+    region_reqs.push_back(rr);
   }
 
   template<typename T, size_t PERMISSIONS>
