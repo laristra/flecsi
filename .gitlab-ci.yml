@@ -2,11 +2,6 @@
 # Global Settings #
 ###################
 
-only:
-  - merge_requests
-  - master
-  - feature/refactor
-
 stages:
   - Env
   - Canary
@@ -131,6 +126,10 @@ before_script:
 
 .general_template: &general_def
   retry: 2
+  only:
+    - merge_requests
+    - master
+    - feature/refactor
 
 .cache_template: &cache_def
   cache:
