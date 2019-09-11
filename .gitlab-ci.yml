@@ -25,7 +25,7 @@ variables:
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   CCACHE_UMASK: 000
   DISTRO: "centOS"
-  RUNTIME: "mpi"
+  RUNTIME: "legion"
   BUILD_TYPE: "Debug"
   CC: "gcc"
   CXX: "g++"
@@ -179,10 +179,8 @@ before_script:
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz backend=mpi ^openmpi;
-      spack install flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz backend=mpi ^mpich;
-      spack install flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz backend=legion ^openmpi;
-      spack install flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz backend=legion ^mpich;
+      spack install ${FLECSI_SPACK_SPEC}openmpi;
+      spack install ${FLECSI_SPACK_SPEC}mpich;
       ) 200>${DEPS_LOCK}
 
 ###############
