@@ -35,7 +35,7 @@
 
 namespace flecsi::runtime {
 
-struct context_t : context<context_t> {
+struct context_t : context {
 
   /*!
     Documnetation for this interface is in the top-level context type.
