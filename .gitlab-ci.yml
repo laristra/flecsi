@@ -11,45 +11,74 @@ stages:
   - Apps
 
 variables:
+  #CI_DEBUG_TRACE: "true"
   GET_SOURCES_ATTEMPTS: 10
   ARTIFACT_DOWNLOAD_ATTEMPTS: 10
   RESTORE_CACHE_ATTEMPTS: 10
   GIT_STRATEGY: fetch
   GLOBAL_CI_VARIABLE: "global_ci_value"
-  CI_JOB_NAME_TMP: ${CI_JOB_NAME}
-  CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME_TMP#*:}
-  #CI_DEBUG_TRACE: "true"
   http_proxy: "http://proxyout.lanl.gov:8080"
   https_proxy: "http://proxyout.lanl.gov:8080"
   ftp_proxy: "http://proxyout.lanl.gov:8080"
   no_proxy: "lanl.gov"
-  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
-  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
-  lock_fd: 314
   GIT_SUBMODULE_STRATEGY: recursive
   CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
   CCACHE_UMASK: 000
   DISTRO: "centOS"
-  RUNTIME: "mpi"
+  RUNTIME: "legion"
   BUILD_TYPE: "Debug"
-  MPI_PACKAGE: ""
   CC: "gcc"
   CXX: "g++"
-  CXXFLAGS: "-Werror -Wno-deprecated-declarations"
+  CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
   IGNORE_NOCI: "FALSE"
+  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
+  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
+  #lock_fd: 314
+  FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
+  FLECSI_MPI_PACKAGE: ""
+  FLECSI_INTEL_VERSION: "19.0.2"
+  FLECSI_CLANG_VERSION: "8.0.1"
+  FLECSI_GCC_VERSION: "7.3.0"
+  FLECSI_PYTHON_VERSION: "3.5.1"
+  FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/flecsi-deps-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
+  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz backend=${RUNTIME} ^${FLECSI_MPI_PACKAGE}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
-  - module load python/3.5.1
-  - module load cmake/3.12.4
-  - module load intel/19.0.2
-  - module load clang/7.0.0
+  - module load python/${FLECSI_PYTHON_VERSION}
+  - module load clang/7.0.0 # for formatting purpose
   - module unload gcc
-  - module load gcc/7.3.0
-  - source ${SPACK_ROOT}/share/spack/setup-env.sh || /bin/true
-  - spack load -r flecsi-deps%gcc@7.3.0 ~graphviz ^${MPI_PACKAGE} || /bin/true
+  - module load gcc/${FLECSI_GCC_VERSION}
+  - echo ${FLECSI_ENV_SOURCE_FILE}
+  - echo ${FLECSI_SPACK_SPEC}
+  - rm ${FLECSI_ENV_SOURCE_FILE} || /bin/true
+  - |
+    ( flock -e 200
+    source ${SPACK_ROOT}/share/spack/setup-env.sh;
+    # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true;
+    spack repo rm laristra_flecsi || /bin/true ;
+    spack repo add ${CI_PROJECT_DIR}/spack-repo;
+    spack repo list;
+    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true;
+    ) 200>${DEPS_LOCK}
+  - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
+  - |
+    if [[ ${CI_JOB_NAME} =~ "clang" ]];
+    then
+      module unload clang;
+      module load clang/${FLECSI_CLANG_VERSION};
+      #export CC=clang;
+      #export CXX=clang++;
+    elif [[ ${CI_JOB_NAME} =~ "intel" ]];
+    then
+      module load intel/${FLECSI_INTEL_VERSION};
+      #export CC=icc;
+      #export CXX=icpc;
+    fi
   - module list
+  - echo $CC;
+  - echo $CXX;
 
 ##########################
 # Build Matrix Variables #
@@ -83,10 +112,10 @@ before_script:
   BUILD_TYPE: "Release"
 
 .openmpi: &openmpi
-  MPI_PACKAGE: "openmpi"
+  FLECSI_MPI_PACKAGE: "openmpi"
 
 .mpich: &mpich
-  MPI_PACKAGE: "mpich"
+  FLECSI_MPI_PACKAGE: "mpich"
 
 .ignore_noci: &ignore_noci
   IGNORE_NOCI: "TRUE"
@@ -97,6 +126,10 @@ before_script:
 
 .general_template: &general_def
   retry: 2
+  only:
+    - merge_requests
+    - master
+    - feature/refactor
 
 .cache_template: &cache_def
   cache:
@@ -134,26 +167,24 @@ before_script:
   <<: *job_def
   stage: Env
   script: &env_script
-    - mkdir -p build
-    - cd ${CI_PROJECT_DIR}/build/
     - |
       if [[ ${I_WANT_TO_CLEAN_UP} ]];
       then
         rm -rf ${SPACK_ROOT}/*;
       fi
     - |
-      ( flock -s 200
+      ( flock -e 200
       if [[ ! -d ${SPACK_ROOT} ]];
       then
         git init --shared=group ${SPACK_ROOT};
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
       fi;
-      source ${SPACK_ROOT}/share/spack/setup-env.sh
+      source ${SPACK_ROOT}/share/spack/setup-env.sh;
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install flecsi-deps%gcc@7.3.0 ~graphviz backend=legion ^openmpi;
-      spack install flecsi-deps%gcc@7.3.0 ~graphviz backend=legion ^mpich;
+      spack install ${FLECSI_SPACK_SPEC}openmpi;
+      spack install ${FLECSI_SPACK_SPEC}mpich;
       ) 200>${DEPS_LOCK}
 
 ###############
@@ -180,14 +211,8 @@ before_script:
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_UNIT_TESTS=ON \
-        -DENABLE_PARMETIS=ON \
-        -DENABLE_COLORING=ON \
-        -DENABLE_DOXYGEN=OFF \
-        -DENABLE_FLECSTAN=$([ "$CI_RUNNER_TAGS" = "shell" ] && echo OFF || echo ON) \
-        -DENABLE_DOCUMENTATION=OFF \
-        -DENABLE_COVERAGE_BUILD=ON \
         ..
-    make -k VERBOSE=1 -j2 -l80
+    make -k VERBOSE=1 -j2 -l40
     make install DESTDIR=${CI_PROJECT_DIR}/build/install
     make install
     ccache -s
@@ -304,25 +329,31 @@ env:
 # Canary Jobs #
 ###############
 
-canary:centOS_mpi:
+canary:centOS_mpich_mpi:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_mpi
+    <<: *buildtype_debug
+    <<: *compiler_gcc
     <<: *mpich
 
-canary:centOS_legion:
+canary:centOS_mpich_legion:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_legion
+    <<: *buildtype_debug
+    <<: *compiler_gcc
     <<: *mpich
 
-canary:centOS_hpx:
+canary:centOS_mpich_hpx:
   extends: .canary
   <<: *shell_def
   variables:
     <<: *runtime_hpx
+    <<: *buildtype_debug
+    <<: *compiler_gcc
     <<: *mpich
   allow_failure: true 
 
@@ -361,6 +392,7 @@ build:centOS_mpi_intel:
   extends: build:centOS_mpi
   variables:
     <<: *compiler_intel
+  allow_failure: true
 
 build:centOS_mpi_intel_release:
   extends: build:centOS_mpi_intel
@@ -398,6 +430,7 @@ build:centOS_mpich_mpi_intel:
   extends: build:centOS_mpich_mpi
   variables:
     <<: *compiler_intel
+  allow_failure: true
 
 build:centOS_mpich_mpi_intel_release:
   extends: build:centOS_mpich_mpi_intel
@@ -425,6 +458,7 @@ build:centOS_legion_clang:
   extends: build:centOS_legion
   variables:
     <<: *compiler_clang
+  allow_failure: true
 
 build:centOS_legion_clang_release:
   extends: build:centOS_legion_clang
@@ -435,6 +469,7 @@ build:centOS_legion_intel:
   extends: build:centOS_legion
   variables:
     <<: *compiler_intel
+  allow_failure: true
 
 build:centOS_legion_intel_release:
   extends: build:centOS_legion_intel
@@ -462,6 +497,7 @@ build:centOS_mpich_legion_clang:
   extends: build:centOS_mpich_legion
   variables:
     <<: *compiler_clang
+  allow_failure: true
 
 build:centOS_mpich_legion_clang_release:
   extends: build:centOS_mpich_legion_clang
@@ -472,6 +508,7 @@ build:centOS_mpich_legion_intel:
   extends: build:centOS_mpich_legion
   variables:
     <<: *compiler_intel
+  allow_failure: true
 
 build:centOS_mpich_legion_intel_release:
   extends: build:centOS_mpich_legion_intel
