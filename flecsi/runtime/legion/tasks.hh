@@ -76,6 +76,7 @@ top_level_task(const Legion::Task * task,
 #endif
 
   context_.initialize_global_topology();
+  context_.initialize_default_index_coloring();
   context_.initialize_default_index_topology();
 
   auto args = runtime->get_input_args();

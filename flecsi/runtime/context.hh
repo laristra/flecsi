@@ -60,18 +60,6 @@ struct context {
     Public types.
    *--------------------------------------------------------------------------*/
 
-  using topology_registration_function_t = std::function<void(size_t)>;
-  using topology_registration_entry_t =
-    std::pair<field_id_t, topology_registration_function_t>;
-  using topology_registration_map_t =
-    std::unordered_map<size_t, topology_registration_entry_t>;
-
-  using field_registration_function_t = std::function<void(size_t, size_t)>;
-  using field_registration_entry_t =
-    std::pair<field_id_t, field_registration_function_t>;
-  using field_registration_map_t =
-    std::unordered_map<size_t, field_registration_entry_t>;
-
   /*!
     This type allows the storage of field information per storage class. The
     size_t key is the storage class.
@@ -260,6 +248,24 @@ struct context {
   } // register_function
 
   /*--------------------------------------------------------------------------*
+    Coloring interface.
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    Return the index coloring associated with \em identifier.
+
+    @param identifier Index coloring identifier.
+   */
+
+  topology::index_topology_t::coloring_t const & index_coloring(size_t identifier) {
+    auto const & cita = index_colorings_.find(identifier);
+    flog_assert(cita != index_colorings_.end(),
+      "index coloring lookup failed for " << identifier);
+    
+    return cita->second;
+  } // index_coloring
+
+  /*--------------------------------------------------------------------------*
     Topology interface.
    *--------------------------------------------------------------------------*/
 
@@ -425,7 +431,6 @@ currently only for unstructured mesh topologies.
 protected:
   context() = default;
 
-private:
 #ifdef DOXYGEN
   /*
     Clear the runtime state of the context.
@@ -456,6 +461,14 @@ private:
    *--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, void *> function_registry_;
+
+  /*--------------------------------------------------------------------------*
+    Coloring data members.
+   *--------------------------------------------------------------------------*/
+
+  std::unordered_map<size_t, topology::index_topology_t::coloring_t> index_colorings_;  
+  std::unordered_map<size_t, topology::canonical_topology_base_t::coloring_t>
+    canonical_colorings_;  
 
   /*--------------------------------------------------------------------------*
     Topology data members.

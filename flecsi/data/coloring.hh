@@ -19,12 +19,19 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/topology/internal/canonical.hh>
-#include <flecsi/topology/internal/index.hh>
-#include <flecsi/topology/ntree/types.hh>
-#include <flecsi/topology/set/types.hh>
-#include <flecsi/topology/structured_mesh/types.hh>
-//#include <flecsi/topology/unstructured_mesh/types.hh>
+#include <flecsi/data/data_reference.hh>
+#include <flecsi/runtime/types.hh>
 
-// FIXME: These files should be included directly where they are needed
-// once the structure is complete.
+namespace flecsi {
+namespace data {
+
+template<typename TOPOLOGY_TYPE>
+struct coloring_reference : public data_reference_base_t {
+
+  coloring_reference()
+    : data_reference_base_t(unique_cid_t::instance().next()) {}
+
+}; // struct coloring_reference
+
+} // namespace data
+} // namespace flecsi

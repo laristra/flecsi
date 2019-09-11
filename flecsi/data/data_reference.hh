@@ -21,12 +21,17 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
-#include <flecsi/runtime/types.hh>
 #endif
+
+#include <flecsi/runtime/types.hh>
 
 namespace flecsi {
 namespace data {
+
+#if 0
+template<typename TOPOLOGY_TYPE>
+struct topology_instance;
+#endif
 
 /*!
   The data_reference_base_t type is the base of all FleCSI data model types.
@@ -42,22 +47,10 @@ struct data_reference_base_t {
     return identifier_;
   } // identifier
 
-private:
+protected:
   size_t identifier_;
 
 }; // struct data_reference_base_t
-
-/*!
-  The topology_reference captures the topology type that is required for
-  dependent field references.
- */
-
-template<typename TOPOLOGY_TYPE>
-struct topology_reference : public data_reference_base_t {
-  using topology_t = TOPOLOGY_TYPE;
-
-  topology_reference(size_t identifier) : data_reference_base_t(identifier) {}
-}; // struct topology_reference
 
 /*!
   The field_reference_t type is used to reference fields. It adds a \em

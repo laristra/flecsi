@@ -20,7 +20,7 @@
   specializations for accessors and topologies.
  */
 
-#include <flecsi/data/legion/topologies.hh>
+#include <flecsi/data/legion/topology_traits.hh>
 
 namespace flecsi {
 namespace data {
@@ -33,16 +33,16 @@ struct legion_data_policy_t {
 
   template<typename TOPOLOGY_TYPE>
   static void create(
-    topology_reference<TOPOLOGY_TYPE> const & topology_reference,
-    typename TOPOLOGY_TYPE::coloring_t const & coloring) {
-    legion::topology_instance<TOPOLOGY_TYPE>::create(
-      topology_reference, coloring);
+    data_reference_base_t const & topology_reference,
+    data_reference_base_t const & coloring_reference) {
+    legion::topology_traits<TOPOLOGY_TYPE>::create(
+      topology_reference, coloring_reference);
   } // create
 
   template<typename TOPOLOGY_TYPE>
   static void destroy(
-    topology_reference<TOPOLOGY_TYPE> const & topology_reference) {
-    legion::topology_instance<TOPOLOGY_TYPE>::destroy(topology_reference);
+    data_reference_base_t const & topology_reference) {
+    legion::topology_traits<TOPOLOGY_TYPE>::destroy(topology_reference);
   } // destroy
 
 }; // struct legion_data_policy_t
