@@ -36,6 +36,8 @@
 #include <boost/program_options.hpp>
 using namespace boost::program_options;
 
+using namespace flecsi;
+
 void
 flecsi_mpi_add_options(options_description & desc) {
   options_description flecsi("FleCSI Runtime Options");
