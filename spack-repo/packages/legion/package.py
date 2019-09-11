@@ -67,6 +67,8 @@ class Legion(CMakePackage):
 
         if self.spec.variants['build_type'].value == 'Debug':
             cmake_cxx_flags.append('-DDEBUG_REALM', '-DDEBUG_LEGION', '-ggdb')
+        else:
+            options.append('-DCMAKE_BUILD_TYPE=Release')
 
         options.append('-DCMAKE_CXX_FLAGS=%s' % (" ".join(cmake_cxx_flags)))
 
