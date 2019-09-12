@@ -68,9 +68,8 @@ struct mpi_context_policy_t {
       : type_size(type_size), num_exclusive(num_exclusive),
         num_shared(num_shared), num_ghost(num_ghost),
         num_total(num_exclusive + num_shared + num_ghost),
-        max_entries_per_index(max_entries_per_index),
-        new_entries(num_total), num_exclusive_entries(0) {
-    }
+        max_entries_per_index(max_entries_per_index), new_entries(num_total),
+        num_exclusive_entries(0) {}
 
     size_t type_size;
 

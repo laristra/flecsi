@@ -45,17 +45,10 @@ struct legion_sparse_data_handle_policy_t {
   size_t index_space;
   size_t data_client_hash;
 
-  size_t reserve;
   size_t max_entries_per_index;
 
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion entries_entire_region;
-  Legion::LogicalPartition entries_color_parition;
-  Legion::LogicalPartition entries_exclusive_lp;
-  Legion::LogicalPartition entries_shared_lp;
-  Legion::LogicalPartition entries_ghost_lp;
-
   Legion::LogicalRegion offsets_entire_region;
   Legion::LogicalPartition offsets_color_partition;
   Legion::LogicalPartition offsets_exclusive_lp;
@@ -63,7 +56,6 @@ struct legion_sparse_data_handle_policy_t {
   Legion::LogicalPartition offsets_ghost_lp;
 
   Legion::LogicalPartition ghost_owners_offsets_lp;
-  Legion::LogicalPartition ghost_owners_entries_lp;
 
   Legion::LogicalRegion metadata_entire_region;
   Legion::LogicalPartition metadata_lp;

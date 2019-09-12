@@ -107,16 +107,6 @@ public:
     pi_.end[2] = pi_.end[1] + num_ghost;
   }
 
-  size_t commit(commit_info_t * ci) {
-    assert(new_entries_ && "uninitialized mutator");
-
-    size_t num_exclusive_entries = ci->entries[1] - ci->entries[0];
-
-    // no longer needed - but return a reasonable value just in case
-
-    return num_exclusive_entries;
-  } // commit
-
   size_t num_exclusive() const {
     return pi_.count[0];
   }

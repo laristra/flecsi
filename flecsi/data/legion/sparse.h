@@ -127,25 +127,15 @@ struct storage_class_u<ragged> {
         << index_space);
 
     const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-    const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
     handle_u<DATA_TYPE, 0, 0, 0> h;
 
-    h.reserve = exclusive_reserve;
     h.max_entries_per_index = max_entries_per_index;
 
     h.offsets_entire_region = ism[index_space].entire_region;
     h.offsets_exclusive_lp = ism[index_space].exclusive_lp;
     h.offsets_shared_lp = ism[index_space].shared_lp;
     h.offsets_ghost_lp = ism[index_space].ghost_lp;
-
-    // TODO: formalize sparse offset
-    constexpr size_t sparse_offset = 8192;
-
-    h.entries_entire_region = ism[index_space + sparse_offset].entire_region;
-    h.entries_exclusive_lp = ism[index_space + sparse_offset].exclusive_lp;
-    h.entries_shared_lp = ism[index_space + sparse_offset].shared_lp;
-    h.entries_ghost_lp = ism[index_space + sparse_offset].ghost_lp;
 
     h.metadata_entire_region = context.sparse_metadata().entire_region;
     h.metadata_lp = context.sparse_metadata().color_partition;
@@ -166,13 +156,6 @@ struct storage_class_u<ragged> {
     //      } // for
 
     h.ghost_owners_offsets_lp = ism[index_space].ghost_owners_lp;
-
-    h.ghost_owners_offsets_lp = ism[index_space].ghost_owners_lp;
-
-    h.ghost_owners_entries_lp =
-      ism[index_space + sparse_offset].ghost_owners_lp;
-
-    h.entries_color_parition = ism[index_space + sparse_offset].primary_lp;
 
     h.global_to_local_color_map_ptr =
       &ism[index_space].global_to_local_color_map;
@@ -211,7 +194,6 @@ struct storage_class_u<ragged> {
         << index_space);
 
     const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-    const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
     mutator_handle_u<DATA_TYPE> h(max_entries_per_index, slots);
 
@@ -219,14 +201,6 @@ struct storage_class_u<ragged> {
     h.offsets_exclusive_lp = ism[index_space].exclusive_lp;
     h.offsets_shared_lp = ism[index_space].shared_lp;
     h.offsets_ghost_lp = ism[index_space].ghost_lp;
-
-    // TODO: formalize sparse offset
-    constexpr size_t sparse_offset = 8192;
-
-    h.entries_entire_region = ism[index_space + sparse_offset].entire_region;
-    h.entries_exclusive_lp = ism[index_space + sparse_offset].exclusive_lp;
-    h.entries_shared_lp = ism[index_space + sparse_offset].shared_lp;
-    h.entries_ghost_lp = ism[index_space + sparse_offset].ghost_lp;
 
     h.metadata_entire_region = context.sparse_metadata().entire_region;
     h.metadata_lp = context.sparse_metadata().color_partition;
@@ -239,9 +213,6 @@ struct storage_class_u<ragged> {
 
     //      h.ghost_owners_offsets_subregions =
     //        ism[index_space].ghost_owners_subregions;
-
-    h.ghost_owners_entries_lp =
-      ism[index_space + sparse_offset].ghost_owners_lp;
 
     h.global_to_local_color_map_ptr =
       &ism[index_space].global_to_local_color_map;

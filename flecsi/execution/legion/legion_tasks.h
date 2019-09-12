@@ -313,21 +313,12 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
     size_t data_client_hash;
     size_t index_space;
     bool sparse;
-    size_t reserve;
     size_t max_entries_per_index;
   };
   args_t args = *(args_t *)task->args;
 
-  if(!args.sparse) {
-    clog_assert(regions.size() == 2, "ghost_copy_task requires 2 regions");
-    clog_assert(
-      task->regions.size() == 2, "ghost_copy_task requires 2 regions");
-  }
-  else {
-    clog_assert(regions.size() == 4, "ghost_copy_task requires 2 regions");
-    clog_assert(
-      task->regions.size() == 4, "ghost_copy_task requires 2 regions");
-  }
+  clog_assert(regions.size() == 2, "ghost_copy_task requires 2 regions");
+  clog_assert(task->regions.size() == 2, "ghost_copy_task requires 2 regions");
 
   clog_assert((task->regions[1].privilege_fields.size() -
                 task->regions[0].privilege_fields.size()) == 1,
@@ -414,11 +405,6 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
 
   } // if
 } // ghost_copy_task
-
-flecsi_internal_legion_task(sparse_set_owner_position_task, void) {
-
-  // no longer needed
-}
 
 /*!
  Owners subregions task returns subrects required from every neighbor

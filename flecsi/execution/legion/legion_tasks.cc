@@ -123,20 +123,6 @@ flecsi_internal_register_legion_task(ghost_copy_task,
   index | leaf);
 
 /*!
-  Register sparse_set_owner_position_task task.
-
-  \remark The translation unit that contains this call will not be
-         necessary with C++17, as it will be possible to move this call
-         into the header file using inline variables.
-
-  @ingroup legion-execution
- */
-
-flecsi_internal_register_legion_task(sparse_set_owner_position_task,
-  processor_type_t::loc,
-  index | leaf);
-
-/*!
   Register owners_subregions task.
 
   \remark The translation unit that contains this call will not be

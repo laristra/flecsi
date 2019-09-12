@@ -44,16 +44,9 @@ struct legion_mutator_handle_policy_t {
   size_t index_space;
   size_t data_client_hash;
   size_t slots;
-  size_t reserve;
 
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion entries_entire_region;
-  Legion::LogicalPartition entries_color_parition;
-  Legion::LogicalPartition entries_exclusive_lp;
-  Legion::LogicalPartition entries_shared_lp;
-  Legion::LogicalPartition entries_ghost_lp;
-
   Legion::LogicalRegion offsets_entire_region;
   Legion::LogicalPartition offsets_color_partition;
   Legion::LogicalPartition offsets_exclusive_lp;
@@ -67,8 +60,6 @@ struct legion_mutator_handle_policy_t {
 
   Legion::LogicalPartition ghost_owners_offsets_lp;
   //  std::vector<Legion::LogicalRegion> ghost_owners_offsets_subregions;
-
-  Legion::LogicalPartition ghost_owners_entries_lp;
 
   Legion::Context context;
   Legion::Runtime * runtime;
