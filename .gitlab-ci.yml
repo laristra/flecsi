@@ -31,6 +31,7 @@ variables:
   CXX: "g++"
   CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
   IGNORE_NOCI: "FALSE"
+  GASNET_BACKTRACE: 1
   SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
   DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
   #lock_fd: 314
@@ -468,6 +469,7 @@ build:centOS_legion_intel:
   extends: build:centOS_legion
   variables:
     <<: *compiler_intel
+  allow_failure: true 
 
 build:centOS_legion_intel_release:
   extends: build:centOS_legion_intel
@@ -505,6 +507,7 @@ build:centOS_mpich_legion_intel:
   extends: build:centOS_mpich_legion
   variables:
     <<: *compiler_intel
+  allow_failure: true 
 
 build:centOS_mpich_legion_intel_release:
   extends: build:centOS_mpich_legion_intel
