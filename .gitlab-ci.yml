@@ -60,7 +60,7 @@ before_script:
     spack repo rm laristra_flecsi || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
-    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true;
+    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}%gcc@${FLECSI_GCC_VERSION}" || /bin/true;
     ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
@@ -179,8 +179,8 @@ before_script:
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install --only dependencies ${FLECSI_SPACK_SPEC}openmpi;
-      spack install --only dependencies ${FLECSI_SPACK_SPEC}mpich;
+      spack install --only dependencies ${FLECSI_SPACK_SPEC}openmpi%gcc@${FLECSI_GCC_VERSION};
+      spack install --only dependencies ${FLECSI_SPACK_SPEC}mpich%gcc@${FLECSI_GCC_VERSION};
       ) 200>${DEPS_LOCK}
 
 ###############
