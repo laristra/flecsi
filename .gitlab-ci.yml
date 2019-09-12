@@ -121,7 +121,7 @@ before_script:
 #######################
 
 .general_template: &general_def
-  retry: 2
+  retry: 1
   only:
     - merge_requests
     - master
