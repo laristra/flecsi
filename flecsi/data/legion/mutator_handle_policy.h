@@ -35,8 +35,6 @@ struct legion_mutator_handle_policy_t {
   legion_mutator_handle_policy_t(
     const legion_mutator_handle_policy_t & p) = default;
 
-  using offset_t = data::sparse_data_offset_t;
-
   bool * ghost_is_readable;
   bool * write_phase_started;
 
@@ -66,17 +64,6 @@ struct legion_mutator_handle_policy_t {
 
   const Legion::STL::map<LegionRuntime::Arrays::coord_t,
     LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
-
-  // +++ The following fields are set on the execution side of the handle
-  // inside the actual Legion task once we have the physical regions
-
-  offset_t * offsets;
-  void * offsets_data[3];
-
-  size_t offsets_size = 0;
-  uint8_t * entries;
-  size_t entries_size = 0;
-  void * entries_data[3];
 
 }; // class legion_mutator_handle_policy_t
 

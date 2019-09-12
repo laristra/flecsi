@@ -138,11 +138,10 @@ struct storage_class_u<ragged> {
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       // TODO: deal with VERSION
-      context.register_sparse_field_data(field_info.fid, field_info.size,
-        color_info, max_entries_per_index, exclusive_reserve);
+      context.register_sparse_field_data(
+        field_info.fid, field_info.size, color_info, max_entries_per_index);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);
@@ -200,11 +199,10 @@ struct storage_class_u<ragged> {
           << field_info.index_space);
 
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       // TODO: deal with VERSION
-      context.register_sparse_field_data(field_info.fid, field_info.size,
-        color_info, max_entries_per_index, exclusive_reserve);
+      context.register_sparse_field_data(
+        field_info.fid, field_info.size, color_info, max_entries_per_index);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);

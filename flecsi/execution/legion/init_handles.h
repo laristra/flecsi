@@ -479,7 +479,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     using value_t = T;
     using vector_t = data::simple_vector_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
-    using offset_t = data::sparse_data_offset_t;
 
     sparse_field_data_t * md;
 
@@ -543,7 +542,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     using value_t = T;
     using vector_t = data::simple_vector_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
-    using offset_t = data::sparse_data_offset_t;
 
     sparse_field_data_t * md;
 

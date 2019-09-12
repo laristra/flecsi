@@ -221,7 +221,6 @@ struct storage_class_u<ragged> {
     h.index_space = index_space;
     h.data_client_hash = field_info.data_client_hash;
     h.slots = slots;
-    h.num_exclusive_insertions = new size_t(0);
 
     return h;
   }

@@ -18,15 +18,12 @@
 #include <algorithm>
 #include <stdint.h>
 
-#include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/simple_vector.h>
 
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
 //! This class is used to implement mutators for ragged and sparse data.
-//! Its methods implement commit functionality to pack the mutator's
-//! existing data and overflow map into the final commit buffer.
 //----------------------------------------------------------------------------//
 
 template<typename T, typename MUTATOR_POLICY>
@@ -35,23 +32,12 @@ class mutator_handle_base_u : public MUTATOR_POLICY
 public:
   using value_t = T;
 
-  using offset_t = data::sparse_data_offset_t;
-
-  using index_t = uint64_t;
-
   using vector_t = data::simple_vector_u<T>;
-
-  size_t * num_exclusive_insertions;
 
   struct partition_info_t {
     size_t count[3];
     size_t start[3];
     size_t end[3];
-  };
-
-  struct commit_info_t {
-    offset_t * offsets;
-    value_t * entries[3];
   };
 
   //--------------------------------------------------------------------------//
@@ -123,18 +109,6 @@ public:
     return max_entries_per_index_;
   }
 
-  size_t number_exclusive_entries() const {
-    return ci_.entries[1] - ci_.entries[0];
-  }
-
-  commit_info_t & commit_info() {
-    return ci_;
-  }
-
-  const commit_info_t & commit_info() const {
-    return ci_;
-  }
-
   size_t new_count(size_t index) const {
     return new_entries_[index].size();
   }
@@ -145,7 +119,6 @@ public:
   size_t num_slots_;
   size_t num_entries_;
   vector_t * new_entries_ = nullptr;
-  commit_info_t ci_;
 
 }; // mutator_handle_base_u
 
