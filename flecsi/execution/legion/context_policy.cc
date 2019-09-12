@@ -91,7 +91,6 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
   // find -ll:gsize
   bool has_gsize = false;
   for ( int i=0; i<argc; ++i ) {
-      std::cout << "argv["<<i<<"] = '" << argv[i]  << "'" << std::endl;
     if ( strstr(argv[i], "ll:gsize") != NULL )
     { has_gsize = true; break; }
   }

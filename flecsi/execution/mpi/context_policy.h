@@ -100,9 +100,11 @@ struct mpi_context_policy_t {
       len = offsets.size();
       os.write((char *) &len, sizeof(size_t));
       os.write((char *) offsets.data(), len*sizeof(offset_t));
+
+      return os;
     }
 
-    std::istream & read( std::istream & is ) {
+    void read( std::istream & is ) {
       is.read((char *) &type_size, sizeof(size_t));
       is.read((char *) &num_exclusive, sizeof(size_t));
       is.read((char *) &num_shared, sizeof(size_t));

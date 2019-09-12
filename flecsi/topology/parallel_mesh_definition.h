@@ -75,6 +75,10 @@ public:
   virtual const std::vector<size_t> & face_owners() const = 0;
   virtual const std::vector<size_t> & region_ids() const = 0;
 
+  virtual std::vector<size_t> element_sides(size_t id) const = 0;
+
+  virtual const flecsi::coloring::crs_t & side_vertices() const = 0;
+  virtual const std::vector<size_t> & side_ids() const = 0;
 
 };
 
