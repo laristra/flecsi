@@ -1,5 +1,6 @@
 FROM laristra/flecsi-third-party:fedora
 
+ARG DISTRO
 ARG MINIMAL
 ARG LEGION
 ARG BUILD_TYPE
@@ -34,8 +35,10 @@ WORKDIR /home/flecsi/flecsi
 RUN mkdir build
 
 WORKDIR build
+RUN ${CC} --version
 RUN ccache -z
-RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+RUN cmake -DMPIEXEC_PREFLAGS=$([ "$DISTRO" = "fedora" ] || [ "$DISTRO" = "ubuntu" ] && echo '--oversubscribe -mca pml ^ucx') \
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
@@ -45,6 +48,7 @@ RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_SPHINX=ON \
           -DENABLE_DOCUMENTATION=ON \
+	  -DENABLE_FLECSTAN=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2
@@ -52,7 +56,7 @@ RUN ccache -s
 RUN make doxygen
 RUN make sphinx
 RUN if [[ ${CLANG_FORMAT} ]]; then \
-      make format && git diff --exit-code; \
+      make format && git diff --exit-code --ignore-submodules; \
     fi
 RUN if [ ${COVERAGE} ]; then \
       python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; \

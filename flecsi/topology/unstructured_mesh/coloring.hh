@@ -37,9 +37,9 @@ struct index_coloring_t {
    */
 
   struct shared_info_t {
-    size_t id;
+    size_t global_id;
     size_t color;
-    size_t offset;
+    size_t local_id;
     std::vector<size_t> used_by_colors;
   }; // struct shared_info_t
 
@@ -48,8 +48,8 @@ struct index_coloring_t {
    */
 
   struct ghost_info_t {
-    size_t id;
-    size_t color;
+    size_t global_id;
+    size_t owned_by_color;
   }; // struct ghost_info_t
 
   /*!
@@ -98,7 +98,7 @@ struct coloring_info_t {
   The map key is the index space identifier.
  */
 
-using color_t = std::map<size_t, index_coloring_t>;
+using coloring_t = std::map<size_t, index_coloring_t>;
 
 /*!
   Type for holding aggregated (from all colors) coloring info.
@@ -106,7 +106,7 @@ using color_t = std::map<size_t, index_coloring_t>;
   The map key is the color and index space.
  */
 
-using coloring_t = std::map<std::pair<size_t, size_t>, coloring_info_t>;
+using coloring_meta_t = std::map<std::pair<size_t, size_t>, coloring_info_t>;
 
 } // namespace coloring
 } // namespace flecsi

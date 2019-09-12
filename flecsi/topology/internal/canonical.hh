@@ -11,21 +11,40 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
+#pragma once
+
+/*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-#define __FLECSI_PRIVATE__
+#error Do not include this file directly!
 #endif
 
-#include "flecsi/runtime/backend.hh"
-#include <flecsi/execution/common/launch.hh>
-
 namespace flecsi {
-namespace execution {
+namespace topology {
 
-void
-set_launch_domain_size(const size_t hash, size_t indices) {
-  runtime::context_t::instance().set_launch_domain_size(hash, indices);
-} // set_launch_domain_size
+/*!
+  The canonical_topology type is a dummy topology for development and testing.
 
-} // namespace execution
+  @ingroup topology
+ */
+
+template<typename TOPOLOGY_POLICY>
+struct canonical_topology {
+
+  canonical_topology() = delete;
+
+  struct coloring_t {
+    coloring_t(size_t size) : size_(size) {}
+
+    size_t size() const {
+      return size_;
+    }
+
+  private:
+    size_t size_;
+  };
+
+}; // struct canonical_topology
+
+} // namespace topology
 } // namespace flecsi

@@ -177,7 +177,7 @@ private:
 } // namespace flecsi
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-#include <flecsi/runtime/runtime.hh>
+#include "runtime.hh"
 
 /*!
   @def flecsi_register_control_options

@@ -7,7 +7,8 @@ Task Invocation
 
 FIXME: These need to be filled out with more explanation.
 
-init_args_t: Adds region requirements, determines what needs to be exchanged,
+task_prologue_t: Adds region requirements,
+determines what needs to be exchanged,
 exchanges data through copy launchers, and marks data that may be modified by
 a user task.
 

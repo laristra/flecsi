@@ -11,30 +11,21 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#pragma once
-
-/*! @file */
 
 #if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
-#else
-//#include "flecsi/data/data_reference.hh"
+#define __FLECSI_PRIVATE__
 #endif
 
+#include "launch.hh"
+#include "flecsi/runtime/backend.hh"
+
 namespace flecsi {
-namespace topology {
+namespace execution {
 
-//----------------------------------------------------------------------------//
-// Mesh topology.
-//----------------------------------------------------------------------------//
+void
+set_launch_domain_size(const size_t hash, size_t indices) {
+  runtime::context_t::instance().set_launch_domain_size(hash, indices);
+} // set_launch_domain_size
 
-/*!
-  @ingroup topology
- */
-
-struct structured_mesh_topology_base_t {
-  using coloring_t = size_t;
-}; // structured_mesh_topology_base_t
-
-} // namespace topology
+} // namespace execution
 } // namespace flecsi

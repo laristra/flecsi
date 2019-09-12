@@ -99,8 +99,6 @@ function(ftest_add_unit name)
   if(FLECSI_RUNTIME_MODEL STREQUAL "mpi"
     AND MPI_${MPI_LANGUAGE}_FOUND)
 
-    set(unit_policy_runtime
-      ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi/runtime.cc)
     set(unit_policy_flags ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS})
     set(unit_policy_includes ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH})
     set(unit_policy_libraries ${MPI_${MPI_LANGUAGE}_LIBRARIES})
@@ -113,8 +111,6 @@ function(ftest_add_unit name)
     AND MPI_${MPI_LANGUAGE}_FOUND
     AND Legion_FOUND)
 
-    set(unit_policy_runtime
-      ${CMAKE_SOURCE_DIR}/flecsi/execution/legion/runtime.cc)
     set(unit_policy_flags ${Legion_CXX_FLAGS}
       ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS})
     set(unit_policy_includes ${Legion_INCLUDE_DIRS}
@@ -132,13 +128,6 @@ function(ftest_add_unit name)
     return()
 
   endif()
-
-  # FIXME: I don't remember why this was necessary (if it was)
-  # copy the main driver for the runtime policy
-  #  get_filename_component(_RUNTIME_MAIN ${unit_policy_runtime} NAME)
-  #  set(_TARGET_MAIN ${name}_${_RUNTIME_MAIN})
-  #  configure_file(${unit_policy_runtime}
-  #    ${_OUTPUT_DIR}/${_TARGET_MAIN} COPYONLY)
 
   #----------------------------------------------------------------------------#
   # Make sure that the user specified sources.

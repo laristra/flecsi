@@ -16,13 +16,14 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "context.hh"
-#include "flecsi/execution/legion/enactment/task_wrapper.hh"
-#include "mapper.hh"
-#include "tasks.hh"
+#include <flecsi/data.hh>
 #include <flecsi/data/legion/data_policy.hh>
-#include <flecsi/execution/common/command_line_options.hh>
-#include <flecsi/execution/common/launch.hh>
+#include <flecsi/execution/command_line_options.hh>
+#include <flecsi/execution/launch.hh>
+#include <flecsi/execution/legion/task_wrapper.hh>
+#include <flecsi/runtime/legion/context.hh>
+#include <flecsi/runtime/legion/mapper.hh>
+#include <flecsi/runtime/legion/tasks.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/const_string.hh>
 
@@ -318,42 +319,32 @@ context_t::finalize_global_topology() {
 void
 context_t::initialize_default_index_topology() {
 
-  constexpr size_t identifier =
-    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-      flecsi_internal_string_hash("index_topology")>();
-
   {
     flog_tag_guard(context);
     flog_devel(info) << "Initializing default index topology" << std::endl
-                     << "\tidentifier: " << identifier << std::endl;
+                     << "\tidentifier: " << flecsi_index_topology.identifier()
+                     << std::endl;
   }
 
-  data::topology_reference<topology::index_topology_t> reference(identifier);
   topology::index_topology_t::coloring_t coloring(processes_);
-
-  data::legion_data_policy_t::create(reference, coloring);
+  data::legion_data_policy_t::create(flecsi_index_topology, coloring);
 } // context_t::initialize_default_index_topology
 
 //----------------------------------------------------------------------------//
-// Implementation of initialize_default_index_topology.
+// Implementation of finalize_default_index_topology.
 //----------------------------------------------------------------------------//
 
 void
 context_t::finalize_default_index_topology() {
 
-  constexpr size_t identifier =
-    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-      flecsi_internal_string_hash("index_topology")>();
-
   {
     flog_tag_guard(context);
     flog_devel(info) << "Finalizing default index topology" << std::endl
-                     << "\tidentifier: " << identifier << std::endl;
+                     << "\tidentifier: " << flecsi_index_topology.identifier()
+                     << std::endl;
   }
 
-  data::topology_reference<topology::index_topology_t> reference(identifier);
-
-  data::legion_data_policy_t::destroy(reference);
+  data::legion_data_policy_t::destroy(flecsi_index_topology);
 } // context_t::finalize_default_index_topology
 
 } // namespace flecsi::runtime

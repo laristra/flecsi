@@ -13,7 +13,7 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include <flecsi/execution/execution.hh>
+#include <flecsi/execution.hh>
 #include <flecsi/io/io_interface.hh>
 #include <flecsi/utils/ftest.hh>
 

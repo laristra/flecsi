@@ -13,7 +13,6 @@
 #------------------------------------------------------------------------------#
 
 set(control_HEADERS
-  control.hh
   control_point_walker.hh
   default_node.hh
 )

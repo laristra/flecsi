@@ -17,24 +17,32 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
-//#include "flecsi/data/data_reference.hh"
 #endif
 
+#include <flecsi/data/topology_registration.hh>
+#include <flecsi/runtime/types.hh>
+#include <flecsi/topology/core.hh>
+#include <flecsi/utils/flog.hh>
+
 namespace flecsi {
-namespace topology {
+namespace data {
 
-//----------------------------------------------------------------------------//
-// Mesh topology.
-//----------------------------------------------------------------------------//
+template<typename TOPOLOGY_TYPE>
+struct topology_need_name {
 
-/*!
-  @ingroup topology
- */
+  using core_t = topology::core_t<TOPOLOGY_TYPE>;
+  static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
+    "topologies may not add data members");
 
-struct structured_mesh_topology_base_t {
-  using coloring_t = size_t;
-}; // structured_mesh_topology_base_t
+  topology_need_name() {
+    topology_registration<TOPOLOGY_TYPE>::register_fields();
+  } // topology
 
-} // namespace topology
+  topology_reference<core_t> operator()() const {
+    return {unique_tid_t::instance().next()};
+  }
+
+}; // struct topology_need_name
+
+} // namespace data
 } // namespace flecsi

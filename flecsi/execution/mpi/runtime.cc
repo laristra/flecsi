@@ -20,9 +20,9 @@
 #include <flecsi/utils/flog.hh>
 #endif
 
+#include "../command_line_options.hh"
+#include "flecsi/runtime.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/execution/common/command_line_options.hh>
-#include <flecsi/runtime/runtime.h>
 
 #if !defined(FLECSI_ENABLE_MPI)
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
