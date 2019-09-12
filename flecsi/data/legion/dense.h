@@ -81,40 +81,7 @@ struct dense_handle_t : public dense_data_handle_u<T,
     Destructor.
    */
 
-  ~dense_handle_t() {
-    Legion::Runtime * runtime = base_t::runtime;
-    Legion::Context & context = base_t::context;
-
-    // Unmap physical regions and copy back out ex/sh/gh regions if we
-    // have write permissions
-
-#ifndef MAPPER_COMPACTION
-    if(base_t::exclusive_data) {
-      if(base_t::exclusive_priv > privilege_t::ro) {
-        std::memcpy(base_t::exclusive_buf, base_t::exclusive_data,
-          base_t::exclusive_size * sizeof(T));
-      }
-    }
-
-    if(base_t::shared_data) {
-      if(base_t::shared_priv > privilege_t::ro) {
-        std::memcpy(base_t::shared_buf, base_t::shared_data,
-          base_t::shared_size * sizeof(T));
-      }
-    }
-
-    // ghost is never mapped with write permissions
-
-    if(base_t::master && base_t::combined_data) {
-      delete[] base_t::combined_data;
-    }
-#ifdef COMPACTED_STORAGE_SORT
-    if(base_t::master && base_t::combined_data_sort) {
-      delete[] base_t::combined_data_sort;
-    }
-#endif
-#endif
-  }
+  ~dense_handle_t() {}
 
   template<typename, size_t, size_t, size_t>
   friend class dense_handle_t;

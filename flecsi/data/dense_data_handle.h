@@ -71,9 +71,6 @@ struct dense_data_handle_base_u : public DATA_POLICY,
     shared_data = b.shared_data;
     ghost_data = b.ghost_data;
     combined_data = b.combined_data;
-#ifdef COMPACTED_STORAGE_SORT
-    combined_data_sort = b.combined_data_sort;
-#endif
     exclusive_size = b.exclusive_size;
     shared_size = b.shared_size;
     ghost_size = b.ghost_size;
@@ -100,9 +97,6 @@ struct dense_data_handle_base_u : public DATA_POLICY,
   size_t ghost_size = 0;
 
   T * combined_data = nullptr;
-#ifdef COMPACTED_STORAGE_SORT
-  T * combined_data_sort = nullptr;
-#endif
   size_t combined_size = 0;
   bool master = true;
 
