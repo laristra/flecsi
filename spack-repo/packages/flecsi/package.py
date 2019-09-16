@@ -25,8 +25,11 @@ class Flecsi(CMakePackage):
     version('develop', branch='master', submodules=False)
     version('refactor', branch='feature/refactor', submodules=False)
 
+    variant('build_type', default='Release', values=('Debug', 'Release'),
+            description='The build type to build')
     variant('runtime', default='legion', values=('legion', 'mpi'),
             description='Backend runtime to use for distributed memory')
+    variant('shared', default=True, description='Build shared libraries')
     variant('caliper', default=False,
             description='Enable Caliper Support')
     variant('graphviz', default=False,
@@ -34,18 +37,22 @@ class Flecsi(CMakePackage):
     variant('tutorial', default=False,
             description='Build FleCSI Tutorials')
 
-    depends_on('cmake', type='build')
-    depends_on('mpi', when='runtime=mpi')
-    depends_on('mpi', when='runtime=legion')
+    depends_on('cmake@3.12:', type='build')
+    depends_on('mpi')
     depends_on('legion@ctrl-rep +shared +mpi', when='runtime=legion')
-    depends_on('boost')
-    depends_on('parmetis')
+    depends_on('boost@1.59.0: cxxstd=11 +program_options')
+    depends_on('parmetis@4.0.3:')
     depends_on('caliper', when='+caliper')
     depends_on('graphviz', when='+graphviz')
-    depends_on('python', when='+tutorial')
+    depends_on('python@3.0:', when='+tutorial')
 
     def cmake_args(self):
-        options = ['-DCMAKE_BUILD_TYPE=debug']
+        options = ['-DBUILD_SHARED_LIBS=%s' % ('+shared' in self.spec)]
+
+        if self.spec.variants['build_type'].value == 'Debug':
+            options.append('-DCMAKE_BUILD_TYPE=Debug')
+        elif self.spec.variants['build_type'].value == 'Release':
+            options.append('-DCMAKE_BUILD_TYPE=Release')
 
         if self.spec.variants['runtime'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
