@@ -21,6 +21,8 @@
 
 #include <flecsi/runtime/types.hh>
 
+#include <string>
+
 namespace flecsi {
 namespace topology {
 
@@ -32,7 +34,7 @@ struct canonical_topology_base {
 
     struct coloring_metadata {};
 
-    static void color(coloring & c);
+    static void color(coloring & coloring_info, std::string const & filename);
 
     local_coloring local_coloring_;
     coloring_metadata coloring_metadata_;
@@ -49,6 +51,8 @@ struct canonical_topology_base {
 
 template<typename TOPOLOGY_POLICY>
 struct canonical_topology : public canonical_topology_base {
+
+  using coloring = canonical_topology_base::coloring;
 
   canonical_topology() = delete;
 

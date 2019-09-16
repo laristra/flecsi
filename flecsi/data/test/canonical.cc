@@ -33,23 +33,23 @@ struct policy {
 
 }; // struct policy
 
-using canonical_topology =
-  data::topology_reference<topology::canonical_topology<policy>>;
+using topology_type = topology::canonical_topology<policy>;
+
+using canonical_topology = data::topology_reference<topology_type>;
 canonical_topology canonical;
 
 canonical_topology::coloring coloring;
 
-#if 0
 using cell_field_t =
-  data::field_member<double, data::dense, canonical_topology, policy::cells>;
+  data::field_member<double, data::dense, topology_type, policy::cells>;
 const cell_field_t cell_field;
 auto pressure = cell_field(canonical);
-#endif
 
 int
 index_driver(int argc, char ** argv) {
 
-  coloring.allocate();
+  const std::string filename = "input.txt";
+  coloring.allocate(filename);
   canonical.allocate(coloring);
 
   return 0;
