@@ -485,7 +485,8 @@ protected:
 
   std::unordered_map<size_t, topology::index_topology_t::coloring_t>
     index_colorings_;
-  std::unordered_map<size_t, topology::canonical_topology_base::coloring> canonical_colorings_;
+  std::unordered_map<size_t, topology::canonical_topology_base::coloring>
+    canonical_colorings_;
 
   /*--------------------------------------------------------------------------*
     Topology data members.
