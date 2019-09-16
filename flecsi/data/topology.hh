@@ -37,12 +37,26 @@ struct topology_reference : public data_reference_base_t {
   static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
     "topologies may not add data members");
 
+  using coloring_t = coloring_reference<TOPOLOGY_TYPE>;
+
   topology_reference()
     : data_reference_base_t(unique_tid_t::instance().next()) {}
 
-  void create(coloring_reference<TOPOLOGY_TYPE> const & coloring_reference) {
-    data_policy_t::create(identifier_, coloring_reference);
-  } // create
+  ~topology_reference() {
+    if(allocated_) {
+      data_policy_t::deallocate<TOPOLOGY_TYPE>(identifier_);
+    } // if
+  }
+
+  void allocate(coloring_reference<TOPOLOGY_TYPE> const & coloring_reference) {
+    data_policy_t::allocate<TOPOLOGY_TYPE>(identifier_, coloring_reference);
+    allocated_ = true;
+  } // allocate
+
+  void deallocate() {
+    data_policy_t::deallocate<TOPOLOGY_TYPE>(identifier_);
+    allocated_ = false;
+  } // deallocate
 
 private:
   static bool static_registered_;
@@ -51,11 +65,13 @@ private:
   // register_fields() is called at most once.
   const bool registered_ = static_registered_;
 
+  bool allocated_ = false;
+
 }; // struct topology_reference
 
 template<typename TOPOLOGY_TYPE>
 bool topology_reference<TOPOLOGY_TYPE>::static_registered_ =
-topology_registration<TOPOLOGY_TYPE>::register_fields();
+  topology_registration<TOPOLOGY_TYPE>::register_fields();
 
 } // namespace data
 } // namespace flecsi

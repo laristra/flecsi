@@ -16,9 +16,9 @@
 /*! @file */
 
 #include <flecsi/data/data_reference.hh>
-#include <flecsi/data/topology.hh>
 #include <flecsi/data/privilege.hh>
 #include <flecsi/data/storage_classes.hh>
+#include <flecsi/data/topology.hh>
 #include <flecsi/runtime/backend.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/core.hh>

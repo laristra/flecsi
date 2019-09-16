@@ -31,19 +31,32 @@ struct legion_data_policy_t {
     Topology Instance Interface.
    *--------------------------------------------------------------------------*/
 
+  template<typename TOPOLOGY_TYPE, typename... ARGS>
+  static void allocate_coloring(
+    data_reference_base_t const & coloring_reference,
+    ARGS &&... args) {
+    legion::topology_traits<TOPOLOGY_TYPE>::allocate_coloring(
+      coloring_reference, std::forward<ARGS>(args)...);
+  } // create
+
   template<typename TOPOLOGY_TYPE>
-  static void create(
-    data_reference_base_t const & topology_reference,
+  static void deallocate_coloring(
     data_reference_base_t const & coloring_reference) {
-    legion::topology_traits<TOPOLOGY_TYPE>::create(
+    legion::topology_traits<TOPOLOGY_TYPE>::deallocate_coloring(
+      coloring_reference);
+  } // create
+
+  template<typename TOPOLOGY_TYPE>
+  static void allocate(data_reference_base_t const & topology_reference,
+    data_reference_base_t const & coloring_reference) {
+    legion::topology_traits<TOPOLOGY_TYPE>::allocate(
       topology_reference, coloring_reference);
   } // create
 
   template<typename TOPOLOGY_TYPE>
-  static void destroy(
-    data_reference_base_t const & topology_reference) {
-    legion::topology_traits<TOPOLOGY_TYPE>::destroy(topology_reference);
-  } // destroy
+  static void deallocate(data_reference_base_t const & topology_reference) {
+    legion::topology_traits<TOPOLOGY_TYPE>::deallocate(topology_reference);
+  } // create
 
 }; // struct legion_data_policy_t
 

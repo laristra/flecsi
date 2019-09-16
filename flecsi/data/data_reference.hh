@@ -24,6 +24,7 @@
 #endif
 
 #include <flecsi/runtime/types.hh>
+#include <flecsi/utils/serialize.hh>
 
 namespace flecsi {
 namespace data {

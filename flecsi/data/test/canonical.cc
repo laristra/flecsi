@@ -39,7 +39,7 @@ using canonical_topology_t =
   topology_reference<topology::canonical_topology<policy_t>>;
 canonical_topology_t canonical;
 
-//canonical_topology_t::coloring_t coloring;
+canonical_topology_t::coloring_t coloring;
 
 #if 0
 
@@ -53,7 +53,8 @@ auto pressure = cell_field(canonical);
 int
 index_driver(int argc, char ** argv) {
 
-//  coloring.create();
+  coloring.allocate();
+  canonical.allocate(coloring);
 
 #if 0
   coloring0.create(/* arg list */);

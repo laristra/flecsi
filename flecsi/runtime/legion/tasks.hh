@@ -132,9 +132,9 @@ wait_on_mpi_task(const Legion::Task * task,
 } // handoff_to_mpi_task
 
 /*!
- Interprocess communication to unset mpi execute state.
+  Interprocess communication to unset mpi execute state.
 
- @ingroup legion-runtime
+  @ingroup legion-runtime
 */
 
 inline void
@@ -146,6 +146,10 @@ unset_call_mpi_task(const Legion::Task * task,
 } // unset_call_mpi_task
 
 #if defined(FLECSI_ENABLE_FLOG)
+
+/*!
+ @ingroup legion-runtime
+*/
 
 #include <flecsi/utils/flog/state.hh>
 

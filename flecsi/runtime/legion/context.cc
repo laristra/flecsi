@@ -331,7 +331,8 @@ context_t::initialize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_data_policy_t::create<topology::index_topology_t>(flecsi_index_topology, flecsi_index_coloring);
+  data::legion_data_policy_t::allocate<topology::index_topology_t>(
+    flecsi_index_topology, flecsi_index_coloring);
 } // context_t::initialize_default_index_topology
 
 void
@@ -344,7 +345,8 @@ context_t::finalize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_data_policy_t::destroy<topology::index_topology_t>(flecsi_index_topology);
+  data::legion_data_policy_t::deallocate<topology::index_topology_t>(
+    flecsi_index_topology);
 } // context_t::finalize_default_index_topology
 
 } // namespace flecsi::runtime
