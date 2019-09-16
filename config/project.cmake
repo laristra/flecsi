@@ -331,23 +331,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   include_directories(${Legion_INCLUDE_DIRS})
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${Legion_INCLUDE_DIRS})
 
-  #
-  # Compacted storage interface
-  #
-  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" ON)
-
-  if(ENABLE_MAPPER_COMPACTION)
-    add_definitions(-DMAPPER_COMPACTION)
-    set (MAPPER_COMPACTION TRUE)
-  else()
-    option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" OFF)
-
-    if(COMPACTED_STORAGE_SORT)
-      add_definitions(-DCOMPACTED_STORAGE_SORT)
-      set(COMPACTED_STORAGE_SORT TRUE)
-    endif()
-  endif()
-
 #
 # MPI interface
 #

@@ -60,9 +60,6 @@ struct global_data_handle_base_u : public DATA_POLICY,
   global_data_handle_base_u(const global_data_handle_base_u & b)
     : DATA_POLICY(b) {
     combined_data = b.combined_data;
-#ifdef COMPACTED_STORAGE_SORT
-    combined_data_sort = b.combined_data_sort;
-#endif
     combined_size = b.combined_size;
     master = false;
     state = b.state;
@@ -71,9 +68,6 @@ struct global_data_handle_base_u : public DATA_POLICY,
   }
 
   T * combined_data = nullptr;
-#ifdef COMPACTED_STORAGE_SORT
-  T * combined_data_sort = nullptr;
-#endif
   T * color_buf = nullptr;
   size_t color_size = 1;
 
