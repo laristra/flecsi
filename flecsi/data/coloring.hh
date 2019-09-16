@@ -31,13 +31,21 @@ namespace data {
 
 template<typename TOPOLOGY_TYPE, typename... ARGS>
 void
-coloring_task(size_t identifier, ARGS &&... args) {} // coloring_task
+coloring_task(size_t identifier, ARGS &&... args) {
+  auto & coloring_info =
+    runtime::context_t::instance().coloring<TOPOLOGY_TYPE>(identifier);
+} // coloring_task
 
 template<typename TOPOLOGY_TYPE>
 struct coloring_reference : public data_reference_base_t {
 
   coloring_reference()
     : data_reference_base_t(unique_cid_t::instance().next()) {}
+
+  /*!
+    @note The MPI task launched by this method is always mapped to the process
+          launch domain.
+   */
 
   template<typename... ARGS>
   void allocate(ARGS &&... args) {

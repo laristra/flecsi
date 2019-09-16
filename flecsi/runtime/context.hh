@@ -257,6 +257,22 @@ struct context {
     @param identifier Index coloring identifier.
    */
 
+  template<typename TOPOLOGY_TYPE>
+  auto & coloring(size_t identifier) {
+
+    constexpr bool index_coloring =
+      std::is_same_v<TOPOLOGY_TYPE, topology::index_topology_t>;
+    constexpr bool canonical_coloring =
+      std::is_base_of_v<topology::canonical_topology_base, TOPOLOGY_TYPE>;
+
+    if constexpr(index_coloring) {
+      return index_colorings_[identifier];
+    }
+    else if(canonical_coloring) {
+      return canonical_colorings_[identifier];
+    } // if
+  } // coloring
+
   topology::index_topology_t::coloring_t const & index_coloring(
     size_t identifier) {
     auto const & cita = index_colorings_.find(identifier);
@@ -469,8 +485,7 @@ protected:
 
   std::unordered_map<size_t, topology::index_topology_t::coloring_t>
     index_colorings_;
-  std::unordered_map<size_t, topology::canonical_topology_base_t::coloring_t>
-    canonical_colorings_;
+  std::unordered_map<size_t, topology::canonical_topology_base::coloring> canonical_colorings_;
 
   /*--------------------------------------------------------------------------*
     Topology data members.

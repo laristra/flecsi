@@ -37,7 +37,7 @@ struct topology_reference : public data_reference_base_t {
   static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
     "topologies may not add data members");
 
-  using coloring_t = coloring_reference<TOPOLOGY_TYPE>;
+  using coloring = coloring_reference<TOPOLOGY_TYPE>;
 
   topology_reference()
     : data_reference_base_t(unique_tid_t::instance().next()) {}

@@ -24,23 +24,22 @@
 namespace flecsi {
 namespace topology {
 
-struct canonical_topology_base_t {
+struct canonical_topology_base {
 
-  struct coloring_t {
+  struct coloring {
 
-    struct local_coloring_t {};
+    struct local_coloring {};
 
-    struct coloring_metadata_t {};
+    struct coloring_metadata {};
 
-    static void color(local_coloring_t & local_coloring,
-      coloring_metadata_t & coloring_metadata) {} // color
+    static void color(coloring & c);
 
-    local_coloring_t local_coloring_;
-    coloring_metadata_t coloring_metadata_;
+    local_coloring local_coloring_;
+    coloring_metadata coloring_metadata_;
 
-  }; // struct coloring_t
+  }; // struct coloring
 
-}; // struct canonical_topology_base_t
+}; // struct canonical_topology_base
 
 /*!
   The canonical_topology type is a dummy topology for development and testing.
@@ -49,7 +48,7 @@ struct canonical_topology_base_t {
  */
 
 template<typename TOPOLOGY_POLICY>
-struct canonical_topology {
+struct canonical_topology : public canonical_topology_base {
 
   canonical_topology() = delete;
 

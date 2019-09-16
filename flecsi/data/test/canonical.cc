@@ -20,10 +20,8 @@
 #include <tuple>
 
 using namespace flecsi;
-using namespace flecsi::data;
-using namespace flecsi::topology;
 
-struct policy_t {
+struct policy {
   constexpr static size_t value = 12;
 
   template<size_t VALUE>
@@ -33,21 +31,19 @@ struct policy_t {
 
   using entity_types = std::tuple<typeify<vertices>, typeify<cells>>;
 
-}; // struct policy_t
+}; // struct policy
 
-using canonical_topology_t =
-  topology_reference<topology::canonical_topology<policy_t>>;
-canonical_topology_t canonical;
+using canonical_topology =
+  data::topology_reference<topology::canonical_topology<policy>>;
+canonical_topology canonical;
 
-canonical_topology_t::coloring_t coloring;
+canonical_topology::coloring coloring;
 
 #if 0
-
 using cell_field_t =
-  field_member<double, dense, canonical_topology_t, policy_t::cells>;
+  data::field_member<double, data::dense, canonical_topology, policy::cells>;
 const cell_field_t cell_field;
 auto pressure = cell_field(canonical);
-
 #endif
 
 int
@@ -55,19 +51,6 @@ index_driver(int argc, char ** argv) {
 
   coloring.allocate();
   canonical.allocate(coloring);
-
-#if 0
-  coloring0.create(/* arg list */);
-
-  mesh0.create(coloring0);
-  mesh1.create(coloring0);
-
-  execute<assign>(mesh0, pressure);
-  execute<check>(pressure);
-
-  mesh0.destroy();
-  mesh1.destroy();
-#endif
 
   return 0;
 } // index
