@@ -17,9 +17,9 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly
-#else
-#include <flecsi/utils/const_string.hh>
 #endif
+
+#include <flecsi/utils/const_string.hh>
 
 namespace flecsi {
 namespace execution {

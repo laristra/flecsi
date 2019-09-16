@@ -11,20 +11,23 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#pragma once
 
 /*! @file */
 
-#if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
+#define __FLECSI_PRIVATE__
+#include <flecsi/topology/internal/canonical.hh>
+
+#if !defined(FLECSI_ENABLE_MPI)
+#error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
-#include <flecsi/topology/internal/canonical.hh>
-#include <flecsi/topology/internal/index.hh>
-#include <flecsi/topology/ntree/types.hh>
-#include <flecsi/topology/set/types.hh>
-#include <flecsi/topology/structured_mesh/types.hh>
-//#include <flecsi/topology/unstructured_mesh/types.hh>
+#include <mpi.h>
 
-// FIXME: These files should be included directly where they are needed
-// once the structure is complete.
+namespace flecsi {
+namespace topology {
+
+void canonical_topology_base::coloring::color(coloring & c) {
+} // canonical_topology_base::coloring::color
+
+} // namespace topology
+} // namespace flecsi

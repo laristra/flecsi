@@ -20,6 +20,7 @@
   data model.
  */
 
+#include <flecsi/data/coloring.hh>
 #include <flecsi/data/field.hh>
 #include <flecsi/data/topology.hh>
 #include <flecsi/topology/internal/global.hh>
@@ -31,9 +32,8 @@ namespace flecsi {
   Default global topology instance.
  */
 
-inline const data::topology_need_name<topology::global_topology_t>
-  global_topology_definition;
-inline auto flecsi_global_topology = global_topology_definition();
+inline const data::topology_reference<topology::global_topology_t>
+  flecsi_global_topology;
 
 /*
   Convenience type for global field members.
@@ -46,12 +46,18 @@ using global_field_member = data::field_member<DATA_TYPE,
   0>;
 
 /*
+  Default index coloring.
+ */
+
+inline const data::coloring_reference<topology::index_topology_t>
+  flecsi_index_coloring;
+
+/*
   Default index topology instance.
  */
 
-inline const data::topology_need_name<topology::index_topology_t>
-  index_topology_definition;
-inline auto flecsi_index_topology = index_topology_definition();
+inline const data::topology_reference<topology::index_topology_t>
+  flecsi_index_topology;
 
 /*
   Convenience type for index field members.

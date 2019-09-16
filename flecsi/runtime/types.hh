@@ -83,6 +83,17 @@ using unique_fid_t =
   utils::unique_id<fid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
 /*!
+  Unique counter for coloring ids.
+ */
+
+using coloring_id_t = size_t;
+const coloring_id_t COLORING_ID_MAX = std::numeric_limits<size_t>::max();
+
+struct cid_counter_t {};
+using unique_cid_t =
+  utils::unique_id<cid_counter_t, coloring_id_t, FLECSI_GENERATED_ID_MAX>;
+
+/*!
   Unique counter for topology ids.
  */
 

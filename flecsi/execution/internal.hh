@@ -17,9 +17,9 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
-#include <flecsi/utils/function_traits.hh>
 #endif
+
+#include <flecsi/utils/function_traits.hh>
 
 #define flecsi_internal_return_type(task)                                      \
   typename flecsi::utils::function_traits<decltype(task)>::return_type

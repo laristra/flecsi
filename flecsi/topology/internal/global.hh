@@ -34,6 +34,7 @@ namespace topology {
 
 struct global_topology_t {
   global_topology_t() = delete;
+  struct coloring_t {};
 }; // struct global_topology
 
 } // namespace topology
