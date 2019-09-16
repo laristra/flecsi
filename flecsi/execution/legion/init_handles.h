@@ -96,8 +96,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     // we need to get Rect for the parent index space in purpose to loop
     // over  compacted physical instance
 
-    // Legion::Domain dom = runtime-> get_index_space_domain(context,
-    // regions[region].get_logical_region().get_index_space());
     Legion::Domain::DomainPointIterator itr(dom);
     LegionRuntime::Arrays::Rect<2> rect = dom.get_rect<2>();
     const Legion::UnsafeFieldAccessor<T, 2, Legion::coord_t,
@@ -107,9 +105,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     T * ac_ptr = (T *)(ac.ptr(itr.p));
 
     // get an accessor to the first element in exclusive LR:
-    // auto ac = regions[region].get_field_accessor(h.fid).template
-    // typeify<T>(); h.combined_data = ac.template raw_rect_ptr<2>(rect, sr,
-    // bo);
     h.combined_data = ac_ptr;
     // Exclusive
     h.exclusive_size = rect.hi[1] - rect.lo[1] + 1;
@@ -272,17 +267,9 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         ac(regions[region], ent.fid, ent.fid_size);
 
-      // auto ac = regions[region].get_field_accessor(ent.fid);
-
       Legion::Domain d = runtime->get_index_space_domain(context, is);
-      // Legion::Domain::DomainPointIterator itr(d);
       dr = d.get_rect<2>();
       Legion::Domain::DomainPointIterator itr(d);
-
-      //      auto ents_raw =
-      //        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
-      //      auto ents = reinterpret_cast<topology::mesh_entity_base_
-      //      *>(ents_raw);
 
       char * ac_ptr = (char *)(ac.ptr(itr.p));
       auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ac_ptr);
@@ -320,20 +307,14 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::IndexSpace is = lr.get_index_space();
       Legion::Domain d = runtime->get_index_space_domain(context, is);
       Legion::Domain::DomainPointIterator itr(d);
-      //    auto ac = pr.get_field_accessor(adj.offset_fid)
-      //              .template typeify<utils::offset_t>();
 
-      //      Legion::Domain d = runtime->get_index_space_domain(context, is);
       const Legion::UnsafeFieldAccessor<utils::offset_t, 2, Legion::coord_t,
         Realm::AffineAccessor<utils::offset_t, 2, Legion::coord_t>>
         ac(regions[region_map[adj.from_index_space]], adj.offset_fid,
           sizeof(utils::offset_t));
 
       utils::offset_t * offsets = (utils::offset_t *)(ac.ptr(itr.p));
-      // utils::offset_t * offsets = ac.template raw_rect_ptr<2>(dr, sr, bo);
       dr = d.get_rect<2>();
-
-      // utils::offset_t * offsets = ac_ptr;
 
       size_t num_offsets = dr.hi[1] - dr.lo[1] + 1;
 
@@ -347,16 +328,11 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       const Legion::UnsafeFieldAccessor<utils::id_t, 2, Legion::coord_t,
         Realm::AffineAccessor<utils::id_t, 2, Legion::coord_t>>
         ac3(regions[region], adj.index_fid, sizeof(utils::id_t));
-      /*auto ac3 = regions[region]
-                   .get_field_accessor(adj.index_fid)
-                   .template typeify<utils::id_t>();
-      */
 
       d = runtime->get_index_space_domain(context, is);
 
       dr = d.get_rect<2>();
 
-      // utils::id_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
       utils::id_t * indices = (utils::id_t *)(ac3.ptr(itr.p));
 
       size_t num_indices = dr.hi[1] - dr.lo[1] + 1;
@@ -380,11 +356,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
         Realm::AffineAccessor<utils::id_t, 2, Legion::coord_t>>
         ac(regions[region], iss.index_fid, sizeof(utils::id_t));
       Legion::Domain::DomainPointIterator itr(d);
-      /*auto ac = regions[region]
-                  .get_field_accessor(iss.index_fid)
-                  .template typeify<utils::id_t>();
-*/
-      //      Legion::Domain d = runtime->get_index_space_domain(context, is);
 
       dr = d.get_rect<2>();
 
