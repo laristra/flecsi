@@ -648,10 +648,10 @@ analyze(const int argc, const char * const * const argv) {
         // no arguments to -[-]analyze :-(
         status = std::max(status, error("The " + str +
                                         " option "
-                                        "(executable target for \"make\" "
+                                        "(executable target for \"make\") "
                                         "expects one or more arguments.\n"
                                         "Example: " +
-                                        str + " foo bar"));
+                                        str + " hydro_2d hydro_3d"));
       } // if
       a = i;
     }
@@ -668,9 +668,8 @@ analyze(const int argc, const char * const * const argv) {
 
   } // for
 
-  if(status != exit_clean) {
+  if(status != exit_clean)
     return status;
-  }
 
   // ------------------------
   // Create and spawn other
@@ -695,13 +694,13 @@ analyze(const int argc, const char * const * const argv) {
   }
 
   // FYI for user
-  emit_color = false; // <== probably best, but think more about it
-  report("Creating individual analysis subcommands", fyi, true);
-  std::cout << std::endl;
+  report("Creating individual analysis commands", fyi, true);
 
   // run!
   for(auto com : commands) {
-    // std::cout << "[" << com << "]" << std::endl;
+    report(
+      "Running \"make clean\" plus individual analysis command", com, true);
+    system("make clean");
     system(com.c_str());
   }
 
