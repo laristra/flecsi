@@ -125,7 +125,7 @@ before_script:
 #######################
 
 .general_template: &general_def
-  retry: 2
+  retry: 1
   only:
     - merge_requests
     - master
@@ -183,8 +183,8 @@ before_script:
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install ${FLECSI_SPACK_SPEC}openmpi;
-      spack install ${FLECSI_SPACK_SPEC}mpich;
+      spack install --only dependencies ${FLECSI_SPACK_SPEC}openmpi%gcc@${FLECSI_GCC_VERSION};
+      spack install --only dependencies ${FLECSI_SPACK_SPEC}mpich%gcc@${FLECSI_GCC_VERSION};
       ) 200>${DEPS_LOCK}
 
 ###############
