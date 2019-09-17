@@ -313,8 +313,13 @@ context_t::finalize_global_topology() {
 } // context_t::finalize_global_topology
 
 //----------------------------------------------------------------------------//
-// Implementation of initialize_default_index_topology.
+// Index coloring and topology method implementations.
 //----------------------------------------------------------------------------//
+
+void
+context_t::initialize_default_index_coloring() {
+  index_colorings_.emplace(flecsi_index_coloring.identifier(), processes_);
+} // context_t::initialize_default_index_coloring
 
 void
 context_t::initialize_default_index_topology() {
@@ -326,13 +331,9 @@ context_t::initialize_default_index_topology() {
                      << std::endl;
   }
 
-  topology::index_topology_t::coloring_t coloring(processes_);
-  data::legion_data_policy_t::create(flecsi_index_topology, coloring);
+  data::legion_data_policy_t::allocate<topology::index_topology_t>(
+    flecsi_index_topology, flecsi_index_coloring);
 } // context_t::initialize_default_index_topology
-
-//----------------------------------------------------------------------------//
-// Implementation of finalize_default_index_topology.
-//----------------------------------------------------------------------------//
 
 void
 context_t::finalize_default_index_topology() {
@@ -344,7 +345,8 @@ context_t::finalize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_data_policy_t::destroy(flecsi_index_topology);
+  data::legion_data_policy_t::deallocate<topology::index_topology_t>(
+    flecsi_index_topology);
 } // context_t::finalize_default_index_topology
 
 } // namespace flecsi::runtime

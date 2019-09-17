@@ -19,11 +19,11 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "execution/backend.hh"
-#include "execution/launch.hh"
-#include "execution/task_attributes.hh"
-#include "flecsi/runtime/backend.hh"
+#include <flecsi/execution/backend.hh>
 #include <flecsi/execution/internal.hh>
+#include <flecsi/execution/launch.hh>
+#include <flecsi/execution/task_attributes.hh>
+#include <flecsi/runtime/backend.hh>
 //#include <flecsi/execution/reduction.hh>
 
 /*----------------------------------------------------------------------------*

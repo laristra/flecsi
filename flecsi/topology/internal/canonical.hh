@@ -19,8 +19,27 @@
 #error Do not include this file directly!
 #endif
 
+#include <flecsi/runtime/types.hh>
+
 namespace flecsi {
 namespace topology {
+
+struct canonical_topology_base {
+
+  struct coloring {
+
+    struct local_coloring {};
+
+    struct coloring_metadata {};
+
+    static void color(coloring & c);
+
+    local_coloring local_coloring_;
+    coloring_metadata coloring_metadata_;
+
+  }; // struct coloring
+
+}; // struct canonical_topology_base
 
 /*!
   The canonical_topology type is a dummy topology for development and testing.
@@ -29,20 +48,9 @@ namespace topology {
  */
 
 template<typename TOPOLOGY_POLICY>
-struct canonical_topology {
+struct canonical_topology : public canonical_topology_base {
 
   canonical_topology() = delete;
-
-  struct coloring_t {
-    coloring_t(size_t size) : size_(size) {}
-
-    size_t size() const {
-      return size_;
-    }
-
-  private:
-    size_t size_;
-  };
 
 }; // struct canonical_topology
 

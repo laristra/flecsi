@@ -37,7 +37,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     legion/data_policy.hh
     legion/runtime_data_types.hh
-    legion/topologies.hh
+    legion/topology_traits.hh
     ${data_HEADERS}
   )
 

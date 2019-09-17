@@ -17,9 +17,9 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
-#include "data_reference.hh"
 #endif
+
+#include <flecsi/data/data_reference.hh>
 
 namespace flecsi {
 namespace data {
@@ -33,11 +33,10 @@ namespace data {
  */
 
 template<typename TOPOLOGY_TYPE, size_t PRIVILEGES>
-struct topology_accessor : public TOPOLOGY_TYPE,
-                           public topology_reference<TOPOLOGY_TYPE> {
+struct topology_accessor : public TOPOLOGY_TYPE, public data_reference_base_t {
 
-  topology_accessor(topology_reference<TOPOLOGY_TYPE> const & reference)
-    : topology_reference<TOPOLOGY_TYPE>(reference) {}
+  topology_accessor(data_reference_base_t const & reference)
+    : data_reference_base_t(reference) {}
 
 }; // struct topology_accessor
 

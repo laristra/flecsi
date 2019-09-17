@@ -397,6 +397,7 @@ private:
    *--------------------------------------------------------------------------*/
 
   void initialize_global_topology();
+  void initialize_default_index_coloring();
   void initialize_default_index_topology();
 
   /*--------------------------------------------------------------------------*
@@ -404,6 +405,7 @@ private:
    *--------------------------------------------------------------------------*/
 
   void finalize_global_topology();
+  void finalize_default_index_coloring();
   void finalize_default_index_topology();
 
   /*--------------------------------------------------------------------------*

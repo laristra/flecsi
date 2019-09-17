@@ -170,7 +170,7 @@ severity_message_t(trace, {
   std::string devel = devel_ ? "(devel)" : "";
   std::string active_tag = flog_t::instance().initialized()
                              ? flog_t::instance().active_tag_name()
-                             : "external ";
+                             : "external";
 
   switch(flog_t::instance().verbose()) {
     case 1: {
@@ -208,7 +208,7 @@ severity_message_t(info, {
   std::string devel = devel_ ? "devel " : "";
   std::string active_tag = flog_t::instance().initialized()
                              ? flog_t::instance().active_tag_name()
-                             : "external ";
+                             : "external";
 
   switch(flog_t::instance().verbose()) {
     case 1: {
@@ -246,7 +246,7 @@ severity_message_t(warn, {
   std::string devel = devel_ ? "(devel)" : "";
   std::string active_tag = flog_t::instance().initialized()
                              ? flog_t::instance().active_tag_name()
-                             : "external ";
+                             : "external";
 
   switch(flog_t::instance().verbose()) {
     case 1: {
@@ -285,7 +285,7 @@ severity_message_t(error, {
   std::string devel = devel_ ? "(devel)" : "";
   std::string active_tag = flog_t::instance().initialized()
                              ? flog_t::instance().active_tag_name()
-                             : "external ";
+                             : "external";
 
   switch(flog_t::instance().verbose()) {
     case 1: {
