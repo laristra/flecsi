@@ -114,7 +114,7 @@ index_driver(int argc, char ** argv) {
 
     std::string str3("");
     cp_io.read_string_from_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str3);
-    printf("str 3 %s\n", str3.c_str());
+    //printf("str 3 %s\n", str3.c_str());
     cp_io.close_hdf5_file(checkpoint_file);
   }
 #endif
