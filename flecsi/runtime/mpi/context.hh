@@ -45,6 +45,22 @@ struct context_t : context {
 
   int start(int, char **, boost::program_options::variables_map &);
 
+  size_t process() const {
+    return color_;
+  }
+
+  size_t processes() const {
+    return colors_;
+  }
+
+  size_t threads_per_process() const {
+    return 1;
+  }
+
+  size_t threads() const {
+    return 0;
+  }
+
   /*
     Documnetation for this interface is in the top-level context type.
    */
