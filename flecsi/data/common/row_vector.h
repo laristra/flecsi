@@ -32,7 +32,7 @@ struct row_vector_u {
   row_vector_u(size_t init_count) {
     count = init_count;
     capacity = count;
-    data = new T[count];
+    datap = new T[count];
   }
 
   row_vector_u(const row_vector_u<T> & rhs) = default;
@@ -42,79 +42,88 @@ struct row_vector_u {
   row_vector_u<T> & operator=(const row_vector_u<T> & rhs) = default;
 
   iterator begin() {
-    return data;
+    return datap;
   }
   iterator end() {
-    return data + count;
+    return datap + count;
   }
   const_iterator begin() const {
-    return data;
+    return datap;
   }
   const_iterator end() const {
-    return data + count;
+    return datap + count;
   }
 
   T & operator[](size_t index) {
     assert(index < count);
-    return data[index];
+    return datap[index];
   } // operator ()
 
   const T & operator[](size_t index) const {
     assert(index < count);
-    return data[index];
+    return datap[index];
   } // operator ()
 
   uint32_t size() const {
     return count;
   }
 
+  T * data() {
+    return datap;
+  }
+
+  const T * data() const {
+    return datap;
+  }
+
   void clear() {
     count = 0;
     capacity = 0;
-    delete[] data;
-    data = nullptr;
+    delete[] datap;
+    datap = nullptr;
   }
 
-  void resize(uint32_t new_count) {
-    if(new_count <= capacity) {
-      count = new_count;
+  void reserve(uint32_t new_cap) {
+    if(new_cap <= capacity) {
       return;
     }
 
-    auto new_data = new T[new_count];
-    std::copy_n(data, count, new_data);
-    delete[] data;
+    auto new_data = new T[new_cap];
+    std::copy_n(datap, count, new_data);
+    delete[] datap;
+    capacity = new_cap;
+    datap = new_data;
+  } // reserve
+
+  void resize(uint32_t new_count) {
+    reserve(new_count);
     count = new_count;
-    capacity = new_count;
-    data = new_data;
   } // resize
 
   void push_back(const T & value) {
     if(count == capacity) {
-      resize(count + 5);
-      count -= 5;
+      reserve(count + 5);
     }
-    data[count] = value;
+    datap[count] = value;
     count += 1;
   } // push_back
 
   void erase(const_iterator pos) {
-    auto idx = pos - data;
+    auto idx = pos - datap;
     assert(idx >= 0);
     assert(idx < count);
-    std::copy(data + idx + 1, end(), data + idx);
+    std::copy(datap + idx + 1, end(), datap + idx);
     count -= 1;
   } // erase
 
   iterator insert(const_iterator pos, const T & value) {
-    auto idx = pos - data;
+    auto idx = pos - datap;
     assert(idx >= 0);
     assert(idx <= count);
     if(count == capacity) {
-      resize(count + 5);
-      count -= 5;
+      reserve(count + 5);
     }
-    auto newpos = data + idx;
+    auto newpos = datap + idx;
     std::copy_backward(newpos, end(), end() + 1);
     *newpos = value;
     count += 1;
@@ -123,7 +132,7 @@ struct row_vector_u {
 
   uint32_t count = 0;
   uint32_t capacity = 0;
-  T * data = nullptr;
+  T * datap = nullptr;
 
 }; // row_vector_u
 
