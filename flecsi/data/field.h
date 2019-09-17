@@ -19,8 +19,8 @@
 
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/registration_wrapper.h>
+#include <flecsi/data/common/row_vector.h>
 #include <flecsi/data/common/serdez.h>
-#include <flecsi/data/common/simple_vector.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/utils/hash.h>
 
@@ -102,11 +102,11 @@ struct field_interface_u {
       int sid = NAME_HASH & 0x7FFFFFFF;
       if constexpr(STORAGE_CLASS == sparse) {
         Runtime::register_custom_serdez_op<
-          serdez_u<simple_vector_u<sparse_entry_value_u<DATA_TYPE>>>>(sid);
+          serdez_u<row_vector_u<sparse_entry_value_u<DATA_TYPE>>>>(sid);
       }
       else {
-        Runtime::register_custom_serdez_op<
-          serdez_u<simple_vector_u<DATA_TYPE>>>(sid);
+        Runtime::register_custom_serdez_op<serdez_u<row_vector_u<DATA_TYPE>>>(
+          sid);
       }
     } // if
 #endif

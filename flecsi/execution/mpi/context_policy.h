@@ -33,7 +33,7 @@
 #include <flecsi/coloring/index_coloring.h>
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/common/data_types.h>
-#include <flecsi/data/common/simple_vector.h>
+#include <flecsi/data/common/row_vector.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/mpi/future.h>
@@ -78,7 +78,7 @@ struct mpi_context_policy_t {
 
     size_t max_entries_per_index;
 
-    std::vector<data::simple_vector_u<uint8_t>> new_entries;
+    std::vector<data::row_vector_u<uint8_t>> new_entries;
   }; // sparse_field_data_t
 
   /*!

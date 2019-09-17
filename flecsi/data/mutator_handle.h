@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <stdint.h>
 
-#include <flecsi/data/common/simple_vector.h>
+#include <flecsi/data/common/row_vector.h>
 
 namespace flecsi {
 
@@ -32,7 +32,7 @@ class mutator_handle_base_u : public MUTATOR_POLICY
 public:
   using value_t = T;
 
-  using vector_t = data::simple_vector_u<T>;
+  using vector_t = data::row_vector_u<T>;
 
   struct partition_info_t {
     size_t count[3];

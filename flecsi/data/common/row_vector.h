@@ -22,24 +22,24 @@ namespace flecsi {
 namespace data {
 
 template<typename T>
-struct simple_vector_u {
+struct row_vector_u {
 
   using iterator = T *;
   using const_iterator = const T *;
 
-  simple_vector_u() {}
+  row_vector_u() {}
 
-  simple_vector_u(size_t init_count) {
+  row_vector_u(size_t init_count) {
     count = init_count;
     capacity = count;
     data = new T[count];
   }
 
-  simple_vector_u(const simple_vector_u<T> & rhs) = default;
+  row_vector_u(const row_vector_u<T> & rhs) = default;
 
-  ~simple_vector_u() = default;
+  ~row_vector_u() = default;
 
-  simple_vector_u<T> & operator=(const simple_vector_u<T> & rhs) = default;
+  row_vector_u<T> & operator=(const row_vector_u<T> & rhs) = default;
 
   iterator begin() {
     return data;
@@ -125,7 +125,7 @@ struct simple_vector_u {
   uint32_t capacity = 0;
   T * data = nullptr;
 
-}; // simple_vector_u
+}; // row_vector_u
 
 } // namespace data
 } // namespace flecsi

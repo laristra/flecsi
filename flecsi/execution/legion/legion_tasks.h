@@ -303,7 +303,7 @@ flecsi_internal_legion_task(owner_pos_compaction_task, void) {
  */
 
 flecsi_internal_legion_task(ghost_copy_task, void) {
-  using vector_t = data::simple_vector_u<uint8_t>;
+  using vector_t = data::row_vector_u<uint8_t>;
 
   const int my_color = runtime->find_local_MPI_rank();
 

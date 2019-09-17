@@ -477,7 +477,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     constexpr size_t num_regions = 3;
 
     using value_t = T;
-    using vector_t = data::simple_vector_u<T>;
+    using vector_t = data::row_vector_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     sparse_field_data_t * md;
@@ -540,7 +540,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     constexpr size_t num_regions = 3;
 
     using value_t = T;
-    using vector_t = data::simple_vector_u<T>;
+    using vector_t = data::row_vector_u<T>;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
     sparse_field_data_t * md;

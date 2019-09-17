@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include <flecsi/data/common/simple_vector.h>
+#include <flecsi/data/common/row_vector.h>
 
 namespace flecsi {
 
@@ -31,7 +31,7 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
    */
   using value_type = T;
 
-  using vector_t = data::simple_vector_u<T>;
+  using vector_t = data::row_vector_u<T>;
 
   //--------------------------------------------------------------------------//
   //! Default constructor.

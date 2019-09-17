@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <stdint.h>
 
-#include <flecsi/data/common/simple_vector.h>
+#include <flecsi/data/common/row_vector.h>
 
 namespace flecsi {
 namespace data {
@@ -30,10 +30,10 @@ class serdez_u
 };
 
 template<typename T>
-class serdez_u<simple_vector_u<T>>
+class serdez_u<row_vector_u<T>>
 {
 public:
-  typedef simple_vector_u<T> vector_t;
+  typedef row_vector_u<T> vector_t;
   // note:  following two defs are required by legion
   typedef vector_t FIELD_TYPE;
   static const size_t MAX_SERIALIZED_SIZE = 4096;
