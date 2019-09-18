@@ -26,7 +26,8 @@
 namespace flecsi {
 namespace topology {
 
-void canonical_topology_base::coloring::color(coloring & c) {
+void
+canonical_topology_base::coloring::color(coloring & c) {
 } // canonical_topology_base::coloring::color
 
 } // namespace topology
