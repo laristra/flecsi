@@ -17,22 +17,22 @@
 
 #include "context.hh"
 
+using namespace boost::program_options;
+
 namespace flecsi::runtime {
 
 int
-context_t::start(int argc, char ** argv) {
-
-  context_t & context_ = context_t::instance();
+context_t::start(int argc, char ** argv, variables_map &) {
 
   /*
     Register reduction operations.
    */
 
-  for(auto & ro : context_.reduction_registry()) {
+  for(auto & ro : reduction_registry()) {
     ro.second();
   } // for
 
-  return context_.top_level_action()(argc, argv);
+  return top_level_action()(argc, argv);
 }
 
 } // namespace flecsi::runtime

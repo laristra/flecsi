@@ -18,6 +18,8 @@
 #include <functional>
 #include <memory>
 
+#include <flecsi/execution/launch.hh>
+
 namespace flecsi {
 namespace execution {
 
@@ -31,7 +33,7 @@ namespace execution {
  @ingroup legion-execution
  */
 template<typename R, launch_type_t launch = launch_type_t::single>
-struct mpi_future_u {
+struct mpi_future {
   using result_t = R;
 
   /*!
@@ -65,22 +67,22 @@ struct mpi_future_u {
 
   result_t result_;
 
-}; // struct mpi_future_u
+}; // struct mpi_future
 
 /*!
  FIXME documentation
  */
 template<launch_type_t launch>
-struct mpi_future_u<void, launch> {
+struct mpi_future<void, launch> {
   /*!
    FIXME documentation
    */
   void wait() {}
 
-}; // struct mpi_future_u
+}; // struct mpi_future
 
 template<typename RETURN, launch_type_t launch>
-using flecsi_future = mpi_future_u<RETURN, launch>;
+using flecsi_future = mpi_future<RETURN, launch>;
 
 } // namespace execution
 } // namespace flecsi
