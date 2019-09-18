@@ -46,7 +46,7 @@ const cell_field_t cell_field;
 auto pressure = cell_field(canonical);
 
 int
-index_driver(int argc, char ** argv) {
+canonical_driver(int argc, char ** argv) {
 
   const std::string filename = "input.txt";
   coloring.allocate(filename);
@@ -55,4 +55,4 @@ index_driver(int argc, char ** argv) {
   return 0;
 } // index
 
-ftest_register_driver(index_driver);
+ftest_register_driver(canonical_driver);
