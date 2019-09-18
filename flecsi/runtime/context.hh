@@ -210,44 +210,6 @@ struct context {
   } // reduction_registry
 
   /*--------------------------------------------------------------------------*
-    Function interface.
-   *--------------------------------------------------------------------------*/
-
-  /*!
-    Register a funtion with the runtime. Internally, this interface is
-    used both for user-defined functions, and for task registration for MPI.
-
-    @tparam KEY       A hash key identifying the function.
-    @tparam RETURN    The return type of the function.
-    @tparam ARG_TUPLE A std::tuple of the function argument types.
-    @tparam FUNCTION  A pointer to the function.
-
-    @return a boolean indicating the succes or failure of the registration.
-   */
-
-  template<size_t KEY,
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE)>
-  bool register_function() {
-    flog_assert(function_registry_.find(KEY) == function_registry_.end(),
-      "function has already been registered");
-
-    // clang-format off
-    flog_devel(info) << "Registering function" << std::endl <<
-      "\thash: " << KEY << std::endl <<
-      "\taddress: " << reinterpret_cast<std::size_t>(FUNCTION) << std::endl <<
-      "\treturn type: " <<
-        utils::demangle(typeid(RETURN).name()) << std::endl <<
-      "\ttuple type: " <<
-        utils::demangle(typeid(ARG_TUPLE).name()) << std::endl;
-    // clang-format on
-
-    function_registry_[KEY] = reinterpret_cast<void *>(FUNCTION);
-    return true;
-  } // register_function
-
-  /*--------------------------------------------------------------------------*
     Coloring interface.
    *--------------------------------------------------------------------------*/
 
