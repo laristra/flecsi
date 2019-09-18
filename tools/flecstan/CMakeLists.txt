@@ -19,13 +19,13 @@ cmake_minimum_required(VERSION 3.8)
 
 # Version
 # fixme Reformulate for newer cmake
-set(flecstan_VERSION_MAJOR 0)
-set(flecstan_VERSION_MINOR 0)
-set(flecstan_VERSION_PATCH 0)
-configure_file (
-  "${PROJECT_SOURCE_DIR}/src/flecstan-config.h.in"
-  "${PROJECT_BINARY_DIR}/flecstan-config.h"
-)
+# set(flecstan_VERSION_MAJOR 0)
+# set(flecstan_VERSION_MINOR 0)
+# set(flecstan_VERSION_PATCH 0)
+# configure_file (
+#   "${PROJECT_SOURCE_DIR}/src/flecstan-config.h.in"
+#   "${PROJECT_BINARY_DIR}/flecstan-config.h"
+# )
 
 # Use cmake modules from cinch
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cinch/cmake)
