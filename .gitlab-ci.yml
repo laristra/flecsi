@@ -134,7 +134,8 @@ before_script:
     variables:
       - $RUNTIME == "mpi"
       - $RUNTIME == "hpx"
-      - $CI_JOB_NAME =~ "intel"
+      - $CI_JOB_NAME =~ /intel/
+      #- $CI_COMMIT_MESSAGE =~ /skip-end-to-end-tests/
 
 .cache_template: &cache_def
   cache:
