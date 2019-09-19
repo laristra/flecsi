@@ -242,14 +242,6 @@ struct context_t : context {
   }
 
   /*!
-    Invoke the current MPI task.
-   */
-
-  void invoke_mpi_task() {
-    return mpi_task_();
-  } // invoke_mpi_task
-
-  /*!
     Set the distributed-memory domain.
    */
 
@@ -264,59 +256,6 @@ struct context_t : context {
   const LegionRuntime::Arrays::Rect<1> & all_processes() const {
     return all_processes_;
   } // all_processes
-
-  /*!
-     Handoff to legion runtime from MPI.
-   */
-
-  void handoff_to_legion() {
-    {
-      flog_tag_guard(context);
-      flog_devel(info) << "In handoff_to_legion" << std::endl;
-    }
-    MPI_Barrier(MPI_COMM_WORLD);
-    handshake_.mpi_handoff_to_legion();
-  } // handoff_to_legion
-
-  /*!
-    Wait for Legion runtime to complete.
-   */
-
-  void wait_on_legion() {
-    {
-      flog_tag_guard(context);
-      flog_devel(info) << "In wait_on_legion" << std::endl;
-    }
-
-    handshake_.mpi_wait_on_legion();
-    MPI_Barrier(MPI_COMM_WORLD);
-  } // wait_on_legion
-
-  /*!
-    Handoff to MPI from Legion.
-   */
-
-  void handoff_to_mpi() {
-    {
-      flog_tag_guard(context);
-      flog_devel(info) << "In handoff_to_mpi" << std::endl;
-    }
-
-    handshake_.legion_handoff_to_mpi();
-  } // handoff_to_mpi
-
-  /*!
-    Wait for MPI runtime to complete task execution.
-   */
-
-  void wait_on_mpi() {
-    {
-      flog_tag_guard(context);
-      flog_devel(info) << "In wait_on_mpi" << std::endl;
-    }
-
-    handshake_.legion_wait_on_mpi();
-  } // wait_on_legion
 
   /*!
     Unset the MPI active state to pass execution back to
@@ -407,6 +346,67 @@ private:
   void finalize_global_topology();
   void finalize_default_index_coloring();
   void finalize_default_index_topology();
+
+  /*!
+     Handoff to legion runtime from MPI.
+   */
+
+  void handoff_to_legion() {
+    {
+      flog_tag_guard(context);
+      flog_devel(info) << "In handoff_to_legion" << std::endl;
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+    handshake_.mpi_handoff_to_legion();
+  } // handoff_to_legion
+
+  /*!
+    Wait for Legion runtime to complete.
+   */
+
+  void wait_on_legion() {
+    {
+      flog_tag_guard(context);
+      flog_devel(info) << "In wait_on_legion" << std::endl;
+    }
+
+    handshake_.mpi_wait_on_legion();
+    MPI_Barrier(MPI_COMM_WORLD);
+  } // wait_on_legion
+
+  /*!
+    Handoff to MPI from Legion.
+   */
+
+  void handoff_to_mpi() {
+    {
+      flog_tag_guard(context);
+      flog_devel(info) << "In handoff_to_mpi" << std::endl;
+    }
+
+    handshake_.legion_handoff_to_mpi();
+  } // handoff_to_mpi
+
+  /*!
+    Wait for MPI runtime to complete task execution.
+   */
+
+  void wait_on_mpi() {
+    {
+      flog_tag_guard(context);
+      flog_devel(info) << "In wait_on_mpi" << std::endl;
+    }
+
+    handshake_.legion_wait_on_mpi();
+  } // wait_on_legion
+
+  /*!
+    Invoke the current MPI task.
+   */
+
+  void invoke_mpi_task() {
+    mpi_task_();
+  } // invoke_mpi_task
 
   /*--------------------------------------------------------------------------*
     Runtime data.
