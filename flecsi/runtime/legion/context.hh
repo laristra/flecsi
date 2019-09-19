@@ -72,10 +72,6 @@ struct context_t : context {
     const std::vector<Legion::PhysicalRegion> & regions,
     Legion::Context ctx,
     Legion::Runtime * runtime);
-  friend void unset_call_mpi_task(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & regions,
-    Legion::Context ctx,
-    Legion::Runtime * runtime);
 
   /*!
      The registration_function_t type defines a function type for
@@ -211,23 +207,6 @@ struct context_t : context {
   //--------------------------------------------------------------------------//
 
   /*!
-    Set the MPI runtime state. When the state is changed to active,
-    the handshake interface will begin executing the current MPI task.
-
-    @return A boolean indicating the current MPI runtime state.
-   */
-
-  bool set_mpi_state(bool active) {
-    {
-      flog_tag_guard(context);
-      flog_devel(info) << "In set_mpi_state " << active << std::endl;
-    }
-
-    mpi_active_ = active;
-    return mpi_active_;
-  } // toggle_mpi_state
-
-  /*!
     Set the MPI user task. When control is given to the MPI runtime
     it will execute whichever function is currently set.
    */
@@ -256,16 +235,6 @@ struct context_t : context {
   const LegionRuntime::Arrays::Rect<1> & all_processes() const {
     return all_processes_;
   } // all_processes
-
-  /*!
-    Unset the MPI active state to pass execution back to
-    the Legion runtime.
-
-    @param ctx The Legion runtime context.
-    @param runtime The Legion task runtime pointer.
-   */
-
-  void unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
   /*!
     Switch execution to the MPI runtime.
@@ -401,11 +370,18 @@ private:
   } // wait_on_legion
 
   /*!
-    Invoke the current MPI task.
+    Invoke the current MPI task, if any, and clear it.
+
+    \return whether there was a task to invoke
    */
 
-  void invoke_mpi_task() {
-    mpi_task_();
+  bool invoke_mpi_task() {
+    const bool ret(mpi_task_);
+    if(ret) {
+      mpi_task_();
+      mpi_task_ = nullptr;
+    }
+    return ret;
   } // invoke_mpi_task
 
   /*--------------------------------------------------------------------------*
@@ -428,7 +404,6 @@ private:
    *--------------------------------------------------------------------------*/
 
   std::function<void()> mpi_task_;
-  bool mpi_active_ = false;
   Legion::MPILegionHandshake handshake_;
   LegionRuntime::Arrays::Rect<1> all_processes_;
 

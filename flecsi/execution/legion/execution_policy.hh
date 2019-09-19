@@ -155,9 +155,6 @@ reduce(ARGS &&... args) {
 
       // Wait for MPI to finish execution (synchronous).
       flecsi_context.wait_on_mpi(legion_context, legion_runtime);
-
-      // Reset the calling state to false.
-      flecsi_context.unset_call_mpi(legion_context, legion_runtime);
     } // if
   } // if
 #endif // FLECSI_ENABLE_FLOG
@@ -292,9 +289,6 @@ reduce(ARGS &&... args) {
 
       // Wait for MPI to finish execution (synchronous).
       flecsi_context.wait_on_mpi(legion_context, legion_runtime);
-
-      // Reset the calling state to false.
-      flecsi_context.unset_call_mpi(legion_context, legion_runtime);
 
       if constexpr(REDUCTION != ZERO) {
         // FIXME implement logic for reduction MPI task

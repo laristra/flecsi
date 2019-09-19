@@ -249,7 +249,6 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     auto & c = runtime::context_t::instance();
     c.set_mpi_task(
       [args = std::move(mpi_task_args)] { apply(F, std::move(args)); });
-    c.set_mpi_state(true);
 
     // FIXME: Refactor
     // finalize_handles_t finalize_handles;

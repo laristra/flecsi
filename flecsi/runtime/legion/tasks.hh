@@ -94,7 +94,6 @@ top_level_task(const Legion::Task * task,
     Finish up Legion runtime and fall back out to MPI.
    */
 
-  context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
 } // top_level_task
 
@@ -131,20 +130,6 @@ wait_on_mpi_task(const Legion::Task * task,
   context_t::instance().wait_on_mpi();
 } // handoff_to_mpi_task
 
-/*!
-  Interprocess communication to unset mpi execute state.
-
-  @ingroup legion-runtime
-*/
-
-inline void
-unset_call_mpi_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime) {
-  context_t::instance().set_mpi_state(false);
-} // unset_call_mpi_task
-
 #if defined(FLECSI_ENABLE_FLOG)
 
 /*!
@@ -170,7 +155,6 @@ flog_mpi_task(const Legion::Task * task,
   std::function<void()> bound_mpi_task = utils::flog::send_to_one;
 
   context_t::instance().set_mpi_task(bound_mpi_task);
-  context_t::instance().set_mpi_state(true);
 } // flog_mpi_task
 
 #endif // FLECSI_ENABLE_FLOG
