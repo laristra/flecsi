@@ -81,7 +81,10 @@ else()
     #MESSAGE( STATUS "${_library} links to ${_imported_targets}" )
   endforeach()
   # also need LLVM
-  list(APPEND CLANG_LIBRARIES LLVM)
+  # 2019-09-18 ...or maybe not. Now, at least, on Darwin, the presence of
+  # LLVM in the following line results in a build error if flecstan is ON,
+  # but compilation succeeds if the line is commented-out entirely.
+  # list(APPEND CLANG_LIBRARIES LLVM)
   # some debug
   MESSAGE( STATUS "Imported cmake config from: ${CLANG_CMAKE_DIR}")
 endif()
