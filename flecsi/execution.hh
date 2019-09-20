@@ -117,6 +117,7 @@ decltype(auto) reduce(ARGS &&... args);
     trivially-move-assignable, non-pointer type, any type that supports the
     Legion return-value serialization interface, or any of several standard
     containers of such types.
+    If \a ATTRIBUTES specifies an MPI task, parameters need merely be movable.
   @tparam LAUNCH_DOMAIN The launch domain id.
   @tparam ATTRIBUTES    The task attributes mask.
   @tparam ARGS The user-specified task arguments, implicitly converted to the
