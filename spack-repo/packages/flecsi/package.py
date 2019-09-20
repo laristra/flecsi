@@ -22,7 +22,7 @@ class Flecsi(CMakePackage):
     git      = 'https://github.com/laristra/flecsi.git'
 
     version('develop', branch='master', submodules=False)
-    variant('backend', default='mpi', values=('serial', 'mpi', 'legion'),
+    variant('backend', default='mpi', values=('hpx', 'mpi', 'legion'),
             description='Backend to use for distributed memory')
     variant('caliper', default=False,
             description='Enable Caliper Support')
