@@ -17,13 +17,13 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "../connectivity.hh"
 #include "../utility_types.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/unstructured_mesh/partition.hh>
 #include <flecsi/topology/unstructured_mesh/utils.hh>
-#endif
 
 #include <array>
 #include <cassert>

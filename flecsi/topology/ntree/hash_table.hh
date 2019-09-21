@@ -16,7 +16,6 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
 #endif
 
 #include "flecsi/runtime/context.hh"

@@ -17,10 +17,10 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include <flecsi/utils/bitutils.hh>
 #include <flecsi/utils/typeify.hh>
-#endif
 
 #include <cstddef>
 #include <tuple>

@@ -12,6 +12,8 @@
    All rights reserved.
                                                                               */
 #define __FLECSI_PRIVATE__
+#include <flecsi/data.hh>
+
 #include <flecsi/utils/ftest.hh>
 #include <flecsi/utils/geometry/filling_curve.hh>
 #include <flecsi/utils/geometry/point.hh>
@@ -20,7 +22,7 @@
 
 using namespace flecsi;
 
-class tree_policy
+struct sph_tree_policy
 {
   static constexpr size_t dimension = 3;
   using element_t = double;
@@ -31,13 +33,20 @@ class tree_policy
   using tree_entity_t = flecsi::topology::ntree_entity_holder<dimension, key_t>;
   using entity_t = flecsi::topology::ntree_entity<dimension, key_t>;
   using node_t = flecsi::topology::ntree_node<dimension, tree_entity_t, key_t>;
-}; // class tree_policy
+}; // sph_tree_policy
 
-// Register a tree topology
-// flecsi_register_topology(ntree_topology_t<tree_policy>,"ntree","test_tree");
+using sph_ntree_topology = data::topology_reference<topology::ntree_topology<sph_tree_policy>>;
+sph_ntree_topology sph_ntree; 
+sph_ntree_topology::coloring coloring; 
 
 int
-ntree_sanity(int argc, char ** argv) {
+ntree_driver(int argc, char ** argv) {
   FTEST();
+
+  coloring.allocate(); 
+  sph_ntree.allocate(coloring); 
+
   return 0;
 } // TEST
+
+ftest_register_driver(ntree_driver);

@@ -21,10 +21,9 @@
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
-#else
-#include "../field_info.hh"
-#endif
+#endif 
 
+#include "../field_info.hh"
 #include <legion.h>
 
 #include <unordered_map>

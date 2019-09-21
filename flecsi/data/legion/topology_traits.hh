@@ -174,6 +174,14 @@ struct topology_traits<topology::canonical_topology<POLICY_TYPE>> {
 template<typename POLICY_TYPE>
 struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
 
+  template<typename... ARGS>
+  static void allocate_coloring(
+    data_reference_base_t const & coloring_reference,
+    ARGS &&... args) {} // allocate_coloring
+
+  static void deallocate_coloring(
+    data_reference_base_t const & coloring_reference) {} // deallocate_coloring
+
   // Distribute the entities on the different processes
   // Create the tree data structure locally
   static void allocate(data_reference_base_t const & topology_reference,

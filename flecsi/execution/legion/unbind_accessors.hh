@@ -19,13 +19,13 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "flecsi/data/privilege.hh"
 #include "flecsi/data/storage_classes.hh"
 #include "flecsi/runtime/context.hh"
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
-#endif
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
