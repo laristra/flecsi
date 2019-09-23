@@ -19,7 +19,8 @@
 # ------------------------
 
 COMPILE='
-   g++ -Isrc -std=c++17 -pthread -fno-rtti -O3 -pedantic -Wall -s '
+   g++ -Isrc -std=c++17 -pthread -fno-rtti -pedantic
+  -O3 -Wall -Wno-comment -Wno-strict-aliasing -s '
 
 LIBRARIES='
  -Wl,--start-group
@@ -37,11 +38,13 @@ LIBRARIES='
  -lLLVMBinaryFormat
  -lLLVMBitReader
  -lLLVMCore
+ -lLLVMDemangle
  -lLLVMMC
  -lLLVMMCParser
  -lLLVMOption
  -lLLVMProfileData
  -lLLVMSupport
+ -lcurses
  -lz
  -Wl,--end-group'
 
@@ -58,7 +61,6 @@ $COMPILE \
    src/flecstan-yaml.cc \
    src/flecstan-utility.cc \
    src/flecstan-diagnostic.cc \
-   src/flecstan-macro.cc \
    src/flecstan-analysis.cc \
    src/flecstan-prep.cc \
    src/flecstan-visitor.cc \
