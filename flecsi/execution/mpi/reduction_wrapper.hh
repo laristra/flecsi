@@ -67,7 +67,7 @@ struct reduction_wrapper {
     } // scope
 
     // Get the runtime context
-    auto & context_ = context_t::instance();
+    auto & context_ = runtime::context_t::instance();
 
     // Get a reference to the operator map
     auto & reduction_ops = context_.reduction_operations();

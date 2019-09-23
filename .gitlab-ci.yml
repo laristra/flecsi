@@ -124,9 +124,18 @@ before_script:
 .general_template: &general_def
   retry: 1
   only:
-    - merge_requests
-    - master
-    - feature/refactor
+    refs:
+      - merge_requests
+      - master
+      - refactor
+  except:
+    variables:
+      - $RUNTIME == "mpi"
+      - $RUNTIME == "hpx"
+      - $CI_JOB_STAGE == "Tutorials"
+      - $CI_JOB_STAGE == "Apps"
+      #- $CI_JOB_NAME =~ /intel/
+      #- $CI_COMMIT_MESSAGE =~ /skip-end-to-end-tests/
 
 .cache_template: &cache_def
   cache:

@@ -357,9 +357,7 @@ legion_io_policy_t::add_regions(legion_hdf5_t & hdf5_file,
 
 void
 legion_io_policy_t::add_default_index_topology(hdf5_t & hdf5_file) {
-  constexpr size_t identifier =
-    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-      flecsi_internal_string_hash("index_topology")>();
+  constexpr size_t identifier = flecsi_index_topology.identifier();
 
   auto & flecsi_context = runtime::context_t::instance();
   data::legion::index_runtime_data_t & index_runtime_data =
@@ -501,9 +499,7 @@ legion_io_policy_t::checkpoint_default_index_topology(
       .field_info();
   printf("checkpoint fid vector size %ld\n", fid_vector.size());
 
-  constexpr size_t identifier =
-    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-      flecsi_internal_string_hash("index_topology")>();
+  constexpr size_t identifier = flecsi_index_topology.identifier();
 
   data::legion::index_runtime_data_t & index_runtime_data =
     flecsi_context.index_topology_instance(identifier);
@@ -535,9 +531,7 @@ legion_io_policy_t::checkpoint_index_topology_field(hdf5_t & hdf5_file,
       .get_field_info(fh.identifier());
   printf("checkpoint fid %ld\n", fid.fid);
 
-  constexpr size_t identifier =
-    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-      flecsi_internal_string_hash("index_topology")>();
+  constexpr size_t identifier = flecsi_index_topology.identifier();
 
   data::legion::index_runtime_data_t & index_runtime_data =
     flecsi_context.index_topology_instance(identifier);
@@ -563,9 +557,7 @@ legion_io_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
       .field_info();
   printf("recover fid vector size %ld\n", fid_vector.size());
 
-  constexpr size_t identifier =
-    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-      flecsi_internal_string_hash("index_topology")>();
+  constexpr size_t identifier = flecsi_index_topology.identifier();
 
   data::legion::index_runtime_data_t & index_runtime_data =
     flecsi_context.index_topology_instance(identifier);
@@ -597,9 +589,7 @@ legion_io_policy_t::recover_index_topology_field(hdf5_t & hdf5_file,
       .get_field_info(fh.identifier());
   printf("recover fid %ld\n", fid.fid);
 
-  constexpr size_t identifier =
-    utils::hash::topology_hash<flecsi_internal_string_hash("internal"),
-      flecsi_internal_string_hash("index_topology")>();
+  constexpr size_t identifier = flecsi_index_topology.identifier();
 
   data::legion::index_runtime_data_t & index_runtime_data =
     flecsi_context.index_topology_instance(identifier);
