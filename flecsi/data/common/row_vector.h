@@ -29,17 +29,26 @@ struct row_vector_u {
 
   row_vector_u() {}
 
-  row_vector_u(size_t init_count) {
+  row_vector_u(uint32_t init_count) {
     count = init_count;
     capacity = count;
     datap = new T[count];
   }
 
-  row_vector_u(const row_vector_u<T> & rhs) = default;
+  row_vector_u(const row_vector_u<T> & rhs) {
+    if(&rhs != this)
+      assign(rhs.begin(), rhs.end());
+  }
 
-  ~row_vector_u() = default;
+  ~row_vector_u() {
+    delete[] datap;
+  }
 
-  row_vector_u<T> & operator=(const row_vector_u<T> & rhs) = default;
+  row_vector_u<T> & operator=(const row_vector_u<T> & rhs) {
+    if(&rhs != this)
+      assign(rhs.begin(), rhs.end());
+    return *this;
+  }
 
   iterator begin() {
     return datap;
@@ -54,12 +63,12 @@ struct row_vector_u {
     return datap + count;
   }
 
-  T & operator[](size_t index) {
+  T & operator[](uint32_t index) {
     assert(index < count);
     return datap[index];
   } // operator ()
 
-  const T & operator[](size_t index) const {
+  const T & operator[](uint32_t index) const {
     assert(index < count);
     return datap[index];
   } // operator ()
@@ -81,6 +90,14 @@ struct row_vector_u {
     capacity = 0;
     delete[] datap;
     datap = nullptr;
+  }
+
+  void assign(const_iterator first, const_iterator last) {
+    delete[] datap;
+    count = last - first;
+    capacity = count;
+    datap = new T[count];
+    std::copy(first, last, datap);
   }
 
   void reserve(uint32_t new_cap) {

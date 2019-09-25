@@ -54,7 +54,7 @@ public:
     std::memcpy(buf, &count, sizeof(int_t));
     buf += sizeof(int_t);
     int_t s = count * sizeof(T);
-    if(s && val.data())
+    if(s)
       std::memcpy(buf, val.data(), s);
     return s + sizeof(int_t);
   }
@@ -66,13 +66,13 @@ public:
     buf += sizeof(int_t);
     val.resize(count);
     int_t s = count * sizeof(T);
-    if(s && val.data())
+    if(s)
       std::memcpy(val.data(), buf, s);
     return s + sizeof(int_t);
   }
 
   static void destroy(vector_t & val) {
-    val.clear();
+    val.~vector_t();
   }
 };
 
