@@ -54,16 +54,15 @@ struct storage_class_u<ragged> {
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle_u = ragged_data_handle_u<T, EP, SP, GP>;
+  template<typename T>
+  using handle_u = ragged_data_handle_u<T>;
 
   template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static handle_u<DATA_TYPE, 0, 0, 0> get_handle(
-    const data_client_t & data_client) {
+  static handle_u<DATA_TYPE> get_handle(const data_client_t & data_client) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
@@ -87,7 +86,7 @@ struct storage_class_u<ragged> {
 
     const size_t max_entries_per_index = iitr->second.max_entries_per_index;
 
-    handle_u<DATA_TYPE, 0, 0, 0> h;
+    handle_u<DATA_TYPE> h;
 
     h.max_entries_per_index = max_entries_per_index;
 

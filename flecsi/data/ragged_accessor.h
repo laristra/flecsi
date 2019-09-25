@@ -64,10 +64,7 @@ struct accessor_u<data::ragged,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
                        public ragged_accessor_base_t {
-  using handle_t = ragged_data_handle_u<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
+  using handle_t = ragged_data_handle_u<T>;
 
   using value_t = T;
   using vector_t = typename handle_t::vector_t;
@@ -79,8 +76,7 @@ struct accessor_u<data::ragged,
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
-  accessor_u(const ragged_data_handle_u<T, 0, 0, 0> & h)
-    : handle(reinterpret_cast<const handle_t &>(h)) {}
+  accessor_u(const ragged_data_handle_u<T> & h) : handle(h) {}
 
   T & operator()(size_t index, size_t ragged_index) {
     vector_t & row = handle.new_entries[index];

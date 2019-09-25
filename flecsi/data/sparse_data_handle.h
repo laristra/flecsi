@@ -19,11 +19,7 @@
 
 namespace flecsi {
 
-template<typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS,
-  typename DATA_POLICY>
+template<typename T, typename DATA_POLICY>
 struct ragged_data_handle_base_u : public DATA_POLICY {
 
   /*!
@@ -88,44 +84,22 @@ namespace flecsi {
 //! The data_handle_u type is the high-level data handle type.
 //!
 //! @tparam T                     The data type referenced by the handle.
-//! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-//!                               indices of the index partition.
-//! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-//!                               indices of the index partition.
-//! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-//!                               indices of the index partition.
 //! @tparam DATA_POLICY           The data policy for this handle type.
 //!
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-template<typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS>
-using ragged_data_handle_u = ragged_data_handle_base_u<T,
-  EXCLUSIVE_PERMISSIONS,
-  SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS,
-  FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
+template<typename T>
+using ragged_data_handle_u =
+  ragged_data_handle_base_u<T, FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
 
-template<typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS,
-  typename DATA_POLICY>
+template<typename T, typename DATA_POLICY>
 struct sparse_data_handle_base_u
   : public ragged_data_handle_base_u<data::sparse_entry_value_u<T>,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS,
       FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY> {
 
   using entry_value_t = data::sparse_entry_value_u<T>;
   using base_t = ragged_data_handle_base_u<entry_value_t,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS,
     FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
 
   /*!
@@ -152,14 +126,8 @@ struct sparse_data_handle_base_u
 
 }; // sparse_data_handle_base_u
 
-template<typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS>
-using sparse_data_handle_u = sparse_data_handle_base_u<T,
-  EXCLUSIVE_PERMISSIONS,
-  SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS,
-  FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
+template<typename T>
+using sparse_data_handle_u =
+  sparse_data_handle_base_u<T, FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
 
 } // namespace flecsi
