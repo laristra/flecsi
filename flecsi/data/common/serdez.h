@@ -64,10 +64,7 @@ public:
     int_t count;
     std::memcpy(&count, buf, sizeof(int_t));
     buf += sizeof(int_t);
-    // some C++ magic to construct object in uninitialized memory
-    // this assumes val is uninitialized - which is always true,
-    // as far as I can tell
-    new(&val) vector_t(count);
+    val.resize(count);
     int_t s = count * sizeof(T);
     if(s && val.data())
       std::memcpy(val.data(), buf, s);
