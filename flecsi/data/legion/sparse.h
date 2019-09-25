@@ -220,7 +220,6 @@ struct storage_class_u<ragged> {
     h.fid = field_info.fid;
     h.index_space = index_space;
     h.data_client_hash = field_info.data_client_hash;
-    h.slots = slots;
 
     return h;
   }
