@@ -147,21 +147,18 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
           h.exclusive_pr = prs[r];
           h.exclusive_data = h.exclusive_size == 0 ? nullptr : h.combined_data;
           h.exclusive_buf = data[r];
-          h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
           break;
         case 1: // Shared
           h.shared_size = sizes[r];
           h.shared_pr = prs[r];
           h.shared_data = h.shared_size == 0 ? nullptr : h.combined_data + pos;
           h.shared_buf = data[r];
-          h.shared_priv = SHARED_PERMISSIONS;
           break;
         case 2: // Ghost
           h.ghost_size = sizes[r];
           h.ghost_pr = prs[r];
           h.ghost_data = h.ghost_size == 0 ? nullptr : h.combined_data + pos;
           h.ghost_buf = data[r];
-          h.ghost_priv = GHOST_PERMISSIONS;
           break;
         default:
           clog_fatal("invalid permissions case");
