@@ -43,8 +43,6 @@ struct legion_sparse_data_handle_policy_t {
 
   field_id_t fid;
 
-  size_t max_entries_per_index;
-
   // These depend on color but are only used in specifying
   // the region requirements
   Legion::LogicalRegion offsets_entire_region;
