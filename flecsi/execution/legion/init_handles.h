@@ -532,7 +532,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     constexpr size_t num_regions = 3;
 

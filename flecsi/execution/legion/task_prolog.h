@@ -286,7 +286,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       return;
     }
 
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     auto & flecsi_context = context_t::instance();
     const int my_color = runtime->find_local_MPI_rank();

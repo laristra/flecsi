@@ -269,7 +269,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
 

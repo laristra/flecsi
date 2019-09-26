@@ -44,7 +44,7 @@ struct finalize_handles_t
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     using value_t = T;
 

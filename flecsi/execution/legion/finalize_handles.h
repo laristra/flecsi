@@ -70,7 +70,7 @@ struct finalize_handles_t
     using value_t = T;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 

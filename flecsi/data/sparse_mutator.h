@@ -81,7 +81,7 @@ struct mutator_u<data::sparse, T>
   } // operator ()
 
   void dump() {
-    auto & h_ = base_t::h_;
+    auto & h_ = base_t::handle;
     std::size_t i = 0;
     const auto f = [&](const char * l, std::size_t n) {
       std::cout << l << ": \n";
@@ -119,7 +119,7 @@ struct mutator_u<data::sparse, T>
   // than 'entry'
   entry_value_t *
   lower_bound(size_t index, size_t entry, size_t * pos = nullptr) {
-    auto & h_ = base_t::h_;
+    auto & h_ = base_t::handle;
     assert(h_.new_entries && "uninitialized mutator");
     assert(index < h_.num_total_);
 
@@ -145,7 +145,7 @@ struct mutator_u<data::sparse, T>
   // for row 'index', return pointer to first entry not less
   // than 'entry'
   const entry_value_t * lower_bound(size_t index, size_t entry) const {
-    auto & h_ = base_t::h_;
+    auto & h_ = base_t::handle;
     assert(h_.new_entries && "uninitialized mutator");
     assert(index < h_.num_total_);
 
@@ -173,7 +173,7 @@ struct mutator_u<data::sparse, T>
   //! Return all entries used over all indices.
   //-------------------------------------------------------------------------//
   index_space_t entries() const {
-    auto & h_ = base_t::h_;
+    auto & h_ = base_t::handle;
     size_t id = 0;
     index_space_t is;
     std::unordered_set<size_t> found;
@@ -196,7 +196,7 @@ struct mutator_u<data::sparse, T>
   //! Return all entries used over the specified index.
   //-------------------------------------------------------------------------//
   index_space_t entries(size_t index) const {
-    auto & h_ = base_t::h_;
+    auto & h_ = base_t::handle;
     clog_assert(index < h_.num_total_, "sparse mutator: index out of bounds");
 
     size_t id = 0;
@@ -214,7 +214,7 @@ struct mutator_u<data::sparse, T>
   //! Return all indices allocated.
   //-------------------------------------------------------------------------//
   index_space_t indices() const {
-    auto & h_ = base_t::h_;
+    auto & h_ = base_t::handle;
     index_space_t is;
     size_t id = 0;
 
@@ -233,7 +233,7 @@ struct mutator_u<data::sparse, T>
   //! Return all indices allocated for a given entry.
   //-------------------------------------------------------------------------//
   index_space_t indices(size_t entry) const {
-    auto & h_ = base_t::h_;
+    auto & h_ = base_t::handle;
     index_space_t is;
     size_t id = 0;
 

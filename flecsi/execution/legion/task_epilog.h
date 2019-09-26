@@ -134,7 +134,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     if((*h.write_phase_started)) {
       clog(trace) << " WRITE PHASE EPILOGUE" << std::endl;
