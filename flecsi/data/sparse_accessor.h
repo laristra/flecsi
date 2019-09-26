@@ -63,30 +63,25 @@ struct accessor_u<data::sparse,
   T,
   EXCLUSIVE_PERMISSIONS,
   SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS> : public accessor_u<data::ragged,
-                         data::sparse_entry_value_u<T>,
+  GHOST_PERMISSIONS> : public accessor_u<data::base,
+                         T,
                          EXCLUSIVE_PERMISSIONS,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
                        public sparse_accessor_base_t {
+private:
   using entry_value_t = data::sparse_entry_value_u<T>;
-  using base_t = accessor_u<data::ragged,
-    entry_value_t,
+  using ragged_t = ragged_accessor<entry_value_t,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
-  using vector_t = typename base_t::handle_t::vector_t;
+  using vector_t = typename ragged_t::handle_t::vector_t;
 
+public:
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
 
-  //-------------------------------------------------------------------------//
-  //! Copy constructor.
-  //-------------------------------------------------------------------------//
-
-  accessor_u(const accessor_u & a) : base_t(a) {}
-
-  accessor_u(const typename base_t::handle_t & h) : base_t(h) {}
+  accessor_u(const typename ragged_t::handle_t & h) : ragged(h) {}
 
   //-------------------------------------------------------------------------//
   //! Main accessor
@@ -134,7 +129,7 @@ struct accessor_u<data::sparse,
   // for row 'index', return pointer to first entry not less
   // than 'entry'
   entry_value_t * lower_bound(size_t index, size_t entry) {
-    auto & handle = base_t::handle;
+    auto & handle = ragged.handle;
     assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
 
     vector_t & row = handle.new_entries[index];
@@ -154,7 +149,7 @@ struct accessor_u<data::sparse,
   // for row 'index', return pointer to first entry not less
   // than 'entry'
   const entry_value_t * lower_bound(size_t index, size_t entry) const {
-    auto & handle = base_t::handle;
+    auto & handle = ragged.handle;
     assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
 
     const vector_t & row = handle.new_entries[index];
@@ -181,7 +176,7 @@ struct accessor_u<data::sparse,
   //! Return all entries used over all indices.
   //-------------------------------------------------------------------------//
   index_space_t entries() const {
-    auto & handle = base_t::handle;
+    auto & handle = ragged.handle;
     size_t id = 0;
     index_space_t is;
     std::unordered_set<size_t> found;
@@ -205,7 +200,7 @@ struct accessor_u<data::sparse,
   //! Return all entries used over the specified index.
   //-------------------------------------------------------------------------//
   index_space_t entries(size_t index) const {
-    auto & handle = base_t::handle;
+    auto & handle = ragged.handle;
     clog_assert(
       index < handle.num_total_, "sparse accessor: index out of bounds");
 
@@ -224,7 +219,7 @@ struct accessor_u<data::sparse,
   //! Return all indices allocated.
   //-------------------------------------------------------------------------//
   index_space_t indices() const {
-    auto & handle = base_t::handle;
+    auto & handle = ragged.handle;
     index_space_t is;
     size_t id = 0;
 
@@ -242,7 +237,7 @@ struct accessor_u<data::sparse,
   //! Return all indices allocated for a given entry.
   //-------------------------------------------------------------------------//
   index_space_t indices(size_t entry) const {
-    auto & handle = base_t::handle;
+    auto & handle = ragged.handle;
     index_space_t is;
     size_t id = 0;
 
@@ -257,7 +252,7 @@ struct accessor_u<data::sparse,
   }
 
   void dump() const {
-    auto & handle = base_t::handle;
+    auto & handle = ragged.handle;
     for(size_t i = 0; i < handle.num_total_; ++i) {
       const auto & row = handle.new_entries[index];
       std::cout << "index: " << i << std::endl;
@@ -271,9 +266,11 @@ struct accessor_u<data::sparse,
   //! Return the maximum possible entries
   //-------------------------------------------------------------------------//
   auto max_entries() const noexcept {
-    auto & handle = base_t::handle;
+    auto & handle = ragged.handle;
     return handle.max_entries_per_index;
   }
+
+  ragged_t ragged;
 };
 
 template<typename T,

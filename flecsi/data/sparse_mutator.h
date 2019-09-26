@@ -46,14 +46,13 @@ struct sparse_mutator_base_t {};
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct mutator_u<data::sparse, T>
-  : public mutator_u<data::ragged, data::sparse_entry_value_u<T>>,
-    public sparse_mutator_base_t {
+struct mutator_u<data::sparse, T> : public mutator_u<data::base, T>,
+                                    public sparse_mutator_base_t {
+private:
   using entry_value_t = data::sparse_entry_value_u<T>;
+  using ragged_t = mutator_u<data::ragged, entry_value_t>;
 
-  using base_t = mutator_u<data::ragged, entry_value_t>;
-  using typename base_t::handle_t;
-
+public:
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
 
@@ -61,7 +60,7 @@ struct mutator_u<data::sparse, T>
   //! Copy constructor.
   //--------------------------------------------------------------------------//
 
-  mutator_u(const handle_t & h) : base_t(h) {}
+  mutator_u(const typename ragged_t::handle_t & h) : ragged(h) {}
 
   T & operator()(size_t index, size_t entry) {
     size_t ragged_idx;
@@ -74,14 +73,13 @@ struct mutator_u<data::sparse, T>
     }
 
     // otherwise, create a new entry
-    auto & ragged = static_cast<base_t &>(*this);
     auto ritr = ragged.insert(index, ragged_idx, {entry, T()});
     return ritr->value;
 
   } // operator ()
 
   void dump() {
-    auto & h_ = base_t::handle;
+    auto & h_ = ragged.handle;
     std::size_t i = 0;
     const auto f = [&](const char * l, std::size_t n) {
       std::cout << l << ": \n";
@@ -110,7 +108,6 @@ struct mutator_u<data::sparse, T>
     }
 
     // otherwise, erase
-    auto & ragged = static_cast<base_t &>(*this);
     ragged.erase(index, ragged_idx);
 
   } // erase
@@ -119,7 +116,7 @@ struct mutator_u<data::sparse, T>
   // than 'entry'
   entry_value_t *
   lower_bound(size_t index, size_t entry, size_t * pos = nullptr) {
-    auto & h_ = base_t::handle;
+    auto & h_ = ragged.handle;
     assert(h_.new_entries && "uninitialized mutator");
     assert(index < h_.num_total_);
 
@@ -145,7 +142,7 @@ struct mutator_u<data::sparse, T>
   // for row 'index', return pointer to first entry not less
   // than 'entry'
   const entry_value_t * lower_bound(size_t index, size_t entry) const {
-    auto & h_ = base_t::handle;
+    auto & h_ = ragged.handle;
     assert(h_.new_entries && "uninitialized mutator");
     assert(index < h_.num_total_);
 
@@ -173,7 +170,7 @@ struct mutator_u<data::sparse, T>
   //! Return all entries used over all indices.
   //-------------------------------------------------------------------------//
   index_space_t entries() const {
-    auto & h_ = base_t::handle;
+    auto & h_ = ragged.handle;
     size_t id = 0;
     index_space_t is;
     std::unordered_set<size_t> found;
@@ -196,7 +193,7 @@ struct mutator_u<data::sparse, T>
   //! Return all entries used over the specified index.
   //-------------------------------------------------------------------------//
   index_space_t entries(size_t index) const {
-    auto & h_ = base_t::handle;
+    auto & h_ = ragged.handle;
     clog_assert(index < h_.num_total_, "sparse mutator: index out of bounds");
 
     size_t id = 0;
@@ -214,7 +211,7 @@ struct mutator_u<data::sparse, T>
   //! Return all indices allocated.
   //-------------------------------------------------------------------------//
   index_space_t indices() const {
-    auto & h_ = base_t::handle;
+    auto & h_ = ragged.handle;
     index_space_t is;
     size_t id = 0;
 
@@ -233,7 +230,7 @@ struct mutator_u<data::sparse, T>
   //! Return all indices allocated for a given entry.
   //-------------------------------------------------------------------------//
   index_space_t indices(size_t entry) const {
-    auto & h_ = base_t::handle;
+    auto & h_ = ragged.handle;
     index_space_t is;
     size_t id = 0;
 
@@ -247,6 +244,7 @@ struct mutator_u<data::sparse, T>
     return is;
   } // indices(index)
 
+  ragged_t ragged;
 }; // mutator_u
 
 template<typename T>
