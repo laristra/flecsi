@@ -119,6 +119,7 @@ public:
   size_t num_slots_;
   size_t num_entries_;
   vector_t * new_entries_ = nullptr;
+  std::size_t index_space, data_client_hash;
 
 }; // mutator_handle_base_u
 

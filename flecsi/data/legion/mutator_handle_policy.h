@@ -39,8 +39,6 @@ struct legion_mutator_handle_policy_t {
   bool * write_phase_started;
 
   field_id_t fid;
-  size_t index_space;
-  size_t data_client_hash;
   size_t slots;
 
   // These depend on color but are only used in specifying
