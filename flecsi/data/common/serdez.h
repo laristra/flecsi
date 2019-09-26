@@ -72,7 +72,7 @@ public:
   }
 
   static void destroy(vector_t & val) {
-    val.~vector_t();
+    val.clear();
   }
 };
 

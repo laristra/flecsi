@@ -36,8 +36,7 @@ struct row_vector_u {
   }
 
   row_vector_u(const row_vector_u<T> & rhs) {
-    if(&rhs != this)
-      assign(rhs.begin(), rhs.end());
+    assign(rhs.begin(), rhs.end());
   }
 
   ~row_vector_u() {
