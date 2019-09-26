@@ -104,20 +104,8 @@ struct accessor_u<data::sparse,
     return itr->value;
   } // operator ()
 
-  //-------------------------------------------------------------------------//
-  //! Main accessor (const version)
-  //!
-  //! Access a sparse element.  Return an emtpy value if not found.  The empty
-  //! value is specified by the default constructor of the underlying type.
-  //-------------------------------------------------------------------------//
   const T & operator()(size_t index, size_t entry) const {
-    auto itr = lower_bound(index, entry);
-    assert(itr && itr->entry == entry && "sparse accessor: unmapped entry");
-
-    if(itr && itr->entry == entry)
-      return itr->value;
-    else
-      return T{};
+    return const_cast<accessor_u &>(*this)(index, entry);
   } // operator ()
 
   //! a struct used for accessing elements.
