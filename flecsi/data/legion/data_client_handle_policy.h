@@ -101,6 +101,10 @@ struct legion_data_client_handle_policy_t {
   data_client_handle_adjacency_t handle_adjacencies[MAX_ADJACENCIES];
   data_client_handle_index_subspace_t
     handle_index_subspaces[MAX_INDEX_SUBSPACES];
+
+  bool * ghost_is_readable;
+  bool * write_phase_started;
+
 }; // struct data_client_handle_policy_t
 
 } // namespace flecsi

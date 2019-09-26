@@ -426,6 +426,13 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
       ++handle_index;
     }
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+    h.ghost_is_readable =
+      &(ism[h.handle_adjacencies[0].adj_index_space].ghost_is_readable[0]);
+    h.write_phase_started =
+      &(ism[h.handle_adjacencies[0].adj_index_space].write_phase_started[0]);
+#endif
+
     auto & issm = context.index_subspace_data_map();
 
     index_subspace_walker_u<POLICY_TYPE> index_subspace_walker;

@@ -650,6 +650,8 @@ runtime_driver(const Legion::Task * task,
     ispace_dmap[idx].entire_region = adjacency.logical_region;
     ispace_dmap[idx].color_partition = runtime->get_logical_partition(
       ctx, adjacency.logical_region, adjacency.index_partition);
+    ispace_dmap[idx].ghost_is_readable[0] = true;
+    ispace_dmap[idx].write_phase_started[0] = true;
   }
 
   // add subspace info to context

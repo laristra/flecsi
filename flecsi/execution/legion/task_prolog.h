@@ -456,6 +456,35 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     handle(static_cast<base_t &>(m));
   }
 
+  template<typename T, size_t PERMISSIONS>
+  typename std::enable_if_t<
+    std::is_base_of<topology::mesh_topology_base_t, T>::value>
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+
+    auto & flecsi_context = context_t::instance();
+    const int my_color = runtime->find_local_MPI_rank();
+    bool read_phase, write_phase;
+    read_phase = (PERMISSIONS == ro);
+    write_phase = (PERMISSIONS == wo) || (PERMISSIONS == rw);
+
+    if(read_phase) {
+      if(!*(h.ghost_is_readable)) {
+        clog_tag_guard(prolog);
+        clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE"
+                    << std::endl;
+
+        *(h.ghost_is_readable) = true;
+
+      } // !ghost_is_readable
+    } // read_phase
+
+    if(write_phase && (*h.ghost_is_readable)) {
+
+      *(h.ghost_is_readable) = false;
+      *(h.write_phase_started) = true;
+    } // if
+  }
+
   /*!
    Handle individual list items
    */

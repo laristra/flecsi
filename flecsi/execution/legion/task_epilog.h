@@ -149,6 +149,25 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     handle(static_cast<base_t &>(m));
   }
 
+  template<typename T, size_t PERMISSIONS>
+  typename std::enable_if_t<
+    std::is_base_of<topology::mesh_topology_base_t, T>::value>
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+    bool write_phase;
+    write_phase = (PERMISSIONS == wo) || (PERMISSIONS == rw);
+
+    if(write_phase && (*h.write_phase_started)) {
+      {
+        clog(trace) << " WRITE PHASE EPILOGUE" << std::endl;
+      } // scope
+
+      // As user
+      // Phase READ
+      *(h.write_phase_started) = false;
+      // better to move copy here than in prolog
+    } // if write phase
+  }
+
   /*!
    Handle individual list items
    */
