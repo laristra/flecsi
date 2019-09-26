@@ -97,41 +97,4 @@ template<typename T>
 using ragged_data_handle_u =
   ragged_data_handle_base_u<T, FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
 
-template<typename T, typename DATA_POLICY>
-struct sparse_data_handle_base_u
-  : public ragged_data_handle_base_u<data::sparse_entry_value_u<T>,
-      FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY> {
-
-  using entry_value_t = data::sparse_entry_value_u<T>;
-  using base_t = ragged_data_handle_base_u<entry_value_t,
-    FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
-
-  /*!
-    Capture the underlying data type.
-   */
-  using value_type = T;
-
-  //--------------------------------------------------------------------------//
-  //! Default constructor.
-  //--------------------------------------------------------------------------//
-
-  sparse_data_handle_base_u() {}
-
-  sparse_data_handle_base_u(size_t num_exclusive,
-    size_t num_shared,
-    size_t num_ghost)
-    : base_t(num_exclusive, num_shared, num_ghost) {}
-
-  //--------------------------------------------------------------------------//
-  //! Copy constructor.
-  //--------------------------------------------------------------------------//
-
-  sparse_data_handle_base_u(const sparse_data_handle_base_u & b) : base_t(b){};
-
-}; // sparse_data_handle_base_u
-
-template<typename T>
-using sparse_data_handle_u =
-  sparse_data_handle_base_u<T, FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY>;
-
 } // namespace flecsi

@@ -69,16 +69,13 @@ struct accessor_u<data::sparse,
                          SHARED_PERMISSIONS,
                          GHOST_PERMISSIONS>,
                        public sparse_accessor_base_t {
-  using handle_t = sparse_data_handle_u<T>;
-
   using entry_value_t = data::sparse_entry_value_u<T>;
-  using vector_t = typename handle_t::vector_t;
-
   using base_t = accessor_u<data::ragged,
     entry_value_t,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
+  using vector_t = typename base_t::handle_t::vector_t;
 
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
@@ -89,7 +86,7 @@ struct accessor_u<data::sparse,
 
   accessor_u(const accessor_u & a) : base_t(a) {}
 
-  accessor_u(const typename handle_t::base_t & h) : base_t(h) {}
+  accessor_u(const typename base_t::handle_t & h) : base_t(h) {}
 
   //-------------------------------------------------------------------------//
   //! Main accessor
