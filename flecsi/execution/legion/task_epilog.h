@@ -158,7 +158,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
     if(write_phase && (*h.write_phase_started)) {
       {
-        clog(trace) << " WRITE PHASE EPILOGUE" << std::endl;
+        clog(trace) << " DATA CLIENT WRITE PHASE EPILOGUE" << std::endl;
       } // scope
 
       // As user

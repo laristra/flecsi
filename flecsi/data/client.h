@@ -362,6 +362,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
       ent.exclusive_partition = ritr->second.exclusive_lp;
       ent.shared_partition = ritr->second.shared_lp;
       ent.ghost_partition = ritr->second.ghost_lp;
+      ent.ghost_owner_partition = ritr->second.ghost_owners_lp;
 #endif
 
       ++entity_index;

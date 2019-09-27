@@ -37,6 +37,7 @@ struct data_client_handle_entity_t {
   Legion::LogicalPartition exclusive_partition;
   Legion::LogicalPartition shared_partition;
   Legion::LogicalPartition ghost_partition;
+  Legion::LogicalPartition ghost_owner_partition;
 }; // struct data_client_handle_entity_t
 
 //----------------------------------------------------------------------------//
