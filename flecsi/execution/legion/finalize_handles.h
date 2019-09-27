@@ -41,20 +41,7 @@ struct finalize_handles_t
   void handle(dense_accessor_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-#ifndef MAPPER_COMPACTION
-
-    auto & h = a.handle;
-
-    if((EXCLUSIVE_PERMISSIONS == rw) || (EXCLUSIVE_PERMISSIONS == wo))
-      std::memcpy(
-        h.exclusive_buf, h.exclusive_data, h.exclusive_size * sizeof(T));
-
-    if((SHARED_PERMISSIONS == rw) || (SHARED_PERMISSIONS == wo))
-      std::memcpy(h.shared_buf, h.shared_data, h.shared_size * sizeof(T));
-
-#endif
-  } // handle
+    GHOST_PERMISSIONS> & a) {}
 
   template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -63,21 +50,7 @@ struct finalize_handles_t
   void handle(ragged_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-    using value_t = T;
-    using sparse_field_data_t = context_t::sparse_field_data_t;
-
-    auto & h = a.handle;
-    auto md = static_cast<sparse_field_data_t *>(h.metadata);
-
-#ifndef MAPPER_COMPACTION
-    std::memcpy(
-      h.entries_data[0], h.entries, md->num_exclusive_filled * sizeof(value_t));
-
-    std::memcpy(h.entries_data[1], h.entries + md->reserve,
-      md->num_shared * sizeof(value_t) * md->max_entries_per_index);
-#endif
-  } // handle
+    GHOST_PERMISSIONS> & a) {}
 
   template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -112,26 +85,6 @@ struct finalize_handles_t
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 
     md->num_exclusive_filled = h.commit(&ci);
-
-#ifndef MAPPER_COMPACTION
-    std::memcpy(
-      h.offsets_data[0], h.offsets, h.num_exclusive() * sizeof(offset_t));
-
-    std::memcpy(h.offsets_data[1], h.offsets + h.num_exclusive(),
-      h.num_shared() * sizeof(offset_t));
-
-    if(!md->initialized) {
-      std::memcpy(h.offsets_data[2],
-        h.offsets + h.num_exclusive() + h.num_shared(),
-        h.num_ghost() * sizeof(offset_t));
-    }
-
-    std::memcpy(
-      h.entries_data[0], h.entries, md->num_exclusive_filled * sizeof(value_t));
-
-    std::memcpy(h.entries_data[1], h.entries + h.reserve * sizeof(value_t),
-      h.num_shared() * sizeof(value_t) * h.max_entries_per_index());
-#endif
 
     md->initialized = true;
   } // handle

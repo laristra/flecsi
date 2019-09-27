@@ -425,7 +425,6 @@ public:
     const Legion::Mapping::Mapper::MapTaskInput & input,
     Legion::Mapping::Mapper::MapTaskOutput & output) {
 
-#ifdef MAPPER_COMPACTION
     using namespace Legion;
     using namespace Legion::Mapping;
 
@@ -501,9 +500,6 @@ public:
     } // end if
 
     runtime->acquire_instances(ctx, output.chosen_instances);
-#else
-    DefaultMapper::map_task(ctx, task, input, output);
-#endif
 
   } // map_task
 
