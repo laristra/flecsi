@@ -113,9 +113,19 @@ decltype(auto) reduce(ARGS &&... args);
   Execute a task.
 
   @tparam TASK          The user task.
+    Its parameters may be of any default-constructible,
+    trivially-move-assignable, non-pointer type, any type that supports the
+    Legion return-value serialization interface, or any of several standard
+    containers of such types.
   @tparam LAUNCH_DOMAIN The launch domain id.
   @tparam ATTRIBUTES    The task attributes mask.
-  @tparam ARGS          The user-specified task arguments.
+  @tparam ARGS The user-specified task arguments, implicitly converted to the
+    parameter types for \a TASK.
+
+  \note Additional types may be supported by defining appropriate
+    specializations of \c utils::serial or \c utils::serial_convert.  Avoid
+    passing large objects to tasks repeatedly; use global variables (and,
+    perhaps, pass keys to select from them) or fields.
  */
 
 template<auto & TASK,
