@@ -37,6 +37,7 @@
 #include <legion.h>
 
 #include <string>
+#include <utility>
 
 flog_register_tag(task_wrapper);
 
@@ -238,7 +239,10 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     //    }
 
     // Unpack task arguments.
-    auto mpi_task_args = detail::tuple_get<ARG_TUPLE>(*task);
+    ARG_TUPLE * p;
+    flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
+    std::memcpy(&p, task->args, sizeof p);
+    auto & mpi_task_args = *p;
 
     // FIXME: Refactor
     // init_handles_t init_handles(runtime, context, regions, task->futures);
@@ -246,8 +250,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
     // Set the MPI function and make the runtime active.
     auto & c = runtime::context_t::instance();
-    c.set_mpi_task([=] { apply(F, mpi_task_args); });
-    c.set_mpi_state(true);
+    c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
     // FIXME: Refactor
     // finalize_handles_t finalize_handles;
