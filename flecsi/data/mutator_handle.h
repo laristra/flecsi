@@ -47,11 +47,10 @@ public:
   mutator_handle_base_u(size_t num_exclusive,
     size_t num_shared,
     size_t num_ghost,
-    size_t max_entries_per_index,
-    size_t num_slots)
+    size_t max_entries_per_index)
     : num_entries_(num_exclusive + num_shared + num_ghost),
       num_exclusive_(num_exclusive),
-      max_entries_per_index_(max_entries_per_index), num_slots_(num_slots) {
+      max_entries_per_index_(max_entries_per_index) {
     pi_.count[0] = num_exclusive;
     pi_.count[1] = num_shared;
     pi_.count[2] = num_ghost;
@@ -66,8 +65,8 @@ public:
     pi_.end[2] = pi_.end[1] + num_ghost;
   }
 
-  mutator_handle_base_u(size_t max_entries_per_index, size_t num_slots)
-    : max_entries_per_index_(max_entries_per_index), num_slots_(num_slots) {}
+  mutator_handle_base_u(size_t max_entries_per_index)
+    : max_entries_per_index_(max_entries_per_index) {}
 
   mutator_handle_base_u(const mutator_handle_base_u & b) = default;
 
@@ -116,7 +115,6 @@ public:
   partition_info_t pi_;
   size_t num_exclusive_;
   size_t max_entries_per_index_;
-  size_t num_slots_;
   size_t num_entries_;
   vector_t * new_entries_ = nullptr;
   std::size_t index_space, data_client_hash;

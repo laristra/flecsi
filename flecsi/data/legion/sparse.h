@@ -174,7 +174,7 @@ struct storage_class_u<ragged> {
     size_t NAME,
     size_t VERSION>
   static mutator_handle_u<DATA_TYPE>
-  get_mutator(const data_client_t & data_client, size_t slots) {
+  get_mutator(const data_client_t & data_client, size_t) {
     auto & context = execution::context_t::instance();
 
     using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
@@ -195,7 +195,7 @@ struct storage_class_u<ragged> {
 
     const size_t max_entries_per_index = iitr->second.max_entries_per_index;
 
-    mutator_handle_u<DATA_TYPE> h(max_entries_per_index, slots);
+    mutator_handle_u<DATA_TYPE> h(max_entries_per_index);
 
     h.offsets_entire_region = ism[index_space].entire_region;
     h.offsets_exclusive_lp = ism[index_space].exclusive_lp;
