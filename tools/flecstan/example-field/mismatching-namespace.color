@@ -1,0 +1,12 @@
+[31;21mError:[0m
+   [31;21mThe flecsi_get_handle() macro call here:[0m
+   [31;21m   file mismatching-namespace.cc, line 25[0m
+   [31;21mwith:[0m
+   [31;21m   namespace = "exmaple"[0m
+   [31;21m   name      = "pressure"[0m
+   [31;21mdoes not match with namespace + name in any flecsi_register_field() call.[0m
+   [31;21mCheck if either is misspelled, or misspelled in a flecsi_register_field(),[0m
+   [31;21mor not registered in any flecsi_register_field() at all.
+[0m
+[34;1mSynopsis:[0m
+   [36;1m1 error[0m

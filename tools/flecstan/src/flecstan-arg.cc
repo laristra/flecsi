@@ -101,11 +101,6 @@ filename_queueing(const std::string & name) {
     return set.find(opt) != set.end();                                         \
   }
 
-// flecstan_setnfind
-#define flecstan_setnfind(...)                                                 \
-  static const std::set<std::string> set{__VA_ARGS__};                         \
-  return set.find(opt) != set.end()
-
 // -----------------------------------------------------------------------------
 // option_*
 // Perhaps it isn't worthwhile to have so many forms in each case. Our intention
@@ -262,69 +257,15 @@ option_no_summary(const std::string & opt) {
 }
 
 // ------------------------
-// Re: compilation
-// ------------------------
-
-inline bool
-option_dir(const std::string & opt) {
-  flecstan_setnfind("-dir", "--dir", "-directory",
-    "--directory"
-    "-folder",
-    "--folder");
-}
-
-inline bool
-option_clang(const std::string & opt) {
-  flecstan_setnfind("-clang", "--clang", "-clang++", "--clang++");
-}
-
-inline bool
-option_flags(const std::string & opt) {
-  flecstan_setnfind("-flag", "--flag", "-flags", "--flags");
-}
-
-// ------------------------
-// Re: files (input)
-// ------------------------
-
-inline bool
-option_json(const std::string & opt) {
-  flecstan_setnfind("-json", "--json");
-}
-
-inline bool
-option_make(const std::string & opt) {
-  flecstan_setnfind("-make", "--make");
-}
-
-inline bool
-option_cc(const std::string & opt) {
-  flecstan_setnfind("-cc", "--cc", "-cpp", "--cpp", "-cxx", "--cxx", "-c++",
-    "--c++", "-C", "--C");
-}
-
-inline bool
-option_yaml(const std::string & opt) {
-  flecstan_setnfind("-yaml", "--yaml");
-}
-
-// ------------------------
-// Re: files (output)
-// ------------------------
-
-inline bool
-option_yout(const std::string & opt) {
-  flecstan_setnfind("-yout", "--yout");
-}
-
-// ------------------------
 // Macro cleanup
 // ------------------------
 
 #undef flecstan_paste
 #undef flecstan_toggle
 #undef flecstan_toggles
-#undef flecstan_setnfind
+
+// was #defined in header; no longer any point with this...
+// #undef flecstan_setnfind
 
 // ------------------------
 // Any of the above flags
@@ -370,33 +311,6 @@ option_any(const std::string & opt) {
          option_yaml(opt) ||
 
          option_yout(opt);
-}
-
-// -----------------------------------------------------------------------------
-// endsin_*
-// -----------------------------------------------------------------------------
-
-inline bool
-endsin_json(const std::string & str) {
-  return endsin(str, ".json");
-}
-
-inline bool
-endsin_make(const std::string & str) {
-  // Interpret .txt as our make-verbose files. :-/ I may or may not
-  // wish to stick with this scheme, but it's serviceable for now.
-  return endsin(str, ".txt");
-}
-
-inline bool
-endsin_cc(const std::string & str) {
-  return endsin(str, ".cc") || endsin(str, ".cpp") || endsin(str, ".cxx") ||
-         endsin(str, ".C");
-}
-
-inline bool
-endsin_yaml(const std::string & str) {
-  return endsin(str, ".yaml");
 }
 
 // -----------------------------------------------------------------------------

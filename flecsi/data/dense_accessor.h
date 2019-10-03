@@ -89,15 +89,7 @@ struct accessor_u<data::dense,
 
   T & operator()(size_t index) {
     assert(index < handle.combined_size && "index out of range");
-#ifndef MAPPER_COMPACTION
-#ifndef COMPACTED_STORAGE_SORT
-    return handle.combined_data[index];
-#else
-    return handle.combined_data_sort[index];
-#endif
-#else
     return *(handle.combined_data + index);
-#endif
   }
 
   /*!
