@@ -27,7 +27,7 @@ struct row_vector_u {
   using iterator = T *;
   using const_iterator = const T *;
 
-  row_vector_u() {}
+  row_vector_u() = default;
 
   row_vector_u(uint32_t init_count) {
     count = init_count;
