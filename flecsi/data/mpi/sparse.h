@@ -18,7 +18,6 @@
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client.h>
-#include <flecsi/data/mutator_handle.h>
 #include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/execution/context.h>
 
@@ -106,7 +105,8 @@ struct storage_class_u<ragged> {
 
     auto & fd = registered_sparse_field_data[field_info.fid];
 
-    handle_u<DATA_TYPE> h(fd.num_exclusive, fd.num_shared, fd.num_ghost);
+    handle_u<DATA_TYPE> h(fd.max_entries_per_index);
+    h.init(fd.num_exclusive, fd.num_shared, fd.num_ghost);
 
     auto & hb = h;
 
@@ -116,8 +116,6 @@ struct storage_class_u<ragged> {
     using vector_t = typename ragged_data_handle_u<DATA_TYPE>::vector_t;
     hb.new_entries = reinterpret_cast<vector_t *>(&fd.new_entries[0]);
 
-    hb.max_entries_per_index = fd.max_entries_per_index;
-
     return h;
   }
 
@@ -126,55 +124,10 @@ struct storage_class_u<ragged> {
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static mutator_handle_u<DATA_TYPE>
-  get_mutator(const data_client_t & data_client, size_t) {
-    auto & context = execution::context_t::instance();
-
-    using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
-
-    // get field_info for this data handle
-    auto & field_info = context.get_field_info_from_name(
-      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
-
-    auto & registered_sparse_field_data =
-      context.registered_sparse_field_data();
-    auto fieldDataIter = registered_sparse_field_data.find(field_info.fid);
-    if(fieldDataIter == registered_sparse_field_data.end()) {
-
-      // get color_info for this field.
-      auto & color_info =
-        (context.coloring_info(field_info.index_space)).at(context.color());
-      auto & index_coloring = context.coloring(field_info.index_space);
-
-      auto & im = context.sparse_index_space_info_map();
-      auto iitr = im.find(field_info.index_space);
-      clog_assert(iitr != im.end(),
-        "sparse index space info not registered for index space: "
-          << field_info.index_space);
-
-      const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-
-      // TODO: deal with VERSION
-      context.register_sparse_field_data(
-        field_info.fid, field_info.size, color_info, max_entries_per_index);
-
-      context.register_sparse_field_metadata<DATA_TYPE>(
-        field_info.fid, color_info, index_coloring);
-    }
-
-    auto & fd = registered_sparse_field_data[field_info.fid];
-
-    mutator_handle_u<DATA_TYPE> h(
-      fd.num_exclusive, fd.num_shared, fd.num_ghost, fd.max_entries_per_index);
-
-    h.fid = field_info.fid;
-    h.index_space = field_info.index_space;
-
-    using vector_t = typename mutator_handle_u<DATA_TYPE>::vector_t;
-    h.new_entries_ = reinterpret_cast<vector_t *>(&fd.new_entries[0]);
-
-    return h;
+  static handle_u<DATA_TYPE> get_mutator(const data_client_t & data_client,
+    size_t) {
+    return get_handle<DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE, NAME, VERSION>(
+      data_client);
   }
 
 }; // struct storage_class_t

@@ -46,7 +46,7 @@ struct finalize_handles_t
   void handle(ragged_mutator<T> & m) {
     auto & h = m.h_;
 
-    using value_t = typename mutator_handle_u<T>::value_t;
+    using value_t = T;
 
     auto & context = context_t::instance();
     const int my_color = context.color();
@@ -57,16 +57,15 @@ struct finalize_handles_t
       context.registered_sparse_field_metadata().at(h.fid);
 
     value_t * shared_data =
-      new value_t[h.num_shared() * h.max_entries_per_index()];
-    value_t * ghost_data =
-      new value_t[h.num_ghost() * h.max_entries_per_index()];
+      new value_t[h.num_shared() * h.max_entries_per_index];
+    value_t * ghost_data = new value_t[h.num_ghost() * h.max_entries_per_index];
 
     // Load data into shared data buffer
     for(int i = 0; i < h.num_shared(); ++i) {
       int r = h.num_exclusive_ + i;
-      const auto & row = h.new_entries_[r];
+      const auto & row = h.new_entries[r];
       size_t count = row.size();
-      std::memcpy(&shared_data[i * h.max_entries_per_index()], row.begin(),
+      std::memcpy(&shared_data[i * h.max_entries_per_index], row.begin(),
         count * sizeof(value_t));
     } // for i
 
@@ -77,7 +76,7 @@ struct finalize_handles_t
 
     MPI_Win win;
     MPI_Win_create(shared_data,
-      sizeof(value_t) * h.num_shared() * h.max_entries_per_index(),
+      sizeof(value_t) * h.num_shared() * h.max_entries_per_index,
       sizeof(value_t), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
     MPI_Win_post(sparse_field_metadata.shared_users_grp, 0, win);
@@ -87,10 +86,9 @@ struct finalize_handles_t
     for(auto & ghost : index_coloring.ghost) {
       clog_rank(warn, 0) << "ghost id: " << ghost.id << ", rank: " << ghost.rank
                          << ", offset: " << ghost.offset << std::endl;
-      MPI_Get(&ghost_data[i * h.max_entries_per_index()],
-        h.max_entries_per_index(), shared_ghost_type, ghost.rank,
-        ghost.offset * h.max_entries_per_index(), h.max_entries_per_index(),
-        shared_ghost_type, win);
+      MPI_Get(&ghost_data[i * h.max_entries_per_index], h.max_entries_per_index,
+        shared_ghost_type, ghost.rank, ghost.offset * h.max_entries_per_index,
+        h.max_entries_per_index, shared_ghost_type, win);
       i++;
     }
 
@@ -99,7 +97,7 @@ struct finalize_handles_t
 
     MPI_Win_free(&win);
 
-    // for (int i = 0; i < h.num_ghost() * h.max_entries_per_index(); i++)
+    // for (int i = 0; i < h.num_ghost() * h.max_entries_per_index; i++)
     //  clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value <<
     //  std::endl;
 
@@ -118,7 +116,7 @@ struct finalize_handles_t
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
         send_count_buf.push_back(
-          h.new_entries_[h.num_exclusive() + shared.offset].size());
+          h.new_count(h.num_exclusive() + shared.offset));
       }
     }
 
@@ -152,10 +150,10 @@ struct finalize_handles_t
     // Unload data from ghost data buffer
     for(int i = 0; i < h.num_ghost(); i++) {
       int r = h.num_exclusive_ + h.num_shared() + i;
-      auto & row = h.new_entries_[r];
+      auto & row = h.new_entries[r];
       int count = recv_count_buf[i];
       row.resize(count);
-      std::memcpy(row.begin(), &ghost_data[i * h.max_entries_per_index()],
+      std::memcpy(row.begin(), &ghost_data[i * h.max_entries_per_index],
         count * sizeof(value_t));
     }
 

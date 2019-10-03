@@ -20,7 +20,6 @@
 #include <unordered_set>
 
 #include <flecsi/data/mutator.h>
-#include <flecsi/data/mutator_handle.h>
 #include <flecsi/topology/index_space.h>
 
 namespace flecsi {
@@ -51,9 +50,9 @@ struct mutator_u<data::sparse, T>
   : public mutator_u<data::ragged, data::sparse_entry_value_u<T>>,
     public sparse_mutator_base_t {
   using entry_value_t = data::sparse_entry_value_u<T>;
-  using handle_t = mutator_handle_u<entry_value_t>;
 
   using base_t = mutator_u<data::ragged, entry_value_t>;
+  using typename base_t::handle_t;
 
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
@@ -83,32 +82,21 @@ struct mutator_u<data::sparse, T>
 
   void dump() {
     auto & h_ = base_t::h_;
-    for(size_t p = 0; p < 3; ++p) {
-      switch(p) {
-        case 0:
-          std::cout << "exclusive: " << std::endl;
-          break;
-        case 1:
-          std::cout << "shared: " << std::endl;
-          break;
-        case 2:
-          std::cout << "ghost: " << std::endl;
-          break;
-        default:
-          break;
-      }
+    std::size_t i = 0;
+    const auto f = [&](const char * l, std::size_t n) {
+      std::cout << l << ": \n";
 
-      size_t start = h_.pi_.start[p];
-      size_t end = h_.pi_.end[p];
-
-      for(size_t i = start; i < end; ++i) {
+      for(std::size_t end = i + n; i < end; ++i) {
         std::cout << "  index: " << i << std::endl;
-        const auto & row = h_.new_entries_[i];
+        const auto & row = h_.new_entries[i];
         for(const auto & ev : row) {
           std::cout << "    +" << ev.entry << " = " << ev.value << std::endl;
         }
       }
-    }
+    };
+    f("exclusive", h_.num_exclusive);
+    f("shared", h_.num_shared);
+    f("ghost", h_.num_ghost);
   } // dump
 
   void erase(size_t index, size_t entry) {
@@ -132,10 +120,10 @@ struct mutator_u<data::sparse, T>
   entry_value_t *
   lower_bound(size_t index, size_t entry, size_t * pos = nullptr) {
     auto & h_ = base_t::h_;
-    assert(h_.new_entries_ && "uninitialized mutator");
-    assert(index < h_.num_entries_);
+    assert(h_.new_entries && "uninitialized mutator");
+    assert(index < h_.num_total_);
 
-    auto & row = h_.new_entries_[index];
+    auto & row = h_.new_entries[index];
     auto start = row.begin();
     auto end = row.end();
 
@@ -158,10 +146,10 @@ struct mutator_u<data::sparse, T>
   // than 'entry'
   const entry_value_t * lower_bound(size_t index, size_t entry) const {
     auto & h_ = base_t::h_;
-    assert(h_.new_entries_ && "uninitialized mutator");
-    assert(index < h_.num_entries_);
+    assert(h_.new_entries && "uninitialized mutator");
+    assert(index < h_.num_total_);
 
-    auto & row = h_.new_entries_[index];
+    auto & row = h_.new_entries[index];
     auto start = row.begin();
     auto end = row.end();
 
@@ -191,7 +179,7 @@ struct mutator_u<data::sparse, T>
     std::unordered_set<size_t> found;
 
     for(size_t index = 0; index < h_.num_total_; ++index) {
-      const auto & row = h_.new_entries_[index];
+      const auto & row = h_.new_entries[index];
       for(const auto & ev : row) {
         size_t entry = ev.entry;
         if(found.find(entry) == found.end()) {
@@ -214,7 +202,7 @@ struct mutator_u<data::sparse, T>
     size_t id = 0;
     index_space_t is;
 
-    const auto & row = h_.new_entries_[index];
+    const auto & row = h_.new_entries[index];
     for(const auto & ev : row) {
       is.push_back({id++, ev.entry});
     }

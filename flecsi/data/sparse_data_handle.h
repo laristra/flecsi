@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/row_vector.h>
 
 namespace flecsi {
@@ -33,14 +34,7 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
   //! Default constructor.
   //--------------------------------------------------------------------------//
 
-  ragged_data_handle_base_u() {}
-
-  ragged_data_handle_base_u(size_t num_exclusive,
-    size_t num_shared,
-    size_t num_ghost)
-    : num_exclusive_(num_exclusive), num_shared_(num_shared),
-      num_ghost_(num_ghost),
-      num_total_(num_exclusive_ + num_shared_ + num_ghost_) {}
+  ragged_data_handle_base_u(size_t max_epi) : max_entries_per_index(max_epi) {}
 
   void init(size_t num_exclusive, size_t num_shared, size_t num_ghost) {
     num_exclusive_ = num_exclusive;
@@ -59,6 +53,10 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
 
   size_t num_ghost() const {
     return num_ghost_;
+  }
+
+  std::size_t new_count(std::size_t index) const {
+    return new_entries[index].size();
   }
 
   size_t num_exclusive_;

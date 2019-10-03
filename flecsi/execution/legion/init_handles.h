@@ -574,7 +574,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     LegionRuntime::Arrays::Rect<2> dr = domain_s.get_rect<2>();
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
-    h.new_entries_ = ac.template raw_rect_ptr<2>(dr, sr, bo);
+    h.new_entries = ac.template raw_rect_ptr<2>(dr, sr, bo);
 
     region += num_regions;
 

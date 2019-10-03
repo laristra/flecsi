@@ -310,7 +310,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       local_args.data_client_hash = h.data_client_hash;
       local_args.index_space = h.index_space;
       local_args.sparse = true;
-      local_args.max_entries_per_index = h.max_entries_per_index();
+      local_args.max_entries_per_index = h.max_entries_per_index;
       args.push_back(local_args);
 
       *(h.ghost_is_readable) = true;

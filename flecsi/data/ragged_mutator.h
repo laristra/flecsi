@@ -18,7 +18,6 @@
 #include <algorithm>
 
 #include <flecsi/data/mutator.h>
-#include <flecsi/data/mutator_handle.h>
 #include <flecsi/topology/index_space.h>
 
 //----------------------------------------------------------------------------//
@@ -52,7 +51,7 @@ struct ragged_mutator_base_t {};
 template<typename T>
 struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
                                     public ragged_mutator_base_t {
-  using handle_t = mutator_handle_u<T>;
+  using handle_t = ragged_data_handle_u<T>;
   using value_t = T;
 
   using index_space_t =
@@ -62,13 +61,13 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
-  mutator_u(const mutator_handle_u<T> & h) : h_(h) {}
+  mutator_u(const handle_t & h) : h_(h) {}
 
   T & operator()(size_t index, size_t ragged_index) {
-    assert(h_.new_entries_ && "uninitialized ragged_mutator");
-    assert(index < h_.num_entries_);
+    assert(h_.new_entries && "uninitialized ragged_mutator");
+    assert(index < h_.num_total_);
 
-    auto & row = h_.new_entries_[index];
+    auto & row = h_.new_entries[index];
     assert(ragged_index < row.size());
     return row[ragged_index];
 
@@ -91,7 +90,7 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   //! Return number of entries used over the specified index.
   //-------------------------------------------------------------------------//
   size_t size(size_t index) const {
-    assert(index < h_.num_entries_);
+    assert(index < h_.num_total_);
     return h_.new_count(index);
   }
 
@@ -133,32 +132,32 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   }
 
   void resize(size_t index, size_t size) {
-    assert(index < h_.num_entries_);
+    assert(index < h_.num_total_);
 
-    auto & row = h_.new_entries_[index];
+    auto & row = h_.new_entries[index];
     row.resize(size);
   } // resize
 
   void erase(size_t index, size_t ragged_index) {
-    assert(index < h_.num_entries_);
+    assert(index < h_.num_total_);
 
-    auto & row = h_.new_entries_[index];
+    auto & row = h_.new_entries[index];
     assert(ragged_index < row.size());
     row.erase(row.begin() + ragged_index);
   } // erase
 
   void push_back(size_t index, const T & value) {
-    assert(index < h_.num_entries_);
+    assert(index < h_.num_total_);
 
-    auto & row = h_.new_entries_[index];
+    auto & row = h_.new_entries[index];
     row.push_back(value);
   } // push_back
 
   // insert BEFORE ragged index
   T * insert(size_t index, size_t ragged_index, const T & value) {
-    assert(index < h_.num_entries_);
+    assert(index < h_.num_total_);
 
-    auto & row = h_.new_entries_[index];
+    auto & row = h_.new_entries[index];
     assert(ragged_index <= row.size());
     auto itr = row.insert(row.begin() + ragged_index, value);
     return &(*itr);
