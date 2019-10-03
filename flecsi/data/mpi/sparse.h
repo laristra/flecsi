@@ -34,48 +34,6 @@ namespace data {
 namespace mpi {
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-// Helper type definitions.
-//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-
-//----------------------------------------------------------------------------//
-// Dense handle.
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-// Dense accessor.
-//----------------------------------------------------------------------------//
-
-///
-/// \brief dense_accessor_t provides logically array-based access to data
-///        variables that have been registered in the data model.
-///
-/// \tparam T The type of the data variable. If this type is not
-///           consistent with the type used to register the data, bad things
-///           can happen. However, it can be useful to reinterpret the type,
-///           e.g., when writing raw bytes. This class is part of the
-///           low-level \e flecsi interface, so it is assumed that you
-///           know what you are doing...
-///
-template<typename T, size_t EP, size_t SP, size_t GP>
-struct ragged_handle_u : public ragged_data_handle_u<T, EP, SP, GP> {
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
-
-  using base = ragged_data_handle_u<T, EP, SP, GP>;
-
-  //--------------------------------------------------------------------------//
-  // Constructors.
-  //--------------------------------------------------------------------------//
-
-  ragged_handle_u(size_t num_exclusive, size_t num_shared, size_t num_ghost)
-    : base(num_exclusive, num_shared, num_ghost) {}
-
-  template<typename, size_t, size_t, size_t>
-  friend class ragged_handle_u;
-}; // struct ragged_handle_u
-
-//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
@@ -99,7 +57,7 @@ struct storage_class_u<ragged> {
   //--------------------------------------------------------------------------//
 
   template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle_u = ragged_handle_u<T, EP, SP, GP>;
+  using handle_u = ragged_data_handle_u<T, EP, SP, GP>;
 
   template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
@@ -232,9 +190,6 @@ struct storage_class_u<sparse> {
 
   template<typename T>
   using entry_value_u = data::sparse_entry_value_u<T>;
-
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle_u = ragged_handle_u<entry_value_u<T>, EP, SP, GP>;
 
   template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
