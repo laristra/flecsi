@@ -135,15 +135,10 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
 
   Runtime::start(largv.size(), largv.data(), true);
 
-  handoff_to_legion();
-  wait_on_legion();
-
-  while(mpi_active_) {
-    invoke_mpi_task();
-    mpi_active_ = false;
+  do {
     handoff_to_legion();
     wait_on_legion();
-  }
+  } while(invoke_mpi_task());
 
   // Make sure that the flusher thread executes at least one cycle.
   __flog_internal_wait_on_flusher();
@@ -152,29 +147,6 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
 
   return context_t::instance().exit_status();
 } // context_t::start
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::unset_call_mpi.
-//----------------------------------------------------------------------------//
-
-void
-context_t::unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
-  {
-    flog_tag_guard(context);
-    flog_devel(info) << "In unset_call_mpi" << std::endl;
-  }
-
-  Legion::ArgumentMap arg_map;
-  // IRINA DEBUG check number of processors
-  Legion::IndexLauncher launcher(task_id<unset_call_mpi_task>,
-    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0),
-    arg_map);
-
-  launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx, launcher);
-  fm.wait_all_results(true);
-} // context_t::unset_call_mpi
 
 //----------------------------------------------------------------------------//
 // Implementation of context_t::handoff_to_mpi.

@@ -16,7 +16,7 @@
 /*!
   @file
 
-  This file contains the high-level, macro interface for the FleCSI
+  User interface to the FleCSI
   data model.
  */
 

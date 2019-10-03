@@ -34,6 +34,8 @@ void
 coloring_task(size_t identifier, ARGS &&... args) {
   auto & coloring_info =
     runtime::context_t::instance().coloring<TOPOLOGY_TYPE>(identifier);
+
+  TOPOLOGY_TYPE::coloring::color(coloring_info, std::forward<ARGS>(args)...);
 } // coloring_task
 
 template<typename TOPOLOGY_TYPE>
