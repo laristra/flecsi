@@ -174,12 +174,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       Legion::RegionRequirement rr_owners(ghost_owners_partitions[first],
         0 /*projection ID*/, READ_ONLY, EXCLUSIVE, entire_regions[first]);
       Legion::RegionRequirement rr_ghost(ghost_partitions[first],
-        0 /*projection ID*/, READ_WRITE, EXCLUSIVE, entire_regions[first]);
+        0 /*projection ID*/, WRITE_ONLY, EXCLUSIVE, entire_regions[first]);
+      Legion::RegionRequirement rr_pos(ghost_partitions[first],
+        0 /*projection ID*/, READ_ONLY, EXCLUSIVE, entire_regions[first]);
 
       auto ghost_owner_pos_fid =
         LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
-      rr_ghost.add_field(ghost_owner_pos_fid);
+      rr_pos.add_field(ghost_owner_pos_fid);
 
       // TODO - circular dependency including internal_task.h
       auto constexpr key =
@@ -202,6 +204,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       ghost_launcher.add_region_requirement(rr_owners);
       ghost_launcher.add_region_requirement(rr_ghost);
+      ghost_launcher.add_region_requirement(rr_pos);
 
       ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
       runtime->execute_index_space(context, ghost_launcher);

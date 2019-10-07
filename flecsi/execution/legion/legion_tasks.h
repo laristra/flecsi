@@ -318,17 +318,19 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
   };
   args_t args = *(args_t *)task->args;
 
-  clog_assert(regions.size() == 2, "ghost_copy_task requires 2 regions");
-  clog_assert(task->regions.size() == 2, "ghost_copy_task requires 2 regions");
+  clog_assert(regions.size() == 3, "ghost_copy_task requires 3 regions");
+  clog_assert(task->regions.size() == 3, "ghost_copy_task requires 3 regions");
 
-  clog_assert((task->regions[1].privilege_fields.size() -
-                task->regions[0].privilege_fields.size()) == 1,
-    "ghost region additionally requires ghost_owner_pos_fid");
+  clog_assert(task->regions[1].privilege_fields.size() ==
+                task->regions[0].privilege_fields.size(),
+    "ghost region must be same size as owner region");
+  clog_assert(task->regions[2].privilege_fields.size() == 1,
+    "pos region must provide ghost_owner_pos_fid");
 
   auto ghost_owner_pos_fid =
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
-  auto position_ref_acc = regions[1]
+  auto position_ref_acc = regions[2]
                             .get_field_accessor(ghost_owner_pos_fid)
                             .typeify<LegionRuntime::Arrays::Point<2>>();
 
@@ -352,7 +354,7 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
       const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         owner_acc(regions[0], fid, field_info.size);
-      const Legion::FieldAccessor<READ_WRITE, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<WRITE_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         ghost_acc(regions[1], fid, field_info.size);
 
