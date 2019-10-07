@@ -25,6 +25,8 @@ set(data_HEADERS
   common/data_reference.h
   common/privilege.h
   common/registration_wrapper.h
+  common/row_vector.h
+  common/serdez.h
   data.h
   data_client.h
   data_client_handle.h

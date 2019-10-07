@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/row_vector.h>
 
 namespace flecsi {
 
@@ -26,18 +26,12 @@ template<typename T,
   typename DATA_POLICY>
 struct ragged_data_handle_base_u : public DATA_POLICY {
 
-  using offset_t = data::sparse_data_offset_t;
-
   /*!
     Capture the underlying data type.
    */
   using value_type = T;
 
-  size_t index_space;
-  size_t data_client_hash;
-
-  value_type * entries = nullptr;
-  offset_t * offsets = nullptr;
+  using vector_t = data::row_vector_u<T>;
 
   //--------------------------------------------------------------------------//
   //! Default constructor.
@@ -58,10 +52,9 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
 
   ragged_data_handle_base_u(const ragged_data_handle_base_u & b)
     : DATA_POLICY(b), index_space(b.index_space),
-      data_client_hash(b.data_client_hash), entries(b.entries),
-      offsets(b.offsets), num_exclusive_(b.num_exclusive_),
-      num_shared_(b.num_shared_), num_ghost_(b.num_ghost_),
-      num_total_(b.num_total_) {}
+      data_client_hash(b.data_client_hash), new_entries(b.new_entries),
+      num_exclusive_(b.num_exclusive_), num_shared_(b.num_shared_),
+      num_ghost_(b.num_ghost_), num_total_(b.num_total_) {}
 
   void init(size_t num_exclusive, size_t num_shared, size_t num_ghost) {
     num_exclusive_ = num_exclusive;
@@ -86,6 +79,12 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
   size_t num_shared_;
   size_t num_ghost_;
   size_t num_total_;
+
+  size_t index_space;
+  size_t data_client_hash;
+
+  vector_t * new_entries = nullptr;
+
 }; // ragged_data_handle_base_u
 
 } // namespace flecsi
@@ -131,7 +130,6 @@ struct sparse_data_handle_base_u
       GHOST_PERMISSIONS,
       FLECSI_RUNTIME_SPARSE_DATA_HANDLE_POLICY> {
 
-  using offset_t = data::sparse_data_offset_t;
   using entry_value_t = data::sparse_entry_value_u<T>;
   using base_t = ragged_data_handle_base_u<entry_value_t,
     EXCLUSIVE_PERMISSIONS,

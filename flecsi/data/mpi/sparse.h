@@ -138,11 +138,10 @@ struct storage_class_u<ragged> {
       // TODO: these parameters need to be passed in field
       // registration, or defined elsewhere
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       // TODO: deal with VERSION
-      context.register_sparse_field_data(field_info.fid, field_info.size,
-        color_info, max_entries_per_index, exclusive_reserve);
+      context.register_sparse_field_data(
+        field_info.fid, field_info.size, color_info, max_entries_per_index);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);
@@ -157,14 +156,12 @@ struct storage_class_u<ragged> {
 
     hb.fid = field_info.fid;
     hb.index_space = field_info.index_space;
-    hb.data_client_hash = field_info.data_client_hash;
 
-    hb.entries = reinterpret_cast<DATA_TYPE *>(&fd.entries[0]);
+    using vector_t =
+      typename ragged_data_handle_u<DATA_TYPE, 0, 0, 0>::vector_t;
+    hb.new_entries = reinterpret_cast<vector_t *>(&fd.new_entries[0]);
 
-    hb.offsets = &fd.offsets[0];
     hb.max_entries_per_index = fd.max_entries_per_index;
-    hb.reserve = fd.reserve;
-    hb.num_exclusive_entries = fd.num_exclusive_entries;
 
     return h;
   }
@@ -202,11 +199,10 @@ struct storage_class_u<ragged> {
           << field_info.index_space);
 
       const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-      const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
       // TODO: deal with VERSION
-      context.register_sparse_field_data(field_info.fid, field_info.size,
-        color_info, max_entries_per_index, exclusive_reserve);
+      context.register_sparse_field_data(
+        field_info.fid, field_info.size, color_info, max_entries_per_index);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);
@@ -219,14 +215,9 @@ struct storage_class_u<ragged> {
 
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
-    h.data_client_hash = field_info.data_client_hash;
 
-    h.offsets = &fd.offsets;
-    h.entries = &fd.entries;
-    h.reserve = &fd.reserve;
-    h.exclusive_reserve = fd.exclusive_reserve;
-    h.num_exclusive_entries = &fd.num_exclusive_entries;
-    h.num_exclusive_insertions = new size_t(0);
+    using vector_t = typename mutator_handle_u<DATA_TYPE>::vector_t;
+    h.new_entries_ = reinterpret_cast<vector_t *>(&fd.new_entries[0]);
 
     return h;
   }

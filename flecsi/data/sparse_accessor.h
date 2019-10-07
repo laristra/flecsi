@@ -74,8 +74,8 @@ struct accessor_u<data::sparse,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS>;
 
-  using offset_t = typename handle_t::offset_t;
   using entry_value_t = data::sparse_entry_value_u<T>;
+  using vector_t = typename handle_t::vector_t;
 
   using base_t = accessor_u<data::ragged,
     entry_value_t,
@@ -156,13 +156,12 @@ struct accessor_u<data::sparse,
     auto & handle = base_t::handle;
     assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
 
-    const offset_t & oi = handle.offsets[index];
-
-    entry_value_t * start = handle.entries + oi.start();
-    entry_value_t * end = start + oi.count();
+    vector_t & row = handle.new_entries[index];
+    auto start = row.begin();
+    auto end = row.end();
 
     // find where entry should be
-    entry_value_t * itr = std::lower_bound(start, end, entry_value_t(entry),
+    auto itr = std::lower_bound(start, end, entry_value_t(entry),
       [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
         return k1.entry < k2.entry;
       });
@@ -177,17 +176,15 @@ struct accessor_u<data::sparse,
     auto & handle = base_t::handle;
     assert(index < handle.num_total_ && "sparse accessor: index out of bounds");
 
-    const offset_t & oi = handle.offsets[index];
-
-    const entry_value_t * start = handle.entries + oi.start();
-    const entry_value_t * end = start + oi.count();
+    const vector_t & row = handle.new_entries[index];
+    auto start = row.begin();
+    auto end = row.end();
 
     // find where entry should be
-    const entry_value_t * itr =
-      std::lower_bound(start, end, entry_value_t(entry),
-        [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
-          return k1.entry < k2.entry;
-        });
+    auto itr = std::lower_bound(start, end, entry_value_t(entry),
+      [](const entry_value_t & k1, const entry_value_t & k2) -> bool {
+        return k1.entry < k2.entry;
+      });
 
     return (itr == end ? nullptr : itr);
 
@@ -209,18 +206,14 @@ struct accessor_u<data::sparse,
     std::unordered_set<size_t> found;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const offset_t & oi = handle.offsets[index];
+      const auto & row = handle.new_entries[index];
 
-      entry_value_t * itr = handle.entries + oi.start();
-      entry_value_t * end = itr + oi.count();
-
-      while(itr != end) {
-        size_t entry = itr->entry;
+      for(const auto & ev : row) {
+        size_t entry = ev.entry;
         if(found.find(entry) == found.end()) {
           is.push_back({id++, entry});
           found.insert(entry);
         }
-        ++itr;
       }
     }
 
@@ -235,17 +228,12 @@ struct accessor_u<data::sparse,
     clog_assert(
       index < handle.num_total_, "sparse accessor: index out of bounds");
 
-    const offset_t & oi = handle.offsets[index];
-
-    entry_value_t * itr = handle.entries + oi.start();
-    entry_value_t * end = itr + oi.count();
-
     index_space_t is;
 
     size_t id = 0;
-    while(itr != end) {
-      is.push_back({id++, itr->entry});
-      ++itr;
+    const auto & row = handle.new_entries[index];
+    for(const auto & ev : row) {
+      is.push_back({id++, ev.entry});
     }
 
     return is;
@@ -260,9 +248,8 @@ struct accessor_u<data::sparse,
     size_t id = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const offset_t & oi = handle.offsets[index];
-
-      if(oi.count() != 0) {
+      const auto & row = handle.new_entries[index];
+      if(row.size() != 0) {
         is.push_back({id++, index});
       }
     }
@@ -291,13 +278,10 @@ struct accessor_u<data::sparse,
   void dump() const {
     auto & handle = base_t::handle;
     for(size_t i = 0; i < handle.num_total_; ++i) {
-      const offset_t & offset = handle.offsets[i];
+      const auto & row = handle.new_entries[index];
       std::cout << "index: " << i << std::endl;
-      std::cout << "offset: " << offset.start() << std::endl;
-      for(size_t j = 0; j < offset.count(); ++j) {
-        size_t k = offset.start() + j;
-        std::cout << "  " << handle.entries[k].entry << " = "
-                  << handle.entries[k].value << std::endl;
+      for(size_t j = 0; j < row.size(); ++j) {
+        std::cout << "  " << row[j].entry << " = " << row[j].value << std::endl;
       }
     }
   }

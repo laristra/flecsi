@@ -59,36 +59,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     }
   } // handle
 
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
-    handle(static_cast<base_t &>(a));
-  } // handle
-
-  template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    using value_t = typename mutator_handle_u<T>::value_t;
-
-    auto & h = m.h_;
-    h.init();
-
-    h.entries_ = reinterpret_cast<value_t *>(&(*h.entries)[0]);
-    h.offsets_ = &(*h.offsets)[0];
-  } // handle
-
-  template<typename T>
-  void handle(sparse_mutator<T> & m) {
-    using base_t = typename sparse_mutator<T>::base_t;
-    handle(static_cast<base_t &>(m));
-  } // handle
-
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
