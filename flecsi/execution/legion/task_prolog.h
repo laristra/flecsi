@@ -275,9 +275,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
-    handle(static_cast<base_t &>(a));
+    handle(a.ragged);
   } // handle
 
   template<typename T>
@@ -286,7 +284,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       return;
     }
 
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     auto & flecsi_context = context_t::instance();
     const int my_color = runtime->find_local_MPI_rank();
@@ -310,7 +308,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       local_args.data_client_hash = h.data_client_hash;
       local_args.index_space = h.index_space;
       local_args.sparse = true;
-      local_args.max_entries_per_index = h.max_entries_per_index();
+      local_args.max_entries_per_index = h.max_entries_per_index;
       args.push_back(local_args);
 
       *(h.ghost_is_readable) = true;
@@ -325,8 +323,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using base_t = typename sparse_mutator<T>::base_t;
-    handle(static_cast<base_t &>(m));
+    handle(m.ragged);
   }
 
   /*!

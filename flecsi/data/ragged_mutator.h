@@ -18,7 +18,7 @@
 #include <algorithm>
 
 #include <flecsi/data/mutator.h>
-#include <flecsi/data/mutator_handle.h>
+#include <flecsi/data/ragged_accessor.h>
 #include <flecsi/topology/index_space.h>
 
 //----------------------------------------------------------------------------//
@@ -51,120 +51,44 @@ struct ragged_mutator_base_t {};
 
 template<typename T>
 struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
+                                    ragged_access<T>,
                                     public ragged_mutator_base_t {
-  using handle_t = mutator_handle_u<T>;
-  using value_t = T;
-
-  using index_space_t =
-    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
+  using base = ragged_access<T>;
 
   //--------------------------------------------------------------------------//
   //! Constructor from handle.
   //--------------------------------------------------------------------------//
 
-  mutator_u(const mutator_handle_u<T> & h) : h_(h) {}
+  mutator_u(const typename base::handle_t & h) : base{h} {}
 
   T & operator()(size_t index, size_t ragged_index) {
-    assert(h_.new_entries_ && "uninitialized ragged_mutator");
-    assert(index < h_.num_entries_);
-
-    auto & row = h_.new_entries_[index];
-    assert(ragged_index < row.size());
+    auto & row = this->handle[index];
     return row[ragged_index];
 
   } // operator ()
 
-  //-------------------------------------------------------------------------//
-  //! Return max number of entries used over all indices.
-  //-------------------------------------------------------------------------//
-  size_t size() const {
-    size_t max_so_far = 0;
-
-    for(size_t index = 0; index < h_.num_total_; ++index) {
-      max_so_far = std::max(max_so_far, h_.new_count(index));
-    }
-
-    return max_so_far;
-  }
-
-  //-------------------------------------------------------------------------//
-  //! Return number of entries used over the specified index.
-  //-------------------------------------------------------------------------//
-  size_t size(size_t index) const {
-    assert(index < h_.num_entries_);
-    return h_.new_count(index);
-  }
-
-  //-------------------------------------------------------------------------//
-  //! Return all entries used over all indices.
-  //-------------------------------------------------------------------------//
-  index_space_t entries() const {
-    size_t id = 0;
-    index_space_t is;
-
-    const size_t max_size = size();
-    for(size_t entry = 0; entry < max_size; ++entry) {
-      is.push_back({id++, entry});
-    }
-
-    return is;
-  }
-
-  //-------------------------------------------------------------------------//
-  //! Return all entries used over the specified index.
-  //-------------------------------------------------------------------------//
-  index_space_t entries(size_t index) const {
-    size_t id = 0;
-    index_space_t is;
-
-    const size_t my_size = size(index);
-    for(size_t entry = 0; entry < my_size; ++entry) {
-      is.push_back({id++, entry});
-    }
-
-    return is;
-  }
-
-  //-------------------------------------------------------------------------//
-  //! Return the maximum possible number of entries
-  //-------------------------------------------------------------------------//
-  auto max_size() const noexcept {
-    return h_.max_entries_per_index;
-  }
-
   void resize(size_t index, size_t size) {
-    assert(index < h_.num_entries_);
-
-    auto & row = h_.new_entries_[index];
+    auto & row = this->handle[index];
     row.resize(size);
   } // resize
 
   void erase(size_t index, size_t ragged_index) {
-    assert(index < h_.num_entries_);
-
-    auto & row = h_.new_entries_[index];
-    assert(ragged_index < row.size());
+    auto & row = this->handle[index];
     row.erase(row.begin() + ragged_index);
   } // erase
 
   void push_back(size_t index, const T & value) {
-    assert(index < h_.num_entries_);
-
-    auto & row = h_.new_entries_[index];
+    auto & row = this->handle[index];
     row.push_back(value);
   } // push_back
 
   // insert BEFORE ragged index
   T * insert(size_t index, size_t ragged_index, const T & value) {
-    assert(index < h_.num_entries_);
-
-    auto & row = h_.new_entries_[index];
+    auto & row = this->handle[index];
     assert(ragged_index <= row.size());
     auto itr = row.insert(row.begin() + ragged_index, value);
     return &(*itr);
   } // insert
-
-  handle_t h_;
 };
 
 template<typename T>

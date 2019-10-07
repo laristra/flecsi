@@ -60,9 +60,7 @@ struct finalize_handles_t
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
-    handle(static_cast<base_t &>(a));
+    handle(a.ragged);
   } // handle
 
   template<typename T>
@@ -70,7 +68,7 @@ struct finalize_handles_t
     using value_t = T;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
 
@@ -79,8 +77,7 @@ struct finalize_handles_t
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using base_t = typename sparse_mutator<T>::base_t;
-    handle(static_cast<base_t &>(m));
+    handle(m.ragged);
   }
 
   /*!
