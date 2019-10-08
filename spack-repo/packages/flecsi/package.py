@@ -8,8 +8,7 @@ from spack import *
 
 
 class Flecsi(CMakePackage):
-    '''
-       FleCSI is a compile-time configurable framework designed to support
+    '''FleCSI is a compile-time configurable framework designed to support
        multi-physics application development. As such, FleCSI attempts to
        provide a very general set of infrastructure design patterns that can
        be specialized and extended to suit the needs of a broad variety of
@@ -21,7 +20,9 @@ class Flecsi(CMakePackage):
     homepage = 'http://flecsi.lanl.gov/'
     git      = 'https://github.com/laristra/flecsi.git'
 
-    version('develop', branch='master', submodules=False)
+    version('develop', branch='master', submodules=False, preferred=True)
+    version('flecsph', branch='feature/flecsph', submodules=False)
+
     variant('backend', default='mpi', values=('hpx', 'mpi', 'legion'),
             description='Backend to use for distributed memory')
     variant('caliper', default=False,
@@ -35,8 +36,9 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12.4',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
-    #depends_on('cinch@1.01:', type='build')
-    depends_on('mpi')
+    depends_on('cinch@1.01:', type='build')
+    depends_on('mpi', when='backend=mpi')
+    depends_on('mpi', when='backend=legion')
     depends_on('legion@ctrl-rep +shared +mpi +hdf5', when='backend=legion')
     depends_on('boost@1.59.0: cxxstd=11 +program_options')
     depends_on('metis@5.1.0:')
@@ -48,7 +50,17 @@ class Flecsi(CMakePackage):
 
     def cmake_args(self):
         options = ['-DCMAKE_BUILD_TYPE=debug']
-        #options.append('-DCINCH_SOURCE_DIR=' + self.spec['cinch'].prefix)
+        options.append('-DCINCH_SOURCE_DIR=' + self.spec['cinch'].prefix)
+
+        # FleCSI for FleCSPH flags
+        if self.spec.satisfies('@flecsph:'):
+            options.append('-DENABLE_MPI=ON')
+            options.append('-DENABLE_OPENMP=ON')
+            options.append('-DCXX_CONFORMANCE_STANDARD=c++17')
+            options.append('-DFLECSI_RUNTIME_MODEL=mpi')
+            options.append('-DENABLE_FLECSIT=OFF')
+            options.append('-DENABLE_FLECSI_TUTORIAL=OFF')
+            return options
 
         if self.spec.variants['backend'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
