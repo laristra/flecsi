@@ -64,16 +64,7 @@ struct finalize_handles_t
   } // handle
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    using value_t = T;
-    using sparse_field_data_t = context_t::sparse_field_data_t;
-
-    auto & h = m.handle;
-
-    auto md = static_cast<sparse_field_data_t *>(h.metadata);
-
-    md->initialized = true;
-  } // handle
+  void handle(ragged_mutator<T> & m) {}
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {

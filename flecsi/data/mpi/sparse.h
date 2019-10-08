@@ -46,8 +46,7 @@ namespace mpi {
   Within an index, entries are stored in sorted order. A sparse accessor
   can read and modify existing entries, but cannot allocate new entries.
   The mutator is used for this purpose. A sparse data handle is passed to a
-  task which is then transformed to an accesor, likewise for a mutator.
-  A mutator commits its data in its temporary buffers in the task epilog.
+  task which is then transformed to an accessor, likewise for a mutator.
  */
 template<>
 struct storage_class_u<ragged> {
@@ -114,7 +113,7 @@ struct storage_class_u<ragged> {
     hb.index_space = field_info.index_space;
 
     using vector_t = typename ragged_data_handle_u<DATA_TYPE>::vector_t;
-    hb.new_entries = reinterpret_cast<vector_t *>(&fd.new_entries[0]);
+    hb.rows = reinterpret_cast<vector_t *>(&fd.rows[0]);
 
     return h;
   }

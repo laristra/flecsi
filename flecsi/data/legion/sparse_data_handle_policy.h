@@ -45,13 +45,12 @@ struct legion_sparse_data_handle_policy_t {
 
   // These depend on color but are only used in specifying
   // the region requirements
-  Legion::LogicalRegion offsets_entire_region;
-  Legion::LogicalPartition offsets_color_partition;
-  Legion::LogicalPartition offsets_exclusive_lp;
-  Legion::LogicalPartition offsets_shared_lp;
-  Legion::LogicalPartition offsets_ghost_lp;
-
-  Legion::LogicalPartition ghost_owners_offsets_lp;
+  Legion::LogicalRegion entire_region;
+  Legion::LogicalPartition color_partition;
+  Legion::LogicalPartition exclusive_lp;
+  Legion::LogicalPartition shared_lp;
+  Legion::LogicalPartition ghost_lp;
+  Legion::LogicalPartition ghost_owners_lp;
 
   Legion::LogicalRegion metadata_entire_region;
   Legion::LogicalPartition metadata_lp;
@@ -60,11 +59,6 @@ struct legion_sparse_data_handle_policy_t {
 
   Legion::Context context;
   Legion::Runtime * runtime;
-
-  // Tuple-walk copies data_handle then discards updates at the end.
-  // Some pointers are necessary for updates to live between walks.
-  const Legion::STL::map<LegionRuntime::Arrays::coord_t,
-    LegionRuntime::Arrays::coord_t> * global_to_local_color_map_ptr;
 }; // class legion_sparse_data_handle_policy_t
 
 } // namespace flecsi

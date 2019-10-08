@@ -124,7 +124,6 @@ struct legion_context_policy_t {
     size_t num_total = 0;
 
     size_t max_entries_per_index;
-    bool initialized = false;
   };
 
   //--------------------------------------------------------------------------//
@@ -467,9 +466,6 @@ struct legion_context_policy_t {
     Legion::LogicalPartition exclusive_lp;
     Legion::LogicalPartition shared_lp;
     Legion::LogicalPartition ghost_lp;
-    Legion::STL::map<LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t>
-      global_to_local_color_map;
   };
 
   struct index_subspace_data_t {

@@ -40,7 +40,7 @@ struct ragged_access { // shared between accessor/mutator
     size_t max_so_far = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const vector_t & row = handle.new_entries[index];
+      const vector_t & row = handle.rows[index];
       max_so_far = std::max(max_so_far, row.size());
     }
 
@@ -54,7 +54,7 @@ struct ragged_access { // shared between accessor/mutator
     clog_assert(
       index < handle.num_total_, "ragged accessor: index out of bounds");
 
-    const vector_t & row = handle.new_entries[index];
+    const vector_t & row = handle.rows[index];
     return row.size();
   }
 
@@ -150,7 +150,7 @@ struct accessor_u<data::ragged,
   accessor_u(const typename base::handle_t & h) : base{h} {}
 
   T & operator()(size_t index, size_t ragged_index) {
-    auto & row = this->handle.new_entries[index];
+    auto & row = this->handle.rows[index];
     assert(ragged_index < row.size() && "ragged accessor: index out of range");
 
     return row[ragged_index];
