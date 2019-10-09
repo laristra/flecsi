@@ -51,6 +51,9 @@ do
 	shift # next argument
 done
 
+if [ $runtime = legion ]; then clog=OFF
+else clog=ON; fi
+
 #------------------------------------------------------------------------------#
 # Call CMake command
 #------------------------------------------------------------------------------#
@@ -62,8 +65,8 @@ $cmake_mode \
   -DCMAKE_C_FLAGS="-fcolor-diagnostics" \
   -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
   -DENABLE_BOOST_PROGRAM_OPTIONS=ON \
-  -DENABLE_CLOG=ON \
-  -DCLOG_ENABLE_TAGS=ON \
+  -DENABLE_CLOG=$CLOG \
+  -DCLOG_ENABLE_TAGS=$CLOG \
   -DENABLE_=ON \
   -DENABLE_DEVEL_TARGETS=ON \
   -DENABLE_UNIT_TESTS=ON \

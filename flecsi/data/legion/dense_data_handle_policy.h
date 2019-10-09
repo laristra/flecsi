@@ -74,9 +74,6 @@ struct legion_dense_data_handle_policy_t {
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
-  size_t exclusive_priv;
-  size_t shared_priv;
-  size_t ghost_priv;
 }; // class legion_dense_data_handle_policy_t
 
 } // namespace flecsi

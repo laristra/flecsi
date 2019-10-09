@@ -175,6 +175,7 @@ cinch_add_unit(simple_task
 )
 
 
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "legion")
 #
 # Test basic task calling gpu_task
 #
@@ -196,6 +197,7 @@ cinch_add_unit(gpu_task
   THREADS 2
   NOCI
 )
+endif()
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 #

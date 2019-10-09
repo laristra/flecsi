@@ -608,11 +608,126 @@ summary() {
 } // namespace flecstan
 
 // -----------------------------------------------------------------------------
+// analyze
+// -----------------------------------------------------------------------------
+
+namespace flecstan {
+
+exit_status_t
+analyze(const int argc, const char * const * const argv) {
+  exit_status_t status = exit_clean; // for now
+
+  std::vector<std::string> exes;
+  std::vector<std::string> args;
+
+  for(std::size_t a = 1; a < std::size_t(argc);) {
+    const std::string str = argv[a];
+    if(str == "-analyze" || str == "--analyze") {
+
+      // ------------------------
+      // option is -analyze;
+      // find *its* arguments
+      // ------------------------
+
+      std::size_t i = a;
+      while(++i < std::size_t(argc)) {
+        const std::string opt = argv[i];
+        if(option_toggle(opt) || option_dir(opt) || option_json(opt) ||
+           option_make(opt) || option_cc(opt) || option_yaml(opt) ||
+           option_clang(opt) || option_flags(opt) || option_yout(opt) ||
+           endsin_json(opt) || endsin_make(opt) || endsin_cc(opt) ||
+           endsin_yaml(opt)) {
+          break; // from while
+        }
+
+        // opt is an argument to -analyze
+        exes.push_back(opt);
+      } // while
+
+      if(i == a + 1) {
+        // no arguments to -[-]analyze :-(
+        status = std::max(status, error("The " + str +
+                                        " option "
+                                        "(executable target for \"make\") "
+                                        "expects one or more arguments.\n"
+                                        "Example: " +
+                                        str + " hydro_2d hydro_3d"));
+      } // if
+      a = i;
+    }
+    else {
+
+      // ------------------------
+      // option is not -analyze;
+      // store for future use
+      // ------------------------
+
+      args.push_back(str);
+      a++;
+    } // else
+
+  } // for
+
+  if(status != exit_clean)
+    return status;
+
+  // ------------------------
+  // Create and spawn other
+  // flecstan commands
+  // ------------------------
+
+  // check
+  assert(exes.size() != 0);
+
+  // create
+  std::vector<std::string> commands;
+  std::string fyi;
+  const std::string invocation = argv[0];
+
+  for(auto exe : exes) {
+    std::string cmd = "make --dry-run VERBOSE=1 " + exe + " | " + invocation;
+    for(auto arg : args)
+      cmd += " " + arg;
+    cmd += " -make -";
+    commands.push_back(cmd);
+    fyi += cmd + "\n";
+  }
+
+  // FYI for user
+  report("Creating individual analysis commands", fyi, true);
+
+  // run!
+  for(auto com : commands) {
+    report(
+      "Running \"make clean\" plus individual analysis command", com, true);
+    system("make clean");
+    system(com.c_str());
+  }
+
+  // done
+  return status;
+
+} // analyze
+
+} // namespace flecstan
+
+// -----------------------------------------------------------------------------
 // main
 // -----------------------------------------------------------------------------
 
 int
 main(const int argc, const char * const * const argv) {
+  // ------------------------
+  // Has --analyze? Then code
+  // takes a different path
+  // ------------------------
+
+  for(std::size_t a = 1; a < std::size_t(argc); ++a) {
+    const std::string str = argv[a];
+    if(str == "-analyze" || str == "--analyze")
+      return flecstan::analyze(argc, argv);
+  }
+
   // ------------------------
   // Beginning version/help
   // ------------------------
