@@ -1,4 +1,3 @@
-//clang-format off
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
    /@@/////  /@@          @@////@@ @@////// /@@
@@ -651,8 +650,7 @@ struct context_u : public CONTEXT_POLICY {
       adjacency_info_.find(adjacency_info.index_space) == adjacency_info_.end(),
       "adjacency exists");
 
-    adjacency_info_.emplace(
-      adjacency_info.index_space, adjacency_info);
+    adjacency_info_.emplace(adjacency_info.index_space, adjacency_info);
   } // add_adjacency
 
   /*!
@@ -722,15 +720,15 @@ struct context_u : public CONTEXT_POLICY {
   auto local_index_map(size_t index_space) const {
     const auto & is = coloring_map().at(index_space);
 
-    std::vector< std::pair<size_t, size_t> > _map;
-    _map.reserve( is.exclusive.size() + is.shared.size() );
+    std::vector<std::pair<size_t, size_t>> _map;
+    _map.reserve(is.exclusive.size() + is.shared.size());
 
     for(auto index : is.exclusive) {
-      _map.emplace_back( std::make_pair(_map.size(), index.offset) );
+      _map.emplace_back(std::make_pair(_map.size(), index.offset));
     } // for
 
     for(auto index : is.shared) {
-      _map.emplace_back( std::make_pair(_map.size(), index.offset) );
+      _map.emplace_back(std::make_pair(_map.size(), index.offset));
     } // for
 
     return _map;
@@ -1023,31 +1021,29 @@ private:
   //--------------------------------------------------------------------------//
 
   size_t execution_state_ = SPECIALIZATION_TLT_INIT;
-  
-public:
 
+public:
   void write_all_fields(const char * filename) {
 
     std::ofstream file(filename, std::ios::out | std::ios::binary);
 
     size_t nfields = CONTEXT_POLICY::field_data.size();
-    file.write((char *) &nfields, sizeof(size_t));
+    file.write((char *)&nfields, sizeof(size_t));
 
-    for ( const auto & [id, data] : CONTEXT_POLICY::field_data ) {
+    for(const auto & [id, data] : CONTEXT_POLICY::field_data) {
       size_t fid = id;
-      file.write((char *) &fid, sizeof(size_t));
+      file.write((char *)&fid, sizeof(size_t));
       size_t len = data.size();
-      file.write((char *) &len, sizeof(size_t));
-      file.write((char *) data.data(), len);
+      file.write((char *)&len, sizeof(size_t));
+      file.write((char *)data.data(), len);
     }
 
-    
     nfields = CONTEXT_POLICY::sparse_field_data.size();
-    file.write((char *) &nfields, sizeof(size_t));
+    file.write((char *)&nfields, sizeof(size_t));
 
-    for ( const auto & [id, data] : CONTEXT_POLICY::sparse_field_data ) {
+    for(const auto & [id, data] : CONTEXT_POLICY::sparse_field_data) {
       size_t fid = id;
-      file.write((char *) &fid, sizeof(size_t));
+      file.write((char *)&fid, sizeof(size_t));
       data.write(file);
     }
 
@@ -1057,49 +1053,49 @@ public:
   void read_fields(const char * filename) {
 
     std::ifstream file(filename, std::ios::in | std::ios::binary);
-      
+
     size_t nfields;
-    file.read((char *) &nfields, sizeof(size_t));
+    file.read((char *)&nfields, sizeof(size_t));
 
-    for ( size_t i=0; i<nfields; ++i) {
+    for(size_t i = 0; i < nfields; ++i) {
       size_t fid;
-      file.read((char *) &fid, sizeof(size_t));
+      file.read((char *)&fid, sizeof(size_t));
       size_t len;
-      file.read((char *) &len, sizeof(size_t));
+      file.read((char *)&len, sizeof(size_t));
 
-      auto it = CONTEXT_POLICY::field_data.find( fid );
-      if ( it == CONTEXT_POLICY::field_data.end() ) {
+      auto it = CONTEXT_POLICY::field_data.find(fid);
+      if(it == CONTEXT_POLICY::field_data.end()) {
         CONTEXT_POLICY::register_field_data(fid, len);
-        it = CONTEXT_POLICY::field_data.find( fid );
+        it = CONTEXT_POLICY::field_data.find(fid);
       }
-      assert( it != CONTEXT_POLICY::field_data.end() && "messed up" );
+      assert(it != CONTEXT_POLICY::field_data.end() && "messed up");
 
       it->second.resize(len);
-      file.read((char *) it->second.data(), len);
+      file.read((char *)it->second.data(), len);
     }
-    
-    file.read((char *) &nfields, sizeof(size_t));
 
-    for ( size_t i=0; i<nfields; ++i) {
+    file.read((char *)&nfields, sizeof(size_t));
+
+    for(size_t i = 0; i < nfields; ++i) {
       size_t fid;
-      file.read((char *) &fid, sizeof(size_t));
+      file.read((char *)&fid, sizeof(size_t));
 
-      auto it = CONTEXT_POLICY::sparse_field_data.find( fid );
-      if ( it == CONTEXT_POLICY::sparse_field_data.end() ) {
-        using map_type = typename decltype(CONTEXT_POLICY::sparse_field_data)::value_type;
+      auto it = CONTEXT_POLICY::sparse_field_data.find(fid);
+      if(it == CONTEXT_POLICY::sparse_field_data.end()) {
+        using map_type =
+          typename decltype(CONTEXT_POLICY::sparse_field_data)::value_type;
         using value_type = typename std::tuple_element<1, map_type>::type;
         auto ret = CONTEXT_POLICY::sparse_field_data.emplace(fid, value_type{});
         it = ret.first;
       }
-      assert( it != CONTEXT_POLICY::sparse_field_data.end() && "sparse messed up" );
+      assert(
+        it != CONTEXT_POLICY::sparse_field_data.end() && "sparse messed up");
 
       it->second.read(file);
     }
 
     file.close();
-
   }
-
 
 }; // class context_u
 
@@ -1124,5 +1120,3 @@ using context_t = context_u<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
 } // namespace execution
 } // namespace flecsi
-//clang-format on
-
