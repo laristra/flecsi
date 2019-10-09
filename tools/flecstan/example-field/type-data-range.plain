@@ -1,0 +1,26 @@
+Error:
+   The flecsi_get_handle() macro call here:
+      file type-data-range.cc, line 24
+   is inconsistent with the matching flecsi_register_field() call here:
+      file type-data-range.cc, line 16
+   because the data type was registered as double,
+   but retrieved as int.
+
+Error:
+   The flecsi_get_handle() macro call here:
+      file type-data-range.cc, line 24
+   is inconsistent with the matching flecsi_register_field() call here:
+      file type-data-range.cc, line 16
+   because the storage class was registered as dense,
+   but retrieved as sparse.
+
+Error:
+   The flecsi_get_handle() macro call here:
+      file type-data-range.cc, line 24
+   is inconsistent with the matching flecsi_register_field() call here:
+      file type-data-range.cc, line 16
+   because 2 versions (indices [0]..[1]) were registered,
+   but version [4] was retrieved.
+
+Synopsis:
+   3 errors

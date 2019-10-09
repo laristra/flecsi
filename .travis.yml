@@ -28,13 +28,7 @@ jobs:
       compiler: gcc
 
     - stage: coverage
-      env: DISTRO=fedora_mpich RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora_mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora_mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora_mpich RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+      env: DISTRO=fedora_mpich RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
     - env: DISTRO=fedora_mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
@@ -50,15 +44,10 @@ jobs:
       compiler: gcc
     - env: DISTRO=fedora_mpich RUNTIME=hpx BUILD_TYPE=Release
       compiler: clang
-
-    - env: DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
+      
+    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora RUNTIME=legion BUILD_TYPE=Release
-      compiler: clang
-
-    - env: DISTRO=fedora RUNTIME=mpi BUILD_TYPE=Release
-      compiler: gcc
-    - env: DISTRO=fedora RUNTIME=npi BUILD_TYPE=Release
+    - env: DISTRO=ubuntu_mpich RUNTIME=legion BUILD_TYPE=Release
       compiler: clang
 
 compiler:
