@@ -23,10 +23,10 @@
 #include <flecsi/data/legion/legion_data.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/execution/remap_shared.h>
 #include <flecsi/execution/legion/internal_field.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/mapper.h>
+#include <flecsi/execution/remap_shared.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 

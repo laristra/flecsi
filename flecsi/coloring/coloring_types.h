@@ -105,7 +105,7 @@ struct entity_info_t {
     : id(id_), rank(rank_), offset(offset_) {
     shared.emplace(shared_);
   }
-  
+
   entity_info_t(size_t id_,
     size_t rank_,
     size_t offset_,

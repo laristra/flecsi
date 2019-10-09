@@ -225,11 +225,10 @@ struct test_mesh_2d_t
   auto vertices() {
     return entities<0, 0>();
   } // cells
-  
+
   using types_t = test_mesh_2d_policy_t;
 
   static constexpr size_t num_domains = 1;
-
 
 }; // struct test_mesh_2d_t
 

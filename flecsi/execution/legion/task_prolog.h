@@ -474,33 +474,33 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
         if(!*(ent.ghost_is_readable)) {
           clog_tag_guard(prolog);
-          clog(trace) << "rank " << my_color << "DATA CLIENT READ PHASE PROLOGUE"
-                      << std::endl;
+          clog(trace) << "rank " << my_color
+                      << "DATA CLIENT READ PHASE PROLOGUE" << std::endl;
 
           ghost_owners_partitions.push_back(ent.ghost_owner_partition);
           ghost_partitions.push_back(ent.ghost_partition);
           entire_regions.push_back(ent.entire_region);
 
           fids.push_back(ent.fid);
-          //FIXME : fids.push_back(ent.id_fid);
+          // FIXME : fids.push_back(ent.id_fid);
 
           ghost_copy_args local_args;
           local_args.data_client_hash = h.type_hash;
           local_args.index_space = ent.index_space;
           local_args.sparse = false;
           args.push_back(local_args);
-        
+
           *(ent.ghost_is_readable) = true;
         } // !ghost_is_readable
 
-      }// for entities
+      } // for entities
 
     } // read_phase
 
     if(write_phase) {
       for(size_t i{0}; i < h.num_handle_entities; ++i) {
         auto & ent = h.handle_entities[i];
-        if (*ent.ghost_is_readable) {
+        if(*ent.ghost_is_readable) {
           *(ent.ghost_is_readable) = false;
           *(ent.write_phase_started) = true;
         }

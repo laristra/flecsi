@@ -367,10 +367,9 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
       auto init = ritr->second.ghost_is_readable.count(ent.fid) == 0;
 
       ent.ghost_is_readable = &(ritr->second.ghost_is_readable[ent.fid]);
-      ent.write_phase_started =
-         &(ritr->second.write_phase_started[ent.fid]);
-      
-      if (init) {
+      ent.write_phase_started = &(ritr->second.write_phase_started[ent.fid]);
+
+      if(init) {
         *ent.ghost_is_readable = true;
         *ent.write_phase_started = false;
       }

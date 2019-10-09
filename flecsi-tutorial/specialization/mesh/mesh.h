@@ -64,7 +64,7 @@ struct specialization_mesh_t
   auto vertices(flecsi::topology::domain_entity_u<M, E> & e) {
     return entities<0, 0>(e);
   } // vertices
-  
+
   using types_t = specialization_mesh_policy_t;
 
   static constexpr size_t num_domains = 1;

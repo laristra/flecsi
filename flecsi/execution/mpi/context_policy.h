@@ -81,46 +81,46 @@ struct mpi_context_policy_t {
                                               max_entries_per_index)));
     }
 
-    std::ostream &  write( std::ostream & os ) const {
+    std::ostream & write(std::ostream & os) const {
 
-      os.write((char *) &type_size, sizeof(size_t));
-      os.write((char *) &num_exclusive, sizeof(size_t));
-      os.write((char *) &num_shared, sizeof(size_t));
-      os.write((char *) &num_ghost, sizeof(size_t));
-      os.write((char *) &num_total, sizeof(size_t));
-      os.write((char *) &max_entries_per_index, sizeof(size_t));
-      os.write((char *) &exclusive_reserve, sizeof(size_t));
-      os.write((char *) &reserve, sizeof(size_t));
-      os.write((char *) &num_exclusive_entries, sizeof(size_t));
+      os.write((char *)&type_size, sizeof(size_t));
+      os.write((char *)&num_exclusive, sizeof(size_t));
+      os.write((char *)&num_shared, sizeof(size_t));
+      os.write((char *)&num_ghost, sizeof(size_t));
+      os.write((char *)&num_total, sizeof(size_t));
+      os.write((char *)&max_entries_per_index, sizeof(size_t));
+      os.write((char *)&exclusive_reserve, sizeof(size_t));
+      os.write((char *)&reserve, sizeof(size_t));
+      os.write((char *)&num_exclusive_entries, sizeof(size_t));
 
       size_t len = entries.size();
-      os.write((char *) &len, sizeof(size_t));
-      os.write((char *) entries.data(), len);
-      
+      os.write((char *)&len, sizeof(size_t));
+      os.write((char *)entries.data(), len);
+
       len = offsets.size();
-      os.write((char *) &len, sizeof(size_t));
-      os.write((char *) offsets.data(), len*sizeof(offset_t));
+      os.write((char *)&len, sizeof(size_t));
+      os.write((char *)offsets.data(), len * sizeof(offset_t));
     }
 
-    std::istream & read( std::istream & is ) {
-      is.read((char *) &type_size, sizeof(size_t));
-      is.read((char *) &num_exclusive, sizeof(size_t));
-      is.read((char *) &num_shared, sizeof(size_t));
-      is.read((char *) &num_ghost, sizeof(size_t));
-      is.read((char *) &num_total, sizeof(size_t));
-      is.read((char *) &max_entries_per_index, sizeof(size_t));
-      is.read((char *) &exclusive_reserve, sizeof(size_t));
-      is.read((char *) &reserve, sizeof(size_t));
-      is.read((char *) &num_exclusive_entries, sizeof(size_t));
+    std::istream & read(std::istream & is) {
+      is.read((char *)&type_size, sizeof(size_t));
+      is.read((char *)&num_exclusive, sizeof(size_t));
+      is.read((char *)&num_shared, sizeof(size_t));
+      is.read((char *)&num_ghost, sizeof(size_t));
+      is.read((char *)&num_total, sizeof(size_t));
+      is.read((char *)&max_entries_per_index, sizeof(size_t));
+      is.read((char *)&exclusive_reserve, sizeof(size_t));
+      is.read((char *)&reserve, sizeof(size_t));
+      is.read((char *)&num_exclusive_entries, sizeof(size_t));
 
       size_t len;
-      is.read((char *) &len, sizeof(size_t));
+      is.read((char *)&len, sizeof(size_t));
       entries.resize(len);
-      is.read((char *) entries.data(), len);
-      
-      is.read((char *) &len, sizeof(size_t));
+      is.read((char *)entries.data(), len);
+
+      is.read((char *)&len, sizeof(size_t));
       offsets.resize(len);
-      is.read((char *) offsets.data(), len*sizeof(offset_t));
+      is.read((char *)offsets.data(), len * sizeof(offset_t));
     }
 
     size_t type_size;
@@ -138,7 +138,6 @@ struct mpi_context_policy_t {
 
     std::vector<offset_t> offsets;
     std::vector<uint8_t> entries;
-
 
   }; // sparse_field_data_t
 
@@ -569,7 +568,7 @@ struct mpi_context_policy_t {
   void register_field_data(field_id_t fid, size_t size) {
     // TODO: VERSIONS
     auto it = field_data.find(fid);
-    if (it == field_data.end()) {
+    if(it == field_data.end()) {
       field_data.insert({fid, std::vector<uint8_t>(size)});
     }
     else {
@@ -598,7 +597,7 @@ struct mpi_context_policy_t {
       coloring_info.shared, coloring_info.ghost, max_entries_per_index,
       exclusive_reserve);
     auto it = sparse_field_data.find(fid);
-    if ( it == sparse_field_data.end() ) {
+    if(it == sparse_field_data.end()) {
       sparse_field_data.emplace(fid, std::move(new_field));
     }
     else {
@@ -625,7 +624,7 @@ struct mpi_context_policy_t {
 
   int rank;
 
-//private:
+  // private:
   int color_ = 0;
   int colors_ = 0;
 

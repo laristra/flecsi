@@ -1,3 +1,4 @@
+//clang-format off
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
    /@@/////  /@@          @@////@@ @@////// /@@
@@ -1123,3 +1124,5 @@ using context_t = context_u<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
 } // namespace execution
 } // namespace flecsi
+//clang-format on
+

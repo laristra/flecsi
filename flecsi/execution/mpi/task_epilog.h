@@ -30,8 +30,8 @@
 #include <vector>
 
 #include "mpi.h"
-#include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/coloring/dcrs_utils.h>
+#include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/execution/context.h>
@@ -275,17 +275,19 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     using base_t = typename sparse_mutator<T>::base_t;
     handle(static_cast<base_t &>(m));
   }
-  
-  template< size_t I, typename T, size_t PERMISSIONS >
+
+  template<size_t I, typename T, size_t PERMISSIONS>
   void client_handler(data_client_handle_u<T, PERMISSIONS> & h) {
-    
+
     using entity_types_t = typename T::types_t::entity_types;
-    
-    if constexpr (I < std::tuple_size<entity_types_t>::value) {
+
+    if constexpr(I < std::tuple_size<entity_types_t>::value) {
 
       // get the entitiy type
-      using entity_tuple_t = typename std::tuple_element<I,entity_types_t>::type;
-      using entity_type_t = typename std::tuple_element< 2, entity_tuple_t >::type;
+      using entity_tuple_t =
+        typename std::tuple_element<I, entity_types_t>::type;
+      using entity_type_t =
+        typename std::tuple_element<2, entity_tuple_t>::type;
       constexpr auto DIM = entity_type_t::dimension;
       constexpr auto DOM = entity_type_t::domain;
 
@@ -297,21 +299,21 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       // loop over entities and exchange the ghost values
       auto entity_size = sizeof(entity_type_t);
       auto entities = h.template get_entities<DIM, DOM>();
-      
+
       // get context information
       auto & context = context_t::instance();
       const int my_color = context.color();
 
       // figure out index space id
-      constexpr auto index_space =
-        topology::find_index_space_from_dimension_u<
-          std::tuple_size<entity_types_t>::value,
-          entity_types_t, DIM, DOM>::find();
+      constexpr auto index_space = topology::find_index_space_from_dimension_u<
+        std::tuple_size<entity_types_t>::value, entity_types_t, DIM,
+        DOM>::find();
       const auto & index_map = context.index_map(index_space);
-   
+
       // get ghost/shared info
       const auto & my_coloring = context.coloring(index_space);
-      const auto & my_coloring_info = context.coloring_info(index_space).at(my_color);
+      const auto & my_coloring_info =
+        context.coloring_info(index_space).at(my_color);
 
       // entity offsets are relative to the start of shared
       auto offset_start = my_coloring_info.exclusive;
@@ -325,80 +327,81 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       std::vector<size_t> sendcounts(comm_size, 0);
       for(auto & shared : my_coloring.shared) {
         for(auto peer : shared.shared) {
-          assert( peer != comm_rank );
+          assert(peer != comm_rank);
           sendcounts[peer] += entity_size;
         }
       }
 
-      std::vector<size_t> senddispls(comm_size+1);
+      std::vector<size_t> senddispls(comm_size + 1);
       senddispls[0] = 0;
-      for ( size_t r=0; r<comm_size; ++r )
-        senddispls[r+1] = senddispls[r] + sendcounts[r];
+      for(size_t r = 0; r < comm_size; ++r)
+        senddispls[r + 1] = senddispls[r] + sendcounts[r];
 
-      std::fill( sendcounts.begin(), sendcounts.end(), 0 );
+      std::fill(sendcounts.begin(), sendcounts.end(), 0);
       std::vector<byte_t> sendbuf(senddispls[comm_size], 0);
       for(auto & shared : my_coloring.shared) {
         auto eptr = &entities[shared.offset];
         for(auto peer : shared.shared) {
           auto offset = senddispls[peer] + sendcounts[peer];
-          std::memcpy( sendbuf.data()+offset, eptr, entity_size );
+          std::memcpy(sendbuf.data() + offset, eptr, entity_size);
           sendcounts[peer] += entity_size;
         }
       }
-     
+
       // setup recv buffers
       std::vector<size_t> recvcounts(comm_size, 0);
       for(auto & ghost : my_coloring.ghost)
         recvcounts[ghost.rank] += entity_size;
-     
-      std::vector<size_t> recvdispls(comm_size+1);
+
+      std::vector<size_t> recvdispls(comm_size + 1);
 
       recvdispls[0] = 0;
-      for ( size_t r=0; r<comm_size; ++r )
-        recvdispls[r+1] = recvdispls[r] + recvcounts[r];
+      for(size_t r = 0; r < comm_size; ++r)
+        recvdispls[r + 1] = recvdispls[r] + recvcounts[r];
 
       std::vector<byte_t> recvbuf(recvdispls[comm_size]);
-      
+
       // exchange data
       auto ret = coloring::alltoallv(sendbuf, sendcounts, senddispls, recvbuf,
-        recvcounts, recvdispls, MPI_COMM_WORLD );
-      if ( ret != MPI_SUCCESS ) clog_error( "Error communicating vertices" );
+        recvcounts, recvdispls, MPI_COMM_WORLD);
+      if(ret != MPI_SUCCESS)
+        clog_error("Error communicating vertices");
 
       // unpack data
-      using id_t = std::decay_t< decltype(entities->global_id()) >;
+      using id_t = std::decay_t<decltype(entities->global_id())>;
       constexpr auto num_domains = T::num_domains;
 
       size_t i{0};
-      std::fill( recvcounts.begin(), recvcounts.end(), 0 );
+      std::fill(recvcounts.begin(), recvcounts.end(), 0);
 
       for(auto & ghost : my_coloring.ghost) {
         // get pointer to entity in question
         auto offset = recvdispls[ghost.rank] + recvcounts[ghost.rank];
         auto eptr = entities + my_coloring_info.shared + i;
-        // copy the original ids for now (GROSS)      
+        // copy the original ids for now (GROSS)
         auto id = eptr->global_id();
         // overrite data
-        std::memcpy( eptr, recvbuf.data()+offset, entity_size );
+        std::memcpy(eptr, recvbuf.data() + offset, entity_size);
         // copy back the ids
         eptr->set_global_id(id);
         // bump counters
         recvcounts[ghost.rank] += entity_size;
         ++i;
       }
-      
-      // recursively call this function
-      client_handler<I+1>(h);
-    } // constexpr if
 
+      // recursively call this function
+      client_handler<I + 1>(h);
+    } // constexpr if
   }
-  
+
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
   handle(data_client_handle_u<T, PERMISSIONS> & h) {
 
     // skip read only
-    if(PERMISSIONS == ro) return;
+    if(PERMISSIONS == ro)
+      return;
 
     // iterate over types
     client_handler<0>(h);

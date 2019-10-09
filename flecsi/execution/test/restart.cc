@@ -24,15 +24,15 @@ using mesh_t = flecsi::supplemental::test_mesh_2d_t;
 void
 write_task(data_client_handle_u<mesh_t, ro> mesh,
   dense_accessor<int, rw, rw, na> f1,
-  sparse_mutator<double> f2 ) {
+  sparse_mutator<double> f2) {
   auto & context = execution::context_t::instance();
   const auto & map = context.index_map(cells);
   for(auto c : mesh.cells(flecsi::owned)) {
     f1(c) = map.at(c.id());
-    if (c.id() % 2 == 0 )
-      f2(c,0) = 2 * map.at(c.id());
+    if(c.id() % 2 == 0)
+      f2(c, 0) = 2 * map.at(c.id());
     else
-      f2(c,1) = 2 * map.at(c.id());
+      f2(c, 1) = 2 * map.at(c.id());
   }
 } // task1
 
@@ -44,10 +44,10 @@ read_task(data_client_handle_u<mesh_t, ro> mesh,
   const auto & map = context.index_map(cells);
   for(auto c : mesh.cells()) {
     EXPECT_EQ(f1(c), map.at(c.id()));
-    if (c.id() % 2 == 0 )
-      EXPECT_EQ(f2(c,0), 2 * map.at(c.id()));
+    if(c.id() % 2 == 0)
+      EXPECT_EQ(f2(c, 0), 2 * map.at(c.id()));
     else
-      EXPECT_EQ(f2(c,1), 2 * map.at(c.id()));
+      EXPECT_EQ(f2(c, 1), 2 * map.at(c.id()));
   }
 } // task1
 
@@ -75,7 +75,7 @@ namespace execution {
 void
 specialization_tlt_init(int argc, char ** argv) {
   supplemental::do_test_mesh_2d_coloring();
-  
+
   context_t::sparse_index_space_info_t isi;
   isi.index_space = index_spaces::cells;
   isi.max_entries_per_index = 10;
@@ -95,12 +95,12 @@ specialization_spmd_init(int argc, char ** argv) {
 
 void
 driver(int argc, char ** argv) {
-  
+
   auto & context = execution::context_t::instance();
   auto rank = context.color();
   std::string outfile = "restart.rst." + std::to_string(rank);
- 
-  //context.read_fields(outfile.c_str());
+
+  // context.read_fields(outfile.c_str());
 
   auto ch = flecsi_get_client_handle(mesh_t, meshes, mesh1);
 
@@ -108,7 +108,7 @@ driver(int argc, char ** argv) {
   auto hym = flecsi_get_mutator(ch, fields, y, double, sparse, 0, 2);
 
   flecsi_execute_task_simple(write_task, index, ch, hx, hym);
-  
+
   auto hy = flecsi_get_handle(ch, fields, y, double, sparse, 0);
   flecsi_execute_task_simple(read_task, index, ch, hx, hy);
 

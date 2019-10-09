@@ -90,25 +90,27 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
 
   // find -ll:gsize
   bool has_gsize = false;
-  for ( int i=0; i<argc; ++i ) {
-      std::cout << "argv["<<i<<"] = '" << argv[i]  << "'" << std::endl;
-    if ( strstr(argv[i], "ll:gsize") != NULL )
-    { has_gsize = true; break; }
+  for(int i = 0; i < argc; ++i) {
+    std::cout << "argv[" << i << "] = '" << argv[i] << "'" << std::endl;
+    if(strstr(argv[i], "ll:gsize") != NULL) {
+      has_gsize = true;
+      break;
+    }
   }
 
   // new argc, argv
-  if ( has_gsize ) { 
+  if(has_gsize) {
     // Start the Legion runtime
     Runtime::start(argc, argv, true);
   }
   else {
-    if (rank==0) {
+    if(rank == 0) {
       std::cout << std::endl;
       std::cout << "*** WARNING ***" << std::endl;
-      std::cout << "  GASNET sement size set to zero. This tends to be more"
+      std::cout
+        << "  GASNET sement size set to zero. This tends to be more"
         << std::endl
-        << "  robust at the expense of performance."
-        << std::endl
+        << "  robust at the expense of performance." << std::endl
         << std::endl
         << "  Specify '-ll:gsize <int>' to set the size of GASNET global memory"
         << std::endl
@@ -117,19 +119,19 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
       std::cout << std::endl;
     }
     // add llgsize=0 by default
-    int new_argc = argc+2;
-    char ** new_argv = new char*[new_argc];
-    for ( int i=0; i<argc; ++i ) {
+    int new_argc = argc + 2;
+    char ** new_argv = new char *[new_argc];
+    for(int i = 0; i < argc; ++i) {
       auto len = strlen(argv[i]);
       new_argv[i] = new char[len];
-      strcpy( new_argv[i], argv[i] );
+      strcpy(new_argv[i], argv[i]);
     }
     new_argv[argc] = new char[12];
-    strcpy( new_argv[argc], "-ll:gsize" );
-    new_argv[argc+1] = new char[2];
-    strcpy( new_argv[argc+1], "0" );
-    for ( int i=0; i<new_argc; ++i ) {
-      std::cout << "new_argv["<<i<<"] = " << new_argv[i] << std::endl;
+    strcpy(new_argv[argc], "-ll:gsize");
+    new_argv[argc + 1] = new char[2];
+    strcpy(new_argv[argc + 1], "0");
+    for(int i = 0; i < new_argc; ++i) {
+      std::cout << "new_argv[" << i << "] = " << new_argv[i] << std::endl;
     }
 
     // Start the Legion runtime

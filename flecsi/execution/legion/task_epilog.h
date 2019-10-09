@@ -157,12 +157,12 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     write_phase = (PERMISSIONS == wo) || (PERMISSIONS == rw);
 
     if(write_phase) {
-        
-      for ( size_t i=0; i<h.num_handle_entities; ++i ) {
+
+      for(size_t i = 0; i < h.num_handle_entities; ++i) {
         auto & ent = h.handle_entities[i];
-        if (*ent.write_phase_started) {
+        if(*ent.write_phase_started) {
           {
-          clog(trace) << " DATA CLIENT WRITE PHASE EPILOGUE" << std::endl;
+            clog(trace) << " DATA CLIENT WRITE PHASE EPILOGUE" << std::endl;
           } // scope
 
           // As user
