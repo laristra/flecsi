@@ -25,7 +25,7 @@ restart_dump(int argc, char ** argv) {
   return 0;
 } // restart_dump
 
-register_action(io /* phase */,
+flecsi_register_action(io /* phase */,
   restart_dump /* name */,
   restart_dump /* action */);
 
@@ -50,4 +50,4 @@ output_final(int argc, char ** argv) {
   return 0;
 } // finalize
 
-register_action(finalize, output_final, output_final);
+flecsi_register_action(finalize, output_final, output_final);

@@ -15,4 +15,4 @@ advance_particles(int argc, char ** argv) {
   return 0;
 } // advance_particles
 
-register_action(advance, advance_particles, advance_particles);
+flecsi_register_action(advance, advance_particles, advance_particles);

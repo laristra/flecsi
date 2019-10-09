@@ -15,6 +15,6 @@ poynting_flux(int argc, char ** argv) {
   return 0;
 } // poynting_flux
 
-register_action(analyze /* phase */,
+flecsi_register_action(analyze /* phase */,
   poynting_flux /* name */,
   poynting_flux /* action */);

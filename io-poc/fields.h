@@ -15,7 +15,7 @@ init_fields(int argc, char ** argv) {
   return 0;
 } // init_fields
 
-register_action(initialize /* phase */,
+flecsi_register_action(initialize /* phase */,
   init_fields /* action name */,
   init_fields /* action */
 );
@@ -41,5 +41,5 @@ update_fields(int argc, char ** argv) {
   return 0;
 } // update_fields
 
-register_action(advance, update_fields, update_fields);
+flecsi_register_action(advance, update_fields, update_fields);
 add_dependency(advance, update_fields, accumulate_currents);

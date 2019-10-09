@@ -16,5 +16,5 @@ init_species(int argc, char ** argv) {
   return 0;
 } // init_fields
 
-register_action(initialize, init_species, init_species);
+flecsi_register_action(initialize, init_species, init_species);
 add_dependency(initialize, init_species, init_mesh);

@@ -15,7 +15,7 @@ init_mesh(int argc, char ** argv) {
   return 0;
 } // init_mesh
 
-register_action(initialize, init_mesh, init_mesh);
+flecsi_register_action(initialize, init_mesh, init_mesh);
 
 int
 fixup_mesh(int argc, char ** argv) {
@@ -25,4 +25,4 @@ fixup_mesh(int argc, char ** argv) {
   return 0;
 } // fixup_mesh
 
-register_action(mesh, fixup_mesh, fixup_mesh);
+flecsi_register_action(mesh, fixup_mesh, fixup_mesh);

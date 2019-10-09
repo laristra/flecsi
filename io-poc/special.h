@@ -16,7 +16,7 @@ particle_special(int argc, char ** argv) {
 } // accumulate_currents
 
 #if defined(ENABLE_SPECIAL)
-register_action(advance, particle_special, particle_special);
+flecsi_register_action(advance, particle_special, particle_special);
 add_dependency(advance, particle_special, advance_particles);
 add_dependency(advance, accumulate_currents, particle_special);
 #endif
