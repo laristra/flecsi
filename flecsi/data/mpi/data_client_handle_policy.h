@@ -38,6 +38,7 @@ struct data_client_handle_entity_t {
   field_id_t id_fid;
   size_t fid_size;
   size_t fid2_size;
+  std::size_t fid3_size;
   size_t id_fid_size;
 }; // struct data_client_handle_entity_t
 
