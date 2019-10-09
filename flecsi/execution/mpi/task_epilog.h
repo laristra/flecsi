@@ -27,9 +27,12 @@
  @date Initial file creation: May 19, 2017
  */
 
+#include <cstring>
+#include <stdint.h>
 #include <vector>
 
 #include "mpi.h"
+
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
@@ -127,10 +130,6 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    using accessor_t = ragged_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>;
-    using handle_t = typename accessor_t::handle_t;
-    using offset_t = typename handle_t::offset_t;
     using value_t = T;
 
     // Skip Read Only handles
@@ -145,10 +144,18 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     auto & sparse_field_metadata =
       context.registered_sparse_field_metadata().at(h.fid);
 
-    value_t * entries = h.entries;
-    auto offsets = &(h.offsets)[0];
-    auto shared_data = entries + h.reserve;
-    auto ghost_data = shared_data + h.num_shared_ * h.max_entries_per_index;
+    value_t * shared_data =
+      new value_t[h.num_shared_ * h.max_entries_per_index];
+    value_t * ghost_data = new value_t[h.num_ghost_ * h.max_entries_per_index];
+
+    // Load data into shared data buffer
+    for(int i = 0; i < h.num_shared_; ++i) {
+      int r = i + h.num_exclusive_;
+      const auto & row = h.new_entries[r];
+      size_t count = row.size();
+      std::memcpy(&shared_data[i * h.max_entries_per_index], row.begin(),
+        count * sizeof(value_t));
+    }
 
     // Get entry_values
     MPI_Datatype shared_ghost_type;
@@ -194,7 +201,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
         send_count_buf.push_back(
-          offsets[h.num_exclusive_ + shared.offset].count());
+          h.new_entries[h.num_exclusive_ + shared.offset].size());
       }
     }
 
@@ -222,9 +229,21 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
     for(int i = 0; i < h.num_ghost_; i++) {
       clog_rank(warn, 0) << recv_count_buf[i] << std::endl;
-      offsets[h.num_exclusive_ + h.num_shared_ + i].set_count(
-        recv_count_buf[i]);
     }
+
+    // Unload data from ghost data buffer
+    for(int i = 0; i < h.num_ghost_; i++) {
+      int r = h.num_exclusive_ + h.num_shared_ + i;
+      auto & row = h.new_entries[r];
+      int count = recv_count_buf[i];
+      row.resize(count);
+      std::memcpy(row.begin(), &ghost_data[i * h.max_entries_per_index],
+        count * sizeof(value_t));
+    }
+
+    delete[] shared_data;
+    delete[] ghost_data;
+
   } // handle
 
   template<typename T,
@@ -235,43 +254,15 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
-    handle(static_cast<base_t &>(a));
+    handle(a.ragged);
   } // handle
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    auto & h = m.h_;
-
-    using mutator_t = ragged_mutator_u<T>;
-    using handle_t = typename mutator_t::handle_t;
-    using offset_t = typename handle_t::offset_t;
-    using value_t = T;
-    using commit_info_t = typename handle_t::commit_info_t;
-
-    clog_assert(*h.num_exclusive_insertions <= *h.reserve,
-      "sparse exclusive reserve exceed");
-
-    // this segfaults if we try to use a sparse mutator more than once
-    // delete h.num_exclusive_insertions;
-
-    value_t * entries = reinterpret_cast<value_t *>(&(*h.entries)[0]);
-
-    commit_info_t ci;
-    ci.offsets = &(*h.offsets)[0];
-    ci.entries[0] = entries;
-    ci.entries[1] = entries + *h.reserve;
-    ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
-
-    h.commit(&ci);
-
-  } // handle
+  void handle(ragged_mutator<T> & m) {} // handle
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using base_t = typename sparse_mutator<T>::base_t;
-    handle(static_cast<base_t &>(m));
+    handle(m.ragged);
   }
 
   /*!

@@ -15,7 +15,12 @@
 
 /*! @file */
 
+#include <flecsi-config.h>
+
+#include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/registration_wrapper.h>
+#include <flecsi/data/common/row_vector.h>
+#include <flecsi/data/common/serdez.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/utils/hash.h>
 
@@ -87,6 +92,24 @@ struct field_interface_u {
         return false;
       } // if
     } // for
+
+    // CRF:  yes, this is ugly, but I can't find any other way to
+    //       make it work
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+    if constexpr(STORAGE_CLASS == ragged || STORAGE_CLASS == sparse) {
+      using namespace Legion;
+      // CRF hack - for now, use lowest bits of name_hash as serdez id
+      int sid = NAME_HASH & 0x7FFFFFFF;
+      if constexpr(STORAGE_CLASS == sparse) {
+        Runtime::register_custom_serdez_op<
+          serdez_u<row_vector_u<sparse_entry_value_u<DATA_TYPE>>>>(sid);
+      }
+      else {
+        Runtime::register_custom_serdez_op<serdez_u<row_vector_u<DATA_TYPE>>>(
+          sid);
+      }
+    } // if
+#endif
 
     return true;
   } // register_field

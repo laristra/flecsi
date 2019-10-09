@@ -25,6 +25,8 @@ set(data_HEADERS
   common/data_reference.h
   common/privilege.h
   common/registration_wrapper.h
+  common/row_vector.h
+  common/serdez.h
   data.h
   data_client.h
   data_client_handle.h
@@ -37,7 +39,6 @@ set(data_HEADERS
   global_data_handle.h
   internal_client.h
   mutator.h
-  mutator_handle.h
   ragged_accessor.h
   ragged_mutator.h
   sparse_accessor.h
@@ -73,13 +74,11 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/dense_data_handle_policy.h
     legion/global_data_handle_policy.h
     legion/sparse_data_handle_policy.h
-    legion/mutator_handle_policy.h
     legion/data_policy.h
     legion/dense.h
     legion/global.h
     legion/color.h
     legion/legion_data.h
-    legion/mutator_handle_policy.h
     legion/scoped.h
     legion/sparse.h
     legion/storage_policy.h
@@ -99,7 +98,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/data_policy.h
     mpi/dense.h
     mpi/global.h
-    mpi/mutator_handle_policy.h
     mpi/sparse.h
     mpi/sparse_data_handle_policy.h
     mpi/storage_policy.h
@@ -122,7 +120,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     hpx/dense.h
     hpx/global.h
     hpx/meta_data.h
-    hpx/mutator_handle_policy.h
     hpx/registration_wrapper.h
     hpx/scoped.h
     hpx/sparse.h

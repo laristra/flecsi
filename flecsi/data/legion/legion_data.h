@@ -24,6 +24,8 @@
 #include <flecsi/coloring/adjacency_types.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
+#include <flecsi/data/common/row_vector.h>
+#include <flecsi/data/common/serdez.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/internal_index_space.h>
 #include <flecsi/execution/legion/helper.h>
@@ -86,20 +88,8 @@ public:
 
   struct sparse_index_space_t {
     size_t index_space_id;
-    Legion::IndexSpace index_space;
-    Legion::FieldSpace field_space;
-    Legion::LogicalRegion logical_region;
-    Legion::IndexPartition access_partition;
-    Legion::IndexPartition color_partition;
-    Legion::IndexPartition primary_partition;
-    Legion::IndexPartition exclusive_partition;
-    Legion::IndexPartition shared_partition;
-    Legion::IndexPartition ghost_partition;
-    Legion::IndexPartition all_shared_partition;
-    size_t exclusive_reserve;
     size_t max_entries_per_index;
     size_t max_shared_ghost;
-    size_t color_size;
   };
 
   struct sparse_metadata_t {
@@ -318,8 +308,6 @@ public:
       is.has_sparse_fields = true;
 
       sparse_index_space_t sis;
-      // TODO: need to formalize this index space offset scheme
-      sis.index_space_id = index_space_id + 8192;
 
       sis.max_shared_ghost = 0;
 
@@ -328,27 +316,7 @@ public:
           color_idx.second.shared + color_idx.second.ghost);
       }
 
-      sis.exclusive_reserve = sparse_info->exclusive_reserve;
       sis.max_entries_per_index = sparse_info->max_entries_per_index;
-
-      sis.color_size = sis.exclusive_reserve +
-                       sis.max_shared_ghost * sis.max_entries_per_index;
-
-      // Create expanded index space
-      LegionRuntime::Arrays::Rect<2> expanded_bounds =
-        LegionRuntime::Arrays::Rect<2>(
-          LegionRuntime::Arrays::Point<2>::ZEROES(),
-          make_point(num_colors_, sis.color_size));
-
-      Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
-
-      sis.index_space = runtime_->create_index_space(ctx_, expanded_dom);
-      attach_name(sis, sis.index_space, "expanded sparse index space");
-
-      // Read user + FleCSI registered field spaces
-      sis.field_space = runtime_->create_field_space(ctx_);
-
-      attach_name(sis, sis.field_space, "expanded sparse field space");
 
       sparse_index_space_map_[index_space_id] = std::move(sis);
     }
@@ -517,16 +485,6 @@ public:
     for(auto & itr : index_space_map_) {
       index_space_t & is = itr.second;
 
-      sparse_index_space_t * sis;
-
-      auto sitr = sparse_index_space_map_.find(is.index_space_id);
-      if(sitr != sparse_index_space_map_.end()) {
-        sis = &sitr->second;
-      }
-      else {
-        sis = nullptr;
-      }
-
       auto citr = indexed_coloring_info_map.find(is.index_space_id);
       clog_assert(
         citr != indexed_coloring_info_map.end(), "invalid index space");
@@ -553,11 +511,15 @@ public:
           case sparse:
             if(fi.index_space == is.index_space_id) {
               if(utils::hash::is_internal(fi.key)) {
+                // CRF:  I don't think this is correct -
+                // but it also appears to be unused currently
                 allocator.allocate_field(fi.size, fi.fid);
               }
               else {
-                // this is a sparse offset
-                allocator.allocate_field(sizeof(utils::offset_t), fi.fid);
+                // CRF hack - use lowest bits of name_hash as serdez id
+                int sid = fi.name_hash & 0x7FFFFFFF;
+                allocator.allocate_field(
+                  sizeof(data::row_vector_u<uint8_t>), fi.fid, sid);
               }
             }
             break;
@@ -682,55 +644,7 @@ public:
           color_domain_, shared_partitioning, true /*disjoint*/);
         attach_name(is, is.shared_partition, "shared partitioning");
       } // scope
-      if(sis) {
-        FieldAllocator allocator =
-          runtime_->create_field_allocator(ctx_, sis->field_space);
-
-        allocator.allocate_field(
-          sizeof(LegionRuntime::Arrays::Point<2>), ghost_owner_pos_fid);
-
-        for(const field_info_t & fi : context.registered_fields()) {
-          switch(fi.storage_class) {
-            case ragged:
-            case sparse:
-              if(fi.index_space == is.index_space_id) {
-                if(!utils::hash::is_internal(fi.key)) {
-                  allocator.allocate_field(fi.size, fi.fid);
-                }
-              }
-              break;
-            default:
-              break;
-          }
-        } // for
-
-        sis->logical_region = runtime_->create_logical_region(
-          ctx_, sis->index_space, sis->field_space);
-        attach_name(
-          *sis, sis->logical_region, "sparse expanded logical region");
-
-        DomainColoring sis_color_partitioning;
-        MultiDomainColoring sis_access_partitioning;
-        MultiDomainColoring sis_owner_partitioning;
-        DomainColoring sis_primary_partitioning;
-        DomainColoring sis_exclusive_partitioning;
-        DomainColoring sis_shared_partitioning;
-        DomainColoring sis_ghost_partitioning;
-        DomainColoring sis_all_shared_partitioning;
-
-        const sparse_index_space_info_t * sparse_info;
-
-        size_t max_shared = 0;
-
-        for(int color = 0; color < num_colors_; color++) {
-          auto citr = coloring_info_map.find(color);
-          clog_assert(citr != coloring_info_map.end(), "invalid color info");
-          const coloring_info_t & coloring_info = citr->second;
-
-          size_t shared_size =
-            coloring_info.shared * sis->max_entries_per_index;
-
-          max_shared = (std::max)(shared_size, max_shared);
+          max_shared = std::max(shared_size, max_shared);
         }
 
         for(int color = 0; color < num_colors_; color++) {

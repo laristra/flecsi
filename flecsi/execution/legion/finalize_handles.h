@@ -60,39 +60,24 @@ struct finalize_handles_t
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
-    handle(static_cast<base_t &>(a));
+    handle(a.ragged);
   } // handle
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
     using value_t = T;
-    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
-    using offset_t = data::sparse_data_offset_t;
     using sparse_field_data_t = context_t::sparse_field_data_t;
 
-    auto & h = m.h_;
-
-    value_t * entries = reinterpret_cast<value_t *>(h.entries);
-
-    commit_info_t ci;
-    ci.offsets = h.offsets;
-    ci.entries[0] = entries;
-    ci.entries[1] = entries + h.reserve;
-    ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
+    auto & h = m.handle;
 
     auto md = static_cast<sparse_field_data_t *>(h.metadata);
-
-    md->num_exclusive_filled = h.commit(&ci);
 
     md->initialized = true;
   } // handle
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using base_t = typename sparse_mutator<T>::base_t;
-    handle(static_cast<base_t &>(m));
+    handle(m.ragged);
   }
 
   /*!
@@ -122,7 +107,6 @@ struct finalize_handles_t
         si.size = h.get_index_subspace_size_(iss.index_subspace);
       }
     }
-
     h.delete_storage();
   } // handle
 
