@@ -8,7 +8,8 @@ from spack import *
 
 
 class Flecsi(CMakePackage):
-    '''FleCSI is a compile-time configurable framework designed to support
+    '''
+       FleCSI is a compile-time configurable framework designed to support
        multi-physics application development. As such, FleCSI attempts to
        provide a very general set of infrastructure design patterns that can
        be specialized and extended to suit the needs of a broad variety of
