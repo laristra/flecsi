@@ -36,7 +36,7 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12.4',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
-    depends_on('cinch@1.01:', type='build')
+    #depends_on('cinch@1.01:', type='build')
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
     depends_on('legion@ctrl-rep +shared +mpi +hdf5', when='backend=legion')
@@ -50,7 +50,7 @@ class Flecsi(CMakePackage):
 
     def cmake_args(self):
         options = ['-DCMAKE_BUILD_TYPE=debug']
-        options.append('-DCINCH_SOURCE_DIR=' + self.spec['cinch'].prefix)
+        #options.append('-DCINCH_SOURCE_DIR=' + self.spec['cinch'].prefix)
 
         # FleCSI for FleCSPH flags
         if self.spec.satisfies('@flecsph:'):
