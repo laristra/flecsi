@@ -156,15 +156,21 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     bool write_phase;
     write_phase = (PERMISSIONS == wo) || (PERMISSIONS == rw);
 
-    if(write_phase && (*h.write_phase_started)) {
-      {
-        clog(trace) << " DATA CLIENT WRITE PHASE EPILOGUE" << std::endl;
-      } // scope
+    if(write_phase) {
+        
+      for ( size_t i=0; i<h.num_handle_entities; ++i ) {
+        auto & ent = h.handle_entities[i];
+        if (*ent.write_phase_started) {
+          {
+          clog(trace) << " DATA CLIENT WRITE PHASE EPILOGUE" << std::endl;
+          } // scope
 
-      // As user
-      // Phase READ
-      *(h.write_phase_started) = false;
-      // better to move copy here than in prolog
+          // As user
+          // Phase READ
+          *(ent.write_phase_started) = false;
+        }
+      } // for
+
     } // if write phase
   }
 

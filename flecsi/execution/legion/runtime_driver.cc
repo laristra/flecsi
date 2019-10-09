@@ -23,6 +23,7 @@
 #include <flecsi/data/legion/legion_data.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/remap_shared.h>
 #include <flecsi/execution/legion/internal_field.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/mapper.h>
@@ -145,6 +146,7 @@ runtime_driver(const Legion::Task * task,
 
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
+  remap_shared_entities();
 
   context_.advance_state();
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
@@ -879,7 +881,6 @@ setup_rank_context_task(const Legion::Task * task,
       _gis_to_cis[gid] = cid;
       ++cid;
     } // for
-
     for(auto entity : is.second.ghost) {
       size_t gid = _rank_offsets[entity.rank] + entity.offset;
       _cis_to_gis[cid] = gid;

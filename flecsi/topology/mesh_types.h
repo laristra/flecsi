@@ -132,6 +132,10 @@ public:
     return entity_->id();
   }
 
+  id_t & global_id() {
+    return entity_->template global_id<DOM>();
+  }
+
   id_t global_id() const {
     return entity_->template global_id<DOM>();
   }

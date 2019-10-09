@@ -88,6 +88,10 @@ public:
     global_ = global;
   }
 
+  void set_local(const std::size_t local) {
+    entity_ = local;
+  }
+
   // Getters...
 
   std::size_t dimension() const {

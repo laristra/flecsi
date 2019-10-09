@@ -338,6 +338,42 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     h.data_ = Legion::Future(futures[future_id]).get_result<T>();
     future_id++;
   } // handle
+  
+  template< size_t I, typename T, size_t PERMISSIONS >
+  void client_handler(data_client_handle_u<T, PERMISSIONS> & h,
+      const std::map<int, topology::mesh_entity_base_ *> & ent_map,
+      const std::map<int, utils::id_t*> & id_map) {
+    
+    using entity_types_t = typename T::types_t::entity_types;
+    
+    if constexpr (I < std::tuple_size<entity_types_t>::value) {
+
+      // get the entitiy type
+      using entity_tuple_t = typename std::tuple_element<I,entity_types_t>::type;
+      using entity_type_t = typename std::tuple_element< 2, entity_tuple_t >::type;
+      constexpr auto DIM = entity_type_t::dimension;
+      constexpr auto DOM = entity_type_t::domain;
+     
+      // get the entitites and ids
+      auto ents = static_cast<entity_type_t*>(ent_map.at(I));
+      auto ids = id_map.at(I);
+
+      const auto & ent = h.handle_entities[I];
+
+      auto offset = ent.num_exclusive + ent.num_shared;
+      for ( size_t i=0; i<ent.num_ghost; ++i ) {
+        auto global = ents[offset + i].global_id().global();
+        ents[offset + i].global_id() = ids[offset + i];
+        ents[offset + i].global_id().set_global( global );  
+      }
+
+      
+
+      // recursively call this function
+      client_handler<I+1>(h, ent_map, id_map);
+    }
+  
+  }
 
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
@@ -352,6 +388,10 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     //------------------------------------------------------------------------//
 
     std::unordered_map<size_t, size_t> region_map;
+
+    std::map<int, topology::mesh_entity_base_ *> entity_pointers;
+    std::map<int, utils::id_t*> id_pointers;
+
 
     bool _read{PERMISSIONS == ro || PERMISSIONS == rw};
 
@@ -376,6 +416,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       auto ents_raw =
         static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
       auto ents = reinterpret_cast<topology::mesh_entity_base_ *>(ents_raw);
+      entity_pointers.emplace( i, ents );
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
 
@@ -383,6 +424,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
                    .get_field_accessor(ent.id_fid)
                    .template typeify<utils::id_t>();
       auto ids = ac2.template raw_rect_ptr<2>(dr, sr, bo);
+      id_pointers.emplace( i, ids );
 
       // calculating exclusive, shared and ghost sizes fro the entity
       auto coloring = context_.coloring(ent.index_space);
@@ -473,6 +515,9 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     if(!_read) {
       h.initialize_storage();
+    }
+    else {
+      client_handler<0>(h, entity_pointers, id_pointers);
     }
   }
 
