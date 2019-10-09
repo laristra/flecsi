@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/data/data_reference.hh"
+#include "flecsi/data/reference.hh"
 //#include "flecsi/runtime/backend.hh"
 //#include <flecsi/topology/unstructured_mesh/partition.hh>
 #include <flecsi/topology/unstructured_mesh/storage.hh>
@@ -112,7 +112,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 
 template<typename POLICY_TYPE>
 struct unstructured_mesh_topology : public unstructured_mesh_topology_base_t,
-                                    public data::data_reference_base_t {
+                                    public data::reference_base {
 
   //--------------------------------------------------------------------------//
   // static verification of mesh policy

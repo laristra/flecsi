@@ -24,36 +24,36 @@
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include <flecsi/io/legion/io_policy.hh>
+#include <flecsi/io/legion/policy.hh>
 
 namespace flecsi {
 namespace io {
 
-using FLECSI_RUNTIME_IO_POLICY = legion_io_policy_t;
+using FLECSI_RUNTIME_IO_POLICY = legion_policy_t;
 
 } // namespace io
 } // namespace flecsi
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include <flecsi/io/mpi/io_policy.hh>
+#include <flecsi/io/mpi/policy.hh>
 
 namespace flecsi {
 namespace io {
 
-using FLECSI_RUNTIME_IO_POLICY = mpi_io_policy_t;
+using FLECSI_RUNTIME_IO_POLICY = mpi_policy_t;
 
 } // namespace io
 } // namespace flecsi
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
 
-#include <flecsi/io/hpx/io_policy.hh>
+#include <flecsi/io/hpx/policy.hh>
 
 namespace flecsi {
 namespace io {
 
-using FLECSI_RUNTIME_IO_POLICY = hpx_io_policy_t;
+using FLECSI_RUNTIME_IO_POLICY = hpx_policy_t;
 
 } // namespace io
 } // namespace flecsi

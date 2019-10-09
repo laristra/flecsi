@@ -24,12 +24,12 @@ set(io_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(io_HEADERS
-    legion/io_policy.hh
+    legion/policy.hh
     ${io_HEADERS}
   )
 
   set(io_SOURCES
-    legion/io_policy.cc
+    legion/policy.cc
     ${io_SOURCES}
   )
 
@@ -84,14 +84,14 @@ ftest_add_unit(io
 )
 endif()
         
-ftest_add_unit(io_index
+ftest_add_unit(index
   SOURCES
-    test/io_index.cc
+    test/index.cc
 )
 
-ftest_add_unit(io_metadata
+ftest_add_unit(metadata
   SOURCES
-    test/io_metadata.cc
+    test/metadata.cc
 )
                 
 endif()

@@ -70,15 +70,13 @@ struct legion_hdf5_t {
   std::map<std::string, hid_t> hdf5_group_map;
 };
 
-struct legion_io_policy_t {
+struct legion_policy_t {
   using hdf5_t = legion_hdf5_t;
   using hdf5_region_t = legion_hdf5_region_t;
   using launch_space_t = Legion::IndexSpace;
   using field_reference_t = data::field_reference_t;
 
-  legion_io_policy_t() {}
-
-  ~legion_io_policy_t();
+  ~legion_policy_t();
 
   legion_hdf5_t init_hdf5_file(const char * file_name, int num_files);
 
@@ -135,7 +133,7 @@ private:
   Legion::IndexPartition default_index_topology_file_ip;
   Legion::LogicalPartition default_index_topology_file_lp;
 
-}; // struct legion_io_policy_t
+}; // struct legion_policy_t
 
 } // namespace io
 } // namespace flecsi

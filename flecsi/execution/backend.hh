@@ -26,14 +26,14 @@
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include <flecsi/execution/legion/execution_policy.hh>
+#include <flecsi/execution/legion/policy.hh>
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-#include <flecsi/execution/mpi/execution_policy.hh>
+#include <flecsi/execution/mpi/policy.hh>
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
 
-#include <flecsi/execution/hpx/execution_policy.hh>
+#include <flecsi/execution/hpx/policy.hh>
 
 #endif // FLECSI_RUNTIME_MODEL

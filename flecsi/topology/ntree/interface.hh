@@ -18,7 +18,7 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #else
-#include "flecsi/data/data_reference.hh"
+#include "flecsi/data/reference.hh"
 #include <flecsi/topology/ntree/geometry.hh>
 #include <flecsi/topology/ntree/storage.hh>
 #include <flecsi/topology/ntree/types.hh>
@@ -48,7 +48,7 @@ namespace topology {
 //-----------------------------------------------------------------//
 template<typename POLICY_TYPE>
 struct ntree_topology : public ntree_topology_base_t,
-                        public data::data_reference_base_t {
+                        public data::reference_base {
 
 public:
   using Policy = POLICY_TYPE;

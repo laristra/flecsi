@@ -12,11 +12,11 @@
    All rights reserved.
                                                                               */
 #define __FLECSI_PRIVATE__
-#include "flecsi/data/data_reference.hh"
 #include "flecsi/data/field_info.hh"
+#include "flecsi/data/reference.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/data/legion/runtime_data_types.hh>
-#include <flecsi/io/legion/io_policy.hh>
+#include <flecsi/data/legion/types.hh>
+#include <flecsi/io/legion/policy.hh>
 #include <flecsi/utils/const_string.hh>
 
 #include <sys/types.h>
@@ -289,7 +289,7 @@ legion_hdf5_t::create_datasets_for_regions(int file_idx) {
   return true;
 }
 
-legion_io_policy_t::~legion_io_policy_t() {
+legion_policy_t::~legion_policy_t() {
   Runtime * runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
   if(default_index_topology_file_is != IndexSpace::NO_SPACE) {
@@ -299,33 +299,33 @@ legion_io_policy_t::~legion_io_policy_t() {
 }
 
 legion_hdf5_t
-legion_io_policy_t::init_hdf5_file(const char * file_name, int num_files) {
+legion_policy_t::init_hdf5_file(const char * file_name, int num_files) {
   return legion_hdf5_t(file_name, num_files);
 }
 
 bool
-legion_io_policy_t::create_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx) {
+legion_policy_t::create_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx) {
   return hdf5_file.create_hdf5_file(file_idx);
 }
 
 bool
-legion_io_policy_t::open_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx) {
+legion_policy_t::open_hdf5_file(legion_hdf5_t & hdf5_file, int file_idx) {
   return hdf5_file.open_hdf5_file(file_idx);
 }
 
 bool
-legion_io_policy_t::close_hdf5_file(legion_hdf5_t & hdf5_file) {
+legion_policy_t::close_hdf5_file(legion_hdf5_t & hdf5_file) {
   return hdf5_file.close_hdf5_file();
 }
 
 bool
-legion_io_policy_t::create_datasets_for_regions(legion_hdf5_t & hdf5_file,
+legion_policy_t::create_datasets_for_regions(legion_hdf5_t & hdf5_file,
   int file_idx) {
   return hdf5_file.create_datasets_for_regions(file_idx);
 }
 
 bool
-legion_io_policy_t::write_string_to_hdf5_file(legion_hdf5_t & hdf5_file,
+legion_policy_t::write_string_to_hdf5_file(legion_hdf5_t & hdf5_file,
   int file_idx,
   const char * group_name,
   const char * dataset_name,
@@ -336,7 +336,7 @@ legion_io_policy_t::write_string_to_hdf5_file(legion_hdf5_t & hdf5_file,
 }
 
 bool
-legion_io_policy_t::read_string_from_hdf5_file(hdf5_t & hdf5_file,
+legion_policy_t::read_string_from_hdf5_file(hdf5_t & hdf5_file,
   int file_idx,
   const char * group_name,
   const char * dataset_name,
@@ -345,7 +345,7 @@ legion_io_policy_t::read_string_from_hdf5_file(hdf5_t & hdf5_file,
 }
 
 void
-legion_io_policy_t::add_regions(legion_hdf5_t & hdf5_file,
+legion_policy_t::add_regions(legion_hdf5_t & hdf5_file,
   std::vector<legion_hdf5_region_t> & hdf5_region_vector) {
   for(std::vector<legion_hdf5_region_t>::iterator it =
         hdf5_region_vector.begin();
@@ -356,7 +356,7 @@ legion_io_policy_t::add_regions(legion_hdf5_t & hdf5_file,
 }
 
 void
-legion_io_policy_t::add_default_index_topology(hdf5_t & hdf5_file) {
+legion_policy_t::add_default_index_topology(hdf5_t & hdf5_file) {
   constexpr size_t identifier = flecsi_index_topology.identifier();
 
   auto & flecsi_context = runtime::context_t::instance();
@@ -409,7 +409,7 @@ legion_io_policy_t::add_default_index_topology(hdf5_t & hdf5_file) {
 }
 
 void
-legion_io_policy_t::generate_hdf5_files(legion_hdf5_t & hdf5_file) {
+legion_policy_t::generate_hdf5_files(legion_hdf5_t & hdf5_file) {
   for(int i = 0; i < hdf5_file.num_files; i++) {
     hdf5_file.create_hdf5_file(i);
     hdf5_file.create_datasets_for_regions(i);
@@ -418,7 +418,7 @@ legion_io_policy_t::generate_hdf5_files(legion_hdf5_t & hdf5_file) {
 }
 
 void
-legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file,
+legion_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file,
   IndexSpace launch_space,
   std::vector<legion_hdf5_region_t> & hdf5_region_vector,
   bool attach_flag) {
@@ -489,8 +489,7 @@ legion_io_policy_t::checkpoint_data(legion_hdf5_t & hdf5_file,
 }
 
 void
-legion_io_policy_t::checkpoint_default_index_topology(
-  legion_hdf5_t & hdf5_file) {
+legion_policy_t::checkpoint_default_index_topology(legion_hdf5_t & hdf5_file) {
   auto & flecsi_context = runtime::context_t::instance();
   std::vector<data::field_info_t> const & fid_vector =
     flecsi_context
@@ -521,7 +520,7 @@ legion_io_policy_t::checkpoint_default_index_topology(
 }
 
 void
-legion_io_policy_t::checkpoint_index_topology_field(hdf5_t & hdf5_file,
+legion_policy_t::checkpoint_index_topology_field(hdf5_t & hdf5_file,
   data::field_reference_t const & fh) {
   auto & flecsi_context = runtime::context_t::instance();
   const data::field_info_t & fid =
@@ -548,7 +547,7 @@ legion_io_policy_t::checkpoint_index_topology_field(hdf5_t & hdf5_file,
 }
 
 void
-legion_io_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
+legion_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
   auto & flecsi_context = runtime::context_t::instance();
   std::vector<data::field_info_t> const & fid_vector =
     flecsi_context
@@ -579,7 +578,7 @@ legion_io_policy_t::recover_default_index_topology(legion_hdf5_t & hdf5_file) {
 }
 
 void
-legion_io_policy_t::recover_index_topology_field(hdf5_t & hdf5_file,
+legion_policy_t::recover_index_topology_field(hdf5_t & hdf5_file,
   data::field_reference_t & fh) {
   auto & flecsi_context = runtime::context_t::instance();
   const data::field_info_t & fid =
@@ -606,7 +605,7 @@ legion_io_policy_t::recover_index_topology_field(hdf5_t & hdf5_file,
 }
 
 void
-legion_io_policy_t::recover_data(legion_hdf5_t & hdf5_file,
+legion_policy_t::recover_data(legion_hdf5_t & hdf5_file,
   IndexSpace launch_space,
   std::vector<legion_hdf5_region_t> & hdf5_region_vector,
   bool attach_flag) {
