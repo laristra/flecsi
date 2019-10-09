@@ -107,7 +107,6 @@ struct finalize_handles_t
         si.size = h.get_index_subspace_size_(iss.index_subspace);
       }
     }
-
     h.delete_storage();
   } // handle
 

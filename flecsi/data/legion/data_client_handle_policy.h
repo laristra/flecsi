@@ -31,6 +31,10 @@ struct data_client_handle_entity_t {
   field_id_t fid2;
   field_id_t fid3;
   field_id_t id_fid;
+  size_t fid_size;
+  size_t fid2_size;
+  size_t fid3_size;
+  size_t id_fid_size;
   Legion::LogicalRegion entire_region;
   Legion::LogicalPartition color_partition;
   Legion::LogicalPartition primary_partition;
@@ -59,6 +63,8 @@ struct data_client_handle_adjacency_t {
   size_t num_indices;
   field_id_t index_fid;
   field_id_t offset_fid;
+  size_t index_fid_size;
+  size_t offset_fid_size;
   Legion::LogicalRegion adj_region;
   Legion::LogicalPartition adj_color_partition;
   Legion::LogicalRegion from_entire_region;
@@ -70,6 +76,7 @@ struct data_client_handle_index_subspace_t {
   size_t index_space;
   size_t index_subspace;
   field_id_t index_fid;
+  size_t index_fid_size;
   Legion::LogicalRegion logical_region;
   Legion::LogicalPartition logical_partition;
   size_t domain;
