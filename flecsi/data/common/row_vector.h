@@ -92,10 +92,7 @@ struct row_vector_u {
   }
 
   void assign(const_iterator first, const_iterator last) {
-    delete[] datap;
-    count = last - first;
-    capacity = count;
-    datap = new T[count];
+    resize(last - first);
     std::copy(first, last, datap);
   }
 

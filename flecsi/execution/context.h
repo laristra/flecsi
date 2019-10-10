@@ -28,6 +28,7 @@
 #include <flecsi/coloring/adjacency_types.h>
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
+#include <flecsi/data/common/serdez.h>
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
@@ -227,6 +228,22 @@ struct context_u : public CONTEXT_POLICY {
   void * function(size_t key) {
     return function_registry_[key];
   } // function
+
+  //--------------------------------------------------------------------------//
+  // Serdez interface.
+  //--------------------------------------------------------------------------//
+
+  template<typename SERDEZ>
+  bool register_serdez(int32_t key) {
+    serdez_registry_[key] = new data::serdez_wrapper_u<SERDEZ>;
+    return true;
+  } // register_serdez
+
+  std::map<int32_t, data::serdez_untyped_t *> serdez_registry() {
+    return serdez_registry_;
+  } // serdez_registry
+
+  std::map<int32_t, data::serdez_untyped_t *> serdez_registry_;
 
   /*!
     Meyer's singleton instance.
