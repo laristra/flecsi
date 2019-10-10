@@ -17,6 +17,11 @@
 
 #include <flecsi-config.h>
 
+namespace flecsi::data {
+template<typename>
+struct topology_traits;
+}
+
 /*----------------------------------------------------------------------------*
   This section works with the build system to select the correct runtime
   implemenation for the data model.
@@ -26,36 +31,12 @@
 
 #include <flecsi/data/legion/policy.hh>
 
-namespace flecsi {
-namespace data {
-
-using policy_t = legion_policy_t;
-
-} // namespace data
-} // namespace flecsi
-
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
 #include <flecsi/data/mpi/policy.hh>
 
-namespace flecsi {
-namespace data {
-
-using policy_t = mpi_policy_t;
-
-} // namespace data
-} // namespace flecsi
-
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
 
 #include <flecsi/data/hpx/policy.hh>
-
-namespace flecsi {
-namespace data {
-
-using policy_t = hpx_policy_t;
-
-} // namespace data
-} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL

@@ -390,7 +390,7 @@ context_t::initialize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_policy_t::allocate<topology::index_topology_t>(
+  data::topology_traits<topology::index_topology_t>::allocate(
     flecsi_index_topology, flecsi_index_coloring.get());
 } // context_t::initialize_default_index_topology
 
@@ -404,7 +404,7 @@ context_t::finalize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_policy_t::deallocate<topology::index_topology_t>(
+  data::topology_traits<topology::index_topology_t>::deallocate(
     flecsi_index_topology);
 } // context_t::finalize_default_index_topology
 

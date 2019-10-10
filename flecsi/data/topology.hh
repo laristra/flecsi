@@ -37,23 +37,25 @@ struct topology_reference : public reference_base {
   static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
     "topologies may not add data members");
 
+  using traits = topology_traits<core_t>;
+
   using coloring = typename TOPOLOGY_TYPE::coloring;
 
   topology_reference() : reference_base(unique_tid_t::instance().next()) {}
 
   ~topology_reference() {
     if(allocated_) {
-      policy_t::deallocate<core_t>(identifier_);
+      traits::deallocate(identifier_);
     } // if
   }
 
   void allocate(const coloring & coloring_reference) {
-    policy_t::allocate<core_t>(identifier_, coloring_reference);
+    traits::allocate(identifier_, coloring_reference);
     allocated_ = true;
   } // allocate
 
   void deallocate() {
-    policy_t::deallocate<core_t>(identifier_);
+    traits::deallocate(identifier_);
     allocated_ = false;
   } // deallocate
 
