@@ -31,18 +31,22 @@
 namespace flecsi {
 namespace data {
 
+namespace legion {
+struct topology_base {
+  size_t index_space_id;
+  Legion::IndexSpace index_space;
+  Legion::FieldSpace field_space;
+  Legion::LogicalRegion logical_region;
+};
+} // namespace legion
+
 /*----------------------------------------------------------------------------*
   Global Topology.
  *----------------------------------------------------------------------------*/
 
 namespace global_topo {
 
-struct runtime_data_t {
-  size_t index_space_id;
-  Legion::IndexSpace index_space;
-  Legion::FieldSpace field_space;
-  Legion::LogicalRegion logical_region;
-}; // struct runtime_data_t
+struct runtime_data_t : legion::topology_base {}; // struct runtime_data_t
 
 } // namespace global_topo
 
@@ -52,12 +56,8 @@ struct runtime_data_t {
 
 namespace index_topo {
 
-struct runtime_data_t {
+struct runtime_data_t : legion::topology_base {
   size_t colors;
-  size_t index_space_id;
-  Legion::IndexSpace index_space;
-  Legion::FieldSpace field_space;
-  Legion::LogicalRegion logical_region;
   Legion::LogicalPartition color_partition;
 }; // struct runtime_data_t
 
