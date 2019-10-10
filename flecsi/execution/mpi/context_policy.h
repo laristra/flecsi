@@ -42,6 +42,12 @@
 
 #include <flecsi/utils/const_string.h>
 
+#ifdef FLECSI_USE_AGGCOMM
+#ifdef FLECSI_USE_TAUSCH_AGGCOMM
+#include "tausch.h"
+#endif
+#endif
+
 namespace flecsi {
 namespace execution {
 
@@ -290,6 +296,7 @@ struct mpi_context_policy_t {
   void register_field_metadata(const field_id_t fid,
     const coloring_info_t & coloring_info,
     const index_coloring_t & index_coloring) {
+#ifndef FLECSI_USE_AGGCOMM
     std::map<int, std::vector<int>> compact_origin_lengs;
     std::map<int, std::vector<int>> compact_origin_disps;
 
@@ -327,6 +334,104 @@ struct mpi_context_policy_t {
       MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
 
     field_metadata.insert({fid, metadata});
+#else
+    int mpiSize;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
+
+#ifdef FLECSI_USE_TAUSCH_AGGCOMM
+
+    sharedIndices[fid].resize(mpiSize);
+    ghostIndices[fid].resize(mpiSize);
+
+    // we extract the indices as plain arrays first...
+
+    std::vector<std::vector<int> > tmpSharedIndices(mpiSize);
+    std::vector<std::vector<int> > tmpGhostIndices(mpiSize);
+
+    size_t ghost_cnt = 0;
+
+    for(auto const & ghost : index_coloring.ghost) {
+
+      for(size_t i = 0; i < sizeof(T); ++i)
+        tmpGhostIndices[ghost.rank].push_back(ghost_cnt*sizeof(T) + i);
+
+      ++ghost_cnt;
+
+    }
+
+    for(auto const & shared : index_coloring.shared) {
+
+      for(auto const & s : shared.shared) {
+
+        for(size_t i = 0; i < sizeof(T); ++i)
+          tmpSharedIndices[s].push_back(shared.offset*sizeof(T)+i);
+
+      }
+
+    }
+
+    // ... and then we store them already in compressed form
+
+    Tausch<unsigned char> tausch(MPI_CHAR, MPI_COMM_WORLD, false);
+    for(int rank = 0; rank < mpiSize; ++rank) {
+      sharedIndices[fid][rank] = tausch.extractHaloIndicesWithStride(tmpSharedIndices[rank]);
+      ghostIndices[fid][rank] = tausch.extractHaloIndicesWithStride(tmpGhostIndices[rank]);
+    }
+
+#else
+
+  // FIXME: Do this per index_space instead of per field id
+
+    sharedIndices[fid].resize(mpiSize);
+    ghostIndices[fid].resize(mpiSize);
+    ghostFieldSizes[fid].resize(mpiSize);
+    sharedFieldSizes[fid].resize(mpiSize);
+
+    // indices are stored as vectors of pairs, each pair consisting of: starting index, how many consecutive indices
+
+    size_t ghost_cnt = 0;
+
+    for(auto const & ghost : index_coloring.ghost) {
+
+      if(ghostIndices[fid][ghost.rank].size() == 0 ||
+         ghost_cnt*sizeof(T) != (ghostIndices[fid][ghost.rank].back()[0]+ghostIndices[fid][ghost.rank].back()[1]))
+
+        ghostIndices[fid][ghost.rank].push_back({ghost_cnt*sizeof(T), sizeof(T)});
+
+      else
+
+        ghostIndices[fid][ghost.rank].back()[1] += sizeof(T);
+
+      ++ghost_cnt;
+
+    }
+
+    for(auto const & shared : index_coloring.shared) {
+
+      for(auto const & s : shared.shared) {
+
+        if(sharedIndices[fid][s].size() == 0 ||
+           shared.offset*sizeof(T) != (sharedIndices[fid][s].back()[0]+sharedIndices[fid][s].back()[1]))
+
+          sharedIndices[fid][s].push_back({shared.offset*sizeof(T), sizeof(T)});
+
+        else
+
+          sharedIndices[fid][s].back()[1] += sizeof(T);
+
+      }
+
+    }
+
+    for(int rank = 0; rank < mpiSize; ++rank) {
+      for(auto const & ind : ghostIndices[fid][rank])
+        ghostFieldSizes[fid][rank] += ind[1];
+      for(auto const & ind : sharedIndices[fid][rank])
+        sharedFieldSizes[fid][rank] += ind[1];
+    }
+
+#endif
+#endif
   }
 
   /*!
@@ -625,6 +730,19 @@ struct mpi_context_policy_t {
 
   int rank;
 
+#ifdef FLECSI_USE_AGGCOMM
+  std::map<field_id_t, bool> hasBeenModified;
+
+#ifdef FLECSI_USE_TAUSCH_AGGCOMM
+  std::map<int, std::vector<std::vector<std::array<int, 4> > > > sharedIndices;
+  std::map<int, std::vector<std::vector<std::array<int, 4> > > > ghostIndices;
+#else
+  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > sharedIndices;
+  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > ghostIndices;
+  std::map<int, std::vector<size_t> > sharedFieldSizes;
+  std::map<int, std::vector<size_t> > ghostFieldSizes;
+#endif
+#endif
 //private:
   int color_ = 0;
   int colors_ = 0;
