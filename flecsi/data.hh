@@ -49,8 +49,7 @@ using global_field_member = data::field_member<DATA_TYPE,
   Default index coloring.
  */
 
-inline const data::coloring_reference<topology::index_topology_t>
-  flecsi_index_coloring;
+inline data::coloring_slot<topology::index_topology_t> flecsi_index_coloring;
 
 /*
   Default index topology instance.

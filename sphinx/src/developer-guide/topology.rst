@@ -123,7 +123,7 @@ Adding New Topologies
    * types.h: This file defines types that are used by FleCSI, and by
      the new topology type. At a minimum, this file should define a base
      type from which the new topology type shall inherit, and a
-     *coloring_t* type. The base class will be used to identify
+     *coloring* type. The base class will be used to identify
      specializations of the new type in explicit/partial specializations
      and template function overloads. The coloring type should include
      whatever interface and data members are required to form a
@@ -133,7 +133,7 @@ Adding New Topologies
 
        struct ntree_topology_base_t {
          
-       using coloring_t = ntree_topology_coloring_t;
+       using coloring = ntree_topology_coloring_t;
 
          // interface ...
 
@@ -141,7 +141,7 @@ Adding New Topologies
 
      The base type should be named consistently with the new topology
      type name, and should follow FleCSI naming conventions. The base
-     type must define the public *coloring_t* type.
+     type must define the public *coloring* type.
 
 2. **Topology Registration**: Define a partial specialization of the
    *topology_registration* type in
@@ -156,7 +156,7 @@ Adding New Topologies
    (currently).
 
    The new type must define a *set_coloring* method that takes the
-   *coloring_t* type defined in assocaited *types.h* file:
+   *coloring* type defined in assocaited *types.h* file:
 
    .. code-block:: cpp
 
@@ -167,7 +167,7 @@ Adding New Topologies
          topology_reference<ntree_topology<POLICY_TYPE>>;
 
        static void set_coloring(topology_reference_t const & topology_reference,
-         ntree_topology<POLICY_TYPE>::coloring_t const & colorint) {
+         ntree_topology<POLICY_TYPE>::coloring const & colorint) {
        } // set_coloring
 
      }; // topology_instance<ntree_topology<POLICY_TYPE>>

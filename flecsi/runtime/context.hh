@@ -369,46 +369,6 @@ struct context {
   } // reduction_registry
 
   /*--------------------------------------------------------------------------*
-    Coloring interface.
-   *--------------------------------------------------------------------------*/
-
-  /*!
-    Return the index coloring associated with \em identifier.
-
-    @param identifier Index coloring identifier.
-   */
-
-  template<typename TOPOLOGY_TYPE>
-  auto & coloring(size_t identifier) {
-
-    constexpr bool index_coloring =
-      std::is_same_v<TOPOLOGY_TYPE, topology::index_topology_t>;
-    constexpr bool canonical_coloring =
-      std::is_base_of_v<topology::canonical_topology_base, TOPOLOGY_TYPE>;
-    constexpr bool ntree_coloring =
-      std::is_base_of_v<topology::ntree_topology_base, TOPOLOGY_TYPE>;
-
-    if constexpr(index_coloring) {
-      return index_colorings_[identifier];
-    }
-    else if constexpr(canonical_coloring) {
-      return canonical_colorings_[identifier];
-    }
-    else if constexpr(ntree_coloring) {
-      return ntree_colorings_[identifier];
-    } // if
-  } // coloring
-
-  topology::index_topology_t::coloring_t const & index_coloring(
-    size_t identifier) {
-    auto const & cita = index_colorings_.find(identifier);
-    flog_assert(cita != index_colorings_.end(),
-      "index coloring lookup failed for " << identifier);
-
-    return cita->second;
-  } // index_coloring
-
-  /*--------------------------------------------------------------------------*
     Topology interface.
    *--------------------------------------------------------------------------*/
 
@@ -625,17 +585,6 @@ protected:
    *--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, void *> function_registry_;
-
-  /*--------------------------------------------------------------------------*
-    Coloring data members.
-   *--------------------------------------------------------------------------*/
-
-  std::unordered_map<size_t, topology::index_topology_t::coloring_t>
-    index_colorings_;
-  std::unordered_map<size_t, topology::canonical_topology_base::coloring>
-    canonical_colorings_;
-  std::unordered_map<size_t, topology::ntree_topology_base::coloring>
-    ntree_colorings_;
 
   /*--------------------------------------------------------------------------*
     Topology data members.

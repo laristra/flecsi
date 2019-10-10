@@ -30,17 +30,6 @@ struct mpi_policy_t {
     Topology Instance Interface.
    *--------------------------------------------------------------------------*/
 
-  template<typename TOPOLOGY_TYPE, typename... ARGS>
-  static void allocate_coloring(reference_base const & coloring_reference,
-    ARGS &&... args) {
-    // TBD
-  } // allocate_coloring
-
-  template<typename TOPOLOGY_TYPE>
-  static void deallocate_coloring(reference_base const & coloring_reference) {
-    // TBD
-  } // deallocate_coloring
-
   template<typename TOPOLOGY_TYPE>
   static void allocate(reference_base const & topology_reference,
     reference_base const & coloring_reference) {

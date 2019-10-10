@@ -377,7 +377,7 @@ context_t::finalize_global_topology() {
 
 void
 context_t::initialize_default_index_coloring() {
-  index_colorings_.emplace(flecsi_index_coloring.identifier(), processes_);
+  flecsi_index_coloring.allocate(processes_);
 } // context_t::initialize_default_index_coloring
 
 void
@@ -391,7 +391,7 @@ context_t::initialize_default_index_topology() {
   }
 
   data::legion_policy_t::allocate<topology::index_topology_t>(
-    flecsi_index_topology, flecsi_index_coloring);
+    flecsi_index_topology, flecsi_index_coloring.get());
 } // context_t::initialize_default_index_topology
 
 void

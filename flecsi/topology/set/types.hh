@@ -32,7 +32,7 @@ namespace topology {
  */
 
 struct set_topology_base_t {
-  using coloring_t = size_t;
+  using coloring = size_t;
 }; // set_topology_base_t
 
 } // namespace topology

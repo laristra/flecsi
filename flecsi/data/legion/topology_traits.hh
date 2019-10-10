@@ -61,7 +61,7 @@ template<>
 struct topology_traits<topology::index_topology_t> {
 
   static void allocate(reference_base const & topology_reference,
-    reference_base const & coloring_reference) {
+    const topology::index_topology_t::coloring & coloring) {
     {
       flog_tag_guard(topologies);
       flog_devel(info) << "Set coloring for " << topology_reference.identifier()
@@ -74,9 +74,6 @@ struct topology_traits<topology::index_topology_t> {
 
     auto & runtime_data =
       flecsi_context.index_topology_instance(topology_reference.identifier());
-
-    auto const & coloring =
-      flecsi_context.index_coloring(coloring_reference.identifier());
 
     runtime_data.colors = coloring.size();
 
@@ -147,19 +144,13 @@ struct topology_traits<topology::index_topology_t> {
 
 template<typename POLICY_TYPE>
 struct topology_traits<topology::canonical_topology<POLICY_TYPE>> {
-
-  template<typename... ARGS>
-  static void allocate_coloring(reference_base const & coloring_reference,
-    ARGS &&... args) {} // allocate_coloring
-
-  static void deallocate_coloring(reference_base const & coloring_reference) {
-  } // deallocate_coloring
+  using type = topology::canonical_topology<POLICY_TYPE>;
 
   static void allocate(reference_base const & topology_reference,
-    reference_base const & coloring_reference) {} // allocate
+    const typename type::coloring & coloring) {} // allocate
 
   static void update(reference_base const & topology_reference,
-    reference_base const & coloring_reference) {} // update
+    const typename type::coloring & coloring_reference) {} // update
 
   static void deallocate(reference_base const & topology_reference) {
   } // deallocate
@@ -172,6 +163,7 @@ struct topology_traits<topology::canonical_topology<POLICY_TYPE>> {
 
 template<typename POLICY_TYPE>
 struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
+  using type = topology::ntree_topology<POLICY_TYPE>;
 
   template<typename... ARGS>
   static void allocate_coloring(reference_base const & coloring_reference,
@@ -183,7 +175,7 @@ struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
   // Distribute the entities on the different processes
   // Create the tree data structure locally
   static void allocate(reference_base const & topology_reference,
-    reference_base const & coloring_reference) {
+    const typename type::coloring & coloring_reference) {
 
     {
       flog_tag_guard(topologies);
@@ -195,7 +187,7 @@ struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
 
   // Update the entities position in the tree
   static void update(reference_base const & topology_reference,
-    reference_base const & coloring_reference) {
+    const typename type::coloring & coloring_reference) {
 
     {
       flog_tag_guard(topologies);
@@ -242,7 +234,7 @@ struct topology_traits<topology::structured_mesh_topology<POLICY_TYPE>> {
 template<typename POLICY_TYPE>
 struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
 
-  using topology_t = topology::unstructured_mesh_topology<POLICY_TYPE>;
+  using type = topology::unstructured_mesh_topology<POLICY_TYPE>;
 
 #if 0
   struct entity_walker_t : public utils::tuple_walker<index_walker_t> {
@@ -260,14 +252,14 @@ struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
 #endif
 
   static void allocate(reference_base const & topology_reference,
-    reference_base const & coloring_reference) {
+    const typename type::coloring & coloring_reference) {
 
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
     auto & flecsi_context = runtime::context_t::instance();
 
     auto & dense_field_info_store = flecsi_context.get_field_info_store(
-      topology::id<topology_t>(), storage_label_t::dense);
+      topology::id<type>(), storage_label_t::dense);
 
 #if 0
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
@@ -280,10 +272,10 @@ struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
     } // for
 
     auto & ragged_field_info_store = flecsi_context.get_field_info_store(
-      /* topology_t */, storage_label_t::ragged);
+      /* type */, storage_label_t::ragged);
 
     auto & sparse_field_info_store = flecsi_context.get_field_info_store(
-      /* topology_t */, storage_label_t::sparse);
+      /* type */, storage_label_t::sparse);
 
 #endif
   } // allocate

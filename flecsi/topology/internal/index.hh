@@ -33,8 +33,8 @@ struct index_topology_t {
 
   index_topology_t() = delete;
 
-  struct coloring_t {
-    coloring_t(size_t size) : size_(size) {}
+  struct coloring {
+    coloring(size_t size) : size_(size) {}
 
     size_t size() const {
       return size_;

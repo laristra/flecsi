@@ -34,7 +34,7 @@ struct canonical_topology_base {
 
     struct coloring_metadata {};
 
-    void init(std::string const & filename);
+    coloring(std::string const & filename);
 
     local_coloring local_coloring_;
     coloring_metadata coloring_metadata_;
