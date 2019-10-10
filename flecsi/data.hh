@@ -30,8 +30,7 @@ namespace flecsi {
   Default global topology instance.
  */
 
-inline const data::topology_reference<topology::global_t>
-  flecsi_global_topology;
+inline const data::topology_reference<topology::global_t> global_topology;
 
 /*
   Convenience type for global field members.

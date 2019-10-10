@@ -41,7 +41,7 @@ static_assert(std::is_same_v<core_t<test>, u_base>);
 using global_field_t = global_field_member<double>;
 const global_field_t energy_field;
 
-const auto energy = energy_field(flecsi_global_topology);
+const auto energy = energy_field(global_topology);
 
 void
 assign(global_field_t::accessor<wo> ga) {

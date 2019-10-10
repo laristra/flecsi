@@ -26,7 +26,7 @@ identifiers(int argc, char ** argv) {
   flog(info) << "global_t: " << topology::id<topology::global_t>() << std::endl;
   flog(info) << "index_t: " << topology::id<topology::index_t>() << std::endl;
 
-  flog(info) << "global topology handle " << flecsi_global_topology.identifier()
+  flog(info) << "global topology handle " << global_topology.identifier()
              << std::endl;
   flog(info) << "index topology handle " << flecsi_index_topology.identifier()
              << std::endl;
