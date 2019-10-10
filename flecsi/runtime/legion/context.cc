@@ -375,35 +375,35 @@ context_t::finalize_global_topology() {
 //----------------------------------------------------------------------------//
 
 void
-context_t::initialize_default_index_coloring() {
-  flecsi_index_coloring.allocate(processes_);
-} // context_t::initialize_default_index_coloring
+context_t::initialize_process_coloring() {
+  process_coloring.allocate(processes_);
+} // context_t::initialize_process_coloring
 
 void
-context_t::initialize_default_index_topology() {
+context_t::initialize_process_topology() {
 
   {
     flog_tag_guard(context);
     flog_devel(info) << "Initializing default index topology" << std::endl
-                     << "\tidentifier: " << flecsi_index_topology.identifier()
+                     << "\tidentifier: " << process_topology.identifier()
                      << std::endl;
   }
 
   data::topology_traits<topology::index_t>::allocate(
-    flecsi_index_topology, flecsi_index_coloring.get());
-} // context_t::initialize_default_index_topology
+    process_topology, process_coloring.get());
+} // context_t::initialize_process_topology
 
 void
-context_t::finalize_default_index_topology() {
+context_t::finalize_process_topology() {
 
   {
     flog_tag_guard(context);
     flog_devel(info) << "Finalizing default index topology" << std::endl
-                     << "\tidentifier: " << flecsi_index_topology.identifier()
+                     << "\tidentifier: " << process_topology.identifier()
                      << std::endl;
   }
 
-  data::topology_traits<topology::index_t>::deallocate(flecsi_index_topology);
-} // context_t::finalize_default_index_topology
+  data::topology_traits<topology::index_t>::deallocate(process_topology);
+} // context_t::finalize_process_topology
 
 } // namespace flecsi::runtime

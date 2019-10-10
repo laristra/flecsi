@@ -41,16 +41,16 @@ using global_field_member = data::
   field_member<DATA_TYPE, data::storage_label_t::dense, topology::global_t, 0>;
 
 /*
-  Default index coloring.
+  Per-process coloring.
  */
 
-inline data::coloring_slot<topology::index_t> flecsi_index_coloring;
+inline data::coloring_slot<topology::index_t> process_coloring;
 
 /*
-  Default index topology instance.
+  Per-process topology instance.
  */
 
-inline const data::topology_reference<topology::index_t> flecsi_index_topology;
+inline const data::topology_reference<topology::index_t> process_topology;
 
 /*
   Convenience type for index field members.

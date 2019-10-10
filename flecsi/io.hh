@@ -66,30 +66,30 @@ struct io_interface : public IO_POLICY {
     return IO_POLICY::add_regions(hdf5_file, hdf5_region_vector);
   }
 
-  void add_default_index_topology(hdf5_t & hdf5_file) {
-    return IO_POLICY::add_default_index_topology(hdf5_file);
+  void add_process_topology(hdf5_t & hdf5_file) {
+    return IO_POLICY::add_process_topology(hdf5_file);
   }
 
   void generate_hdf5_files(hdf5_t & hdf5_file) {
     return IO_POLICY::generate_hdf5_files(hdf5_file);
   }
 
-  void checkpoint_default_index_topology(hdf5_t & hdf5_file) {
-    return IO_POLICY::checkpoint_default_index_topology(hdf5_file);
+  void checkpoint_process_topology(hdf5_t & hdf5_file) {
+    return IO_POLICY::checkpoint_process_topology(hdf5_file);
   }
 
-  void checkpoint_default_index_topology_field(hdf5_t & hdf5_file,
+  void checkpoint_process_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
-    return IO_POLICY::checkpoint_default_index_topology_field(hdf5_file, fh);
+    return IO_POLICY::checkpoint_process_topology_field(hdf5_file, fh);
   }
 
-  void recover_default_index_topology(hdf5_t & hdf5_file) {
-    return IO_POLICY::recover_default_index_topology(hdf5_file);
+  void recover_process_topology(hdf5_t & hdf5_file) {
+    return IO_POLICY::recover_process_topology(hdf5_file);
   }
 
-  void recover_default_index_topology_field(hdf5_t & hdf5_file,
+  void recover_process_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
-    return IO_POLICY::recover_default_index_topology_field(hdf5_file, fh);
+    return IO_POLICY::recover_process_topology_field(hdf5_file, fh);
   }
 
   void checkpoint_data(hdf5_t & hdf5_file,

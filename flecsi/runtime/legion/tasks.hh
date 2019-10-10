@@ -76,8 +76,8 @@ top_level_task(const Legion::Task * task,
 #endif
 
   context_.initialize_global_topology();
-  context_.initialize_default_index_coloring();
-  context_.initialize_default_index_topology();
+  context_.initialize_process_coloring();
+  context_.initialize_process_topology();
 
   auto args = runtime->get_input_args();
 
@@ -88,7 +88,7 @@ top_level_task(const Legion::Task * task,
   context_.exit_status() = context_.top_level_action()(args.argc, args.argv);
 
   context_.finalize_global_topology();
-  context_.finalize_default_index_topology();
+  context_.finalize_process_topology();
 
   /*
     Finish up Legion runtime and fall back out to MPI.
