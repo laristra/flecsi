@@ -78,11 +78,11 @@ struct unstructured_mesh_runtime_data_t {
 }; // struct unstructured_mesh_runtime_data_t
 #endif
 
-namespace unstructured_mesh {
+namespace unstr_mesh {
 
 struct runtime_data_t {}; // struct runtime_data_t
 
-} // namespace unstructured_mesh
+} // namespace unstr_mesh
 
 #if 0
 struct unstructured_mesh_dense_runtime_data_t {

@@ -402,7 +402,7 @@ private:
   data::global_topo::runtime_data_t global_topology_instance_;
   std::unordered_map<size_t, data::index_topo::runtime_data_t>
     index_topology_instances_;
-  std::unordered_map<size_t, data::unstructured_mesh::runtime_data_t>
+  std::unordered_map<size_t, data::unstr_mesh::runtime_data_t>
     unstructured_mesh_topology_instances_;
 
   /*--------------------------------------------------------------------------*
