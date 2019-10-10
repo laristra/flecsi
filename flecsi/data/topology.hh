@@ -43,17 +43,17 @@ struct topology_reference : public reference_base {
 
   ~topology_reference() {
     if(allocated_) {
-      policy_t::deallocate<TOPOLOGY_TYPE>(identifier_);
+      policy_t::deallocate<core_t>(identifier_);
     } // if
   }
 
   void allocate(const coloring & coloring_reference) {
-    policy_t::allocate<TOPOLOGY_TYPE>(identifier_, coloring_reference);
+    policy_t::allocate<core_t>(identifier_, coloring_reference);
     allocated_ = true;
   } // allocate
 
   void deallocate() {
-    policy_t::deallocate<TOPOLOGY_TYPE>(identifier_);
+    policy_t::deallocate<core_t>(identifier_);
     allocated_ = false;
   } // deallocate
 
