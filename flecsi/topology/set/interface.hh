@@ -33,8 +33,7 @@ namespace topology {
  */
 
 template<typename POLICY_TYPE>
-struct set_topology : public set_topology_base_t,
-                      public data::reference_base {}; // struct set_topology
+struct set : set_base_t, data::reference_base {}; // struct set
 
 } // namespace topology
 } // namespace flecsi

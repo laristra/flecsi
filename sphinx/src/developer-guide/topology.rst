@@ -83,10 +83,10 @@ template specialization, template function overload, and tuple walkers.
     flecsi::utils::tuple_walker<task_prologue_t> {
 
       template<typename DATA_TYPE, size_t PRIVILEGES>
-      void visit(index_topology::accessor<DATA_TYPE, PRIVILEGES> &
+      void visit(index_t::accessor<DATA_TYPE, PRIVILEGES> &
       accessor) {
         // Implmentation for type
-        // index_topology::accessor<DATA_TYPE, PRIVILEGES>.
+        // index_t::accessor<DATA_TYPE, PRIVILEGES>.
       } // visit
 
     }; // struct task_prologue_t
@@ -111,11 +111,11 @@ Adding New Topologies
        namespace topology {
 
        template<typename POLICY_TYPE>
-       struct ntree_topology : public ntree_topology_base_t {
+       struct ntree : ntree_base {
 
          // interface ...
 
-       }; // struct ntree_topology
+       }; // struct ntree
 
        } // namespace flecsi
        } // namespace topology
@@ -131,13 +131,13 @@ Adding New Topologies
 
      .. code-block:: cpp
 
-       struct ntree_topology_base_t {
+       struct ntree_base {
          
-       using coloring = ntree_topology_coloring_t;
+       using coloring = ntree_coloring_t;
 
          // interface ...
 
-       }; // struct ntree_topology_base_t
+       }; // struct ntree_base
 
      The base type should be named consistently with the new topology
      type name, and should follow FleCSI naming conventions. The base
@@ -161,16 +161,16 @@ Adding New Topologies
    .. code-block:: cpp
 
      template<typename POLICY_TYPE>
-     struct  topology_instance<ntree_topology<POLICY_TYPE>> {
+     struct  topology_instance<ntree<POLICY_TYPE>> {
 
        using topology_reference_t =
-         topology_reference<ntree_topology<POLICY_TYPE>>;
+         topology_reference<ntree<POLICY_TYPE>>;
 
        static void set_coloring(topology_reference_t const & topology_reference,
-         ntree_topology<POLICY_TYPE>::coloring const & colorint) {
+         ntree<POLICY_TYPE>::coloring const & colorint) {
        } // set_coloring
 
-     }; // topology_instance<ntree_topology<POLICY_TYPE>>
+     }; // topology_instance<ntree<POLICY_TYPE>>
 
 4. **Initialize Arguments**: Define a template function
    overload of the *task_prologue_t* type in

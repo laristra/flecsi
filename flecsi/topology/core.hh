@@ -27,22 +27,22 @@ namespace topology {
 // Declarations for the base topology types.
 
 template<typename>
-struct canonical_topology;
+struct canonical;
 
-struct global_topology_t;
-struct index_topology_t;
-
-template<typename>
-class ntree_topology;
+struct global_t;
+struct index_t;
 
 template<typename>
-class set_topology;
+class ntree;
 
 template<typename>
-class structured_mesh_topology;
+class set;
 
 template<typename>
-class unstructured_mesh_topology;
+class structured_mesh;
+
+template<typename>
+class unstructured_mesh;
 
 namespace detail {
 
@@ -50,41 +50,40 @@ template<class, class = void>
 struct core;
 
 template<class T>
-struct core<T,
-  utils::voided<utils::base_specialization_t<canonical_topology, T>>> {
-  using type = utils::base_specialization_t<canonical_topology, T>;
+struct core<T, utils::voided<utils::base_specialization_t<canonical, T>>> {
+  using type = utils::base_specialization_t<canonical, T>;
 };
 
 template<class T>
-struct core<T, std::enable_if_t<std::is_base_of_v<global_topology_t, T>>> {
-  using type = global_topology_t;
+struct core<T, std::enable_if_t<std::is_base_of_v<global_t, T>>> {
+  using type = global_t;
 };
 
 template<class T>
-struct core<T, std::enable_if_t<std::is_base_of_v<index_topology_t, T>>> {
-  using type = index_topology_t;
+struct core<T, std::enable_if_t<std::is_base_of_v<index_t, T>>> {
+  using type = index_t;
 };
 
 template<class T>
-struct core<T, utils::voided<utils::base_specialization_t<ntree_topology, T>>> {
-  using type = utils::base_specialization_t<ntree_topology, T>;
+struct core<T, utils::voided<utils::base_specialization_t<ntree, T>>> {
+  using type = utils::base_specialization_t<ntree, T>;
 };
 
 template<class T>
-struct core<T, utils::voided<utils::base_specialization_t<set_topology, T>>> {
-  using type = utils::base_specialization_t<set_topology, T>;
-};
-
-template<class T>
-struct core<T,
-  utils::voided<utils::base_specialization_t<structured_mesh_topology, T>>> {
-  using type = utils::base_specialization_t<structured_mesh_topology, T>;
+struct core<T, utils::voided<utils::base_specialization_t<set, T>>> {
+  using type = utils::base_specialization_t<set, T>;
 };
 
 template<class T>
 struct core<T,
-  utils::voided<utils::base_specialization_t<unstructured_mesh_topology, T>>> {
-  using type = utils::base_specialization_t<unstructured_mesh_topology, T>;
+  utils::voided<utils::base_specialization_t<structured_mesh, T>>> {
+  using type = utils::base_specialization_t<structured_mesh, T>;
+};
+
+template<class T>
+struct core<T,
+  utils::voided<utils::base_specialization_t<unstructured_mesh, T>>> {
+  using type = utils::base_specialization_t<unstructured_mesh, T>;
 };
 
 inline std::size_t next_id;

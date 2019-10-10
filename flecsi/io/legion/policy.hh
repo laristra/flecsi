@@ -493,8 +493,7 @@ struct legion_policy_t {
 
     std::vector<data::field_info_t> const & fid_vector =
       flecsi_context.get_field_info_store(
-        topology::id<topology::index_topology_t>(),
-        data::storage_label_t::dense);
+        topology::id<topology::index_t>(), data::storage_label_t::dense);
 
     for(const data::field_info_t & it : fid_vector) {
       field_string_map[it.fid] = std::to_string(it.fid);
@@ -553,8 +552,7 @@ struct legion_policy_t {
     auto & flecsi_context = runtime::context_t::instance();
     std::vector<data::field_info_t> const & fid_vector =
       flecsi_context.get_field_info_store(
-        topology::id<topology::index_topology_t>(),
-        data::storage_label_t::dense);
+        topology::id<topology::index_t>(), data::storage_label_t::dense);
 
     size_t identifier = flecsi_index_topology.identifier();
     {
@@ -621,8 +619,7 @@ struct legion_policy_t {
     auto & flecsi_context = runtime::context_t::instance();
     std::vector<data::field_info_t> const & fid_vector =
       flecsi_context.get_field_info_store(
-        topology::id<topology::index_topology_t>(),
-        data::storage_label_t::dense);
+        topology::id<topology::index_t>(), data::storage_label_t::dense);
 
     size_t identifier = flecsi_index_topology.identifier();
 

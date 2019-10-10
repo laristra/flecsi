@@ -61,7 +61,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 
 /*!
-  unstructured_mesh_topology is parameterized on a class (POLICY_TYPE) which
+  unstructured_mesh is parameterized on a class (POLICY_TYPE) which
   gives information about its entity types, connectivities and more. the mesh
   topology is responsibly for computing connectivity info between entities of
   different topological dimension, e.g: vertex -> cell, cell -> edge, etc. and
@@ -110,8 +110,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
  */
 
 template<typename POLICY_TYPE>
-struct unstructured_mesh_topology : public unstructured_mesh_topology_base_t,
-                                    public data::reference_base {
+struct unstructured_mesh : unstructured_mesh_base_t, data::reference_base {
 
   //--------------------------------------------------------------------------//
   // static verification of mesh policy
@@ -158,12 +157,12 @@ private:
     num_index_subspaces<POLICY_TYPE>::value>
     ms_;
 
-}; // struct unstructured_mesh_topology
+}; // struct unstructured_mesh
 
 #if 0
 template<class POLICY_TYPE>
-class unstructured_mesh_topology
-  : public mesh_topology_base<mesh_storage<POLICY_TYPE::num_dimensions,
+class unstructured_mesh
+  : mesh_base<mesh_storage<POLICY_TYPE::num_dimensions,
       POLICY_TYPE::num_domains,
       num_index_subspaces<POLICY_TYPE>::value>>
 {
@@ -174,7 +173,7 @@ public:
     num_index_subspaces<POLICY_TYPE>::value>;
 
   // mesh topology base definition
-  using base_t = mesh_topology_base<storage_t>;
+  using base_t = mesh_base<storage_t>;
 
   // entity ID type
   using id_t = utils::id_t;
@@ -188,31 +187,31 @@ public:
 
   // Don't allow the mesh to be copied or copy constructed
 
-  // don't allow mesh to be assigned unstructured_mesh_topology & operator=(
-    const unstructured_mesh_topology &) = delete;
+  // don't allow mesh to be assigned unstructured_mesh & operator=(
+    const unstructured_mesh &) = delete;
 
-  Allow move operations unstructured_mesh_topology(
-    unstructured_mesh_topology && o) = default;
+  Allow move operations unstructured_mesh(
+    unstructured_mesh && o) = default;
 
-  override default move assignement unstructured_mesh_topology & operator=(
-    unstructured_mesh_topology && o) = default;
+  override default move assignement unstructured_mesh & operator=(
+    unstructured_mesh && o) = default;
 
   Constructor, takes as input a mesh storage or
-                 storage can later be set unstructured_mesh_topology(
+                 storage can later be set unstructured_mesh(
                    storage_t * ms = nullptr)
     : base_t(ms) {
     if(ms != nullptr) {
       initialize_storage();
     } // if
-  } // unstructured_mesh_topology()
+  } // unstructured_mesh()
 
-  Copy constructor : alias another mesh unstructured_mesh_topology(
-                       const unstructured_mesh_topology & m)
+  Copy constructor : alias another mesh unstructured_mesh(
+                       const unstructured_mesh & m)
     : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
-  virtual ~unstructured_mesh_topology() {}
+  virtual ~unstructured_mesh() {}
 
   /*!
     Initialize the mesh storage after it has been set
@@ -2252,7 +2251,7 @@ private:
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-}; // class unstructured_mesh_topology
+}; // class unstructured_mesh
 #endif
 
 } // namespace topology

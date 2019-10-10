@@ -38,8 +38,10 @@ namespace topology {
  * class mesh_entity_base
  *----------------------------------------------------------------------------*/
 
+//! \brief contains methods and data about the mesh topology that do not depend
+//! on type parameterization, e.g: entity types, domains, etc.
 template<class>
-class mesh_topology_base;
+class mesh_base;
 
 // Aliases for backward compatibility
 using mesh_entity_base_ = entity_base_;
@@ -278,46 +280,35 @@ private:
   size_t to_domain_;
 };
 
-/*----------------------------------------------------------------------------*
- * class mesh_topology_base
- *----------------------------------------------------------------------------*/
-
-//-----------------------------------------------------------------//
-//! \class mesh_topology_base mesh_topology.h
-//! \brief contains methods and data about the mesh topology that do not depend
-//! on type parameterization, e.g: entity types, domains, etc.
-//-----------------------------------------------------------------//
-
 /*!
-  The unstructured_mesh_topology_base_t type allows identification of
+  The unstructured_mesh_base_t type allows identification of
   unstructured meshes.
  */
 
-struct unstructured_mesh_topology_base_t {
+struct unstructured_mesh_base_t {
   using coloring = size_t;
 };
 
 #if 0
 template<class STORAGE_TYPE>
-class mesh_topology_base : public data::data_client_t,
-                             public unstructured_mesh_topology_base_t
+class mesh_base : data::data_client_t, unstructured_mesh_base_t
 {
 public:
   using id_t = utils::id_t;
 
   // Default constructor
-  mesh_topology_base(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
+  mesh_base(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
 
   // Don't allow the mesh to be copied or copy constructed
-  mesh_topology_base(const mesh_topology_base & m) : ms_(m.ms_) {}
+  mesh_base(const mesh_base & m) : ms_(m.ms_) {}
 
-  mesh_topology_base & operator=(const mesh_topology_base &) = delete;
+  mesh_base & operator=(const mesh_base &) = delete;
 
   /// Allow move operations
-  mesh_topology_base(mesh_topology_base &&) = default;
+  mesh_base(mesh_base &&) = default;
 
   //! override default move assignement
-  mesh_topology_base & operator=(mesh_topology_base && o) {
+  mesh_base & operator=(mesh_base && o) {
     // call base_t move operator
     data::data_client_t::operator=(std::move(o));
     // return a reference to the object
@@ -397,7 +388,7 @@ public:
 protected:
   STORAGE_TYPE * ms_ = nullptr;
 
-}; // mesh_topology_base
+}; // mesh_base
 #endif
 
 template<class MESH_TYPE, size_t DIM, size_t DOM>
@@ -405,7 +396,7 @@ using entity_type_ = typename find_entity_<MESH_TYPE, DIM, DOM>::type;
 
 template<class STORAGE_TYPE, class MESH_TYPE, size_t NM, size_t DOM, size_t DIM>
 void
-unserialize_dimension_(mesh_topology_base<STORAGE_TYPE> & mesh,
+unserialize_dimension_(mesh_base<STORAGE_TYPE> & mesh,
   char * buf,
   uint64_t & pos) {
   uint64_t num_entities;
@@ -443,9 +434,8 @@ template<class STORAGE_TYPE,
   size_t DIM>
 struct unserialize_dimensions_ {
 
-  static void unserialize(mesh_topology_base<STORAGE_TYPE> & mesh,
-    char * buf,
-    uint64_t & pos) {
+  static void
+  unserialize(mesh_base<STORAGE_TYPE> & mesh, char * buf, uint64_t & pos) {
     unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, DIM>(
       mesh, buf, pos);
     unserialize_dimensions_<STORAGE_TYPE,
@@ -469,9 +459,8 @@ struct unserialize_dimensions_<STORAGE_TYPE,
   DOM,
   NUM_DIMS> {
 
-  static void unserialize(mesh_topology_base<STORAGE_TYPE> & mesh,
-    char * buf,
-    uint64_t & pos) {
+  static void
+  unserialize(mesh_base<STORAGE_TYPE> & mesh, char * buf, uint64_t & pos) {
     unserialize_dimension_<STORAGE_TYPE, MESH_TYPE, NUM_DOMAINS, DOM, NUM_DIMS>(
       mesh, buf, pos);
   }
@@ -484,9 +473,8 @@ template<class STORAGE_TYPE,
   size_t DOM>
 struct unserialize_domains_ {
 
-  static void unserialize(mesh_topology_base<STORAGE_TYPE> & mesh,
-    char * buf,
-    uint64_t & pos) {
+  static void
+  unserialize(mesh_base<STORAGE_TYPE> & mesh, char * buf, uint64_t & pos) {
     unserialize_dimensions_<STORAGE_TYPE,
       MESH_TYPE,
       NUM_DOMAINS,
@@ -511,9 +499,8 @@ struct unserialize_domains_<STORAGE_TYPE,
   NUM_DIMS,
   NUM_DOMAINS> {
 
-  static void unserialize(mesh_topology_base<STORAGE_TYPE> & mesh,
-    char * buf,
-    uint64_t & pos) {}
+  static void
+  unserialize(mesh_base<STORAGE_TYPE> & mesh, char * buf, uint64_t & pos) {}
 };
 
 } // namespace topology

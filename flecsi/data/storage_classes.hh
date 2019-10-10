@@ -64,7 +64,7 @@ struct accessor;
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
-  topology::global_topology_t,
+  topology::global_t,
   DATA_TYPE,
   PRIVILEGES> : reference_base {
 
@@ -73,7 +73,7 @@ struct accessor<storage_label_t::dense,
   }
 
   using value_type = DATA_TYPE;
-  using topology_t = topology::global_topology_t;
+  using topology_t = topology::global_t;
 
   accessor(field_reference<DATA_TYPE> const & ref) : reference_base(ref) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
@@ -106,11 +106,11 @@ private:
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
-  topology::index_topology_t,
+  topology::index_t,
   DATA_TYPE,
   PRIVILEGES> : reference_base {
   using value_type = DATA_TYPE;
-  using topology_t = topology::index_topology_t;
+  using topology_t = topology::index_t;
 
   accessor(field_reference<DATA_TYPE> const & ref) : reference_base(ref) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
@@ -158,14 +158,14 @@ private:
  *----------------------------------------------------------------------------*/
 
 // TODO: Do we need POLICY_TYPE, or should we avoid redundant instantiation by
-// keying on unstructured_mesh_topology_base_t (or some equivalent enum)?
+// keying on unstructured_mesh_base_t (or some equivalent enum)?
 template<typename POLICY_TYPE, typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
-  topology::unstructured_mesh_topology<POLICY_TYPE>,
+  topology::unstructured_mesh<POLICY_TYPE>,
   DATA_TYPE,
   PRIVILEGES> : reference_base {
   using value_type = DATA_TYPE;
-  using topology_t = topology::unstructured_mesh_topology<POLICY_TYPE>;
+  using topology_t = topology::unstructured_mesh<POLICY_TYPE>;
 
   accessor(field_reference<DATA_TYPE> const & ref) : reference_base(ref) {}
   explicit accessor(std::size_t f) : reference_base(f) {}

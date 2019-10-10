@@ -23,15 +23,15 @@ namespace flecsi {
 namespace topology {
 
 /*!
-  The index_topology type allows users to register data on an
+  The \c index_t type allows users to register data on an
   arbitrarily-sized set of indices that have an implicit one-to-one coloring.
 
   @ingroup topology
  */
 
-struct index_topology_t {
+struct index_t {
 
-  index_topology_t() = delete;
+  index_t() = delete;
 
   struct coloring {
     coloring(size_t size) : size_(size) {}
@@ -44,7 +44,7 @@ struct index_topology_t {
     size_t size_;
   };
 
-}; // struct index_topology
+}; // struct index_t
 
 } // namespace topology
 } // namespace flecsi

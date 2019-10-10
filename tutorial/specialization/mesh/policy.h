@@ -47,7 +47,7 @@ struct specialization_mesh_policy_t {
 
   template<size_t M, size_t D, typename ST>
   static flecsi::topology::mesh_entity_base_u<1> * create_entity(
-    flecsi::topology::mesh_topology_base_u<ST> * mesh,
+    flecsi::topology::mesh_base_u<ST> * mesh,
     size_t num_vertices,
     id_t const & id) {
     return nullptr;

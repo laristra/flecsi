@@ -26,7 +26,7 @@
 namespace flecsi {
 namespace topology {
 
-struct canonical_topology_base {
+struct canonical_base {
 
   struct coloring {
 
@@ -41,20 +41,20 @@ struct canonical_topology_base {
 
   }; // struct coloring
 
-}; // struct canonical_topology_base
+}; // struct canonical_base
 
 /*!
-  The canonical_topology type is a dummy topology for development and testing.
+  The canonical type is a dummy topology for development and testing.
 
   @ingroup topology
  */
 
 template<typename TOPOLOGY_POLICY>
-struct canonical_topology : public canonical_topology_base {
+struct canonical : canonical_base {
 
-  canonical_topology() = delete;
+  canonical() = delete;
 
-}; // struct canonical_topology
+}; // struct canonical
 
 } // namespace topology
 } // namespace flecsi

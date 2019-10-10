@@ -94,8 +94,8 @@ registered, invoked, and executed.
 
 From the point of view of the core FleCSI library, a data client is a
 type that defines one or more index spaces on which data may be
-registered. Examples of FleCSI data client types are: *mesh_topology*,
-*tree_topology*, and *set_topology*. Each of these types provide
+registered. Examples of FleCSI data client types are: *structured_mesh*,
+*ntree*, and *set*. Each of these types provide
 interfaces to iterators over the various entity types that make up the
 elements of the topology. When a user registers a field, it is loosley
 equivalent to adding a data member to the client type. At runtime, an

@@ -26,7 +26,7 @@
 namespace flecsi {
 namespace topology {
 
-canonical_topology_base::coloring::coloring(std::string const & filename) {
+canonical_base::coloring::coloring(std::string const & filename) {
 
   std::cout << "process " << process() << " of " << processes() << " with "
             << threads_per_process() << " (tpp) and input " << filename

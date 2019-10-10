@@ -25,17 +25,17 @@ namespace flecsi {
 namespace topology {
 
 /*!
-  The global_topology type allows users to register data on a
+  The \c global_t type allows users to register data on a
   topology with a single index, i.e., there is one instance of
   the registered field type that is visible to all colors.
 
   @ingroup topology
  */
 
-struct global_topology_t {
-  global_topology_t() = delete;
+struct global_t {
+  global_t() = delete;
   struct coloring {};
-}; // struct global_topology
+}; // struct global_t
 
 } // namespace topology
 } // namespace flecsi

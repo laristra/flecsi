@@ -45,7 +45,7 @@ namespace topology {
 //! and entity types.
 //-----------------------------------------------------------------//
 template<typename POLICY_TYPE>
-struct ntree_topology : public ntree_topology_base {
+struct ntree : ntree_base {
 
 public:
   using Policy = POLICY_TYPE;
@@ -78,7 +78,7 @@ public:
     Constuct a tree topology with unit coordinates, i.e. each coordinate
     dimension is in range [0, 1].
    */
-  ntree_topology() {
+  ntree() {
     max_depth_ = 0;
     // Init the new storage, for now without handler
     // Add the root in the node_map_
@@ -87,7 +87,7 @@ public:
     assert(root_ != node_map_.end());
   }
 
-  ntree_topology(const ntree_topology & s) {}
+  ntree(const ntree & s) {}
 
   /**
    * @brief Set the range of the current domain.
@@ -145,7 +145,7 @@ public:
    */
   template<class TREE_POLICY>
   friend std::ostream & operator<<(std::ostream & os,
-    const ntree_topology<TREE_POLICY> & t);
+    const ntree<TREE_POLICY> & t);
 
   /**
    * @brief Build the tree topology in the node_map_, insert all the local
@@ -507,7 +507,7 @@ private:
 
 template<class TREE_TYPE>
 std::ostream &
-operator<<(std::ostream & os, const ntree_topology<TREE_TYPE> & t) {
+operator<<(std::ostream & os, const ntree<TREE_TYPE> & t) {
   os << "Tree: range: " << t.range_[0] << "-" << t.range_[1];
   return os;
 }

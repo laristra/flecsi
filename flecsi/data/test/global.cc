@@ -22,9 +22,9 @@ using namespace flecsi::data;
 using namespace flecsi::topology;
 
 namespace {
-static_assert(std::is_same_v<core_t<global_topology_t>, global_topology_t>);
-struct test_g : global_topology_t {};
-static_assert(std::is_same_v<core_t<test_g>, global_topology_t>);
+static_assert(std::is_same_v<core_t<global_t>, global_t>);
+struct test_g : global_t {};
+static_assert(std::is_same_v<core_t<test_g>, global_t>);
 
 struct test_policy {
   static constexpr std::size_t num_dimensions = 1, num_domains = 1;
@@ -32,7 +32,7 @@ struct test_policy {
   static void create_entity();
 };
 
-using u_base = unstructured_mesh_topology<test_policy>;
+using u_base = unstructured_mesh<test_policy>;
 static_assert(std::is_same_v<core_t<u_base>, u_base>);
 struct test : u_base {};
 static_assert(std::is_same_v<core_t<test>, u_base>);

@@ -335,8 +335,7 @@ context_t::initialize_global_topology() {
    */
 
   auto & field_info_store = context_t::instance().get_field_info_store(
-    topology::id<topology::global_topology_t>(),
-    flecsi::data::storage_label_t::dense);
+    topology::id<topology::global_t>(), flecsi::data::storage_label_t::dense);
 
   for(auto const & fi : field_info_store) {
     allocator.allocate_field(fi.type_size, fi.fid);
@@ -390,7 +389,7 @@ context_t::initialize_default_index_topology() {
                      << std::endl;
   }
 
-  data::topology_traits<topology::index_topology_t>::allocate(
+  data::topology_traits<topology::index_t>::allocate(
     flecsi_index_topology, flecsi_index_coloring.get());
 } // context_t::initialize_default_index_topology
 
@@ -404,8 +403,7 @@ context_t::finalize_default_index_topology() {
                      << std::endl;
   }
 
-  data::topology_traits<topology::index_topology_t>::deallocate(
-    flecsi_index_topology);
+  data::topology_traits<topology::index_t>::deallocate(flecsi_index_topology);
 } // context_t::finalize_default_index_topology
 
 } // namespace flecsi::runtime

@@ -110,7 +110,7 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-               topology::global_topology_t,
+               topology::global_t,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE> & ref) {
@@ -142,7 +142,7 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-               topology::index_topology_t,
+               topology::index_t,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE> & ref) {
@@ -175,7 +175,7 @@ struct task_prologue_t {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using ntree_accessor =
-    data::topology_accessor<topology::ntree_topology<POLICY_TYPE>, PRIVILEGES>;
+    data::topology_accessor<topology::ntree<POLICY_TYPE>, PRIVILEGES>;
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
@@ -187,7 +187,7 @@ struct task_prologue_t {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using set_accessor =
-    data::topology_accessor<topology::set_topology<POLICY_TYPE>, PRIVILEGES>;
+    data::topology_accessor<topology::set<POLICY_TYPE>, PRIVILEGES>;
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(set_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
@@ -199,8 +199,7 @@ struct task_prologue_t {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using structured_mesh_accessor =
-    data::topology_accessor<topology::structured_mesh_topology<POLICY_TYPE>,
-      PRIVILEGES>;
+    data::topology_accessor<topology::structured_mesh<POLICY_TYPE>, PRIVILEGES>;
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(

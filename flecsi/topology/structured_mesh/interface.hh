@@ -33,9 +33,8 @@ namespace topology {
  */
 
 template<typename POLICY_TYPE>
-struct structured_mesh_topology : public structured_mesh_topology_base_t,
-                                  public data::reference_base {
-}; // struct structured_mesh_topology
+struct structured_mesh : structured_mesh_base_t,
+                         data::reference_base {}; // struct structured_mesh
 
 } // namespace topology
 } // namespace flecsi

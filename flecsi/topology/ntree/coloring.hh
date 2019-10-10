@@ -28,7 +28,7 @@ namespace topology {
 // NTree topology coloring.
 //----------------------------------------------------------------------------//
 
-struct ntree_topology_base {
+struct ntree_base {
 
   struct coloring {
 
@@ -44,7 +44,7 @@ struct ntree_topology_base {
     coloring_metadata coloring_metadata_;
 
   }; // struct coloring
-}; // struct ntree_topology_base
+}; // struct ntree_base
 
 // using coloring_t = std::map<size_t, index_coloring_t>;
 

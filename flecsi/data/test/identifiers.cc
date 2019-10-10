@@ -23,10 +23,8 @@ identifiers(int argc, char ** argv) {
 
   FTEST();
 
-  flog(info) << "global_topology_t: "
-             << topology::id<topology::global_topology_t>() << std::endl;
-  flog(info) << "index_topology_t: "
-             << topology::id<topology::index_topology_t>() << std::endl;
+  flog(info) << "global_t: " << topology::id<topology::global_t>() << std::endl;
+  flog(info) << "index_t: " << topology::id<topology::index_t>() << std::endl;
 
   flog(info) << "global topology handle " << flecsi_global_topology.identifier()
              << std::endl;

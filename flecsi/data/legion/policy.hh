@@ -39,24 +39,24 @@ namespace data {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_traits<topology::global_topology_t> {
+struct topology_traits<topology::global_t> {
 
   // This is unused, but is required for garbage cleanup of other topology
   // types, i.e., global must implement this method.
 
   static void deallocate(reference_base const & topology_reference) {}
 
-}; // global_topology_t specialization
+}; // global_t specialization
 
 /*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_traits<topology::index_topology_t> {
+struct topology_traits<topology::index_t> {
 
   static void allocate(reference_base const & topology_reference,
-    const topology::index_topology_t::coloring & coloring) {
+    const topology::index_t::coloring & coloring) {
     {
       flog_tag_guard(topologies);
       flog_devel(info) << "Set coloring for " << topology_reference.identifier()
@@ -85,7 +85,7 @@ struct topology_traits<topology::index_topology_t> {
       legion_runtime->create_field_space(legion_context);
 
     auto & field_info_store = flecsi_context.get_field_info_store(
-      topology::id<topology::index_topology_t>(), storage_label_t::dense);
+      topology::id<topology::index_t>(), storage_label_t::dense);
 
     Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(
       legion_context, runtime_data.field_space);
@@ -131,15 +131,15 @@ struct topology_traits<topology::index_topology_t> {
 
   } // deallocate
 
-}; // index_topology_t specialization
+}; // index_t specialization
 
 /*----------------------------------------------------------------------------*
   Canonical Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_traits<topology::canonical_topology<POLICY_TYPE>> {
-  using type = topology::canonical_topology<POLICY_TYPE>;
+struct topology_traits<topology::canonical<POLICY_TYPE>> {
+  using type = topology::canonical<POLICY_TYPE>;
 
   static void allocate(reference_base const & topology_reference,
     typename type::coloring const & coloring) {} // allocate
@@ -150,15 +150,15 @@ struct topology_traits<topology::canonical_topology<POLICY_TYPE>> {
   static void deallocate(reference_base const & topology_reference) {
   } // deallocate
 
-}; // canonical_topology specialization
+}; // canonical specialization
 
 /*----------------------------------------------------------------------------*
   NTree Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
-  using type = topology::ntree_topology<POLICY_TYPE>;
+struct topology_traits<topology::ntree<POLICY_TYPE>> {
+  using type = topology::ntree<POLICY_TYPE>;
 
   // Distribute the entities on the different processes
   // Create the tree data structure locally
@@ -195,34 +195,32 @@ struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
 
   } // deallocate
 
-}; // ntree_topology specialization
+}; // ntree specialization
 
 /*----------------------------------------------------------------------------*
   Set Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_traits<topology::set_topology<POLICY_TYPE>> {
-
-}; // set_topology specialization
+struct topology_traits<topology::set<POLICY_TYPE>> {}; // set specialization
 
 /*----------------------------------------------------------------------------*
   Structured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_traits<topology::structured_mesh_topology<POLICY_TYPE>> {
+struct topology_traits<topology::structured_mesh<POLICY_TYPE>> {
 
-}; // structured_mesh_topology specialization
+}; // structured_mesh specialization
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
 template<typename POLICY_TYPE>
-struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
+struct topology_traits<topology::unstructured_mesh<POLICY_TYPE>> {
 
-  using type = topology::unstructured_mesh_topology<POLICY_TYPE>;
+  using type = topology::unstructured_mesh<POLICY_TYPE>;
 
 #if 0
   struct entity_walker_t : public utils::tuple_walker<index_walker_t> {
@@ -270,16 +268,16 @@ struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
 
   static void deallocate(reference_base const & topology_reference) {}
 
-}; // unstructured_mesh_topology specialization
+}; // unstructured_mesh specialization
 
 // NOTE THAT THE HANDLE TYPE FOR THIS TYPE WILL NEED TO CAPTURE THE
-// UNDERLYING TOPOLOGY TYPE, i.e., topology::mesh_topology_t<MESH_POLICY>
+// UNDERLYING TOPOLOGY TYPE, i.e., topology::mesh_t<MESH_POLICY>
 
 #if 0
 template<typename MESH_POLICY>
-struct client_handle_specialization<topology::mesh_topology_t<MESH_POLICY>> {
+struct client_handle_specialization<topology::mesh_t<MESH_POLICY>> {
 
-  using client_t = topology::mesh_topology_t<MESH_POLICY>;
+  using client_t = topology::mesh_t<MESH_POLICY>;
 
   template<size_t NAMESPACE, size_t NAME>
   static client_handle<client_t, 0> get_client_handle() {
@@ -287,7 +285,7 @@ struct client_handle_specialization<topology::mesh_topology_t<MESH_POLICY>> {
     return h;
   } // get_client_handle
 
-}; // client_handle_specialization<topology::mesh_topology_t<MESH_POLICY>>
+}; // client_handle_specialization<topology::mesh_t<MESH_POLICY>>
 #endif
 
 } // namespace data

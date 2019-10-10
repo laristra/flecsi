@@ -35,7 +35,7 @@ struct sph_tree_policy {
   using node_t = flecsi::topology::ntree_node<dimension, tree_entity_t, key_t>;
 }; // sph_tree_policy
 
-using sph_ntree_topology = topology::ntree_topology<sph_tree_policy>;
+using sph_ntree_topology = topology::ntree<sph_tree_policy>;
 data::topology_reference<sph_ntree_topology> sph_ntree;
 data::coloring_slot<sph_ntree_topology> coloring;
 
