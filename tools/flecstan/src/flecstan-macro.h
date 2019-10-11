@@ -484,7 +484,7 @@ flecstan_maptraits_done
   // 0" as its last template argument. So, the macro's ##__VA_ARGS__, which is
   // the last template argument it sends to register_field(), is an (optional)
   // index space.
-  flecstan_class(flecsi_register_field) std::string client_type;
+    flecstan_class(flecsi_register_field) std::string client_type;
 std::string nspace;
 std::string name;
 std::string data_type;
@@ -568,7 +568,7 @@ flecstan_maptraits_done
 
   // flecsi_get_handles ( client, nspace, data_type, storage_class, version, ...
   // )
-  flecstan_class(flecsi_get_handles) std::string client;
+    flecstan_class(flecsi_get_handles) std::string client;
 std::string nspace;
 std::string data_type;
 std::string storage_class;
@@ -633,7 +633,7 @@ flecstan_maptraits_done
   // flecsi_get_mutator
   //    ( client_handle, nspace, name, data_type, storage_class, version, slots
   //    )
-  flecstan_class(flecsi_get_mutator) std::string client_handle;
+    flecstan_class(flecsi_get_mutator) std::string client_handle;
 std::string nspace;
 std::string name;
 std::string data_type;

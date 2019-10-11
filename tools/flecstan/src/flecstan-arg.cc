@@ -101,11 +101,6 @@ filename_queueing(const std::string & name) {
     return set.find(opt) != set.end();                                         \
   }
 
-// flecstan_setnfind
-#define flecstan_setnfind(...)                                                 \
-  static const std::set<std::string> set{__VA_ARGS__};                         \
-  return set.find(opt) != set.end()
-
 // -----------------------------------------------------------------------------
 // option_*
 // Perhaps it isn't worthwhile to have so many forms in each case. Our intention
@@ -128,6 +123,12 @@ option_version(const std::string & opt) {
 bool
 option_help(const std::string & opt) {
   flecstan_setnfind("-help", "--help");
+}
+
+// h (uncolored help)
+bool
+option_h(const std::string & opt) {
+  flecstan_setnfind("-h", "--h");
 }
 
 // quiet
@@ -262,69 +263,12 @@ option_no_summary(const std::string & opt) {
 }
 
 // ------------------------
-// Re: compilation
-// ------------------------
-
-inline bool
-option_dir(const std::string & opt) {
-  flecstan_setnfind("-dir", "--dir", "-directory",
-    "--directory"
-    "-folder",
-    "--folder");
-}
-
-inline bool
-option_clang(const std::string & opt) {
-  flecstan_setnfind("-clang", "--clang", "-clang++", "--clang++");
-}
-
-inline bool
-option_flags(const std::string & opt) {
-  flecstan_setnfind("-flag", "--flag", "-flags", "--flags");
-}
-
-// ------------------------
-// Re: files (input)
-// ------------------------
-
-inline bool
-option_json(const std::string & opt) {
-  flecstan_setnfind("-json", "--json");
-}
-
-inline bool
-option_make(const std::string & opt) {
-  flecstan_setnfind("-make", "--make");
-}
-
-inline bool
-option_cc(const std::string & opt) {
-  flecstan_setnfind("-cc", "--cc", "-cpp", "--cpp", "-cxx", "--cxx", "-c++",
-    "--c++", "-C", "--C");
-}
-
-inline bool
-option_yaml(const std::string & opt) {
-  flecstan_setnfind("-yaml", "--yaml");
-}
-
-// ------------------------
-// Re: files (output)
-// ------------------------
-
-inline bool
-option_yout(const std::string & opt) {
-  flecstan_setnfind("-yout", "--yout");
-}
-
-// ------------------------
 // Macro cleanup
 // ------------------------
 
 #undef flecstan_paste
 #undef flecstan_toggle
 #undef flecstan_toggles
-#undef flecstan_setnfind
 
 // ------------------------
 // Any of the above flags
@@ -334,9 +278,9 @@ option_yout(const std::string & opt) {
 // This is part of the aforementioned maintenance headache.
 inline bool
 option_any(const std::string & opt) {
-  return option_version(opt) || option_help(opt) || option_quiet(opt) ||
-         option_verbose(opt) || option_short(opt) || option_long(opt) ||
-         option_print(opt) || option_debug(opt) ||
+  return option_version(opt) || option_help(opt) || option_h(opt) ||
+         option_quiet(opt) || option_verbose(opt) || option_short(opt) ||
+         option_long(opt) || option_print(opt) || option_debug(opt) ||
 
          option_file_long(opt) || option_file_medium(opt) ||
          option_file_short(opt) || option_file_full(opt) ||
@@ -370,33 +314,6 @@ option_any(const std::string & opt) {
          option_yaml(opt) ||
 
          option_yout(opt);
-}
-
-// -----------------------------------------------------------------------------
-// endsin_*
-// -----------------------------------------------------------------------------
-
-inline bool
-endsin_json(const std::string & str) {
-  return endsin(str, ".json");
-}
-
-inline bool
-endsin_make(const std::string & str) {
-  // Interpret .txt as our make-verbose files. :-/ I may or may not
-  // wish to stick with this scheme, but it's serviceable for now.
-  return endsin(str, ".txt");
-}
-
-inline bool
-endsin_cc(const std::string & str) {
-  return endsin(str, ".cc") || endsin(str, ".cpp") || endsin(str, ".cxx") ||
-         endsin(str, ".C");
-}
-
-inline bool
-endsin_yaml(const std::string & str) {
-  return endsin(str, ".yaml");
 }
 
 // -----------------------------------------------------------------------------
@@ -997,7 +914,10 @@ option_toggle(const std::string & opt) {
     print_version();
   }
   if(option_help(opt)) {
-    print_help();
+    print_help(true);
+  }
+  if(option_h(opt)) {
+    print_help(false);
   }
 
   // quiet?
