@@ -72,9 +72,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
   void dense(A & accessor) {
     using DATA_TYPE = typename A::value_type;
 
-    Legion::Domain dom = legion_runtime_->get_index_space_domain(
-      legion_context_, regions_[region].get_logical_region().get_index_space());
-    Legion::Domain::DomainPointIterator itr(dom);
+    auto & reg = regions_[region++];
 
     const auto fid =
       runtime::context_t::instance()
@@ -88,13 +86,13 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
       1,
       Legion::coord_t,
       Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
-      ac(regions_[region], fid, sizeof(DATA_TYPE));
+      ac(reg, fid, sizeof(DATA_TYPE));
 
-    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
-
-    bind(accessor, ac_ptr);
-
-    ++region;
+    bind(accessor,
+      ac.ptr(Legion::Domain::DomainPointIterator(
+        legion_runtime_->get_index_space_domain(
+          legion_context_, reg.get_logical_region().get_index_space()))
+               .p));
   }
 
   /*--------------------------------------------------------------------------*
