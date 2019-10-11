@@ -58,18 +58,17 @@ struct topology_reference : public reference_base {
   } // deallocate
 
 private:
-  static bool static_registered_;
-
-  // The static_registered_ variable must be referenced so that
-  // register_fields() is called at most once.
-  const bool registered_ = static_registered_;
+  static const bool static_registered_;
+  // Force instantiation, working around GCC 9.1/9.2 bug #92062 with an
+  // explicitly dependent condition:
+  static_assert(((void)&static_registered_, sizeof(TOPOLOGY_TYPE)));
 
   bool allocated_ = false;
 
 }; // struct topology_reference
 
 template<typename TOPOLOGY_TYPE>
-bool topology_reference<TOPOLOGY_TYPE>::static_registered_ =
+const bool topology_reference<TOPOLOGY_TYPE>::static_registered_ =
   topology_registration<TOPOLOGY_TYPE>::register_fields();
 
 } // namespace data
