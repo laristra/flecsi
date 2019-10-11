@@ -25,70 +25,13 @@
 
 namespace flecsi {
 
-//----------------------------------------------------------------------------//
-//! The ragged_accessor_base_t type provides an empty base type for
-//! compile-time identification of data handle objects.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
-
-struct ragged_accessor_base_t {};
-
-//----------------------------------------------------------------------------//
-//! The ragged accessor_u type captures information about permissions
-//! and specifies a data policy.
-//!
-//! @tparam T                     The data type referenced by the handle.
-//! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-//!                               indices of the index partition.
-//! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-//!                               indices of the index partition.
-//! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-//!                               indices of the index partition.
-//! @tparam DATA_POLICY           The data policy for this handle type.
-//!
-//! @ingroup data
-//----------------------------------------------------------------------------//
-
-template<typename T,
-  size_t EXCLUSIVE_PERMISSIONS,
-  size_t SHARED_PERMISSIONS,
-  size_t GHOST_PERMISSIONS>
-struct accessor_u<data::ragged,
-  T,
-  EXCLUSIVE_PERMISSIONS,
-  SHARED_PERMISSIONS,
-  GHOST_PERMISSIONS> : public accessor_u<data::base,
-                         T,
-                         EXCLUSIVE_PERMISSIONS,
-                         SHARED_PERMISSIONS,
-                         GHOST_PERMISSIONS>,
-                       public ragged_accessor_base_t {
-  using handle_t = ragged_data_handle_u<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS>;
-
-  using offset_t = typename handle_t::offset_t;
-  using value_t = T;
+template<class T>
+struct ragged_access { // shared between accessor/mutator
+  using handle_t = ragged_data_handle_u<T>;
+  using value_type = T;
 
   using index_space_t =
     topology::index_space_u<topology::simple_entry_u<size_t>, true>;
-
-  //--------------------------------------------------------------------------//
-  //! Constructor from handle.
-  //--------------------------------------------------------------------------//
-
-  accessor_u(const ragged_data_handle_u<T, 0, 0, 0> & h)
-    : handle(reinterpret_cast<const handle_t &>(h)) {}
-
-  T & operator()(size_t index, size_t ragged_index) {
-    const offset_t & offset = handle.offsets[index];
-    assert(
-      ragged_index < offset.count() && "ragged accessor: index out of range");
-
-    return handle.entries[offset.start() + ragged_index];
-  } // operator ()
 
   //-------------------------------------------------------------------------//
   //! Return max number of entries used over all indices.
@@ -97,8 +40,8 @@ struct accessor_u<data::ragged,
     size_t max_so_far = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const offset_t & oi = handle.offsets[index];
-      max_so_far = std::max(max_so_far, oi.count());
+      const vector_t & row = handle.new_entries[index];
+      max_so_far = std::max(max_so_far, row.size());
     }
 
     return max_so_far;
@@ -111,8 +54,8 @@ struct accessor_u<data::ragged,
     clog_assert(
       index < handle.num_total_, "ragged accessor: index out of bounds");
 
-    const offset_t & oi = handle.offsets[index];
-    return oi.count();
+    const vector_t & row = handle.new_entries[index];
+    return row.size();
   }
 
   //-------------------------------------------------------------------------//
@@ -153,6 +96,69 @@ struct accessor_u<data::ragged,
   }
 
   handle_t handle;
+
+private:
+  using vector_t = typename handle_t::vector_t;
+};
+
+//----------------------------------------------------------------------------//
+//! The ragged_accessor_base_t type provides an empty base type for
+//! compile-time identification of data handle objects.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
+struct ragged_accessor_base_t {};
+
+//----------------------------------------------------------------------------//
+//! The ragged accessor_u type captures information about permissions
+//! and specifies a data policy.
+//!
+//! @tparam T                     The data type referenced by the handle.
+//! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+//!                               indices of the index partition.
+//! @tparam SHARED_PERMISSIONS    The permissions required on the shared
+//!                               indices of the index partition.
+//! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+//!                               indices of the index partition.
+//! @tparam DATA_POLICY           The data policy for this handle type.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
+template<typename T,
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS>
+struct accessor_u<data::ragged,
+  T,
+  EXCLUSIVE_PERMISSIONS,
+  SHARED_PERMISSIONS,
+  GHOST_PERMISSIONS> : public accessor_u<data::base,
+                         T,
+                         EXCLUSIVE_PERMISSIONS,
+                         SHARED_PERMISSIONS,
+                         GHOST_PERMISSIONS>,
+                       ragged_access<T>,
+                       public ragged_accessor_base_t {
+  using base = ragged_access<T>;
+
+  //--------------------------------------------------------------------------//
+  //! Constructor from handle.
+  //--------------------------------------------------------------------------//
+
+  accessor_u(const typename base::handle_t & h) : base{h} {}
+
+  T & operator()(size_t index, size_t ragged_index) {
+    auto & row = this->handle.new_entries[index];
+    assert(ragged_index < row.size() && "ragged accessor: index out of range");
+
+    return row[ragged_index];
+  } // operator ()
+
+  const T & operator()(size_t index, size_t ragged_index) const {
+    return const_cast<accessor_u &>(*this)(index, ragged_index);
+  } // operator ()
 };
 
 template<typename T,

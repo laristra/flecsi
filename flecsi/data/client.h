@@ -341,6 +341,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
 
       if(fi) {
         ent.fid = fi->fid;
+        ent.fid_size = fi->size;
       }
 
       fi = context.get_field_info_from_key(
@@ -350,6 +351,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
 
       if(fi) {
         ent.id_fid = fi->fid;
+        ent.id_fid_size = fi->size;
       }
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
@@ -411,6 +413,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
 
       if(fi) {
         adj.offset_fid = fi->fid;
+        adj.offset_fid_size = fi->size;
       }
 
       fi = context.get_field_info_from_key(
@@ -420,6 +423,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
 
       if(fi) {
         adj.index_fid = fi->fid;
+        adj.index_fid_size = fi->size;
       }
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
@@ -475,6 +479,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
 
       if(fi) {
         iss.index_fid = fi->fid;
+        iss.index_fid_size = fi->size;
       }
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
@@ -592,6 +597,7 @@ struct data_client_policy_handler_u<topology::set_topology_u<POLICY_TYPE>> {
 
       if(fi) {
         ent.fid2 = fi->fid;
+        ent.fid2_size = fi->size;
       }
 
       fi = context.get_field_info_from_key(h.type_hash,
@@ -601,6 +607,7 @@ struct data_client_policy_handler_u<topology::set_topology_u<POLICY_TYPE>> {
 
       if(fi) {
         ent.fid3 = fi->fid;
+        ent.fid3_size = fi->size;
       }
 
       ++entity_index;

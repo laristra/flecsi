@@ -18,7 +18,6 @@
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client.h>
-#include <flecsi/data/mutator_handle.h>
 #include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/execution/context.h>
 
@@ -30,47 +29,6 @@
 namespace flecsi {
 namespace data {
 namespace legion {
-
-//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-// Helper type definitions.
-//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-
-//----------------------------------------------------------------------------//
-// Sparse handle.
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-// Sparse accessor.
-//----------------------------------------------------------------------------//
-
-///
-/// \brief Sparse_accessor_t provides logically array-based access to data
-///        variables that have been registered in the data model.
-///
-/// \tparam T The type of the data variable. If this type is not
-///           consistent with the type used to register the data, bad things
-///           can happen. However, it can be useful to reinterpret the type,
-///           e.g., when writing raw bytes. This class is part of the
-///           low-level \e flecsi interface, so it is assumed that you
-///           know what you are doing...
-///
-template<typename T, size_t EP, size_t SP, size_t GP>
-struct ragged_handle_u : public ragged_data_handle_u<T, EP, SP, GP> {
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
-
-  using base = ragged_data_handle_u<T, EP, SP, GP>;
-
-  //--------------------------------------------------------------------------//
-  // Constructors.
-  //--------------------------------------------------------------------------//
-
-  ragged_handle_u() {}
-
-  template<typename, size_t, size_t, size_t>
-  friend class ragged_handle_u;
-}; // struct ragged_handle_u
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -95,16 +53,15 @@ struct storage_class_u<ragged> {
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle_u = ragged_handle_u<T, EP, SP, GP>;
+  template<typename T>
+  using handle_u = ragged_data_handle_u<T>;
 
   template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static handle_u<DATA_TYPE, 0, 0, 0> get_handle(
-    const data_client_t & data_client) {
+  static handle_u<DATA_TYPE> get_handle(const data_client_t & data_client) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
@@ -127,25 +84,13 @@ struct storage_class_u<ragged> {
         << index_space);
 
     const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-    const size_t exclusive_reserve = iitr->second.exclusive_reserve;
 
-    handle_u<DATA_TYPE, 0, 0, 0> h;
-
-    h.reserve = exclusive_reserve;
-    h.max_entries_per_index = max_entries_per_index;
+    handle_u<DATA_TYPE> h(max_entries_per_index);
 
     h.offsets_entire_region = ism[index_space].entire_region;
     h.offsets_exclusive_lp = ism[index_space].exclusive_lp;
     h.offsets_shared_lp = ism[index_space].shared_lp;
     h.offsets_ghost_lp = ism[index_space].ghost_lp;
-
-    // TODO: formalize sparse offset
-    constexpr size_t sparse_offset = 8192;
-
-    h.entries_entire_region = ism[index_space + sparse_offset].entire_region;
-    h.entries_exclusive_lp = ism[index_space + sparse_offset].exclusive_lp;
-    h.entries_shared_lp = ism[index_space + sparse_offset].shared_lp;
-    h.entries_ghost_lp = ism[index_space + sparse_offset].ghost_lp;
 
     h.metadata_entire_region = context.sparse_metadata().entire_region;
     h.metadata_lp = context.sparse_metadata().color_partition;
@@ -167,13 +112,6 @@ struct storage_class_u<ragged> {
 
     h.ghost_owners_offsets_lp = ism[index_space].ghost_owners_lp;
 
-    h.ghost_owners_offsets_lp = ism[index_space].ghost_owners_lp;
-
-    h.ghost_owners_entries_lp =
-      ism[index_space + sparse_offset].ghost_owners_lp;
-
-    h.entries_color_parition = ism[index_space + sparse_offset].primary_lp;
-
     h.global_to_local_color_map_ptr =
       &ism[index_space].global_to_local_color_map;
 
@@ -190,69 +128,10 @@ struct storage_class_u<ragged> {
     size_t NAMESPACE,
     size_t NAME,
     size_t VERSION>
-  static mutator_handle_u<DATA_TYPE>
-  get_mutator(const data_client_t & data_client, size_t slots) {
-    auto & context = execution::context_t::instance();
-
-    using client_type = typename DATA_CLIENT_TYPE::type_identifier_t;
-
-    // get field_info for this data handle
-    auto & field_info = context.get_field_info_from_name(
-      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-      utils::hash::field_hash<NAMESPACE, NAME>(VERSION));
-
-    size_t index_space = field_info.index_space;
-    auto & ism = context.index_space_data_map();
-
-    auto & im = context.sparse_index_space_info_map();
-    auto iitr = im.find(index_space);
-    clog_assert(iitr != im.end(),
-      "sparse index space info not registered for index space: "
-        << index_space);
-
-    const size_t max_entries_per_index = iitr->second.max_entries_per_index;
-    const size_t exclusive_reserve = iitr->second.exclusive_reserve;
-
-    mutator_handle_u<DATA_TYPE> h(max_entries_per_index, slots);
-
-    h.offsets_entire_region = ism[index_space].entire_region;
-    h.offsets_exclusive_lp = ism[index_space].exclusive_lp;
-    h.offsets_shared_lp = ism[index_space].shared_lp;
-    h.offsets_ghost_lp = ism[index_space].ghost_lp;
-
-    // TODO: formalize sparse offset
-    constexpr size_t sparse_offset = 8192;
-
-    h.entries_entire_region = ism[index_space + sparse_offset].entire_region;
-    h.entries_exclusive_lp = ism[index_space + sparse_offset].exclusive_lp;
-    h.entries_shared_lp = ism[index_space + sparse_offset].shared_lp;
-    h.entries_ghost_lp = ism[index_space + sparse_offset].ghost_lp;
-
-    h.metadata_entire_region = context.sparse_metadata().entire_region;
-    h.metadata_lp = context.sparse_metadata().color_partition;
-
-    h.ghost_is_readable = &(ism[index_space].ghost_is_readable[field_info.fid]);
-    h.write_phase_started =
-      &(ism[index_space].write_phase_started[field_info.fid]);
-
-    h.ghost_owners_offsets_lp = ism[index_space].ghost_owners_lp;
-
-    //      h.ghost_owners_offsets_subregions =
-    //        ism[index_space].ghost_owners_subregions;
-
-    h.ghost_owners_entries_lp =
-      ism[index_space + sparse_offset].ghost_owners_lp;
-
-    h.global_to_local_color_map_ptr =
-      &ism[index_space].global_to_local_color_map;
-
-    h.fid = field_info.fid;
-    h.index_space = index_space;
-    h.data_client_hash = field_info.data_client_hash;
-    h.slots = slots;
-    h.num_exclusive_insertions = new size_t(0);
-
-    return h;
+  static handle_u<DATA_TYPE> get_mutator(const data_client_t & data_client,
+    size_t) {
+    return get_handle<DATA_CLIENT_TYPE, DATA_TYPE, NAMESPACE, NAME, VERSION>(
+      data_client);
   }
 
 }; // struct storage_class_t
@@ -265,9 +144,6 @@ struct storage_class_u<sparse> {
 
   template<typename T>
   using entry_value_u = data::sparse_entry_value_u<T>;
-
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle_u = ragged_handle_u<entry_value_u<T>, EP, SP, GP>;
 
   template<typename DATA_CLIENT_TYPE,
     typename DATA_TYPE,
