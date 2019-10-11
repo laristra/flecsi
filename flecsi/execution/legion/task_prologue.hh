@@ -151,7 +151,7 @@ struct task_prologue_t {
     auto instance_data =
       flecsi_context.index_topology_instance(ref.topology_identifier());
 
-    flog_assert(instance_data.colors = domain_,
+    flog_assert(instance_data.colors == domain_,
       "attempting to pass index topology reference with size "
         << instance_data.colors << " into task with launch domain of size "
         << domain_);
