@@ -52,8 +52,6 @@ struct canonical_topology_base {
 template<typename TOPOLOGY_POLICY>
 struct canonical_topology : public canonical_topology_base {
 
-  using coloring = canonical_topology_base::coloring;
-
   canonical_topology() = delete;
 
 }; // struct canonical_topology
