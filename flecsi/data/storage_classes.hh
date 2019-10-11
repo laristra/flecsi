@@ -72,6 +72,7 @@ struct accessor<storage_label_t::dense,
     a.data_ = data;
   }
 
+  using topology_t = topology::global_topology_t;
   using Base = field_reference<DATA_TYPE>;
   accessor(Base const & ref) : Base(ref) {}
 
@@ -107,6 +108,7 @@ struct accessor<storage_label_t::dense,
   DATA_TYPE,
   PRIVILEGES> : field_reference<DATA_TYPE> {
 
+  using topology_t = topology::index_topology_t;
   using Base = field_reference<DATA_TYPE>;
   accessor(Base const & ref) : Base(ref) {}
 
@@ -160,6 +162,7 @@ struct accessor<storage_label_t::dense,
   DATA_TYPE,
   PRIVILEGES> : public field_reference<DATA_TYPE> {
 
+  using topology_t = topology::unstructured_mesh_topology<POLICY_TYPE>;
   using Base = field_reference<DATA_TYPE>;
   accessor(Base const & ref) : Base(ref) {}
 
