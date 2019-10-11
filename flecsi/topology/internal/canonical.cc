@@ -27,13 +27,12 @@ namespace flecsi {
 namespace topology {
 
 void
-canonical_topology_base::coloring::color(coloring & coloring_info,
-  std::string const & filename) {
+canonical_topology_base::coloring::init(std::string const & filename) {
 
   std::cout << "process " << process() << " of " << processes() << " with "
             << threads_per_process() << " (tpp) and input " << filename
             << std::endl;
-} // canonical_topology_base::coloring::color
+} // canonical_topology_base::coloring::init
 
 } // namespace topology
 } // namespace flecsi

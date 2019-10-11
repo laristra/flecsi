@@ -40,7 +40,7 @@ struct ntree_topology_base {
       std::vector<size_t> entities_distribution_;
     }; // coloring_metadata
 
-    static void color(coloring & c) {}
+    void init() {}
 
     local_coloring local_coloring_;
     coloring_metadata coloring_metadata_;
