@@ -306,45 +306,7 @@ context_t::connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
 
 void
 context_t::initialize_global_topology() {
-  using namespace Legion;
-
-  auto legion_runtime_ = Legion::Runtime::get_runtime();
-  auto legion_context_ = Legion::Runtime::get_context();
-
-  LegionRuntime::Arrays::Rect<1> bounds(
-    LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
-
-  Domain dom(Domain::from_rect<1>(bounds));
-
-  auto & global_topology_instance_ = global_topology.allocate({});
-
-  global_topology_instance_.index_space =
-    legion_runtime_->create_index_space(legion_context_, dom);
-
-  global_topology_instance_.field_space =
-    legion_runtime_->create_field_space(legion_context_);
-
-  FieldAllocator allocator = legion_runtime_->create_field_allocator(
-    legion_context_, global_topology_instance_.field_space);
-
-  /*
-    Note: This call to get_field_info_store uses the non-const version
-    so that this call works if no fields have been registered. In other parts
-    of the code that occur after initialization, the const version of this call
-    should be used.
-   */
-
-  auto & field_info_store = context_t::instance().get_field_info_store(
-    topology::id<topology::global_t>(), flecsi::data::storage_label_t::dense);
-
-  for(auto const & fi : field_info_store) {
-    allocator.allocate_field(fi.type_size, fi.fid);
-  } // for
-
-  global_topology_instance_.logical_region =
-    legion_runtime_->create_logical_region(legion_context_,
-      global_topology_instance_.index_space,
-      global_topology_instance_.field_space);
+  global_topology.allocate({});
 } // context_t::initialize_global_topology
 
 //----------------------------------------------------------------------------//
