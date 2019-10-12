@@ -33,6 +33,41 @@ namespace flecsi::runtime {
 using namespace boost::program_options;
 using execution::legion::task_id;
 
+/*----------------------------------------------------------------------------*
+  Legion top-level task.
+ *----------------------------------------------------------------------------*/
+
+void
+top_level_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime) {
+
+  context_t & context_ = context_t::instance();
+
+  /*
+    Initialize MPI interoperability.
+   */
+
+  context_.connect_with_mpi(ctx, runtime);
+  context_.wait_on_mpi(ctx, runtime);
+
+  auto args = runtime->get_input_args();
+
+  /*
+    Invoke the FleCSI runtime top-level action.
+   */
+
+  detail::data_guard(),
+    context_.exit_status() = context_.top_level_action()(args.argc, args.argv);
+
+  /*
+    Finish up Legion runtime and fall back out to MPI.
+   */
+
+  context_.handoff_to_mpi(ctx, runtime);
+} // top_level_task
+
 //----------------------------------------------------------------------------//
 // Implementation of context_t::initialize.
 //----------------------------------------------------------------------------//
@@ -299,42 +334,5 @@ context_t::connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
       "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
 #endif
 } // context_t::connect_with_mpi
-
-//----------------------------------------------------------------------------//
-// Implementation of initialize_global_topology.
-//----------------------------------------------------------------------------//
-
-void
-context_t::initialize_global_topology() {
-  global_topology.allocate({});
-} // context_t::initialize_global_topology
-
-//----------------------------------------------------------------------------//
-// Implementation of finalize_global_topology.
-//----------------------------------------------------------------------------//
-
-void
-context_t::finalize_global_topology() {
-  global_topology.deallocate();
-} // context_t::finalize_global_topology
-
-//----------------------------------------------------------------------------//
-// Index coloring and topology method implementations.
-//----------------------------------------------------------------------------//
-
-void
-context_t::initialize_process_coloring() {
-  process_coloring.allocate(processes_);
-} // context_t::initialize_process_coloring
-
-void
-context_t::initialize_process_topology() {
-  process_topology.allocate(process_coloring.get());
-} // context_t::initialize_process_topology
-
-void
-context_t::finalize_process_topology() {
-  process_topology.deallocate();
-} // context_t::finalize_process_topology
 
 } // namespace flecsi::runtime

@@ -270,22 +270,6 @@ struct context_t : context {
   } // reduction_operations
 
 private:
-  /*--------------------------------------------------------------------------*
-    Backend initialization.
-   *--------------------------------------------------------------------------*/
-
-  void initialize_global_topology();
-  void initialize_process_coloring();
-  void initialize_process_topology();
-
-  /*--------------------------------------------------------------------------*
-    Backend initialization.
-   *--------------------------------------------------------------------------*/
-
-  void finalize_global_topology();
-  void finalize_process_coloring();
-  void finalize_process_topology();
-
   /*!
      Handoff to legion runtime from MPI.
    */

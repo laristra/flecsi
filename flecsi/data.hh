@@ -59,4 +59,37 @@ template<typename DATA_TYPE>
 using index_field_member = data::
   field_member<DATA_TYPE, data::storage_label_t::dense, topology::index_t, 0>;
 
+namespace detail {
+/// An RAII type to manage the global coloring and topologies.
+struct data_guard {
+  struct global_guard {
+    global_guard() {
+      global_topology.allocate({});
+    }
+    global_guard(global_guard &&) = delete;
+    ~global_guard() {
+      global_topology.deallocate();
+    }
+  } g;
+  struct color_guard {
+    color_guard() {
+      process_coloring.allocate(runtime::context_t::instance().processes());
+    }
+    color_guard(color_guard &&) = delete;
+    ~color_guard() {
+      process_coloring.deallocate();
+    }
+  } c;
+  struct process_guard {
+    process_guard() {
+      process_topology.allocate(process_coloring.get());
+    }
+    process_guard(process_guard &&) = delete;
+    ~process_guard() {
+      process_topology.deallocate();
+    }
+  } p;
+};
+} // namespace detail
+
 } // namespace flecsi
