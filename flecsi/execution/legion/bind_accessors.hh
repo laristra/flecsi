@@ -74,19 +74,12 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
 
     auto & reg = regions_[region++];
 
-    const auto fid =
-      runtime::context_t::instance()
-        .get_field_info_store(
-          topology::id<typename A::topology_t>(), data::storage_label_t::dense)
-        .get_field_info(accessor.identifier())
-        .fid;
-
     //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
     const Legion::UnsafeFieldAccessor<DATA_TYPE,
       1,
       Legion::coord_t,
       Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
-      ac(reg, fid, sizeof(DATA_TYPE));
+      ac(reg, accessor.identifier(), sizeof(DATA_TYPE));
 
     bind(accessor,
       ac.ptr(Legion::Domain::DomainPointIterator(

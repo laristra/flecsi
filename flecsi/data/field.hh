@@ -59,8 +59,7 @@ struct field_member {
 
     runtime::context_t::instance().add_field_info(topology::id<TOPOLOGY_TYPE>(),
       STORAGE_CLASS,
-      {fid_, INDEX_SPACE, sizeof(DATA_TYPE)},
-      fid_);
+      {fid_, INDEX_SPACE, sizeof(DATA_TYPE)});
   }
 
   /*!

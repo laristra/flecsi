@@ -250,7 +250,7 @@ context_t::initialize_global_topology() {
     topology::id<topology::global_topology_t>(),
     flecsi::data::storage_label_t::dense);
 
-  for(auto const & fi : field_info_store.field_info()) {
+  for(auto const & fi : field_info_store) {
     allocator.allocate_field(fi.type_size, fi.fid);
   } // for
 
