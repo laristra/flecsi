@@ -122,7 +122,7 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
     int new_argc = argc + 2;
     char ** new_argv = new char *[new_argc];
     for(int i = 0; i < argc; ++i) {
-      auto len = strlen(argv[i]);
+      auto len = strlen(argv[i]) + 1;
       new_argv[i] = new char[len];
       strcpy(new_argv[i], argv[i]);
     }
