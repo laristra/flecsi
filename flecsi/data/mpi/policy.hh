@@ -18,6 +18,9 @@
 namespace flecsi {
 namespace data {
 
+template<class>
+struct topology_id {};
+
 template<class T>
 struct topology_data {
   topology_data(const typename T::coloring &) {}

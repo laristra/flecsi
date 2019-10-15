@@ -35,6 +35,21 @@ flog_register_tag(topologies);
 namespace flecsi {
 namespace data {
 
+template<class C>
+struct topology_id {
+  // NB: C-style cast supports private inheritance
+  topology_id() : id(runtime::context_t::instance().record(*(C *)this)) {}
+  topology_id(const topology_id &) : topology_id() {}
+  ~topology_id() {
+    runtime::context_t::instance().forget(id);
+  }
+  topology_id & operator=(const topology_id &) noexcept {
+    return *this;
+  }
+
+  std::size_t id;
+};
+
 /*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/

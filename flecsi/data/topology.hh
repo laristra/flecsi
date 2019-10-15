@@ -31,7 +31,7 @@ namespace flecsi {
 namespace data {
 
 template<typename TOPOLOGY_TYPE>
-struct topology_slot {
+struct topology_slot : topology_id<topology_slot<TOPOLOGY_TYPE>> {
 
   using core_t = topology::core_t<TOPOLOGY_TYPE>;
   static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
