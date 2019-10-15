@@ -21,7 +21,7 @@
 #error Do not include this file directly!
 #else
 #include "../context.hh"
-#include <flecsi/data/legion/runtime_data_types.hh>
+#include <flecsi/data/legion/types.hh>
 //#include "flecsi/execution/launch.hh"
 //#include "flecsi/execution/processor.hh"
 #include <flecsi/runtime/types.hh>

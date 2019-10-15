@@ -19,7 +19,7 @@
 
 set(data_HEADERS
   backend.hh
-  data_reference.hh
+  reference.hh
   field.hh
   field_info.hh
   privilege.hh
@@ -35,8 +35,8 @@ set(data_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
-    legion/data_policy.hh
-    legion/runtime_data_types.hh
+    legion/policy.hh
+    legion/types.hh
     legion/topology_traits.hh
     ${data_HEADERS}
   )
@@ -48,7 +48,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(data_HEADERS
-    mpi/data_policy.hh
+    mpi/policy.hh
     ${data_HEADERS}
   )
 

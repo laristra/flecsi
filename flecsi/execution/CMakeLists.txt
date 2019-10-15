@@ -38,7 +38,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/bind_accessors.hh
     legion/task_wrapper.hh
     legion/unbind_accessors.hh
-    legion/execution_policy.hh
+    legion/policy.hh
     legion/future.hh
     legion/task_prologue.hh
     legion/reduction_wrapper.hh
@@ -53,7 +53,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
     ${execution_HEADERS}
-    mpi/execution_policy.hh
+    mpi/policy.hh
     mpi/reduction_wrapper.hh
   )
 

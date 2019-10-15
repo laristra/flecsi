@@ -230,7 +230,7 @@ struct task_prologue_t {
 
   template<class P, typename DATA_TYPE>
   static typename std::enable_if_t<
-    !std::is_base_of_v<data::data_reference_base_t, DATA_TYPE>>
+    !std::is_base_of_v<data::reference_base, DATA_TYPE>>
   visit(P *, DATA_TYPE &) {
     {
       flog_tag_guard(task_prologue);

@@ -17,7 +17,6 @@
 #endif
 
 #include <flecsi/data.hh>
-#include <flecsi/data/legion/data_policy.hh>
 #include <flecsi/execution/command_line_options.hh>
 #include <flecsi/execution/launch.hh>
 #include <flecsi/execution/legion/task_wrapper.hh>
@@ -303,7 +302,7 @@ context_t::initialize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_data_policy_t::allocate<topology::index_topology_t>(
+  data::legion_policy_t::allocate<topology::index_topology_t>(
     flecsi_index_topology, flecsi_index_coloring);
 } // context_t::initialize_default_index_topology
 
@@ -317,7 +316,7 @@ context_t::finalize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_data_policy_t::deallocate<topology::index_topology_t>(
+  data::legion_policy_t::deallocate<topology::index_topology_t>(
     flecsi_index_topology);
 } // context_t::finalize_default_index_topology
 

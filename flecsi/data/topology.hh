@@ -21,7 +21,7 @@
 
 #include <flecsi/data/backend.hh>
 #include <flecsi/data/coloring.hh>
-#include <flecsi/data/data_reference.hh>
+#include <flecsi/data/reference.hh>
 #include <flecsi/data/topology_registration.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/core.hh>
@@ -31,7 +31,7 @@ namespace flecsi {
 namespace data {
 
 template<typename TOPOLOGY_TYPE>
-struct topology_reference : public data_reference_base_t {
+struct topology_reference : public reference_base {
 
   using core_t = topology::core_t<TOPOLOGY_TYPE>;
   static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
@@ -39,22 +39,21 @@ struct topology_reference : public data_reference_base_t {
 
   using coloring = coloring_reference<TOPOLOGY_TYPE>;
 
-  topology_reference()
-    : data_reference_base_t(unique_tid_t::instance().next()) {}
+  topology_reference() : reference_base(unique_tid_t::instance().next()) {}
 
   ~topology_reference() {
     if(allocated_) {
-      data_policy_t::deallocate<TOPOLOGY_TYPE>(identifier_);
+      policy_t::deallocate<TOPOLOGY_TYPE>(identifier_);
     } // if
   }
 
   void allocate(coloring_reference<TOPOLOGY_TYPE> const & coloring_reference) {
-    data_policy_t::allocate<TOPOLOGY_TYPE>(identifier_, coloring_reference);
+    policy_t::allocate<TOPOLOGY_TYPE>(identifier_, coloring_reference);
     allocated_ = true;
   } // allocate
 
   void deallocate() {
-    data_policy_t::deallocate<TOPOLOGY_TYPE>(identifier_);
+    policy_t::deallocate<TOPOLOGY_TYPE>(identifier_);
     allocated_ = false;
   } // deallocate
 
