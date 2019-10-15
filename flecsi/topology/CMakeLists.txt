@@ -18,7 +18,7 @@
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
-  base_topology_types.hh
+  base.hh
   array_buffer.hh
   connectivity.hh
   entity_storage.hh

@@ -32,23 +32,23 @@ namespace control {
   Convenience type for defining control points.
  */
 
-template<size_t CONTROL_POINT>
-using control_point_ = flecsi::utils::typeify<size_t, CONTROL_POINT>;
+template<size_t POINT>
+using point_ = flecsi::utils::typeify<size_t, POINT>;
 
 /*!
   Allow users to define cyclic control points. Cycles can be nested.
 
   @tparam PREDICATE      A predicate function that determines when
                          the cycle should end.
-  @tparam CONTROL_POINTS A variadic list of control points within the cycle.
+  @tparam POINTS         A variadic list of control points within the cycle.
 
   @ingroup control
  */
 
-template<bool (*PREDICATE)(), typename... CONTROL_POINTS>
+template<bool (*PREDICATE)(), typename... POINTS>
 struct cycle {
 
-  using TYPE = std::tuple<CONTROL_POINTS...>;
+  using TYPE = std::tuple<POINTS...>;
 
   using BEGIN_TYPE = typename std::tuple_element<0, TYPE>::type;
   using END_TYPE =
@@ -64,16 +64,16 @@ struct cycle {
 }; // struct cycle
 
 /*!
-  The control_point_walker class allows execution of statically-defined
+  The point_walker class allows execution of statically-defined
   control points.
 
   @ingroup control
  */
 
 template<typename CONTROL_POLICY>
-struct control_point_walker
-  : public flecsi::utils::tuple_walker<control_point_walker<CONTROL_POLICY>> {
-  control_point_walker(int argc, char ** argv) : argc_(argc), argv_(argv) {}
+struct point_walker
+  : public flecsi::utils::tuple_walker<point_walker<CONTROL_POLICY>> {
+  point_walker(int argc, char ** argv) : argc_(argc), argv_(argv) {}
 
   /*!
     Handle the tuple type \em ELEMENT_TYPE.
@@ -105,8 +105,8 @@ struct control_point_walker
       // This is a cycle -> create a new control point walker to recurse
       // the cycle.
       while(ELEMENT_TYPE::predicate()) {
-        control_point_walker control_point_walker(argc_, argv_);
-        control_point_walker.template walk_types<typename ELEMENT_TYPE::TYPE>();
+        point_walker point_walker(argc_, argv_);
+        point_walker.template walk_types<typename ELEMENT_TYPE::TYPE>();
       } // while
     } // if
 
@@ -116,23 +116,23 @@ private:
   int argc_;
   char ** argv_;
 
-}; // struct control_point_walker
+}; // struct point_walker
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 
 /*!
-  The control_point_writer class allows execution of statically-defined
+  The point_writer class allows execution of statically-defined
   control points.
 
   @ingroup control
  */
 
 template<typename CONTROL_POLICY>
-struct control_point_writer
-  : public flecsi::utils::tuple_walker<control_point_writer<CONTROL_POLICY>> {
+struct point_writer
+  : public flecsi::utils::tuple_walker<point_writer<CONTROL_POLICY>> {
   using graphviz_t = flecsi::utils::graphviz_t;
 
-  control_point_writer(graphviz_t & gv) : gv_(gv) {}
+  point_writer(graphviz_t & gv) : gv_(gv) {}
 
   /*!
     Handle the tuple type \em ELEMENT_TYPE for type size_t.
@@ -147,26 +147,26 @@ struct control_point_writer
   typename std::enable_if<
     std::is_same<typename ELEMENT_TYPE::TYPE, size_t>::value>::type
   visit_type() {
-    auto & control_point_map =
-      CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::value);
+    auto & point_map =
+      CONTROL_POLICY::instance().point_map(ELEMENT_TYPE::value);
 
     // Add the control point node to the graph
-    auto * root = gv_.add_node(
-      control_point_map.label().c_str(), control_point_map.label().c_str());
+    auto * root =
+      gv_.add_node(point_map.label().c_str(), point_map.label().c_str());
 
     // Add edge dependency to last control point
     if(ELEMENT_TYPE::value > 0) {
       auto & last =
-        CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::value - 1);
+        CONTROL_POLICY::instance().point_map(ELEMENT_TYPE::value - 1);
       auto * last_node = gv_.node(last.label().c_str());
       gv_.add_edge(last_node, root);
     } // if
 
     // Add graph to output
-    control_point_map.add(gv_);
+    point_map.add(gv_);
 
     // Add edges from graph to control node
-    auto & unsorted = control_point_map.nodes();
+    auto & unsorted = point_map.nodes();
     for(auto & n : unsorted) {
       if(n.second.edges().size() == 0) {
         gv_.add_edge(root, gv_.node(std::to_string(n.second.hash()).c_str()));
@@ -189,16 +189,14 @@ struct control_point_writer
     !std::is_same<typename ELEMENT_TYPE::TYPE, size_t>::value>::type
   visit_type() {
 
-    control_point_writer control_point_writer(gv_);
-    control_point_writer.template walk_types<typename ELEMENT_TYPE::TYPE>();
+    point_writer point_writer(gv_);
+    point_writer.template walk_types<typename ELEMENT_TYPE::TYPE>();
 
     // Add edges for cycles and beautify them...
 
     if(ELEMENT_TYPE::begin != ELEMENT_TYPE::end) {
-      auto & begin =
-        CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::begin);
-      auto & end =
-        CONTROL_POLICY::instance().control_point_map(ELEMENT_TYPE::end);
+      auto & begin = CONTROL_POLICY::instance().point_map(ELEMENT_TYPE::begin);
+      auto & end = CONTROL_POLICY::instance().point_map(ELEMENT_TYPE::end);
       auto * edge = gv_.add_edge(
         gv_.node(end.label().c_str()), gv_.node(begin.label().c_str()));
       gv_.set_edge_attribute(edge, "label", "cycle");
@@ -213,7 +211,7 @@ struct control_point_writer
 private:
   graphviz_t & gv_;
 
-}; // struct control_point_writer
+}; // struct point_writer
 
 #endif // FLECSI_ENABLE_GRAPHVIZ
 

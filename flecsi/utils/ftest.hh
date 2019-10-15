@@ -54,7 +54,7 @@ struct ftest_control_policy_t {
   using control_t = flecsi::control::control<ftest_control_policy_t>;
   using node_t = flecsi::utils::ftest::node_t;
 
-#define control_point(name) flecsi::control::control_point_<name>
+#define control_point(name) flecsi::control::point_<name>
 
   using control_points = std::tuple<control_point(initialize),
     control_point(driver),

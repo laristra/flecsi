@@ -17,7 +17,7 @@
 
 #include <flecsi-config.h>
 
-#include <flecsi/control/control_point_walker.hh>
+#include <flecsi/control/point_walker.hh>
 #include <flecsi/utils/dag.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/flog.hh>
@@ -51,7 +51,7 @@ struct control : public CONTROL_POLICY {
 
   using dag_t = flecsi::utils::dag<typename CONTROL_POLICY::node_t>;
   using node_t = typename dag_t::node_t;
-  using control_point_walker_t = control_point_walker<control<CONTROL_POLICY>>;
+  using point_walker_t = point_walker<control<CONTROL_POLICY>>;
 
   /*!
     Meyer's singleton.
@@ -99,13 +99,13 @@ struct control : public CONTROL_POLICY {
     }
 
     instance().sort_control_points();
-    control_point_walker_t pw(argc, argv);
+    point_walker_t pw(argc, argv);
     pw.template walk_types<typename CONTROL_POLICY::control_points>();
     return instance().exit_status();
   } // execute
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-  using control_point_writer_t = control_point_writer<control<CONTROL_POLICY>>;
+  using point_writer_t = point_writer<control<CONTROL_POLICY>>;
   using graphviz_t = flecsi::utils::graphviz_t;
 
   /*!
@@ -118,7 +118,7 @@ struct control : public CONTROL_POLICY {
 
   void write(graphviz_t & gv) {
     sort_control_points();
-    control_point_writer_t pw(gv);
+    point_writer_t pw(gv);
     pw.template walk_types<typename CONTROL_POLICY::control_points>();
   } // write
 #endif // FLECSI_ENABLE_GRAPHVIZ

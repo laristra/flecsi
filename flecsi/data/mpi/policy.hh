@@ -20,45 +20,39 @@
   specializations for accessors and topologies.
  */
 
-#include <flecsi/data/legion/topology_traits.hh>
+#include <flecsi/data/reference.hh>
 
 namespace flecsi {
 namespace data {
 
-struct legion_data_policy_t {
-
+struct mpi_policy_t {
   /*--------------------------------------------------------------------------*
     Topology Instance Interface.
    *--------------------------------------------------------------------------*/
 
   template<typename TOPOLOGY_TYPE, typename... ARGS>
-  static void allocate_coloring(
-    data_reference_base_t const & coloring_reference,
+  static void allocate_coloring(reference_base const & coloring_reference,
     ARGS &&... args) {
-    legion::topology_traits<TOPOLOGY_TYPE>::allocate_coloring(
-      coloring_reference, std::forward<ARGS>(args)...);
-  } // create
+    // TBD
+  } // allocate_coloring
 
   template<typename TOPOLOGY_TYPE>
-  static void deallocate_coloring(
-    data_reference_base_t const & coloring_reference) {
-    legion::topology_traits<TOPOLOGY_TYPE>::deallocate_coloring(
-      coloring_reference);
-  } // create
+  static void deallocate_coloring(reference_base const & coloring_reference) {
+    // TBD
+  } // deallocate_coloring
 
   template<typename TOPOLOGY_TYPE>
-  static void allocate(data_reference_base_t const & topology_reference,
-    data_reference_base_t const & coloring_reference) {
-    legion::topology_traits<TOPOLOGY_TYPE>::allocate(
-      topology_reference, coloring_reference);
-  } // create
+  static void allocate(reference_base const & topology_reference,
+    reference_base const & coloring_reference) {
+    // TBD
+  } // allocate
 
   template<typename TOPOLOGY_TYPE>
-  static void deallocate(data_reference_base_t const & topology_reference) {
-    legion::topology_traits<TOPOLOGY_TYPE>::deallocate(topology_reference);
-  } // create
+  static void deallocate(reference_base const & topology_reference) {
+    // TBD
+  } // deallocate
 
-}; // struct legion_data_policy_t
+}; // struct mpi_policy_t
 
 } // namespace data
 } // namespace flecsi

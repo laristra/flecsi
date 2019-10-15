@@ -410,7 +410,7 @@ struct legion_hdf5_t {
 /*----------------------------------------------------------------------------*
   Legion HDF5 checkpoint interface.
  *----------------------------------------------------------------------------*/
-struct legion_io_policy_t {
+struct legion_policy_t {
   using hdf5_t = legion_hdf5_t;
   using hdf5_region_t = legion_hdf5_region_t;
   using launch_space_t = Legion::IndexSpace;
@@ -419,7 +419,7 @@ struct legion_io_policy_t {
 //----------------------------------------------------------------------------//
 // Implementation of legion_io_policy_t::legion_io_policy_t.
 //----------------------------------------------------------------------------//   
-  legion_io_policy_t() {
+  legion_policy_t() {
     file_is_map.clear();
     file_ip_map.clear();
     file_lp_map.clear();
@@ -428,7 +428,7 @@ struct legion_io_policy_t {
 //----------------------------------------------------------------------------//
 // Implementation of legion_io_policy_t::~legion_io_policy_t.
 //----------------------------------------------------------------------------//   
-  ~legion_io_policy_t() {
+  ~legion_policy_t() {
     Legion::Runtime * runtime = Legion::Runtime::get_runtime();
     Legion::Context ctx = Legion::Runtime::get_context();
     for (std::map<size_t, Legion::IndexSpace>::iterator it = file_is_map.begin();
@@ -905,7 +905,7 @@ private:
   std::map<size_t, Legion::IndexPartition> file_ip_map;
   std::map<size_t, Legion::LogicalPartition> file_lp_map;
   
-}; // struct legion_io_policy_t
+}; // struct legion_policy_t
 
 void
 checkpoint_with_attach_task(const Legion::Task * task,

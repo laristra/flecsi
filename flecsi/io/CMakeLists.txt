@@ -24,7 +24,7 @@ set(io_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(io_HEADERS
-    legion/io_policy.hh
+    legion/policy.hh
     ${io_HEADERS}
   )
 

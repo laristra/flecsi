@@ -23,7 +23,7 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/data/data_reference.hh>
+#include <flecsi/data/reference.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/structured_mesh/interface.hh>
