@@ -243,7 +243,7 @@ struct context_u : public CONTEXT_POLICY {
     return true;
   } // register_serdez
 
-  const auto get_serdez(int32_t key) const {
+  const auto * get_serdez(int32_t key) const {
     return serdez_registry_.at(key).get();
   } // get_serdez
 
