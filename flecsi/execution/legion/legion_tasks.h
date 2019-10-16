@@ -386,7 +386,7 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
       const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         owner_acc(regions[0], fid, sizeof(vector_t));
-      const Legion::FieldAccessor<READ_WRITE, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<WRITE_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         ghost_acc(regions[1], fid, sizeof(vector_t));
 

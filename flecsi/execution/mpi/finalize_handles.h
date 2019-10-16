@@ -63,7 +63,7 @@ struct finalize_handles_t
     // Load data into shared data buffer
     for(int i = 0; i < h.num_shared(); ++i) {
       int r = h.num_exclusive_ + i;
-      const auto & row = h.new_entries[r];
+      const auto & row = h.rows[r];
       size_t count = row.size();
       std::memcpy(&shared_data[i * h.max_entries_per_index], row.begin(),
         count * sizeof(value_t));
@@ -116,7 +116,7 @@ struct finalize_handles_t
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
         send_count_buf.push_back(
-          h.new_count(h.num_exclusive() + shared.offset));
+          h.rows[h.num_exclusive_ + shared.offset].size());
       }
     }
 
@@ -150,7 +150,7 @@ struct finalize_handles_t
     // Unload data from ghost data buffer
     for(int i = 0; i < h.num_ghost(); i++) {
       int r = h.num_exclusive_ + h.num_shared() + i;
-      auto & row = h.new_entries[r];
+      auto & row = h.rows[r];
       int count = recv_count_buf[i];
       row.resize(count);
       std::memcpy(row.begin(), &ghost_data[i * h.max_entries_per_index],
