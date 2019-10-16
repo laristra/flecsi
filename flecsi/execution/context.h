@@ -19,6 +19,7 @@
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <memory>
 #include <unordered_map>
 
 #include <cinchlog.h>
@@ -233,17 +234,20 @@ struct context_u : public CONTEXT_POLICY {
   // Serdez interface.
   //--------------------------------------------------------------------------//
 
+  using serdez_registry_t =
+    std::map<int32_t, std::unique_ptr<data::serdez_untyped_t>>;
+
   template<typename SERDEZ>
   bool register_serdez(int32_t key) {
-    serdez_registry_[key] = new data::serdez_wrapper_u<SERDEZ>;
+    serdez_registry_[key] = std::make_unique<data::serdez_wrapper_u<SERDEZ>>();
     return true;
   } // register_serdez
 
-  std::map<int32_t, data::serdez_untyped_t *> serdez_registry() {
-    return serdez_registry_;
-  } // serdez_registry
+  const auto get_serdez(int32_t key) const {
+    return serdez_registry_.at(key).get();
+  } // get_serdez
 
-  std::map<int32_t, data::serdez_untyped_t *> serdez_registry_;
+  serdez_registry_t serdez_registry_;
 
   /*!
     Meyer's singleton instance.

@@ -399,7 +399,7 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
         const vector_t * ptr_owner_acc =
           reinterpret_cast<const vector_t *>(owner_acc.ptr(owner_ptr));
 
-        auto serdez_op = context.serdez_registry()[fid];
+        const auto serdez_op = context.get_serdez(fid);
         assert(serdez_op);
         serdez_op->deep_copy(ptr_owner_acc, ptr_ghost_acc);
 
