@@ -77,13 +77,17 @@ struct mpi_context_policy_t {
       os.write((char *)&num_total, sizeof(size_t));
       os.write((char *)&max_entries_per_index, sizeof(size_t));
 
+      // The following doesn't quite work, since we don't know the
+      // correct type for row.  What's needed here is a serialize
+      // operation, which isn't available yet, but will be soon.
+#if 0
       for(int i = 0; i < num_total; ++i) {
         const auto & row = new_entries[i];
         size_t len = row.size();
-        // TODO: replace with serialize, when that's available?
         os.write((char *)&len, sizeof(size_t));
         os.write((char *)row.data(), len * type_size);
       }
+#endif
     }
 
     std::istream & read(std::istream & is) {
@@ -94,14 +98,18 @@ struct mpi_context_policy_t {
       is.read((char *)&num_total, sizeof(size_t));
       is.read((char *)&max_entries_per_index, sizeof(size_t));
 
+      // The following doesn't quite work, since we don't know the
+      // correct type for row.  What's needed here is a deserialize
+      // operation, which isn't available yet, but will be soon.
+#if 0
       for(int i = 0; i < num_total; ++i) {
         auto & row = new_entries[i];
         size_t len;
-        // TODO: replace with deserialize, when that's available?
         is.read((char *)&len, sizeof(size_t));
         row.resize(len);
         is.read((char *)row.data(), len * type_size);
       }
+#endif
     }
 
     size_t type_size;
