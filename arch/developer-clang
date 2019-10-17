@@ -65,9 +65,9 @@ echo ""
 $cmake_mode \
   -DCMAKE_BUILD_TYPE=debug \
   -DCMAKE_CXX_COMPILER=clang++ \
-  -DCMAKE_CXX_FLAGS="-fcolor-diagnostics" \
+  -DCMAKE_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror" \
   -DCMAKE_C_COMPILER=clang \
-  -DCMAKE_C_FLAGS="-fcolor-diagnostics" \
+  -DCMAKE_C_FLAGS="-fcolor-diagnostics -Wall -W -Werror" \
   -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
   -DENABLE_BOOST=ON \
   -DENABLE_FLOG=ON \
