@@ -106,7 +106,8 @@ struct serial<T, std::enable_if_t<memcpyable_v<T>>> {
   }
   static T get(const std::byte *& p) {
     T ret;
-    std::memcpy(&ret, p, sizeof ret);
+    // Suppress -Wclass-memaccess: the default constructor needn't be trivial!
+    std::memcpy(static_cast<void *>(&ret), p, sizeof ret);
     p += sizeof ret;
     return ret;
   }
