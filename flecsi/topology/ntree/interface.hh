@@ -253,7 +253,9 @@ public:
     // Work in parallel on the sub branches
     const int nwork = working_branches.size();
 
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
     for(int b = 0; b < nwork; ++b) {
       // Find the leave in order in these sub branches
       std::stack<node_t *> stk1;
