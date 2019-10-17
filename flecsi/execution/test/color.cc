@@ -42,7 +42,7 @@ color_raw(int, char **) {
                << "threads_per_process(raw): " << tpp << std::endl;
   }
 
-  ASSERT_EQ(processes, 4);
+  ASSERT_EQ(processes, 4u);
   ASSERT_LT(process, processes);
 
   return FTEST_RESULT();

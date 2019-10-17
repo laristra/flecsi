@@ -76,7 +76,7 @@ public:
 
   int initialize(std::string active = "none",
     int verbose = 0,
-    int64_t one_process = -1) {
+    std::size_t one_process = -1) {
 #if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing runtime"
               << FLOG_COLOR_PLAIN << std::endl;
@@ -137,10 +137,15 @@ public:
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &process_);
-    MPI_Comm_size(MPI_COMM_WORLD, &processes_);
+    {
+      int p, np;
+      MPI_Comm_rank(MPI_COMM_WORLD, &p);
+      MPI_Comm_size(MPI_COMM_WORLD, &np);
+      process_ = p;
+      processes_ = np;
+    }
 
-    if(one_process && !(one_process < processes_)) {
+    if(one_process + 1 && one_process >= processes_) {
       if(process_ == 0) {
         std::cerr << "flog process " << one_process << " out-of-bounds ("
                   << processes_ << " processes)" << std::endl;
@@ -328,18 +333,18 @@ public:
 
 #if defined(FLOG_ENABLE_MPI)
   bool one_process() const {
-    return one_process_ > -1 && one_process_ < processes_;
+    return one_process_ < processes_;
   }
 
   size_t output_process() const {
     return one_process_;
   }
 
-  int process() {
+  std::size_t process() {
     return process_;
   }
 
-  int processes() {
+  std::size_t processes() {
     return processes_;
   }
 
@@ -403,9 +408,7 @@ private:
   std::unordered_map<size_t, std::string> tag_reverse_map_;
 
 #if defined(FLOG_ENABLE_MPI)
-  int64_t one_process_;
-  int process_;
-  int processes_;
+  std::size_t one_process_, process_, processes_;
   std::thread flusher_thread_;
   std::mutex packets_mutex_;
   std::vector<packet_t> packets_;
