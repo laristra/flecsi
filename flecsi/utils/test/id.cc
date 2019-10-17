@@ -70,7 +70,7 @@ identical(const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
 #define GBITS 60 /* for global    */
 
 int
-id(int argc, char ** argv) {
+id(int, char **) {
 
   FTEST();
 

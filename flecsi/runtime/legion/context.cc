@@ -38,8 +38,8 @@ using execution::legion::task_id;
  *----------------------------------------------------------------------------*/
 
 void
-top_level_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
+top_level_task(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
   Legion::Context ctx,
   Legion::Runtime * runtime) {
 

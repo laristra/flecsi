@@ -108,7 +108,7 @@ struct legion_future<RETURN, launch_type_t::single> : public future_base_t {
     Wait on a task result.
    */
 
-  void wait(bool silence_warnings = false) {
+  void wait(bool = false) {
     legion_future_.wait();
   } // wait
 
@@ -121,7 +121,7 @@ struct legion_future<RETURN, launch_type_t::single> : public future_base_t {
    */
 
   RETURN
-  get(size_t index = 0, bool silence_warnings = false) {
+  get(size_t = 0, bool silence_warnings = false) {
     return legion_future_.template get_result<RETURN>(silence_warnings);
   } // get
 
@@ -144,7 +144,7 @@ struct legion_future<RETURN, launch_type_t::single> : public future_base_t {
     initialized_ = false;
   }
 
-  RETURN & operator=(legion_future const & f) {
+  RETURN & operator=(legion_future const &) {
     return data_;
   }
 
@@ -272,11 +272,11 @@ struct legion_future<RETURN, launch_type_t::index> : public future_base_t {
   /*!
     Add Legion Future to the task launcher
    */
-  void add_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
+  void add_to_single_task_launcher(Legion::TaskLauncher &) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
-  void add_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
+  void add_to_index_task_launcher(Legion::IndexLauncher &) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
 
@@ -323,11 +323,11 @@ struct legion_future<void, launch_type_t::index> : public future_base_t {
   /*!
     Add Legion Future to the task launcher
    */
-  void add_to_single_task_launcher(Legion::TaskLauncher & launcher) const {
+  void add_to_single_task_launcher(Legion::TaskLauncher &) const {
     assert(false && "you can't pass future from index task to any task");
   }
 
-  void add_to_index_task_launcher(Legion::IndexLauncher & launcher) const {
+  void add_to_index_task_launcher(Legion::IndexLauncher &) const {
     assert(false && "you can't pass future handle from index task to any task");
   }
 

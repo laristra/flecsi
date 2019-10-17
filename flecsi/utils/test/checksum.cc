@@ -4,7 +4,7 @@
 const std::size_t N = 100;
 
 int
-checksum(int argc, char ** argv) {
+checksum(int, char **) {
 
   FTEST();
 

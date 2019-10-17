@@ -17,7 +17,7 @@
 #include <flecsi/utils/ftest.hh>
 
 int
-const_string(int argc, char ** argv) {
+const_string(int, char **) {
 
   FTEST();
 

@@ -174,8 +174,7 @@ struct task_prologue_t {
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::ntree<POLICY_TYPE>> & ref) {
-  } // visit
+    const data::field_reference<T, topology::ntree<POLICY_TYPE>> &) {} // visit
 
   /*--------------------------------------------------------------------------*
     Set Topology
@@ -187,8 +186,7 @@ struct task_prologue_t {
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(set_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::set<POLICY_TYPE>> & ref) {
-  } // visit
+    const data::field_reference<T, topology::set<POLICY_TYPE>> &) {} // visit
 
   /*--------------------------------------------------------------------------*
     Structured Mesh Topology
@@ -201,8 +199,8 @@ struct task_prologue_t {
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(
     structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::structured_mesh<POLICY_TYPE>> &
-      ref) {} // visit
+    const data::field_reference<T, topology::structured_mesh<POLICY_TYPE>> &) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types

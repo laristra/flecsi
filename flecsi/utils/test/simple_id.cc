@@ -21,7 +21,7 @@ using id_types_t = std::tuple<int, int, int>;
 using my_id_t = simple_id_t<id_types_t, lexical_comparison<id_types_t>>;
 
 int
-simple_id(int argc, char ** argv) {
+simple_id(int, char **) {
 
   FTEST();
 

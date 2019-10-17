@@ -56,7 +56,7 @@ check(index_field_t::accessor<ro> ia) {
 } // print
 
 int
-index_driver(int argc, char ** argv) {
+index_driver(int, char **) {
 
   char file_name[256];
   strcpy(file_name, "checkpoint.dat");

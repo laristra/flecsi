@@ -182,7 +182,7 @@ struct legion_hdf5_t {
   bool write_string_to_hdf5_file(const char * group_name,
     const char * dataset_name,
     const std::string & str,
-    size_t size) {
+    size_t) {
 
     assert(hdf5_file_id >= 0);
 
@@ -448,7 +448,7 @@ struct legion_policy_t {
   // Implementation of legion_io_policy_t::write_string_to_hdf5_file.
   //----------------------------------------------------------------------------//
   bool write_string_to_hdf5_file(legion_hdf5_t & hdf5_file,
-    int rank_id,
+    int,
     const char * group_name,
     const char * dataset_name,
     const std::string & str,
@@ -461,7 +461,7 @@ struct legion_policy_t {
   // Implementation of legion_io_policy_t::read_string_from_hdf5_file.
   //----------------------------------------------------------------------------//
   bool read_string_from_hdf5_file(legion_hdf5_t & hdf5_file,
-    int file_idx,
+    int,
     const char * group_name,
     const char * dataset_name,
     std::string & str) {

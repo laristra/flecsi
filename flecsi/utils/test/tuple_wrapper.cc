@@ -2,7 +2,7 @@
 #include <flecsi/utils/tuple_wrapper.hh>
 
 int
-tuple_wrapper(int argc, char ** argv) {
+tuple_wrapper(int, char **) {
 
   FTEST();
 

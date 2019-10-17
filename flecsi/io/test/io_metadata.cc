@@ -24,7 +24,7 @@
 using namespace flecsi;
 
 int
-index_topology(int argc, char ** argv) {
+index_topology(int, char **) {
 
   FTEST();
 

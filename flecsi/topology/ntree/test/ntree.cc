@@ -40,7 +40,7 @@ data::topology_slot<sph_ntree_topology> sph_ntree;
 data::coloring_slot<sph_ntree_topology> coloring;
 
 int
-ntree_driver(int argc, char ** argv) {
+ntree_driver(int, char **) {
   FTEST();
 
   coloring.allocate();

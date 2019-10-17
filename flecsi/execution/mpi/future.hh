@@ -42,9 +42,9 @@ struct mpi_future {
   void wait() {}
 
   /*!
-    get() mothod
+    get() method
    */
-  const result_t & get(size_t index = 0) const {
+  const result_t & get(size_t /*index*/ = 0) const {
     return result_;
   }
 

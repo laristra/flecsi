@@ -109,7 +109,7 @@ public:
     return size_ - 1;
   }
 
-  void push_back(simple_id i) {
+  void push_back(simple_id) {
     assert(false && "invalid operation");
   }
 
@@ -134,14 +134,14 @@ public:
   }
 
   template<typename... Args>
-  void assign(Args &&... args) {
+  void assign(Args &&...) {
     assert(false && "invalid operation");
   }
 
   template<typename... Args>
-  void insert(Args &&... args) {}
+  void insert(Args &&...) {}
 
-  void reserve(size_t n) {
+  void reserve(size_t) {
     assert(false && "invalid operation");
   }
 

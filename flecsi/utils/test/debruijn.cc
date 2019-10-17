@@ -4,7 +4,7 @@
 #include <random>
 
 int
-debruijn(int argc, char ** argv) {
+debruijn(int, char **) {
 
   FTEST();
 

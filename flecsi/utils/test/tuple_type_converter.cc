@@ -16,7 +16,7 @@ class thing
 };
 
 int
-tuple_type_converter(int argc, char ** argv) {
+tuple_type_converter(int, char **) {
 
   FTEST();
 

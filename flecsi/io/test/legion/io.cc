@@ -43,7 +43,7 @@ enum FieldIDs {
 };
 
 int
-io_sanity(int argc, char ** argv) {
+io_sanity(int, char **) {
 
   int num_elements = 1023;
   int num_files = 16;

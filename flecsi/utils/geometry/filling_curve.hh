@@ -173,7 +173,7 @@ public:
     return value_;
   }
   //! Convert this key to coordinates in range.
-  virtual void coordinates(point_t & p) {}
+  virtual void coordinates(point_t &) {}
 
   // Operators
   filling_curve & operator=(const filling_curve & bid) {

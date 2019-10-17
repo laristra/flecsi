@@ -72,8 +72,8 @@ struct unbind_accessors_t
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-    data::accessor<data::dense, topology::global_t, DATA_TYPE, PRIVILEGES> &
-      accessor) {} // visit
+    data::accessor<data::dense, topology::global_t, DATA_TYPE, PRIVILEGES> &) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Index Topology
@@ -81,8 +81,8 @@ struct unbind_accessors_t
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-    data::accessor<data::dense, topology::index_t, DATA_TYPE, PRIVILEGES> &
-      accessor) {} // visit
+    data::accessor<data::dense, topology::index_t, DATA_TYPE, PRIVILEGES> &) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types

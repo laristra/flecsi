@@ -3,7 +3,7 @@
 #include <flecsi/utils/index_space.hh>
 
 int
-index_space(int argc, char ** argv) {
+index_space(int, char **) {
 
   FTEST();
 

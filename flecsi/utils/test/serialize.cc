@@ -26,7 +26,7 @@ using namespace flecsi::utils;
 //----------------------------------------------------------------------------//
 
 int
-sanity(int argc, char ** argv) {
+sanity(int, char **) {
 
   FTEST();
 
@@ -89,7 +89,7 @@ private:
 }; // struct type_t
 
 int
-user_type(int argc, char ** argv) {
+user_type(int, char **) {
 
   FTEST();
 
@@ -176,7 +176,7 @@ struct flecsi::utils::serial_convert<simple_context_t> {
 };
 
 int
-simple_context(int argc, char ** argv) {
+simple_context(int, char **) {
 
   FTEST();
 
@@ -274,7 +274,7 @@ ftest_register_driver(simple_context);
 //----------------------------------------------------------------------------//
 
 int
-flecsi_context(int argc, char ** argv) {
+flecsi_context(int, char **) {
   return 0;
 } // simple_context
 

@@ -291,7 +291,7 @@ public:
   /**
    * @brief Compute the COFM information for a dedicated branch
    */
-  void update_COM(node_t * b, bool local_only = false) {
+  void update_COM(node_t * b, bool /*local_only*/ = false) {
     // Starting branch
     element_t mass = 0;
     point_t bmax{}, bmin{};

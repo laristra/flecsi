@@ -45,7 +45,7 @@ check(index_field_t::accessor<ro> p) {
 } // print
 
 int
-index_driver(int argc, char ** argv) {
+index_driver(int, char **) {
 
   execute<assign>(pressure);
   execute<check>(pressure);

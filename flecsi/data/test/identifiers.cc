@@ -19,7 +19,7 @@
 using namespace flecsi;
 
 int
-identifiers(int argc, char ** argv) {
+identifiers(int, char **) {
 
   FTEST();
 

@@ -17,7 +17,7 @@
 #include <flecsi/utils/ftest.hh>
 
 int
-sanity(int argc, char ** argv) {
+sanity(int, char **) {
 
   FTEST();
 

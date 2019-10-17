@@ -22,7 +22,7 @@ struct thrice : public flecsi::utils::tuple_walker<thrice> {
 };
 
 int
-tuple_walker(int argc, char ** argv) {
+tuple_walker(int, char **) {
 
   FTEST();
 

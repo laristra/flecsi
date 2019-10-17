@@ -25,7 +25,7 @@ flog_register_tag(color);
  */
 
 int
-color_raw(int argc, char ** argv) {
+color_raw(int, char **) {
 
   FTEST();
 
@@ -57,7 +57,7 @@ ftest_register_driver(color_raw);
  */
 
 int
-color_ui(int argc, char ** argv) {
+color_ui(int, char **) {
 
   FTEST();
 

@@ -227,9 +227,9 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
   static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
   static void execute(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & regions,
-    Legion::Context context,
-    Legion::Runtime * runtime) {
+    const std::vector<Legion::PhysicalRegion> &,
+    Legion::Context,
+    Legion::Runtime *) {
     // FIXME: Refactor
     //    {
     //      flog_tag_guard(task_wrapper);

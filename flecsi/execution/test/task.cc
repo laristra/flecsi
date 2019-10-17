@@ -55,7 +55,7 @@ mpi(int * p) {
 } // namespace hydro
 
 int
-test_driver(int argc, char ** argv) {
+test_driver(int, char **) {
 
   FTEST();
 

@@ -13,7 +13,7 @@ print_refc(const flecsi::utils::array_ref<char> & arr) {
 }
 
 int
-array_ref(int argc, char ** argv) {
+array_ref(int, char **) {
 
   FTEST();
 

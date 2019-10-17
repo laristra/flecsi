@@ -16,7 +16,7 @@
 #include <flecsi/utils/hash.hh>
 
 int
-hash(int argc, char ** argv) {
+hash(int, char **) {
 
   FTEST();
 

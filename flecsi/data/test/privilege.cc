@@ -24,7 +24,7 @@ constexpr size_t prvs3 = privilege_pack<ro, wo, rw>::value;
 constexpr size_t prvs4 = privilege_pack<nu, ro, wo, rw>::value;
 
 int
-privilege(int argc, char ** argv) {
+privilege(int, char **) {
 
   FTEST();
 

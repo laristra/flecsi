@@ -23,7 +23,7 @@ flog_register_tag(kokkos);
  */
 
 int
-kokkos_sanity(int argc, char ** argv) {
+kokkos_sanity(int, char **) {
 
   FTEST();
 

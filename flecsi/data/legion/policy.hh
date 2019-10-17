@@ -130,6 +130,8 @@ inline topology_data<topology::unstructured_mesh_base_t>::topology_data(
     auto & sparse_field_info_store = flecsi_context.get_field_info_store(
       /* type */, storage_label_t::sparse);
 
+#else
+  (void)coloring;
 #endif
 }
 
