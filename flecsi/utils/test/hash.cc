@@ -342,7 +342,7 @@ hash(int, char **) {
     } // if
   } // for
 
-  ASSERT_EQ(num_collisions, 0);
+  ASSERT_EQ(num_collisions, 0u);
 
   return 0;
 }

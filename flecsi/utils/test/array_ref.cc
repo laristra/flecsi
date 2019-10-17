@@ -213,10 +213,10 @@ array_ref(int, char **) {
     const std::vector<double> vec = {3.14, 2.18, 2.72};
     refd arr = vec;
     EXPECT_NE(arr.begin(), nullptr);
-    EXPECT_NE(arr.size(), 0);
+    EXPECT_NE(arr.size(), 0u);
     arr.clear();
     EXPECT_EQ(arr.begin(), nullptr);
-    EXPECT_EQ(arr.size(), 0);
+    EXPECT_EQ(arr.size(), 0u);
 
     // remove_*()
     int iarray[9] = {1, 9, 2, 8, 3, 7, 4, 6, 5};
@@ -234,7 +234,7 @@ array_ref(int, char **) {
     FTEST_CAPTURE() << std::endl;
 
     f.remove_prefix(1); // ==> nothing left!
-    EXPECT_EQ(f.size(), 0);
+    EXPECT_EQ(f.size(), 0u);
     for(auto it = f.begin(); it != f.end(); ++it)
       assert(false);
 

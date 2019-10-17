@@ -29,7 +29,7 @@ privilege(int, char **) {
   FTEST();
 
   {
-    ASSERT_EQ(utils::msb<prvs1>(), 3);
+    ASSERT_EQ(utils::msb<prvs1>(), 3u);
 
     constexpr size_t p0 = get_privilege<0, prvs1>();
 
@@ -37,7 +37,7 @@ privilege(int, char **) {
   } // scope
 
   {
-    ASSERT_EQ(utils::msb<prvs2>(), 5);
+    ASSERT_EQ(utils::msb<prvs2>(), 5u);
 
     constexpr size_t p0 = get_privilege<0, prvs2>();
     constexpr size_t p1 = get_privilege<1, prvs2>();
@@ -47,7 +47,7 @@ privilege(int, char **) {
   } // scope
 
   {
-    ASSERT_EQ(utils::msb<prvs3>(), 7);
+    ASSERT_EQ(utils::msb<prvs3>(), 7u);
 
     constexpr size_t p1 = get_privilege<0, prvs3>();
     constexpr size_t p2 = get_privilege<1, prvs3>();
@@ -59,7 +59,7 @@ privilege(int, char **) {
   } // scope
 
   {
-    ASSERT_EQ(utils::msb<prvs4>(), 9);
+    ASSERT_EQ(utils::msb<prvs4>(), 9u);
 
     constexpr size_t p0 = get_privilege<0, prvs4>();
     constexpr size_t p1 = get_privilege<1, prvs4>();
