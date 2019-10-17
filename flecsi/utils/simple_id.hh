@@ -26,14 +26,11 @@ namespace detail {
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief A helper to identify if all types Ts are integral.
-//! \remark If they are not, this version is instantiated.
 ////////////////////////////////////////////////////////////////////////////////
 template<typename... Ts>
 class are_integral : public std::integral_constant<bool, true>
 {};
 
-/// \brief A helper to identify if all types Ts are integral.
-//! \remark If they are, this version is instantiated.
 template<typename T, typename... Ts>
 class are_integral<T, Ts...>
   : public std::integral_constant<bool,
