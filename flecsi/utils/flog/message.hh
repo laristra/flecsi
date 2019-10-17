@@ -112,7 +112,7 @@ protected:
 #define severity_message_t(severity, format)                                   \
   struct severity##_log_message_t : public log_message_t {                     \
     severity##_log_message_t(const char * file, int line, bool devel = false)  \
-      : devel_(devel), log_message_t(file, line) {}                            \
+      : log_message_t(file, line), devel_(devel) {}                            \
                                                                                \
     ~severity##_log_message_t() {                                              \
       /* Clean colors from the stream */                                       \
