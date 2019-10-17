@@ -255,7 +255,7 @@ public:
     assert(depth <= max_depth_);
     std::array<int_t, dimension> coords;
     // Convert the position to integer
-    for(int i = 0; i < dimension; ++i) {
+    for(std::size_t i = 0; i < dimension; ++i) {
       coords[i] = (p[i] - min_) / scale_ * max_value_;
     }
     // Handle 1D case
@@ -288,7 +288,7 @@ public:
 
   static void set_range(const range_t & range) {
     range_ = range;
-    for(int i = 0; i < dimension; ++i) {
+    for(std::size_t i = 0; i < dimension; ++i) {
       min_ = range_[0][i];
       scale_ = range_[1][i] - min_;
     }
@@ -321,7 +321,7 @@ public:
     }
 
     assert(key == int_t(1));
-    for(int j = 0; j < dimension; ++j) {
+    for(std::size_t j = 0; j < dimension; ++j) {
       p[j] = min_ + scale_ * static_cast<double>(coords[j]) / max_value_ / 2;
     } // for
   }
@@ -480,7 +480,7 @@ public:
 
   static void set_range(const range_t & range) {
     range_ = range;
-    for(int i = 0; i < dimension; ++i) {
+    for(std::size_t i = 0; i < dimension; ++i) {
       min_ = range_[0][i];
       scale_ = range_[1][i] - min_;
     }
