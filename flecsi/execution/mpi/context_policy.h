@@ -16,7 +16,9 @@
 /*! @file */
 
 #include <functional>
+#include <istream>
 #include <map>
+#include <ostream>
 #include <stdint.h>
 #include <vector>
 
@@ -34,6 +36,7 @@
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/row_vector.h>
+#include <flecsi/data/common/serdez.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/mpi/future.h>
@@ -69,7 +72,8 @@ struct mpi_context_policy_t {
         max_entries_per_index(max_entries_per_index),
         rows(num_total * sizeof(data::row_vector_u<uint8_t>)) {}
 
-    std::ostream & write(std::ostream & os) const {
+    std::ostream & write(std::ostream & os,
+      const data::serdez_untyped_t * serdez) const {
 
       os.write((char *)&type_size, sizeof(size_t));
       os.write((char *)&num_exclusive, sizeof(size_t));
@@ -78,20 +82,17 @@ struct mpi_context_policy_t {
       os.write((char *)&num_total, sizeof(size_t));
       os.write((char *)&max_entries_per_index, sizeof(size_t));
 
-      // The following doesn't quite work, since we don't know the
-      // correct type for row.  What's needed here is a serialize
-      // operation, which isn't available yet, but will be soon.
-#if 0
+      // use serdez operator to write actual row data
+      const char * row_ptr = (char *)rows.data();
       for(int i = 0; i < num_total; ++i) {
-        const auto & row = new_entries[i];
-        size_t len = row.size();
-        os.write((char *)&len, sizeof(size_t));
-        os.write((char *)row.data(), len * type_size);
+        serdez->serialize(row_ptr, os);
+        row_ptr += sizeof(data::row_vector_u<uint8_t>);
       }
-#endif
+      return os;
     }
 
-    std::istream & read(std::istream & is) {
+    std::istream & read(std::istream & is,
+      const data::serdez_untyped_t * serdez) {
       is.read((char *)&type_size, sizeof(size_t));
       is.read((char *)&num_exclusive, sizeof(size_t));
       is.read((char *)&num_shared, sizeof(size_t));
@@ -99,18 +100,13 @@ struct mpi_context_policy_t {
       is.read((char *)&num_total, sizeof(size_t));
       is.read((char *)&max_entries_per_index, sizeof(size_t));
 
-      // The following doesn't quite work, since we don't know the
-      // correct type for row.  What's needed here is a deserialize
-      // operation, which isn't available yet, but will be soon.
-#if 0
+      // use serdez operator to read actual row data
+      char * row_ptr = (char *)rows.data();
       for(int i = 0; i < num_total; ++i) {
-        auto & row = new_entries[i];
-        size_t len;
-        is.read((char *)&len, sizeof(size_t));
-        row.resize(len);
-        is.read((char *)row.data(), len * type_size);
+        serdez->deserialize(row_ptr, is);
+        row_ptr += sizeof(data::row_vector_u<uint8_t>);
       }
-#endif
+      return is;
     }
 
     size_t type_size;

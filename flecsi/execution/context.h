@@ -1065,7 +1065,8 @@ public:
     for(const auto & [id, data] : CONTEXT_POLICY::sparse_field_data) {
       size_t fid = id;
       file.write((char *)&fid, sizeof(size_t));
-      data.write(file);
+      auto serdez = get_serdez(fid);
+      data.write(file, serdez);
     }
 
     file.close();
@@ -1112,7 +1113,8 @@ public:
       assert(
         it != CONTEXT_POLICY::sparse_field_data.end() && "sparse messed up");
 
-      it->second.read(file);
+      auto serdez = get_serdez(fid);
+      it->second.read(file, serdez);
     }
 
     file.close();
