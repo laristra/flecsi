@@ -62,7 +62,7 @@ array_ref(int, char **) {
   EXPECT_EQ(c.end(), &plain_array[0] + length);
 
   // copy assignment
-  c = c = b;
+  c = b;
   EXPECT_EQ(c.begin(), &plain_array[0]);
   EXPECT_EQ(c.end(), &plain_array[0] + length);
 
