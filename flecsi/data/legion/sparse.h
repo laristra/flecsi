@@ -87,10 +87,10 @@ struct storage_class_u<ragged> {
 
     handle_u<DATA_TYPE> h(max_entries_per_index);
 
-    h.offsets_entire_region = ism[index_space].entire_region;
-    h.offsets_exclusive_lp = ism[index_space].exclusive_lp;
-    h.offsets_shared_lp = ism[index_space].shared_lp;
-    h.offsets_ghost_lp = ism[index_space].ghost_lp;
+    h.entire_region = ism[index_space].entire_region;
+    h.exclusive_lp = ism[index_space].exclusive_lp;
+    h.shared_lp = ism[index_space].shared_lp;
+    h.ghost_lp = ism[index_space].ghost_lp;
 
     h.metadata_entire_region = context.sparse_metadata().entire_region;
     h.metadata_lp = context.sparse_metadata().color_partition;
@@ -110,10 +110,7 @@ struct storage_class_u<ragged> {
     //            &(ism[index_space].ghost_owners_pbarriers[field_info.fid][i]));
     //      } // for
 
-    h.ghost_owners_offsets_lp = ism[index_space].ghost_owners_lp;
-
-    h.global_to_local_color_map_ptr =
-      &ism[index_space].global_to_local_color_map;
+    h.ghost_owners_lp = ism[index_space].ghost_owners_lp;
 
     h.fid = field_info.fid;
 

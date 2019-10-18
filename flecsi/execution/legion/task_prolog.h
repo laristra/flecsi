@@ -242,11 +242,11 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
                     << std::endl;
 
         // offsets
-        ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
+        ghost_owners_partitions.push_back(h.ghost_owners_lp);
         //          owner_subregion_partitions.push_back(
         //			h.ghost_owners_offsets_subregion_lp);
-        entire_regions.push_back(h.offsets_entire_region);
-        ghost_partitions.push_back(h.offsets_ghost_lp);
+        entire_regions.push_back(h.entire_region);
+        ghost_partitions.push_back(h.ghost_lp);
         //         color_partitions.push_back(h.offsets_color_lp);
 
         fids.push_back(h.fid);
@@ -298,11 +298,11 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       clog(trace) << "rank " << my_color << " READ PHASE PROLOGUE" << std::endl;
 
       // offsets
-      ghost_owners_partitions.push_back(h.ghost_owners_offsets_lp);
+      ghost_owners_partitions.push_back(h.ghost_owners_lp);
       //          owner_subregion_partitions.push_back(
       //                      h.ghost_owners_offsets_subregion_lp);
-      entire_regions.push_back(h.offsets_entire_region);
-      ghost_partitions.push_back(h.offsets_ghost_lp);
+      entire_regions.push_back(h.entire_region);
+      ghost_partitions.push_back(h.ghost_lp);
       //         color_partitions.push_back(h.offsets_color_lp);
 
       fids.push_back(h.fid);

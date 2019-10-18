@@ -24,7 +24,6 @@
 #include <legion.h>
 #include <legion_stl.h>
 #include <legion_utilities.h>
-#include <realm/runtime_impl.h>
 
 #include <flecsi/execution/execution.h>
 #include <flecsi/execution/legion/helper.h>
@@ -386,7 +385,7 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
       const Legion::FieldAccessor<READ_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         owner_acc(regions[0], fid, sizeof(vector_t));
-      const Legion::FieldAccessor<READ_WRITE, char, 2, Legion::coord_t,
+      const Legion::FieldAccessor<WRITE_ONLY, char, 2, Legion::coord_t,
         Realm::AffineAccessor<char, 2, Legion::coord_t>>
         ghost_acc(regions[1], fid, sizeof(vector_t));
 
@@ -400,17 +399,9 @@ flecsi_internal_legion_task(ghost_copy_task, void) {
         const vector_t * ptr_owner_acc =
           reinterpret_cast<const vector_t *>(owner_acc.ptr(owner_ptr));
 
-        auto count = ptr_owner_acc->size();
-        auto field_size = field_info.size;
-        // CRF hack - use lowest bits of name_hash as serdez id
-        int sid = field_info.name_hash & 0x7FFFFFFF;
-        auto serdez_op = Realm::get_runtime()->custom_serdez_table[sid];
+        const auto serdez_op = context.get_serdez(fid);
         assert(serdez_op);
-        auto buffer_size = serdez_op->serialized_size(ptr_owner_acc);
-        std::vector<char> buffer(buffer_size);
-        // TODO:  replace serdez calls with a deep copy
-        serdez_op->serialize(ptr_owner_acc, buffer.data());
-        serdez_op->deserialize(ptr_ghost_acc, buffer.data());
+        serdez_op->deep_copy(ptr_owner_acc, ptr_ghost_acc);
 
       } // for ghost_domain
     } // for fids
