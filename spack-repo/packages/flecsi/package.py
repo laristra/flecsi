@@ -40,7 +40,7 @@ class Flecsi(CMakePackage):
     #depends_on('cinch@1.01:', type='build')
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
-    depends_on('legion@ctrl-rep-stable +shared +mpi +hdf5', when='backend=legion')
+    depends_on('legion@ctrl-rep-1 +shared +mpi +hdf5', when='backend=legion')
     depends_on('boost@1.59.0: cxxstd=11 +program_options')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
