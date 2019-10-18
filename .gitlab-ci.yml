@@ -458,7 +458,6 @@ build:centOS_legion_clang:
   extends: build:centOS_legion
   variables:
     <<: *compiler_clang
-  allow_failure: true
 
 build:centOS_legion_clang_release:
   extends: build:centOS_legion_clang
@@ -497,7 +496,6 @@ build:centOS_mpich_legion_clang:
   extends: build:centOS_mpich_legion
   variables:
     <<: *compiler_clang
-  allow_failure: true
 
 build:centOS_mpich_legion_clang_release:
   extends: build:centOS_mpich_legion_clang
