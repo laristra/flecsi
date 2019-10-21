@@ -352,9 +352,9 @@ alltoallv(const SEND_TYPE & sendbuf,
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief A simple utility for subdividing an index space into several parts
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T, template<typename> typename Vector>
+template<typename Vector>
 void
-subdivide(size_t nelem, size_t npart, Vector<T> & dist) {
+subdivide(size_t nelem, size_t npart, Vector & dist) {
 
   size_t quot = nelem / npart;
   size_t rem = nelem % npart;
@@ -699,9 +699,9 @@ make_dcrs_distributed(
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Simple utility for determining which rank owns an id
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T, template<typename> class Vector>
-T
-rank_owner(const Vector<T> & distribution, T i) {
+template<typename Vector>
+size_t
+rank_owner(const Vector & distribution, typename Vector::value_type i) {
   auto it = std::upper_bound(distribution.begin(), distribution.end(), i);
   assert(it != distribution.end());
   return std::distance(distribution.begin(), it) - 1;
