@@ -61,6 +61,12 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
     return rows[i];
   }
 
+  const vector_t & operator[](std::size_t i) const {
+    assert(rows && "uninitialized ragged handle");
+    assert(i < num_total_);
+    return rows[i];
+  }
+
   size_t num_exclusive_;
   size_t num_shared_;
   size_t num_ghost_;
