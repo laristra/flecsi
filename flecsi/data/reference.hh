@@ -77,6 +77,7 @@ private:
 /// \tparam T data type (merely for type safety)
 template<class T>
 struct field_reference : field_reference_t {
+  using value_type = T;
   using field_reference_t::field_reference_t;
 };
 
