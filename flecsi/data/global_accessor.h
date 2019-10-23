@@ -19,6 +19,7 @@
 #include <flecsi/data/data_constants.h>
 #include <flecsi/data/dense_data_handle.h>
 #include <flecsi/data/global_data_handle.h>
+#include <flecsi/utils/target.h>
 
 /*!
  @file
@@ -58,27 +59,33 @@ struct accessor_u<data::global, T, PERMISSIONS, 0, 0>
   accessor_u(const global_data_handle_u<T, 0> & h)
     : handle(reinterpret_cast<const handle_t &>(h)) {}
 
+  FLECSI_INLINE_TARGET
   operator T &() {
     return data();
   }
 
+  FLECSI_INLINE_TARGET
   operator const T &() const {
     return data();
   }
 
+  FLECSI_INLINE_TARGET
   T & data() const {
     return *handle.combined_data;
   } // data
 
+  FLECSI_INLINE_TARGET
   size_t size() {
     return 1;
   } // size
 
+  FLECSI_INLINE_TARGET
   accessor_u & operator=(const T & x) {
     data() = x;
     return *this;
   } // operator =
 
+  FLECSI_INLINE_TARGET
   T * operator&() const {
     return handle.combined_data;
   }
@@ -129,31 +136,38 @@ struct accessor_u<data::color, T, PERMISSIONS, 0, 0>
   accessor_u(const global_data_handle_u<T, 0> & h)
     : handle(reinterpret_cast<const handle_t &>(h)) {}
 
+  FLECSI_INLINE_TARGET
   operator T &() {
     return data();
   }
 
+  FLECSI_INLINE_TARGET
   operator const T &() const {
     return data();
   }
 
+  FLECSI_INLINE_TARGET
   T & data() const {
     return *handle.combined_data;
   }
 
+  FLECSI_INLINE_TARGET
   size_t size() {
     return 1;
   }
 
+  FLECSI_INLINE_TARGET
   accessor_u & operator=(const T & x) {
     data() = x;
     return *this;
   }
 
+  FLECSI_INLINE_TARGET
   T & operator=(accessor_u) {
     return *handle.combined_data;
   }
 
+  FLECSI_INLINE_TARGET
   T * operator&() const {
     return handle.combined_data;
   }

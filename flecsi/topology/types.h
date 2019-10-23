@@ -101,25 +101,27 @@ public:
   //! \return The id of the entity.
   //-----------------------------------------------------------------//
   template<size_t DOM = 0>
-  id_t global_id() const {
+  FLECSI_INLINE_TARGET id_t global_id() const {
     return ids_[DOM];
   } // id
 
+  FLECSI_INLINE_TARGET
   id_t global_id(size_t domain) const {
     return ids_[domain];
   } // id
 
   template<size_t DOM = 0>
-  size_t id() const {
+  FLECSI_INLINE_TARGET size_t id() const {
     return ids_[DOM].entity();
   } // id
 
+  FLECSI_INLINE_TARGET
   size_t id(size_t domain) const {
     return ids_[domain].entity();
   } // id
 
   template<size_t DOM = 0>
-  uint16_t info() const {
+  FLECSI_INLINE_TARGET uint16_t info() const {
     return ids_[DOM] >> 48;
   } // info
 
@@ -127,13 +129,13 @@ public:
   //! Set the id of this entity.
   //-----------------------------------------------------------------//
   template<size_t DOM = 0>
-  void set_global_id(const id_t & id) {
+  FLECSI_INLINE_TARGET void set_global_id(const id_t & id) {
     ids_[DOM] = id;
   } // id
 
   /*!
    */
-
+  FLECSI_INLINE_TARGET
   static constexpr size_t get_dim_(size_t meshDim, size_t dim) {
     return dim > meshDim ? meshDim : dim;
   } // get_dim_
