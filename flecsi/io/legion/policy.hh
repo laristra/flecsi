@@ -419,11 +419,7 @@ struct legion_policy_t {
 //----------------------------------------------------------------------------//
 // Implementation of legion_io_policy_t::legion_io_policy_t.
 //----------------------------------------------------------------------------//   
-  legion_policy_t() {
-    file_is_map.clear();
-    file_ip_map.clear();
-    file_lp_map.clear();
-  }
+  legion_policy_t() {} // leave it here for later use even if it is empty
 
 //----------------------------------------------------------------------------//
 // Implementation of legion_io_policy_t::~legion_io_policy_t.
@@ -506,13 +502,8 @@ struct legion_policy_t {
 //----------------------------------------------------------------------------//
 // Implementation of legion_io_policy_t::add_regions.
 //----------------------------------------------------------------------------//  
-  void add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector) {
-    for(std::vector<legion_hdf5_region_t>::iterator it =
-          hdf5_region_vector.begin();
-        it != hdf5_region_vector.end();
-        ++it) {
-      hdf5_file.add_hdf5_region(*it);
-    }
+  void add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector) const {
+    for(auto &r : hdf5_region_vector) hdf5_file.add_hdf5_region(r);
   } // add_regions
 
 //----------------------------------------------------------------------------//
@@ -753,18 +744,9 @@ struct legion_policy_t {
       task_argument.field_map_size);
 
     runtime::context_t & context_ = runtime::context_t::instance();
-    auto task_id = 0;
-    auto task_id_attach =
-      execution::legion::task_id<checkpoint_with_attach_task, loc | inner>;
-    auto task_id_without_attach =
-      execution::legion::task_id<checkpoint_without_attach_task, loc | leaf>;
     
-    if(attach_flag == true) {
-      task_id = task_id_attach;
-    }
-    else {
-      task_id = task_id_without_attach;
-    }
+    auto task_id = attach_flag ? execution::legion::task_id<checkpoint_with_attach_task, loc | inner> :
+      execution::legion::task_id<checkpoint_without_attach_task, loc | leaf>;
 
     Legion::IndexLauncher checkpoint_launcher(task_id,
       launch_space,
@@ -837,18 +819,9 @@ struct legion_policy_t {
       task_argument.field_map_size);
 
     runtime::context_t & context_ = runtime::context_t::instance();
-    auto task_id = 0;
-    auto task_id_attach =
-        execution::legion::task_id<recover_with_attach_task, loc | inner>;
-    auto task_id_without_attach =
-      execution::legion::task_id<recover_without_attach_task, loc | leaf>;
     
-    if(attach_flag == true) {
-      task_id = task_id_attach;
-    }
-    else {
-      task_id = task_id_without_attach;
-    }
+    auto task_id = attach_flag ? execution::legion::task_id<recover_with_attach_task, loc | inner> :
+      execution::legion::task_id<recover_without_attach_task, loc | leaf>;
 
     Legion::IndexLauncher recover_launcher(task_id,
       launch_space,
