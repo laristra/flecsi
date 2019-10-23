@@ -58,15 +58,6 @@ recover_without_attach_task(const Legion::Task * task,
   Legion::Runtime * runtime);
 
 /*----------------------------------------------------------------------------*
-  Argumemt of Legion checkpoint and recover tasks, not called by users.
- *----------------------------------------------------------------------------*/
-struct checkpoint_task_args_s {
-  size_t field_map_size;
-  char field_map_serial[SERIALIZATION_BUFFER_SIZE];
-  char file_name[32];
-};
-
-/*----------------------------------------------------------------------------*
   HDF5 descriptor of one logical region, not called by users.
  *----------------------------------------------------------------------------*/
 struct legion_hdf5_region_t {
