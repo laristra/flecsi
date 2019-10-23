@@ -68,6 +68,26 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
+  template<class A>
+  void dense(A & accessor) {
+    using DATA_TYPE = typename A::value_type;
+
+    auto & reg = regions_[region++];
+
+    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
+    const Legion::UnsafeFieldAccessor<DATA_TYPE,
+      1,
+      Legion::coord_t,
+      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
+      ac(reg, accessor.identifier(), sizeof(DATA_TYPE));
+
+    bind(accessor,
+      ac.ptr(Legion::Domain::DomainPointIterator(
+        legion_runtime_->get_index_space_domain(
+          legion_context_, reg.get_logical_region().get_index_space()))
+               .p));
+  }
+
   /*--------------------------------------------------------------------------*
     Global Topology
    *--------------------------------------------------------------------------*/
@@ -77,31 +97,8 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
     topology::global_topology_t,
     DATA_TYPE,
     PRIVILEGES> & accessor) {
-
-    Legion::Domain dom = legion_runtime_->get_index_space_domain(
-      legion_context_, regions_[region].get_logical_region().get_index_space());
-    Legion::Domain::DomainPointIterator itr(dom);
-
-    const auto fid =
-      runtime::context_t::instance()
-        .get_field_info_store(topology::id<topology::global_topology_t>(),
-          data::storage_label_t::dense)
-        .get_field_info(accessor.identifier())
-        .fid;
-
-    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
-    const Legion::UnsafeFieldAccessor<DATA_TYPE,
-      1,
-      Legion::coord_t,
-      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
-      ac(regions_[region], fid, sizeof(DATA_TYPE));
-
-    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
-
-    bind(accessor, ac_ptr);
-
-    ++region;
-  } // visit
+    dense(accessor);
+  }
 
   /*--------------------------------------------------------------------------*
     Index Topology
@@ -111,30 +108,8 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
   void visit(data::
       accessor<data::dense, topology::index_topology_t, DATA_TYPE, PRIVILEGES> &
         accessor) {
-
-    Legion::Domain dom = legion_runtime_->get_index_space_domain(
-      legion_context_, regions_[region].get_logical_region().get_index_space());
-    Legion::Domain::DomainPointIterator itr(dom);
-
-    const auto fid =
-      runtime::context_t::instance()
-        .get_field_info_store(topology::id<topology::index_topology_t>(),
-          data::storage_label_t::dense)
-        .get_field_info(accessor.identifier())
-        .fid;
-
-    const Legion::UnsafeFieldAccessor<DATA_TYPE,
-      1,
-      Legion::coord_t,
-      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
-      ac(regions_[region], fid, sizeof(DATA_TYPE));
-
-    DATA_TYPE * ac_ptr = (DATA_TYPE *)(ac.ptr(itr.p));
-
-    bind(accessor, ac_ptr);
-
-    ++region;
-  } // visit
+    dense(accessor);
+  }
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types

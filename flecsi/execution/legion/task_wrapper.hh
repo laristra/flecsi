@@ -43,18 +43,16 @@ flog_register_tag(task_wrapper);
 
 namespace flecsi {
 
-// Send and receive only the field_reference_t portion:
+// Send and receive only the reference_base portion:
 template<data::storage_label_t L, class Topo, class T, std::size_t Priv>
 struct utils::serial_convert<data::accessor<L, Topo, T, Priv>> {
   using type = data::accessor<L, Topo, T, Priv>;
-  struct Rep { // trivial
-    std::size_t id, top;
-  };
+  using Rep = std::size_t;
   static Rep put(const type & r) {
-    return {r.identifier(), r.topology_identifier()};
+    return r.identifier();
   }
   static type get(const Rep & r) {
-    return typename type::Base(r.id, r.top);
+    return type(r);
   }
 };
 

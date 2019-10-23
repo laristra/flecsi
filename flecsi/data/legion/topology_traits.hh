@@ -98,7 +98,7 @@ struct topology_traits<topology::index_topology_t> {
     Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(
       legion_context, runtime_data.field_space);
 
-    for(auto const & fi : field_info_store.field_info()) {
+    for(auto const & fi : field_info_store) {
       allocator.allocate_field(fi.type_size, fi.fid);
     } // for
 
@@ -265,7 +265,7 @@ struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
 #if 0
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
 
-      for(auto const & fi : field_info_store.field_info()) {
+      for(auto const & fi : field_info_store) {
         allocator.allocate_field(fi.type_size, fi.fid);
       } // for
 
