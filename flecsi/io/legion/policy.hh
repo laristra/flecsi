@@ -730,19 +730,9 @@ struct legion_policy_t {
         ++it) {
       field_string_map_vector.push_back((*it).field_string_map);
     }
-
-    struct checkpoint_task_args_s task_argument;
-    strcpy(task_argument.file_name, file_name.c_str());
-
-    Realm::Serialization::DynamicBufferSerializer dbs(0);
-    dbs << field_string_map_vector;
-    task_argument.field_map_size = dbs.bytes_used();
-    if(task_argument.field_map_size > SERIALIZATION_BUFFER_SIZE) {
-      assert(0);
-    }
-    memcpy(task_argument.field_map_serial,
-      dbs.detach_buffer(),
-      task_argument.field_map_size);
+      
+    std::vector<std::byte> task_args;
+    task_args = utils::serial_put(std::tie(field_string_map_vector, file_name));
 
     runtime::context_t & context_ = runtime::context_t::instance();
     
@@ -751,7 +741,7 @@ struct legion_policy_t {
 
     Legion::IndexLauncher checkpoint_launcher(task_id,
       launch_space,
-      Legion::TaskArgument(&task_argument, sizeof(task_argument)),
+      Legion::TaskArgument((void*)(task_args.data()), task_args.size()),
       Legion::ArgumentMap());
 
     int idx = 0;
@@ -806,18 +796,8 @@ struct legion_policy_t {
       field_string_map_vector.push_back((*it).field_string_map);
     }
 
-    struct checkpoint_task_args_s task_argument;
-    strcpy(task_argument.file_name, file_name.c_str());
-
-    Realm::Serialization::DynamicBufferSerializer dbs(0);
-    dbs << field_string_map_vector;
-    task_argument.field_map_size = dbs.bytes_used();
-    if(task_argument.field_map_size > SERIALIZATION_BUFFER_SIZE) {
-      assert(0);
-    }
-    memcpy(task_argument.field_map_serial,
-      dbs.detach_buffer(),
-      task_argument.field_map_size);
+    std::vector<std::byte> task_args;
+    task_args = utils::serial_put(std::tie(field_string_map_vector, file_name));
 
     runtime::context_t & context_ = runtime::context_t::instance();
     
@@ -826,7 +806,7 @@ struct legion_policy_t {
 
     Legion::IndexLauncher recover_launcher(task_id,
       launch_space,
-      Legion::TaskArgument(&task_argument, sizeof(task_argument)),
+      Legion::TaskArgument((void*)(task_args.data()), task_args.size()),
       Legion::ArgumentMap());
     int idx = 0;
     for(std::vector<legion_hdf5_region_t>::iterator it =
@@ -872,23 +852,17 @@ checkpoint_with_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime) {
-  struct checkpoint_task_args_s task_arg =
-    *(struct checkpoint_task_args_s *)task->args;
 
   const int point = task->index_point.point_data[0];
+  
+  const std::byte* task_args = (const std::byte *)task->args;
 
   std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
-  Realm::Serialization::FixedBufferDeserializer fdb(
-    task_arg.field_map_serial, task_arg.field_map_size);
-  bool ok = fdb >> field_string_map_vector;
-  if(!ok) {
-    flog(error) << "Recover task_args deserializer error" << std::endl;
-  }
   
-  // verification
-  assert (field_string_map_vector.size() == regions.size());
-
-  std::string fname(task_arg.file_name);
+  field_string_map_vector = utils::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(task_args);
+  
+  std::string fname = utils::serial_get<std::string>(task_args);
+  
   fname = fname + std::to_string(point);
   char * file_name = const_cast<char *>(fname.c_str());
 
@@ -951,23 +925,17 @@ checkpoint_without_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime) {
-  struct checkpoint_task_args_s task_arg =
-    *(struct checkpoint_task_args_s *)task->args;
 
   const int point = task->index_point.point_data[0];
 
-  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
-  Realm::Serialization::FixedBufferDeserializer fdb(
-    task_arg.field_map_serial, task_arg.field_map_size);
-  bool ok = fdb >> field_string_map_vector;
-  if(!ok) {
-    flog(error) << "Recover task_args deserializer error" << std::endl;
-  }
-  
-  // verification
-  assert (field_string_map_vector.size() == regions.size());
+  const std::byte* task_args = (const std::byte *)task->args;
 
-  std::string fname(task_arg.file_name);
+  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
+  
+  field_string_map_vector = utils::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(task_args);
+  
+  std::string fname = utils::serial_get<std::string>(task_args);
+  
   fname = fname + std::to_string(point);
   char * file_name = const_cast<char *>(fname.c_str());
 
@@ -1032,20 +1000,14 @@ recover_with_attach_task(const Legion::Task * task,
   Legion::Runtime * runtime) {
   const int point = task->index_point.point_data[0];
 
-  struct checkpoint_task_args_s task_arg =
-    *(struct checkpoint_task_args_s *)task->args;
-  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
-  Realm::Serialization::FixedBufferDeserializer fdb(
-    task_arg.field_map_serial, task_arg.field_map_size);
-  bool ok = fdb >> field_string_map_vector;
-  if(!ok) {
-    flog(error) << "Recover task_args deserializer error" << std::endl;
-  }
-  
-  // verification
-  assert (field_string_map_vector.size() == regions.size());
+  const std::byte* task_args = (const std::byte *)task->args;
 
-  std::string fname(task_arg.file_name);
+  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
+  
+  field_string_map_vector = utils::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(task_args);
+  
+  std::string fname = utils::serial_get<std::string>(task_args);
+  
   fname = fname + std::to_string(point);
   char * file_name = const_cast<char *>(fname.c_str());
 
@@ -1110,20 +1072,14 @@ recover_without_attach_task(const Legion::Task * task,
   Legion::Runtime * runtime) {
   const int point = task->index_point.point_data[0];
 
-  struct checkpoint_task_args_s task_arg =
-    *(struct checkpoint_task_args_s *)task->args;
-  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
-  Realm::Serialization::FixedBufferDeserializer fdb(
-    task_arg.field_map_serial, task_arg.field_map_size);
-  bool ok = fdb >> field_string_map_vector;
-  if(!ok) {
-    flog(error) << "Recover task_args deserializer error" << std::endl;
-  }
-  
-  // verification
-  assert (field_string_map_vector.size() == regions.size());
+  const std::byte* task_args = (const std::byte *)task->args;
 
-  std::string fname(task_arg.file_name);
+  std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
+  
+  field_string_map_vector = utils::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(task_args);
+  
+  std::string fname = utils::serial_get<std::string>(task_args);
+  
   fname = fname + std::to_string(point);
   char * file_name = const_cast<char *>(fname.c_str());
 
