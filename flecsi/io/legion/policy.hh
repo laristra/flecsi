@@ -26,30 +26,30 @@
 #include <hdf5.h>
 #include <legion.h>
 
-flog_register_tag(io);
+inline flog_register_tag(io);
 
 namespace flecsi {
 namespace io {
   
-void
+inline void
 checkpoint_with_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime);
   
-void
+inline void
 checkpoint_without_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime);
   
-void
+inline void
 recover_with_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
   Legion::Runtime * runtime);
   
-void
+inline void
 recover_without_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
@@ -802,7 +802,7 @@ private:
   
 }; // struct legion_policy_t
 
-void
+inline void
 checkpoint_with_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
@@ -871,7 +871,7 @@ checkpoint_with_attach_task(const Legion::Task * task,
   }
 } // checkpoint_with_attach_task
 
-void
+inline void
 checkpoint_without_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
@@ -942,7 +942,7 @@ checkpoint_without_attach_task(const Legion::Task * task,
   H5Fclose(file_id);
 } // checkpoint_without_attach_task
 
-void
+inline void
 recover_with_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
@@ -1010,7 +1010,7 @@ recover_with_attach_task(const Legion::Task * task,
   }
 } // recover_with_attach_task
 
-void
+inline void
 recover_without_attach_task(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
