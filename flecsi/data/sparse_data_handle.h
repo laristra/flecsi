@@ -55,14 +55,10 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
     return num_ghost_;
   }
 
-  std::size_t new_count(std::size_t index) const {
-    return new_entries[index].size();
-  }
-
   vector_t & operator[](std::size_t i) {
-    assert(new_entries && "uninitialized ragged handle");
+    assert(rows && "uninitialized ragged handle");
     assert(i < num_total_);
-    return new_entries[i];
+    return rows[i];
   }
 
   size_t num_exclusive_;
@@ -74,7 +70,7 @@ struct ragged_data_handle_base_u : public DATA_POLICY {
   size_t data_client_hash;
   std::size_t max_entries_per_index;
 
-  vector_t * new_entries = nullptr;
+  vector_t * rows = nullptr;
 
 }; // ragged_data_handle_base_u
 

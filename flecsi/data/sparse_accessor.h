@@ -80,7 +80,7 @@ public:
 
       for(std::size_t end = i + n; i < end; ++i) {
         std::cout << "  index: " << i << std::endl;
-        const auto & row = h_.new_entries[i];
+        const auto & row = h_.rows[i];
         for(const auto & ev : row) {
           std::cout << "    +" << ev.entry << " = " << ev.value << std::endl;
         }
@@ -101,7 +101,7 @@ public:
     std::unordered_set<size_t> found;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const auto & row = handle.new_entries[index];
+      const auto & row = handle.rows[index];
 
       for(const auto & ev : row) {
         size_t entry = ev.entry;
@@ -126,7 +126,7 @@ public:
     index_space_t is;
 
     size_t id = 0;
-    const auto & row = handle.new_entries[index];
+    const auto & row = handle.rows[index];
     for(const auto & ev : row) {
       is.push_back({id++, ev.entry});
     }
@@ -143,7 +143,7 @@ public:
     size_t id = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const auto & row = handle.new_entries[index];
+      const auto & row = handle.rows[index];
       if(row.size() != 0) {
         is.push_back({id++, index});
       }

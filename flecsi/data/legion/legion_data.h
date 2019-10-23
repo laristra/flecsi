@@ -30,7 +30,6 @@
 #include <flecsi/execution/internal_index_space.h>
 #include <flecsi/execution/legion/helper.h>
 #include <flecsi/execution/legion/legion_tasks.h>
-#include <flecsi/utils/offset.h>
 
 clog_register_tag(legion_data);
 

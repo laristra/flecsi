@@ -222,34 +222,33 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     region_reqs.push_back(md_rr);
 
     if(EXCLUSIVE_PERMISSIONS == wo) {
-      Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp, 0, READ_WRITE,
-        EXCLUSIVE, h.offsets_entire_region, tag);
+      Legion::RegionRequirement ex_rr(
+        h.exclusive_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region, tag);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
     }
     else {
-      Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp, 0,
-        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
-        h.offsets_entire_region, tag);
+      Legion::RegionRequirement ex_rr(h.exclusive_lp, 0,
+        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.entire_region, tag);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
     }
 
     if(SHARED_PERMISSIONS == wo) {
       Legion::RegionRequirement sh_rr(
-        h.offsets_shared_lp, 0, READ_WRITE, EXCLUSIVE, h.offsets_entire_region);
+        h.shared_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region);
       sh_rr.add_field(h.fid);
       region_reqs.push_back(sh_rr);
     }
     else {
-      Legion::RegionRequirement sh_rr(h.offsets_shared_lp, 0,
-        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.offsets_entire_region);
+      Legion::RegionRequirement sh_rr(h.shared_lp, 0,
+        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.entire_region);
       sh_rr.add_field(h.fid);
       region_reqs.push_back(sh_rr);
     }
 
-    Legion::RegionRequirement gh_rr(h.offsets_ghost_lp, 0,
-      privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.offsets_entire_region);
+    Legion::RegionRequirement gh_rr(h.ghost_lp, 0,
+      privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.entire_region);
     gh_rr.add_field(h.fid);
     region_reqs.push_back(gh_rr);
   } // handle
@@ -276,18 +275,18 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     md_rr.add_field(h.fid);
     region_reqs.push_back(md_rr);
 
-    Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp, 0, READ_WRITE,
-      EXCLUSIVE, h.offsets_entire_region, tag);
+    Legion::RegionRequirement ex_rr(
+      h.exclusive_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region, tag);
     ex_rr.add_field(h.fid);
     region_reqs.push_back(ex_rr);
 
     Legion::RegionRequirement sh_rr(
-      h.offsets_shared_lp, 0, READ_WRITE, EXCLUSIVE, h.offsets_entire_region);
+      h.shared_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region);
     sh_rr.add_field(h.fid);
     region_reqs.push_back(sh_rr);
 
     Legion::RegionRequirement gh_rr(
-      h.offsets_ghost_lp, 0, READ_WRITE, EXCLUSIVE, h.offsets_entire_region);
+      h.ghost_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region);
     gh_rr.add_field(h.fid);
     region_reqs.push_back(gh_rr);
   } // handle

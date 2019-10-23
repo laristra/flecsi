@@ -66,7 +66,8 @@ struct mpi_context_policy_t {
       : type_size(type_size), num_exclusive(num_exclusive),
         num_shared(num_shared), num_ghost(num_ghost),
         num_total(num_exclusive + num_shared + num_ghost),
-        max_entries_per_index(max_entries_per_index), new_entries(num_total) {}
+        max_entries_per_index(max_entries_per_index),
+        rows(num_total * sizeof(data::row_vector_u<uint8_t>)) {}
 
     size_t type_size;
 
@@ -78,7 +79,7 @@ struct mpi_context_policy_t {
 
     size_t max_entries_per_index;
 
-    std::vector<data::row_vector_u<uint8_t>> new_entries;
+    std::vector<uint8_t> rows;
   }; // sparse_field_data_t
 
   /*!

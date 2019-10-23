@@ -151,7 +151,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     // Load data into shared data buffer
     for(int i = 0; i < h.num_shared_; ++i) {
       int r = i + h.num_exclusive_;
-      const auto & row = h.new_entries[r];
+      const auto & row = h.rows[r];
       size_t count = row.size();
       std::memcpy(&shared_data[i * h.max_entries_per_index], row.begin(),
         count * sizeof(value_t));
@@ -201,7 +201,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
         send_count_buf.push_back(
-          h.new_entries[h.num_exclusive_ + shared.offset].size());
+          h.rows[h.num_exclusive_ + shared.offset].size());
       }
     }
 
@@ -234,7 +234,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     // Unload data from ghost data buffer
     for(int i = 0; i < h.num_ghost_; i++) {
       int r = h.num_exclusive_ + h.num_shared_ + i;
-      auto & row = h.new_entries[r];
+      auto & row = h.rows[r];
       int count = recv_count_buf[i];
       row.resize(count);
       std::memcpy(row.begin(), &ghost_data[i * h.max_entries_per_index],

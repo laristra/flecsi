@@ -71,10 +71,42 @@ public:
     return s + sizeof(int_t);
   }
 
+  // not part of the legion serdez interface, but useful for flecsi
+  static void deep_copy(const vector_t & valin, vector_t & valout) {
+    valout = valin;
+  }
+
   static void destroy(vector_t & val) {
     val.clear();
   }
-};
+}; // class serdez_u<row_vector_u<T>>
+
+struct serdez_untyped_t {
+
+public:
+  serdez_untyped_t(void) {}
+
+  virtual ~serdez_untyped_t(void) {}
+
+  virtual void deep_copy(const void * ptr_in, void * ptr_out) const = 0;
+
+}; // class serdez_untyped_t
+
+template<typename SERDEZ>
+struct serdez_wrapper_u : public serdez_untyped_t {
+
+public:
+  serdez_wrapper_u(void) {}
+
+  virtual ~serdez_wrapper_u(void) {}
+
+  virtual void deep_copy(const void * ptr_in, void * ptr_out) const {
+    using TYPE = typename SERDEZ::FIELD_TYPE;
+    auto in = static_cast<const TYPE *>(ptr_in);
+    auto out = static_cast<TYPE *>(ptr_out);
+    SERDEZ::deep_copy(*in, *out);
+  }
+}; // class serdez_wrapper_u
 
 } // namespace data
 } // namespace flecsi

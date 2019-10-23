@@ -462,8 +462,6 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     ++region;
 
-    assert(md->initialized);
-
     Legion::LogicalRegion lr_s = regions[region].get_logical_region();
     Legion::IndexSpace is_s = lr_s.get_index_space();
     auto ac =
@@ -472,7 +470,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     LegionRuntime::Arrays::Rect<2> dr = domain_s.get_rect<2>();
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
-    h.new_entries = ac.template raw_rect_ptr<2>(dr, sr, bo);
+    h.rows = ac.template raw_rect_ptr<2>(dr, sr, bo);
 
     region += num_regions;
 
@@ -533,7 +531,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     LegionRuntime::Arrays::Rect<2> dr = domain_s.get_rect<2>();
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
-    h.new_entries = ac.template raw_rect_ptr<2>(dr, sr, bo);
+    h.rows = ac.template raw_rect_ptr<2>(dr, sr, bo);
 
     region += num_regions;
 

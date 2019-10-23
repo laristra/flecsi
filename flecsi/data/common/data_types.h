@@ -18,12 +18,8 @@
 #include <bitset>
 #include <ostream>
 
-#include <flecsi/utils/offset.h>
-
 namespace flecsi {
 namespace data {
-
-using sparse_data_offset_t = utils::offset_u<16>;
 
 template<typename T>
 struct sparse_entry_value_u {
