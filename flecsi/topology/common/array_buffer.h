@@ -129,6 +129,13 @@ public:
   void insert(Args &&... args) {}
 
   void push_back(const ref_t x) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if(size_ >= capacity_) {
+      std::cout << "adding " << size_ << " with cap " << capacity_
+                << " on rank " << rank << std::endl
+                << std::flush;
+    }
     assert(size_ < capacity_ && "array buffer capacity exceeded");
     buf_[size_++] = x;
   }

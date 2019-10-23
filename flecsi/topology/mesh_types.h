@@ -129,7 +129,11 @@ public:
   }
 
   operator size_t() const {
-    return entity_->template id<DOM>();
+    return entity_->id();
+  }
+
+  id_t & global_id() {
+    return entity_->template global_id<DOM>();
   }
 
   id_t global_id() const {
@@ -137,7 +141,7 @@ public:
   }
 
   size_t id() const {
-    return entity_->template id<DOM>();
+    return entity_->id();
   }
 
   bool operator==(domain_entity_u e) const {

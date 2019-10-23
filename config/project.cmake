@@ -379,6 +379,10 @@ if(ENABLE_MPI)
   # Counter-intuitive variable: set to TRUE to disable test
   set(PARMETIS_TEST_RUNS TRUE)
   find_package(ParMETIS 4.0)
+  if ( ParMETIS_LIBRARIES AND NOT PARMETIS_LIBRARIES )
+    set(PARMETIS_LIBRARIES ${ParMETIS_LIBRARIES})
+    set(PARMETIS_INCLUDE_DIRS ${ParMETIS_INCLUDE_DIRS})
+  endif()
 endif()
 
 set(COLORING_LIBRARIES)

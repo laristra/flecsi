@@ -16,6 +16,8 @@
 /*! @file */
 
 #include <cstring>
+#include <istream>
+#include <ostream>
 #include <stdint.h>
 
 #include <flecsi/data/common/row_vector.h>
@@ -59,6 +61,15 @@ public:
     return s + sizeof(int_t);
   }
 
+  static size_t serialize(const vector_t & val, std::ostream & os) {
+    int_t count = val.size();
+    os.write((char *)&count, sizeof(int_t));
+    int_t s = count * sizeof(T);
+    if(s)
+      os.write((char *)val.data(), s);
+    return s + sizeof(int_t);
+  }
+
   static size_t deserialize(vector_t & val, const void * buffer) {
     const char * buf = (char *)buffer;
     int_t count;
@@ -71,9 +82,20 @@ public:
     return s + sizeof(int_t);
   }
 
+  static size_t deserialize(vector_t & val, std::istream & is) {
+    int_t count;
+    is.read((char *)&count, sizeof(int_t));
+    val.resize(count);
+    int_t s = count * sizeof(T);
+    if(s)
+      is.read((char *)val.data(), s);
+    return s + sizeof(int_t);
+  }
+
   // not part of the legion serdez interface, but useful for flecsi
-  static void deep_copy(const vector_t & valin, vector_t & valout) {
+  static size_t deep_copy(const vector_t & valin, vector_t & valout) {
     valout = valin;
+    return serialized_size(valout);
   }
 
   static void destroy(vector_t & val) {
@@ -88,7 +110,11 @@ public:
 
   virtual ~serdez_untyped_t(void) {}
 
-  virtual void deep_copy(const void * ptr_in, void * ptr_out) const = 0;
+  virtual size_t serialize(const void * field_ptr, std::ostream & os) const = 0;
+
+  virtual size_t deserialize(void * field_ptr, std::istream & is) const = 0;
+
+  virtual size_t deep_copy(const void * ptr_in, void * ptr_out) const = 0;
 
 }; // class serdez_untyped_t
 
@@ -100,11 +126,23 @@ public:
 
   virtual ~serdez_wrapper_u(void) {}
 
-  virtual void deep_copy(const void * ptr_in, void * ptr_out) const {
+  virtual size_t serialize(const void * field_ptr, std::ostream & os) const {
+    using TYPE = typename SERDEZ::FIELD_TYPE;
+    auto item_ptr = static_cast<const TYPE *>(field_ptr);
+    return SERDEZ::serialize(*item_ptr, os);
+  }
+
+  virtual size_t deserialize(void * field_ptr, std::istream & is) const {
+    using TYPE = typename SERDEZ::FIELD_TYPE;
+    auto item_ptr = static_cast<TYPE *>(field_ptr);
+    return SERDEZ::deserialize(*item_ptr, is);
+  }
+
+  virtual size_t deep_copy(const void * ptr_in, void * ptr_out) const {
     using TYPE = typename SERDEZ::FIELD_TYPE;
     auto in = static_cast<const TYPE *>(ptr_in);
     auto out = static_cast<TYPE *>(ptr_out);
-    SERDEZ::deep_copy(*in, *out);
+    return SERDEZ::deep_copy(*in, *out);
   }
 }; // class serdez_wrapper_u
 

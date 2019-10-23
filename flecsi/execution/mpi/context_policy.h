@@ -16,7 +16,9 @@
 /*! @file */
 
 #include <functional>
+#include <istream>
 #include <map>
+#include <ostream>
 #include <stdint.h>
 #include <vector>
 
@@ -34,6 +36,7 @@
 #include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/row_vector.h>
+#include <flecsi/data/common/serdez.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/mpi/future.h>
@@ -68,6 +71,43 @@ struct mpi_context_policy_t {
         num_total(num_exclusive + num_shared + num_ghost),
         max_entries_per_index(max_entries_per_index),
         rows(num_total * sizeof(data::row_vector_u<uint8_t>)) {}
+
+    std::ostream & write(std::ostream & os,
+      const data::serdez_untyped_t * serdez) const {
+
+      os.write((char *)&type_size, sizeof(size_t));
+      os.write((char *)&num_exclusive, sizeof(size_t));
+      os.write((char *)&num_shared, sizeof(size_t));
+      os.write((char *)&num_ghost, sizeof(size_t));
+      os.write((char *)&num_total, sizeof(size_t));
+      os.write((char *)&max_entries_per_index, sizeof(size_t));
+
+      // use serdez operator to write actual row data
+      const char * row_ptr = (char *)rows.data();
+      for(int i = 0; i < num_total; ++i) {
+        serdez->serialize(row_ptr, os);
+        row_ptr += sizeof(data::row_vector_u<uint8_t>);
+      }
+      return os;
+    }
+
+    std::istream & read(std::istream & is,
+      const data::serdez_untyped_t * serdez) {
+      is.read((char *)&type_size, sizeof(size_t));
+      is.read((char *)&num_exclusive, sizeof(size_t));
+      is.read((char *)&num_shared, sizeof(size_t));
+      is.read((char *)&num_ghost, sizeof(size_t));
+      is.read((char *)&num_total, sizeof(size_t));
+      is.read((char *)&max_entries_per_index, sizeof(size_t));
+
+      // use serdez operator to read actual row data
+      char * row_ptr = (char *)rows.data();
+      for(int i = 0; i < num_total; ++i) {
+        serdez->deserialize(row_ptr, is);
+        row_ptr += sizeof(data::row_vector_u<uint8_t>);
+      }
+      return is;
+    }
 
     size_t type_size;
 
@@ -468,7 +508,13 @@ struct mpi_context_policy_t {
    */
   void register_field_data(field_id_t fid, size_t size) {
     // TODO: VERSIONS
-    field_data.insert({fid, std::vector<uint8_t>(size)});
+    auto it = field_data.find(fid);
+    if(it == field_data.end()) {
+      field_data.insert({fid, std::vector<uint8_t>(size)});
+    }
+    else {
+      it->second.resize(size);
+    }
   }
 
   std::map<field_id_t, std::vector<uint8_t>> & registered_field_data() {
@@ -487,9 +533,15 @@ struct mpi_context_policy_t {
     const coloring_info_t & coloring_info,
     size_t max_entries_per_index) {
     // TODO: VERSIONS
-    sparse_field_data.emplace(
-      fid, sparse_field_data_t(type_size, coloring_info.exclusive,
-             coloring_info.shared, coloring_info.ghost, max_entries_per_index));
+    sparse_field_data_t new_field(type_size, coloring_info.exclusive,
+      coloring_info.shared, coloring_info.ghost, max_entries_per_index);
+    auto it = sparse_field_data.find(fid);
+    if(it == sparse_field_data.end()) {
+      sparse_field_data.emplace(fid, std::move(new_field));
+    }
+    else {
+      it->second = std::move(new_field);
+    }
   }
 
   std::map<field_id_t, sparse_field_data_t> & registered_sparse_field_data() {
@@ -511,7 +563,7 @@ struct mpi_context_policy_t {
 
   int rank;
 
-private:
+  // private:
   int color_ = 0;
   int colors_ = 0;
 

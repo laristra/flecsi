@@ -26,6 +26,7 @@
 #include <flecsi/execution/legion/internal_field.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/mapper.h>
+#include <flecsi/execution/remap_shared.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
 
@@ -145,6 +146,7 @@ runtime_driver(const Legion::Task * task,
 
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
+  remap_shared_entities();
 
   context_.advance_state();
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
@@ -468,6 +470,8 @@ runtime_driver(const Legion::Task * task,
     ispace_dmap[idx].entire_region = adjacency.logical_region;
     ispace_dmap[idx].color_partition = runtime->get_logical_partition(
       ctx, adjacency.logical_region, adjacency.index_partition);
+    ispace_dmap[idx].ghost_is_readable[0] = true;
+    ispace_dmap[idx].write_phase_started[0] = true;
   }
 
   // add subspace info to context
@@ -695,7 +699,6 @@ setup_rank_context_task(const Legion::Task * task,
       _gis_to_cis[gid] = cid;
       ++cid;
     } // for
-
     for(auto entity : is.second.ghost) {
       size_t gid = _rank_offsets[entity.rank] + entity.offset;
       _cis_to_gis[cid] = gid;

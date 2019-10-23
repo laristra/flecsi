@@ -34,6 +34,7 @@ using point_t = std::array<double, 2>;
 //----------------------------------------------------------------------------//
 
 struct vertex_t : public flecsi::topology::mesh_entity_u<0, 1> {
+  static constexpr size_t domain = 0;
 
   vertex_t(point_t & p) : p_(p) {}
 
@@ -42,7 +43,7 @@ struct vertex_t : public flecsi::topology::mesh_entity_u<0, 1> {
   }
 
   void print(const char * string) {
-    std::cout << string << " My id is " << id<0>() << std::endl;
+    std::cout << string << " My id is " << id() << std::endl;
   } // print
 
 private:
@@ -55,6 +56,7 @@ private:
 //----------------------------------------------------------------------------//
 
 struct edge_t : public flecsi::topology::mesh_entity_u<1, 1> {
+  static constexpr size_t domain = 0;
 }; // struct edge_t
 
 //----------------------------------------------------------------------------//
@@ -63,9 +65,10 @@ struct edge_t : public flecsi::topology::mesh_entity_u<1, 1> {
 
 struct cell_t : public flecsi::topology::mesh_entity_u<2, 1> {
   using id_t = flecsi::utils::id_t;
+  static constexpr size_t domain = 0;
 
   void print(const char * string) {
-    std::cout << string << " My id is " << id<0>() << std::endl;
+    std::cout << string << " My id is " << id() << std::endl;
   } // print
 
   std::vector<size_t> create_entities(id_t cell_id,
