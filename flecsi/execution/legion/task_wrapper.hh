@@ -58,6 +58,7 @@ struct utils::serial_convert<data::accessor<L, Topo, T, Priv>> {
 
 namespace execution {
 namespace legion {
+using runtime::legion::task;
 
 namespace detail {
 /*!
@@ -70,12 +71,7 @@ namespace detail {
   @ingroup legion-execution
  */
 
-template<typename RETURN,
-  RETURN (*TASK)(const Legion::Task *,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *),
-  std::size_t A>
+template<typename RETURN, task<RETURN> * TASK, std::size_t A>
 void register_task();
 
 template<class T>
@@ -116,12 +112,7 @@ inline const size_t task_id = runtime::context_t::instance().register_task(
     F,
     A>);
 
-template<typename RETURN,
-  RETURN (*TASK)(const Legion::Task *,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *),
-  std::size_t A>
+template<typename RETURN, task<RETURN> * TASK, std::size_t A>
 void
 detail::register_task() {
   constexpr auto processor_type = mask_to_processor_type(A);
