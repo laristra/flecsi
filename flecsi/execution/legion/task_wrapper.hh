@@ -105,7 +105,8 @@ tuple_get(const Legion::Task & t) {
  */
 
 template<auto & F, size_t A = loc | leaf>
-inline const size_t task_id = runtime::context_t::instance().register_task(
+// 'extern' works around GCC bug #90493
+extern const task_id_t task_id = runtime::context_t::instance().register_task(
   utils::symbol<F>(),
   detail::register_task<
     typename utils::function_traits<decltype(F)>::return_type,
