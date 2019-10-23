@@ -46,7 +46,7 @@ struct io_interface : public IO_POLICY {
     int file_idx,
     const char * group_name,
     const char * dataset_name,
-    const char * str,
+    const std::string & str,
     size_t size) {
     return IO_POLICY::write_string_to_hdf5_file(
       hdf5_file, file_idx, group_name, dataset_name, str, size);

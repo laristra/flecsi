@@ -110,9 +110,9 @@ index_driver(int argc, char ** argv) {
   if(my_rank % num_ranks_per_file == 0) {
     cp_io.open_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file);
     std::string str2("test string 2");
-    cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str2.c_str(), str2.size());
+    cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str2, str2.size());
 
-    std::string str3("");
+    std::string str3;
     cp_io.read_string_from_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str3);
     //printf("str 3 %s\n", str3.c_str());
     cp_io.close_hdf5_file(checkpoint_file);

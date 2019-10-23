@@ -200,11 +200,12 @@ struct legion_hdf5_t {
 //----------------------------------------------------------------------------//    
   bool write_string_to_hdf5_file(const char * group_name,
     const char * dataset_name,
-    const char * str,
+    const std::string & str,
     size_t size) {
 
     assert(hdf5_file_id >= 0);
 
+    const char* cstr = str.c_str();
     herr_t status;
     // TODO:FIXME
     // status = H5Eset_auto(NULL, NULL);
@@ -237,7 +238,7 @@ struct legion_hdf5_t {
     hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
 
     const char * data[1];
-    data[0] = str;
+    data[0] = cstr;
     hid_t dset = H5Dcreate2(group_id,
       dataset_name,
       filetype,
@@ -482,7 +483,7 @@ struct legion_policy_t {
     int rank_id,
     const char * group_name,
     const char * dataset_name,
-    const char * str,
+    const std::string & str,
     size_t size) {
     return hdf5_file.write_string_to_hdf5_file(
       group_name, dataset_name, str, size);
@@ -502,7 +503,7 @@ struct legion_policy_t {
 //----------------------------------------------------------------------------//
 // Implementation of legion_io_policy_t::add_regions.
 //----------------------------------------------------------------------------//  
-  void add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector) const {
+  void add_regions(legion_hdf5_t & hdf5_file, std::vector<legion_hdf5_region_t> & hdf5_region_vector) {
     for(auto &r : hdf5_region_vector) hdf5_file.add_hdf5_region(r);
   } // add_regions
 
