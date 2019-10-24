@@ -34,7 +34,22 @@ write_task(data_client_handle_u<mesh_t, ro> mesh,
     else
       f2(c, 1) = 2 * map.at(c.id());
   }
-} // task1
+} // write_task
+
+void
+clear_task(data_client_handle_u<mesh_t, ro> mesh,
+  dense_accessor<int, rw, rw, na> f1,
+  sparse_mutator<double> f2) {
+  auto & context = execution::context_t::instance();
+  const auto & map = context.index_map(cells);
+  for(auto c : mesh.cells(flecsi::owned)) {
+    f1(c) = 0;
+    if(c.id() % 2 == 0)
+      f2.erase(c, 0);
+    else
+      f2.erase(c, 1);
+  }
+} // clear_task
 
 void
 read_task(data_client_handle_u<mesh_t, ro> mesh,
@@ -49,9 +64,10 @@ read_task(data_client_handle_u<mesh_t, ro> mesh,
     else
       EXPECT_EQ(f2(c, 1), 2 * map.at(c.id()));
   }
-} // task1
+} // read_task
 
 flecsi_register_task_simple(write_task, loc, index);
+flecsi_register_task_simple(clear_task, loc, index);
 flecsi_register_task_simple(read_task, loc, index);
 
 //---------------------------------------------------------------------------//
@@ -100,8 +116,6 @@ driver(int argc, char ** argv) {
   auto rank = context.color();
   std::string outfile = "restart.rst." + std::to_string(rank);
 
-  // context.read_fields(outfile.c_str());
-
   auto ch = flecsi_get_client_handle(mesh_t, meshes, mesh1);
 
   auto hx = flecsi_get_handle(ch, fields, x, int, dense, 0);
@@ -109,10 +123,14 @@ driver(int argc, char ** argv) {
 
   flecsi_execute_task_simple(write_task, index, ch, hx, hym);
 
+  context.write_all_fields(outfile.c_str());
+
+  flecsi_execute_task_simple(clear_task, index, ch, hx, hym);
+
+  context.read_fields(outfile.c_str());
+
   auto hy = flecsi_get_handle(ch, fields, y, double, sparse, 0);
   flecsi_execute_task_simple(read_task, index, ch, hx, hy);
-
-  context.write_all_fields(outfile.c_str());
 
 } // driver
 
