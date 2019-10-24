@@ -38,8 +38,9 @@
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
-#include <boost/program_options.hpp>
 #include <mpi.h>
+
+#include <boost/program_options.hpp>
 
 #include <map>
 #include <string_view>
@@ -88,7 +89,19 @@ struct context_t : context {
     Documentation for this interface is in the top-level context type.
    */
 
-  int start(int argc, char ** argv, boost::program_options::variables_map & vm);
+  int initialize(int argc, char ** argv, bool dependent);
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  int finalize();
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  int start();
 
   /*
     Documentation for this interface is in the top-level context type.

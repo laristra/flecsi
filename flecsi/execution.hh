@@ -32,6 +32,65 @@
 
 namespace flecsi {
 
+inline int
+initialize(int argc, char ** argv, bool dependent = true) {
+  return runtime::context_t::instance().initialize(argc, argv, dependent);
+}
+
+inline int
+start() {
+  return runtime::context_t::instance().start();
+}
+
+inline int
+finalize() {
+  return runtime::context_t::instance().finalize();
+}
+
+/*!
+  Add a program option to the \em options_description identified by \em
+  label. If the options_description does not exist, it is created.
+
+  @param label A std::string containing the options_description label.
+ */
+
+template<typename... ARGS>
+inline bool
+add_program_option(std::string const & label, ARGS &&... args) {
+  return runtime::context_t::instance().add_program_option(
+    label, std::forward<ARGS>(args)...);
+}
+
+/*!
+  Initialize the program options. This causes the commandline arguments to
+  be parsed and stored in the variables map. This method should be invoked
+  after all options have been added.
+
+  @param argc  The \em argc input argument to the \em main function.
+  @param argv  The \em argv input argument to the \em main function.
+  @param label The display label for the top-level options description.
+
+  @return Non-zero if the user invoked "help", zero otherwise.
+ */
+
+inline int
+initialize_program_options(int argc, char ** argv, std::string const & label) {
+  return runtime::context_t::instance().initialize_program_options(
+    argc, argv, label);
+}
+
+/*!
+  Return the boost program options variable map.
+
+  @note The \em initialize method must be called before this method can be
+  invokded.
+ */
+
+inline boost::program_options::variables_map const &
+program_options_variables_map() {
+  return runtime::context_t::instance().program_options_variables_map();
+}
+
 /*!
   Return the current process id.
  */

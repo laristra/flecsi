@@ -7,5 +7,4 @@ set(flecsi_HEADERS
 )
 
 set(flecsi_SOURCES
-  runtime/main.cc
 )
