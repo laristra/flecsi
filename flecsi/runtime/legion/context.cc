@@ -17,12 +17,12 @@
 #endif
 
 #include <flecsi/data.hh>
-#include <flecsi/execution/command_line_options.hh>
 #include <flecsi/execution/launch.hh>
 #include <flecsi/execution/legion/task_wrapper.hh>
 #include <flecsi/runtime/legion/context.hh>
 #include <flecsi/runtime/legion/mapper.hh>
 #include <flecsi/runtime/legion/tasks.hh>
+#include <flecsi/runtime/program_options.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/const_string.hh>
 
@@ -31,8 +31,58 @@ namespace flecsi::runtime {
 using namespace boost::program_options;
 using execution::legion::task_id;
 
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
 int
-context_t::start(int argc, char ** argv, variables_map & vm) {
+context_t::initialize(int argc, char ** argv, bool dependent) {
+
+  if(dependent) {
+    int version, subversion;
+    MPI_Get_version(&version, &subversion);
+
+#if defined(GASNET_CONDUIT_MPI)
+    if(version == 3 && subversion > 0) {
+      int provided;
+      MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+
+      if(provided < MPI_THREAD_MULTIPLE) {
+        std::cerr << "Your implementation of MPI does not support "
+                     "MPI_THREAD_MULTIPLE which is required for use of the "
+                     "GASNet MPI conduit with the Legion-MPI Interop!"
+                  << std::endl;
+        std::abort();
+      } // if
+    }
+    else {
+      // Initialize the MPI runtime
+      MPI_Init(&argc, &argv);
+    } // if
+#else
+    MPI_Init(&argc, &argv);
+#endif
+  } // if
+
+  auto status = context::initialize_generic(argc, argv);
+
+  if(status != success) {
+    MPI_Finalize();
+  } // if
+
+  return status;
+} // initialize
+
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
+int context_t::finalize() {
+} // finalize
+
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
+int
+context_t::start() {
   using namespace Legion;
 
   /*
@@ -101,7 +151,7 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
     Register reduction operations.
    */
 
-  for(auto & ro : context_t::instance().reduction_registry()) {
+  for(auto & ro : context::reduction_registry()) {
     ro.second();
   } // for
 
@@ -109,6 +159,7 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
     Handle command-line arguments.
    */
 
+#if 0
   std::string tpp; // lives past start() (which is hopefully enough)
   std::vector<char *> largv;
   largv.push_back(argv[0]);
@@ -122,6 +173,7 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
   } // if
 
   threads_ = processes_ * threads_per_process_;
+#endif
 
   /*
     Start Legion runtime.
@@ -132,7 +184,7 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
     flog_devel(info) << "Starting Legion runtime" << std::endl;
   }
 
-  Runtime::start(largv.size(), largv.data(), true);
+  Runtime::start(context::argv().size(), context::argv().data(), true);
 
   do {
     handoff_to_legion();
@@ -144,7 +196,7 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
 
   Legion::Runtime::wait_for_shutdown();
 
-  return context_t::instance().exit_status();
+  return context::exit_status();
 } // context_t::start
 
 //----------------------------------------------------------------------------//

@@ -13,9 +13,10 @@
 #------------------------------------------------------------------------------#
 
 set(runtime_HEADERS
-  context.hh
-  types.hh
   backend.hh
+  context.hh
+  program_options.hh
+  types.hh
 )
 
 set(runtime_SOURCES

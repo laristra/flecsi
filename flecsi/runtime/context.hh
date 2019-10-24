@@ -40,12 +40,19 @@
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 flog_register_tag(context);
 
 namespace flecsi::runtime {
 
 struct context_t; // supplied by backend
+
+enum status : int {
+  success,
+  help,
+  error, // add specific error modes
+}; // initialization_codes
 
 /*!
   The context type provides a high-level execution context interface that
@@ -103,21 +110,150 @@ struct context {
   static inline context_t & instance();
 
   /*--------------------------------------------------------------------------*
+    Program options interface.
+   *--------------------------------------------------------------------------*/
+
+  std::vector<char *> & argv() { return argv_; }
+
+  /*
+    The boolean return is necessary for assignment so that this code block is
+    executed at namespace scope.
+   */
+
+  template<typename... ARGS>
+  bool add_program_option(std::string const & label, ARGS &&... args) {
+    auto ita = descriptions_map_.find(label);
+
+    if(ita == descriptions_map_.end()) {
+      boost::program_options::options_description desc(label.c_str());
+      descriptions_map_.emplace(label, desc);
+    } // if
+
+    descriptions_map_[label].add_options()(std::forward<ARGS>(args)...);
+    return true;
+  }
+
+  int initialize_program_options(int argc,
+    char ** argv,
+    std::string const & label) {
+
+    boost::program_options::options_description master(label.c_str());
+    master.add_options()("help,h", "Print this message and exit.");
+
+    // Add all of the descriptions to the main description
+    for(auto & od : descriptions_map_) {
+      master.add(od.second);
+    } // for
+
+    boost::program_options::parsed_options parsed =
+      boost::program_options::command_line_parser(argc, argv)
+        .options(master)
+        .allow_unregistered()
+        .run();
+
+    store(parsed, variables_map_);
+    program_options_initialized_ = true;
+
+    if(variables_map_.count("help")) {
+      std::cout << master << std::endl;
+      return status::help;
+    } // if
+
+    return status::success;
+  } // initialize_program_options
+
+  boost::program_options::variables_map const &
+  program_options_variables_map() {
+    flog_assert(program_options_initialized_,
+      "unitialized program options -> "
+      "invoke flecsi::initialize_program_options");
+    return variables_map_;
+  }
+
+  std::string * flog_tags() { return &flog_tags_; }
+  int * flog_verbose() { return &flog_verbose_; }
+  size_t * flog_process() { return &flog_process_; }
+
+  /*--------------------------------------------------------------------------*
     Runtime interface.
    *--------------------------------------------------------------------------*/
 
+  inline int initialize_generic(int argc, char ** argv) {
+
+    // Save command-line arguments
+    for(auto i(0); i<argc; ++i) {
+      argv_.push_back(argv[i]);
+    } // for
+
+    std::string program(argv[0]);
+    program = "Basic Options (" + program.substr(program.rfind('/') + 1) + ")";
+    auto status = initialize_program_options(argc, argv, program.c_str());
+
+    if(status == success) {
+#if defined(FLECSI_ENABLE_FLOG)
+      if(flog_tags_ == "0") {
+        int rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+        if(rank == 0) {
+          std::cout << "Available tags (FLOG):" << std::endl;
+
+          for(auto t: flog_tag_map()) {
+            std::cout << " " << t.first << std::endl;
+          } // for
+        } // if
+
+        return help;
+      } // if
+
+      flog_initialize(flog_tags_, flog_verbose_, flog_process_);
+#endif
+
+#if defined(FLECSI_ENABLE_KOKKOS)
+      Kokkos::initialize(argc, argv);
+#endif
+    } // if
+
+    return status;
+  } // initialize_generic
+
 #ifdef DOXYGEN // these functions are implemented per-backend
   /*!
-    Start the FleCSI runtime.
+    Perform FleCSI runtime initialization. If \em dependent is true, this call
+    will also initialize any runtime on which FleCSI depends.
 
-    @param argc The number of command-line arguments.
-    @param argv The command-line arguments in a char **.
+    @param argc      The number of command-line arguments.
+    @param argv      The command-line arguments.
+    @param dependent A boolean telling FleCSI whether or not to initialize
+                     runtimes on which it depends.
+
+    @return An integer indicating the initialization status. This may be
+            interpreted as a \em flecsi::runtime::status enumeration, e.g.,
+            a value of 1 is equivalent to flecsi::runtime::status::HELP.
+   */
+
+  int initialize(int argc, char ** argv, bool dependent);
+
+  /*!
+    Perform FleCSI runtime finalization. If FleCSI was initialized with
+    the \em dependent flag set to true, FleCSI will also finalize any runtimes
+    on which it depends.
+
+    @return An integer indicating the finalization status. This will either
+            be 0 for successful completion, or an error code from
+            flecsi::runtime::status.
+   */
+
+  int finalize();
+
+  /*!
+    Start the FleCSI runtime.
 
     @return An integer with \em 0 being success, and any other value
             being failure.
    */
 
-  int start(int argc, char ** argv, variables_map & vm);
+  int start();
 
   /*!
     Return the current process id.
@@ -425,6 +561,21 @@ protected:
 
   void clear();
 #endif
+
+  /*--------------------------------------------------------------------------*
+    Program options data members.
+   *--------------------------------------------------------------------------*/
+
+  std::vector<char *> argv_;
+
+  bool program_options_initialized_ = false;
+  std::map<std::string, boost::program_options::options_description>
+    descriptions_map_;
+  boost::program_options::variables_map variables_map_;
+
+  std::string flog_tags_;
+  int flog_verbose_;
+  size_t flog_process_;
 
   /*--------------------------------------------------------------------------*
     Basic runtime data members.
