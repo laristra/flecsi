@@ -36,6 +36,10 @@ struct data_client_handle_entity_t {
   field_id_t fid2;
   field_id_t fid3;
   field_id_t id_fid;
+  size_t fid_size;
+  size_t fid2_size;
+  size_t fid3_size;
+  size_t id_fid_size;
 };
 
 //----------------------------------------------------------------------------//
@@ -58,8 +62,8 @@ struct data_client_handle_adjacency_t {
   std::size_t num_indices;
   field_id_t index_fid;
   field_id_t offset_fid;
-  std::size_t * offsets_buf;
-  uint64_t * indices_buf;
+  size_t index_fid_size;
+  size_t offset_fid_size;
 };
 
 struct data_client_handle_index_subspace_t {
@@ -69,7 +73,7 @@ struct data_client_handle_index_subspace_t {
   std::size_t index_space;
   std::size_t index_subspace;
   field_id_t index_fid;
-  uint64_t * indices_buf;
+  size_t index_fid_size;
   std::size_t domain;
   std::size_t dim;
 };
