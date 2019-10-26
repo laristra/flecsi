@@ -78,18 +78,18 @@ struct io_interface : public IO_POLICY {
     return IO_POLICY::checkpoint_process_topology(hdf5_file);
   }
 
-  void checkpoint_process_topology_field(hdf5_t & hdf5_file,
+  void checkpoint_index_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
-    return IO_POLICY::checkpoint_process_topology_field(hdf5_file, fh);
+    return IO_POLICY::checkpoint_index_topology_field(hdf5_file, fh);
   }
 
   void recover_process_topology(hdf5_t & hdf5_file) {
     return IO_POLICY::recover_process_topology(hdf5_file);
   }
 
-  void recover_process_topology_field(hdf5_t & hdf5_file,
+  void recover_index_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
-    return IO_POLICY::recover_process_topology_field(hdf5_file, fh);
+    return IO_POLICY::recover_index_topology_field(hdf5_file, fh);
   }
 
   void checkpoint_data(hdf5_t & hdf5_file,

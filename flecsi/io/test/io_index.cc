@@ -91,9 +91,9 @@ index_driver(int argc, char ** argv) {
 
 #if 1
   // cp_io.checkpoint_process_topology(checkpoint_file);
-  cp_io.checkpoint_process_topology_field(checkpoint_file, fh1);
-  cp_io.checkpoint_process_topology_field(checkpoint_file, fh2);
-  cp_io.checkpoint_process_topology_field(checkpoint_file, fh3);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh1);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh2);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh3);
 
   execute<reset_zero>(fh1);
   execute<reset_zero>(fh2);

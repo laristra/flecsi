@@ -573,17 +573,16 @@ struct legion_policy_t {
   // flecsi::utils::const_string_t &index_topology_name);
 
   //----------------------------------------------------------------------------//
-  // Implementation of legion_io_policy_t::checkpoint_process_topology_field.
+  // Implementation of legion_io_policy_t::checkpoint_index_topology_field.
   //----------------------------------------------------------------------------//
-  void checkpoint_process_topology_field(hdf5_t & hdf5_file,
+  void checkpoint_index_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
     const size_t fid = fh.identifier();
-
-    auto & index_runtime_data = process_topology.get();
+    auto & index_runtime_data = fh.topology().get();
 
     {
       flog_tag_guard(io);
-      flog_devel(info) << "Checkpoint default index topology, field " << fid
+      flog_devel(info) << "Checkpoint index topology, field " << fid
                        << std::endl;
     }
 
@@ -596,7 +595,7 @@ struct legion_policy_t {
     std::vector<legion_hdf5_region_t> hdf5_region_vector;
     hdf5_region_vector.push_back(checkpoint_region);
     checkpoint_data(hdf5_file, file.index_space, hdf5_region_vector, true);
-  } // checkpoint_process_topology_field
+  } // checkpoint_index_topology_field
 
   //----------------------------------------------------------------------------//
   // Implementation of legion_io_policy_t::recover_process_topology.
@@ -629,30 +628,28 @@ struct legion_policy_t {
   } // recover_process_topology
 
   //----------------------------------------------------------------------------//
-  // Implementation of legion_io_policy_t::recover_process_topology_field.
+  // Implementation of legion_io_policy_t::recover_index_topology_field.
   //----------------------------------------------------------------------------//
-  void recover_process_topology_field(hdf5_t & hdf5_file,
+  void recover_index_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
     const size_t fid = fh.identifier();
-
-    auto & index_runtime_data = process_topology.get();
+    auto & index_runtime_data = fh.topology().get();
 
     {
       flog_tag_guard(io);
-      flog_devel(info) << "Recover default index topology, field " << fid
-                       << std::endl;
+      flog_devel(info) << "Recover index topology, field " << fid << std::endl;
     }
 
     const auto & file = file_map[&index_runtime_data];
     legion_hdf5_region_t recover_region(index_runtime_data.logical_region,
       file.logical_partition,
-      "process_topology");
+      "index_topology");
     recover_region.field_string_map[fid] = std::to_string(fid);
 
     std::vector<legion_hdf5_region_t> hdf5_region_vector;
     hdf5_region_vector.push_back(recover_region);
     recover_data(hdf5_file, file.index_space, hdf5_region_vector, true);
-  } // recover_process_topology_field
+  } // recover_index_topology_field
 
   //----------------------------------------------------------------------------//
   // Implementation of legion_io_policy_t::checkpoint_data.
