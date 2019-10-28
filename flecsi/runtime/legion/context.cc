@@ -37,6 +37,7 @@ using execution::legion::task_id;
 int
 context_t::initialize(int argc, char ** argv, bool dependent) {
 
+
   if(dependent) {
     int version, subversion;
     MPI_Get_version(&version, &subversion);
@@ -63,9 +64,9 @@ context_t::initialize(int argc, char ** argv, bool dependent) {
 #endif
   } // if
 
-  auto status = context::initialize_generic(argc, argv);
+  auto status = context::initialize_generic(argc, argv, dependent);
 
-  if(status != success) {
+  if(status != success && dependent) {
     MPI_Finalize();
   } // if
 
@@ -76,7 +77,16 @@ context_t::initialize(int argc, char ** argv, bool dependent) {
 //----------------------------------------------------------------------------//
 
 int
-context_t::finalize() {} // finalize
+context_t::finalize() {
+
+  auto status = context::finalize_generic();
+
+  if(status == success && context::initialize_dependent_) {
+    MPI_Finalize();
+  } // if
+
+  return status;
+} // finalize
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
