@@ -39,8 +39,8 @@ namespace po = boost::program_options;
 
 inline auto flecsi_flog_tags_option =
   flecsi::add_program_option("FleCSI Options",
-    "--flog-tags",
-    po::value(flecsi::runtime::context_t::instance().flog_tags())->implicit_value("0")->default_value("all"),
+    "flog-tags",
+    po::value(&flecsi::runtime::context_t::instance().flog_tags())->implicit_value("0")->default_value("all"),
     "Enable the specified output tags, e.g., --flog-tags=tag1,tag2."
     " Passing --flog-tags by itself will print the available tags.");
 
@@ -51,7 +51,7 @@ inline auto flecsi_flog_tags_option =
 inline auto flecsi_flog_verbose_option =
   flecsi::add_program_option("FleCSI Options",
     "flog-verbose",
-    po::value(flecsi::runtime::context_t::instance().flog_verbose())->implicit_value(1)->default_value(0),
+    po::value(&flecsi::runtime::context_t::instance().flog_verbose())->implicit_value(1)->default_value(0),
     "Enable verbose output. Passing '-1' will strip any additional"
     "decorations added by flog and will only output the user's message.");
 
@@ -61,8 +61,8 @@ inline auto flecsi_flog_verbose_option =
 
 inline auto flecsi_flog_process_option = flecsi::add_program_option(
   "FleCSI Options",
-  "--flog-process",
-  po::value(flecsi::runtime::context_t::instance().flog_process())->default_value(std::numeric_limits<size_t>::max()),
+  "flog-process",
+  po::value(&flecsi::runtime::context_t::instance().flog_process())->default_value(std::numeric_limits<size_t>::max()),
   "Restrict output to the specified process id.");
 
 #endif // FLECSI_ENABLE_FLOG
