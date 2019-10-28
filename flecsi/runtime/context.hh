@@ -181,7 +181,9 @@ struct context {
     Runtime interface.
    *--------------------------------------------------------------------------*/
 
-  inline int initialize_generic(int argc, char ** argv) {
+  inline int initialize_generic(int argc, char ** argv, bool dependent) {
+
+    initialize_dependent_ = dependent;
 
     // Save command-line arguments
     for(auto i(0); i < argc; ++i) {
@@ -213,12 +215,29 @@ struct context {
 #endif
 
 #if defined(FLECSI_ENABLE_KOKKOS)
-      Kokkos::initialize(argc, argv);
+      if(initialize_dependent_) {
+        // Need to capture status from this
+        Kokkos::initialize(argc, argv);
+      } // if
 #endif
     } // if
 
     return status;
   } // initialize_generic
+
+  inline int finalize_generic() {
+#if defined(FLECSI_ENABLE_FLOG)
+    flog_finalize();
+#endif
+
+    if(initialize_dependent_) {
+#if defined(FLECSI_ENABLE_KOKKOS)
+      Kokkos::finalize();
+#endif
+    } // if
+
+    return success;
+  } // finalize_generic
 
 #ifdef DOXYGEN // these functions are implemented per-backend
   /*!
@@ -575,6 +594,7 @@ protected:
   int flog_verbose_;
   size_t flog_process_;
 
+  bool initialize_dependent_ = true;
   bool program_options_initialized_ = false;
   std::map<std::string, boost::program_options::options_description>
     descriptions_map_;
