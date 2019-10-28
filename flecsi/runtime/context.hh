@@ -113,7 +113,13 @@ struct context {
     Program options interface.
    *--------------------------------------------------------------------------*/
 
-  std::vector<char *> & argv() { return argv_; }
+  std::vector<char *> & argv() {
+    return argv_;
+  }
+
+  std::string & flog_tags() { return flog_tags_; }
+  int & flog_verbose() { return flog_verbose_; }
+  size_t & flog_process() { return flog_process_; }
 
   /*
     The boolean return is necessary for assignment so that this code block is
@@ -151,7 +157,8 @@ struct context {
         .allow_unregistered()
         .run();
 
-    store(parsed, variables_map_);
+    boost::program_options::store(parsed, variables_map_);
+    boost::program_options::notify(variables_map_);
     program_options_initialized_ = true;
 
     if(variables_map_.count("help")) {
@@ -170,10 +177,6 @@ struct context {
     return variables_map_;
   }
 
-  std::string * flog_tags() { return &flog_tags_; }
-  int * flog_verbose() { return &flog_verbose_; }
-  size_t * flog_process() { return &flog_process_; }
-
   /*--------------------------------------------------------------------------*
     Runtime interface.
    *--------------------------------------------------------------------------*/
@@ -181,7 +184,7 @@ struct context {
   inline int initialize_generic(int argc, char ** argv) {
 
     // Save command-line arguments
-    for(auto i(0); i<argc; ++i) {
+    for(auto i(0); i < argc; ++i) {
       argv_.push_back(argv[i]);
     } // for
 
@@ -198,7 +201,7 @@ struct context {
         if(rank == 0) {
           std::cout << "Available tags (FLOG):" << std::endl;
 
-          for(auto t: flog_tag_map()) {
+          for(auto t : flog_tag_map()) {
             std::cout << " " << t.first << std::endl;
           } // for
         } // if
@@ -563,14 +566,14 @@ protected:
 
   std::vector<char *> argv_;
 
+  std::string flog_tags_;
+  int flog_verbose_;
+  size_t flog_process_;
+
   bool program_options_initialized_ = false;
   std::map<std::string, boost::program_options::options_description>
     descriptions_map_;
   boost::program_options::variables_map variables_map_;
-
-  std::string flog_tags_;
-  int flog_verbose_;
-  size_t flog_process_;
 
   /*--------------------------------------------------------------------------*
     Basic runtime data members.
