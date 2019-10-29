@@ -294,6 +294,22 @@ if(ENABLE_CLOG)
 endif()
 
 #------------------------------------------------------------------------------#
+# HDF5
+#------------------------------------------------------------------------------#
+
+option(ENABLE_HDF5 "Enable HDF5" OFF)
+
+if(ENABLE_HDF5)
+  find_package(HDF5 REQUIRED)
+
+  if(HDF5_FOUND)
+    include_directories(${HDF5_INCLUDE_DIRS})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${HDF5_LIBRARIES})
+  else()
+    message(FATAL_ERROR "HDF5 requested, but not found")
+  endif()
+
+#------------------------------------------------------------------------------#
 # Add option for Kokkos
 #------------------------------------------------------------------------------#
 
