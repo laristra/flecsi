@@ -48,16 +48,6 @@ namespace detail {
 template<typename... Ts>
 struct hold {};
 
-// Adapted from https://stackoverflow.com/questions/25845536/
-template<template<class...> class B, class D>
-struct base_specialization {
-  template<class... AA>
-  static B<AA...> test(B<AA...> *);
-  static void test(void *);
-
-  using type = decltype(test(static_cast<D *>(nullptr)));
-};
-
 template<class T>
 struct nonvoid {
   using type = T;
@@ -70,12 +60,6 @@ struct nonvoid<void> {};
 // Workaround for Clang's eager reduction of void_t (see also CWG1980)
 template<class... TT>
 using voided = std::conditional_t<false, detail::hold<TT...>, void>;
-
-template<template<class...> class B, class D>
-struct base_specialization
-  : detail::nonvoid<typename detail::base_specialization<B, D>::type> {};
-template<template<class...> class B, class D>
-using base_specialization_t = typename base_specialization<B, D>::type;
 
 //! \brief Check if a particular type T is a container.
 //! \remark If T is not, this version is instantiated.
