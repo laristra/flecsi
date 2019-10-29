@@ -228,7 +228,7 @@ struct accessor_u<data::dense,
    */
   template<typename E>
   FLECSI_INLINE_TARGET const T & operator()(E * e) const {
-    return this->operator()(e->template id<0>());
+    return this->operator()(e->id());
   } // operator ()
 
   /*!
@@ -242,7 +242,7 @@ struct accessor_u<data::dense,
    */
   template<typename E>
   FLECSI_INLINE_TARGET T & operator()(E * e) {
-    return this->operator()(e->template id<0>());
+    return this->operator()(e->id());
   } // operator ()
 
   handle_t handle;

@@ -26,8 +26,13 @@
 #include <flecsi/execution/legion/internal_field.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/mapper.h>
+#include <flecsi/execution/remap_shared.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
+
+#if defined(ENABLE_CALIPER)
+#include <caliper/Annotation.h>
+#endif // ENABLE_CALIPER
 
 clog_register_tag(runtime_driver);
 
@@ -45,6 +50,11 @@ runtime_driver(const Legion::Task * task,
   Legion::Runtime * runtime) {
   using namespace data;
   // using data::storage_label_type_t;
+
+#if defined(ENABLE_CALIPER)
+  cali::Annotation rd("RUNTIME-DRIVER");
+  rd.begin("set-up");
+#endif // ENABLE_CALIPER
 
   {
     clog_tag_guard(runtime_driver);
@@ -137,6 +147,11 @@ runtime_driver(const Legion::Task * task,
     context_.set_sparse_metadata(md);
   } // if
 
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("spl-tlt-init");
+#endif // ENABLE_CALIPER
+
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
     clog_tag_guard(runtime_driver);
@@ -145,9 +160,15 @@ runtime_driver(const Legion::Task * task,
 
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
+  remap_shared_entities();
 
   context_.advance_state();
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("create-regions");
+#endif // ENABLE_CALIPER
 
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
@@ -468,6 +489,8 @@ runtime_driver(const Legion::Task * task,
     ispace_dmap[idx].entire_region = adjacency.logical_region;
     ispace_dmap[idx].color_partition = runtime->get_logical_partition(
       ctx, adjacency.logical_region, adjacency.index_partition);
+    ispace_dmap[idx].ghost_is_readable[0] = true;
+    ispace_dmap[idx].write_phase_started[0] = true;
   }
 
   // add subspace info to context
@@ -508,6 +531,11 @@ runtime_driver(const Legion::Task * task,
         ctx, color_ispace.logical_region, color_ispace.color_partition);
   } // if
 
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("spl-spmd-init");
+#endif // ENABLE_CALIPER
+
 #if defined FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
   {
     clog_tag_guard(runtime_driver);
@@ -520,15 +548,29 @@ runtime_driver(const Legion::Task * task,
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
+
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("driver");
+#endif // ENABLE_CALIPER
+
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("finish");
+#endif // ENABLE_CALIPER
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
   // ----------------------------------------------------------------------//
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
+
+#if defined(ENABLE_CALIPER)
+  rd.end();
+#endif // ENABLE_CALIPER
 } // runtime_driver
 
 void
@@ -695,7 +737,6 @@ setup_rank_context_task(const Legion::Task * task,
       _gis_to_cis[gid] = cid;
       ++cid;
     } // for
-
     for(auto entity : is.second.ghost) {
       size_t gid = _rank_offsets[entity.rank] + entity.offset;
       _cis_to_gis[cid] = gid;

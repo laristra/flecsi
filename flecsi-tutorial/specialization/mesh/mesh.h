@@ -65,6 +65,10 @@ struct specialization_mesh_t
     return entities<0, 0>(e);
   } // vertices
 
+  using types_t = specialization_mesh_policy_t;
+
+  static constexpr size_t num_domains = 1;
+
 }; // specialization_mesh_t
 
 using mesh_t = specialization_mesh_t;

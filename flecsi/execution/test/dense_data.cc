@@ -82,21 +82,21 @@ print(mesh<ro> mesh, field<ro, ro, ro> h) {
   auto rank = context.color();
 
   for(auto c : mesh.cells(exclusive)) {
-    CINCH_CAPTURE() << "[" << rank << "]: exclusive cell id " << c->id<0>()
-                    << "(" << c->index()[0] << "," << c->index()[1]
-                    << "): " << h(c) << std::endl;
+    CINCH_CAPTURE() << "[" << rank << "]: exclusive cell id " << c->id() << "("
+                    << c->index()[0] << "," << c->index()[1] << "): " << h(c)
+                    << std::endl;
   }
 
   for(auto c : mesh.cells(shared)) {
-    CINCH_CAPTURE() << "[" << rank << "]:    shared cell id " << c->id<0>()
-                    << "(" << c->index()[0] << "," << c->index()[1]
-                    << "): " << h(c) << std::endl;
+    CINCH_CAPTURE() << "[" << rank << "]:    shared cell id " << c->id() << "("
+                    << c->index()[0] << "," << c->index()[1] << "): " << h(c)
+                    << std::endl;
   }
 
   for(auto c : mesh.cells(ghost)) {
-    CINCH_CAPTURE() << "[" << rank << "]:     ghost cell id " << c->id<0>()
-                    << "(" << c->index()[0] << "," << c->index()[1]
-                    << "): " << h(c) << std::endl;
+    CINCH_CAPTURE() << "[" << rank << "]:     ghost cell id " << c->id() << "("
+                    << c->index()[0] << "," << c->index()[1] << "): " << h(c)
+                    << std::endl;
   }
 } // print
 

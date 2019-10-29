@@ -97,6 +97,13 @@ struct storage_class_u<ragged> {
       // TODO: deal with VERSION
       context.register_sparse_field_data(
         field_info.fid, field_info.size, color_info, max_entries_per_index);
+    }
+    auto fieldMetaDataIter =
+      context.registered_sparse_field_metadata().find(field_info.fid);
+    if(fieldMetaDataIter == context.registered_sparse_field_metadata().end()) {
+      auto & color_info =
+        (context.coloring_info(field_info.index_space)).at(context.color());
+      auto & index_coloring = context.coloring(field_info.index_space);
 
       context.register_sparse_field_metadata<DATA_TYPE>(
         field_info.fid, color_info, index_coloring);

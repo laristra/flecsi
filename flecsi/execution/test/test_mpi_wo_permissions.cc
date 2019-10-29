@@ -40,11 +40,11 @@ traverse_mesh_ro(test_mesh::mesh_handle_t<ro> m) {
 
   // Iterate over the vertices
   for(auto v : m.vertices())
-    std::cout << "vertex id: " << v->template id<0>() << std::endl;
+    std::cout << "vertex id: " << v->id() << std::endl;
 
   // Iterate over the cells
   for(auto c : m.cells())
-    std::cout << "cell id: " << c->template id<0>() << std::endl;
+    std::cout << "cell id: " << c->id() << std::endl;
 
 } // traverse_mesh
 
@@ -55,11 +55,11 @@ traverse_mesh_wo(test_mesh::mesh_handle_t<wo> m) {
 
   // Iterate over the vertices
   for(auto v : m.vertices())
-    std::cout << "vertex id: " << v->template id<0>() << std::endl;
+    std::cout << "vertex id: " << v->id() << std::endl;
 
   // Iterate over the cells
   for(auto c : m.cells())
-    std::cout << "cell id: " << c->template id<0>() << std::endl;
+    std::cout << "cell id: " << c->id() << std::endl;
 
 } // traverse_mesh
 

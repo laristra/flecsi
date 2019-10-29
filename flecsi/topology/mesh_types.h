@@ -138,7 +138,11 @@ public:
 
   FLECSI_INLINE_TARGET
   operator size_t() const {
-    return entity_->template id<DOM>();
+    return entity_->id();
+  }
+
+  id_t & global_id() {
+    return entity_->template global_id<DOM>();
   }
 
   FLECSI_INLINE_TARGET
@@ -148,7 +152,7 @@ public:
 
   FLECSI_INLINE_TARGET
   size_t id() const {
-    return entity_->template id<DOM>();
+    return entity_->id();
   }
 
   FLECSI_INLINE_TARGET

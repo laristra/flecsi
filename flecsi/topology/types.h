@@ -100,37 +100,32 @@ public:
   //!
   //! \return The id of the entity.
   //-----------------------------------------------------------------//
-  template<size_t DOM = 0>
-  FLECSI_INLINE_TARGET id_t global_id() const {
-    return ids_[DOM];
+  FLECSI_INLINE_TARGET
+  const id_t & global_id() const {
+    return id_;
   } // id
 
   FLECSI_INLINE_TARGET
-  id_t global_id(size_t domain) const {
-    return ids_[domain];
-  } // id
-
-  template<size_t DOM = 0>
-  FLECSI_INLINE_TARGET size_t id() const {
-    return ids_[DOM].entity();
+  id_t & global_id() {
+    return id_;
   } // id
 
   FLECSI_INLINE_TARGET
-  size_t id(size_t domain) const {
-    return ids_[domain].entity();
+  size_t id() const {
+    return id_.entity();
   } // id
 
-  template<size_t DOM = 0>
-  FLECSI_INLINE_TARGET uint16_t info() const {
-    return ids_[DOM] >> 48;
+  FLECSI_INLINE_TARGET
+  uint16_t info() const {
+    return global_id() >> 48;
   } // info
 
   //-----------------------------------------------------------------//
   //! Set the id of this entity.
   //-----------------------------------------------------------------//
-  template<size_t DOM = 0>
-  FLECSI_INLINE_TARGET void set_global_id(const id_t & id) {
-    ids_[DOM] = id;
+  FLECSI_INLINE_TARGET
+  void set_global_id(const id_t & id) {
+    id_ = id;
   } // id
 
   /*!
@@ -141,13 +136,12 @@ public:
   } // get_dim_
 
 protected:
-  template<size_t DOM = 0>
   void set_info(uint16_t info) {
-    ids_[DOM] = (uint64_t(info) << 48) | ids_[DOM];
+    id_ = (uint64_t(info) << 48) | global_id();
   } // set_info
 
 private:
-  std::array<id_t, NUM_DOMAINS> ids_;
+  id_t id_;
 
 }; // class entity_base_u
 
