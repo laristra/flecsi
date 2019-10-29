@@ -84,9 +84,9 @@ registered, invoked, and executed.
 **Interface File:** *flecsi/execution/task.h*, and
 *flecsi/execution/funciton.h*
 
-**Legion Backend:** *flecsi/execution/legion/execution_policy.h*
+**Legion Backend:** *flecsi/execution/legion/policy.h*
 
-**MPI Backend:** *flecsi/execution/mpi/execution_policy.h*
+**MPI Backend:** *flecsi/execution/mpi/policy.h*
 
 **Preprocessor Variable:** *FLECSI_RUNTIME_EXECUTION_POLICY*
 

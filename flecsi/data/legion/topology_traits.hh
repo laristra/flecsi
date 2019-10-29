@@ -15,7 +15,7 @@
 
 /*! @file */
 
-#include <flecsi/data/data_reference.hh>
+#include <flecsi/data/reference.hh>
 #include <flecsi/data/storage_classes.hh>
 #include <flecsi/runtime/backend.hh>
 #include <flecsi/runtime/types.hh>
@@ -49,7 +49,7 @@ struct topology_traits<topology::global_topology_t> {
   // This is unused, but is required for garbage cleanup of other topology
   // types, i.e., global must implement this method.
 
-  static void deallocate(data_reference_base_t const & topology_reference) {}
+  static void deallocate(reference_base const & topology_reference) {}
 
 }; // global_topology_t specialization
 
@@ -60,8 +60,8 @@ struct topology_traits<topology::global_topology_t> {
 template<>
 struct topology_traits<topology::index_topology_t> {
 
-  static void allocate(data_reference_base_t const & topology_reference,
-    data_reference_base_t const & coloring_reference) {
+  static void allocate(reference_base const & topology_reference,
+    reference_base const & coloring_reference) {
     {
       flog_tag_guard(topologies);
       flog_devel(info) << "Set coloring for " << topology_reference.identifier()
@@ -98,7 +98,7 @@ struct topology_traits<topology::index_topology_t> {
     Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(
       legion_context, runtime_data.field_space);
 
-    for(auto const & fi : field_info_store.field_info()) {
+    for(auto const & fi : field_info_store) {
       allocator.allocate_field(fi.type_size, fi.fid);
     } // for
 
@@ -113,7 +113,7 @@ struct topology_traits<topology::index_topology_t> {
       legion_context, runtime_data.logical_region, index_partition);
   } // allocate
 
-  static void deallocate(data_reference_base_t const & topology_reference) {
+  static void deallocate(reference_base const & topology_reference) {
 
     {
       flog_tag_guard(topologies);
@@ -149,20 +149,19 @@ template<typename POLICY_TYPE>
 struct topology_traits<topology::canonical_topology<POLICY_TYPE>> {
 
   template<typename... ARGS>
-  static void allocate_coloring(
-    data_reference_base_t const & coloring_reference,
+  static void allocate_coloring(reference_base const & coloring_reference,
     ARGS &&... args) {} // allocate_coloring
 
-  static void deallocate_coloring(
-    data_reference_base_t const & coloring_reference) {} // deallocate_coloring
+  static void deallocate_coloring(reference_base const & coloring_reference) {
+  } // deallocate_coloring
 
-  static void allocate(data_reference_base_t const & topology_reference,
-    data_reference_base_t const & coloring_reference) {} // allocate
+  static void allocate(reference_base const & topology_reference,
+    reference_base const & coloring_reference) {} // allocate
 
-  static void update(data_reference_base_t const & topology_reference,
-    data_reference_base_t const & coloring_reference) {} // update
+  static void update(reference_base const & topology_reference,
+    reference_base const & coloring_reference) {} // update
 
-  static void deallocate(data_reference_base_t const & topology_reference) {
+  static void deallocate(reference_base const & topology_reference) {
   } // deallocate
 
 }; // canonical_topology specialization
@@ -176,16 +175,16 @@ struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
 
   template<typename... ARGS>
   static void allocate_coloring(
-    data_reference_base_t const & coloring_reference,
+    reference_base const & coloring_reference,
     ARGS &&... args) {} // allocate_coloring
 
   static void deallocate_coloring(
-    data_reference_base_t const & coloring_reference) {} // deallocate_coloring
+    reference_base const & coloring_reference) {} // deallocate_coloring
 
   // Distribute the entities on the different processes
   // Create the tree data structure locally
-  static void allocate(data_reference_base_t const & topology_reference,
-    data_reference_base_t const & coloring_reference) {
+  static void allocate(reference_base const & topology_reference,
+    reference_base const & coloring_reference) {
 
     {
       flog_tag_guard(topologies);
@@ -196,8 +195,8 @@ struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
   } // allocate
 
   // Update the entities position in the tree
-  static void update(data_reference_base_t const & topology_reference,
-    data_reference_base_t const & coloring_reference) {
+  static void update(reference_base const & topology_reference,
+    reference_base const & coloring_reference) {
 
     {
       flog_tag_guard(topologies);
@@ -207,7 +206,7 @@ struct topology_traits<topology::ntree_topology<POLICY_TYPE>> {
 
   } // update
 
-  static void deallocate(data_reference_base_t const & topology_reference) {
+  static void deallocate(reference_base const & topology_reference) {
 
     {
       flog_tag_guard(topologies);
@@ -261,8 +260,8 @@ struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
   }; // struct entity_walker_t
 #endif
 
-  static void allocate(data_reference_base_t const & topology_reference,
-    data_reference_base_t const & coloring_reference) {
+  static void allocate(reference_base const & topology_reference,
+    reference_base const & coloring_reference) {
 
     auto legion_runtime = Legion::Runtime::get_runtime();
     auto legion_context = Legion::Runtime::get_context();
@@ -274,7 +273,7 @@ struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
 #if 0
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
 
-      for(auto const & fi : field_info_store.field_info()) {
+      for(auto const & fi : field_info_store) {
         allocator.allocate_field(fi.type_size, fi.fid);
       } // for
 
@@ -290,7 +289,7 @@ struct topology_traits<topology::unstructured_mesh_topology<POLICY_TYPE>> {
 #endif
   } // allocate
 
-  static void deallocate(data_reference_base_t const & topology_reference) {}
+  static void deallocate(reference_base const & topology_reference) {}
 
 }; // unstructured_mesh_topology specialization
 

@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include <flecsi/data/data_reference.hh>
 #include <flecsi/data/privilege.hh>
+#include <flecsi/data/reference.hh>
 #include <flecsi/data/storage_classes.hh>
 #include <flecsi/data/topology.hh>
 #include <flecsi/runtime/backend.hh>
@@ -59,8 +59,7 @@ struct field_member {
 
     runtime::context_t::instance().add_field_info(topology::id<TOPOLOGY_TYPE>(),
       STORAGE_CLASS,
-      {fid_, INDEX_SPACE, sizeof(DATA_TYPE)},
-      fid_);
+      {fid_, INDEX_SPACE, sizeof(DATA_TYPE)});
   }
 
   /*!

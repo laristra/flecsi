@@ -13,8 +13,9 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
+#include <flecsi/data.hh>
 #include <flecsi/execution.hh>
-#include <flecsi/io/io_interface.hh>
+#include <flecsi/io.hh>
 #include <flecsi/utils/ftest.hh>
 
 #include <assert.h>

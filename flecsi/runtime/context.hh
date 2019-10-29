@@ -23,7 +23,7 @@
 #include <flecsi/execution/launch.hh>
 #include <flecsi/execution/task_attributes.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/topology/base_topology_types.hh>
+#include <flecsi/topology/base.hh>
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/demangle.hh>
@@ -282,14 +282,13 @@ struct context {
 
   void add_field_info(size_t topology_type_identifier,
     size_t storage_class,
-    const data::field_info_t & field_info,
-    size_t key) {
+    const data::field_info_t & field_info) {
     flog_devel(info) << "Registering field info (context)" << std::endl
                      << "\ttopology type identifier: "
                      << topology_type_identifier << std::endl
                      << "\tstorage class: " << storage_class << std::endl;
-    topology_field_info_map_[topology_type_identifier][storage_class]
-      .add_field_info(field_info, key);
+    topology_field_info_map_[topology_type_identifier][storage_class].push_back(
+      field_info);
   } // add_field_information
 
   /*!

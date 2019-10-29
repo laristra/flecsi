@@ -17,7 +17,6 @@
 #endif
 
 #include <flecsi/data.hh>
-#include <flecsi/data/legion/data_policy.hh>
 #include <flecsi/execution/command_line_options.hh>
 #include <flecsi/execution/launch.hh>
 #include <flecsi/execution/legion/task_wrapper.hh>
@@ -135,15 +134,10 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
 
   Runtime::start(largv.size(), largv.data(), true);
 
-  handoff_to_legion();
-  wait_on_legion();
-
-  while(mpi_active_) {
-    invoke_mpi_task();
-    mpi_active_ = false;
+  do {
     handoff_to_legion();
     wait_on_legion();
-  }
+  } while(invoke_mpi_task());
 
   // Make sure that the flusher thread executes at least one cycle.
   __flog_internal_wait_on_flusher();
@@ -152,29 +146,6 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
 
   return context_t::instance().exit_status();
 } // context_t::start
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::unset_call_mpi.
-//----------------------------------------------------------------------------//
-
-void
-context_t::unset_call_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
-  {
-    flog_tag_guard(context);
-    flog_devel(info) << "In unset_call_mpi" << std::endl;
-  }
-
-  Legion::ArgumentMap arg_map;
-  // IRINA DEBUG check number of processors
-  Legion::IndexLauncher launcher(task_id<unset_call_mpi_task>,
-    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0),
-    arg_map);
-
-  launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx, launcher);
-  fm.wait_all_results(true);
-} // context_t::unset_call_mpi
 
 //----------------------------------------------------------------------------//
 // Implementation of context_t::handoff_to_mpi.
@@ -279,7 +250,7 @@ context_t::initialize_global_topology() {
     topology::id<topology::global_topology_t>(),
     flecsi::data::storage_label_t::dense);
 
-  for(auto const & fi : field_info_store.field_info()) {
+  for(auto const & fi : field_info_store) {
     allocator.allocate_field(fi.type_size, fi.fid);
   } // for
 
@@ -331,7 +302,7 @@ context_t::initialize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_data_policy_t::allocate<topology::index_topology_t>(
+  data::legion_policy_t::allocate<topology::index_topology_t>(
     flecsi_index_topology, flecsi_index_coloring);
 } // context_t::initialize_default_index_topology
 
@@ -345,7 +316,7 @@ context_t::finalize_default_index_topology() {
                      << std::endl;
   }
 
-  data::legion_data_policy_t::deallocate<topology::index_topology_t>(
+  data::legion_policy_t::deallocate<topology::index_topology_t>(
     flecsi_index_topology);
 } // context_t::finalize_default_index_topology
 

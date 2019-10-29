@@ -115,35 +115,25 @@ struct task_prologue_t {
                PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE> & ref) {
     auto & c = runtime::context_t::instance();
-    const auto fid =
-      c.get_field_info_store(topology::id<topology::global_topology_t>(),
-         data::storage_label_t::dense)
-        .get_field_info(ref.identifier())
-        .fid;
 
     Legion::LogicalRegion region = c.global_topology_instance().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
       "global topology accessor type only takes one privilege");
 
-    if constexpr(get_privilege<0, PRIVILEGES>() > partition_privilege_t::ro) {
+    constexpr auto priv = get_privilege<0, PRIVILEGES>();
+
+    if(priv > partition_privilege_t::ro)
       flog_assert(domain_ == 1,
         "global can only be modified from within single launch task");
 
-      Legion::RegionRequirement rr(region,
-        privilege_mode(get_privilege<0, PRIVILEGES>()),
-        EXCLUSIVE,
-        region);
+    Legion::RegionRequirement rr(region,
+      priv > partition_privilege_t::ro ? privilege_mode(priv) : READ_ONLY,
+      EXCLUSIVE,
+      region);
 
-      rr.add_field(fid);
-      region_reqs_.push_back(rr);
-    }
-    else {
-      Legion::RegionRequirement rr(region, READ_ONLY, EXCLUSIVE, region);
-
-      rr.add_field(fid);
-      region_reqs_.push_back(rr);
-    } // if
+    rr.add_field(ref.identifier());
+    region_reqs_.push_back(rr);
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -157,13 +147,6 @@ struct task_prologue_t {
                PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE> & ref) {
     auto & flecsi_context = runtime::context_t::instance();
-
-    const auto fid =
-      flecsi_context
-        .get_field_info_store(topology::id<topology::index_topology_t>(),
-          data::storage_label_t::dense)
-        .get_field_info(ref.identifier())
-        .fid;
 
     auto instance_data =
       flecsi_context.index_topology_instance(ref.topology_identifier());
@@ -182,7 +165,7 @@ struct task_prologue_t {
       EXCLUSIVE,
       instance_data.logical_region);
 
-    rr.add_field(fid);
+    rr.add_field(ref.identifier());
     region_reqs_.push_back(rr);
   } // visit
 
@@ -230,7 +213,7 @@ struct task_prologue_t {
 
   template<class P, typename DATA_TYPE>
   static typename std::enable_if_t<
-    !std::is_base_of_v<data::data_reference_base_t, DATA_TYPE>>
+    !std::is_base_of_v<data::reference_base, DATA_TYPE>>
   visit(P *, DATA_TYPE &) {
     {
       flog_tag_guard(task_prologue);

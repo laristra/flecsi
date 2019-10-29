@@ -155,9 +155,6 @@ reduce(ARGS &&... args) {
 
       // Wait for MPI to finish execution (synchronous).
       flecsi_context.wait_on_mpi(legion_context, legion_runtime);
-
-      // Reset the calling state to false.
-      flecsi_context.unset_call_mpi(legion_context, legion_runtime);
     } // if
   } // if
 #endif // FLECSI_ENABLE_FLOG
@@ -173,8 +170,22 @@ reduce(ARGS &&... args) {
 
   legion::task_prologue_t pro(legion_runtime, legion_context, domain_size);
   pro.walk<ARG_TUPLE>(args...);
-  auto buf = detail::serial_arguments(
-    static_cast<ARG_TUPLE *>(nullptr), std::forward<ARGS>(args)...);
+
+  std::optional<ARG_TUPLE> mpi_args;
+  std::vector<std::byte> buf;
+  if constexpr(processor_type == task_processor_type_t::mpi) {
+    // MPI tasks must be invoked collectively from one task on each rank.
+    // We therefore can transmit merely a pointer to a tuple of the arguments.
+    // utils::serial_put deliberately doesn't support this, so just memcpy it.
+    mpi_args.emplace(std::forward<ARGS>(args)...);
+    const auto p = &*mpi_args;
+    buf.resize(sizeof p);
+    std::memcpy(buf.data(), &p, sizeof p);
+  }
+  else {
+    buf = detail::serial_arguments(
+      static_cast<ARG_TUPLE *>(nullptr), std::forward<ARGS>(args)...);
+  }
 
   //------------------------------------------------------------------------//
   // Single launch
@@ -291,10 +302,8 @@ reduce(ARGS &&... args) {
       flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
 
       // Wait for MPI to finish execution (synchronous).
+      // We must keep mpi_args alive until then.
       flecsi_context.wait_on_mpi(legion_context, legion_runtime);
-
-      // Reset the calling state to false.
-      flecsi_context.unset_call_mpi(legion_context, legion_runtime);
 
       if constexpr(REDUCTION != ZERO) {
         // FIXME implement logic for reduction MPI task

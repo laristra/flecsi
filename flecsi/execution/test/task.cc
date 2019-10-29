@@ -47,6 +47,11 @@ seq(const T & s) {
   }(flog_info("s(")); // keep temporary alive throughout
 }
 
+void
+mpi(int * p) {
+  *p = 1;
+}
+
 } // namespace hydro
 
 int
@@ -60,6 +65,10 @@ test_driver(int argc, char ** argv) {
   execute<hydro::simple<const double &>>(3.5);
   using V = std::vector<std::string>;
   execute<hydro::seq<V>>(V{"Elementary", " Dear Data"});
+
+  int x = 0;
+  execute<hydro::mpi, flecsi::index, mpi>(&x);
+  ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
 
   return FTEST_RESULT();
 }

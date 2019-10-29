@@ -17,9 +17,8 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
-
-#include "flecsi/data/data_reference.hh"
+#endif
+#include "flecsi/data/reference.hh"
 #include <flecsi/topology/set/types.hh>
 
 namespace flecsi {
@@ -35,8 +34,7 @@ namespace topology {
 
 template<typename POLICY_TYPE>
 struct set_topology : public set_topology_base_t,
-                      public data::data_reference_base_t {
-}; // struct set_topology
+                      public data::reference_base {}; // struct set_topology
 
 } // namespace topology
 } // namespace flecsi

@@ -23,7 +23,7 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/data/data_reference.hh>
+#include <flecsi/data/reference.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/structured_mesh/interface.hh>
@@ -66,14 +66,17 @@ template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
   topology::global_topology_t,
   DATA_TYPE,
-  PRIVILEGES> : field_reference<DATA_TYPE> {
+  PRIVILEGES> : reference_base {
 
   friend void bind(accessor & a, DATA_TYPE * data) {
     a.data_ = data;
   }
 
-  using Base = field_reference<DATA_TYPE>;
-  accessor(Base const & ref) : Base(ref) {}
+  using value_type = DATA_TYPE;
+  using topology_t = topology::global_topology_t;
+
+  accessor(field_reference<DATA_TYPE> const & ref) : reference_base(ref) {}
+  explicit accessor(std::size_t f) : reference_base(f) {}
 
   operator DATA_TYPE &() {
     return *data_;
@@ -105,10 +108,12 @@ template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
   topology::index_topology_t,
   DATA_TYPE,
-  PRIVILEGES> : field_reference<DATA_TYPE> {
+  PRIVILEGES> : reference_base {
+  using value_type = DATA_TYPE;
+  using topology_t = topology::index_topology_t;
 
-  using Base = field_reference<DATA_TYPE>;
-  accessor(Base const & ref) : Base(ref) {}
+  accessor(field_reference<DATA_TYPE> const & ref) : reference_base(ref) {}
+  explicit accessor(std::size_t f) : reference_base(f) {}
 
   operator DATA_TYPE &() {
     return *data_;
@@ -158,10 +163,12 @@ template<typename POLICY_TYPE, typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
   topology::unstructured_mesh_topology<POLICY_TYPE>,
   DATA_TYPE,
-  PRIVILEGES> : public field_reference<DATA_TYPE> {
+  PRIVILEGES> : reference_base {
+  using value_type = DATA_TYPE;
+  using topology_t = topology::unstructured_mesh_topology<POLICY_TYPE>;
 
-  using Base = field_reference<DATA_TYPE>;
-  accessor(Base const & ref) : Base(ref) {}
+  accessor(field_reference<DATA_TYPE> const & ref) : reference_base(ref) {}
+  explicit accessor(std::size_t f) : reference_base(f) {}
 
   /*!
     Provide logical array-based access to the data referenced by this

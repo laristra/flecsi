@@ -91,7 +91,7 @@ struct unbind_accessors_t
 
   template<typename DATA_TYPE>
   static typename std::enable_if_t<
-    !std::is_base_of_v<data::data_reference_base_t, DATA_TYPE>>
+    !std::is_base_of_v<data::reference_base, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
       flog_tag_guard(unbind_accessors);

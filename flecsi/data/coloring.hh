@@ -20,7 +20,7 @@
 #endif
 
 #include <flecsi/data/backend.hh>
-#include <flecsi/data/data_reference.hh>
+#include <flecsi/data/reference.hh>
 #include <flecsi/execution.hh>
 #include <flecsi/runtime/types.hh>
 
@@ -39,10 +39,9 @@ coloring_task(size_t identifier, ARGS &&... args) {
 } // coloring_task
 
 template<typename TOPOLOGY_TYPE>
-struct coloring_reference : public data_reference_base_t {
+struct coloring_reference : public reference_base {
 
-  coloring_reference()
-    : data_reference_base_t(unique_cid_t::instance().next()) {}
+  coloring_reference() : reference_base(unique_cid_t::instance().next()) {}
 
   /*!
     @note The MPI task launched by this method is always mapped to the process
@@ -57,7 +56,7 @@ struct coloring_reference : public data_reference_base_t {
   } // allocate
 
   void deallocate() {
-    data_policy_t::deallocate_coloring<TOPOLOGY_TYPE>(identifier_);
+    policy_t::deallocate_coloring<TOPOLOGY_TYPE>(identifier_);
     allocated_ = false;
   } // deallocate
 

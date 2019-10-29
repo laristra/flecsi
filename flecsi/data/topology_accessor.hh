@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/data/data_reference.hh>
+#include <flecsi/data/reference.hh>
 
 namespace flecsi {
 namespace data {
@@ -33,10 +33,10 @@ namespace data {
  */
 
 template<typename TOPOLOGY_TYPE, size_t PRIVILEGES>
-struct topology_accessor : public TOPOLOGY_TYPE, public data_reference_base_t {
+struct topology_accessor : public TOPOLOGY_TYPE, public reference_base {
 
-  topology_accessor(data_reference_base_t const & reference)
-    : data_reference_base_t(reference) {}
+  topology_accessor(reference_base const & reference)
+    : reference_base(reference) {}
 
 }; // struct topology_accessor
 

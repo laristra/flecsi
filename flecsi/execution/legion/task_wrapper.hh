@@ -37,23 +37,22 @@
 #include <legion.h>
 
 #include <string>
+#include <utility>
 
 flog_register_tag(task_wrapper);
 
 namespace flecsi {
 
-// Send and receive only the field_reference_t portion:
+// Send and receive only the reference_base portion:
 template<data::storage_label_t L, class Topo, class T, std::size_t Priv>
 struct utils::serial_convert<data::accessor<L, Topo, T, Priv>> {
   using type = data::accessor<L, Topo, T, Priv>;
-  struct Rep { // trivial
-    std::size_t id, top;
-  };
+  using Rep = std::size_t;
   static Rep put(const type & r) {
-    return {r.identifier(), r.topology_identifier()};
+    return r.identifier();
   }
   static type get(const Rep & r) {
-    return typename type::Base(r.id, r.top);
+    return type(r);
   }
 };
 
@@ -238,7 +237,10 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     //    }
 
     // Unpack task arguments.
-    auto mpi_task_args = detail::tuple_get<ARG_TUPLE>(*task);
+    ARG_TUPLE * p;
+    flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
+    std::memcpy(&p, task->args, sizeof p);
+    auto & mpi_task_args = *p;
 
     // FIXME: Refactor
     // init_handles_t init_handles(runtime, context, regions, task->futures);
@@ -246,8 +248,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
     // Set the MPI function and make the runtime active.
     auto & c = runtime::context_t::instance();
-    c.set_mpi_task([=] { apply(F, mpi_task_args); });
-    c.set_mpi_state(true);
+    c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
     // FIXME: Refactor
     // finalize_handles_t finalize_handles;
