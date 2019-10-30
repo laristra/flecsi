@@ -308,6 +308,7 @@ if(ENABLE_HDF5)
   else()
     message(FATAL_ERROR "HDF5 requested, but not found")
   endif()
+endif()
 
 #------------------------------------------------------------------------------#
 # Add option for Kokkos

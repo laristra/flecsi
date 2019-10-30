@@ -18,7 +18,6 @@
 #------------------------------------------------------------------------------#
 
 set(io_HEADERS
-  backend.h
   io.h
   io_base.h
   simple_definition.h
@@ -26,6 +25,16 @@ set(io_HEADERS
 
 set(io_SOURCES
 )
+
+if(ENABLE_HDF5)
+
+  set(io_HEADERS
+    backend.h
+    io_hdf5.h
+    ${io_HEADERS}
+  )
+
+endif() # ENABLE_HDF5
 
 set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 
@@ -38,15 +47,17 @@ set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  set(io_HEADERS
-    legion/policy.h
-    ${io_HEADERS}
-  )
+  if(ENABLE_HDF5)
+    set(io_HEADERS
+      legion/policy.h
+      ${io_HEADERS}
+    )
 
-  set(io_SOURCES
-    legion/policy.cc
-    ${io_SOURCES}
-  )
+    set(io_SOURCES
+      legion/policy.cc
+      ${io_SOURCES}
+    )
+  endif()
 
 endif()
 
