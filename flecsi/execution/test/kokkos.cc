@@ -66,7 +66,7 @@ set_global_int(global_accessor_u<int, rw> global, int value) {
 flecsi_register_task_simple(set_global_int, loc, single);
 
 void
-init(client_handle_t<test_mesh_t, ro> mesh,
+init_loc(client_handle_t<test_mesh_t, ro> mesh,
   dense_accessor<double, rw, rw, na> pressure,
   color_accessor<int, rw> color,
   sparse_mutator<double> sm) {
@@ -76,6 +76,30 @@ init(client_handle_t<test_mesh_t, ro> mesh,
   for(auto c : mesh.cells()) {
     pressure(c) = 0.0;
   }
+
+  auto rank = execution::context_t::instance().color();
+  for (auto i:mesh.cells()){
+    auto gid = i->gid();
+    // for most cells, do a checkerboard pattern
+    bool parity = (gid / 8 + gid % 8) & 1;
+    int start = (parity ? 0 : 1);
+    int stop = (parity ? 6 : 5);
+    // make a few cells overflow
+    if(gid >= 11 && gid <= 13)
+      stop = (parity ? 16 : 17);
+    for(size_t j = start; j < stop; j += 2) {
+      sm(i, j) = rank * 10000 + gid * 100 + j;
+    }
+  }
+
+}
+
+flecsi_register_task_simple(init_loc, loc, index);
+
+void
+init_toc(client_handle_t<test_mesh_t, ro> mesh,
+  dense_accessor<double, rw, rw, na> pressure,
+  color_accessor<int, rw> color){
 
   flecsi::parallel_for(
     mesh.cells(), KOKKOS_LAMBDA(auto c) { pressure(c) = 1.0; },
@@ -98,14 +122,15 @@ init(client_handle_t<test_mesh_t, ro> mesh,
 #endif
 }
 
-flecsi_register_task_simple(init, loc, index);
+flecsi_register_task_simple(init_toc, toc, index);
+
 
 void
 test(client_handle_t<test_mesh_t, ro> mesh,
   dense_accessor<double, ro, ro, ro> pressure,
   global_accessor_u<int, ro> global,
-  color_accessor<int, ro> color,
-  sparse_accessor<double, rw, rw, rw> alpha) {
+  color_accessor<int, ro> color){
+//  sparse_accessor<double, rw, rw, rw> alpha) {
 
   flecsi::parallel_for(
     mesh.cells(),
@@ -127,8 +152,7 @@ test(client_handle_t<test_mesh_t, ro> mesh,
   }; // forall
 }
 
-flecsi_register_task_simple(test, loc, index);
-
+flecsi_register_task_simple(test, toc, index);
 //----------------------------------------------------------------------------//
 // Specialization driver.
 //----------------------------------------------------------------------------//
@@ -136,7 +160,6 @@ flecsi_register_task_simple(test, loc, index);
 void
 specialization_tlt_init(int argc, char ** argv) {
 
-  Kokkos::initialize(argc, argv);
 
   clog(info) << "In specialization top-level-task init" << std::endl;
   supplemental::do_test_mesh_2d_coloring();
@@ -176,10 +199,12 @@ driver(int argc, char ** argv) {
   auto am = flecsi_get_mutator(mh, hydro, alpha, double, sparse, 0, 5);
   auto ah = flecsi_get_handle(mh, hydro, alpha, double, sparse, 0);
 
-  flecsi_execute_task_simple(init, index, mh, ph, ch, am);
-  flecsi_execute_task_simple(test, index, mh, ph, gh, ch, ah);
+ // flecsi_execute_task_simple(init, index, mh, ph, ch, am);
+ // flecsi_execute_task_simple(test, index, mh, ph, gh, ch, ah);
+ flecsi_execute_task_simple(init_loc, index, mh, ph, ch, am);
+ flecsi_execute_task_simple(init_toc, index, mh, ph, ch);
+ flecsi_execute_task_simple(test, index, mh, ph, gh, ch);
 
-  Kokkos::finalize();
 } // driver
 
 //----------------------------------------------------------------------------//
