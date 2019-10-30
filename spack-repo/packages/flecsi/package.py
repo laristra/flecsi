@@ -44,6 +44,7 @@ class Flecsi(CMakePackage):
     depends_on('boost@1.59.0: cxxstd=11 +program_options')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
+    depends_on('hdf5', when='+hdf5')
     depends_on('caliper', when='+caliper')
     depends_on('graphviz', when='+graphviz')
     depends_on('python@3.0:', when='+tutorial')
@@ -79,6 +80,11 @@ class Flecsi(CMakePackage):
         else:
             options.append('-DENABLE_FLECSIT=OFF')
             options.append('-DENABLE_FLECSI_TUTORIAL=OFF')
+
+        if '+hdf5' in self.spec:
+            options.append('-DENABLE_HDF5=ON')
+        else:
+            options.append('-DENABLE_HDF5=OFF')
 
         if '+caliper' in self.spec:
             options.append('-DENABLE_CALIPER=ON')
