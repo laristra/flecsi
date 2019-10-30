@@ -40,6 +40,7 @@ set(utils_HEADERS
   mpi_type_traits.h
   offset.h
   reorder.h
+  serialize.h
   set_intersection.h
   set_utils.h
   simple_id.h
@@ -159,6 +160,11 @@ cinch_add_unit(humble
 cinch_add_unit(logging
   SOURCES
     test/logging.cc
+)
+
+cinch_add_unit(serialize
+  SOURCES
+    test/serialize.cc
 )
 
 cinch_add_unit(set_intersection
