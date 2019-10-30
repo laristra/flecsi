@@ -169,12 +169,12 @@ context_t::start() {
     Handle command-line arguments.
    */
 
-#if 0
   std::string tpp; // lives past start() (which is hopefully enough)
   std::vector<char *> largv;
-  largv.push_back(argv[0]);
+  largv.push_back(argv_[0]);
 
-  threads_per_process_ = vm[FLECSI_TPP_OPTION_STRING].as<size_t>();
+  auto vm = context::program_options_variables_map();
+  threads_per_process_ = vm["tpp"].as<size_t>();
 
   if(threads_per_process_ > 1) {
     largv.push_back(const_cast<char *>("-ll:cpu"));
@@ -183,7 +183,6 @@ context_t::start() {
   } // if
 
   threads_ = processes_ * threads_per_process_;
-#endif
 
   /*
     Start Legion runtime.

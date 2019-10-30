@@ -71,8 +71,6 @@ inline auto flecsi_flog_process_option = flecsi::add_program_option(
   Command-line option to specify threads per process.
  */
 
-#define FLECSI_TPP_OPTION_STRING "tpp"
-
 inline auto flecsi_tpp_option = flecsi::add_program_option("FleCSI Options",
   "tpp",
   po::value<size_t>()->default_value(1),
