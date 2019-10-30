@@ -26,6 +26,8 @@ class Flecsi(CMakePackage):
 
     variant('backend', default='mpi', values=('hpx', 'mpi', 'legion'),
             description='Backend to use for distributed memory')
+    variant('hdf5', default=False,
+            description='Enable HDF5 Support')
     variant('caliper', default=False,
             description='Enable Caliper Support')
     variant('graphviz', default=False,
@@ -40,6 +42,7 @@ class Flecsi(CMakePackage):
     #depends_on('cinch@1.01:', type='build')
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
+    depends_on('hpx', when='backend=hpx')
     depends_on('legion@ctrl-rep-2 +shared +mpi +hdf5', when='backend=legion')
     depends_on('boost@1.59.0: cxxstd=11 +program_options')
     depends_on('metis@5.1.0:')
