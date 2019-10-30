@@ -26,21 +26,26 @@ namespace topology {
 
 // Declarations for the base topology types.
 
+struct canonical_base;
 template<typename>
 struct canonical;
 
 struct global_t;
 struct index_t;
 
+struct ntree_base;
 template<typename>
 class ntree;
 
+struct set_base_t;
 template<typename>
 class set;
 
+struct structured_mesh_base_t;
 template<typename>
 class structured_mesh;
 
+struct unstructured_mesh_base_t;
 template<typename>
 class unstructured_mesh;
 
@@ -86,6 +91,22 @@ struct core<T,
   using type = utils::base_specialization_t<unstructured_mesh, T>;
 };
 
+template<class T>
+struct category {
+  using type = T;
+};
+
+template<class P>
+struct category<canonical<P>> : category<canonical_base> {};
+template<class P>
+struct category<ntree<P>> : category<ntree_base> {};
+template<class P>
+struct category<set<P>> : category<set_base_t> {};
+template<class P>
+struct category<structured_mesh<P>> : category<structured_mesh_base_t> {};
+template<class P>
+struct category<unstructured_mesh<P>> : category<unstructured_mesh_base_t> {};
+
 inline std::size_t next_id;
 // Use functions because these are needed during non-local initialization:
 template<class>
@@ -98,6 +119,8 @@ id() {
 
 template<class T>
 using core_t = typename detail::core<T>::type;
+template<class T>
+using category_t = typename detail::category<T>::type; // of a core type only
 
 template<class T>
 std::size_t
