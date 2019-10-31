@@ -32,15 +32,48 @@
 
 namespace flecsi {
 
+/*!
+  Perform FleCSI runtime initialization. If \em dependent is true, this call
+  will also initialize any runtime on which FleCSI depends.
+
+  @param argc      The number of command-line arguments.
+  @param argv      The command-line arguments.
+  @param dependent A boolean telling FleCSI whether or not to initialize
+                   runtimes on which it depends.
+
+  @return An integer indicating the initialization status. This may be
+          interpreted as a \em flecsi::runtime::status enumeration, e.g.,
+          a value of 1 is equivalent to flecsi::runtime::status::HELP.
+ */
+
 inline int
 initialize(int argc, char ** argv, bool dependent = true) {
   return runtime::context_t::instance().initialize(argc, argv, dependent);
 }
 
+/*!
+  Perform FleCSI runtime start. This causes the runtime to begin execution
+  of the top-level action.
+
+  @return An integer indicating the finalization status. This will either
+          be 0 for successful completion, or an error code from
+          flecsi::runtime::status.
+ */
+
 inline int
 start() {
   return runtime::context_t::instance().start();
 }
+
+/*!
+  Perform FleCSI runtime finalization. If FleCSI was initialized with the \em
+  dependent flag set to true, FleCSI will also finalize any runtimes on which
+  it depends.
+
+  @return An integer indicating the finalization status. This will either
+          be 0 for successful completion, or an error code from
+          flecsi::runtime::status.
+ */
 
 inline int
 finalize() {
@@ -59,24 +92,6 @@ inline bool
 add_program_option(std::string const & label, ARGS &&... args) {
   return runtime::context_t::instance().add_program_option(
     label, std::forward<ARGS>(args)...);
-}
-
-/*!
-  Initialize the program options. This causes the commandline arguments to
-  be parsed and stored in the variables map. This method should be invoked
-  after all options have been added.
-
-  @param argc  The \em argc input argument to the \em main function.
-  @param argv  The \em argv input argument to the \em main function.
-  @param label The display label for the top-level options description.
-
-  @return Non-zero if the user invoked "help", zero otherwise.
- */
-
-inline int
-initialize_program_options(int argc, char ** argv, std::string const & label) {
-  return runtime::context_t::instance().initialize_program_options(
-    argc, argv, label);
 }
 
 /*!
