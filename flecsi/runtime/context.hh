@@ -139,11 +139,23 @@ struct context {
     return true;
   }
 
+  /*!
+    Initialize the program options. This causes the commandline arguments to
+    be parsed and stored in the variables map. This method should be invoked
+    after all options have been added.
+
+    @param argc  The \em argc input argument to the \em main function.
+    @param argv  The \em argv input argument to the \em main function.
+    @param label The display label for the top-level options description.
+
+    @return Non-zero if the user invoked "help", zero otherwise.
+  */
+
   int initialize_program_options(int argc,
     char ** argv,
-    std::string const & label) {
+    const char * label) {
 
-    boost::program_options::options_description master(label.c_str());
+    boost::program_options::options_description master(label);
     master.add_options()("help,h", "Print this message and exit.");
 
     // Add all of the descriptions to the main description
@@ -240,18 +252,8 @@ struct context {
   } // finalize_generic
 
 #ifdef DOXYGEN // these functions are implemented per-backend
-  /*!
-    Perform FleCSI runtime initialization. If \em dependent is true, this call
-    will also initialize any runtime on which FleCSI depends.
-
-    @param argc      The number of command-line arguments.
-    @param argv      The command-line arguments.
-    @param dependent A boolean telling FleCSI whether or not to initialize
-                     runtimes on which it depends.
-
-    @return An integer indicating the initialization status. This may be
-            interpreted as a \em flecsi::runtime::status enumeration, e.g.,
-            a value of 1 is equivalent to flecsi::runtime::status::HELP.
+  /*
+    Documented in execution.hh
    */
 
   int initialize(int argc, char ** argv, bool dependent);
