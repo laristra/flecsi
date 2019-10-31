@@ -11,7 +11,6 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-
 #include <flecsi/execution.hh>
 
 int
@@ -23,7 +22,7 @@ main(int argc, char ** argv) {
     return status == flecsi::runtime::status::help ? 0 : status;
   } // if
 
-  status = flecsi::start();
+  flecsi::start();
 
   return flecsi::finalize();
 } // main

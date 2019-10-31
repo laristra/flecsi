@@ -177,7 +177,8 @@ private:
 } // namespace control
 } // namespace flecsi
 
-#if defined(FLECSI_ENABLE_GRAPHVIZ)
+#if 0
+// FIXME: This needs to be factored into the new runtime style.
 #include "runtime.hh"
 
 /*!
