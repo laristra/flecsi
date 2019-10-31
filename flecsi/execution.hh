@@ -43,7 +43,7 @@ namespace flecsi {
 
   @return An integer indicating the initialization status. This may be
           interpreted as a \em flecsi::runtime::status enumeration, e.g.,
-          a value of 1 is equivalent to flecsi::runtime::status::HELP.
+          a value of 1 is equivalent to flecsi::runtime::status::help.
  */
 
 inline int
@@ -85,6 +85,13 @@ finalize() {
   label. If the options_description does not exist, it is created.
 
   @param label A std::string containing the options_description label.
+
+  @code
+  auto my_unique_variable_name = add_program_option("Description Label",
+    arg0, arg1, ...);
+  @endcode
+
+  @return A boolean value that can be used at namespace scope for assignment.
  */
 
 template<typename... ARGS>
