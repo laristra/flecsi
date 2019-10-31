@@ -196,7 +196,7 @@ context_t::start() {
     flog_devel(info) << "Starting Legion runtime" << std::endl;
   }
 
-  Runtime::start(context::argv().size(), context::argv().data(), true);
+  Runtime::start(largv.size(), largv.data(), true);
 
   do {
     handoff_to_legion();
