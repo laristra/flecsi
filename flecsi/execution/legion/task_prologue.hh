@@ -19,7 +19,7 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
+#endif
 
 #include "flecsi/data/privilege.hh"
 #include "flecsi/data/storage_classes.hh"

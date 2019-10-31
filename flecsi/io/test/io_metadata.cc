@@ -25,7 +25,7 @@ using namespace flecsi;
 
 int
 index_topology(int argc, char ** argv) {
-  
+
   FTEST();
 
   char file_name[256];
@@ -38,7 +38,7 @@ index_topology(int argc, char ** argv) {
 
   // create hdf5 file and checkpoint
   cp_io.create_hdf5_file(checkpoint_file, my_rank);
-  
+
   std::string str1("control_ds1");
   cp_io.write_string_to_hdf5_file(
     checkpoint_file, my_rank, "control", "ds1", str1, str1.size());
@@ -51,30 +51,30 @@ index_topology(int argc, char ** argv) {
   std::string str2("control_ds2");
   cp_io.write_string_to_hdf5_file(
     checkpoint_file, my_rank, "control", "ds2", str2, str2.size());
-  
+
   std::string str3("topology_ds1");
   cp_io.write_string_to_hdf5_file(
     checkpoint_file, my_rank, "topology", "ds1", str3, str3.size());
-  
+
   cp_io.close_hdf5_file(checkpoint_file);
-  
+
   // recover
   cp_io.open_hdf5_file(checkpoint_file, my_rank);
 
   std::string str1_recover;
   cp_io.read_string_from_hdf5_file(
     checkpoint_file, my_rank, "control", "ds1", str1_recover);
-  
+
   flog(info) << "str1 reover " << str1_recover << std::endl;
   ASSERT_EQ(str1_recover, "control_ds1");
 
   std::string str2_recover;
   cp_io.read_string_from_hdf5_file(
     checkpoint_file, my_rank, "control", "ds2", str2_recover);
-  
+
   flog(info) << "str2 reover " << str2_recover << std::endl;
   ASSERT_EQ(str2_recover, "control_ds2");
-  
+
   std::string str3_recover;
   cp_io.read_string_from_hdf5_file(
     checkpoint_file, my_rank, "topology", "ds1", str3_recover);

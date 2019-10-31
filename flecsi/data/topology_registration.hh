@@ -24,7 +24,7 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
+#endif
 
 #include "../topology/core.hh"
 #include "flecsi/runtime/backend.hh"
@@ -448,8 +448,7 @@ struct topology_registration<
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct topology_registration<
-  flecsi::topology::ntree_topology<POLICY_TYPE>> {
+struct topology_registration<flecsi::topology::ntree_topology<POLICY_TYPE>> {
 
   using TOPOLOGY_TYPE = flecsi::topology::ntree_topology<POLICY_TYPE>;
 
@@ -460,11 +459,9 @@ struct topology_registration<
 
 }; // class topology_registration
 
-
 //----------------------------------------------------------------------------//
 // Canonical.
 //----------------------------------------------------------------------------//
-
 
 template<typename POLICY_TYPE>
 struct topology_registration<

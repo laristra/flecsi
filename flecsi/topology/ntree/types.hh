@@ -17,11 +17,11 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
+#endif
 
 #include "../utility_types.hh"
-#include <flecsi/utils/geometry/point.hh>
 #include <flecsi/topology/ntree/coloring.hh>
+#include <flecsi/utils/geometry/point.hh>
 
 namespace flecsi {
 namespace topology {

@@ -39,7 +39,6 @@ using execution::legion::task_id;
 int
 context_t::initialize(int argc, char ** argv, bool dependent) {
 
-
   if(dependent) {
     int version, subversion;
     MPI_Get_version(&version, &subversion);

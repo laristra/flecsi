@@ -19,7 +19,7 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
+#endif
 
 #include "../launch.hh"
 #include "flecsi/runtime/backend.hh"

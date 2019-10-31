@@ -55,7 +55,6 @@ check(index_field_t::accessor<ro> ia) {
   return FTEST_RESULT();
 } // print
 
-
 int
 index_driver(int argc, char ** argv) {
 
@@ -91,7 +90,7 @@ index_driver(int argc, char ** argv) {
   MPI_Barrier(MPI_COMM_WORLD);
 
 #if 1
-  //cp_io.checkpoint_default_index_topology(checkpoint_file);
+  // cp_io.checkpoint_default_index_topology(checkpoint_file);
   cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh1);
   cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh2);
   cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh3);
@@ -102,7 +101,7 @@ index_driver(int argc, char ** argv) {
 
   // execute<check>(fh1);
   // execute<check>(fh2);
-  
+
 #if 1
   int num_ranks = flecsi_context.processes();
   assert(num_ranks % num_files == 0);
@@ -110,11 +109,17 @@ index_driver(int argc, char ** argv) {
   if(my_rank % num_ranks_per_file == 0) {
     cp_io.open_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file);
     std::string str2("test string 2");
-    cp_io.write_string_to_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str2, str2.size());
+    cp_io.write_string_to_hdf5_file(checkpoint_file,
+      my_rank / num_ranks_per_file,
+      "control",
+      "ds2",
+      str2,
+      str2.size());
 
     std::string str3;
-    cp_io.read_string_from_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str3);
-    //printf("str 3 %s\n", str3.c_str());
+    cp_io.read_string_from_hdf5_file(
+      checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str3);
+    // printf("str 3 %s\n", str3.c_str());
     cp_io.close_hdf5_file(checkpoint_file);
   }
 #endif
@@ -127,7 +132,6 @@ index_driver(int argc, char ** argv) {
   execute<check>(fh2);
   execute<check>(fh3);
 #endif
-  
 
   return 0;
 } // index

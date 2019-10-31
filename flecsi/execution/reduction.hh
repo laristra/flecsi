@@ -17,7 +17,7 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
+#endif
 
 #include "backend.hh"
 #include "internal.hh"

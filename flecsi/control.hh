@@ -17,8 +17,8 @@
 
 #include <flecsi-config.h>
 
-#include <flecsi/execution.hh>
 #include <flecsi/control/point_walker.hh>
+#include <flecsi/execution.hh>
 #include <flecsi/utils/dag.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/flog.hh>
