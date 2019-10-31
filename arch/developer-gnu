@@ -25,6 +25,7 @@ fi
 cmake_mode=cmake
 extra_define=""
 runtime=mpi
+kokkos=OFF
 
 while [[ $# -gt 0 ]]
 do
@@ -39,16 +40,22 @@ do
 			echo "Runtimes: legion, mpi."
 			echo "(default runtime is mpi)."
 			exit
+      shift #past argument
 		;;
 		--ccmake|-c)
 			cmake_mode=ccmake
+      shift #past argument
 		;;
     legion|hpx)
       runtime=$1
+      shift #past argument
+    ;;
+    kokkos)
+      kokkos=ON
+      shift #past argument
     ;;
 	esac
 
-	shift # next argument
 done
 
 if [ $runtime = legion ]; then clog=OFF
@@ -71,6 +78,7 @@ $cmake_mode \
   -DENABLE_UNIT_TESTS=ON \
   -DENABLE_FLECSIT=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
+  -DENABLE_KOKKOS=$kokkos \
   $cinch_dir
 
 #------------------------------------------------------------------------------#
