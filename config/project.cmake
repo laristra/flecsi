@@ -294,6 +294,15 @@ if(ENABLE_CLOG)
 endif()
 
 #------------------------------------------------------------------------------#
+# Add option for Kokkos
+#------------------------------------------------------------------------------#
+
+if (ENABLE_KOKKOS)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Kokkos_LIBRARIES})
+  set (FLECSI_ENABLE_KOKKOS TRUE)
+endif()
+
+#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
@@ -510,6 +519,15 @@ install(
 if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   cinch_target_link_libraries(
     FleCSI ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
+  )
+endif()
+
+if (ENABLE_KOKKOS)
+  cinch_target_link_libraries(
+    FleCSI ${Kokkos_LIBRARIES}
+  )
+  cinch_target_link_libraries(
+    FleCSI-Tut ${Kokkos_LIBRARIES}
   )
 endif()
 

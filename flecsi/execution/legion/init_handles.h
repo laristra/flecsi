@@ -164,7 +164,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
         LegionRuntime::Arrays::Rect<1> dr = dom.get_rect<1>();
         const Legion::UnsafeFieldAccessor<T, 1, Legion::coord_t,
           Realm::AffineAccessor<T, 1, Legion::coord_t>>
-          ac(regions[r], h.fid, sizeof(T));
+          ac(regions[region + r], h.fid, sizeof(T));
 
         T * ac_ptr = (T *)(ac.ptr(itr.p));
         data[r] = ac_ptr;

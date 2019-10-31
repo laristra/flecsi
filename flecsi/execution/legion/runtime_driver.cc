@@ -32,7 +32,7 @@
 
 #if defined(ENABLE_CALIPER)
 #include <caliper/Annotation.h>
-#endif //ENABLE_CALIPER
+#endif // ENABLE_CALIPER
 
 clog_register_tag(runtime_driver);
 
@@ -54,8 +54,7 @@ runtime_driver(const Legion::Task * task,
 #if defined(ENABLE_CALIPER)
   cali::Annotation rd("RUNTIME-DRIVER");
   rd.begin("set-up");
-#endif //ENABLE_CALIPER
-
+#endif // ENABLE_CALIPER
 
   {
     clog_tag_guard(runtime_driver);
@@ -148,12 +147,10 @@ runtime_driver(const Legion::Task * task,
     context_.set_sparse_metadata(md);
   } // if
 
-
 #if defined(ENABLE_CALIPER)
   rd.end();
   rd.begin("spl-tlt-init");
-#endif //ENABLE_CALIPER
-
+#endif // ENABLE_CALIPER
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
@@ -171,7 +168,7 @@ runtime_driver(const Legion::Task * task,
 #if defined(ENABLE_CALIPER)
   rd.end();
   rd.begin("create-regions");
-#endif //ENABLE_CALIPER
+#endif // ENABLE_CALIPER
 
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
@@ -537,7 +534,7 @@ runtime_driver(const Legion::Task * task,
 #if defined(ENABLE_CALIPER)
   rd.end();
   rd.begin("spl-spmd-init");
-#endif //ENABLE_CALIPER
+#endif // ENABLE_CALIPER
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
   {
@@ -555,7 +552,7 @@ runtime_driver(const Legion::Task * task,
 #if defined(ENABLE_CALIPER)
   rd.end();
   rd.begin("driver");
-#endif //ENABLE_CALIPER
+#endif // ENABLE_CALIPER
 
   // run default or user-defined driver
   driver(args.argc, args.argv);
@@ -563,7 +560,7 @@ runtime_driver(const Legion::Task * task,
 #if defined(ENABLE_CALIPER)
   rd.end();
   rd.begin("finish");
-#endif //ENABLE_CALIPER
+#endif // ENABLE_CALIPER
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
   // ----------------------------------------------------------------------//
@@ -573,7 +570,7 @@ runtime_driver(const Legion::Task * task,
 
 #if defined(ENABLE_CALIPER)
   rd.end();
-#endif //ENABLE_CALIPER
+#endif // ENABLE_CALIPER
 } // runtime_driver
 
 void

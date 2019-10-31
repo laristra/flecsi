@@ -55,6 +55,7 @@ struct array_buf_ref_type_u<domain_entity_u<M, E>> {
 
 template<typename T, bool B>
 struct array_buf_ref_get_u {
+  FLECSI_INLINE_TARGET
   static T get(T a, size_t i) {
     return &a[i];
   }
@@ -62,6 +63,7 @@ struct array_buf_ref_get_u {
 
 template<typename T>
 struct array_buf_ref_get_u<T, false> {
+  FLECSI_INLINE_TARGET
   static auto get(T a, size_t i) -> decltype(a[i]) {
     return a[i];
   }
@@ -81,53 +83,64 @@ public:
 
   array_buffer_u() : buf_(nullptr), size_(0), capacity_(0) {}
 
+  FLECSI_INLINE_TARGET
   ref_t operator[](size_t index) {
     return array_buf_ref_get_u<item_t, std::is_pointer<ref_t>::value>::get(
       buf_, index);
   }
 
+  FLECSI_INLINE_TARGET
   const ref_t operator[](size_t index) const {
     return array_buf_ref_get_u<const item_t,
       std::is_pointer<ref_t>::value>::get(buf_, index);
   }
 
+  FLECSI_INLINE_TARGET
   ref_t back() {
     return array_buf_ref_get_u<item_t, std::is_pointer<ref_t>::value>::get(
       buf_, size_ - 1);
   }
 
+  FLECSI_INLINE_TARGET
   const ref_t back() const {
     return array_buf_ref_get_u<item_t, std::is_pointer<ref_t>::value>::get(
       buf_, size_ - 1);
   }
 
+  FLECSI_INLINE_TARGET
   size_t size() const {
     return size_;
   } // size
 
+  FLECSI_INLINE_TARGET
   size_t capacity() const {
     return capacity_;
   } // capacity
 
+  FLECSI_INLINE_TARGET
   item_t begin() {
     return buf_;
   }
 
+  FLECSI_INLINE_TARGET
   item_t end() {
     return buf_ + size_;
   }
 
+  FLECSI_INLINE_TARGET
   const item_t begin() const {
     return buf_;
   }
 
+  FLECSI_INLINE_TARGET
   const item_t end() const {
     return buf_ + size_;
   }
 
   template<typename... Args>
-  void insert(Args &&... args) {}
+  FLECSI_INLINE_TARGET void insert(Args &&... args) {}
 
+  FLECSI_INLINE_TARGET
   void push_back(const ref_t x) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -140,62 +153,74 @@ public:
     buf_[size_++] = x;
   }
 
+  FLECSI_INLINE_TARGET
   void pushed() {
     ++size_;
   }
 
+  FLECSI_INLINE_TARGET
   void clear() {
     size_ = 0;
   }
 
+  FLECSI_INLINE_TARGET
   bool empty() const {
     return size_ == 0;
   }
 
+  FLECSI_INLINE_TARGET
   void resize(size_t n) {
     assert(n <= capacity_);
     size_ = n;
   }
 
+  FLECSI_INLINE_TARGET
   void set_buffer(item_t buf, size_t size) {
     buf_ = buf;
     size_ = size;
     capacity_ = size;
   }
 
+  FLECSI_INLINE_TARGET
   void set_buffer(item_t buf, size_t capacity, bool initialized) {
     buf_ = buf;
     capacity_ = capacity;
     size_ = initialized ? capacity_ : 0;
   }
 
+  FLECSI_INLINE_TARGET
   void set_buffer(item_t buf, size_t capacity, size_t size) {
     buf_ = buf;
     capacity_ = capacity;
     size_ = size;
   }
 
+  FLECSI_INLINE_TARGET
   item_t buffer() {
     return buf_;
   }
 
+  FLECSI_INLINE_TARGET
   const item_t buffer() const {
     return buf_;
   }
 
+  FLECSI_INLINE_TARGET
   item_t data() {
     return buf_;
   }
 
+  FLECSI_INLINE_TARGET
   const item_t data() const {
     return buf_;
   }
 
   template<typename... Args>
-  void assign(Args &&... args) {
+  FLECSI_INLINE_TARGET void assign(Args &&... args) {
     assert(false && "unimplemented");
   }
 
+  FLECSI_INLINE_TARGET
   void reserve(size_t n) {
     assert(false && "unimplemented");
   }

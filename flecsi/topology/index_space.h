@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <flecsi/utils/target.h>
+
 #include <algorithm>
 #include <functional>
 #include <map>
@@ -80,7 +82,7 @@ template<class T,
   bool OWNED = true,
   bool SORTED = false,
   class F = void,
-  template<typename, typename...> class ID_STORAGE_TYPE = std::vector,
+  template<typename, typename...> class ID_STORAGE_TYPE = flecsi::vector,
   template<typename, typename...> class STORAGE_TYPE = ID_STORAGE_TYPE>
 class index_space_u
 {
@@ -228,11 +230,12 @@ public:
       s_ = itr.s_;
       return *this;
     }
-    */
+   */
 
     //-----------------------------------------------------------------//
     //! Equality operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     bool operator==(const iterator_base_ & itr) const {
       return index_ == itr.index_;
     }
@@ -240,6 +243,7 @@ public:
     //-----------------------------------------------------------------//
     //! Inequality operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     bool operator!=(const iterator_base_ & itr) const {
       return index_ != itr.index_;
     }
@@ -247,6 +251,7 @@ public:
     //-----------------------------------------------------------------//
     //! Less than operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     bool operator<(const iterator_base_ & itr) const {
       return index_ < itr.index_;
     }
@@ -254,6 +259,7 @@ public:
     //-----------------------------------------------------------------//
     //! Less than equal operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     bool operator<=(const iterator_base_ & itr) const {
       return index_ <= itr.index_;
     }
@@ -261,6 +267,7 @@ public:
     //-----------------------------------------------------------------//
     //! Greater than operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     bool operator>(const iterator_base_ & itr) const {
       return index_ > itr.index_;
     }
@@ -268,6 +275,7 @@ public:
     //-----------------------------------------------------------------//
     //! Greater than equal operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     bool operator>=(const iterator_base_ & itr) const {
       return index_ >= itr.index_;
     }
@@ -275,6 +283,7 @@ public:
     //-----------------------------------------------------------------//
     //! Difference
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     size_t operator-(const iterator_base_ & itr) const {
       return index_ - itr.index_;
     }
@@ -283,14 +292,16 @@ public:
     //! Helper method. Get item at index
     //-----------------------------------------------------------------//
   protected:
+    FLECSI_INLINE_TARGET
     auto get_(size_t index) const {
       return static_cast<cast_t>((*s_)[(*items_)[index].index_space_index()]);
     }
 
-  public:
     //-----------------------------------------------------------------//
     //! Get item at index
     //-----------------------------------------------------------------//
+  public:
+    FLECSI_INLINE_TARGET
     auto operator[](size_t index) const {
       return get_(index);
     }
@@ -511,6 +522,7 @@ public:
     //-----------------------------------------------------------------//
     //! Increment operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     iterator_ & operator++() {
       ++B::index_;
       return *this;
@@ -519,6 +531,7 @@ public:
     //-----------------------------------------------------------------//
     //! Decrement operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     iterator_ & operator--() {
       --B::index_;
       return *this;
@@ -527,6 +540,7 @@ public:
     //-----------------------------------------------------------------//
     //! Post-increment operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     iterator_ operator++(int) {
       iterator_ itr(*this);
       B::index_++;
@@ -536,6 +550,7 @@ public:
     //-----------------------------------------------------------------//
     //! Post-decrement operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     iterator_ operator--(int) {
       iterator_ itr(*this);
       B::index_--;
@@ -545,6 +560,7 @@ public:
     //-----------------------------------------------------------------//
     //! Plus offset operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     iterator_ operator+(size_t offset) const {
       iterator_ itr(*this);
       itr.B::index_ += offset;
@@ -581,6 +597,7 @@ public:
     //-----------------------------------------------------------------//
     //! Plus assignment offset operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     iterator_ & operator+=(size_t offset) {
       B::index_ += offset;
       return *this;
@@ -589,6 +606,7 @@ public:
     //-----------------------------------------------------------------//
     //! Minus assignment offset operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     iterator_ & operator-=(size_t offset) {
       B::index_ -= offset;
       return *this;
@@ -597,6 +615,7 @@ public:
     //-----------------------------------------------------------------//
     //! Dereference operator
     //-----------------------------------------------------------------//
+    FLECSI_INLINE_TARGET
     S operator*() {
       return B::get_(B::index_);
     }
@@ -670,6 +689,7 @@ public:
   //-----------------------------------------------------------------//
   //! Move constructor.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   index_space_u(index_space_u && is)
     : v_(std::move(is.v_)), begin_(std::move(is.begin_)),
       end_(std::move(is.end_)), sorted_(std::move(is.sorted_)),
@@ -694,6 +714,7 @@ public:
   //-----------------------------------------------------------------//
   //! Destructor.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   ~index_space_u() {
     if(OWNED || owned_) {
       delete v_;
@@ -823,6 +844,7 @@ public:
   //-----------------------------------------------------------------//
   //! Return begin iterator
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   auto begin() {
     return iterator_<T, F>(s_, *v_, begin_, end_);
   }
@@ -830,6 +852,7 @@ public:
   //-----------------------------------------------------------------//
   //! Return begin iterator
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   auto begin() const {
     return iterator_<const T, F>(s_, *v_, begin_, end_);
   }
@@ -837,6 +860,7 @@ public:
   //-----------------------------------------------------------------//
   //! Return end iterator
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   auto end() {
     return iterator_<T, F>(s_, *v_, end_, end_);
   }
@@ -844,6 +868,7 @@ public:
   //-----------------------------------------------------------------//
   //! Return end iterator
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   auto end() const {
     return iterator_<const T, F>(s_, *v_, end_, end_);
   }
@@ -940,6 +965,7 @@ public:
   //-----------------------------------------------------------------//
   //! Helper method. Get item at offset.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   ref_t get_(size_t offset) {
     return static_cast<cast_t>(
       (*s_)[(*v_)[begin_ + offset].index_space_index()]);
@@ -948,6 +974,7 @@ public:
   //-----------------------------------------------------------------//
   //! Helper method. Get item at offset.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const ref_t get_(size_t offset) const {
     return static_cast<cast_t>(
       (*s_)[(*v_)[begin_ + offset].index_space_index()]);
@@ -956,6 +983,7 @@ public:
   //-----------------------------------------------------------------//
   //! Helper method. Get item at offset from end.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   ref_t get_end_(size_t offset) {
     return static_cast<cast_t>(
       (*s_)[(*v_)[end_ - 1 - offset].index_space_index()]);
@@ -964,6 +992,7 @@ public:
   //-----------------------------------------------------------------//
   //! Helper method. Get item at offset from end.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const ref_t get_end_(size_t offset) const {
     return static_cast<cast_t>(
       (*s_)[(*v_)[end_ - 1 - offset].index_space_index()]);
@@ -972,6 +1001,7 @@ public:
   //-----------------------------------------------------------------//
   //! Get item at offset.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   ref_t operator[](size_t offset) {
     return get_(offset);
   }
@@ -979,6 +1009,7 @@ public:
   //-----------------------------------------------------------------//
   //! Get item at offset.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const ref_t operator[](size_t i) const {
     return get_(i);
   }
@@ -987,6 +1018,7 @@ public:
   //! Index into the index space and return reference to the entity id
   //! at index
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const id_t & operator()(size_t i) const {
     return (*v_)[begin_ + i];
   }
@@ -995,6 +1027,7 @@ public:
   //! Index into the index space and return reference to the entity id
   //! at index
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   id_t & operator()(size_t i) {
     return (*v_)[begin_ + i];
   }
@@ -1107,7 +1140,7 @@ public:
   //! Construct and return a vector containing the entities
   //! associated with this index space
   //-----------------------------------------------------------------//
-  std::vector<const T> to_vec() const {
+  flecsi::vector<const T> to_vec() const {
     return to_vec_<const T>();
   }
 
@@ -1115,7 +1148,7 @@ public:
   //! Construct and return a vector containing the entities associated
   //! with this index space
   //-----------------------------------------------------------------//
-  std::vector<T> to_vec() {
+  flecsi::vector<T> to_vec() {
     return to_vec_<T>();
   }
 
@@ -1126,8 +1159,8 @@ public:
   //! @tparam S entity type
   //-----------------------------------------------------------------//
   template<class S>
-  std::vector<S> to_vec_() {
-    std::vector<S> ret;
+  flecsi::vector<S> to_vec_() {
+    flecsi::vector<S> ret;
     size_t n = end_ - begin_;
     ret.reserve(n);
     for(size_t i = 0; i < n; ++i) {
@@ -1181,7 +1214,7 @@ public:
   //-----------------------------------------------------------------//
   template<typename Predicate>
   auto filter(Predicate && f) const {
-    index_space_u<T, false, true, false, void, std::vector, STORAGE_TYPE> is;
+    index_space_u<T, false, true, false, void, flecsi::vector, STORAGE_TYPE> is;
     is.set_master(*this);
 
     for(auto item : *this) {
@@ -1209,7 +1242,7 @@ public:
   //-----------------------------------------------------------------//
   template<class S>
   auto map(map_function<S> f) const {
-    index_space_u<S, false, true, false, void, std::vector, STORAGE_TYPE> is;
+    index_space_u<S, false, true, false, void, flecsi::vector, STORAGE_TYPE> is;
     is.set_master(*this);
 
     is.begin_push_(v_->size());
@@ -1324,7 +1357,7 @@ public:
 
     // now extract the results and store them in a vector.
     // should be faster for access.
-    std::vector<new_index_space_t> bins_vec;
+    flecsi::vector<new_index_space_t> bins_vec;
     bins_vec.reserve(bins_map.size());
 
     for(auto && entry : bins_map)
@@ -1495,6 +1528,7 @@ public:
   //! have storage then only the index is pushed. It will create a copy
   //! of its aliased indices if OWNED is false.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   void push_back(const T & item) {
     if(!OWNED && !owned_) {
       v_ = new id_storage_t(*v_);
@@ -1508,7 +1542,7 @@ public:
     if(SORTED || sorted_) {
       auto id = id_(item);
       auto itr = std::upper_bound(v_->begin(), v_->end(), id);
-      v_->insert(itr, id);
+      v_->insert(itr, index);
     }
     else {
       v_->push_back(id_(item));
@@ -1529,6 +1563,7 @@ public:
     }
 
     if(SORTED || sorted_) {
+
       auto itr = std::upper_bound(v_->begin(), v_->end(), index);
       v_->insert(itr, index);
     }
@@ -1769,7 +1804,11 @@ public:
   //-----------------------------------------------------------------//
   //! Constructor
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   simple_id(size_t id) : id_(id) {}
+
+  FLECSI_INLINE_TARGET
+  simple_id() : id_(0) {}
 
   //-----------------------------------------------------------------//
   //! Conversion the size_t
@@ -1806,8 +1845,15 @@ public:
   using id_t = simple_id;
 
   //-----------------------------------------------------------------//
+  //! Simple constructor
+  //----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
+  simple_entry_u() : id_(0), entry_(T(0)) {}
+
+  //-----------------------------------------------------------------//
   //! Constructor to associate an id with an entry
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   simple_entry_u(id_t id, const T & entry) : id_(id), entry_(entry) {}
 
   //-----------------------------------------------------------------//

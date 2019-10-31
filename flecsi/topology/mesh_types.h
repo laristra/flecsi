@@ -94,40 +94,49 @@ public:
 
   // implicit type conversions are evil.  This one tries to convert
   // all pointers to domain_entities
+  FLECSI_INLINE_TARGET
   explicit domain_entity_u(ENTITY_TYPE * entity) : entity_(entity) {}
   domain_entity_u & operator=(const domain_entity_u & e) {
     entity_ = e.entity_;
     return *this;
   }
 
+  FLECSI_INLINE_TARGET
   ENTITY_TYPE * entity() {
     return entity_;
   }
 
+  FLECSI_INLINE_TARGET
   const ENTITY_TYPE * entity() const {
     return entity_;
   }
 
+  FLECSI_INLINE_TARGET
   operator ENTITY_TYPE *() {
     return entity_;
   }
 
+  FLECSI_INLINE_TARGET
   ENTITY_TYPE * operator->() {
     return entity_;
   }
 
+  FLECSI_INLINE_TARGET
   const ENTITY_TYPE * operator->() const {
     return entity_;
   }
 
+  FLECSI_INLINE_TARGET
   ENTITY_TYPE * operator*() {
     return entity_;
   }
 
+  FLECSI_INLINE_TARGET
   const ENTITY_TYPE * operator*() const {
     return entity_;
   }
 
+  FLECSI_INLINE_TARGET
   operator size_t() const {
     return entity_->id();
   }
@@ -136,26 +145,32 @@ public:
     return entity_->template global_id<DOM>();
   }
 
+  FLECSI_INLINE_TARGET
   id_t global_id() const {
     return entity_->template global_id<DOM>();
   }
 
+  FLECSI_INLINE_TARGET
   size_t id() const {
     return entity_->id();
   }
 
+  FLECSI_INLINE_TARGET
   bool operator==(domain_entity_u e) const {
     return entity_ == e.entity_;
   }
 
+  FLECSI_INLINE_TARGET
   bool operator!=(domain_entity_u e) const {
     return entity_ != e.entity_;
   }
 
+  FLECSI_INLINE_TARGET
   bool operator<(domain_entity_u e) const {
     return entity_ < e.entity_;
   }
 
+  FLECSI_INLINE_TARGET
   id_t index_space_id() const {
     return entity_->template global_id<DOM>();
   }

@@ -35,7 +35,6 @@
 #include <flecsi/utils/tuple_function.h>
 #include <flecsi/utils/tuple_type_converter.h>
 
-
 clog_register_tag(task_wrapper);
 
 namespace flecsi {
