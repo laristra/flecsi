@@ -17,7 +17,7 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif
 #include "flecsi/data/reference.hh"
 //#include "flecsi/runtime/backend.hh"
 //#include <flecsi/topology/unstructured_mesh/partition.hh>
@@ -26,7 +26,6 @@
 //#include <flecsi/utils/common.hh>
 //#include <flecsi/utils/set_intersection.hh>
 //#include <flecsi/utils/static_verify.hh>
-#endif
 
 //#include <algorithm>
 //#include <array>

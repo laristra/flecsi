@@ -24,7 +24,8 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "../topology/core.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/runtime/types.hh>
@@ -37,7 +38,6 @@
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/hash.hh>
 #include <flecsi/utils/tuple_walker.hh>
-#endif
 
 #include <string>
 #include <tuple>
@@ -442,6 +442,29 @@ struct topology_registration<
 
 /*!
  */
+
+//----------------------------------------------------------------------------//
+// NTree.
+//----------------------------------------------------------------------------//
+
+template<typename POLICY_TYPE>
+struct topology_registration<
+  flecsi::topology::ntree_topology<POLICY_TYPE>> {
+
+  using TOPOLOGY_TYPE = flecsi::topology::ntree_topology<POLICY_TYPE>;
+
+  static bool register_fields() {
+    flog(info) << "topology_registration::register_fields()" << std::endl;
+    return true;
+  } // register_fields
+
+}; // class topology_registration
+
+
+//----------------------------------------------------------------------------//
+// Canonical.
+//----------------------------------------------------------------------------//
+
 
 template<typename POLICY_TYPE>
 struct topology_registration<

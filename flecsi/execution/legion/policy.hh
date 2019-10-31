@@ -19,7 +19,8 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "../launch.hh"
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/runtime/legion/tasks.hh"
@@ -32,7 +33,6 @@
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/flog/utils.hh>
-#endif
 
 #include <functional>
 #include <memory>

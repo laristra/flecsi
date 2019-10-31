@@ -19,14 +19,14 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "../context.hh"
 #include <flecsi/data/legion/types.hh>
 //#include "flecsi/execution/launch.hh"
 //#include "flecsi/execution/processor.hh"
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
-#endif
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!

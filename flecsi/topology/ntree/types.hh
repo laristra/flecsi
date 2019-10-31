@@ -17,36 +17,14 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "../utility_types.hh"
 #include <flecsi/utils/geometry/point.hh>
-#endif
+#include <flecsi/topology/ntree/coloring.hh>
 
 namespace flecsi {
 namespace topology {
-
-//----------------------------------------------------------------------------//
-// NTree topology.
-//----------------------------------------------------------------------------//
-
-/*!
-  @ingroup topology
- */
-
-struct ntree_topology_base_t {
-  using coloring_t = size_t;
-
-  // add storage
-}; // ntree_topology_base_t
-
-/*----------------------------------------------------------------------------*
- * class tree_entity_base
- *----------------------------------------------------------------------------*/
-template<class>
-class ntree_topology_base;
-
-// Aliases for backward compatibility
-using ntree_entity_base_ = entity_base_;
 
 using ntree_entity_base_t = entity_base<0>;
 

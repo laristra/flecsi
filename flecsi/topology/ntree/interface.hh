@@ -17,14 +17,12 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif
 #include "flecsi/data/reference.hh"
 #include <flecsi/topology/ntree/geometry.hh>
 #include <flecsi/topology/ntree/storage.hh>
 #include <flecsi/topology/ntree/types.hh>
-#include <flecsi/utils/flog.hh>
-#include <flecsi/utils/flog/utils.hh>
-#endif
+#include <flecsi/topology/ntree/coloring.hh>
 
 #include <fstream>
 #include <iostream>
@@ -47,16 +45,13 @@ namespace topology {
 //! and entity types.
 //-----------------------------------------------------------------//
 template<typename POLICY_TYPE>
-struct ntree_topology : public ntree_topology_base_t,
-                        public data::reference_base {
+struct ntree_topology : public ntree_topology_base {
 
 public:
   using Policy = POLICY_TYPE;
 
   // tree storage type definition
   using storage_t = ntree_storage<Policy>;
-  // tree topology base definition
-  using base_t = ntree_topology_base<storage_t>;
   // entity ID type
   using id_t = utils::id_t;
   // offset type use by connectivities to give offsets and counts
@@ -68,13 +63,15 @@ public:
   using point_t = point<element_t, dimension>;
   using range_t = std::array<point_t, 2>;
   // ------- Space filling curve
-  using key_t = typename Policy::filling_curve_t;
+  using key_t = typename Policy::key_t;
   // ------- Tree topology
-  using node_t = typename Policy::tree_node_;
-  using tree_entity_t = typename Policy::tree_entity_holder_;
-  using entity_t = typename Policy::tree_entity_;
+  using node_t = typename Policy::node_t;
+  using tree_entity_t = typename Policy::tree_entity_t;
+  using entity_t = typename Policy::entity_t;
   using entity_id_t = typename entity_base<0>::id_t;
   using geometry_t = ntree_geometry<element_t, dimension>;
+
+  storage_t nts_; 
 
 public:
   /*!
@@ -84,14 +81,13 @@ public:
   ntree_topology() {
     max_depth_ = 0;
     // Init the new storage, for now without handler
-    base_t::set_storage(new storage_t);
     // Add the root in the node_map_
     node_map_.emplace(key_t::root(), key_t::root());
     root_ = node_map_.find(key_t::root());
     assert(root_ != node_map_.end());
   }
 
-  ntree_topology(const ntree_topology & s) : base_t(s) {}
+  ntree_topology(const ntree_topology & s) {}
 
   /**
    * @brief Set the range of the current domain.
@@ -108,14 +104,14 @@ public:
    */
   template<class... S>
   entity_t * make_entity(S &&... args) {
-    return base_t::nts_->template make_entity(std::forward<S>(args)...);
+    return nts_.template make_entity(std::forward<S>(args)...);
   }
 
   /**
    * @brief Make the keys for all the enities present in the tree
    */
   void generate_keys() {
-    for(auto & ent : *(base_t::nts_->entity_index_space.storage())) {
+    for(auto & ent : *(nts_.entity_index_space.storage())) {
       ent.set_key(key_t(range_, ent.coordinates()));
     }
   }
@@ -141,7 +137,7 @@ public:
    */
   template<class... S>
   entity_t * make_tree_entity(S &&... args) {
-    return base_t::nts_->template make_tree_entity(std::forward<S>(args)...);
+    return nts_.template make_tree_entity(std::forward<S>(args)...);
   }
 
   /**
@@ -156,7 +152,7 @@ public:
    * particles of the tree in a serial way
    */
   void build_tree() {
-    for(auto & ent : *(base_t::nts_->entity_index_space.storage())) {
+    for(auto & ent : *(nts_.entity_index_space.storage())) {
       insert(ent);
     }
   }
@@ -202,7 +198,7 @@ public:
    * @brief get an entity from the storage
    */
   entity_t & get(const entity_id_t & id) {
-    return *(base_t::nts_->entity_index_space.storage()->begin() + id.entity());
+    return *(nts_.entity_index_space.storage()->begin() + id.entity());
   }
 
   /**
@@ -506,7 +502,8 @@ private:
   std::unordered_map<key_t, node_t, node_key_hasher__<key_t>> node_map_;
   typename std::unordered_map<key_t, node_t, node_key_hasher__<key_t>>::iterator
     root_;
-};
+    
+}; // ntree_topology
 
 template<class TREE_TYPE>
 std::ostream &

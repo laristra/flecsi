@@ -226,12 +226,17 @@ struct context {
       std::is_same_v<TOPOLOGY_TYPE, topology::index_topology_t>;
     constexpr bool canonical_coloring =
       std::is_base_of_v<topology::canonical_topology_base, TOPOLOGY_TYPE>;
+    constexpr bool ntree_coloring = 
+      std::is_base_of_v<topology::ntree_topology_base, TOPOLOGY_TYPE>; 
 
     if constexpr(index_coloring) {
       return index_colorings_[identifier];
     }
-    else if(canonical_coloring) {
+    else if constexpr (canonical_coloring) {
       return canonical_colorings_[identifier];
+    }
+    else if constexpr (ntree_coloring) {
+      return ntree_colorings_[identifier];
     } // if
   } // coloring
 
@@ -448,6 +453,8 @@ protected:
     index_colorings_;
   std::unordered_map<size_t, topology::canonical_topology_base::coloring>
     canonical_colorings_;
+  std::unordered_map<size_t, topology::ntree_topology_base::coloring>
+    ntree_colorings_;
 
   /*--------------------------------------------------------------------------*
     Topology data members.

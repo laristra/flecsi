@@ -19,9 +19,9 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include <boost/program_options.hpp>
-#endif
 
 #if defined(FLECSI_RUNTIME_DEBUG)
 #include <iostream>

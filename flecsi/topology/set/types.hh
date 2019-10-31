@@ -17,9 +17,8 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
-//#include "flecsi/data/reference.hh"
 #endif
+//#include "flecsi/data/reference.hh"
 
 namespace flecsi {
 namespace topology {
