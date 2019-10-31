@@ -17,15 +17,15 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
+#endif
 
 #include "../entity_storage.hh"
 #include "../index_space.hh"
 #include "flecsi/runtime/backend.hh"
+#include <flecsi/runtime/context.hh>
 #include <flecsi/topology/ntree/storage.hh>
 #include <flecsi/topology/ntree/types.hh>
 #include <flecsi/utils/id.hh>
-#include <flecsi/runtime/context.hh>
 
 #include <array>
 
@@ -82,11 +82,11 @@ struct ntree_storage {
     node_partition_index_spaces;
 
   ntree_storage() {
-    //auto & context_ = flecsi::runtime::context_t::instance();
+    // auto & context_ = flecsi::runtime::context_t::instance();
   }
 
   void finalize_storage() {
-    //auto & context = runtime::context_t::instance();
+    // auto & context = runtime::context_t::instance();
   }
 
   /**

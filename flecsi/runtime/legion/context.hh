@@ -19,7 +19,7 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
+#endif
 
 #include "../context.hh"
 #include <flecsi/data/legion/types.hh>

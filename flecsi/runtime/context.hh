@@ -117,9 +117,15 @@ struct context {
     return argv_;
   }
 
-  std::string & flog_tags() { return flog_tags_; }
-  int & flog_verbose() { return flog_verbose_; }
-  size_t & flog_process() { return flog_process_; }
+  std::string & flog_tags() {
+    return flog_tags_;
+  }
+  int & flog_verbose() {
+    return flog_verbose_;
+  }
+  size_t & flog_process() {
+    return flog_process_;
+  }
 
   /*
     The boolean return is necessary for assignment so that this code block is
@@ -151,9 +157,7 @@ struct context {
     @return Non-zero if the user invoked "help", zero otherwise.
   */
 
-  int initialize_program_options(int argc,
-    char ** argv,
-    const char * label) {
+  int initialize_program_options(int argc, char ** argv, const char * label) {
 
     boost::program_options::options_description master(label);
     master.add_options()("help,h", "Print this message and exit.");
@@ -386,16 +390,16 @@ struct context {
       std::is_same_v<TOPOLOGY_TYPE, topology::index_topology_t>;
     constexpr bool canonical_coloring =
       std::is_base_of_v<topology::canonical_topology_base, TOPOLOGY_TYPE>;
-    constexpr bool ntree_coloring = 
-      std::is_base_of_v<topology::ntree_topology_base, TOPOLOGY_TYPE>; 
+    constexpr bool ntree_coloring =
+      std::is_base_of_v<topology::ntree_topology_base, TOPOLOGY_TYPE>;
 
     if constexpr(index_coloring) {
       return index_colorings_[identifier];
     }
-    else if constexpr (canonical_coloring) {
+    else if constexpr(canonical_coloring) {
       return canonical_colorings_[identifier];
     }
-    else if constexpr (ntree_coloring) {
+    else if constexpr(ntree_coloring) {
       return ntree_colorings_[identifier];
     } // if
   } // coloring
