@@ -29,11 +29,10 @@ if(ENABLE_HDF5)
 
   find_package(HDF5 REQUIRED)
 
-  include_directories(${HDF5_C_INCLUDE_DIR})
-
-  if(CMAKE_BUILD_TYPE MATCHES Debug)
-    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${HDF5_hdf5_LIBRARY_DEBUG})
+  if(HDF5_FOUND)
+    include_directories(${HDF5_INCLUDE_DIRS})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${HDF5_LIBRARIES})
   else()
-    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${HDF5_hdf5_LIBRARY_RELEASE})
+    message(FATAL_ERROR "HDF5 requested, but not found")
   endif()
 endif()
