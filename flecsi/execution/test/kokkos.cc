@@ -122,7 +122,11 @@ init_toc(client_handle_t<test_mesh_t, ro> mesh,
 #endif
 }
 
+#if defined (REALM_USE_CUDA)
 flecsi_register_task_simple(init_toc, toc, index);
+#else
+flecsi_register_task_simple(init_toc, loc, index);
+#endif
 
 
 void
@@ -152,7 +156,11 @@ test(client_handle_t<test_mesh_t, ro> mesh,
   }; // forall
 }
 
+#if defined (REALM_USE_CUDA)
 flecsi_register_task_simple(test, toc, index);
+#else
+flecsi_register_task_simple(test, loc, index);
+#endif
 //----------------------------------------------------------------------------//
 // Specialization driver.
 //----------------------------------------------------------------------------//
