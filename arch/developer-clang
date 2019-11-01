@@ -25,7 +25,7 @@ fi
 cmake_mode=cmake
 extra_define=""
 runtime=mpi
-kokkos=ON
+kokkos=OFF
 
 
 while [[ $# -gt 0 ]]
