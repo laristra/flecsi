@@ -23,8 +23,6 @@
 #include <flecsi/data/coloring.hh>
 #include <flecsi/data/field.hh>
 #include <flecsi/data/topology.hh>
-#include <flecsi/topology/internal/global.hh>
-#include <flecsi/topology/internal/index.hh>
 
 namespace flecsi {
 

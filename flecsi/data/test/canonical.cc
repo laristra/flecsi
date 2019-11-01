@@ -15,6 +15,7 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
+#include <flecsi/topology/internal/canonical.hh>
 #include <flecsi/utils/ftest.hh>
 
 #include <tuple>

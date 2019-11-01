@@ -23,7 +23,6 @@
 #include <flecsi/execution/launch.hh>
 #include <flecsi/execution/task_attributes.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/topology/base.hh>
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/demangle.hh>
