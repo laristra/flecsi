@@ -149,8 +149,8 @@ test(client_handle_t<test_mesh_t, ro> mesh,
     },
     std::string("test"));
 
-  forall(mesh.cells(), "test2") {
-    assert(pressure(i) == 1.0);
+  forall(mesh.cells(), c, "test2") {
+    assert(pressure(c) == 1.0);
     assert(global == 2042);
     assert(color == 2);
   }; // forall
