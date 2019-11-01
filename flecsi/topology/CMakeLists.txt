@@ -26,6 +26,7 @@ set(topology_HEADERS
   entity_storage.h
   index_space.h
   mesh_definition.h
+  parallel_mesh_definition.h
   mesh.h
   mesh_storage.h
   mesh_topology.h
