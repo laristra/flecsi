@@ -402,7 +402,7 @@ print_help(const bool colorize) {
 
   option("markup-tex-listing",
     "Emit text-coloring markup that may work in the context of a specific\n"
-    "type of \\listing macro, found in some .tex documents, that allows for\n"
+    "type of \\listing macro, found in some .tex documents, that allows \n"
     "input files to use backticks as the TeX escape character. "
     "This was used\n"
     "by flecstan's author to help make some of the presentation slides.\n"
