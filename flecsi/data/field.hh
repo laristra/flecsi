@@ -16,7 +16,6 @@
 /*! @file */
 
 #include <flecsi/data/privilege.hh>
-#include <flecsi/data/reference.hh>
 #include <flecsi/data/storage_classes.hh>
 #include <flecsi/data/topology.hh>
 #include <flecsi/runtime/backend.hh>
@@ -43,19 +42,23 @@ struct accessor;
   associated topology instance.
  */
 template<class Topo>
-struct field_reference_t : public reference_base {
+struct field_reference_t {
   // The use of the slot allows creating field references statically, before
   // the topology_data has been allocated.
   using topology_t = topology_slot<Topo>;
 
-  field_reference_t(size_t identifier, const topology_t & topology)
-    : reference_base(identifier), topology_(&topology) {}
+  field_reference_t(const field_info_t & info, const topology_t & topology)
+    : info_(&info), topology_(&topology) {}
 
+  const field_info_t & info() const {
+    return *info_;
+  }
   const topology_t & topology() const {
     return *topology_;
   } // topology_identifier
 
 private:
+  const field_info_t * info_;
   const topology_t * topology_;
 
 }; // struct field_reference
@@ -87,7 +90,7 @@ template<typename DATA_TYPE,
   storage_label_t STORAGE_CLASS,
   typename TOPOLOGY_TYPE,
   size_t INDEX_SPACE>
-struct field_member {
+struct field_member : field_info_t {
 
   using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 
@@ -97,11 +100,12 @@ struct field_member {
     DATA_TYPE,
     privilege_pack<PRIVILEGES...>::value>;
 
-  field_member() : fid_(unique_fid_t::instance().next()) {
-
-    runtime::context_t::instance().add_field_info(topology::id<TOPOLOGY_TYPE>(),
-      STORAGE_CLASS,
-      {fid_, INDEX_SPACE, sizeof(DATA_TYPE)});
+  field_member()
+    : field_info_t{unique_fid_t::instance().next(),
+        INDEX_SPACE,
+        sizeof(DATA_TYPE)} {
+    runtime::context_t::instance().add_field_info(
+      topology::id<TOPOLOGY_TYPE>(), STORAGE_CLASS, *this);
   }
 
   /*!
@@ -114,12 +118,8 @@ struct field_member {
   field_reference<DATA_TYPE, TOPOLOGY_TYPE> operator()(
     topology_reference_t const & topology_reference) const {
 
-    return {fid_, topology_reference};
+    return {*this, topology_reference};
   } // operator()
-
-private:
-  field_id_t fid_;
-
 }; // struct field_member
 
 } // namespace data

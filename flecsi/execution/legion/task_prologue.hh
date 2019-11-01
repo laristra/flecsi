@@ -130,7 +130,7 @@ struct task_prologue_t {
       EXCLUSIVE,
       region);
 
-    rr.add_field(ref.identifier());
+    rr.add_field(ref.info().fid);
     region_reqs_.push_back(rr);
   } // visit
 
@@ -160,7 +160,7 @@ struct task_prologue_t {
       EXCLUSIVE,
       instance_data.logical_region);
 
-    rr.add_field(ref.identifier());
+    rr.add_field(ref.info().fid);
     region_reqs_.push_back(rr);
   } // visit
 

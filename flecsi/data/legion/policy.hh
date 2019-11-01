@@ -71,7 +71,7 @@ inline topology_data<topology::index_t>::topology_data(
     legion_runtime->create_field_allocator(legion_context, field_space);
 
   for(auto const & fi : field_info_store) {
-    allocator.allocate_field(fi.type_size, fi.fid);
+    allocator.allocate_field(fi->type_size, fi->fid);
   } // for
 
   allocate();
@@ -117,7 +117,8 @@ inline topology_data<topology::unstructured_mesh_base_t>::topology_data(
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
 
       for(auto const & fi : field_info_store) {
-        allocator.allocate_field(fi.type_size, fi.fid);
+        if(fi->index_space == is)
+          allocator.allocate_field(fi->type_size, fi->fid);
       } // for
 
 

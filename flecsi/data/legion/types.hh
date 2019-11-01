@@ -118,7 +118,7 @@ struct topology_data<topology::global_t> : legion::topology_base {
         topology::id<topology::global_t>(), storage_label_t::dense);
 
     for(auto const & fi : field_info_store) {
-      allocator.allocate_field(fi.type_size, fi.fid);
+      allocator.allocate_field(fi->type_size, fi->fid);
     } // for
 
     allocate();

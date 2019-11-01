@@ -72,7 +72,7 @@ struct context {
     size_t key is the storage class.
    */
 
-  using field_info_store_t = data::field_info_store_t;
+  using field_info_store_t = std::vector<const data::field_info_t *>;
   using field_info_map_t = std::unordered_map<size_t, field_info_store_t>;
 
   /*!
@@ -406,7 +406,7 @@ struct context {
                      << topology_type_identifier << std::endl
                      << "\tstorage class: " << storage_class << std::endl;
     topology_field_info_map_[topology_type_identifier][storage_class].push_back(
-      field_info);
+      &field_info);
   } // add_field_information
 
   /*!
