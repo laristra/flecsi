@@ -23,12 +23,43 @@ set(io_HEADERS
   simple_definition.h
 )
 
+set(io_SOURCES
+)
+
+if(ENABLE_HDF5)
+
+  set(io_HEADERS
+    backend.h
+    io_hdf5.h
+    ${io_HEADERS}
+  )
+
+endif() # ENABLE_HDF5
+
+set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
+
 #------------------------------------------------------------------------------#
 # Runtime-specific files.
 #
 # UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
 # runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+  if(ENABLE_HDF5)
+    set(io_HEADERS
+      legion/policy.h
+      ${io_HEADERS}
+    )
+
+    set(io_SOURCES
+      legion/policy.cc
+      ${io_SOURCES}
+    )
+  endif()
+
+endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
@@ -42,7 +73,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-  set(UNIT_POLICY LEGION)
+  set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER mpi/runtime_driver.cc)
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
@@ -74,6 +105,25 @@ set(io_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion" AND ENABLE_HDF5)
+
+cinch_add_unit(io_hdf5
+  SOURCES
+    test/legion/io_hdf5.cc
+    ${DRIVER_INITIALIZATION}
+    ${RUNTIME_DRIVER}
+  DEFINES
+    -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    FleCSI
+    ${CINCH_RUNTIME_LIBRARIES}
+    ${HDF5_LIBRARIES}
+  THREADS 4
+)
+endif()
+
 cinch_add_unit(simple_definition
   SOURCES test/simple_definition.cc
   INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
@@ -88,7 +138,3 @@ set(io_HEADERS
 cinch_add_unit(io
   SOURCES test/io.cc
 )
-
-set(io_SOURCES
-  PARENT_SCOPE
-  )
