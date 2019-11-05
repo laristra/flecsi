@@ -123,8 +123,8 @@ struct context {
   int & flog_verbose() {
     return flog_verbose_;
   }
-  size_t & flog_process() {
-    return flog_process_;
+  size_t & flog_output_process() {
+    return flog_output_process_;
   }
 
   /*
@@ -144,46 +144,6 @@ struct context {
     descriptions_map_[label].add_options()(std::forward<ARGS>(args)...);
     return true;
   }
-
-  /*!
-    Initialize the program options. This causes the commandline arguments to
-    be parsed and stored in the variables map. This method should be invoked
-    after all options have been added.
-
-    @param argc  The \em argc input argument to the \em main function.
-    @param argv  The \em argv input argument to the \em main function.
-    @param label The display label for the top-level options description.
-
-    @return Non-zero if the user invoked "help", zero otherwise.
-  */
-
-  int initialize_program_options(int argc, char ** argv, const char * label) {
-
-    boost::program_options::options_description master(label);
-    master.add_options()("help,h", "Print this message and exit.");
-
-    // Add all of the descriptions to the main description
-    for(auto & od : descriptions_map_) {
-      master.add(od.second);
-    } // for
-
-    boost::program_options::parsed_options parsed =
-      boost::program_options::command_line_parser(argc, argv)
-        .options(master)
-        .allow_unregistered()
-        .run();
-
-    boost::program_options::store(parsed, variables_map_);
-    boost::program_options::notify(variables_map_);
-    program_options_initialized_ = true;
-
-    if(variables_map_.count("help")) {
-      std::cout << master << std::endl;
-      return status::help;
-    } // if
-
-    return status::success;
-  } // initialize_program_options
 
   boost::program_options::variables_map const &
   program_options_variables_map() {
@@ -208,37 +168,60 @@ struct context {
 
     std::string program(argv[0]);
     program = "Basic Options (" + program.substr(program.rfind('/') + 1) + ")";
-    auto status = initialize_program_options(argc, argv, program.c_str());
 
-    if(status == success) {
-#if defined(FLECSI_ENABLE_FLOG)
-      if(flog_tags_ == "0") {
-        int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    boost::program_options::options_description master(program);
+    master.add_options()("help,h", "Print this message and exit.");
 
-        if(rank == 0) {
-          std::cout << "Available tags (FLOG):" << std::endl;
+    // Add all of the descriptions to the main description
+    for(auto & od : descriptions_map_) {
+      master.add(od.second);
+    } // for
 
-          for(auto t : flog_tag_map()) {
-            std::cout << " " << t.first << std::endl;
-          } // for
-        } // if
+    boost::program_options::parsed_options parsed =
+      boost::program_options::command_line_parser(argc, argv)
+        .options(master)
+        .allow_unregistered()
+        .run();
 
-        return help;
+    boost::program_options::store(parsed, variables_map_);
+    boost::program_options::notify(variables_map_);
+    program_options_initialized_ = true;
+
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    if(variables_map_.count("help")) {
+      if(rank == 0) {
+      std::cout << master << std::endl;
       } // if
 
-      flog_initialize(flog_tags_, flog_verbose_, flog_process_);
+      return status::help;
+    } // if
+
+#if defined(FLECSI_ENABLE_FLOG)
+    if(flog_tags_ == "0") {
+      if(rank == 0) {
+        std::cout << "Available tags (FLOG):" << std::endl;
+
+        for(auto t : flog_tag_map()) {
+          std::cout << " " << t.first << std::endl;
+        } // for
+      } // if
+
+      return status::help;
+    } // if
+
+    flog_initialize(flog_tags_, flog_verbose_, flog_output_process_);
 #endif
 
 #if defined(FLECSI_ENABLE_KOKKOS)
-      if(initialize_dependent_) {
-        // Need to capture status from this
-        Kokkos::initialize(argc, argv);
-      } // if
-#endif
+    if(initialize_dependent_) {
+      // Need to capture status from this
+      Kokkos::initialize(argc, argv);
     } // if
+#endif
 
-    return status;
+    return status::success;
   } // initialize_generic
 
   inline int finalize_generic() {
@@ -598,7 +581,7 @@ protected:
 
   std::string flog_tags_;
   int flog_verbose_;
-  size_t flog_process_;
+  size_t flog_output_process_;
 
   bool initialize_dependent_ = true;
   bool program_options_initialized_ = false;

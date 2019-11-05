@@ -63,11 +63,11 @@ inline auto flecsi_flog_verbose_option =
   Command-line option to restrict flog output to a single process.
  */
 
-inline auto flecsi_flog_process_option =
+inline auto flecsi_flog_output_process_option =
   flecsi::add_program_option("FleCSI Options",
     "flog-process",
     boost::program_options::value(
-      &flecsi::runtime::context_t::instance().flog_process())
+      &flecsi::runtime::context_t::instance().flog_output_process())
       ->default_value(std::numeric_limits<size_t>::max()),
     "Restrict output to the specified process id.");
 
