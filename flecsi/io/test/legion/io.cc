@@ -22,6 +22,7 @@
 #include <legion.h>
 #include <mpi.h>
 
+#include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -62,7 +63,8 @@ io_sanity(int argc, char ** argv) {
     }
   }
 
-  printf("Running for %d elements, pid %ld\n", num_elements, getpid());
+  std::cout << "Running for " << num_elements << " elements, pid "
+            << getpid() << std::endl;
 
   Runtime * runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
