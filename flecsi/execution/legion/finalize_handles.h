@@ -17,6 +17,7 @@
 
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/type_traits.h>
 
 namespace flecsi {
 namespace execution {
@@ -41,20 +42,7 @@ struct finalize_handles_t
   void handle(dense_accessor_u<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-#ifndef MAPPER_COMPACTION
-
-    auto & h = a.handle;
-
-    if((EXCLUSIVE_PERMISSIONS == rw) || (EXCLUSIVE_PERMISSIONS == wo))
-      std::memcpy(
-        h.exclusive_buf, h.exclusive_data, h.exclusive_size * sizeof(T));
-
-    if((SHARED_PERMISSIONS == rw) || (SHARED_PERMISSIONS == wo))
-      std::memcpy(h.shared_buf, h.shared_data, h.shared_size * sizeof(T));
-
-#endif
-  } // handle
+    GHOST_PERMISSIONS> & a) {}
 
   template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -63,21 +51,7 @@ struct finalize_handles_t
   void handle(ragged_accessor<T,
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-    using value_t = T;
-    using sparse_field_data_t = context_t::sparse_field_data_t;
-
-    auto & h = a.handle;
-    auto md = static_cast<sparse_field_data_t *>(h.metadata);
-
-#ifndef MAPPER_COMPACTION
-    std::memcpy(
-      h.entries_data[0], h.entries, md->num_exclusive_filled * sizeof(value_t));
-
-    std::memcpy(h.entries_data[1], h.entries + md->reserve,
-      md->num_shared * sizeof(value_t) * md->max_entries_per_index);
-#endif
-  } // handle
+    GHOST_PERMISSIONS> & a) {}
 
   template<typename T,
     size_t EXCLUSIVE_PERMISSIONS,
@@ -87,59 +61,15 @@ struct finalize_handles_t
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
-    handle(static_cast<base_t &>(a));
+    handle(a.ragged);
   } // handle
 
   template<typename T>
-  void handle(ragged_mutator<T> & m) {
-    using value_t = T;
-    using commit_info_t = typename mutator_handle_u<T>::commit_info_t;
-    using offset_t = data::sparse_data_offset_t;
-    using sparse_field_data_t = context_t::sparse_field_data_t;
-
-    auto & h = m.h_;
-
-    value_t * entries = reinterpret_cast<value_t *>(h.entries);
-
-    commit_info_t ci;
-    ci.offsets = h.offsets;
-    ci.entries[0] = entries;
-    ci.entries[1] = entries + h.reserve;
-    ci.entries[2] = ci.entries[1] + h.num_shared() * h.max_entries_per_index();
-
-    auto md = static_cast<sparse_field_data_t *>(h.metadata);
-
-    md->num_exclusive_filled = h.commit(&ci);
-
-#ifndef MAPPER_COMPACTION
-    std::memcpy(
-      h.offsets_data[0], h.offsets, h.num_exclusive() * sizeof(offset_t));
-
-    std::memcpy(h.offsets_data[1], h.offsets + h.num_exclusive(),
-      h.num_shared() * sizeof(offset_t));
-
-    if(!md->initialized) {
-      std::memcpy(h.offsets_data[2],
-        h.offsets + h.num_exclusive() + h.num_shared(),
-        h.num_ghost() * sizeof(offset_t));
-    }
-
-    std::memcpy(
-      h.entries_data[0], h.entries, md->num_exclusive_filled * sizeof(value_t));
-
-    std::memcpy(h.entries_data[1], h.entries + h.reserve * sizeof(value_t),
-      h.num_shared() * sizeof(value_t) * h.max_entries_per_index());
-#endif
-
-    md->initialized = true;
-  } // handle
+  void handle(ragged_mutator<T> & m) {}
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using base_t = typename sparse_mutator<T>::base_t;
-    handle(static_cast<base_t &>(m));
+    handle(m.ragged);
   }
 
   /*!
@@ -169,7 +99,6 @@ struct finalize_handles_t
         si.size = h.get_index_subspace_size_(iss.index_subspace);
       }
     }
-
     h.delete_storage();
   } // handle
 
@@ -192,6 +121,23 @@ struct finalize_handles_t
   void handle(Container<T, N> & list) {
     for(auto & item : list)
       handle(item);
+  }
+
+  /*!
+   * Handle tuple of items
+   */
+
+  template<typename... Ts, size_t... I>
+  void handle_tuple_items(std::tuple<Ts...> & items,
+    std::index_sequence<I...>) {
+    (handle(std::get<I>(items)), ...);
+  }
+
+  template<typename... Ts,
+    typename = std::enable_if_t<
+      utils::are_base_of_t<data::data_reference_base_t, Ts...>::value>>
+  void handle(std::tuple<Ts...> & items) {
+    handle_tuple_items(items, std::make_index_sequence<sizeof...(Ts)>{});
   }
 
   /*!

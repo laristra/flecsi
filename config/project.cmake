@@ -294,6 +294,15 @@ if(ENABLE_CLOG)
 endif()
 
 #------------------------------------------------------------------------------#
+# Add option for Kokkos
+#------------------------------------------------------------------------------#
+
+if (ENABLE_KOKKOS)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Kokkos_LIBRARIES})
+  set (FLECSI_ENABLE_KOKKOS TRUE)
+endif()
+
+#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
@@ -330,23 +339,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   include_directories(${Legion_INCLUDE_DIRS})
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${Legion_INCLUDE_DIRS})
-
-  #
-  # Compacted storage interface
-  #
-  option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" ON)
-
-  if(ENABLE_MAPPER_COMPACTION)
-    add_definitions(-DMAPPER_COMPACTION)
-    set (MAPPER_COMPACTION TRUE)
-  else()
-    option(COMPACTED_STORAGE_SORT "sort compacted storage according to GIS" OFF)
-
-    if(COMPACTED_STORAGE_SORT)
-      add_definitions(-DCOMPACTED_STORAGE_SORT)
-      set(COMPACTED_STORAGE_SORT TRUE)
-    endif()
-  endif()
 
 #
 # MPI interface
@@ -396,6 +388,10 @@ if(ENABLE_MPI)
   # Counter-intuitive variable: set to TRUE to disable test
   set(PARMETIS_TEST_RUNS TRUE)
   find_package(ParMETIS 4.0)
+  if ( ParMETIS_LIBRARIES AND NOT PARMETIS_LIBRARIES )
+    set(PARMETIS_LIBRARIES ${ParMETIS_LIBRARIES})
+    set(PARMETIS_INCLUDE_DIRS ${ParMETIS_INCLUDE_DIRS})
+  endif()
 endif()
 
 set(COLORING_LIBRARIES)
@@ -523,6 +519,15 @@ install(
 if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   cinch_target_link_libraries(
     FleCSI ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
+  )
+endif()
+
+if (ENABLE_KOKKOS)
+  cinch_target_link_libraries(
+    FleCSI ${Kokkos_LIBRARIES}
+  )
+  cinch_target_link_libraries(
+    FleCSI-Tut ${Kokkos_LIBRARIES}
   )
 endif()
 

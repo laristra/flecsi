@@ -18,23 +18,25 @@
 #include <bitset>
 #include <ostream>
 
-#include <flecsi/utils/offset.h>
+#include <flecsi/utils/target.h>
 
 namespace flecsi {
 namespace data {
-
-using sparse_data_offset_t = utils::offset_u<16>;
 
 template<typename T>
 struct sparse_entry_value_u {
   using index_t = uint64_t;
 
+  FLECSI_INLINE_TARGET
   sparse_entry_value_u(index_t entry) : entry(entry) {}
 
+  FLECSI_INLINE_TARGET
   sparse_entry_value_u(index_t entry, T value) : entry(entry), value(value) {}
 
+  FLECSI_INLINE_TARGET
   sparse_entry_value_u() {}
 
+  FLECSI_INLINE_TARGET
   bool operator<(const sparse_entry_value_u & ev) const {
     return entry < ev.entry;
   }

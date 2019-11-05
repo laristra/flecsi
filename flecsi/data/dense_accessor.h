@@ -19,6 +19,7 @@
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/data_constants.h>
 #include <flecsi/data/dense_data_handle.h>
+#include <flecsi/utils/target.h>
 
 /*!
  @file
@@ -86,18 +87,10 @@ struct accessor_u<data::dense,
 
    \param index The index of the data variable to return.
    */
-
+  FLECSI_INLINE_TARGET
   T & operator()(size_t index) {
     assert(index < handle.combined_size && "index out of range");
-#ifndef MAPPER_COMPACTION
-#ifndef COMPACTED_STORAGE_SORT
-    return handle.combined_data[index];
-#else
-    return handle.combined_data_sort[index];
-#endif
-#else
     return *(handle.combined_data + index);
-#endif
   }
 
   /*!
@@ -107,7 +100,8 @@ struct accessor_u<data::dense,
    \param index The index of the data variable to return.
    */
 
-  const T & operator()(size_t index) const {
+  FLECSI_INLINE_TARGET
+  T & operator()(size_t index) const {
     return const_cast<accessor_u &>(*this)(index);
   }
 
@@ -115,6 +109,7 @@ struct accessor_u<data::dense,
    \brief Return the index space size of the data variable
           referenced by this handle.
    */
+  FLECSI_INLINE_TARGET
   size_t size() const {
     return handle.combined_size;
   }
@@ -123,6 +118,7 @@ struct accessor_u<data::dense,
    \brief Return the index space size of the data variable
           referenced by this handle.
    */
+  FLECSI_INLINE_TARGET
   size_t exclusive_size() const {
     return handle.exclusive_size;
   } // size
@@ -131,6 +127,7 @@ struct accessor_u<data::dense,
    \brief Return the index space size of the data variable
           referenced by this handle.
    */
+  FLECSI_INLINE_TARGET
   size_t shared_size() const {
     return handle.shared_size;
   } // size
@@ -139,6 +136,7 @@ struct accessor_u<data::dense,
    \brief Return the index space size of the data variable
           referenced by this handle.
    */
+  FLECSI_INLINE_TARGET
   size_t ghost_size() const {
     return handle.ghost_size;
   } // size
@@ -153,6 +151,7 @@ struct accessor_u<data::dense,
 
    \param index The index of the data variable to return.
    */
+  FLECSI_INLINE_TARGET
   const T & exclusive(size_t index) const {
     assert(index < handle.exclusive_size && "index out of range");
     return handle.exclusive_data[index];
@@ -164,6 +163,7 @@ struct accessor_u<data::dense,
 
    \param index The index of the data variable to return.
    */
+  FLECSI_INLINE_TARGET
   T & exclusive(size_t index) {
     assert(index < handle.exclusive_size && "index out of range");
     return handle.exclusive_data[index];
@@ -175,6 +175,7 @@ struct accessor_u<data::dense,
 
    \param index The index of the data variable to return.
    */
+  FLECSI_INLINE_TARGET
   const T & shared(size_t index) const {
     assert(index < handle.shared_size && "index out of range");
     return handle.shared_data[index];
@@ -186,6 +187,7 @@ struct accessor_u<data::dense,
 
    \param index The index of the data variable to return.
   */
+  FLECSI_INLINE_TARGET
   T & shared(size_t index) {
     assert(index < handle.shared_size && "index out of range");
     return handle.shared_data[index];
@@ -197,6 +199,7 @@ struct accessor_u<data::dense,
 
    \param index The index of the data variable to return.
   */
+  FLECSI_INLINE_TARGET
   const T & ghost(size_t index) const {
     assert(index < handle.ghost_size && "index out of range");
     return handle.ghost_data[index];
@@ -208,6 +211,7 @@ struct accessor_u<data::dense,
 
    \param index The index of the data variable to return.
   */
+  FLECSI_INLINE_TARGET
   T & ghost(size_t index) {
     assert(index < handle.ghost_size && "index out of range");
     return handle.ghost_data[index];
@@ -223,8 +227,8 @@ struct accessor_u<data::dense,
    \e flecsi mesh entity types \ref mesh_entity_base_t.
    */
   template<typename E>
-  const T & operator()(E * e) const {
-    return this->operator()(e->template id<0>());
+  FLECSI_INLINE_TARGET const T & operator()(E * e) const {
+    return this->operator()(e->id());
   } // operator ()
 
   /*!
@@ -237,8 +241,8 @@ struct accessor_u<data::dense,
    \e flecsi mesh entity types \ref mesh_entity_base_u.
    */
   template<typename E>
-  T & operator()(E * e) {
-    return this->operator()(e->template id<0>());
+  FLECSI_INLINE_TARGET T & operator()(E * e) {
+    return this->operator()(e->id());
   } // operator ()
 
   handle_t handle;

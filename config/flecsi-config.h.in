@@ -28,6 +28,7 @@
 
 #cmakedefine FLECSI_ENABLE_MPI
 #cmakedefine FLECSI_ENABLE_LEGION
+#cmakedefine FLECSI_ENABLE_KOKKOS
 
 //----------------------------------------------------------------------------//
 // Control Model
@@ -49,13 +50,6 @@
   
   #if !defined(ENABLE_LEGION_TLS)
     #define ENABLE_LEGION_TLS
-  #endif
-
-  #if !defined(MAPPER_COMPACTION)
-    #cmakedefine MAPPER_COMPACTION
-  #endif
-  #if !defined(COMPACTED_STORAGE_SORT)
-    #cmakedefine COMPACTED_STORAGE_SORT
   #endif
 
 #endif

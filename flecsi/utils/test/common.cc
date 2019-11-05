@@ -40,6 +40,8 @@ TEST(common, all) {
   // *BITS #defines
   CINCH_CAPTURE() << FLECSI_ID_PBITS << std::endl;
   CINCH_CAPTURE() << FLECSI_ID_EBITS << std::endl;
+  CINCH_CAPTURE() << FLECSI_ID_FBITS << std::endl;
+  CINCH_CAPTURE() << FLECSI_ID_GBITS << std::endl;
   CINCH_CAPTURE() << std::endl;
 
   // types

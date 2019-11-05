@@ -26,7 +26,9 @@ class Legion(CMakePackage):
     git      = "https://github.com/StanfordLegion/legion.git"
 
     version('develop', branch='master')
-    version('ctrl-rep', commit='177584e77036c9913d8a62e33b55fa784748759c')
+    version('ctrl-rep-2', commit='96682fd8aae071ecd30a3ed5f481a9d84457a4b6')
+    version('ctrl-rep-1', commit='a03671b21851d5f0d3f63210343cb61a630f4405')
+    version('ctrl-rep-0', commit='177584e77036c9913d8a62e33b55fa784748759c')
     version('19.06.0', sha256='31cd97e9264c510ab83b1f9e8e1e6bf72021a0c6ee4a028966fce08736e39fbf')
     version('19.04.0', sha256='279bbc8dcdab4c75be570318989a9fc9821178143e9db9c3f62e58bf9070b5ac')
     version('18.12.0', sha256='71f2c409722975c0ad92f2caffcc9eaa9260f7035e2b55b731d819eb6a94016c')
@@ -43,22 +45,34 @@ class Legion(CMakePackage):
             description='Build on top of ibv conduit for InfiniBand support')
     variant('shared', default=True, description='Build shared libraries')
     variant('hdf5', default=True, description='Enable HDF5 support')
+    variant('build_type', default='Release', values=('Debug', 'Release'),
+            description='The build type to build')
 
-    depends_on("cmake@3.12.4", type='build')
+    depends_on("cmake@3.1:", type='build')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB'", when='~mpi')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB' +mpi", when='+mpi')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB' +ibv", when='+ibv')
     depends_on("hdf5~mpi", when='+hdf5')
 
     def cmake_args(self):
+        cmake_cxx_flags = [
+            '-DPRIVILEGE_CHECKS',
+            '-DBOUNDS_CHECKS',
+            '-DENABLE_LEGION_TLS']
+
         options = [
-            '-DCMAKE_BUILD_TYPE=Debug',
             '-DLegion_USE_GASNet=ON',
             '-DLEGION_USE_CUDA=OFF',
             '-DLEGION_USE_OPENMP=OFF',
             '-DLegion_BUILD_EXAMPLES=ON',
-            '-DCMAKE_CXX_FLAGS=-DPRIVILEGE_CHECKS -DDEBUG_REALM -DDEBUG_LEGION -DBOUNDS_CHECKS -DENABLE_LEGION_TLS -ggdb',
             '-DBUILD_SHARED_LIBS=%s' % ('+shared' in self.spec)]
+
+        if self.spec.variants['build_type'].value == 'Debug':
+            cmake_cxx_flags.append('-DDEBUG_REALM', '-DDEBUG_LEGION', '-ggdb')
+        else:
+            options.append('-DCMAKE_BUILD_TYPE=Release')
+
+        options.append('-DCMAKE_CXX_FLAGS=%s' % (" ".join(cmake_cxx_flags)))
 
         if '+mpi' in self.spec:
             options.append('-DGASNet_CONDUIT=mpi')
@@ -69,3 +83,4 @@ class Legion(CMakePackage):
             options.append('-DLegion_USE_HDF5=OFF')
 
         return options
+

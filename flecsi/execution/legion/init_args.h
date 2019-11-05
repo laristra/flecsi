@@ -39,6 +39,7 @@
 #include <flecsi/topology/set_types.h>
 
 #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/type_traits.h>
 
 namespace flecsi {
 namespace execution {
@@ -222,67 +223,35 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     region_reqs.push_back(md_rr);
 
     if(EXCLUSIVE_PERMISSIONS == wo) {
-      Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp, 0, READ_WRITE,
-        EXCLUSIVE, h.offsets_entire_region, tag);
+      Legion::RegionRequirement ex_rr(
+        h.exclusive_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region, tag);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
     }
     else {
-      Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp, 0,
-        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
-        h.offsets_entire_region, tag);
+      Legion::RegionRequirement ex_rr(h.exclusive_lp, 0,
+        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.entire_region, tag);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
     }
 
     if(SHARED_PERMISSIONS == wo) {
       Legion::RegionRequirement sh_rr(
-        h.offsets_shared_lp, 0, READ_WRITE, EXCLUSIVE, h.offsets_entire_region);
+        h.shared_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region);
       sh_rr.add_field(h.fid);
       region_reqs.push_back(sh_rr);
     }
     else {
-      Legion::RegionRequirement sh_rr(h.offsets_shared_lp, 0,
-        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.offsets_entire_region);
+      Legion::RegionRequirement sh_rr(h.shared_lp, 0,
+        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.entire_region);
       sh_rr.add_field(h.fid);
       region_reqs.push_back(sh_rr);
     }
 
-    Legion::RegionRequirement gh_rr(h.offsets_ghost_lp, 0,
-      privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.offsets_entire_region);
+    Legion::RegionRequirement gh_rr(h.ghost_lp, 0,
+      privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.entire_region);
     gh_rr.add_field(h.fid);
     region_reqs.push_back(gh_rr);
-
-    if(EXCLUSIVE_PERMISSIONS == wo) {
-      Legion::RegionRequirement ex_rr2(h.entries_exclusive_lp, 0, READ_WRITE,
-        EXCLUSIVE, h.entries_entire_region, tag);
-      ex_rr2.add_field(h.fid);
-      region_reqs.push_back(ex_rr2);
-    }
-    else {
-      Legion::RegionRequirement ex_rr2(h.entries_exclusive_lp, 0,
-        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE,
-        h.entries_entire_region, tag);
-      ex_rr2.add_field(h.fid);
-      region_reqs.push_back(ex_rr2);
-    }
-
-    if(SHARED_PERMISSIONS == wo) {
-      Legion::RegionRequirement sh_rr2(
-        h.entries_shared_lp, 0, READ_WRITE, EXCLUSIVE, h.entries_entire_region);
-      sh_rr2.add_field(h.fid);
-      region_reqs.push_back(sh_rr2);
-    }
-    else {
-      Legion::RegionRequirement sh_rr2(h.entries_shared_lp, 0,
-        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.entries_entire_region);
-      sh_rr2.add_field(h.fid);
-      region_reqs.push_back(sh_rr2);
-    }
-    Legion::RegionRequirement gh_rr2(h.entries_ghost_lp, 0,
-      privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.entries_entire_region);
-    gh_rr2.add_field(h.fid);
-    region_reqs.push_back(gh_rr2);
   } // handle
 
   template<typename T,
@@ -293,14 +262,12 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
-    handle(static_cast<base_t &>(a));
+    handle(a.ragged);
   } // handle
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
 
@@ -309,41 +276,25 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
     md_rr.add_field(h.fid);
     region_reqs.push_back(md_rr);
 
-    Legion::RegionRequirement ex_rr(h.offsets_exclusive_lp, 0, READ_WRITE,
-      EXCLUSIVE, h.offsets_entire_region, tag);
+    Legion::RegionRequirement ex_rr(
+      h.exclusive_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region, tag);
     ex_rr.add_field(h.fid);
     region_reqs.push_back(ex_rr);
 
     Legion::RegionRequirement sh_rr(
-      h.offsets_shared_lp, 0, READ_WRITE, EXCLUSIVE, h.offsets_entire_region);
+      h.shared_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region);
     sh_rr.add_field(h.fid);
     region_reqs.push_back(sh_rr);
 
     Legion::RegionRequirement gh_rr(
-      h.offsets_ghost_lp, 0, READ_WRITE, EXCLUSIVE, h.offsets_entire_region);
+      h.ghost_lp, 0, READ_WRITE, EXCLUSIVE, h.entire_region);
     gh_rr.add_field(h.fid);
     region_reqs.push_back(gh_rr);
-
-    Legion::RegionRequirement ex_rr2(h.entries_exclusive_lp, 0, READ_WRITE,
-      EXCLUSIVE, h.entries_entire_region, tag);
-    ex_rr2.add_field(h.fid);
-    region_reqs.push_back(ex_rr2);
-
-    Legion::RegionRequirement sh_rr2(
-      h.entries_shared_lp, 0, READ_WRITE, EXCLUSIVE, h.entries_entire_region);
-    sh_rr2.add_field(h.fid);
-    region_reqs.push_back(sh_rr2);
-
-    Legion::RegionRequirement gh_rr2(
-      h.entries_ghost_lp, 0, READ_WRITE, EXCLUSIVE, h.entries_entire_region);
-    gh_rr2.add_field(h.fid);
-    region_reqs.push_back(gh_rr2);
   } // handle
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using base_t = typename sparse_mutator<T>::base_t;
-    handle(static_cast<base_t &>(m));
+    handle(m.ragged);
   }
 
   /*!
@@ -377,6 +328,23 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   void handle(Container<T, N> & list) {
     for(auto & item : list)
       handle(item);
+  }
+
+  /*!
+   * Handle tuple of items
+   */
+
+  template<typename... Ts, size_t... I>
+  void handle_tuple_items(std::tuple<Ts...> & items,
+    std::index_sequence<I...>) {
+    (handle(std::get<I>(items)), ...);
+  }
+
+  template<typename... Ts,
+    typename = std::enable_if_t<
+      utils::are_base_of_t<data::data_reference_base_t, Ts...>::value>>
+  void handle(std::tuple<Ts...> & items) {
+    handle_tuple_items(items, std::make_index_sequence<sizeof...(Ts)>{});
   }
 
   //-----------------------------------------------------------------------//
