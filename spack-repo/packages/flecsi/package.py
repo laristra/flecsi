@@ -18,14 +18,17 @@ class Flecsi(CMakePackage):
        n-dimensional hashed-tree data structures, graph partitioning
        interfaces,and dependency closures.
     '''
-    homepage = 'http://flecsi.lanl.gov/'
+    homepage = 'http://flecsi.org/'
     git      = 'https://github.com/laristra/flecsi.git'
 
     version('develop', branch='master', submodules=False, preferred=True)
     version('flecsph', branch='feature/flecsph', submodules=False)
 
+    variant('build_type', default='Release', values=('Debug', 'Release'),
+            description='The build type to build')
     variant('backend', default='mpi', values=('hpx', 'mpi', 'legion'),
-            description='Backend to use for distributed memory')
+            description='Backend runtime to use for distributed memory')
+    variant('shared', default=True, description='Build shared libraries')
     variant('hdf5', default=False,
             description='Enable HDF5 Support')
     variant('caliper', default=False,
@@ -37,7 +40,7 @@ class Flecsi(CMakePackage):
     variant('flecstan', default=False,
             description='Build FleCSI Static Analyzer')
 
-    depends_on('cmake@3.12.4',  type='build')
+    depends_on('cmake@3.12.1:3.12.4',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
     #depends_on('cinch@1.01:', type='build')
     depends_on('mpi', when='backend=mpi')
@@ -55,8 +58,13 @@ class Flecsi(CMakePackage):
     depends_on('llvm', when='+flecstan')
 
     def cmake_args(self):
-        options = ['-DCMAKE_BUILD_TYPE=debug']
+        options = ['-DBUILD_SHARED_LIBS=%s' % ('+shared' in self.spec)]
         #options.append('-DCINCH_SOURCE_DIR=' + self.spec['cinch'].prefix)
+
+        if self.spec.variants['build_type'].value == 'Debug':
+            options.append('-DCMAKE_BUILD_TYPE=Debug')
+        elif self.spec.variants['build_type'].value == 'Release':
+            options.append('-DCMAKE_BUILD_TYPE=Release')
 
         # FleCSI for FleCSPH flags
         if self.spec.satisfies('@flecsph:'):
