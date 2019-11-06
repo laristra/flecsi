@@ -200,12 +200,8 @@ struct context {
 
     program_options_initialized_ = true;
 
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
     if(variables_map_.count("help")) {
-      if(rank == 0) {
+      if(process_ == 0) {
         std::cout << master << std::endl;
       } // if
 
@@ -214,7 +210,7 @@ struct context {
 
 #if defined(FLECSI_ENABLE_FLOG)
     if(flog_tags_ == "0") {
-      if(rank == 0) {
+      if(process_ == 0) {
         std::cout << "Available tags (FLOG):" << std::endl;
 
         for(auto t : flog_tag_map()) {
@@ -609,6 +605,11 @@ protected:
   /*--------------------------------------------------------------------------*
     Basic runtime data members.
    *--------------------------------------------------------------------------*/
+
+  size_t process_ = std::numeric_limits<size_t>::max();
+  size_t processes_ = std::numeric_limits<size_t>::max();
+  size_t threads_per_process_ = std::numeric_limits<size_t>::max();
+  size_t threads_ = std::numeric_limits<size_t>::max();
 
   int exit_status_ = 0;
   top_level_action_t top_level_action_ = {};
