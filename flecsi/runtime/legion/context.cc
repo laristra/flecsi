@@ -66,6 +66,13 @@ context_t::initialize(int argc, char ** argv, bool dependent) {
 #endif
   } // if
 
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  context::process_ = rank;
+  context::processes_ = size;
+
   auto status = context::initialize_generic(argc, argv, dependent);
 
   if(status != success && dependent) {
@@ -154,14 +161,7 @@ context_t::start() {
     Configure interoperability layer.
    */
 
-  int rank, size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  process_ = rank;
-  processes_ = size;
-
-  Legion::Runtime::configure_MPI_interoperability(rank);
+  Legion::Runtime::configure_MPI_interoperability(context::process_);
 
   /*
     Register reduction operations.
@@ -177,7 +177,7 @@ context_t::start() {
 
   std::vector<char *> largv;
   largv.push_back(argv_[0]);
-  threads_per_process_ = 1;
+  context::threads_per_process_ = 1;
 
   for(auto opt = unrecognized_options_.begin();
       opt != unrecognized_options_.end();
@@ -189,14 +189,14 @@ context_t::start() {
       largv.push_back(opt->data());
       largv.push_back((++opt)->data());
       std::stringstream sstream(largv.back());
-      sstream >> threads_per_process_;
+      sstream >> context::threads_per_process_;
     }
     else {
       largv.push_back(opt->data());
     } // if
   } // for
 
-  threads_ = processes_ * threads_per_process_;
+  context::threads_ = context::processes_ * context::threads_per_process_;
 
   /*
     Start Legion runtime.
