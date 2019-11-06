@@ -68,7 +68,7 @@ inline auto flecsi_flog_output_process_option =
     "flog-process",
     boost::program_options::value(
       &flecsi::runtime::context_t::instance().flog_output_process())
-      ->default_value(std::numeric_limits<size_t>::max()),
+      ->default_value(-1),
     "Restrict output to the specified process id.");
 
 #endif // FLECSI_ENABLE_FLOG

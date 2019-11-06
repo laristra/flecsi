@@ -121,10 +121,12 @@ struct context {
   std::string & flog_tags() {
     return flog_tags_;
   }
+
   int & flog_verbose() {
     return flog_verbose_;
   }
-  size_t & flog_output_process() {
+
+  int64_t & flog_output_process() {
     return flog_output_process_;
   }
 
@@ -198,8 +200,9 @@ struct context {
 
     program_options_initialized_ = true;
 
-    int rank;
+    int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     if(variables_map_.count("help")) {
       if(rank == 0) {
@@ -222,7 +225,9 @@ struct context {
       return status::help;
     } // if
 
-    flog_initialize(flog_tags_, flog_verbose_, flog_output_process_);
+    if(flog_initialize(flog_tags_, flog_verbose_, flog_output_process_)) {
+      return status::error;
+    } // if
 #endif
 
 #if defined(FLECSI_ENABLE_KOKKOS)
@@ -592,7 +597,7 @@ protected:
 
   std::string flog_tags_;
   int flog_verbose_;
-  size_t flog_output_process_;
+  int64_t flog_output_process_;
 
   bool initialize_dependent_ = true;
   bool program_options_initialized_ = false;
