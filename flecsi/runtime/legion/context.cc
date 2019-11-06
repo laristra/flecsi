@@ -34,6 +34,7 @@ using namespace boost::program_options;
 using execution::legion::task_id;
 
 //----------------------------------------------------------------------------//
+// Implementation of context_t::initialize.
 //----------------------------------------------------------------------------//
 
 int
@@ -75,6 +76,7 @@ context_t::initialize(int argc, char ** argv, bool dependent) {
 } // initialize
 
 //----------------------------------------------------------------------------//
+// Implementation of context_t::finalize.
 //----------------------------------------------------------------------------//
 
 int
@@ -92,6 +94,7 @@ context_t::finalize() {
 } // finalize
 
 //----------------------------------------------------------------------------//
+// Implementation of context_t::start.
 //----------------------------------------------------------------------------//
 
 int
@@ -172,70 +175,26 @@ context_t::start() {
     Handle command-line arguments.
    */
 
-#if 0
-  auto vm = context::program_options_variables_map();
-  threads_per_process_ = vm["tpp"].as<size_t>();
-
-  if(threads_per_process_ > 1) {
-    largv.push_back(const_cast<char *>("-ll:cpu"));
-    tpp = std::to_string(threads_per_process_);
-    largv.push_back(tpp.data());
-  } // if
-#endif
-
-  // Initialize with default. This may get modified by the options processing
-  // below.
-  // FIXME: We are asking for -ll:cpu to be accessible from Legion so that
-  // we can request this information from the Legion runtime.
-  threads_per_process_ = 1;
-
   std::vector<char *> largv;
   largv.push_back(argv_[0]);
-
-#define check_option_with_arg(label, it)                                       \
-  if(it->find(label) != std::string::npos) {                                   \
-    largv.push_back(const_cast<char *>(it->data()));                           \
-    largv.push_back(const_cast<char *>((++it)->data()));                       \
-  }
+  threads_per_process_ = 1;
 
   for(auto opt = unrecognized_options_.begin();
       opt != unrecognized_options_.end();
       ++opt) {
 
-    // Machine configuration
-    check_option_with_arg("-ll:util", opt);
-
-    //check_option_with_arg("-ll:cpu", opt);
+    // FIXME: This case is a temporary fix until we decide
+    // what to do about Issue #8: Default Launch Domain Size.
     if(opt->find("-ll:cpu") != std::string::npos) {
-      largv.push_back(const_cast<char *>(opt->data()));
-      largv.push_back(const_cast<char *>((++opt)->data()));
+      largv.push_back(opt->data());
+      largv.push_back((++opt)->data());
       std::stringstream sstream(largv.back());
       sstream >> threads_per_process_;
+    }
+    else {
+      largv.push_back(opt->data());
     } // if
-
-    check_option_with_arg("-ll:gpu", opt);
-    check_option_with_arg("-ll:amsg", opt);
-    check_option_with_arg("-ll:dma", opt);
-    check_option_with_arg("-ll:csize", opt);
-    check_option_with_arg("-ll:gsize", opt);
-    check_option_with_arg("-ll:rsize", opt);
-    check_option_with_arg("-ll:fsize", opt);
-    check_option_with_arg("-ll:zsize", opt);
-    check_option_with_arg("-ll:stacksize", opt);
-    check_option_with_arg("-ll:sdpsize", opt);
-    check_option_with_arg("-ll:lmbsize", opt);
-    check_option_with_arg("-ll:numlmbs", opt);
-    check_option_with_arg("-ll:pin", opt);
-
-    // Runtime performance configuration
-    check_option_with_arg("-lg:window", opt);
-    check_option_with_arg("-lg:sched", opt);
-    check_option_with_arg("-lg:width", opt);
-    check_option_with_arg("-lg:message", opt);
-    check_option_with_arg("-lg:filter", opt);
   } // for
-
-#undef check_option_with_arg
 
   threads_ = processes_ * threads_per_process_;
 
@@ -245,8 +204,21 @@ context_t::start() {
 
   {
     flog_tag_guard(context);
-    flog_devel(info) << "Starting Legion runtime" << std::endl;
-  }
+
+    std::stringstream stream;
+
+    stream << "Starting Legion runtime" << std::endl;
+    stream << "\targc: " << largv.size() << std::endl;
+    stream << "\targv: ";
+
+    for(auto opt: largv) {
+      stream << opt << " ";
+    } // for
+
+    stream << std::endl;
+
+    flog_devel(info) << stream.str();
+  } // scope
 
   Runtime::start(largv.size(), largv.data(), true);
 

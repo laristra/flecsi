@@ -59,10 +59,11 @@ done
 #------------------------------------------------------------------------------#
 
 echo "Executing:"
-echo "$cmake_mode -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS=\"-fcolor-diagnostics\" -DCMAKE_C_COMPILER=clang -DCMAKE_C_FLAGS=\"-fcolor-diagnostics\" -DFLECSI_RUNTIME_MODEL=$runtime -DENABLE_BOOST=ON -DENABLE_FLOG=ON -DENABLE_UNIT_TESTS=ON -DENABLE_FLECSIT=ON -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cinch_dir"
+echo "$cmake_mode -DCMAKE_BUILD_TYPE=debug -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS=\"-fcolor-diagnostics\" -DCMAKE_C_COMPILER=clang -DCMAKE_C_FLAGS=\"-fcolor-diagnostics\" -DFLECSI_RUNTIME_MODEL=$runtime -DENABLE_BOOST=ON -DENABLE_FLOG=ON -DENABLE_UNIT_TESTS=ON -DENABLE_FLECSIT=ON -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cinch_dir"
 echo ""
 
 $cmake_mode \
+  -DCMAKE_BUILD_TYPE=debug \
   -DCMAKE_CXX_COMPILER=clang++ \
   -DCMAKE_CXX_FLAGS="-fcolor-diagnostics" \
   -DCMAKE_C_COMPILER=clang \
