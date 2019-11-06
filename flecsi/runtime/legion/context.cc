@@ -211,7 +211,7 @@ context_t::start() {
     stream << "\targc: " << largv.size() << std::endl;
     stream << "\targv: ";
 
-    for(auto opt: largv) {
+    for(auto opt : largv) {
       stream << opt << " ";
     } // for
 
