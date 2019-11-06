@@ -547,7 +547,7 @@ print_help(const bool colorize) {
   // Debugging
   subsubtitle("Debugging");
 
-  option("debug", "Print [or don't] vast amounts of information "
+  option("debug", "Print [or don't] copious amounts of information "
                   "about flecstan's internal\n"
                   "behavior. You really don't want to use this option "
                   "unless you're a flecstan\n"
