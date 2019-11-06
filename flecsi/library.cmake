@@ -3,7 +3,6 @@ set(flecsi_HEADERS
   data.hh
   execution.hh
   io.hh
-  runtime.hh
 )
 
 set(flecsi_SOURCES

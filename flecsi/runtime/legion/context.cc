@@ -12,6 +12,8 @@
    All rights reserved.
                                                                               */
 
+#include <flecsi-config.h>
+
 #if !defined(__FLECSI_PRIVATE__)
 #define __FLECSI_PRIVATE__
 #endif
@@ -81,9 +83,11 @@ context_t::finalize() {
 
   auto status = context::finalize_generic();
 
+#ifndef GASNET_CONDUIT_MPI
   if(status == success && context::initialize_dependent_) {
     MPI_Finalize();
   } // if
+#endif
 
   return status;
 } // finalize
