@@ -72,12 +72,3 @@ inline auto flecsi_flog_output_process_option =
     "Restrict output to the specified process id.");
 
 #endif // FLECSI_ENABLE_FLOG
-
-/*
-  Command-line option to specify threads per process.
- */
-
-inline auto flecsi_tpp_option = flecsi::add_program_option("FleCSI Options",
-  "tpp",
-  boost::program_options::value<size_t>()->default_value(1),
-  "Specify the number of threads per process.");
