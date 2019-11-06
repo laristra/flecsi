@@ -17,6 +17,8 @@ class FlecsiDeps(Package):
     version('develop', branch='master', submodules=False)
     variant('backend', default='mpi', values=('serial', 'mpi', 'legion'),
             description='Backend to use for distributed memory')
+    variant('hdf5', default=False,
+            description='Enable HDF5 Support')
     variant('caliper', default=False,
             description='Enable Caliper Support')
     variant('graphviz', default=False,
@@ -32,10 +34,12 @@ class FlecsiDeps(Package):
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
     depends_on('gasnet@2019.3.0 ~pshm', when='backend=legion')
-    depends_on('legion@ctrl-rep +shared +mpi', when='backend=legion')
+    depends_on('legion@ctrl-rep +shared +mpi +hdf5', when='backend=legion +hdf5')
+    depends_on('legion@ctrl-rep +shared +mpi', when='backend=legion ~hdf5')
     depends_on('boost@1.59.0: cxxstd=11 +program_options')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
+    depends_on('hdf5', when='+hdf5')
     depends_on('caliper', when='+caliper')
     depends_on('graphviz', when='+graphviz')
     depends_on('python@3.0:', when='+tutorial')

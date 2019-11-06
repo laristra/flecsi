@@ -19,9 +19,9 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "../launch.hh"
-#endif
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!

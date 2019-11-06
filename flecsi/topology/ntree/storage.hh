@@ -17,14 +17,15 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "../entity_storage.hh"
 #include "../index_space.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/ntree/storage.hh>
 #include <flecsi/topology/ntree/types.hh>
 #include <flecsi/utils/id.hh>
-#endif
+#include <flecsi/runtime/context.hh>
 
 #include <array>
 
@@ -37,9 +38,9 @@ struct ntree_storage {
   using id_t = utils::id_t;
   static constexpr size_t num_partitions = 5;
 
-  using entity_t = typename TREE_TYPE::tree_entity_;
-  using branch_t = typename TREE_TYPE::tree_branch_;
-  using tree_entity_t = typename TREE_TYPE::tree_entity_holder_;
+  using entity_t = typename TREE_TYPE::entity_t;
+  using node_t = typename TREE_TYPE::node_t;
+  using tree_entity_t = typename TREE_TYPE::tree_entity_t;
 
   // entity index spaces
   using entity_index_space_t =
@@ -67,25 +68,25 @@ struct ntree_storage {
   std::array<tree_entity_partition_index_spaces_t, num_partitions>
     tree_entity_partition_index_spaces;
 
-  // Branches index space
-  using branch_index_space_t =
-    index_space<branch_t *, true, true, true, void, topology_storage>;
-  using branch_index_subspaces_t =
-    index_space<branch_t *, false, true, false, void, topology_storage>;
-  using branch_partition_index_spaces_t =
-    index_space<branch_t *, false, false, true, void, topology_storage>;
+  // Nodes index space
+  using node_index_space_t =
+    index_space<node_t *, true, true, true, void, topology_storage>;
+  using node_index_subspaces_t =
+    index_space<node_t *, false, true, false, void, topology_storage>;
+  using node_partition_index_spaces_t =
+    index_space<node_t *, false, false, true, void, topology_storage>;
 
-  branch_index_space_t branch_index_space;
-  branch_index_subspaces_t branch_index_subspaces;
-  std::array<branch_partition_index_spaces_t, num_partitions>
-    branch_partition_index_spaces;
+  node_index_space_t node_index_space;
+  node_index_subspaces_t node_index_subspaces;
+  std::array<node_partition_index_spaces_t, num_partitions>
+    node_partition_index_spaces;
 
   ntree_storage() {
-    auto & context_ = flecsi::runtime::context_t::instance();
+    //auto & context_ = flecsi::runtime::context_t::instance();
   }
 
   void finalize_storage() {
-    auto & context = runtime::context_t::instance();
+    //auto & context = runtime::context_t::instance();
   }
 
   /**
@@ -105,10 +106,10 @@ struct ntree_storage {
   }
 
   /**
-   * Initilize the branch index space
+   * Initilize the node index space
    */
-  void init_branches(branch_t * buf, size_t num_branches) {
-    branch_index_space.storage()->set_buffer(buf, num_branches);
+  void init_nodes(node_t * buf, size_t num_nodes) {
+    node_index_space.storage()->set_buffer(buf, num_nodes);
   }
 
   /**

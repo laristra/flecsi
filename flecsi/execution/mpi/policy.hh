@@ -17,12 +17,12 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "flecsi/utils/function_traits.hh"
 #include "future.hh"
 #include <flecsi/execution/mpi/reduction_wrapper.hh>
 #include <flecsi/utils/flog.hh>
-#endif
 
 #include <type_traits>
 #include <utility> // forward

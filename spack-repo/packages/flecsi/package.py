@@ -27,9 +27,11 @@ class Flecsi(CMakePackage):
 
     variant('build_type', default='Release', values=('Debug', 'Release'),
             description='The build type to build')
-    variant('runtime', default='legion', values=('legion', 'mpi'),
+    variant('runtime', default='legion', values=('hpx', 'mpi', 'legion'),
             description='Backend runtime to use for distributed memory')
     variant('shared', default=True, description='Build shared libraries')
+    variant('hdf5', default=False,
+            description='Enable HDF5 Support')
     variant('caliper', default=False,
             description='Enable Caliper Support')
     variant('graphviz', default=False,
@@ -38,10 +40,14 @@ class Flecsi(CMakePackage):
             description='Build FleCSI Tutorials')
 
     depends_on('cmake@3.12:', type='build')
-    depends_on('mpi')
-    depends_on('legion@ctrl-rep +shared +mpi', when='runtime=legion')
+    depends_on('mpi', when='runtime=mpi')
+    depends_on('mpi', when='runtime=legion')
+    depends_on('hpx', when='runtime=hpx')
+    depends_on('legion@ctrl-rep-2 +shared +mpi +hdf5', when='runtime=legion +hdf5')
+    depends_on('legion@ctrl-rep-2 +shared +mpi', when='runtime=legion ~hdf5')
     depends_on('boost@1.59.0: cxxstd=11 +program_options')
     depends_on('parmetis@4.0.3:')
+    depends_on('hdf5', when='+hdf5')
     depends_on('caliper', when='+caliper')
     depends_on('graphviz', when='+graphviz')
     depends_on('python@3.0:', when='+tutorial')
@@ -65,6 +71,11 @@ class Flecsi(CMakePackage):
         else:
             options.append('-DENABLE_FLECSIT=OFF')
             options.append('-DENABLE_FLECSI_TUTORIAL=OFF')
+
+        if '+hdf5' in self.spec:
+            options.append('-DENABLE_HDF5=ON')
+        else:
+            options.append('-DENABLE_HDF5=OFF')
 
         if '+caliper' in self.spec:
             options.append('-DENABLE_CALIPER=ON')

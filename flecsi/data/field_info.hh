@@ -17,11 +17,11 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/hash.hh>
-#endif
 
 #include <cstddef>
 #include <limits>

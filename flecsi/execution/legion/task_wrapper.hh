@@ -19,7 +19,8 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif 
+
 #include "../task_attributes.hh"
 #include "bind_accessors.hh"
 #include "flecsi/runtime/backend.hh"
@@ -28,7 +29,6 @@
 #include "unbind_accessors.hh"
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/flog.hh>
-#endif
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!

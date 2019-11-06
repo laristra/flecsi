@@ -17,10 +17,9 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#else
+#endif
 #include "flecsi/data/reference.hh"
 #include <flecsi/topology/structured_mesh/types.hh>
-#endif
 
 namespace flecsi {
 namespace topology {
