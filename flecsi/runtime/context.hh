@@ -37,6 +37,7 @@
 #include <functional>
 #include <map>
 #include <set>
+#include <string>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -153,6 +154,13 @@ struct context {
     return variables_map_;
   }
 
+  std::vector<std::string> const & unrecognized_options() {
+    flog_assert(program_options_initialized_,
+      "unitialized program options -> "
+      "invoke flecsi::initialize_program_options");
+    return unrecognized_options_;
+  }
+
   /*--------------------------------------------------------------------------*
     Runtime interface.
    *--------------------------------------------------------------------------*/
@@ -185,6 +193,9 @@ struct context {
 
     boost::program_options::store(parsed, variables_map_);
     boost::program_options::notify(variables_map_);
+    unrecognized_options_ = boost::program_options::collect_unrecognized(
+      parsed.options, boost::program_options::include_positional);
+
     program_options_initialized_ = true;
 
     int rank;
@@ -192,7 +203,7 @@ struct context {
 
     if(variables_map_.count("help")) {
       if(rank == 0) {
-      std::cout << master << std::endl;
+        std::cout << master << std::endl;
       } // if
 
       return status::help;
@@ -588,6 +599,7 @@ protected:
   std::map<std::string, boost::program_options::options_description>
     descriptions_map_;
   boost::program_options::variables_map variables_map_;
+  std::vector<std::string> unrecognized_options_;
 
   /*--------------------------------------------------------------------------*
     Basic runtime data members.

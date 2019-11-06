@@ -162,9 +162,7 @@ reduce(ARGS &&... args) {
   constexpr size_t ZERO = flecsi_internal_hash(0);
 
   size_t domain_size = flecsi_context.get_launch_domain_size(LAUNCH_DOMAIN);
-  domain_size = domain_size == 0 ? flecsi_context.processes() *
-                                     flecsi_context.threads_per_process()
-                                 : domain_size;
+  domain_size = domain_size == 0 ? flecsi_context.processes() : domain_size;
 
   ++flecsi_context.tasks_executed();
 

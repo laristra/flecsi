@@ -172,10 +172,7 @@ context_t::start() {
     Handle command-line arguments.
    */
 
-  std::string tpp; // lives past start() (which is hopefully enough)
-  std::vector<char *> largv;
-  largv.push_back(argv_[0]);
-
+#if 0
   auto vm = context::program_options_variables_map();
   threads_per_process_ = vm["tpp"].as<size_t>();
 
@@ -184,6 +181,61 @@ context_t::start() {
     tpp = std::to_string(threads_per_process_);
     largv.push_back(tpp.data());
   } // if
+#endif
+
+  // Initialize with default. This may get modified by the options processing
+  // below.
+  // FIXME: We are asking for -ll:cpu to be accessible from Legion so that
+  // we can request this information from the Legion runtime.
+  threads_per_process_ = 1;
+
+  std::vector<char *> largv;
+  largv.push_back(argv_[0]);
+
+#define check_option_with_arg(label, it)                                       \
+  if(it->find(label) != std::string::npos) {                                   \
+    largv.push_back(const_cast<char *>(it->data()));                           \
+    largv.push_back(const_cast<char *>((++it)->data()));                       \
+  }
+
+  for(auto opt = unrecognized_options_.begin();
+      opt != unrecognized_options_.end();
+      ++opt) {
+
+    // Machine configuration
+    check_option_with_arg("-ll:util", opt);
+
+    //check_option_with_arg("-ll:cpu", opt);
+    if(opt->find("-ll:cpu") != std::string::npos) {
+      largv.push_back(const_cast<char *>(opt->data()));
+      largv.push_back(const_cast<char *>((++opt)->data()));
+      std::stringstream sstream(largv.back());
+      sstream >> threads_per_process_;
+    } // if
+
+    check_option_with_arg("-ll:gpu", opt);
+    check_option_with_arg("-ll:amsg", opt);
+    check_option_with_arg("-ll:dma", opt);
+    check_option_with_arg("-ll:csize", opt);
+    check_option_with_arg("-ll:gsize", opt);
+    check_option_with_arg("-ll:rsize", opt);
+    check_option_with_arg("-ll:fsize", opt);
+    check_option_with_arg("-ll:zsize", opt);
+    check_option_with_arg("-ll:stacksize", opt);
+    check_option_with_arg("-ll:sdpsize", opt);
+    check_option_with_arg("-ll:lmbsize", opt);
+    check_option_with_arg("-ll:numlmbs", opt);
+    check_option_with_arg("-ll:pin", opt);
+
+    // Runtime performance configuration
+    check_option_with_arg("-lg:window", opt);
+    check_option_with_arg("-lg:sched", opt);
+    check_option_with_arg("-lg:width", opt);
+    check_option_with_arg("-lg:message", opt);
+    check_option_with_arg("-lg:filter", opt);
+  } // for
+
+#undef check_option_with_arg
 
   threads_ = processes_ * threads_per_process_;
 
