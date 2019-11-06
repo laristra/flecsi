@@ -12,17 +12,19 @@
    All rights reserved.
                                                                               */
 
+#include <flecsi-config.h>
+
 #if !defined(__FLECSI_PRIVATE__)
 #define __FLECSI_PRIVATE__
 #endif
 
 #include <flecsi/data.hh>
-#include <flecsi/execution/command_line_options.hh>
 #include <flecsi/execution/launch.hh>
 #include <flecsi/execution/legion/task_wrapper.hh>
 #include <flecsi/runtime/legion/context.hh>
 #include <flecsi/runtime/legion/mapper.hh>
 #include <flecsi/runtime/legion/tasks.hh>
+#include <flecsi/runtime/program_options.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/const_string.hh>
 
@@ -31,8 +33,79 @@ namespace flecsi::runtime {
 using namespace boost::program_options;
 using execution::legion::task_id;
 
+//----------------------------------------------------------------------------//
+// Implementation of context_t::initialize.
+//----------------------------------------------------------------------------//
+
 int
-context_t::start(int argc, char ** argv, variables_map & vm) {
+context_t::initialize(int argc, char ** argv, bool dependent) {
+
+  if(dependent) {
+    int version, subversion;
+    MPI_Get_version(&version, &subversion);
+
+#if defined(GASNET_CONDUIT_MPI)
+    if(version == 3 && subversion > 0) {
+      int provided;
+      MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+
+      if(provided < MPI_THREAD_MULTIPLE) {
+        std::cerr << "Your implementation of MPI does not support "
+                     "MPI_THREAD_MULTIPLE which is required for use of the "
+                     "GASNet MPI conduit with the Legion-MPI Interop!"
+                  << std::endl;
+        std::abort();
+      } // if
+    }
+    else {
+      // Initialize the MPI runtime
+      MPI_Init(&argc, &argv);
+    } // if
+#else
+    MPI_Init(&argc, &argv);
+#endif
+  } // if
+
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  context::process_ = rank;
+  context::processes_ = size;
+
+  auto status = context::initialize_generic(argc, argv, dependent);
+
+  if(status != success && dependent) {
+    MPI_Finalize();
+  } // if
+
+  return status;
+} // initialize
+
+//----------------------------------------------------------------------------//
+// Implementation of context_t::finalize.
+//----------------------------------------------------------------------------//
+
+int
+context_t::finalize() {
+
+  auto status = context::finalize_generic();
+
+#ifndef GASNET_CONDUIT_MPI
+  if(status == success && context::initialize_dependent_) {
+    MPI_Finalize();
+  } // if
+#endif
+
+  return status;
+} // finalize
+
+//----------------------------------------------------------------------------//
+// Implementation of context_t::start.
+//----------------------------------------------------------------------------//
+
+int
+context_t::start() {
   using namespace Legion;
 
   /*
@@ -88,20 +161,13 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
     Configure interoperability layer.
    */
 
-  int rank, size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  process_ = rank;
-  processes_ = size;
-
-  Legion::Runtime::configure_MPI_interoperability(rank);
+  Legion::Runtime::configure_MPI_interoperability(context::process_);
 
   /*
     Register reduction operations.
    */
 
-  for(auto & ro : context_t::instance().reduction_registry()) {
+  for(auto & ro : context::reduction_registry()) {
     ro.second();
   } // for
 
@@ -109,19 +175,28 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
     Handle command-line arguments.
    */
 
-  std::string tpp; // lives past start() (which is hopefully enough)
   std::vector<char *> largv;
-  largv.push_back(argv[0]);
+  largv.push_back(argv_[0]);
+  context::threads_per_process_ = 1;
 
-  threads_per_process_ = vm[FLECSI_TPP_OPTION_STRING].as<size_t>();
+  for(auto opt = unrecognized_options_.begin();
+      opt != unrecognized_options_.end();
+      ++opt) {
 
-  if(threads_per_process_ > 1) {
-    largv.push_back(const_cast<char *>("-ll:cpu"));
-    tpp = std::to_string(threads_per_process_);
-    largv.push_back(tpp.data());
-  } // if
+    // FIXME: This case is a temporary fix until we decide
+    // what to do about Issue #8: Default Launch Domain Size.
+    if(opt->find("-ll:cpu") != std::string::npos) {
+      largv.push_back(opt->data());
+      largv.push_back((++opt)->data());
+      std::stringstream sstream(largv.back());
+      sstream >> context::threads_per_process_;
+    }
+    else {
+      largv.push_back(opt->data());
+    } // if
+  } // for
 
-  threads_ = processes_ * threads_per_process_;
+  context::threads_ = context::processes_ * context::threads_per_process_;
 
   /*
     Start Legion runtime.
@@ -129,8 +204,21 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
 
   {
     flog_tag_guard(context);
-    flog_devel(info) << "Starting Legion runtime" << std::endl;
-  }
+
+    std::stringstream stream;
+
+    stream << "Starting Legion runtime" << std::endl;
+    stream << "\targc: " << largv.size() << std::endl;
+    stream << "\targv: ";
+
+    for(auto opt: largv) {
+      stream << opt << " ";
+    } // for
+
+    stream << std::endl;
+
+    flog_devel(info) << stream.str();
+  } // scope
 
   Runtime::start(largv.size(), largv.data(), true);
 
@@ -144,7 +232,7 @@ context_t::start(int argc, char ** argv, variables_map & vm) {
 
   Legion::Runtime::wait_for_shutdown();
 
-  return context_t::instance().exit_status();
+  return context::exit_status();
 } // context_t::start
 
 //----------------------------------------------------------------------------//

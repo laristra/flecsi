@@ -33,6 +33,87 @@
 namespace flecsi {
 
 /*!
+  Perform FleCSI runtime initialization. If \em dependent is true, this call
+  will also initialize any runtime on which FleCSI depends.
+
+  @param argc      The number of command-line arguments.
+  @param argv      The command-line arguments.
+  @param dependent A boolean telling FleCSI whether or not to initialize
+                   runtimes on which it depends.
+
+  @return An integer indicating the initialization status. This may be
+          interpreted as a \em flecsi::runtime::status enumeration, e.g.,
+          a value of 1 is equivalent to flecsi::runtime::status::help.
+ */
+
+inline int
+initialize(int argc, char ** argv, bool dependent = true) {
+  return runtime::context_t::instance().initialize(argc, argv, dependent);
+}
+
+/*!
+  Perform FleCSI runtime start. This causes the runtime to begin execution
+  of the top-level action.
+
+  @return An integer indicating the finalization status. This will either
+          be 0 for successful completion, or an error code from
+          flecsi::runtime::status.
+ */
+
+inline int
+start() {
+  return runtime::context_t::instance().start();
+}
+
+/*!
+  Perform FleCSI runtime finalization. If FleCSI was initialized with the \em
+  dependent flag set to true, FleCSI will also finalize any runtimes on which
+  it depends.
+
+  @return An integer indicating the finalization status. This will either
+          be 0 for successful completion, or an error code from
+          flecsi::runtime::status.
+ */
+
+inline int
+finalize() {
+  return runtime::context_t::instance().finalize();
+}
+
+/*!
+  Add a program option to the \em options_description identified by \em
+  label. If the options_description does not exist, it is created.
+
+  @param label A std::string containing the options_description label.
+
+  @code
+  auto my_unique_variable_name = add_program_option("Description Label",
+    arg0, arg1, ...);
+  @endcode
+
+  @return A boolean value that can be used at namespace scope for assignment.
+ */
+
+template<typename... ARGS>
+inline bool
+add_program_option(std::string const & label, ARGS &&... args) {
+  return runtime::context_t::instance().add_program_option(
+    label, std::forward<ARGS>(args)...);
+}
+
+/*!
+  Return the boost program options variable map.
+
+  @note The \em initialize method must be called before this method can be
+  invokded.
+ */
+
+inline boost::program_options::variables_map const &
+program_options_variables_map() {
+  return runtime::context_t::instance().program_options_variables_map();
+}
+
+/*!
   Return the current process id.
  */
 

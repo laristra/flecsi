@@ -22,8 +22,7 @@
 
 using namespace flecsi;
 
-struct sph_tree_policy
-{
+struct sph_tree_policy {
   static constexpr size_t dimension = 3;
   using element_t = double;
   using point_t = point<element_t, dimension>;
@@ -35,16 +34,17 @@ struct sph_tree_policy
   using node_t = flecsi::topology::ntree_node<dimension, tree_entity_t, key_t>;
 }; // sph_tree_policy
 
-using sph_ntree_topology = data::topology_reference<topology::ntree_topology<sph_tree_policy>>;
-sph_ntree_topology sph_ntree; 
-sph_ntree_topology::coloring coloring; 
+using sph_ntree_topology =
+  data::topology_reference<topology::ntree_topology<sph_tree_policy>>;
+sph_ntree_topology sph_ntree;
+sph_ntree_topology::coloring coloring;
 
 int
 ntree_driver(int argc, char ** argv) {
   FTEST();
 
-  coloring.allocate(); 
-  sph_ntree.allocate(coloring); 
+  coloring.allocate();
+  sph_ntree.allocate(coloring);
 
   return 0;
 } // TEST

@@ -18,6 +18,7 @@
 #include <flecsi-config.h>
 
 #include <flecsi/control/point_walker.hh>
+#include <flecsi/execution.hh>
 #include <flecsi/utils/dag.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/flog.hh>
@@ -176,7 +177,8 @@ private:
 } // namespace control
 } // namespace flecsi
 
-#if defined(FLECSI_ENABLE_GRAPHVIZ)
+#if 0
+// FIXME: This needs to be factored into the new runtime style.
 #include "runtime.hh"
 
 /*!

@@ -18,13 +18,12 @@
 #------------------------------------------------------------------------------#
 
 set(execution_HEADERS
-  command_line_options.hh
-  launch.hh
-  task_attributes.hh
+  backend.hh
   internal.hh
   kernel_interface.hh
+  launch.hh
+  task_attributes.hh
   reduction.hh
-  backend.hh
 )
 
 set(execution_SOURCES
@@ -46,7 +45,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(execution_SOURCES
     ${execution_SOURCES}
-    legion/runtime.cc
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -59,14 +57,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_SOURCES
     ${execution_SOURCES}
-    mpi/runtime.cc
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   set(execution_SOURCES
     ${execution_SOURCES}
-    hpx/runtime.cc
   )
 
 endif()

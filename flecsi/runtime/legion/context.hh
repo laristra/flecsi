@@ -19,7 +19,7 @@
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
-#endif 
+#endif
 
 #include "../context.hh"
 #include <flecsi/data/legion/types.hh>
@@ -38,8 +38,9 @@
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
-#include <boost/program_options.hpp>
 #include <mpi.h>
+
+#include <boost/program_options.hpp>
 
 #include <map>
 #include <string_view>
@@ -88,7 +89,19 @@ struct context_t : context {
     Documentation for this interface is in the top-level context type.
    */
 
-  int start(int argc, char ** argv, boost::program_options::variables_map & vm);
+  int initialize(int argc, char ** argv, bool dependent);
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  int finalize();
+
+  /*
+    Documentation for this interface is in the top-level context type.
+   */
+
+  int start();
 
   /*
     Documentation for this interface is in the top-level context type.
@@ -101,7 +114,7 @@ struct context_t : context {
    */
 
   size_t process() const {
-    return process_;
+    return context::process_;
   } // process
 
   /*
@@ -109,7 +122,7 @@ struct context_t : context {
    */
 
   size_t processes() const {
-    return processes_;
+    return context::processes_;
   } // processes
 
   /*
@@ -117,7 +130,7 @@ struct context_t : context {
    */
 
   size_t threads_per_process() const {
-    return threads_per_process_;
+    return context::threads_per_process_;
   } // threads_per_process
 
   /*
@@ -125,7 +138,7 @@ struct context_t : context {
    */
 
   size_t threads() const {
-    return threads_;
+    return context::threads_;
   } // threads
 
   /*
@@ -393,11 +406,6 @@ private:
     index_topology_instances_;
   std::unordered_map<size_t, data::unstructured_mesh::runtime_data_t>
     unstructured_mesh_topology_instances_;
-
-  size_t process_ = std::numeric_limits<size_t>::max();
-  size_t processes_ = std::numeric_limits<size_t>::max();
-  size_t threads_per_process_ = std::numeric_limits<size_t>::max();
-  size_t threads_ = std::numeric_limits<size_t>::max();
 
   /*--------------------------------------------------------------------------*
     Interoperability data members.

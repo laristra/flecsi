@@ -74,9 +74,9 @@ public:
     return c;
   } // instance
 
-  void initialize(std::string active = "none",
+  int initialize(std::string active = "none",
     int verbose = 0,
-    size_t one_process = std::numeric_limits<size_t>::max()) {
+    int64_t one_process = -1) {
 #if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: initializing runtime"
               << FLOG_COLOR_PLAIN << std::endl;
@@ -101,12 +101,11 @@ public:
     // The default group is always active (unscoped). To avoid
     // output for this tag, make sure to scope all FLOG output.
     tag_bitset_.set(0);
+    tag_reverse_map_[0] = "all";
 
     if(active == "all") {
       // Turn on all of the bits for "all".
       tag_bitset_.set();
-      active_tag_ = 0;
-      tag_reverse_map_[0] = "all";
     }
     else if(active != "none") {
       // Turn on the bits for the selected groups.
@@ -138,10 +137,19 @@ public:
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
-    one_process_ = one_process;
-
     MPI_Comm_rank(MPI_COMM_WORLD, &process_);
     MPI_Comm_size(MPI_COMM_WORLD, &processes_);
+
+    if(one_process && !(one_process < processes_)) {
+      if(process_ == 0) {
+        std::cerr << "flog process " << one_process << " out-of-bounds ("
+                  << processes_ << " processes)" << std::endl;
+      } // if
+
+      return !0;
+    } // if
+
+    one_process_ = one_process;
 
     if(process_ == 0) {
       std::thread flusher(flush_packets);
@@ -150,6 +158,8 @@ public:
 #endif // FLOG_ENABLE_MPI
 
     initialized_ = true;
+
+    return 0;
   } // initialize
 
   void finalize() {
@@ -318,7 +328,7 @@ public:
 
 #if defined(FLOG_ENABLE_MPI)
   bool one_process() const {
-    return one_process_ < processes_;
+    return one_process_ > -1 && one_process_ < processes_;
   }
 
   size_t output_process() const {
@@ -393,7 +403,7 @@ private:
   std::unordered_map<size_t, std::string> tag_reverse_map_;
 
 #if defined(FLOG_ENABLE_MPI)
-  size_t one_process_;
+  int64_t one_process_;
   int process_;
   int processes_;
   std::thread flusher_thread_;

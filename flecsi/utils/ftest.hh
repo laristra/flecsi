@@ -115,6 +115,10 @@ flecsi_register_control_options(control_t);
 
 #include "flecsi/runtime/context.hh"
 
-inline bool unit_tla_registered =
+namespace flecsi::utils::flog {
+
+inline bool top_level_action_registered =
   flecsi::runtime::context_t::instance().register_top_level_action(
     flecsi::control::control_t::execute);
+
+} // namespace flecsi::utils::flog

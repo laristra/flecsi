@@ -37,15 +37,23 @@
 #include <functional>
 #include <map>
 #include <set>
+#include <string>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 flog_register_tag(context);
 
 namespace flecsi::runtime {
 
 struct context_t; // supplied by backend
+
+enum status : int {
+  success,
+  help,
+  error, // add specific error modes
+}; // initialization_codes
 
 /*!
   The context type provides a high-level execution context interface that
@@ -103,21 +111,172 @@ struct context {
   static inline context_t & instance();
 
   /*--------------------------------------------------------------------------*
+    Program options interface.
+   *--------------------------------------------------------------------------*/
+
+  std::vector<char *> & argv() {
+    return argv_;
+  }
+
+  std::string & flog_tags() {
+    return flog_tags_;
+  }
+
+  int & flog_verbose() {
+    return flog_verbose_;
+  }
+
+  int64_t & flog_output_process() {
+    return flog_output_process_;
+  }
+
+  /*
+    The boolean return is necessary for assignment so that this code block is
+    executed at namespace scope.
+   */
+
+  template<typename... ARGS>
+  bool add_program_option(std::string const & label, ARGS &&... args) {
+    auto ita = descriptions_map_.find(label);
+
+    if(ita == descriptions_map_.end()) {
+      boost::program_options::options_description desc(label.c_str());
+      descriptions_map_.emplace(label, desc);
+    } // if
+
+    descriptions_map_[label].add_options()(std::forward<ARGS>(args)...);
+    return true;
+  }
+
+  boost::program_options::variables_map const &
+  program_options_variables_map() {
+    flog_assert(program_options_initialized_,
+      "unitialized program options -> "
+      "invoke flecsi::initialize_program_options");
+    return variables_map_;
+  }
+
+  std::vector<std::string> const & unrecognized_options() {
+    flog_assert(program_options_initialized_,
+      "unitialized program options -> "
+      "invoke flecsi::initialize_program_options");
+    return unrecognized_options_;
+  }
+
+  /*--------------------------------------------------------------------------*
     Runtime interface.
    *--------------------------------------------------------------------------*/
 
+  inline int initialize_generic(int argc, char ** argv, bool dependent) {
+
+    initialize_dependent_ = dependent;
+
+    // Save command-line arguments
+    for(auto i(0); i < argc; ++i) {
+      argv_.push_back(argv[i]);
+    } // for
+
+    std::string program(argv[0]);
+    program = "Basic Options (" + program.substr(program.rfind('/') + 1) + ")";
+
+    boost::program_options::options_description master(program);
+    master.add_options()("help,h", "Print this message and exit.");
+
+    // Add all of the descriptions to the main description
+    for(auto & od : descriptions_map_) {
+      master.add(od.second);
+    } // for
+
+    boost::program_options::parsed_options parsed =
+      boost::program_options::command_line_parser(argc, argv)
+        .options(master)
+        .allow_unregistered()
+        .run();
+
+    boost::program_options::store(parsed, variables_map_);
+    boost::program_options::notify(variables_map_);
+    unrecognized_options_ = boost::program_options::collect_unrecognized(
+      parsed.options, boost::program_options::include_positional);
+
+    program_options_initialized_ = true;
+
+    if(variables_map_.count("help")) {
+      if(process_ == 0) {
+        std::cout << master << std::endl;
+      } // if
+
+      return status::help;
+    } // if
+
+#if defined(FLECSI_ENABLE_FLOG)
+    if(flog_tags_ == "0") {
+      if(process_ == 0) {
+        std::cout << "Available tags (FLOG):" << std::endl;
+
+        for(auto t : flog_tag_map()) {
+          std::cout << " " << t.first << std::endl;
+        } // for
+      } // if
+
+      return status::help;
+    } // if
+
+    if(flog_initialize(flog_tags_, flog_verbose_, flog_output_process_)) {
+      return status::error;
+    } // if
+#endif
+
+#if defined(FLECSI_ENABLE_KOKKOS)
+    if(initialize_dependent_) {
+      // Need to capture status from this
+      Kokkos::initialize(argc, argv);
+    } // if
+#endif
+
+    return status::success;
+  } // initialize_generic
+
+  inline int finalize_generic() {
+#if defined(FLECSI_ENABLE_FLOG)
+    flog_finalize();
+#endif
+
+    if(initialize_dependent_) {
+#if defined(FLECSI_ENABLE_KOKKOS)
+      Kokkos::finalize();
+#endif
+    } // if
+
+    return success;
+  } // finalize_generic
+
 #ifdef DOXYGEN // these functions are implemented per-backend
+  /*
+    Documented in execution.hh
+   */
+
+  int initialize(int argc, char ** argv, bool dependent);
+
+  /*!
+    Perform FleCSI runtime finalization. If FleCSI was initialized with
+    the \em dependent flag set to true, FleCSI will also finalize any runtimes
+    on which it depends.
+
+    @return An integer indicating the finalization status. This will either
+            be 0 for successful completion, or an error code from
+            flecsi::runtime::status.
+   */
+
+  int finalize();
+
   /*!
     Start the FleCSI runtime.
-
-    @param argc The number of command-line arguments.
-    @param argv The command-line arguments in a char **.
 
     @return An integer with \em 0 being success, and any other value
             being failure.
    */
 
-  int start(int argc, char ** argv, variables_map & vm);
+  int start();
 
   /*!
     Return the current process id.
@@ -226,16 +385,16 @@ struct context {
       std::is_same_v<TOPOLOGY_TYPE, topology::index_topology_t>;
     constexpr bool canonical_coloring =
       std::is_base_of_v<topology::canonical_topology_base, TOPOLOGY_TYPE>;
-    constexpr bool ntree_coloring = 
-      std::is_base_of_v<topology::ntree_topology_base, TOPOLOGY_TYPE>; 
+    constexpr bool ntree_coloring =
+      std::is_base_of_v<topology::ntree_topology_base, TOPOLOGY_TYPE>;
 
     if constexpr(index_coloring) {
       return index_colorings_[identifier];
     }
-    else if constexpr (canonical_coloring) {
+    else if constexpr(canonical_coloring) {
       return canonical_colorings_[identifier];
     }
-    else if constexpr (ntree_coloring) {
+    else if constexpr(ntree_coloring) {
       return ntree_colorings_[identifier];
     } // if
   } // coloring
@@ -427,8 +586,30 @@ protected:
 #endif
 
   /*--------------------------------------------------------------------------*
+    Program options data members.
+   *--------------------------------------------------------------------------*/
+
+  std::vector<char *> argv_;
+
+  std::string flog_tags_;
+  int flog_verbose_;
+  int64_t flog_output_process_;
+
+  bool initialize_dependent_ = true;
+  bool program_options_initialized_ = false;
+  std::map<std::string, boost::program_options::options_description>
+    descriptions_map_;
+  boost::program_options::variables_map variables_map_;
+  std::vector<std::string> unrecognized_options_;
+
+  /*--------------------------------------------------------------------------*
     Basic runtime data members.
    *--------------------------------------------------------------------------*/
+
+  size_t process_ = std::numeric_limits<size_t>::max();
+  size_t processes_ = std::numeric_limits<size_t>::max();
+  size_t threads_per_process_ = std::numeric_limits<size_t>::max();
+  size_t threads_ = std::numeric_limits<size_t>::max();
 
   int exit_status_ = 0;
   top_level_action_t top_level_action_ = {};

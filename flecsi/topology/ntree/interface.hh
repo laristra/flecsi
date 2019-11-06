@@ -19,10 +19,10 @@
 #error Do not include this file directly!
 #endif
 #include "flecsi/data/reference.hh"
+#include <flecsi/topology/ntree/coloring.hh>
 #include <flecsi/topology/ntree/geometry.hh>
 #include <flecsi/topology/ntree/storage.hh>
 #include <flecsi/topology/ntree/types.hh>
-#include <flecsi/topology/ntree/coloring.hh>
 
 #include <fstream>
 #include <iostream>
@@ -71,7 +71,7 @@ public:
   using entity_id_t = typename entity_base<0>::id_t;
   using geometry_t = ntree_geometry<element_t, dimension>;
 
-  storage_t nts_; 
+  storage_t nts_;
 
 public:
   /*!
@@ -502,7 +502,7 @@ private:
   std::unordered_map<key_t, node_t, node_key_hasher__<key_t>> node_map_;
   typename std::unordered_map<key_t, node_t, node_key_hasher__<key_t>>::iterator
     root_;
-    
+
 }; // ntree_topology
 
 template<class TREE_TYPE>

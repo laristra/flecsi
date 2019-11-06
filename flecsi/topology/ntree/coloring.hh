@@ -28,28 +28,27 @@ namespace topology {
 // NTree topology coloring.
 //----------------------------------------------------------------------------//
 
-
 struct ntree_topology_base {
 
-  struct coloring{
-  
-    struct local_coloring{
-      size_t local_entities_; 
+  struct coloring {
+
+    struct local_coloring {
+      size_t local_entities_;
     }; // local_coloring
-    
-    struct coloring_metadata{
-      std::vector<size_t> entities_distribution_; 
+
+    struct coloring_metadata {
+      std::vector<size_t> entities_distribution_;
     }; // coloring_metadata
 
-    static void color(coloring & c){}
+    static void color(coloring & c) {}
 
     local_coloring local_coloring_;
     coloring_metadata coloring_metadata_;
 
-  }; // struct coloring 
+  }; // struct coloring
 }; // struct ntree_topology_base
 
-//using coloring_t = std::map<size_t, index_coloring_t>;
+// using coloring_t = std::map<size_t, index_coloring_t>;
 
 } // namespace topology
 } // namespace flecsi
