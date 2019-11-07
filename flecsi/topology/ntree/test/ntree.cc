@@ -18,6 +18,7 @@
 #include <flecsi/utils/geometry/filling_curve.hh>
 #include <flecsi/utils/geometry/point.hh>
 
+#include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/ntree/types.hh>
 
 using namespace flecsi;
