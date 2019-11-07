@@ -36,11 +36,31 @@ namespace flecsi::runtime {
 
 struct context_t : context {
 
+  //--------------------------------------------------------------------------//
+  //  Runtime.
+  //--------------------------------------------------------------------------//
+
   /*!
     Documnetation for this interface is in the top-level context type.
    */
 
-  int start(int, char **, boost::program_options::variables_map &);
+  int initialize(int argc, char ** argv, bool dependent);
+
+  /*!
+    Documnetation for this interface is in the top-level context type.
+   */
+
+  int finalize();
+
+  /*!
+    Documnetation for this interface is in the top-level context type.
+   */
+
+  int start();
+
+  /*!
+    Documnetation for this interface is in the top-level context type.
+   */
 
   size_t process() const {
     return color_;

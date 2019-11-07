@@ -40,8 +40,6 @@
 
 #include <mpi.h>
 
-#include <boost/program_options.hpp>
-
 #include <map>
 #include <string_view>
 #include <unordered_map>

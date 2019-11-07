@@ -130,7 +130,6 @@ before_script:
       - refactor
   except:
     variables:
-      - $RUNTIME == "mpi"
       - $RUNTIME == "hpx"
       - $CI_JOB_STAGE == "Tutorials"
       - $CI_JOB_STAGE == "Apps"
@@ -217,7 +216,7 @@ before_script:
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_FLOG=ON \
-        -DENABLE_HDF5=ON \
+        -DENABLE_HDF5=$([ "$RUNTIME" = "legion" ] && echo ON || echo OFF) \
         -DENABLE_DOXYGEN=ON \
         -DENABLE_DOCUMENTATION=OFF \
         -DENABLE_COVERAGE_BUILD=ON \
@@ -347,7 +346,6 @@ canary:centOS_mpich_mpi:
     <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *mpich
-  allow_failure: true 
 
 canary:centOS_mpich_legion:
   extends: .canary
