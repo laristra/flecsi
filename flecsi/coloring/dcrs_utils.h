@@ -348,6 +348,17 @@ auto alltoallv(
   return ret;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// \brief Simple utility for determining which rank owns an id
+////////////////////////////////////////////////////////////////////////////////
+template<typename T, template <typename> class Vector>
+T rank_owner( const Vector<T> & distribution, T i )
+{
+  auto it = std::upper_bound( distribution.begin(), distribution.end(), i );
+  assert( it != distribution.end() );
+  return std::distance( distribution.begin(), it ) - 1;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief A simple utility for subdividing an index space into several parts 
@@ -479,27 +490,46 @@ void make_dcrs_distributed(
   // We send the results for each vertex to their owner rank, which was
   // defined using the vertex subdivision above
   std::vector<size_t> sendcounts(size, 0);
-  std::vector<size_t> senddispls(size+1);
-  std::vector<size_t> sendbuf;
-  {
-    auto it = vertex2cell.begin();
-    for (size_t r=0; r<size && it != vertex2cell.end(); ++it) {
-      while (it->first >= vert_dist[r+1]) r++;
-      // we will be sending vertex id, number of cells, plus cell ids
-      if ( r != rank ) {
-        auto n = 2 + it->second.size();
-        sendcounts[r] += n;
-        sendbuf.reserve( sendbuf.size() + n );
-        sendbuf.emplace_back( it->first );
-        sendbuf.emplace_back( it->second.size() );
-        sendbuf.insert( sendbuf.end(), it->second.begin(), it->second.end() );
-      }
+
+  // count
+  for ( const auto & vs_pair : vertex2cell ) {
+    auto global_id = vs_pair.first;
+    auto r = rank_owner( vert_dist,  global_id );
+    // we will be sending vertex id, number of cells, plus cell ids
+    if ( r != rank ) {
+      auto n = 2 + vs_pair.second.size();
+      sendcounts[r] += n;
     }
-  } // scope
+  }
   
   // finish displacements
+  std::vector<size_t> senddispls(size+1);
   senddispls[0] = 0;
-  for ( size_t r=0; r<size; ++r ) senddispls[r+1] = senddispls[r] + sendcounts[r];
+  for ( size_t r=0; r<size; ++r ) {
+    senddispls[r+1] = senddispls[r] + sendcounts[r];
+    sendcounts[r] = 0;
+  }
+
+  // fill buffers
+  std::vector<size_t> sendbuf( senddispls[size] );
+
+  for ( const auto & vs_pair : vertex2cell ) {
+    auto global_id = vs_pair.first;
+    auto r = rank_owner( vert_dist,  global_id );
+    // we will be sending vertex id, number of cells, plus cell ids
+    if ( r != rank ) {
+      // get offset
+      auto offset = senddispls[r] + sendcounts[r];
+      // populate data
+      sendbuf[offset++] = global_id;
+      sendbuf[offset++] = vs_pair.second.size();
+      for ( auto v : vs_pair.second ) sendbuf[offset++] = v;
+      // bump counters
+      auto n = 2 + vs_pair.second.size();
+      sendcounts[r] += n;
+    }
+  }
+
 
   std::vector<size_t> recvcounts(size, 0);
   auto ret = MPI_Alltoall(sendcounts.data(), 1, mpi_size_t, recvcounts.data(), 1, mpi_size_t, MPI_COMM_WORLD);
@@ -684,17 +714,6 @@ void make_dcrs_distributed(
   }
 
 } // make_dcrs
-
-////////////////////////////////////////////////////////////////////////////////
-/// \brief Simple utility for determining which rank owns an id
-////////////////////////////////////////////////////////////////////////////////
-template<typename T, template <typename> class Vector>
-T rank_owner( const Vector<T> & distribution, T i )
-{
-  auto it = std::upper_bound( distribution.begin(), distribution.end(), i );
-  assert( it != distribution.end() );
-  return std::distance( distribution.begin(), it ) - 1;
-}
 
   
 ////////////////////////////////////////////////////////////////////////////////
