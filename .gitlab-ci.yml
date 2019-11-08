@@ -41,7 +41,7 @@ variables:
   FLECSI_GCC_VERSION: "7.3.0"
   FLECSI_PYTHON_VERSION: "3.5.1"
   FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/flecsi-deps-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
-  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz backend=${RUNTIME} ^${FLECSI_MPI_PACKAGE}"
+  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz +hdf5 backend=${RUNTIME} ^${FLECSI_MPI_PACKAGE}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
@@ -211,6 +211,7 @@ before_script:
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_UNIT_TESTS=ON \
+        -DENABLE_HDF5=$([ "$RUNTIME" = "legion" ] && echo ON || echo OFF) \
         ..
     make -k VERBOSE=1 -j2 -l40
     make install DESTDIR=${CI_PROJECT_DIR}/build/install

@@ -25,30 +25,38 @@ fi
 cmake_mode=cmake
 extra_define=""
 runtime=mpi
+kokkos=OFF
+
 
 while [[ $# -gt 0 ]]
 do
 
-	case $1 in
-		--help|-h)
-			command=`echo $0 | sed 's,.*\/,,g'`
-			echo "Usage: $command [options] runtime"
-			echo "  -h, --help     Show this message and exit."
-			echo "  -c, --ccmake   Enable curses mode."
-			echo ""
-			echo "Runtimes: legion, mpi."
-			echo "(default runtime is mpi)."
-			exit
-		;;
-		--ccmake|-c)
-			cmake_mode=ccmake
-		;;
+  case $1 in
+    --help|-h)
+      command=`echo $0 | sed 's,.*\/,,g'`
+      echo "Usage: $command [options] runtime"
+      echo "  -h, --help     Show this message and exit."
+      echo "  -c, --ccmake   Enable curses mode."
+      echo ""
+      echo "Runtimes: legion, mpi."
+      echo "(default runtime is mpi)."
+      exit
+      shift #past argument
+    ;;
+    --ccmake|-c)
+      cmake_mode=ccmake
+      shift #past argument
+    ;;
     legion|hpx)
       runtime=$1
+      shift #past argument
     ;;
-	esac
+    kokkos)
+      kokkos=ON
+      shift #past argument
+    ;;
+  esac
 
-	shift # next argument
 done
 
 if [ $runtime = legion ]; then clog=OFF
@@ -73,6 +81,7 @@ $cmake_mode \
   -DENABLE_JENKINS_OUTPUT=ON \
   -DENABLE_FLECSIT=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
+  -DENABLE_KOKKOS=$kokkos \
   $cinch_dir
 
 #------------------------------------------------------------------------------#
