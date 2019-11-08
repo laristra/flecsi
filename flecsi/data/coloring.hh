@@ -25,45 +25,43 @@
 #include <flecsi/runtime/types.hh>
 
 #include <mpi.h>
+#include <optional>
 
 namespace flecsi {
 namespace data {
 
-template<typename TOPOLOGY_TYPE, typename... ARGS>
-void
-coloring_task(size_t identifier, ARGS &&... args) {
-  auto & coloring_info =
-    runtime::context_t::instance().coloring<TOPOLOGY_TYPE>(identifier);
-
-  TOPOLOGY_TYPE::coloring::color(coloring_info, std::forward<ARGS>(args)...);
-} // coloring_task
-
-template<typename TOPOLOGY_TYPE>
-struct coloring_reference : public reference_base {
-
-  coloring_reference() : reference_base(unique_cid_t::instance().next()) {}
+template<class Topo>
+struct coloring_slot {
+  using color_type = typename Topo::coloring;
 
   /*!
     @note The MPI task launched by this method is always mapped to the process
-          launch domain.
-   */
+    launch domain.
+  */
 
   template<typename... ARGS>
-  void allocate(ARGS &&... args) {
-    execute<coloring_task<TOPOLOGY_TYPE, ARGS...>, index, mpi>(
-      identifier_, std::forward<ARGS>(args)...);
-    allocated_ = true;
+  color_type & allocate(ARGS &&... args) {
+    constexpr auto f = [](coloring_slot & s, ARGS &&... aa) {
+      s.coloring.emplace(std::forward<ARGS>(aa)...);
+    };
+    execute<*f, index, mpi>(*this, std::forward<ARGS>(args)...);
+    return get();
   } // allocate
 
   void deallocate() {
-    policy_t::deallocate_coloring<TOPOLOGY_TYPE>(identifier_);
-    allocated_ = false;
+    coloring.reset();
   } // deallocate
 
-private:
-  bool allocated_ = false;
+  color_type & get() {
+    return *coloring;
+  }
+  const color_type & get() const {
+    return *coloring;
+  }
 
-}; // struct coloring_reference
+private:
+  std::optional<color_type> coloring;
+};
 
 } // namespace data
 } // namespace flecsi

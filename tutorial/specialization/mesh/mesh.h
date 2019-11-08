@@ -34,7 +34,7 @@ namespace tutorial {
 //----------------------------------------------------------------------------//
 
 struct specialization_mesh_t
-  : public flecsi::topology::mesh_topology_u<specialization_mesh_policy_t> {
+  : flecsi::topology::mesh_u<specialization_mesh_policy_t> {
 
   void print(const char * string) {
     std::cout << string << std::endl;

@@ -33,6 +33,41 @@ namespace flecsi::runtime {
 using namespace boost::program_options;
 using execution::legion::task_id;
 
+/*----------------------------------------------------------------------------*
+  Legion top-level task.
+ *----------------------------------------------------------------------------*/
+
+void
+top_level_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime) {
+
+  context_t & context_ = context_t::instance();
+
+  /*
+    Initialize MPI interoperability.
+   */
+
+  context_.connect_with_mpi(ctx, runtime);
+  context_.wait_on_mpi(ctx, runtime);
+
+  auto args = runtime->get_input_args();
+
+  /*
+    Invoke the FleCSI runtime top-level action.
+   */
+
+  detail::data_guard(),
+    context_.exit_status() = context_.top_level_action()(args.argc, args.argv);
+
+  /*
+    Finish up Legion runtime and fall back out to MPI.
+   */
+
+  context_.handoff_to_mpi(ctx, runtime);
+} // top_level_task
+
 //----------------------------------------------------------------------------//
 // Implementation of context_t::initialize.
 //----------------------------------------------------------------------------//
@@ -211,7 +246,7 @@ context_t::start() {
     stream << "\targc: " << largv.size() << std::endl;
     stream << "\targv: ";
 
-    for(auto opt: largv) {
+    for(auto opt : largv) {
       stream << opt << " ";
     } // for
 
@@ -299,113 +334,5 @@ context_t::connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
       "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
 #endif
 } // context_t::connect_with_mpi
-
-//----------------------------------------------------------------------------//
-// Implementation of initialize_global_topology.
-//----------------------------------------------------------------------------//
-
-void
-context_t::initialize_global_topology() {
-  using namespace Legion;
-
-  global_topology_instance_.index_space_id = unique_isid_t::instance().next();
-
-  auto legion_runtime_ = Legion::Runtime::get_runtime();
-  auto legion_context_ = Legion::Runtime::get_context();
-
-  LegionRuntime::Arrays::Rect<1> bounds(
-    LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
-
-  Domain dom(Domain::from_rect<1>(bounds));
-
-  global_topology_instance_.index_space =
-    legion_runtime_->create_index_space(legion_context_, dom);
-
-  global_topology_instance_.field_space =
-    legion_runtime_->create_field_space(legion_context_);
-
-  FieldAllocator allocator = legion_runtime_->create_field_allocator(
-    legion_context_, global_topology_instance_.field_space);
-
-  /*
-    Note: This call to get_field_info_store uses the non-const version
-    so that this call works if no fields have been registered. In other parts
-    of the code that occur after initialization, the const version of this call
-    should be used.
-   */
-
-  auto & field_info_store = context_t::instance().get_field_info_store(
-    topology::id<topology::global_topology_t>(),
-    flecsi::data::storage_label_t::dense);
-
-  for(auto const & fi : field_info_store) {
-    allocator.allocate_field(fi.type_size, fi.fid);
-  } // for
-
-  global_topology_instance_.logical_region =
-    legion_runtime_->create_logical_region(legion_context_,
-      global_topology_instance_.index_space,
-      global_topology_instance_.field_space);
-} // context_t::initialize_global_topology
-
-//----------------------------------------------------------------------------//
-// Implementation of finalize_global_topology.
-//----------------------------------------------------------------------------//
-
-void
-context_t::finalize_global_topology() {
-  using namespace Legion;
-
-  global_topology_instance_.index_space_id = unique_isid_t::instance().next();
-
-  auto legion_runtime_ = Legion::Runtime::get_runtime();
-  auto legion_context_ = Legion::Runtime::get_context();
-
-  legion_runtime_->destroy_logical_region(
-    legion_context_, global_topology_instance_.logical_region);
-
-  legion_runtime_->destroy_field_space(
-    legion_context_, global_topology_instance_.field_space);
-
-  legion_runtime_->destroy_index_space(
-    legion_context_, global_topology_instance_.index_space);
-} // context_t::finalize_global_topology
-
-//----------------------------------------------------------------------------//
-// Index coloring and topology method implementations.
-//----------------------------------------------------------------------------//
-
-void
-context_t::initialize_default_index_coloring() {
-  index_colorings_.emplace(flecsi_index_coloring.identifier(), processes_);
-} // context_t::initialize_default_index_coloring
-
-void
-context_t::initialize_default_index_topology() {
-
-  {
-    flog_tag_guard(context);
-    flog_devel(info) << "Initializing default index topology" << std::endl
-                     << "\tidentifier: " << flecsi_index_topology.identifier()
-                     << std::endl;
-  }
-
-  data::legion_policy_t::allocate<topology::index_topology_t>(
-    flecsi_index_topology, flecsi_index_coloring);
-} // context_t::initialize_default_index_topology
-
-void
-context_t::finalize_default_index_topology() {
-
-  {
-    flog_tag_guard(context);
-    flog_devel(info) << "Finalizing default index topology" << std::endl
-                     << "\tidentifier: " << flecsi_index_topology.identifier()
-                     << std::endl;
-  }
-
-  data::legion_policy_t::deallocate<topology::index_topology_t>(
-    flecsi_index_topology);
-} // context_t::finalize_default_index_topology
 
 } // namespace flecsi::runtime

@@ -15,6 +15,7 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
+#include <flecsi/topology/internal/canonical.hh>
 #include <flecsi/utils/ftest.hh>
 
 #include <tuple>
@@ -33,12 +34,12 @@ struct policy {
 
 }; // struct policy
 
-using topology_type = topology::canonical_topology<policy>;
+using topology_type = topology::canonical<policy>;
 
-using canonical_topology = data::topology_reference<topology_type>;
+using canonical_topology = data::topology_slot<topology_type>;
 canonical_topology canonical;
 
-canonical_topology::coloring coloring;
+data::coloring_slot<topology_type> coloring;
 
 using cell_field_t =
   data::field_member<double, data::dense, topology_type, policy::cells>;
@@ -50,7 +51,7 @@ canonical_driver(int argc, char ** argv) {
 
   const std::string filename = "input.txt";
   coloring.allocate(filename);
-  canonical.allocate(coloring);
+  canonical.allocate(coloring.get());
 
   return 0;
 } // index

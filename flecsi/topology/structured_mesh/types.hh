@@ -31,9 +31,9 @@ namespace topology {
   @ingroup topology
  */
 
-struct structured_mesh_topology_base_t {
-  using coloring_t = size_t;
-}; // structured_mesh_topology_base_t
+struct structured_mesh_base_t {
+  using coloring = size_t;
+}; // structured_mesh_base_t
 
 } // namespace topology
 } // namespace flecsi

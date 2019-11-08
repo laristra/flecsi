@@ -20,11 +20,12 @@
 #endif
 
 #include <flecsi/topology/internal/canonical.hh>
+#include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/ntree/types.hh>
 #include <flecsi/topology/set/types.hh>
 #include <flecsi/topology/structured_mesh/types.hh>
-//#include <flecsi/topology/unstructured_mesh/types.hh>
+#include <flecsi/topology/unstructured_mesh/types.hh>
 
 // FIXME: These files should be included directly where they are needed
 // once the structure is complete.

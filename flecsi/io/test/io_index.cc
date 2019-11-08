@@ -31,9 +31,9 @@ const index_field_t test_value_1;
 const index_field_t test_value_2;
 const index_field_t test_value_3;
 
-const auto fh1 = test_value_1(flecsi_index_topology);
-const auto fh2 = test_value_2(flecsi_index_topology);
-const auto fh3 = test_value_3(flecsi_index_topology);
+const auto fh1 = test_value_1(process_topology);
+const auto fh2 = test_value_2(process_topology);
+const auto fh3 = test_value_3(process_topology);
 
 void
 assign(index_field_t::accessor<rw> ia) {
@@ -71,7 +71,7 @@ index_driver(int argc, char ** argv) {
   io::io_interface_t cp_io;
   io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
 
-  cp_io.add_default_index_topology(checkpoint_file);
+  cp_io.add_process_topology(checkpoint_file);
 #if 1
   if(my_rank == 0) {
     cp_io.generate_hdf5_files(checkpoint_file);
@@ -90,10 +90,10 @@ index_driver(int argc, char ** argv) {
   MPI_Barrier(MPI_COMM_WORLD);
 
 #if 1
-  // cp_io.checkpoint_default_index_topology(checkpoint_file);
-  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh1);
-  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh2);
-  cp_io.checkpoint_default_index_topology_field(checkpoint_file, fh3);
+  // cp_io.checkpoint_process_topology(checkpoint_file);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh1);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh2);
+  cp_io.checkpoint_index_topology_field(checkpoint_file, fh3);
 
   execute<reset_zero>(fh1);
   execute<reset_zero>(fh2);
@@ -124,9 +124,9 @@ index_driver(int argc, char ** argv) {
   }
 #endif
 
-  cp_io.recover_default_index_topology(checkpoint_file);
-  // cp_io.recover_default_index_topology_field(checkpoint_file, fh1);
-  // cp_io.recover_default_index_topology_field(checkpoint_file, fh2);
+  cp_io.recover_process_topology(checkpoint_file);
+  // cp_io.recover_process_topology_field(checkpoint_file, fh1);
+  // cp_io.recover_process_topology_field(checkpoint_file, fh2);
 
   execute<check>(fh1);
   execute<check>(fh2);

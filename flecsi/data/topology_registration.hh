@@ -61,10 +61,10 @@ struct topology_registration;
 
 template<typename POLICY_TYPE, size_t NAMESPACE, size_t NAME>
 struct topology_registration<
-  flecsi::topology::mesh_topology<POLICY_TYPE>,
+  topology::mesh<POLICY_TYPE>,
   NAMESPACE,
   NAME> {
-  using CLIENT_TYPE = typename flecsi::topology::mesh_topology<POLICY_TYPE>;
+  using CLIENT_TYPE = typename topology::mesh<POLICY_TYPE>;
 
   /*!
 
@@ -362,10 +362,10 @@ struct topology_registration<
 
 template<typename POLICY_TYPE, size_t NAMESPACE, size_t NAME>
 struct topology_registration<
-  flecsi::topology::set_topology<POLICY_TYPE>,
+  topology::set<POLICY_TYPE>,
   NAMESPACE,
   NAME> {
-  using CLIENT_TYPE = typename flecsi::topology::set_topology<POLICY_TYPE>;
+  using CLIENT_TYPE = typename topology::set<POLICY_TYPE>;
 
   /*!
 
@@ -448,9 +448,9 @@ struct topology_registration<
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct topology_registration<flecsi::topology::ntree_topology<POLICY_TYPE>> {
+struct topology_registration<flecsi::topology::ntree<POLICY_TYPE>> {
 
-  using TOPOLOGY_TYPE = flecsi::topology::ntree_topology<POLICY_TYPE>;
+  using TOPOLOGY_TYPE = flecsi::topology::ntree<POLICY_TYPE>;
 
   static bool register_fields() {
     flog(info) << "topology_registration::register_fields()" << std::endl;
@@ -464,10 +464,9 @@ struct topology_registration<flecsi::topology::ntree_topology<POLICY_TYPE>> {
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct topology_registration<
-  flecsi::topology::canonical_topology<POLICY_TYPE>> {
+struct topology_registration<topology::canonical<POLICY_TYPE>> {
 
-  using TOPOLOGY_TYPE = flecsi::topology::canonical_topology<POLICY_TYPE>;
+  using TOPOLOGY_TYPE = topology::canonical<POLICY_TYPE>;
 
   static bool register_fields() {
     flog(info) << "topology_registration::register_fields()" << std::endl;
@@ -486,9 +485,9 @@ struct topology_registration<
  */
 
 template<>
-struct topology_registration<flecsi::topology::global_topology_t> {
+struct topology_registration<topology::global_t> {
 
-  using TOPOLOGY_TYPE = flecsi::topology::global_topology_t;
+  using TOPOLOGY_TYPE = topology::global_t;
 
   static bool register_fields() {
     return true;
@@ -505,9 +504,9 @@ struct topology_registration<flecsi::topology::global_topology_t> {
  */
 
 template<>
-struct topology_registration<flecsi::topology::index_topology_t> {
+struct topology_registration<topology::index_t> {
 
-  using TOPOLOGY_TYPE = flecsi::topology::index_topology_t;
+  using TOPOLOGY_TYPE = topology::index_t;
 
   static bool register_fields() {
     return true;

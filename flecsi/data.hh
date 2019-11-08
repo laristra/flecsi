@@ -20,11 +20,8 @@
   data model.
  */
 
+#include <flecsi/data/accessor.hh>
 #include <flecsi/data/coloring.hh>
-#include <flecsi/data/field.hh>
-#include <flecsi/data/topology.hh>
-#include <flecsi/topology/internal/global.hh>
-#include <flecsi/topology/internal/index.hh>
 
 namespace flecsi {
 
@@ -32,41 +29,67 @@ namespace flecsi {
   Default global topology instance.
  */
 
-inline const data::topology_reference<topology::global_topology_t>
-  flecsi_global_topology;
+inline data::topology_slot<topology::global_t> global_topology;
 
 /*
   Convenience type for global field members.
  */
 
 template<typename DATA_TYPE>
-using global_field_member = data::field_member<DATA_TYPE,
-  data::storage_label_t::dense,
-  topology::global_topology_t,
-  0>;
+using global_field_member = data::
+  field_member<DATA_TYPE, data::storage_label_t::dense, topology::global_t, 0>;
 
 /*
-  Default index coloring.
+  Per-process coloring.
  */
 
-inline const data::coloring_reference<topology::index_topology_t>
-  flecsi_index_coloring;
+inline data::coloring_slot<topology::index_t> process_coloring;
 
 /*
-  Default index topology instance.
+  Per-process topology instance.
  */
 
-inline const data::topology_reference<topology::index_topology_t>
-  flecsi_index_topology;
+inline data::topology_slot<topology::index_t> process_topology;
 
 /*
   Convenience type for index field members.
  */
 
 template<typename DATA_TYPE>
-using index_field_member = data::field_member<DATA_TYPE,
-  data::storage_label_t::dense,
-  topology::index_topology_t,
-  0>;
+using index_field_member = data::
+  field_member<DATA_TYPE, data::storage_label_t::dense, topology::index_t, 0>;
+
+namespace detail {
+/// An RAII type to manage the global coloring and topologies.
+struct data_guard {
+  struct global_guard {
+    global_guard() {
+      global_topology.allocate({});
+    }
+    global_guard(global_guard &&) = delete;
+    ~global_guard() {
+      global_topology.deallocate();
+    }
+  } g;
+  struct color_guard {
+    color_guard() {
+      process_coloring.allocate(runtime::context_t::instance().processes());
+    }
+    color_guard(color_guard &&) = delete;
+    ~color_guard() {
+      process_coloring.deallocate();
+    }
+  } c;
+  struct process_guard {
+    process_guard() {
+      process_topology.allocate(process_coloring.get());
+    }
+    process_guard(process_guard &&) = delete;
+    ~process_guard() {
+      process_topology.deallocate();
+    }
+  } p;
+};
+} // namespace detail
 
 } // namespace flecsi

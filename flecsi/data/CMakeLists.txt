@@ -18,6 +18,7 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
+  accessor.hh
   backend.hh
   reference.hh
   field.hh
@@ -37,7 +38,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     legion/policy.hh
     legion/types.hh
-    legion/topology_traits.hh
     ${data_HEADERS}
   )
 

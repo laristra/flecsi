@@ -13,46 +13,18 @@
                                                                               */
 #pragma once
 
-/*!
-  @file
-
-  This file is really just a conduit to capture the different
-  specializations for accessors and topologies.
- */
-
 #include <flecsi/data/reference.hh>
 
 namespace flecsi {
 namespace data {
 
-struct mpi_policy_t {
-  /*--------------------------------------------------------------------------*
-    Topology Instance Interface.
-   *--------------------------------------------------------------------------*/
+template<class>
+struct topology_id {};
 
-  template<typename TOPOLOGY_TYPE, typename... ARGS>
-  static void allocate_coloring(reference_base const & coloring_reference,
-    ARGS &&... args) {
-    // TBD
-  } // allocate_coloring
-
-  template<typename TOPOLOGY_TYPE>
-  static void deallocate_coloring(reference_base const & coloring_reference) {
-    // TBD
-  } // deallocate_coloring
-
-  template<typename TOPOLOGY_TYPE>
-  static void allocate(reference_base const & topology_reference,
-    reference_base const & coloring_reference) {
-    // TBD
-  } // allocate
-
-  template<typename TOPOLOGY_TYPE>
-  static void deallocate(reference_base const & topology_reference) {
-    // TBD
-  } // deallocate
-
-}; // struct mpi_policy_t
+template<class T>
+struct topology_data {
+  topology_data(const typename T::coloring &) {}
+};
 
 } // namespace data
 } // namespace flecsi

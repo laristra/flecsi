@@ -20,14 +20,9 @@
 #endif
 
 #include <flecsi/runtime/types.hh>
-#include <flecsi/utils/flog.hh>
-#include <flecsi/utils/hash.hh>
 
 #include <cstddef>
 #include <limits>
-#include <unordered_map>
-#include <utility>
-#include <vector>
 
 namespace flecsi {
 namespace data {
@@ -42,8 +37,6 @@ struct field_info_t {
   size_t index_space = std::numeric_limits<size_t>::max();
   size_t type_size = std::numeric_limits<size_t>::max();
 }; // struct field_info_t
-
-using field_info_store_t = std::vector<field_info_t>;
 
 } // namespace data
 } // namespace flecsi

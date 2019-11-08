@@ -26,7 +26,7 @@
 namespace flecsi {
 namespace topology {
 
-struct canonical_topology_base {
+struct canonical_base {
 
   struct coloring {
 
@@ -34,29 +34,27 @@ struct canonical_topology_base {
 
     struct coloring_metadata {};
 
-    static void color(coloring & coloring_info, std::string const & filename);
+    coloring(std::string const & filename);
 
     local_coloring local_coloring_;
     coloring_metadata coloring_metadata_;
 
   }; // struct coloring
 
-}; // struct canonical_topology_base
+}; // struct canonical_base
 
 /*!
-  The canonical_topology type is a dummy topology for development and testing.
+  The canonical type is a dummy topology for development and testing.
 
   @ingroup topology
  */
 
 template<typename TOPOLOGY_POLICY>
-struct canonical_topology : public canonical_topology_base {
+struct canonical : canonical_base {
 
-  using coloring = canonical_topology_base::coloring;
+  canonical() = delete;
 
-  canonical_topology() = delete;
-
-}; // struct canonical_topology
+}; // struct canonical
 
 } // namespace topology
 } // namespace flecsi

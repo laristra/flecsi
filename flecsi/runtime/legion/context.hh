@@ -22,7 +22,6 @@
 #endif
 
 #include "../context.hh"
-#include <flecsi/data/legion/types.hh>
 //#include "flecsi/execution/launch.hh"
 //#include "flecsi/execution/processor.hh"
 #include <flecsi/runtime/types.hh>
@@ -173,45 +172,33 @@ struct context_t : context {
       ->index_domain.get_volume();
   } // colors
 
-  /*!
-    Global topology instance.
-   */
-
-  auto & global_topology_instance() {
-    return global_topology_instance_;
-  } // global_topology_instance
-
-  /*!
-    Index topology instances.
-   */
-
-  auto & index_topology_instance(size_t instance_identifier) {
-    return index_topology_instances_[instance_identifier];
-  } // index_topology_instance
-
-  auto index_topology_instance(size_t instance_identifier) const {
-    auto ti = index_topology_instances_.find(instance_identifier);
-    flog_assert(ti != index_topology_instances_.end(),
-      "index topology instance does not exists");
-
-    return ti->second;
-  } // index_topology_instance
-
-  /*!
-    Unstructured mesh topology instances.
-   */
-
-  auto & unstructured_mesh_topology_instance(size_t instance_identifier) {
-    return unstructured_mesh_topology_instances_[instance_identifier];
-  } // unstructured_mesh_topology_instance
-
-  auto unstructured_mesh_topology_instance(size_t instance_identifier) const {
-    auto ti = unstructured_mesh_topology_instances_.find(instance_identifier);
-    flog_assert(ti != unstructured_mesh_topology_instances_.end(),
-      "umesh topology instance does not exists");
-
-    return ti->second;
-  } // unstructured_mesh_topology_instance
+  /// Store a reference to the argument under a small unused positive integer.
+  /// Its type is forgotten.
+  template<class T>
+  std::size_t record(T & t) {
+    const auto tp = const_cast<void *>(static_cast<const void *>(&t));
+    if(auto & f = enumerated.front()) { // we have a free slot
+      auto & slot = *static_cast<void **>(f);
+      f = slot;
+      slot = tp;
+      return &slot - &f;
+    }
+    // NB: reallocation invalidates all zero of the free list pointers
+    enumerated.push_back(tp);
+    return enumerated.size() - 1;
+  }
+  /// Discard a recorded reference.  Its index may be reused.
+  void forget(std::size_t i) {
+    void *&f = enumerated.front(), *&p = enumerated[i];
+    p = f;
+    f = &p;
+  }
+  /// Obtain a reference from its index.
+  /// \tparam T the object's forgotten type
+  template<class T>
+  T & recall(std::size_t i) {
+    return *static_cast<T *>(enumerated[i]);
+  }
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -311,22 +298,6 @@ struct context_t : context {
   } // reduction_operations
 
 private:
-  /*--------------------------------------------------------------------------*
-    Backend initialization.
-   *--------------------------------------------------------------------------*/
-
-  void initialize_global_topology();
-  void initialize_default_index_coloring();
-  void initialize_default_index_topology();
-
-  /*--------------------------------------------------------------------------*
-    Backend initialization.
-   *--------------------------------------------------------------------------*/
-
-  void finalize_global_topology();
-  void finalize_default_index_coloring();
-  void finalize_default_index_topology();
-
   /*!
      Handoff to legion runtime from MPI.
    */
@@ -399,11 +370,8 @@ private:
     Runtime data.
    *--------------------------------------------------------------------------*/
 
-  data::global_topo::runtime_data_t global_topology_instance_;
-  std::unordered_map<size_t, data::index_topo::runtime_data_t>
-    index_topology_instances_;
-  std::unordered_map<size_t, data::unstructured_mesh::runtime_data_t>
-    unstructured_mesh_topology_instances_;
+  // The first element is the head of the free list.
+  std::vector<void *> enumerated = {nullptr};
 
   /*--------------------------------------------------------------------------*
     Interoperability data members.

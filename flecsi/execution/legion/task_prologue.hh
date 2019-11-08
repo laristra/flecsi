@@ -21,8 +21,8 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/accessor.hh"
 #include "flecsi/data/privilege.hh"
-#include "flecsi/data/storage_classes.hh"
 #include "flecsi/data/topology_accessor.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/ntree/interface.hh>
@@ -110,13 +110,11 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-               topology::global_topology_t,
+               topology::global_t,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE> & ref) {
-    auto & c = runtime::context_t::instance();
-
-    Legion::LogicalRegion region = c.global_topology_instance().logical_region;
+    const data::field_reference<DATA_TYPE, topology::global_t> & ref) {
+    Legion::LogicalRegion region = ref.topology().get().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
       "global topology accessor type only takes one privilege");
@@ -132,7 +130,7 @@ struct task_prologue_t {
       EXCLUSIVE,
       region);
 
-    rr.add_field(ref.identifier());
+    rr.add_field(ref.info().fid);
     region_reqs_.push_back(rr);
   } // visit
 
@@ -142,16 +140,13 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-               topology::index_topology_t,
+               topology::index_t,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE> & ref) {
-    auto & flecsi_context = runtime::context_t::instance();
+    const data::field_reference<DATA_TYPE, topology::index_t> & ref) {
+    auto & instance_data = ref.topology().get();
 
-    auto instance_data =
-      flecsi_context.index_topology_instance(ref.topology_identifier());
-
-    flog_assert(instance_data.colors = domain_,
+    flog_assert(instance_data.colors == domain_,
       "attempting to pass index topology reference with size "
         << instance_data.colors << " into task with launch domain of size "
         << domain_);
@@ -165,7 +160,7 @@ struct task_prologue_t {
       EXCLUSIVE,
       instance_data.logical_region);
 
-    rr.add_field(ref.identifier());
+    rr.add_field(ref.info().fid);
     region_reqs_.push_back(rr);
   } // visit
 
@@ -175,11 +170,12 @@ struct task_prologue_t {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using ntree_accessor =
-    data::topology_accessor<topology::ntree_topology<POLICY_TYPE>, PRIVILEGES>;
+    data::topology_accessor<topology::ntree<POLICY_TYPE>, PRIVILEGES>;
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T> & ref) {} // visit
+    const data::field_reference<T, topology::ntree<POLICY_TYPE>> & ref) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Set Topology
@@ -187,11 +183,12 @@ struct task_prologue_t {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using set_accessor =
-    data::topology_accessor<topology::set_topology<POLICY_TYPE>, PRIVILEGES>;
+    data::topology_accessor<topology::set<POLICY_TYPE>, PRIVILEGES>;
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(set_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T> & ref) {} // visit
+    const data::field_reference<T, topology::set<POLICY_TYPE>> & ref) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Structured Mesh Topology
@@ -199,13 +196,13 @@ struct task_prologue_t {
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
   using structured_mesh_accessor =
-    data::topology_accessor<topology::structured_mesh_topology<POLICY_TYPE>,
-      PRIVILEGES>;
+    data::topology_accessor<topology::structured_mesh<POLICY_TYPE>, PRIVILEGES>;
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(
     structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T> & ref) {} // visit
+    const data::field_reference<T, topology::structured_mesh<POLICY_TYPE>> &
+      ref) {} // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types

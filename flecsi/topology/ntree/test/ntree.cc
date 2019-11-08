@@ -35,17 +35,16 @@ struct sph_tree_policy {
   using node_t = flecsi::topology::ntree_node<dimension, tree_entity_t, key_t>;
 }; // sph_tree_policy
 
-using sph_ntree_topology =
-  data::topology_reference<topology::ntree_topology<sph_tree_policy>>;
-sph_ntree_topology sph_ntree;
-sph_ntree_topology::coloring coloring;
+using sph_ntree_topology = topology::ntree<sph_tree_policy>;
+data::topology_slot<sph_ntree_topology> sph_ntree;
+data::coloring_slot<sph_ntree_topology> coloring;
 
 int
 ntree_driver(int argc, char ** argv) {
   FTEST();
 
   coloring.allocate();
-  sph_ntree.allocate(coloring);
+  sph_ntree.allocate(coloring.get());
 
   return 0;
 } // TEST

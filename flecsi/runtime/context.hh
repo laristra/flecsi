@@ -23,7 +23,6 @@
 #include <flecsi/execution/launch.hh>
 #include <flecsi/execution/task_attributes.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/topology/base.hh>
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/demangle.hh>
@@ -73,7 +72,7 @@ struct context {
     size_t key is the storage class.
    */
 
-  using field_info_store_t = data::field_info_store_t;
+  using field_info_store_t = std::vector<const data::field_info_t *>;
   using field_info_map_t = std::unordered_map<size_t, field_info_store_t>;
 
   /*!
@@ -369,46 +368,6 @@ struct context {
   } // reduction_registry
 
   /*--------------------------------------------------------------------------*
-    Coloring interface.
-   *--------------------------------------------------------------------------*/
-
-  /*!
-    Return the index coloring associated with \em identifier.
-
-    @param identifier Index coloring identifier.
-   */
-
-  template<typename TOPOLOGY_TYPE>
-  auto & coloring(size_t identifier) {
-
-    constexpr bool index_coloring =
-      std::is_same_v<TOPOLOGY_TYPE, topology::index_topology_t>;
-    constexpr bool canonical_coloring =
-      std::is_base_of_v<topology::canonical_topology_base, TOPOLOGY_TYPE>;
-    constexpr bool ntree_coloring =
-      std::is_base_of_v<topology::ntree_topology_base, TOPOLOGY_TYPE>;
-
-    if constexpr(index_coloring) {
-      return index_colorings_[identifier];
-    }
-    else if constexpr(canonical_coloring) {
-      return canonical_colorings_[identifier];
-    }
-    else if constexpr(ntree_coloring) {
-      return ntree_colorings_[identifier];
-    } // if
-  } // coloring
-
-  topology::index_topology_t::coloring_t const & index_coloring(
-    size_t identifier) {
-    auto const & cita = index_colorings_.find(identifier);
-    flog_assert(cita != index_colorings_.end(),
-      "index coloring lookup failed for " << identifier);
-
-    return cita->second;
-  } // index_coloring
-
-  /*--------------------------------------------------------------------------*
     Topology interface.
    *--------------------------------------------------------------------------*/
 
@@ -447,7 +406,7 @@ struct context {
                      << topology_type_identifier << std::endl
                      << "\tstorage class: " << storage_class << std::endl;
     topology_field_info_map_[topology_type_identifier][storage_class].push_back(
-      field_info);
+      &field_info);
   } // add_field_information
 
   /*!
@@ -625,17 +584,6 @@ protected:
    *--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, void *> function_registry_;
-
-  /*--------------------------------------------------------------------------*
-    Coloring data members.
-   *--------------------------------------------------------------------------*/
-
-  std::unordered_map<size_t, topology::index_topology_t::coloring_t>
-    index_colorings_;
-  std::unordered_map<size_t, topology::canonical_topology_base::coloring>
-    canonical_colorings_;
-  std::unordered_map<size_t, topology::ntree_topology_base::coloring>
-    ntree_colorings_;
 
   /*--------------------------------------------------------------------------*
     Topology data members.
