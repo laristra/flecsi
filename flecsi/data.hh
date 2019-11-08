@@ -20,9 +20,8 @@
   data model.
  */
 
+#include <flecsi/data/accessor.hh>
 #include <flecsi/data/coloring.hh>
-#include <flecsi/data/field.hh>
-#include <flecsi/data/topology.hh>
 
 namespace flecsi {
 
@@ -30,7 +29,7 @@ namespace flecsi {
   Default global topology instance.
  */
 
-inline const data::topology_reference<topology::global_t> global_topology;
+inline data::topology_slot<topology::global_t> global_topology;
 
 /*
   Convenience type for global field members.
@@ -50,7 +49,7 @@ inline data::coloring_slot<topology::index_t> process_coloring;
   Per-process topology instance.
  */
 
-inline const data::topology_reference<topology::index_t> process_topology;
+inline data::topology_slot<topology::index_t> process_topology;
 
 /*
   Convenience type for index field members.

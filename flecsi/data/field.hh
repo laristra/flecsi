@@ -26,6 +26,48 @@
 namespace flecsi {
 namespace data {
 
+/// A data accessor.
+/// \tparam STORAGE_CLASS data layout
+/// \tparam TOPOLOGY_TYPE core topology type
+/// \tparam T data type
+/// \tparam Priv access privileges
+template<storage_label_t STORAGE_CLASS,
+  typename TOPOLOGY_TYPE,
+  typename T,
+  std::size_t Priv>
+struct accessor;
+
+/*!
+  The field_reference_t type is used to reference fields. It adds a \em
+  topology field to the \c reference_base to track the
+  associated topology instance.
+ */
+template<class Topo>
+struct field_reference_t : public reference_base {
+  // The use of the slot allows creating field references statically, before
+  // the topology_data has been allocated.
+  using topology_t = topology_slot<Topo>;
+
+  field_reference_t(size_t identifier, const topology_t & topology)
+    : reference_base(identifier), topology_(&topology) {}
+
+  const topology_t & topology() const {
+    return *topology_;
+  } // topology_identifier
+
+private:
+  const topology_t * topology_;
+
+}; // struct field_reference
+
+/// A \c field_reference is a \c field_reference_t tagged with a data type.
+/// \tparam T data type (merely for type safety)
+template<class T, class Topo>
+struct field_reference : field_reference_t<Topo> {
+  using value_type = T;
+  using field_reference_t<Topo>::field_reference_t;
+};
+
 /*!
   The field_member type provides a mechanism to define and register
   fundamental field types with the FleCSI runtime.
@@ -47,7 +89,7 @@ template<typename DATA_TYPE,
   size_t INDEX_SPACE>
 struct field_member {
 
-  using topology_reference_t = topology_reference<TOPOLOGY_TYPE>;
+  using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 
   template<size_t... PRIVILEGES>
   using accessor = accessor<STORAGE_CLASS,
@@ -69,10 +111,10 @@ struct field_member {
     @param topology_reference A reference to a valid topology instance.
    */
 
-  field_reference<DATA_TYPE> operator()(
+  field_reference<DATA_TYPE, TOPOLOGY_TYPE> operator()(
     topology_reference_t const & topology_reference) const {
 
-    return {fid_, topology_reference.identifier()};
+    return {fid_, topology_reference};
   } // operator()
 
 private:

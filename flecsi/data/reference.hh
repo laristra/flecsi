@@ -53,33 +53,5 @@ protected:
 
 }; // struct reference_base
 
-/*!
-  The field_reference_t type is used to reference fields. It adds a \em
-  topology identifier field to the reference_base to track the
-  associated topology instance.
- */
-
-struct field_reference_t : public reference_base {
-
-  field_reference_t(size_t identifier, size_t topology_identifier)
-    : reference_base(identifier), topology_identifier_(topology_identifier) {}
-
-  size_t topology_identifier() const {
-    return topology_identifier_;
-  } // topology_identifier
-
-private:
-  size_t topology_identifier_;
-
-}; // struct field_reference_t
-
-/// A \c field_reference is a \c field_reference_t tagged with a data type.
-/// \tparam T data type (merely for type safety)
-template<class T>
-struct field_reference : field_reference_t {
-  using value_type = T;
-  using field_reference_t::field_reference_t;
-};
-
 } // namespace data
 } // namespace flecsi

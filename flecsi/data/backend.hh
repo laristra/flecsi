@@ -19,7 +19,7 @@
 
 namespace flecsi::data {
 template<typename>
-struct topology_traits;
+struct topology_data;
 }
 
 /*----------------------------------------------------------------------------*

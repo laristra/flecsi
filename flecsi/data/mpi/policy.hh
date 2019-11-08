@@ -19,12 +19,8 @@ namespace flecsi {
 namespace data {
 
 template<class T>
-struct topology_traits {
-  static void allocate(reference_base const & topology_reference,
-    const typename T::coloring & coloring) {} // allocate
-
-  static void deallocate(reference_base const & topology_reference) {
-  } // deallocate
+struct topology_data {
+  topology_data(const typename T::coloring &) {}
 };
 
 } // namespace data

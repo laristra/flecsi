@@ -36,7 +36,7 @@ struct policy {
 
 using topology_type = topology::canonical<policy>;
 
-using canonical_topology = data::topology_reference<topology_type>;
+using canonical_topology = data::topology_slot<topology_type>;
 canonical_topology canonical;
 
 data::coloring_slot<topology_type> coloring;

@@ -36,7 +36,7 @@ struct sph_tree_policy {
 }; // sph_tree_policy
 
 using sph_ntree_topology = topology::ntree<sph_tree_policy>;
-data::topology_reference<sph_ntree_topology> sph_ntree;
+data::topology_slot<sph_ntree_topology> sph_ntree;
 data::coloring_slot<sph_ntree_topology> coloring;
 
 int

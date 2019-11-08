@@ -21,8 +21,8 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/accessor.hh"
 #include "flecsi/data/privilege.hh"
-#include "flecsi/data/storage_classes.hh"
 #include "flecsi/runtime/context.hh"
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>

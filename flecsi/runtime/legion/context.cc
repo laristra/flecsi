@@ -308,8 +308,6 @@ void
 context_t::initialize_global_topology() {
   using namespace Legion;
 
-  global_topology_instance_.index_space_id = unique_isid_t::instance().next();
-
   auto legion_runtime_ = Legion::Runtime::get_runtime();
   auto legion_context_ = Legion::Runtime::get_context();
 
@@ -317,6 +315,8 @@ context_t::initialize_global_topology() {
     LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(1));
 
   Domain dom(Domain::from_rect<1>(bounds));
+
+  auto & global_topology_instance_ = global_topology.allocate({});
 
   global_topology_instance_.index_space =
     legion_runtime_->create_index_space(legion_context_, dom);
@@ -353,21 +353,7 @@ context_t::initialize_global_topology() {
 
 void
 context_t::finalize_global_topology() {
-  using namespace Legion;
-
-  global_topology_instance_.index_space_id = unique_isid_t::instance().next();
-
-  auto legion_runtime_ = Legion::Runtime::get_runtime();
-  auto legion_context_ = Legion::Runtime::get_context();
-
-  legion_runtime_->destroy_logical_region(
-    legion_context_, global_topology_instance_.logical_region);
-
-  legion_runtime_->destroy_field_space(
-    legion_context_, global_topology_instance_.field_space);
-
-  legion_runtime_->destroy_index_space(
-    legion_context_, global_topology_instance_.index_space);
+  global_topology.deallocate();
 } // context_t::finalize_global_topology
 
 //----------------------------------------------------------------------------//
@@ -381,29 +367,12 @@ context_t::initialize_process_coloring() {
 
 void
 context_t::initialize_process_topology() {
-
-  {
-    flog_tag_guard(context);
-    flog_devel(info) << "Initializing default index topology" << std::endl
-                     << "\tidentifier: " << process_topology.identifier()
-                     << std::endl;
-  }
-
-  data::topology_traits<topology::index_t>::allocate(
-    process_topology, process_coloring.get());
+  process_topology.allocate(process_coloring.get());
 } // context_t::initialize_process_topology
 
 void
 context_t::finalize_process_topology() {
-
-  {
-    flog_tag_guard(context);
-    flog_devel(info) << "Finalizing default index topology" << std::endl
-                     << "\tidentifier: " << process_topology.identifier()
-                     << std::endl;
-  }
-
-  data::topology_traits<topology::index_t>::deallocate(process_topology);
+  process_topology.deallocate();
 } // context_t::finalize_process_topology
 
 } // namespace flecsi::runtime

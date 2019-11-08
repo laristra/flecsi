@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <flecsi/data/legion/types.hh>
 #include <flecsi/data/reference.hh>
 #include <flecsi/data/storage_classes.hh>
 #include <flecsi/runtime/backend.hh>
@@ -35,192 +36,60 @@ namespace flecsi {
 namespace data {
 
 /*----------------------------------------------------------------------------*
-  Global Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_traits<topology::global_t> {
-
-  // This is unused, but is required for garbage cleanup of other topology
-  // types, i.e., global must implement this method.
-
-  static void deallocate(reference_base const & topology_reference) {}
-
-}; // global_t specialization
-
-/*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/
 
-template<>
-struct topology_traits<topology::index_t> {
+inline topology_data<topology::index_t>::topology_data(
+  const type::coloring & coloring)
+  : colors(coloring.size()) {
 
-  static void allocate(reference_base const & topology_reference,
-    const topology::index_t::coloring & coloring) {
-    {
-      flog_tag_guard(topologies);
-      flog_devel(info) << "Set coloring for " << topology_reference.identifier()
-                       << std::endl;
-    }
+  auto legion_runtime = Legion::Runtime::get_runtime();
+  auto legion_context = Legion::Runtime::get_context();
+  auto & flecsi_context = runtime::context_t::instance();
 
-    auto legion_runtime = Legion::Runtime::get_runtime();
-    auto legion_context = Legion::Runtime::get_context();
-    auto & flecsi_context = runtime::context_t::instance();
+  LegionRuntime::Arrays::Rect<1> bounds(0, coloring.size() - 1);
+  Legion::Domain domain(Legion::Domain::from_rect<1>(bounds));
 
-    auto & runtime_data =
-      flecsi_context.index_topology_instance(topology_reference.identifier());
+  index_space = legion_runtime->create_index_space(legion_context, domain);
 
-    runtime_data.colors = coloring.size();
+  field_space = legion_runtime->create_field_space(legion_context);
 
-    // Maybe this line can go away
-    runtime_data.index_space_id = unique_isid_t::instance().next();
+  auto & field_info_store = flecsi_context.get_field_info_store(
+    topology::id<topology::index_t>(), storage_label_t::dense);
 
-    LegionRuntime::Arrays::Rect<1> bounds(0, coloring.size() - 1);
-    Legion::Domain domain(Legion::Domain::from_rect<1>(bounds));
+  Legion::FieldAllocator allocator =
+    legion_runtime->create_field_allocator(legion_context, field_space);
 
-    runtime_data.index_space =
-      legion_runtime->create_index_space(legion_context, domain);
+  for(auto const & fi : field_info_store) {
+    allocator.allocate_field(fi.type_size, fi.fid);
+  } // for
 
-    runtime_data.field_space =
-      legion_runtime->create_field_space(legion_context);
+  logical_region = legion_runtime->create_logical_region(
+    legion_context, index_space, field_space);
 
-    auto & field_info_store = flecsi_context.get_field_info_store(
-      topology::id<topology::index_t>(), storage_label_t::dense);
+  Legion::IndexPartition index_partition =
+    legion_runtime->create_equal_partition(
+      legion_context, index_space, index_space);
 
-    Legion::FieldAllocator allocator = legion_runtime->create_field_allocator(
-      legion_context, runtime_data.field_space);
+  color_partition = legion_runtime->get_logical_partition(
+    legion_context, logical_region, index_partition);
+}
 
-    for(auto const & fi : field_info_store) {
-      allocator.allocate_field(fi.type_size, fi.fid);
-    } // for
+inline legion::topology_base::~topology_base() {
+  auto legion_runtime = Legion::Runtime::get_runtime();
+  auto legion_context = Legion::Runtime::get_context();
 
-    runtime_data.logical_region = legion_runtime->create_logical_region(
-      legion_context, runtime_data.index_space, runtime_data.field_space);
+  legion_runtime->destroy_logical_region(legion_context, logical_region);
 
-    Legion::IndexPartition index_partition =
-      legion_runtime->create_equal_partition(
-        legion_context, runtime_data.index_space, runtime_data.index_space);
+  legion_runtime->destroy_field_space(legion_context, field_space);
 
-    runtime_data.color_partition = legion_runtime->get_logical_partition(
-      legion_context, runtime_data.logical_region, index_partition);
-  } // allocate
+  legion_runtime->destroy_index_space(legion_context, index_space);
 
-  static void deallocate(reference_base const & topology_reference) {
-
-    {
-      flog_tag_guard(topologies);
-      flog_devel(info) << "Set coloring for " << topology_reference.identifier()
-                       << std::endl;
-    }
-
-    auto legion_runtime = Legion::Runtime::get_runtime();
-    auto legion_context = Legion::Runtime::get_context();
-    auto & flecsi_context = runtime::context_t::instance();
-
-    auto & runtime_data =
-      flecsi_context.index_topology_instance(topology_reference.identifier());
-
-    legion_runtime->destroy_logical_region(
-      legion_context, runtime_data.logical_region);
-
-    legion_runtime->destroy_field_space(
-      legion_context, runtime_data.field_space);
-
-    legion_runtime->destroy_index_space(
-      legion_context, runtime_data.index_space);
-
-  } // deallocate
-
-}; // index_t specialization
-
-/*----------------------------------------------------------------------------*
-  Canonical Topology.
- *----------------------------------------------------------------------------*/
-
-template<typename POLICY_TYPE>
-struct topology_traits<topology::canonical<POLICY_TYPE>> {
-  using type = topology::canonical<POLICY_TYPE>;
-
-  static void allocate(reference_base const & topology_reference,
-    typename type::coloring const & coloring) {} // allocate
-
-  static void update(reference_base const & topology_reference,
-    const typename type::coloring & coloring_reference) {} // update
-
-  static void deallocate(reference_base const & topology_reference) {
-  } // deallocate
-
-}; // canonical specialization
-
-/*----------------------------------------------------------------------------*
-  NTree Topology.
- *----------------------------------------------------------------------------*/
-
-template<typename POLICY_TYPE>
-struct topology_traits<topology::ntree<POLICY_TYPE>> {
-  using type = topology::ntree<POLICY_TYPE>;
-
-  // Distribute the entities on the different processes
-  // Create the tree data structure locally
-  static void allocate(reference_base const & topology_reference,
-    typename type::coloring const & coloring_reference) {
-
-    {
-      flog_tag_guard(topologies);
-      flog_devel(info) << "Set coloring for " << topology_reference.identifier()
-                       << std::endl;
-    }
-
-  } // allocate
-
-  // Update the entities position in the tree
-  static void update(reference_base const & topology_reference,
-    const typename type::coloring & coloring_reference) {
-
-    {
-      flog_tag_guard(topologies);
-      flog_devel(info) << "Update coloring for "
-                       << topology_reference.identifier() << std::endl;
-    }
-
-  } // update
-
-  static void deallocate(reference_base const & topology_reference) {
-
-    {
-      flog_tag_guard(topologies);
-      flog_devel(info) << "Destroy coloring for "
-                       << topology_reference.identifier() << std::endl;
-    }
-
-  } // deallocate
-
-}; // ntree specialization
-
-/*----------------------------------------------------------------------------*
-  Set Topology.
- *----------------------------------------------------------------------------*/
-
-template<typename POLICY_TYPE>
-struct topology_traits<topology::set<POLICY_TYPE>> {}; // set specialization
-
-/*----------------------------------------------------------------------------*
-  Structured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-template<typename POLICY_TYPE>
-struct topology_traits<topology::structured_mesh<POLICY_TYPE>> {
-
-}; // structured_mesh specialization
+} // deallocate
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
-
-template<typename POLICY_TYPE>
-struct topology_traits<topology::unstructured_mesh<POLICY_TYPE>> {
-
-  using type = topology::unstructured_mesh<POLICY_TYPE>;
 
 #if 0
   struct entity_walker_t : public utils::tuple_walker<index_walker_t> {
@@ -237,15 +106,15 @@ struct topology_traits<topology::unstructured_mesh<POLICY_TYPE>> {
   }; // struct entity_walker_t
 #endif
 
-  static void allocate(reference_base const & topology_reference,
-    const typename type::coloring & coloring_reference) {
+inline topology_data<topology::unstructured_mesh_base_t>::topology_data(
+  const type::coloring & coloring) {
 
-    auto legion_runtime = Legion::Runtime::get_runtime();
-    auto legion_context = Legion::Runtime::get_context();
-    auto & flecsi_context = runtime::context_t::instance();
+  auto legion_runtime = Legion::Runtime::get_runtime();
+  auto legion_context = Legion::Runtime::get_context();
+  auto & flecsi_context = runtime::context_t::instance();
 
-    auto & dense_field_info_store = flecsi_context.get_field_info_store(
-      topology::id<type>(), storage_label_t::dense);
+  auto & dense_field_info_store = flecsi_context.get_field_info_store(
+    topology::id<type>(), storage_label_t::dense);
 
 #if 0
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
@@ -264,11 +133,7 @@ struct topology_traits<topology::unstructured_mesh<POLICY_TYPE>> {
       /* type */, storage_label_t::sparse);
 
 #endif
-  } // allocate
-
-  static void deallocate(reference_base const & topology_reference) {}
-
-}; // unstructured_mesh specialization
+}
 
 // NOTE THAT THE HANDLE TYPE FOR THIS TYPE WILL NEED TO CAPTURE THE
 // UNDERLYING TOPOLOGY TYPE, i.e., topology::mesh_t<MESH_POLICY>

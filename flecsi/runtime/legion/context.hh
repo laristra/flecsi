@@ -22,7 +22,6 @@
 #endif
 
 #include "../context.hh"
-#include <flecsi/data/legion/types.hh>
 //#include "flecsi/execution/launch.hh"
 //#include "flecsi/execution/processor.hh"
 #include <flecsi/runtime/types.hh>
@@ -172,46 +171,6 @@ struct context_t : context {
       ->get_current_task(Legion::Runtime::get_context())
       ->index_domain.get_volume();
   } // colors
-
-  /*!
-    Global topology instance.
-   */
-
-  auto & global_topology_instance() {
-    return global_topology_instance_;
-  } // global_topology_instance
-
-  /*!
-    Index topology instances.
-   */
-
-  auto & index_topology_instance(size_t instance_identifier) {
-    return index_topology_instances_[instance_identifier];
-  } // index_topology_instance
-
-  auto index_topology_instance(size_t instance_identifier) const {
-    auto ti = index_topology_instances_.find(instance_identifier);
-    flog_assert(ti != index_topology_instances_.end(),
-      "index topology instance does not exists");
-
-    return ti->second;
-  } // index_topology_instance
-
-  /*!
-    Unstructured mesh topology instances.
-   */
-
-  auto & unstructured_mesh_topology_instance(size_t instance_identifier) {
-    return unstructured_mesh_topology_instances_[instance_identifier];
-  } // unstructured_mesh_topology_instance
-
-  auto unstructured_mesh_topology_instance(size_t instance_identifier) const {
-    auto ti = unstructured_mesh_topology_instances_.find(instance_identifier);
-    flog_assert(ti != unstructured_mesh_topology_instances_.end(),
-      "umesh topology instance does not exists");
-
-    return ti->second;
-  } // unstructured_mesh_topology_instance
 
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
@@ -398,12 +357,6 @@ private:
   /*--------------------------------------------------------------------------*
     Runtime data.
    *--------------------------------------------------------------------------*/
-
-  data::global_topo::runtime_data_t global_topology_instance_;
-  std::unordered_map<size_t, data::index_topo::runtime_data_t>
-    index_topology_instances_;
-  std::unordered_map<size_t, data::unstr_mesh::runtime_data_t>
-    unstructured_mesh_topology_instances_;
 
   /*--------------------------------------------------------------------------*
     Interoperability data members.

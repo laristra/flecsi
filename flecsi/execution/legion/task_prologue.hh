@@ -21,8 +21,8 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/accessor.hh"
 #include "flecsi/data/privilege.hh"
-#include "flecsi/data/storage_classes.hh"
 #include "flecsi/data/topology_accessor.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/ntree/interface.hh>
@@ -113,10 +113,8 @@ struct task_prologue_t {
                topology::global_t,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE> & ref) {
-    auto & c = runtime::context_t::instance();
-
-    Legion::LogicalRegion region = c.global_topology_instance().logical_region;
+    const data::field_reference<DATA_TYPE, topology::global_t> & ref) {
+    Legion::LogicalRegion region = ref.topology().get().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
       "global topology accessor type only takes one privilege");
@@ -145,11 +143,8 @@ struct task_prologue_t {
                topology::index_t,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE> & ref) {
-    auto & flecsi_context = runtime::context_t::instance();
-
-    auto instance_data =
-      flecsi_context.index_topology_instance(ref.topology_identifier());
+    const data::field_reference<DATA_TYPE, topology::index_t> & ref) {
+    auto & instance_data = ref.topology().get();
 
     flog_assert(instance_data.colors == domain_,
       "attempting to pass index topology reference with size "
@@ -179,7 +174,8 @@ struct task_prologue_t {
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T> & ref) {} // visit
+    const data::field_reference<T, topology::ntree<POLICY_TYPE>> & ref) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Set Topology
@@ -191,7 +187,8 @@ struct task_prologue_t {
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(set_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T> & ref) {} // visit
+    const data::field_reference<T, topology::set<POLICY_TYPE>> & ref) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Structured Mesh Topology
@@ -204,7 +201,8 @@ struct task_prologue_t {
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(
     structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T> & ref) {} // visit
+    const data::field_reference<T, topology::structured_mesh<POLICY_TYPE>> &
+      ref) {} // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types

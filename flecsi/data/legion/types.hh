@@ -23,7 +23,8 @@
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
 #endif
 
-#include "../field_info.hh"
+#include <flecsi/topology/base.hh>
+
 #include <legion.h>
 
 #include <unordered_map>
@@ -33,7 +34,8 @@ namespace data {
 
 namespace legion {
 struct topology_base {
-  size_t index_space_id;
+  ~topology_base();
+  size_t index_space_id = unique_isid_t::instance().next(); // TODO: needed?
   Legion::IndexSpace index_space;
   Legion::FieldSpace field_space;
   Legion::LogicalRegion logical_region;
@@ -44,45 +46,54 @@ struct topology_base {
   Global Topology.
  *----------------------------------------------------------------------------*/
 
-namespace global_topo {
-
-struct runtime_data_t : legion::topology_base {}; // struct runtime_data_t
-
-} // namespace global_topo
+template<>
+struct topology_data<topology::global_t> : legion::topology_base {
+  using type = topology::global_t;
+  topology_data(const type::coloring &) {}
+};
 
 /*----------------------------------------------------------------------------*
   Index Topology.
  *----------------------------------------------------------------------------*/
 
-namespace index_topo {
-
-struct runtime_data_t : legion::topology_base {
+template<>
+struct topology_data<topology::index_t> : legion::topology_base {
+  using type = topology::index_t;
+  topology_data(const type::coloring &);
   size_t colors;
   Legion::LogicalPartition color_partition;
-}; // struct runtime_data_t
+};
 
-} // namespace index_topo
+template<>
+struct topology_data<topology::canonical_base> {
+  using type = topology::canonical_base;
+  topology_data(const type::coloring &) {}
+};
+
+template<>
+struct topology_data<topology::ntree_base> {
+  using type = topology::ntree_base;
+  topology_data(const type::coloring &) {}
+};
 
 /*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
 
+template<>
+struct topology_data<topology::unstructured_mesh_base_t> {
+  using type = topology::unstructured_mesh_base_t;
+  topology_data(const type::coloring &);
+
 #if 0
-struct unstructured_mesh_runtime_data_t {
   std::vector<base_data_t> entities;
   std::vector<base_data_t> adjacencies;
   std::vector<Legion::LogicalPartition> exclusive;
   std::vector<Legion::LogicalPartition> shared;
   std::vector<Legion::LogicalPartition> ghost;
   std::vector<Legion::LogicalPartition> ghost_owners;
-}; // struct unstructured_mesh_runtime_data_t
 #endif
-
-namespace unstr_mesh {
-
-struct runtime_data_t {}; // struct runtime_data_t
-
-} // namespace unstr_mesh
+};
 
 #if 0
 struct unstructured_mesh_dense_runtime_data_t {

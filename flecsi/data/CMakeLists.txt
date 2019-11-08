@@ -18,6 +18,7 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
+  accessor.hh
   backend.hh
   reference.hh
   field.hh
