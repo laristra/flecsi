@@ -41,7 +41,7 @@ class Flecsi(CMakePackage):
             description='Enable documentation')
     variant('coverage', default=False,
             description='Enable coverage build')
-    variant('openmpi', default=True,
+    variant('openmpi', default=False,
             description='Use OpenMPI package')
     variant('mpich', default=False,
             description='Use MPICH package')
