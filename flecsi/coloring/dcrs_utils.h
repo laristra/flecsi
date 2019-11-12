@@ -352,8 +352,8 @@ alltoallv(const SEND_TYPE & sendbuf,
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Simple utility for determining which rank owns an id
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T, template <typename> class Vector>
-T rank_owner( const Vector<T> & distribution, T i )
+template<typename T, typename Vector>
+T rank_owner( const Vector & distribution, T i )
 {
   auto it = std::upper_bound( distribution.begin(), distribution.end(), i );
   assert( it != distribution.end() );
@@ -491,7 +491,7 @@ make_dcrs_distributed(
 
   // count
   for ( const auto & vs_pair : vertex2cell ) {
-    auto global_id = vs_pair.first;
+    size_t global_id = vs_pair.first;
     auto r = rank_owner( vert_dist,  global_id );
     // we will be sending vertex id, number of cells, plus cell ids
     if ( r != rank ) {
@@ -512,7 +512,7 @@ make_dcrs_distributed(
   std::vector<size_t> sendbuf( senddispls[size] );
 
   for ( const auto & vs_pair : vertex2cell ) {
-    auto global_id = vs_pair.first;
+    size_t global_id = vs_pair.first;
     auto r = rank_owner( vert_dist,  global_id );
     // we will be sending vertex id, number of cells, plus cell ids
     if ( r != rank ) {
