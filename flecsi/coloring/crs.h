@@ -71,18 +71,18 @@ struct crs_t {
     auto num_remove = ids.size();
     auto num_offsets = size();
 
-    std::vector<size_t> new_offsets( offsets.size() - num_remove );
+    std::vector<size_t> new_offsets(offsets.size() - num_remove);
     std::vector<size_t> new_indices;
-    new_indices.reserve( indices.size() );
+    new_indices.reserve(indices.size());
 
     new_offsets[0] = 0;
     auto delete_it = ids.begin();
 
-    for ( size_t iold=0, inew=0; iold<num_offsets; ++iold ) {
-    
+    for(size_t iold = 0, inew = 0; iold < num_offsets; ++iold) {
+
       // skip deleted items
-      if ( delete_it != ids.end() ) {
-        if ( *delete_it == iold ) {
+      if(delete_it != ids.end()) {
+        if(*delete_it == iold) {
           delete_it++;
           continue;
         }
@@ -90,19 +90,19 @@ struct crs_t {
 
       // keep otherwise
       auto start = offsets[iold];
-      auto end = offsets[iold+1];
-      for ( auto j=start; j<end; ++j ) {
-        new_indices.push_back( indices[j] );
+      auto end = offsets[iold + 1];
+      for(auto j = start; j < end; ++j) {
+        new_indices.push_back(indices[j]);
       }
-      new_offsets[inew+1] = new_indices.size();
+      new_offsets[inew + 1] = new_indices.size();
       inew++;
     }
 
-    assert( new_offsets.size() == offsets.size() - num_remove );
+    assert(new_offsets.size() == offsets.size() - num_remove);
 
     // resize arrays
-    std::swap( offsets, new_offsets );
-    std::swap( indices, new_indices );
+    std::swap(offsets, new_offsets);
+    std::swap(indices, new_indices);
   }
 
   /// \brief clears the current storage

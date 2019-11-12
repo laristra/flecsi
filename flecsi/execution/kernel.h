@@ -88,7 +88,8 @@ private:
 
 }; // forall_t
 
-#define forall(it, iterator, name) forall_t{iterator, name} + KOKKOS_LAMBDA(auto it)
+#define forall(it, iterator, name)                                             \
+  forall_t{iterator, name} + KOKKOS_LAMBDA(auto it)
 
 } // namespace flecsi
 #endif
