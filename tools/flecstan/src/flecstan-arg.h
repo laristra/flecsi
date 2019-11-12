@@ -25,6 +25,7 @@ namespace flecstan {
 
 bool option_version(const std::string &);
 bool option_help(const std::string &);
+bool option_h(const std::string &);
 
 // -----------------------------------------------------------------------------
 // fullfile: helper
@@ -78,8 +79,8 @@ public:
   // Results
   // In the first three vectors, the bools indicate whether or not the files
   // in question (JSON, make-verbose, or C++) were found at the time of command
-  // line parsing. The last vector is a simple way to indicate whether the
-  // next queued file is a JSON, make-verbose, or C++ file.
+  // line parsing. The last vector is a simple way to indicate whether the next
+  // queued file is a JSON, make-verbose, or C++ file.
   std::vector<std::pair<std::string, bool>> jsonfile;
   std::vector<std::pair<std::string, bool>> makeinfo;
   std::vector<std::pair<clang::tooling::CompileCommand, bool>> commands;
