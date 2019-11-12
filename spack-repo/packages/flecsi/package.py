@@ -78,15 +78,14 @@ class Flecsi(CMakePackage):
 
     conflicts('+tutorial', when='backend=hpx')
     conflicts('+tutorial', when='@flecsph')
-    conflicts('+hdf5', when='backend=hpx')
-    conflicts('+hdf5', when='backend=mpi')
+#    conflicts('+hdf5', when='backend=hpx')
+#    conflicts('+hdf5', when='backend=mpi')
 
     def cmake_args(self):
         spec = self.spec
         options = ['-DCMAKE_DISABLE_FIND_PACKAGE_METIS=%s'%('ON' if '+minimal' in spec else 'OFF'),
                    '-DBUILD_SHARED_LIBS=%s'%('ON' if '+shared' in spec else 'OFF'),
                    '-DENABLE_UNIT_TESTS=%s'%('ON' if '+unittest' in spec else 'OFF'),
-                   '-DENABLE_HDF5=%s'%('ON' if '+hdf5' in spec else 'OFF'),
                    '-DENABLE_CALIPER=%s'%('ON' if '+caliper' in spec else 'OFF'),
                    '-DENABLE_FLECSTAN=%s'%('ON' if '+flecstan' in spec else 'OFF'),
                    '-DENABLE_DOXYGEN=%s'%('ON' if '+doxygen' in spec else 'OFF'),
@@ -126,6 +125,11 @@ class Flecsi(CMakePackage):
         else:
             options.append('-DFLECSI_RUNTIME_MODEL=serial')
             options.append('-DENABLE_MPI=OFF')
+
+        if '+hdf5' in spec and spec.variants['backend'].value == 'legion':
+            options.append('-DENABLE_HDF5=ON')
+        else:
+            options.append('-DENABLE_HDF5=OFF')
 
         if '+tutorial' in spec:
             options.append('-DENABLE_FLECSIT=ON')
