@@ -26,6 +26,7 @@ class Legion(CMakePackage):
     git      = "https://github.com/StanfordLegion/legion.git"
 
     version('develop', branch='master')
+    version('ctrl-rep', branch='control_replication')
     version('ctrl-rep-2', commit='96682fd8aae071ecd30a3ed5f481a9d84457a4b6')
     version('ctrl-rep-1', commit='a03671b21851d5f0d3f63210343cb61a630f4405')
     version('ctrl-rep-0', commit='177584e77036c9913d8a62e33b55fa784748759c')
