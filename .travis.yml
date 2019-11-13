@@ -70,7 +70,7 @@ before_install:
   - pwd
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
   - git show-ref --tags
-  - git fetch --unshallow
+  #- git fetch --unshallow
   #- git fetch --tags #for versioning
 
 script:
