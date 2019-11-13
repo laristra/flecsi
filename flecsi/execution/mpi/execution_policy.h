@@ -29,6 +29,11 @@
 #include <flecsi/execution/mpi/task_epilog.h>
 #include <flecsi/execution/mpi/task_prolog.h>
 
+
+#if defined(ENABLE_CALIPER)
+#include<caliper/Annotation.h>
+#endif 
+
 namespace flecsi {
 namespace execution {
 
@@ -43,9 +48,20 @@ struct executor_u {
    */
   template<typename T, typename A>
   static decltype(auto) execute(T function, A && targs) {
+
+#if defined(ENABLE_CALIPER)
+    cali::Annotation ep("FleCSI-Execution");
+    ep.begin("execute");
+#endif
+
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function));
     mpi_future_u<RETURN> future;
     future.set(user_fun(std::forward<A>(targs)));
+
+#if defined(ENABLE_CALIPER)
+    ep.end();
+#endif
+
     return future;
   } // execute
 }; // struct executor_u
@@ -61,10 +77,19 @@ struct executor_u<void, ARG_TUPLE> {
    */
   template<typename T, typename A>
   static decltype(auto) execute(T function, A && targs) {
+
+#if defined(ENABLE_CALIPER)
+    cali::Annotation ep("FleCSI-Execution");
+    ep.begin("execute");
+#endif
     auto user_fun = (reinterpret_cast<void (*)(ARG_TUPLE)>(function));
 
     mpi_future_u<void> future;
     user_fun(std::forward<A>(targs));
+
+#if defined(ENABLE_CALIPER)
+    ep.end();
+#endif
 
     return future;
   } // execute_task

@@ -35,6 +35,10 @@
 #include <flecsi/utils/tuple_function.h>
 #include <flecsi/utils/tuple_type_converter.h>
 
+#if defined(ENABLE_CALIPER)
+#include <caliper/cali.h>
+#include <caliper/Annotation.h>
+#endif
 clog_register_tag(task_wrapper);
 
 namespace flecsi {
@@ -215,15 +219,39 @@ struct task_wrapper_u {
     context_t & context_ = context_t::instance();
     context_.set_color(task->index_point.point_data[0]);
 
+#if defined(ENABLE_CALIPER)
+    cali::Annotation tw("FleCSI-Execution");
+#endif
+
+
     if constexpr(std::is_same_v<RETURN, void>) {
+
+#if defined(ENABLE_CALIPER)
+    std::string tname = task->get_task_name();
+    std::string tname1 = "execute_user_task "+tname; 
+    tw.begin(tname1.c_str());
+#endif
+
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
+#if defined(ENABLE_CALIPER)
+    tw.end();
+#endif
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
+
     }
     else {
+#if defined(ENABLE_CALIPER)
+    std::string tname = task->get_task_name();
+    std::string tname1 = "execute_user_task "+tname; 
+    tw.begin(tname1.c_str());
+#endif
       RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
+#if defined(ENABLE_CALIPER)
+    tw.end();
+#endif
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
 
