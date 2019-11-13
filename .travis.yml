@@ -67,9 +67,10 @@ env:
     - DISTRO=fedora_mpich RUNTIME=hpx BUILD_TYPE=Release
 
 before_install:
+  - pwd
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-  - git fetch --unshallow
   - git show-ref --tags
+  - git fetch --unshallow
   - git fetch --tags #for versioning
 
 script:
