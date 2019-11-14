@@ -19,7 +19,6 @@
 
 set(execution_HEADERS
   backend.hh
-  internal.hh
   kernel_interface.hh
   launch.hh
   task_attributes.hh
