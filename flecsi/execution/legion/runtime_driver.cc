@@ -52,7 +52,7 @@ runtime_driver(const Legion::Task * task,
   // using data::storage_label_type_t;
 
 #if defined(ENABLE_CALIPER)
-  cali::Annotation rd("RUNTIME-DRIVER");
+  cali::Annotation rd("FleCSI-Execution");
   rd.begin("set-up");
 #endif // ENABLE_CALIPER
 

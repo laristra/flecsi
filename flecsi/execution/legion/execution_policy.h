@@ -41,6 +41,11 @@
 #include <flecsi/execution/legion/task_prolog.h>
 #include <flecsi/execution/legion/task_wrapper.h>
 
+#if defined(ENABLE_CALIPER)
+#include <caliper/cali.h>
+#include <caliper/Annotation.h>
+#endif 
+
 namespace flecsi {
 namespace execution {
 
@@ -156,6 +161,16 @@ struct legion_execution_policy_t {
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
 
+#if defined(ENABLE_CALIPER)
+    cali::Annotation et("FleCSI-Execution");
+    //cali::Annotation et;
+   // et.set("FleCSI-execution");
+   std::string tname = "execute_task with TASK HASH " + std::to_string(TASK); 
+    //et.set("execute_task");
+    std::cout<<"tname = "<<tname; 
+    et.set(tname.c_str()); 
+#endif 
+
     using namespace Legion;
 
     // This will guard the entire method
@@ -202,9 +217,15 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
+#if defined(ENABLE_CALIPER)
+    et.begin("single-launch init_args"); 
+#endif 
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
 
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
           // Add region requirements and future dependencies to the
           // task launcher
           for(auto & req : init_args.region_reqs) {
@@ -220,6 +241,9 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
+#if defined(ENABLE_CALIPER)
+    et.begin("single-launch task_prolog sparse false"); 
+#endif 
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -227,7 +251,13 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
+#if defined(ENABLE_CALIPER)
+    et.begin("single-launch task_prolog sparse true"); 
+#endif 
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -235,6 +265,9 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << TASK << " on rank "
@@ -243,8 +276,14 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task epilog operations
           // on the mapped handles
+#if defined(ENABLE_CALIPER)
+    et.begin("single-launch task_epilog"); 
+#endif 
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
           static_assert(
             REDUCTION == ZERO, "reductions are not supported for single tasks");
@@ -276,8 +315,14 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
+#if defined(ENABLE_CALIPER)
+    et.begin("index-launch init_args"); 
+#endif 
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
           LegionRuntime::Arrays::Rect<1> launch_bounds(
             LegionRuntime::Arrays::Point<1>(0),
@@ -306,6 +351,9 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
+#if defined(ENABLE_CALIPER)
+    et.begin("index-launch task_prolog sparse false"); 
+#endif 
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -313,7 +361,13 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
+#if defined(ENABLE_CALIPER)
+    et.begin("index-launch task_prolog sparse true"); 
+#endif 
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -321,6 +375,9 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
           if constexpr(REDUCTION != ZERO) {
             clog(info) << "executing reduction logic for " << REDUCTION
@@ -337,8 +394,14 @@ struct legion_execution_policy_t {
               legion_context, launcher, reduction_id);
 
             // Enqueue the epilog.
+#if defined(ENABLE_CALIPER)
+    et.begin("index-launch task_epilog"); 
+#endif 
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
             return legion_future_u<RETURN, launch_type_t::single>(future);
           }
@@ -349,8 +412,14 @@ struct legion_execution_policy_t {
 
             // Execute a tuple walker that applies the task epilog operations
             // on the mapped handles
+#if defined(ENABLE_CALIPER)
+    et.begin("index-launch task_epilog"); 
+#endif 
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
             return legion_future_u<RETURN, launch_type_t::index>(future_map);
           } // else
@@ -361,8 +430,14 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
+#if defined(ENABLE_CALIPER)
+    et.begin("mpi-launch init_args"); 
+#endif 
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
           // FIXME: This will need to change with the new control model
           //         if(context_.execution_state() == SPECIALIZATION_TLT_INIT) {
@@ -392,6 +467,9 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
+#if defined(ENABLE_CALIPER)
+    et.begin("mpi-launch task_prolog sparse false"); 
+#endif 
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -399,7 +477,13 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
+#if defined(ENABLE_CALIPER)
+    et.begin("mpi-launch task_prolog sparse true"); 
+#endif 
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -407,6 +491,9 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
           // Launch the MPI task
           auto future =
@@ -425,8 +512,14 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task epilog operations
           // on the mapped handles
+#if defined(ENABLE_CALIPER)
+    et.begin("mpi-launch task_epilog"); 
+#endif 
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
+#if defined(ENABLE_CALIPER)
+    et.end();
+#endif 
 
           if constexpr(REDUCTION != ZERO) {
             clog_fatal("there is no implementation for the mpi"
@@ -502,6 +595,9 @@ struct legion_execution_policy_t {
       } // switch
 
     } // if constexpr
+#if defined(ENABLE_CALIPER)
+    et.end(); 
+#endif 
   } // execute_task
 
   //------------------------------------------------------------------------//
@@ -551,6 +647,11 @@ struct legion_execution_policy_t {
     return context_t::instance().register_reduction_operation(
       HASH, wrapper_t::registration_callback);
   } // register_reduction_operation
+
+//#if defined(ENABLE_CALIPER)
+//    private:
+//    static cali::Annotation et;
+//#endif 
 
 }; // struct legion_execution_policy_t
 

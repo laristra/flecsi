@@ -36,9 +36,9 @@
 #include <flecsi/utils/tuple_type_converter.h>
 
 #if defined(ENABLE_CALIPER)
-#include <caliper/cali.h>
 #include <caliper/Annotation.h>
-#endif
+#endif 
+
 clog_register_tag(task_wrapper);
 
 namespace flecsi {
@@ -160,11 +160,12 @@ struct task_wrapper_u {
       clog(info) << "registering task " << name << std::endl;
     }
 
-    std::string short_name = name;
-    for(int i = 0; i < 4; i++)
-      short_name = short_name.erase(0, short_name.find(":") + 2);
+    //std::string short_name = name;
+    //for(int i = 0; i < 4; i++)
+    //  short_name = short_name.erase(0, short_name.find(":") + 2);
 
-    Legion::TaskVariantRegistrar registrar(tid, short_name.c_str());
+    //Legion::TaskVariantRegistrar registrar(tid, short_name.c_str());
+    Legion::TaskVariantRegistrar registrar(tid, name.c_str());
     Legion::Processor::Kind kind = processor_type == processor_type_t::toc
                                      ? Legion::Processor::TOC_PROC
                                      : Legion::Processor::LOC_PROC;
@@ -172,6 +173,7 @@ struct task_wrapper_u {
     registrar.set_leaf(launch_leaf(launch));
     registrar.set_inner(launch_inner(launch));
     registrar.set_idempotent(launch_idempotent(launch));
+
 
     /*
       This section of conditionals is necessary because there is still
@@ -184,18 +186,19 @@ struct task_wrapper_u {
     if constexpr(std::is_same_v<RETURN, void>) {
       if(processor_type == processor_type_t::mpi) {
         Legion::Runtime::preregister_task_variant<execute_mpi_task>(
-          registrar, short_name.c_str());
+          registrar, name.c_str());
       }
       else {
         Legion::Runtime::preregister_task_variant<execute_user_task>(
-          registrar, short_name.c_str());
+          registrar, name.c_str());
       } // if
     }
     else {
       Legion::Runtime::preregister_task_variant<RETURN, execute_user_task>(
-        registrar, short_name.c_str());
+        registrar, name.c_str());
     } // if
-  } // registration_callback
+
+} // registration_callback
 
   /*!
     Execution wrapper method for user tasks.
@@ -210,50 +213,68 @@ struct task_wrapper_u {
       clog(info) << "In execute_user_task" << std::endl;
     }
 
+#if defined(ENABLE_CALIPER)
+    cali::Annotation tw("FleCSI-Execution");
+    std::string tname = task->get_task_name();
+    std::string tname1 = "execute_user_task init-handles "+tname;
+    tw.begin(tname1.c_str());
+#endif 
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(task_args);
 
+#if defined(ENABLE_CALIPER)
+    tw.end();
+#endif 
+ 
     context_t & context_ = context_t::instance();
     context_.set_color(task->index_point.point_data[0]);
-
-#if defined(ENABLE_CALIPER)
-    cali::Annotation tw("FleCSI-Execution");
-#endif
-
 
     if constexpr(std::is_same_v<RETURN, void>) {
 
 #if defined(ENABLE_CALIPER)
-    std::string tname = task->get_task_name();
-    std::string tname1 = "execute_user_task "+tname; 
+    tname1 = "execute_user_task delegate "+tname;
     tw.begin(tname1.c_str());
 #endif
-
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
 #if defined(ENABLE_CALIPER)
     tw.end();
-#endif
-      finalize_handles_t finalize_handles;
-      finalize_handles.walk(task_args);
-
-    }
-    else {
-#if defined(ENABLE_CALIPER)
-    std::string tname = task->get_task_name();
-    std::string tname1 = "execute_user_task "+tname; 
+    tname1 = "execute_user_task finalize-handles "+tname;
     tw.begin(tname1.c_str());
 #endif
-      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+
+      finalize_handles_t finalize_handles;
+      finalize_handles.walk(task_args);
 
 #if defined(ENABLE_CALIPER)
     tw.end();
 #endif
+
+    }
+    else {
+
+#if defined(ENABLE_CALIPER)
+    tname1 = "execute_user_task delegate "+tname;
+    tw.begin(tname1.c_str());
+#endif
+
+      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+
+#if defined(ENABLE_CALIPER)
+    tw.end();
+    tname1 = "execute_user_task finalize-handles "+tname;
+    tw.begin(tname1.c_str());
+#endif
+
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
+
+#if defined(ENABLE_CALIPER)
+    tw.end();
+#endif
 
       return result;
     } // if
@@ -273,21 +294,45 @@ struct task_wrapper_u {
       clog(info) << "In execute_mpi_task" << std::endl;
     }
 
+//#if defined(ENABLE_CALIPER)
+//    cali::Annotation tw("FleCSI-Execution");
+//    tw.begin("execute-mpi-task-init-handles");
+//#endif 
+
     // Unpack task arguments.
     ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(mpi_task_args);
 
+//#if defined(ENABLE_CALIPER)
+//    tw.end();
+//    tw.begin("execute-mpi-task-bind-mpi-task");
+//#endif
+
     // Create bound function to pass to MPI runtime.
     std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
+
+//#if defined(ENABLE_CALIPER)
+//    tw.end();
+//    tw.begin("execute-mpi-task-set-mpi-task");
+//#endif
 
     // Set the MPI function and make the runtime active.
     context_t::instance().set_mpi_task(bound_mpi_task);
     context_t::instance().set_mpi_state(true);
 
+//#if defined(ENABLE_CALIPER)
+//    tw.end();
+//    tw.begin("execute-mpi-task-finalize-handles");
+//#endif
+
     finalize_handles_t finalize_handles;
     finalize_handles.walk(mpi_task_args);
+
+//#if defined(ENABLE_CALIPER)
+//    tw.end();
+//#endif
 
   } // execute_mpi_task
 
