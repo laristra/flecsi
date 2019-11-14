@@ -21,11 +21,26 @@ class Flecsi(CMakePackage):
     homepage = 'http://flecsi.lanl.gov/'
     git      = 'https://github.com/laristra/flecsi.git'
 
-    version('develop', branch='master', submodules=False, preferred=True)
-    version('flecsph', branch='feature/flecsph', submodules=False)
+    version('master', branch='master', submodules=False, preferred=True)
 
-    variant('backend', default='mpi', values=('hpx', 'mpi', 'legion'),
-            description='Backend to use for distributed memory')
+    variant('build_type', default='Release', values=('Debug', 'Release'),
+            description='The build type to build', multi=False)
+    variant('backend', default='mpi', values=('serial', 'mpi', 'legion', 'hpx'),
+            description='Backend to use for distributed memory', multi=False)
+    variant('minimal', default=False,
+            description='Disable FindPackageMetis')
+    variant('shared', default=True,
+            description='Build shared libraries')
+    variant('unittest', default=False,
+            description='Enable unit testing')
+    variant('flog', default=False,
+            description='Enable flog testing')
+    variant('doxygen', default=False,
+            description='Enable doxygen')
+    variant('doc', default=False,
+            description='Enable documentation')
+    variant('coverage', default=False,
+            description='Enable coverage build')
     variant('hdf5', default=False,
             description='Enable HDF5 Support')
     variant('caliper', default=False,
@@ -39,13 +54,14 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12.4',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
-    #depends_on('cinch@1.01:', type='build')
+    depends_on('cinch@1.01:', type='build')
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
-    depends_on('hpx', when='backend=hpx')
-    depends_on('legion@ctrl-rep-2 +shared +mpi +hdf5', when='backend=legion +hdf5')
-    depends_on('legion@ctrl-rep-2 +shared +mpi', when='backend=legion ~hdf5')
-    depends_on('boost@1.59.0: cxxstd=11 +program_options')
+    depends_on('mpi', when='backend=hpx')
+    depends_on('legion@ctrl-rep +shared +mpi +hdf5', when='backend=legion +hdf5')
+    depends_on('legion@ctrl-rep +shared +mpi', when='backend=legion ~hdf5')
+    depends_on('hpx@1.3.0 cxxstd=14', when='backend=hpx')
+    depends_on('boost@1.70.0: cxxstd=14 +program_options')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
     depends_on('hdf5', when='+hdf5')
@@ -54,30 +70,53 @@ class Flecsi(CMakePackage):
     depends_on('python@3.0:', when='+tutorial')
     depends_on('llvm', when='+flecstan')
 
-    def cmake_args(self):
-        options = ['-DCMAKE_BUILD_TYPE=debug']
-        #options.append('-DCINCH_SOURCE_DIR=' + self.spec['cinch'].prefix)
+    conflicts('+tutorial', when='backend=hpx')
+#    conflicts('+hdf5', when='backend=hpx')
+#    conflicts('+hdf5', when='backend=mpi')
 
-        # FleCSI for FleCSPH flags
-        if self.spec.satisfies('@flecsph:'):
-            options.append('-DENABLE_MPI=ON')
-            options.append('-DENABLE_OPENMP=ON')
-            options.append('-DCXX_CONFORMANCE_STANDARD=c++17')
-            options.append('-DFLECSI_RUNTIME_MODEL=mpi')
-            options.append('-DENABLE_FLECSIT=OFF')
-            options.append('-DENABLE_FLECSI_TUTORIAL=OFF')
-            return options
+    def cmake_args(self):
+        spec = self.spec
+        options = ['-DENABLE_MPI=ON',
+                   '-DENABLE_OPENMP=ON',
+                   '-DCXX_CONFORMANCE_STANDARD=c++17',
+                   '-DENABLE_METIS=ON',
+                   '-DENABLE_PARMETIS=ON',
+                   '-DENABLE_COLORING=ON',
+                   '-DENABLE_DEVEL_TARGETS=ON'
+                   ]
+        options.append('-DCINCH_SOURCE_DIR=' + spec['cinch'].prefix)
 
         if self.spec.variants['backend'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
         elif self.spec.variants['backend'].value == 'mpi':
             options.append('-DFLECSI_RUNTIME_MODEL=mpi')
+        elif spec.variants['backend'].value == 'hpx':
+            options.append('-DFLECSI_RUNTIME_MODEL=hpx')
         else:
             options.append('-DFLECSI_RUNTIME_MODEL=serial')
-            options.append(
-                '-DENABLE_MPI=OFF',
-            )
+            options.append('-DENABLE_MPI=OFF')
 
+        if '+minimal' in spec:
+            options.append('-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON')
+        else:
+            options.append('-DCMAKE_DISABLE_FIND_PACKAGE_METIS=OFF')
+        if '+shared' in spec:
+            options.append('-DBUILD_SHARED_LIBSON')
+        else:
+            options.append('-DBUILD_SHARED_LIBSOFF')
+        if '+unittest' in spec:
+            options.append('-DENABLE_UNIT_TESTS=ON')
+        else:
+            options.append('-DENABLE_UNIT_TESTS=OFF')
+
+        if '+hdf5' in spec and spec.variants['backend'].value == 'legion':
+            options.append('-DENABLE_HDF5=ON')
+        else:
+            options.append('-DENABLE_HDF5=OFF')
+        if '+caliper' in spec:
+            options.append('-DENABLE_CALIPER=ON')
+        else:
+            options.append('-DENABLE_CALIPER=OFF')
         if '+tutorial' in self.spec:
             options.append('-DENABLE_FLECSIT=ON')
             options.append('-DENABLE_FLECSI_TUTORIAL=ON')
@@ -85,19 +124,22 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_FLECSIT=OFF')
             options.append('-DENABLE_FLECSI_TUTORIAL=OFF')
 
-        if '+hdf5' in self.spec:
-            options.append('-DENABLE_HDF5=ON')
-        else:
-            options.append('-DENABLE_HDF5=OFF')
-
-        if '+caliper' in self.spec:
-            options.append('-DENABLE_CALIPER=ON')
-        else:
-            options.append('-DENABLE_CALIPER=OFF')
-
-        if '+flecstan' in self.spec:
+        if '+flecstan' in spec:
             options.append('-DENABLE_FLECSTAN=ON')
         else:
             options.append('-DENABLE_FLECSTAN=OFF')
+
+        if '+doxygen' in spec:
+            options.append('-DENABLE_DOXYGEN=ON')
+        else:
+            options.append('-DENABLE_DOXYGEN=OFF')
+        if '+doc' in spec:
+            options.append('-DENABLE_DOCUMENTATION=ON')
+        else:
+            options.append('-DENABLE_DOCUMENTATION=OFF')
+        if '+coverage' in spec:
+            options.append('-DENABLE_COVERAGE_BUILD=ON')
+        else:
+            options.append('-DENABLE_COVERAGE_BUILD=OFF')
 
         return options
