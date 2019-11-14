@@ -54,7 +54,7 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12.4',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
-    depends_on('cinch@1.01:', type='build')
+    #depends_on('cinch@1.01:', type='build')
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
     depends_on('mpi', when='backend=hpx')
@@ -84,7 +84,7 @@ class Flecsi(CMakePackage):
                    '-DENABLE_COLORING=ON',
                    '-DENABLE_DEVEL_TARGETS=ON'
                    ]
-        options.append('-DCINCH_SOURCE_DIR=' + spec['cinch'].prefix)
+        #options.append('-DCINCH_SOURCE_DIR=' + spec['cinch'].prefix)
 
         if self.spec.variants['backend'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
