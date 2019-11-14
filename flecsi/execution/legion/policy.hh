@@ -30,7 +30,6 @@
 #include "task_wrapper.hh"
 #include <flecsi/execution/legion/future.hh>
 #include <flecsi/execution/legion/reduction_wrapper.hh>
-#include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/flog/utils.hh>
 
@@ -82,7 +81,7 @@ serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
 } // namespace detail
 
 template<auto & F,
-  size_t LAUNCH_DOMAIN,
+  const execution::launch_domain & LAUNCH_DOMAIN,
   size_t REDUCTION,
   size_t ATTRIBUTES,
   typename... ARGS>
@@ -161,7 +160,7 @@ reduce(ARGS &&... args) {
 
   constexpr size_t ZERO = flecsi_internal_hash(0);
 
-  size_t domain_size = flecsi_context.get_launch_domain_size(LAUNCH_DOMAIN);
+  size_t domain_size = LAUNCH_DOMAIN.size();
   domain_size = domain_size == 0 ? flecsi_context.processes() : domain_size;
 
   ++flecsi_context.tasks_executed();
@@ -193,7 +192,7 @@ reduce(ARGS &&... args) {
   const auto task = legion::task_id<wrap::execute,
     (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
 
-  if constexpr(LAUNCH_DOMAIN == launch_identifier("single")) {
+  if constexpr(LAUNCH_DOMAIN == single) {
 
     static_assert(
       REDUCTION == ZERO, "reductions are not supported for single tasks");

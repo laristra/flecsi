@@ -184,7 +184,7 @@ colors() {
  */
 
 template<auto & TASK,
-  size_t LAUNCH_DOMAIN,
+  const execution::launch_domain & LAUNCH_DOMAIN,
   size_t REDUCTION_OPERATION,
   size_t ATTRIBUTES,
   typename... ARGS>
@@ -199,7 +199,7 @@ decltype(auto) reduce(ARGS &&... args);
     Legion return-value serialization interface, or any of several standard
     containers of such types.
     If \a ATTRIBUTES specifies an MPI task, parameters need merely be movable.
-  @tparam LAUNCH_DOMAIN The launch domain id.
+  @tparam LAUNCH_DOMAIN The launch domain object.
   @tparam ATTRIBUTES    The task attributes mask.
   @tparam ARGS The user-specified task arguments, implicitly converted to the
     parameter types for \a TASK.
@@ -211,7 +211,7 @@ decltype(auto) reduce(ARGS &&... args);
  */
 
 template<auto & TASK,
-  size_t LAUNCH_DOMAIN = flecsi::index,
+  const execution::launch_domain & LAUNCH_DOMAIN = flecsi::index,
   size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
   typename... ARGS>
 decltype(auto)

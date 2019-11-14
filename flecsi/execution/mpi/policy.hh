@@ -30,7 +30,7 @@
 namespace flecsi {
 
 template<auto & F,
-  size_t LAUNCH_DOMAIN,
+  const execution::launch_domain & LAUNCH_DOMAIN,
   size_t REDUCTION,
   size_t ATTRIBUTES,
   typename... ARGS>

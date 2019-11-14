@@ -20,14 +20,9 @@
 #endif
 
 #include <flecsi/data/field_info.hh>
-#include <flecsi/execution/launch.hh>
 #include <flecsi/execution/task_attributes.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/utils/common.hh>
-#include <flecsi/utils/const_string.hh>
-#include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/flog.hh>
-#include <flecsi/utils/hash.hh>
 
 #include <boost/program_options.hpp>
 
@@ -74,13 +69,6 @@ struct context {
 
   using field_info_store_t = std::vector<const data::field_info_t *>;
   using field_info_map_t = std::unordered_map<size_t, field_info_store_t>;
-
-  /*!
-   This type allows storage of launch_domains, the key is a hash from the
-   domain name, the value is # of index points.
-   */
-
-  using launch_domain_map_t = std::unordered_map<size_t, size_t>;
 
   /*!
     This type allows storage of subspace information.
@@ -495,25 +483,6 @@ currently only for unstructured mesh topologies.
    *--------------------------------------------------------------------------*/
 
   /*!
-    Set the number of indices for the associated launch identifier.
-
-    @param hash    A hash key identifies the launch domain.
-    @param indices The size to set the launch domain.
-   */
-
-  void set_launch_domain_size(const size_t hash, size_t indices) {
-    launch_domain_map_[hash] = indices;
-  }
-
-  /*!
-    Returns domain information from the domain key
-   */
-
-  size_t get_launch_domain_size(const size_t hash) {
-    return launch_domain_map_[hash];
-  }
-
-  /*!
     Return the count of executed tasks. Const version.
    */
 
@@ -608,12 +577,6 @@ protected:
    */
 
   std::map<size_t, index_subspace_info_t> index_subspace_map_;
-
-  /*--------------------------------------------------------------------------*
-    Launch data members.
-   *--------------------------------------------------------------------------*/
-
-  launch_domain_map_t launch_domain_map_;
 
   /*--------------------------------------------------------------------------*
     Task count.

@@ -26,10 +26,6 @@ set(execution_HEADERS
   reduction.hh
 )
 
-set(execution_SOURCES
-  launch.cc
-)
-
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(execution_HEADERS
@@ -43,10 +39,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/reduction_wrapper.hh
   )
 
-  set(execution_SOURCES
-    ${execution_SOURCES}
-  )
-
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
@@ -55,15 +47,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/reduction_wrapper.hh
   )
 
-  set(execution_SOURCES
-    ${execution_SOURCES}
-  )
-
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
-  set(execution_SOURCES
-    ${execution_SOURCES}
-  )
 
 endif()
 
@@ -73,15 +57,6 @@ endif()
 
 set(execution_HEADERS
   ${execution_HEADERS}
-  PARENT_SCOPE
-)
-
-#------------------------------------------------------------------------------#
-# Export source list to parent scope.
-#------------------------------------------------------------------------------#
-
-set(execution_SOURCES
-  ${execution_SOURCES}
   PARENT_SCOPE
 )
 

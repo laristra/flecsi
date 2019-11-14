@@ -160,13 +160,6 @@ context_t::start() {
   } // scope
 
   /*
-    Setup internal launch domains.
-   */
-
-  set_launch_domain_size(single, 1);
-  set_launch_domain_size(index, 0);
-
-  /*
     Register tasks.
    */
 

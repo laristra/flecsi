@@ -19,28 +19,35 @@
 #error Do not include this file directly
 #endif
 
-#include <flecsi/utils/const_string.hh>
+#include <cstddef>
 
 namespace flecsi {
 namespace execution {
 
 enum class launch_type_t : size_t { single, index };
 
-/*!
-  Return a launch_identifier from a string literal.
- */
+/// A launch domain with a static identity but a runtime size.
+struct launch_domain {
+  explicit constexpr launch_domain(std::size_t s = 0) : sz(s) {}
+  void size(std::size_t s) {
+    sz = s;
+  }
+  constexpr std::size_t size() const {
+    return sz;
+  }
+  constexpr bool operator==(const launch_domain & o) const {
+    return this == &o;
+  }
+  constexpr bool operator!=(const launch_domain & o) const {
+    return !(*this == o);
+  }
 
-template<size_t CHARACTERS>
-inline constexpr size_t
-launch_identifier(const char (&str)[CHARACTERS]) {
-  return utils::const_string_t(str).hash();
-}
-
-void set_launch_domain_size(const size_t identifier, size_t indices);
+private:
+  std::size_t sz;
+};
 
 } // namespace execution
 
-inline constexpr size_t single = execution::launch_identifier("single");
-inline constexpr size_t index = execution::launch_identifier("index");
+inline constexpr execution::launch_domain single(1), index;
 
 } // namespace flecsi
