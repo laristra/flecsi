@@ -329,7 +329,6 @@ env_mpi:
     <<: *runtime_mpi
     <<: *buildtype_debug
     <<: *compiler_gcc
-    <<: *mpich
 
 env_legion:
   extends: .env_template
@@ -338,7 +337,6 @@ env_legion:
     <<: *runtime_legion
     <<: *buildtype_debug
     <<: *compiler_gcc
-    <<: *mpich
 
 env_hpx:
   extends: .env_template
@@ -347,7 +345,6 @@ env_hpx:
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
-    <<: *mpich
 
 ###############
 # Canary Jobs #
