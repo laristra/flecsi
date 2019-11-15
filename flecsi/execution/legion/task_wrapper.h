@@ -37,6 +37,7 @@
 
 #if defined(ENABLE_CALIPER)
 #include <caliper/Annotation.h>
+#include <caliper/cali.h>
 #endif 
 
 clog_register_tag(task_wrapper);
@@ -294,45 +295,21 @@ struct task_wrapper_u {
       clog(info) << "In execute_mpi_task" << std::endl;
     }
 
-//#if defined(ENABLE_CALIPER)
-//    cali::Annotation tw("FleCSI-Execution");
-//    tw.begin("execute-mpi-task-init-handles");
-//#endif 
-
     // Unpack task arguments.
     ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(mpi_task_args);
 
-//#if defined(ENABLE_CALIPER)
-//    tw.end();
-//    tw.begin("execute-mpi-task-bind-mpi-task");
-//#endif
-
     // Create bound function to pass to MPI runtime.
     std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
-
-//#if defined(ENABLE_CALIPER)
-//    tw.end();
-//    tw.begin("execute-mpi-task-set-mpi-task");
-//#endif
 
     // Set the MPI function and make the runtime active.
     context_t::instance().set_mpi_task(bound_mpi_task);
     context_t::instance().set_mpi_state(true);
 
-//#if defined(ENABLE_CALIPER)
-//    tw.end();
-//    tw.begin("execute-mpi-task-finalize-handles");
-//#endif
-
     finalize_handles_t finalize_handles;
     finalize_handles.walk(mpi_task_args);
-
-//#if defined(ENABLE_CALIPER)
-//    tw.end();
-//#endif
 
   } // execute_mpi_task
 

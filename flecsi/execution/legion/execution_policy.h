@@ -163,12 +163,8 @@ struct legion_execution_policy_t {
 
 #if defined(ENABLE_CALIPER)
     cali::Annotation et("FleCSI-Execution");
-    //cali::Annotation et;
-   // et.set("FleCSI-execution");
-   std::string tname = "execute_task with TASK HASH " + std::to_string(TASK); 
-    //et.set("execute_task");
-    std::cout<<"tname = "<<tname; 
-    et.set(tname.c_str()); 
+    std::string tname = "execute_task with TASK HASH " + std::to_string(TASK); 
+    cali::Annotation::Guard g(et.begin(tname.c_str())); 
 #endif 
 
     using namespace Legion;
@@ -218,7 +214,8 @@ struct legion_execution_policy_t {
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
 #if defined(ENABLE_CALIPER)
-    et.begin("single-launch init_args"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" single-launch init_args"; 
+    et.begin(tname.c_str()); 
 #endif 
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
@@ -242,7 +239,8 @@ struct legion_execution_policy_t {
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
 #if defined(ENABLE_CALIPER)
-    et.begin("single-launch task_prolog sparse false"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" single-launch task_prolog sparse false"; 
+    et.begin(tname.c_str()); 
 #endif 
           {
             task_prolog_t task_prolog(
@@ -256,7 +254,8 @@ struct legion_execution_policy_t {
 #endif 
 
 #if defined(ENABLE_CALIPER)
-    et.begin("single-launch task_prolog sparse true"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" single-launch task_prolog sparse true"; 
+    et.begin(tname.c_str()); 
 #endif 
           {
             task_prolog_t task_prolog(
@@ -277,7 +276,8 @@ struct legion_execution_policy_t {
           // Execute a tuple walker that applies the task epilog operations
           // on the mapped handles
 #if defined(ENABLE_CALIPER)
-    et.begin("single-launch task_epilog"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" single-launch task_epilog"; 
+    et.begin(tname.c_str()); 
 #endif 
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
@@ -316,7 +316,8 @@ struct legion_execution_policy_t {
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
 #if defined(ENABLE_CALIPER)
-    et.begin("index-launch init_args"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" index-launch init_args"; 
+    et.begin(tname.c_str()); 
 #endif 
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
@@ -352,7 +353,8 @@ struct legion_execution_policy_t {
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
 #if defined(ENABLE_CALIPER)
-    et.begin("index-launch task_prolog sparse false"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" index-launch task_prolog sparse false"; 
+    et.begin(tname.c_str()); 
 #endif 
           {
             task_prolog_t task_prolog(
@@ -366,7 +368,8 @@ struct legion_execution_policy_t {
 #endif 
 
 #if defined(ENABLE_CALIPER)
-    et.begin("index-launch task_prolog sparse true"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" index-launch task_prolog sparse true"; 
+    et.begin(tname.c_str()); 
 #endif 
           {
             task_prolog_t task_prolog(
@@ -395,7 +398,8 @@ struct legion_execution_policy_t {
 
             // Enqueue the epilog.
 #if defined(ENABLE_CALIPER)
-    et.begin("index-launch task_epilog"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" index-launch task_epilog"; 
+    et.begin(tname.c_str()); 
 #endif 
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
@@ -413,7 +417,8 @@ struct legion_execution_policy_t {
             // Execute a tuple walker that applies the task epilog operations
             // on the mapped handles
 #if defined(ENABLE_CALIPER)
-    et.begin("index-launch task_epilog"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" index-launch task_epilog"; 
+    et.begin(tname.c_str()); 
 #endif 
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
@@ -431,7 +436,8 @@ struct legion_execution_policy_t {
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
 #if defined(ENABLE_CALIPER)
-    et.begin("mpi-launch init_args"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" mpi-launch init_args"; 
+    et.begin(tname.c_str()); 
 #endif 
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
@@ -468,7 +474,8 @@ struct legion_execution_policy_t {
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
 #if defined(ENABLE_CALIPER)
-    et.begin("mpi-launch task_prolog sparse false"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" mpi-launch task_prolog sparse false"; 
+    et.begin(tname.c_str()); 
 #endif 
           {
             task_prolog_t task_prolog(
@@ -482,7 +489,8 @@ struct legion_execution_policy_t {
 #endif 
 
 #if defined(ENABLE_CALIPER)
-    et.begin("mpi-launch task_prolog sparse true"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" mpi-launch task_prolog sparse true"; 
+    et.begin(tname.c_str()); 
 #endif 
           {
             task_prolog_t task_prolog(
@@ -513,7 +521,8 @@ struct legion_execution_policy_t {
           // Execute a tuple walker that applies the task epilog operations
           // on the mapped handles
 #if defined(ENABLE_CALIPER)
-    et.begin("mpi-launch task_epilog"); 
+    tname = "TASK HASH " + std::to_string(TASK)+" mpi-launch task_epilog"; 
+    et.begin(tname.c_str()); 
 #endif 
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
@@ -595,9 +604,6 @@ struct legion_execution_policy_t {
       } // switch
 
     } // if constexpr
-#if defined(ENABLE_CALIPER)
-    et.end(); 
-#endif 
   } // execute_task
 
   //------------------------------------------------------------------------//
@@ -647,11 +653,6 @@ struct legion_execution_policy_t {
     return context_t::instance().register_reduction_operation(
       HASH, wrapper_t::registration_callback);
   } // register_reduction_operation
-
-//#if defined(ENABLE_CALIPER)
-//    private:
-//    static cali::Annotation et;
-//#endif 
 
 }; // struct legion_execution_policy_t
 
