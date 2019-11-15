@@ -25,13 +25,11 @@ class Flecsi(CMakePackage):
     variant('build_type', default='Release', values=('Debug', 'Release'),
             description='The build type to build', multi=False)
     variant('backend', default='mpi', values=('serial', 'mpi', 'legion', 'hpx'),
-            description='Backend runtime to use for distributed memory', multi=False)
+            description='Backend to use for distributed memory', multi=False)
     variant('minimal', default=False,
             description='Disable FindPackageMetis')
     variant('shared', default=True,
             description='Build shared libraries')
-    variant('unittest', default=False,
-            description='Enable unit testing')
     variant('flog', default=False,
             description='Enable flog testing')
     variant('doxygen', default=False,
@@ -97,6 +95,11 @@ class Flecsi(CMakePackage):
             options.append('-DFLECSI_RUNTIME_MODEL=serial')
             options.append('-DENABLE_MPI=OFF')
 
+        if self.run_tests:
+            options.append('-DENABLE_UNIT_TESTS=ON')
+        else:
+            options.append('-DENABLE_UNIT_TESTS=OFF')
+
         if '+minimal' in spec:
             options.append('-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON')
         else:
@@ -105,10 +108,6 @@ class Flecsi(CMakePackage):
             options.append('-DBUILD_SHARED_LIBS=ON')
         else:
             options.append('-DBUILD_SHARED_LIBS=OFF')
-        if '+unittest' in spec:
-            options.append('-DENABLE_UNIT_TESTS=ON')
-        else:
-            options.append('-DENABLE_UNIT_TESTS=OFF')
 
         if '+hdf5' in spec and spec.variants['backend'].value == 'legion':
             options.append('-DENABLE_HDF5=ON')
@@ -118,13 +117,13 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_CALIPER=ON')
         else:
             options.append('-DENABLE_CALIPER=OFF')
+
         if '+tutorial' in spec:
             options.append('-DENABLE_FLECSIT=ON')
             options.append('-DENABLE_FLECSI_TUTORIAL=ON')
         else:
             options.append('-DENABLE_FLECSIT=OFF')
             options.append('-DENABLE_FLECSI_TUTORIAL=OFF')
-
         if '+flecstan' in spec:
             options.append('-DENABLE_FLECSTAN=ON')
         else:
