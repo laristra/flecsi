@@ -92,7 +92,7 @@ class Flecsi(CMakePackage):
         if spec.variants['backend'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
             options.append('-DENABLE_MPI=ON')
-        elif self.spec.variants['backend'].value == 'mpi':
+        elif spec.variants['backend'].value == 'mpi':
             options.append('-DFLECSI_RUNTIME_MODEL=mpi')
             options.append('-DENABLE_MPI=ON')
         elif spec.variants['backend'].value == 'hpx':
@@ -123,7 +123,7 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_CALIPER=ON')
         else:
             options.append('-DENABLE_CALIPER=OFF')
-        if '+tutorial' in self.spec:
+        if '+tutorial' in spec:
             options.append('-DENABLE_FLECSIT=ON')
             options.append('-DENABLE_FLECSI_TUTORIAL=ON')
         else:
