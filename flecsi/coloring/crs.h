@@ -71,27 +71,38 @@ struct crs_t {
     auto num_remove = ids.size();
     auto num_offsets = size();
 
-    // shift data to the left
-    for(auto i = num_remove; i-- > 0;) {
-      // get local id to remove
-      auto local_id = ids[i];
-      // get offset positions
-      auto start = offsets[local_id];
-      auto end = offsets[local_id + 1];
-      auto n = end - start;
-      // shift all indices
-      for(size_t j = end, k = 0; j < offsets[num_offsets]; ++j, ++k)
-        indices[start + k] = indices[j];
-      // shift all offsets
-      for(auto j = local_id; j < num_offsets; ++j)
-        offsets[j] = offsets[j + 1] - n;
-      // remove one entry
-      num_offsets--;
+    std::vector<size_t> new_offsets(offsets.size() - num_remove);
+    std::vector<size_t> new_indices;
+    new_indices.reserve(indices.size());
+
+    new_offsets[0] = 0;
+    auto delete_it = ids.begin();
+
+    for(size_t iold = 0, inew = 0; iold < num_offsets; ++iold) {
+
+      // skip deleted items
+      if(delete_it != ids.end()) {
+        if(*delete_it == iold) {
+          delete_it++;
+          continue;
+        }
+      }
+
+      // keep otherwise
+      auto start = offsets[iold];
+      auto end = offsets[iold + 1];
+      for(auto j = start; j < end; ++j) {
+        new_indices.push_back(indices[j]);
+      }
+      new_offsets[inew + 1] = new_indices.size();
+      inew++;
     }
 
+    assert(new_offsets.size() == offsets.size() - num_remove);
+
     // resize arrays
-    offsets.resize(num_offsets + 1);
-    indices.resize(offsets[num_offsets]);
+    std::swap(offsets, new_offsets);
+    std::swap(indices, new_indices);
   }
 
   /// \brief clears the current storage

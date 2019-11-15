@@ -68,7 +68,8 @@ env:
 
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-  - git fetch --unshallow && git fetch --tags #for versioning
+  #- git fetch --unshallow && git fetch --tags #for versioning
+  - git show-ref --tags
 
 script:
   - cp -vr docker ${HOME}/docker

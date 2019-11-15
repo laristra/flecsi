@@ -100,8 +100,8 @@ driver(int argc, char ** argv) {
     }
   }
 
-  std::cout << "Running for " << num_elements << " elements, pid "
-            << getpid() << std::endl;
+  std::cout << "Running for " << num_elements << " elements, pid " << getpid()
+            << std::endl;
 
   Runtime * runtime = Runtime::get_runtime();
   Context ctx = Runtime::get_context();
