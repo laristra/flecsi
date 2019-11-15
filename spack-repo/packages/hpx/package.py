@@ -40,6 +40,8 @@ class Hpx(CMakePackage, CudaPackage):
     variant('networking', default=True,
             description='Support for networking and multi=node runs')
     variant('tools', default=False, description='Build HPX tools')
+    variant('build_type', default='Release', values=('Debug', 'Release'),
+            description='The build type to build', multi=False)
 
     depends_on('boost')
     depends_on('hwloc')
