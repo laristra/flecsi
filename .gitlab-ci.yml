@@ -322,9 +322,32 @@ before_script:
 # Env Jobs #
 ############
 
-env:
+env_mpi:
   extends: .env_template
   <<: *shell_def
+  variables:
+    <<: *runtime_mpi
+    <<: *buildtype_debug
+    <<: *compiler_gcc
+    <<: *mpich
+
+env_legion:
+  extends: .env_template
+  <<: *shell_def
+  variables:
+    <<: *runtime_legion
+    <<: *buildtype_debug
+    <<: *compiler_gcc
+    <<: *mpich
+
+env_hpx:
+  extends: .env_template
+  <<: *shell_def
+  variables:
+    <<: *runtime_hpx
+    <<: *buildtype_debug
+    <<: *compiler_gcc
+    <<: *mpich
 
 ###############
 # Canary Jobs #
