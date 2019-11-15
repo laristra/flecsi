@@ -92,12 +92,4 @@ struct isid_counter_t {};
 using unique_isid_t =
   utils::unique_id<isid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
-/*!
-  Unique counter for reduction operator ids.
- */
-
-struct oid_counter_t {};
-using unique_oid_t =
-  utils::unique_id<oid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
-
 } // namespace flecsi

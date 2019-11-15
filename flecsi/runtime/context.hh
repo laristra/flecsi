@@ -345,15 +345,9 @@ struct context {
     Reduction interface.
    *--------------------------------------------------------------------------*/
 
-  bool register_reduction_operation(size_t key,
-    const std::function<void()> & callback) {
-    reduction_registry_[key] = callback;
-    return true;
+  void register_reduction_operation(void callback()) {
+    reduction_registry_.push_back(callback);
   } // register_reduction_operation
-
-  std::map<size_t, std::function<void()>> & reduction_registry() {
-    return reduction_registry_;
-  } // reduction_registry
 
   /*--------------------------------------------------------------------------*
     Topology interface.
@@ -546,7 +540,7 @@ protected:
     Reduction data members.
    *--------------------------------------------------------------------------*/
 
-  std::map<size_t, std::function<void()>> reduction_registry_;
+  std::vector<void (*)()> reduction_registry_;
 
   /*--------------------------------------------------------------------------*
     Function data members.

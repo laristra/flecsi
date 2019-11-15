@@ -130,14 +130,6 @@ struct context_t : context {
     return reduction_types_;
   } // reduction_types
 
-  /*!
-    Return the map of registered reduction operations.
-   */
-
-  std::map<size_t, MPI_Op> & reduction_operations() {
-    return reduction_ops_;
-  } // reduction_types
-
 private:
   /*--------------------------------------------------------------------------*
     Runtime data members.
@@ -151,7 +143,6 @@ private:
    *--------------------------------------------------------------------------*/
 
   std::map<size_t, MPI_Datatype> reduction_types_;
-  std::map<size_t, MPI_Op> reduction_ops_;
 };
 
 } // namespace flecsi::runtime

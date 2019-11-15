@@ -47,6 +47,7 @@ flog_register_tag(execution);
 
 namespace flecsi {
 
+namespace execution {
 namespace detail {
 
 // Remove const from under a reference, if there is one.
@@ -79,10 +80,11 @@ serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
 }
 
 } // namespace detail
+} // namespace execution
 
 template<auto & F,
   const execution::launch_domain & LAUNCH_DOMAIN,
-  size_t REDUCTION,
+  class REDUCTION,
   size_t ATTRIBUTES,
   typename... ARGS>
 decltype(auto)
@@ -125,13 +127,9 @@ reduce(ARGS &&... args) {
       Legion::TaskArgument(NULL, 0),
       arg_map);
 
-    constexpr size_t max_hash =
-      utils::hash::reduction_hash<flecsi_internal_hash(max),
-        flecsi_internal_hash(size_t)>();
-    size_t reduction_id = flecsi_context.reduction_operations()[max_hash];
-
-    Legion::Future future = legion_runtime->execute_index_space(
-      legion_context, reduction_launcher, reduction_id);
+    Legion::Future future = legion_runtime->execute_index_space(legion_context,
+      reduction_launcher,
+      reduction_op<reduction::max<std::size_t>>);
 
     if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
       Legion::IndexLauncher flog_mpi_launcher(
@@ -157,8 +155,6 @@ reduce(ARGS &&... args) {
     } // if
   } // if
 #endif // FLECSI_ENABLE_FLOG
-
-  constexpr size_t ZERO = flecsi_internal_hash(0);
 
   size_t domain_size = LAUNCH_DOMAIN.size();
   domain_size = domain_size == 0 ? flecsi_context.processes() : domain_size;
@@ -194,8 +190,8 @@ reduce(ARGS &&... args) {
 
   if constexpr(LAUNCH_DOMAIN == single) {
 
-    static_assert(
-      REDUCTION == ZERO, "reductions are not supported for single tasks");
+    static_assert(std::is_void_v<REDUCTION>,
+      "reductions are not supported for single tasks");
 
     {
       flog_tag_guard(execution);
@@ -252,20 +248,14 @@ reduce(ARGS &&... args) {
                  processor_type == task_processor_type_t::loc) {
       flog_devel(info) << "Executing index launch on loc" << std::endl;
 
-      if constexpr(REDUCTION != ZERO) {
-        flog_devel(info) << "executing reduction logic for " << REDUCTION
-                         << std::endl;
-        auto reduction_op =
-          flecsi_context.reduction_operations().find(REDUCTION);
-
-        flog_assert(reduction_op != flecsi_context.reduction_operations().end(),
-          "invalid reduction operation");
+      if constexpr(!std::is_void_v<REDUCTION>) {
+        flog_devel(info) << "executing reduction logic for "
+                         << utils::type<REDUCTION>() << std::endl;
 
         Legion::Future future;
 
-        size_t reduction_id = flecsi_context.reduction_operations()[REDUCTION];
         future = legion_runtime->execute_index_space(
-          legion_context, launcher, reduction_id);
+          legion_context, launcher, reduction_op<REDUCTION>);
 
         // FIXME
         // return legion_future<RETURN, launch_type_t::single>(future);
@@ -299,7 +289,7 @@ reduce(ARGS &&... args) {
       // We must keep mpi_args alive until then.
       flecsi_context.wait_on_mpi(legion_context, legion_runtime);
 
-      if constexpr(REDUCTION != ZERO) {
+      if constexpr(!std::is_void_v<REDUCTION>) {
         // FIXME implement logic for reduction MPI task
         flog_fatal("there is no implementation for the mpi"
                    " reduction task");
@@ -315,14 +305,4 @@ reduce(ARGS &&... args) {
   // return 0;
 } // execute_task
 
-namespace execution {
-
-//------------------------------------------------------------------------//
-// Reduction interface.
-//------------------------------------------------------------------------//
-
-template<size_t HASH, typename TYPE>
-using reduction_wrapper = legion::reduction_wrapper<HASH, TYPE>;
-
-} // namespace execution
 } // namespace flecsi

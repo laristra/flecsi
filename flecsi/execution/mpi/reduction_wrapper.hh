@@ -20,6 +20,7 @@
 #endif
 
 #include "flecsi/runtime/backend.hh"
+#include "flecsi/utils/demangle.hh"
 #include <flecsi/utils/flog.hh>
 #include <flecsi/utils/mpi_type_traits.hh>
 
@@ -29,81 +30,74 @@ flog_register_tag(reduction_wrapper);
 
 namespace flecsi {
 namespace execution {
-namespace mpi {
 
-template<size_t HASH, typename TYPE>
-struct reduction_wrapper {
+namespace detail {
+template<class>
+void register_reduction();
+}
 
-  using rhs_t = typename TYPE::RHS;
-  using lhs_t = typename TYPE::LHS;
+// NB: The real initialization is in the callback.
+template<class R>
+inline MPI_Op
+  reduction_op = (runtime::context::instance().register_reduction_operation(
+                    detail::register_reduction<R>),
+    MPI_Op());
 
+/*!
+  Register the user-defined reduction operator with the runtime.
+ */
+
+template<typename TYPE>
+void
+detail::register_reduction() {
+  using value_type = typename TYPE::LHS;
   // MPI does not have support for mixed-type reductions
-  static_assert(std::is_same_v<lhs_t, rhs_t>, "type mismatch: LHS != RHS");
+  static_assert(std::is_same_v<value_type, typename TYPE::RHS>,
+    "type mismatch: LHS != RHS");
 
-  /*!
-    Wrapper to convert the type-erased MPI function to the typed C++ method.
-   */
+  {
+    flog_tag_guard(reduction_wrapper);
+    flog(info) << "Executing reduction wrapper callback for "
+               << utils::type<TYPE>() << std::endl;
+  } // scope
 
-  static void mpi_wrapper(void * in, void * inout, int * len, MPI_Datatype *) {
+  // Get the runtime context
+  auto & context_ = runtime::context_t::instance();
 
-    lhs_t * lhs = reinterpret_cast<lhs_t *>(inout);
-    rhs_t * rhs = reinterpret_cast<rhs_t *>(in);
+  // Create the MPI data type if it isn't P.O.D.
+  if constexpr(!std::is_pod_v<value_type>) {
+    // Get the datatype map from the context
+    auto & reduction_types = context_.reduction_types();
 
-    for(size_t i{0}; i < *len; ++i) {
-      TYPE::template apply<true>(lhs[i], rhs[i]);
-    } // for
-  } // mpi_wrapper
+    // Get a hash from the runtime type information
+    size_t typehash = typeid(value_type).hash_code();
 
-  /*!
-    Register the user-defined reduction operator with the runtime.
-   */
+    // Search for this type...
+    auto dtype = reduction_types.find(typehash);
 
-  static void registration_callback() {
-    {
-      flog_tag_guard(reduction_wrapper);
-      flog(info) << "Executing reduction wrapper callback for " << HASH
-                 << std::endl;
-    } // scope
-
-    // Get the runtime context
-    auto & context_ = runtime::context_t::instance();
-
-    // Get a reference to the operator map
-    auto & reduction_ops = context_.reduction_operations();
-
-    // Check if operator has already been registered
-    flog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
-      typeid(TYPE).name() << " has already been registered with this name");
-
-    // Create the MPI data type if it isn't P.O.D.
-    if constexpr(!std::is_pod_v<lhs_t>) {
-      // Get the datatype map from the context
-      auto & reduction_types = context_.reduction_types();
-
-      // Get a hash from the runtime type information
-      size_t typehash = typeid(lhs_t).hash_code();
-
-      // Search for this type...
-      auto dtype = reduction_types.find(typehash);
-
-      if(dtype == reduction_types.end()) {
-        // Add the MPI type if it doesn't exist
-        MPI_Datatype datatype;
-        constexpr size_t datatype_size = sizeof(typename TYPE::RHS);
-        MPI_Type_contiguous(datatype_size, MPI_BYTE, &datatype);
-        MPI_Type_commit(&datatype);
-        reduction_types[typehash] = datatype;
-      } // if
+    if(dtype == reduction_types.end()) {
+      // Add the MPI type if it doesn't exist
+      MPI_Datatype datatype;
+      constexpr size_t datatype_size = sizeof(typename TYPE::RHS);
+      MPI_Type_contiguous(datatype_size, MPI_BYTE, &datatype);
+      MPI_Type_commit(&datatype);
+      reduction_types[typehash] = datatype;
     } // if
+  } // if
 
-    // Create the operator and register it with the runtime
-    MPI_Op mpiop;
-    MPI_Op_create(mpi_wrapper, true, &mpiop);
-    reduction_ops[HASH] = mpiop;
-  } // registration_callback
+  // Create the operator and register it with the runtime
+  MPI_Op_create(
+    [](void * in, void * inout, int * len, MPI_Datatype *) {
+      const auto lhs = static_cast<value_type *>(inout);
+      const auto rhs = static_cast<const value_type *>(in);
 
-}; // struct reduction_wrapper
+      for(size_t i{0}; i < *len; ++i) {
+        TYPE::template apply<true>(lhs[i], rhs[i]);
+      } // for
+    },
+    true,
+    &reduction_op<TYPE>);
+}
 
-} // namespace mpi
 } // namespace execution
 } // namespace flecsi

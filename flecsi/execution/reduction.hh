@@ -19,9 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include "backend.hh"
-#include <flecsi/utils/const_string.hh>
-#include <flecsi/utils/hash.hh>
+#include "../runtime/backend.hh"
 
 #include <limits>
 
@@ -29,42 +27,9 @@
   Reduction Interface
  *----------------------------------------------------------------------------*/
 
-/*!
-  @def flecsi_register_reduction_operation
-
-  This macro registers a custom reduction rule with the runtime.
-
-  @param type     A type that defines static methods \em apply
-                  and \em fold. The \em apply method will be used
-                  by the runtime for \em exclusive operations, i.e.,
-                  the elements are accessed sequentially. The \em fold
-                  method is for \em non-exclusive access.
-  @param datatype The data type of the custom reduction.
-
-  @ingroup execution
- */
-
-#define flecsi_register_reduction_operation(type, datatype)                    \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  inline bool type##_##datatype##_reduction_operation_registered =             \
-    flecsi::execution::task_interface_t::register_reduction_operation<         \
-      flecsi::utils::hash::reduction_hash<flecsi_internal_hash(type),          \
-        flecsi_internal_hash(datatype)>(),                                     \
-      type<datatype>>()
-
 namespace flecsi {
 namespace execution {
 namespace reduction {
-
-#define flecsi_register_operation_types(operation)                             \
-  flecsi_register_reduction_operation(operation, int);                         \
-  flecsi_register_reduction_operation(operation, long);                        \
-  flecsi_register_reduction_operation(operation, short);                       \
-  flecsi_register_reduction_operation(operation, unsigned);                    \
-  flecsi_register_reduction_operation(operation, size_t);                      \
-  flecsi_register_reduction_operation(operation, float);                       \
-  flecsi_register_reduction_operation(operation, double);
 
 /*!
   Minimum reduction type.
@@ -124,8 +89,6 @@ struct min {
 
 }; // struct min
 
-flecsi_register_operation_types(min);
-
 /*!
   Maximum reduction type.
  */
@@ -184,8 +147,6 @@ struct max {
 
 }; // struct max
 
-flecsi_register_operation_types(max);
-
 /*!
   Sum reduction type.
  */
@@ -223,8 +184,6 @@ struct sum {
 
 }; // struct sum
 
-flecsi_register_operation_types(sum);
-
 /*!
   Product reduction type.
  */
@@ -261,8 +220,6 @@ struct product {
   } // fold
 
 }; // struct product
-
-flecsi_register_operation_types(product);
 
 } // namespace reduction
 } // namespace execution

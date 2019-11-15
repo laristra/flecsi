@@ -31,7 +31,7 @@ namespace flecsi {
 
 template<auto & F,
   const execution::launch_domain & LAUNCH_DOMAIN,
-  size_t REDUCTION,
+  class REDUCTION,
   size_t ATTRIBUTES,
   typename... ARGS>
 decltype(auto)
@@ -45,14 +45,4 @@ reduce(ARGS &&... args) {
   return ret;
 }
 
-namespace execution {
-
-//--------------------------------------------------------------------------//
-// Reduction interface.
-//--------------------------------------------------------------------------//
-
-template<size_t HASH, typename TYPE>
-using reduction_wrapper = mpi::reduction_wrapper<HASH, TYPE>;
-
-} // namespace execution
 } // namespace flecsi
