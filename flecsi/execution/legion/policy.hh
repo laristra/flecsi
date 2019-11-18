@@ -166,7 +166,7 @@ reduce(ARGS &&... args) {
 
   ++flecsi_context.tasks_executed();
 
-  legion::task_prologue_t pro(legion_runtime, legion_context, domain_size);
+  legion::task_prologue_t pro(domain_size);
   pro.walk<ARG_TUPLE>(args...);
 
   std::optional<ARG_TUPLE> mpi_args;

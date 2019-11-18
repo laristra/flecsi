@@ -62,10 +62,7 @@ struct task_prologue_t {
     @param context The Legion task runtime context.
    */
 
-  task_prologue_t(Legion::Runtime * runtime,
-    Legion::Context & context,
-    const size_t & domain)
-    : runtime_(runtime), context_(context), domain_(domain) {}
+  task_prologue_t(const size_t & domain) : domain_(domain) {}
 
   std::vector<Legion::RegionRequirement> const & region_requirements() {
     return region_reqs_;
@@ -223,8 +220,6 @@ private:
     (visit(static_cast<std::decay_t<PP> *>(nullptr), aa), ...);
   }
 
-  Legion::Runtime * runtime_;
-  Legion::Context & context_;
   size_t domain_;
 
   std::vector<Legion::RegionRequirement> region_reqs_;

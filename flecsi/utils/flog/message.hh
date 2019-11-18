@@ -154,6 +154,7 @@ protected:
 //----------------------------------------------------------------------------//
 
 severity_message_t(utility, {
+  (void)devel_;
   std::ostream & stream =
     flog_t::instance().severity_stream(flog_t::instance().tag_enabled());
   return stream;
