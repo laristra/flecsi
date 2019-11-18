@@ -51,7 +51,7 @@ class Hpx(CMakePackage, CudaPackage):
 
     # Recommended dependency versions for stable
     depends_on('boost@1.70.0', when='@:stable')
-    depends_on('boost cxxstd=17', when='@:stable')
+    depends_on('boost cxxstd=14', when='@:stable')
 
     # Recommended dependency versions for 1.2.X
     depends_on('cmake@3.9.0:', when='@:1.2.1', type='build')
