@@ -31,6 +31,7 @@ variables:
   CXX: "g++"
   CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
   IGNORE_NOCI: "FALSE"
+  GASNET_BACKTRACE: 1
   SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
   DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
   #lock_fd: 314
@@ -68,13 +69,9 @@ before_script:
     then
       module unload clang;
       module load clang/${FLECSI_CLANG_VERSION};
-      #export CC=clang;
-      #export CXX=clang++;
     elif [[ ${CI_JOB_NAME} =~ "intel" ]];
     then
       module load intel/${FLECSI_INTEL_VERSION};
-      #export CC=icc;
-      #export CXX=icpc;
     fi
   - module list
   - echo $CC;
@@ -129,7 +126,7 @@ before_script:
   only:
     - merge_requests
     - master
-    - feature/refactor
+    - refactor
 
 .cache_template: &cache_def
   cache:
@@ -183,8 +180,8 @@ before_script:
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install --only dependencies ${FLECSI_SPACK_SPEC}openmpi%gcc@${FLECSI_GCC_VERSION};
-      spack install --only dependencies ${FLECSI_SPACK_SPEC}mpich%gcc@${FLECSI_GCC_VERSION};
+      spack install -v --only dependencies ${FLECSI_SPACK_SPEC}openmpi%gcc@${FLECSI_GCC_VERSION};
+      spack install -v --only dependencies ${FLECSI_SPACK_SPEC}mpich%gcc@${FLECSI_GCC_VERSION};
       ) 200>${DEPS_LOCK}
 
 ###############
@@ -212,6 +209,9 @@ before_script:
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_UNIT_TESTS=ON \
         -DENABLE_HDF5=$([ "$RUNTIME" = "legion" ] && echo ON || echo OFF) \
+        -DENABLE_DOXYGEN=ON \
+        -DENABLE_DOCUMENTATION=OFF \
+        -DENABLE_COVERAGE_BUILD=ON \
         ..
     make -k VERBOSE=1 -j2 -l40
     make install DESTDIR=${CI_PROJECT_DIR}/build/install
@@ -322,9 +322,29 @@ before_script:
 # Env Jobs #
 ############
 
-env:
+env_mpi:
   extends: .env_template
   <<: *shell_def
+  variables:
+    <<: *runtime_mpi
+    <<: *buildtype_debug
+    <<: *compiler_gcc
+
+env_legion:
+  extends: .env_template
+  <<: *shell_def
+  variables:
+    <<: *runtime_legion
+    <<: *buildtype_debug
+    <<: *compiler_gcc
+
+env_hpx:
+  extends: .env_template
+  <<: *shell_def
+  variables:
+    <<: *runtime_hpx
+    <<: *buildtype_debug
+    <<: *compiler_gcc
 
 ###############
 # Canary Jobs #

@@ -8,8 +8,7 @@ from spack import *
 
 
 class Flecsi(CMakePackage):
-    '''
-       FleCSI is a compile-time configurable framework designed to support
+    '''FleCSI is a compile-time configurable framework designed to support
        multi-physics application development. As such, FleCSI attempts to
        provide a very general set of infrastructure design patterns that can
        be specialized and extended to suit the needs of a broad variety of
@@ -18,7 +17,7 @@ class Flecsi(CMakePackage):
        n-dimensional hashed-tree data structures, graph partitioning
        interfaces,and dependency closures.
     '''
-    homepage = 'http://flecsi.lanl.gov/'
+    homepage = 'http://flecsi.org/'
     git      = 'https://github.com/laristra/flecsi.git'
 
     version('master', branch='master', submodules=False, preferred=True)
@@ -31,8 +30,6 @@ class Flecsi(CMakePackage):
             description='Disable FindPackageMetis')
     variant('shared', default=True,
             description='Build shared libraries')
-    variant('unittest', default=False,
-            description='Enable unit testing')
     variant('flog', default=False,
             description='Enable flog testing')
     variant('doxygen', default=False,
@@ -52,7 +49,7 @@ class Flecsi(CMakePackage):
     variant('flecstan', default=False,
             description='Build FleCSI Static Analyzer')
 
-    depends_on('cmake@3.12.4',  type='build')
+    depends_on('cmake@3.12:',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
     #depends_on('cinch@1.01:', type='build')
     depends_on('mpi', when='backend=mpi')
@@ -85,10 +82,10 @@ class Flecsi(CMakePackage):
                    ]
         #options.append('-DCINCH_SOURCE_DIR=' + spec['cinch'].prefix)
 
-        if self.spec.variants['backend'].value == 'legion':
+        if spec.variants['backend'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
             options.append('-DENABLE_MPI=ON')
-        elif self.spec.variants['backend'].value == 'mpi':
+        elif spec.variants['backend'].value == 'mpi':
             options.append('-DFLECSI_RUNTIME_MODEL=mpi')
             options.append('-DENABLE_MPI=ON')
         elif spec.variants['backend'].value == 'hpx':
@@ -98,6 +95,11 @@ class Flecsi(CMakePackage):
             options.append('-DFLECSI_RUNTIME_MODEL=serial')
             options.append('-DENABLE_MPI=OFF')
 
+        if self.run_tests:
+            options.append('-DENABLE_UNIT_TESTS=ON')
+        else:
+            options.append('-DENABLE_UNIT_TESTS=OFF')
+
         if '+minimal' in spec:
             options.append('-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON')
         else:
@@ -106,10 +108,6 @@ class Flecsi(CMakePackage):
             options.append('-DBUILD_SHARED_LIBS=ON')
         else:
             options.append('-DBUILD_SHARED_LIBS=OFF')
-        if '+unittest' in spec:
-            options.append('-DENABLE_UNIT_TESTS=ON')
-        else:
-            options.append('-DENABLE_UNIT_TESTS=OFF')
 
         if '+hdf5' in spec and spec.variants['backend'].value == 'legion':
             options.append('-DENABLE_HDF5=ON')
@@ -119,13 +117,13 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_CALIPER=ON')
         else:
             options.append('-DENABLE_CALIPER=OFF')
-        if '+tutorial' in self.spec:
+
+        if '+tutorial' in spec:
             options.append('-DENABLE_FLECSIT=ON')
             options.append('-DENABLE_FLECSI_TUTORIAL=ON')
         else:
             options.append('-DENABLE_FLECSIT=OFF')
             options.append('-DENABLE_FLECSI_TUTORIAL=OFF')
-
         if '+flecstan' in spec:
             options.append('-DENABLE_FLECSTAN=ON')
         else:
