@@ -72,7 +72,6 @@ template<std::size_t I = 0,
                               std::tuple_size<TupleA>::value >= 2>>
 bool
 less_than(const TupleA & a, const TupleB & b) {
-  constexpr auto N = std::tuple_size<TupleA>::value;
   if(std::get<I>(a) == std::get<I>(b))
     return less_than<I + 1>(a, b);
   else
@@ -109,8 +108,6 @@ template<std::size_t I = 0,
                               std::tuple_size<TupleA>::value >= 2>>
 bool
 equal_to(const TupleA & a, const TupleB & b) {
-  constexpr auto N = std::tuple_size<TupleA>::value;
-  auto test = (std::get<I>(a) < std::get<I>(b));
   if(std::get<I>(a) != std::get<I>(b))
     return false;
   else

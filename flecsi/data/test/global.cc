@@ -62,8 +62,6 @@ check(global_field_t::accessor<ro> ga) {
 int
 global(int, char **) {
 
-  double value{10.0};
-
   execute<assign, single>(energy);
   execute<check>(energy);
 

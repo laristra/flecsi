@@ -112,7 +112,7 @@ id(int, char **) {
     id a;
     const id b(id{});
     (void)b;
-    const id c = a;
+    (id(a));
     const id d(12345);
     print(d);
   }

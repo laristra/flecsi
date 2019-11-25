@@ -68,7 +68,6 @@ struct ntree_geometry<T, 1> {
     const point_t & center,
     element_t r1,
     element_t r2) {
-    element_t dist_2 = (origin[0] - center[0]) * (origin[0] - center[0]);
     return distance(origin, center) <= std::max(r1, r2);
   }
 

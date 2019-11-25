@@ -69,7 +69,6 @@ public:
   //! Biggest value possible at max_depth considering the root
   static constexpr DERIVED max() {
     int_t id = ~static_cast<int_t>(0);
-    int_t remove = int_t(1) << max_depth_ * dimension;
     for(size_t i = max_depth_ * dimension + 1; i < bits_; ++i) {
       id ^= int_t(1) << i;
     } // for
@@ -299,7 +298,6 @@ public:
   void coordinates(point_t & p) {
     int_t key = value_;
     std::array<int_t, dimension> coords = {};
-    int i = 0;
     for(int_t mask = int_t(1); mask <= max_value_; mask <<= 1) {
       std::array<bool, dimension> r = {};
       if constexpr(dimension == 3) {

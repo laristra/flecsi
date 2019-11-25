@@ -187,7 +187,7 @@ struct legion_hdf5_t {
     assert(hdf5_file_id >= 0);
 
     const char * cstr = str.c_str();
-    herr_t status;
+    [[maybe_unused]] herr_t status; // FIXME: report errors
     // TODO:FIXME
     // status = H5Eset_auto(NULL, NULL);
     // status = H5Gget_objinfo (hdf5_file_id, group_name, 0, NULL);
@@ -247,7 +247,7 @@ struct legion_hdf5_t {
 
     assert(hdf5_file_id >= 0);
 
-    herr_t status;
+    [[maybe_unused]] herr_t status; // FIXME: report errors
     // TODO:FIXME
     // status = H5Eset_auto(NULL, NULL);
     // status = H5Gget_objinfo (hdf5_file_id, group_name, 0, NULL);
@@ -665,8 +665,6 @@ struct legion_policy_t {
     std::vector<std::byte> task_args;
     task_args = utils::serial_put(std::tie(field_string_map_vector, file_name));
 
-    runtime::context_t & context_ = runtime::context_t::instance();
-
     auto task_id =
       attach_flag
         ? execution::legion::task_id<checkpoint_with_attach_task, loc | inner>
@@ -727,8 +725,6 @@ struct legion_policy_t {
 
     std::vector<std::byte> task_args;
     task_args = utils::serial_put(std::tie(field_string_map_vector, file_name));
-
-    runtime::context_t & context_ = runtime::context_t::instance();
 
     auto task_id =
       attach_flag

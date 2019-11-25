@@ -302,11 +302,8 @@ public:
       bmax[d] = -DBL_MAX;
       bmin[d] = DBL_MAX;
     }
-    bool full_nonlocal = true, full_local = true;
     if(b->is_leaf()) {
       // For local branches, compute the radius
-      int start = -1;
-      int end = -1;
       for(auto child : *b) {
         auto ent = get(child);
         owner = ent.owner();

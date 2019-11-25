@@ -30,7 +30,7 @@ color_raw(int, char **) {
   FTEST();
 
   auto & c = flecsi::runtime::context_t::instance();
-  auto depth = c.task_depth();
+  ASSERT_EQ(c.task_depth(), 1u);
   auto process = c.process();
   auto processes = c.processes();
   auto tpp = c.threads_per_process();

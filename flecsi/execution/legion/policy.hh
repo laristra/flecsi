@@ -209,9 +209,6 @@ reduce(ARGS &&... args) {
       launcher.add_region_requirement(req);
     } // for
 
-    LegionRuntime::Arrays::Rect<1> launch_bounds(0, 1);
-    Domain launch_domain = Domain::from_rect<1>(launch_bounds);
-
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {
       auto future = legion_runtime->execute_task(legion_context, launcher);

@@ -89,7 +89,6 @@ privilege_count() {
 template<size_t INDEX, size_t PACK>
 constexpr partition_privilege_t
 get_privilege() {
-  constexpr size_t count = (utils::msb<PACK>() - 1) >> 1;
   return partition_privilege_t(
     PACK >> ((privilege_count<PACK>() - 1 - INDEX) * 2) & 0x03);
 } // get_privilege

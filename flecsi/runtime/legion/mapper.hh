@@ -240,8 +240,6 @@ public:
     const Legion::Task & task,
     const Legion::Mapping::Mapper::SliceTaskInput & input,
     Legion::Mapping::Mapper::SliceTaskOutput & output) {
-    using legion_proc = Legion::Processor;
-    context_t & context_ = context_t::instance();
 
     if(task.tag == FLECSI_MAPPER_SUBRANK_LAUNCH) {
       // expect a 1-D index domain
