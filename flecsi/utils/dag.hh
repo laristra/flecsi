@@ -60,14 +60,6 @@ struct dag_node : public NODE_POLICY {
   dag_node(size_t hash, std::string const & label, ARGS &&... args)
     : hash_(hash), label_(label), NODE_POLICY(std::forward<ARGS>(args)...) {}
 
-  /*!
-    Copy constructor.
-   */
-
-  dag_node(dag_node const & node)
-    : hash_(node.hash_), label_(node.label_), edge_list_(node.edge_list_),
-      NODE_POLICY(node) {}
-
   size_t const & hash() const {
     return hash_;
   }

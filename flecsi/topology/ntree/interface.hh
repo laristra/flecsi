@@ -87,8 +87,6 @@ public:
     assert(root_ != node_map_.end());
   }
 
-  ntree(const ntree & s) {}
-
   /**
    * @brief Set the range of the current domain.
    * This range is the same among all the processes and is used to compute the
