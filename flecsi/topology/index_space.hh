@@ -103,9 +103,6 @@ public:
   //! reference casting type
   using cast_t = std::decay_t<ref_t>;
 
-  //! filter predicate function signature
-  using filter_function = std::function<bool(T &)>;
-
   //! apply function signature
   using apply_function = std::function<void(T &)>;
 
@@ -164,8 +161,6 @@ public:
   class iterator_base_
   {
   public:
-    using MS = typename std::remove_const<S>::type;
-
     //-----------------------------------------------------------------//
     //! Initialize iterator from items and range
     //-----------------------------------------------------------------//
