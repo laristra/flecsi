@@ -33,7 +33,7 @@ using geo1d = flecsi::topology::ntree_geometry<double, 1>;
 using p1d = point<double, 1>;
 
 int
-geometry_1d_sanity(int argc, char ** argv) {
+geometry_1d_sanity(int, char **) {
 
   FTEST();
   using namespace flecsi;
@@ -147,7 +147,7 @@ using geo2d = flecsi::topology::ntree_geometry<double, 2>;
 using p2d = point<double, 2>;
 
 int
-geometry_2d_sanity(int argc, char ** argv) {
+geometry_2d_sanity(int, char **) {
 
   FTEST();
   using namespace flecsi;
@@ -245,7 +245,7 @@ using geo3d = flecsi::topology::ntree_geometry<double, 3>;
 using p3d = point<double, 3>;
 
 int
-geometry_3d_sanity(int argc, char ** argv) {
+geometry_3d_sanity(int, char **) {
 
   FTEST();
   using namespace flecsi;

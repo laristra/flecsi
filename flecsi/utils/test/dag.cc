@@ -54,7 +54,7 @@ const size_t f = flecsi_hash(f);
 const size_t g = flecsi_hash(g);
 
 int
-dag(int argc, char ** argv) {
+dag(int, char **) {
 
   FTEST();
 

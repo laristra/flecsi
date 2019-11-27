@@ -22,7 +22,7 @@ flog_register_tag(task_attributes);
 using namespace flecsi;
 
 int
-task_attributes(int argc, char ** argv) {
+task_attributes(int, char **) {
 
   FTEST();
 

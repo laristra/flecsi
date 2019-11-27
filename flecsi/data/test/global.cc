@@ -60,9 +60,7 @@ check(global_field_t::accessor<ro> ga) {
 } // check
 
 int
-global(int argc, char ** argv) {
-
-  double value{10.0};
+global(int, char **) {
 
   execute<assign, single>(energy);
   execute<check>(energy);

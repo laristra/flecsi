@@ -69,7 +69,7 @@ bool const is_tuple<std::tuple<T...>>::value;
 } // namespace flecsi
 
 int
-static_verify(int argc, char ** argv) {
+static_verify(int, char **) {
 
   FTEST();
 

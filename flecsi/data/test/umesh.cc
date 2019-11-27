@@ -28,7 +28,7 @@ auto pressure = cell_field(m);
 #endif
 
 int
-index_driver(int argc, char ** argv) {
+index_driver(int, char **) {
 
 #if 0
   coloring.create(/* arg list */);

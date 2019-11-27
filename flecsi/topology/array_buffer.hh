@@ -126,7 +126,7 @@ public:
   }
 
   template<typename... Args>
-  void insert(Args &&... args) {}
+  void insert(Args &&...) {}
 
   void push_back(const ref_t x) {
     assert(size_ < capacity_ && "array buffer capacity exceeded");
@@ -185,11 +185,11 @@ public:
   }
 
   template<typename... Args>
-  void assign(Args &&... args) {
+  void assign(Args &&...) {
     assert(false && "unimplemented");
   }
 
-  void reserve(size_t n) {
+  void reserve(size_t) {
     assert(false && "unimplemented");
   }
 

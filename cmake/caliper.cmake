@@ -24,7 +24,7 @@ if(ENABLE_CALIPER)
 
     message(STATUS "Found Caliper: ${Caliper_INCLUDE_DIRS}")
 
-    include_directories(${Caliper_INCLUDE_DIRS})
+    include_directories(SYSTEM ${Caliper_INCLUDE_DIRS})
     add_definitions(-DENABLE_CALIPER)
     list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Caliper_LIBRARIES})
     if(ENABLE_MPI)

@@ -23,7 +23,7 @@ if(ENABLE_KOKKOS)
 
   find_package(Kokkos REQUIRED)
 
-  include_directories(${KOKKOS_INCLUDE_DIR})
+  include_directories(SYSTEM ${KOKKOS_INCLUDE_DIR})
   link_directories(${KOKKOS_LIBRARY_DIRS})
 
   list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${KOKKOS_CORE_LIBRARY})

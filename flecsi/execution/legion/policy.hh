@@ -166,7 +166,7 @@ reduce(ARGS &&... args) {
 
   ++flecsi_context.tasks_executed();
 
-  legion::task_prologue_t pro(legion_runtime, legion_context, domain_size);
+  legion::task_prologue_t pro(domain_size);
   pro.walk<ARG_TUPLE>(args...);
 
   std::optional<ARG_TUPLE> mpi_args;
@@ -208,9 +208,6 @@ reduce(ARGS &&... args) {
     for(auto & req : pro.region_requirements()) {
       launcher.add_region_requirement(req);
     } // for
-
-    LegionRuntime::Arrays::Rect<1> launch_bounds(0, 1);
-    Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {

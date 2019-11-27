@@ -23,7 +23,7 @@ using point_2d_t = point<double, 2>;
 using point_3d_t = point<double, 3>;
 
 int
-point_sanity(int argc, char ** argv) {
+point_sanity(int, char **) {
   FTEST();
   point_1d_t a1{-1.0};
   ASSERT_EQ(-1.0, a1[utils::axis::x]);
@@ -43,7 +43,7 @@ point_sanity(int argc, char ** argv) {
 ftest_register_driver(point_sanity);
 
 int
-point_distance(int argc, char ** argv) {
+point_distance(int, char **) {
   FTEST();
   point_1d_t a1{1.0};
   point_1d_t b1{4.0};
@@ -65,7 +65,7 @@ point_distance(int argc, char ** argv) {
 ftest_register_driver(point_distance);
 
 int
-point_midpoint(int argc, char ** argv) {
+point_midpoint(int, char **) {
   FTEST();
   point_1d_t a1{1.0};
   point_1d_t b1{4.0};

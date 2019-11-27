@@ -15,7 +15,7 @@
 #include <flecsi/utils/ftest.hh>
 
 int
-init_a(int argc, char ** argv) {
+init_a(int, char **) {
   flog_tag_guard(ftest);
   flog(info) << "init a" << std::endl;
 
@@ -29,7 +29,7 @@ init_a(int argc, char ** argv) {
 ftest_register_initialize(init_a);
 
 int
-init_b(int argc, char ** argv) {
+init_b(int, char **) {
   flog_tag_guard(ftest);
   flog(info) << "init b" << std::endl;
   return 0;
@@ -39,7 +39,7 @@ ftest_register_initialize(init_b);
 ftest_add_initialize_dependency(init_b, init_a);
 
 int
-test1(int argc, char ** argv) {
+test1(int, char **) {
 
   FTEST();
 
@@ -55,7 +55,7 @@ test1(int argc, char ** argv) {
 ftest_register_driver(test1);
 
 int
-test2(int argc, char ** argv) {
+test2(int, char **) {
 
   FTEST();
 
@@ -68,7 +68,7 @@ test2(int argc, char ** argv) {
 ftest_register_driver(test2);
 
 int
-finalize(int argc, char ** argv) {
+finalize(int, char **) {
   flog_tag_guard(ftest);
   flog(info) << "finalize" << std::endl;
   return 0;

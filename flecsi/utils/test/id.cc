@@ -70,7 +70,7 @@ identical(const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
 #define GBITS 60 /* for global    */
 
 int
-id(int argc, char ** argv) {
+id(int, char **) {
 
   FTEST();
 
@@ -112,7 +112,7 @@ id(int argc, char ** argv) {
     id a;
     const id b(id{});
     (void)b;
-    const id c = a;
+    (id(a));
     const id d(12345);
     print(d);
   }
@@ -183,7 +183,7 @@ id(int argc, char ** argv) {
     id a = id::make<1, 2>(3, 4, 5, 6);
     id b = id{};
     a = b = id{};
-    b = a = a;
+    b = a;
   }
 
   // ------------------------

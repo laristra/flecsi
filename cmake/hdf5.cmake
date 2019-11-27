@@ -30,7 +30,7 @@ if(ENABLE_HDF5)
   find_package(HDF5 REQUIRED)
 
   if(HDF5_FOUND)
-    include_directories(${HDF5_INCLUDE_DIRS})
+    include_directories(SYSTEM ${HDF5_INCLUDE_DIRS})
     list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${HDF5_LIBRARIES})
   else()
     message(FATAL_ERROR "HDF5 requested, but not found")

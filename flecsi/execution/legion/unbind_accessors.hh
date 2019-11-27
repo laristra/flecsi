@@ -47,20 +47,6 @@ namespace legion {
 struct unbind_accessors_t
   : public flecsi::utils::tuple_walker<unbind_accessors_t> {
 
-  /*!
-    Construct an unbind_accessors_t instance.
-
-    @param runtime The Legion task runtime.
-    @param context The Legion task runtime context.
-   */
-
-  unbind_accessors_t(Legion::Runtime * runtime,
-    Legion::Context & context,
-    std::vector<Legion::PhysicalRegion> const & regions,
-    std::vector<Legion::Future> const & futures)
-    : runtime_(runtime), context_(context), regions_(regions),
-      futures_(futures) {}
-
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and topology
     type, potentially for every permutation thereof.
@@ -72,8 +58,8 @@ struct unbind_accessors_t
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-    data::accessor<data::dense, topology::global_t, DATA_TYPE, PRIVILEGES> &
-      accessor) {} // visit
+    data::accessor<data::dense, topology::global_t, DATA_TYPE, PRIVILEGES> &) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Index Topology
@@ -81,8 +67,8 @@ struct unbind_accessors_t
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-    data::accessor<data::dense, topology::index_t, DATA_TYPE, PRIVILEGES> &
-      accessor) {} // visit
+    data::accessor<data::dense, topology::index_t, DATA_TYPE, PRIVILEGES> &) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
@@ -98,13 +84,6 @@ struct unbind_accessors_t
                        << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }
   } // visit
-
-private:
-  Legion::Runtime * runtime_;
-  Legion::Context & context_;
-  const std::vector<Legion::PhysicalRegion> & regions_;
-  const std::vector<Legion::Future> & futures_;
-
 }; // struct unbind_accessors_t
 
 } // namespace legion

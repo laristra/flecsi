@@ -25,12 +25,12 @@ flog_register_tag(color);
  */
 
 int
-color_raw(int argc, char ** argv) {
+color_raw(int, char **) {
 
   FTEST();
 
   auto & c = flecsi::runtime::context_t::instance();
-  auto depth = c.task_depth();
+  ASSERT_EQ(c.task_depth(), 1u);
   auto process = c.process();
   auto processes = c.processes();
   auto tpp = c.threads_per_process();
@@ -42,7 +42,7 @@ color_raw(int argc, char ** argv) {
                << "threads_per_process(raw): " << tpp << std::endl;
   }
 
-  ASSERT_EQ(processes, 4);
+  ASSERT_EQ(processes, 4u);
   ASSERT_LT(process, processes);
 
   return FTEST_RESULT();
@@ -57,7 +57,7 @@ ftest_register_driver(color_raw);
  */
 
 int
-color_ui(int argc, char ** argv) {
+color_ui(int, char **) {
 
   FTEST();
 

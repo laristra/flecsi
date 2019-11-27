@@ -15,7 +15,7 @@
 #include <flecsi/utils/ftest.hh>
 
 int
-demangle(int argc, char ** argv) {
+demangle(int, char **) {
 
   FTEST();
 

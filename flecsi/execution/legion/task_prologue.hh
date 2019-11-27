@@ -62,10 +62,7 @@ struct task_prologue_t {
     @param context The Legion task runtime context.
    */
 
-  task_prologue_t(Legion::Runtime * runtime,
-    Legion::Context & context,
-    const size_t & domain)
-    : runtime_(runtime), context_(context), domain_(domain) {}
+  task_prologue_t(const size_t & domain) : domain_(domain) {}
 
   std::vector<Legion::RegionRequirement> const & region_requirements() {
     return region_reqs_;
@@ -174,8 +171,7 @@ struct task_prologue_t {
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::ntree<POLICY_TYPE>> & ref) {
-  } // visit
+    const data::field_reference<T, topology::ntree<POLICY_TYPE>> &) {} // visit
 
   /*--------------------------------------------------------------------------*
     Set Topology
@@ -187,8 +183,7 @@ struct task_prologue_t {
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(set_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::set<POLICY_TYPE>> & ref) {
-  } // visit
+    const data::field_reference<T, topology::set<POLICY_TYPE>> &) {} // visit
 
   /*--------------------------------------------------------------------------*
     Structured Mesh Topology
@@ -201,8 +196,8 @@ struct task_prologue_t {
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
   void visit(
     structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::structured_mesh<POLICY_TYPE>> &
-      ref) {} // visit
+    const data::field_reference<T, topology::structured_mesh<POLICY_TYPE>> &) {
+  } // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
@@ -225,8 +220,6 @@ private:
     (visit(static_cast<std::decay_t<PP> *>(nullptr), aa), ...);
   }
 
-  Legion::Runtime * runtime_;
-  Legion::Context & context_;
   size_t domain_;
 
   std::vector<Legion::RegionRequirement> region_reqs_;

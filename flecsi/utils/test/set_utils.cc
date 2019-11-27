@@ -27,7 +27,7 @@ print_set(const char * const prefix, const std::set<T> & set) {
 }
 
 int
-set_utils(int argc, char ** argv) {
+set_utils(int, char **) {
 
   FTEST();
 

@@ -499,8 +499,7 @@ struct unserialize_domains_<STORAGE_TYPE,
   NUM_DIMS,
   NUM_DOMAINS> {
 
-  static void
-  unserialize(mesh_base<STORAGE_TYPE> & mesh, char * buf, uint64_t & pos) {}
+  static void unserialize(mesh_base<STORAGE_TYPE> &, char *, uint64_t &) {}
 };
 
 } // namespace topology

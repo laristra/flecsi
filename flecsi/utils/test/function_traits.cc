@@ -19,7 +19,7 @@ test_function(double, int, long) {
 }
 
 int
-function_traits(int argc, char ** argv) {
+function_traits(int, char **) {
 
   FTEST();
 

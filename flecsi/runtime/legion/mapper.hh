@@ -111,10 +111,10 @@ public:
 
   Legion::LayoutConstraintID default_policy_select_layout_constraints(
     Legion::Mapping::MapperContext ctx,
-    Realm::Memory target_memory,
-    const Legion::RegionRequirement & req,
-    Legion::Mapping::DefaultMapper::MappingKind mapping_kind,
-    bool needs_field_constraint_check,
+    Realm::Memory,
+    const Legion::RegionRequirement &,
+    Legion::Mapping::DefaultMapper::MappingKind,
+    bool /* constraint */,
     bool & force_new_instances) {
     // We always set force_new_instances to false since we are
     // deciding to optimize for minimizing memory usage instead
@@ -240,8 +240,6 @@ public:
     const Legion::Task & task,
     const Legion::Mapping::Mapper::SliceTaskInput & input,
     Legion::Mapping::Mapper::SliceTaskOutput & output) {
-    using legion_proc = Legion::Processor;
-    context_t & context_ = context_t::instance();
 
     if(task.tag == FLECSI_MAPPER_SUBRANK_LAUNCH) {
       // expect a 1-D index domain

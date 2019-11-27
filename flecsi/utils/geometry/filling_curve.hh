@@ -69,7 +69,6 @@ public:
   //! Biggest value possible at max_depth considering the root
   static constexpr DERIVED max() {
     int_t id = ~static_cast<int_t>(0);
-    int_t remove = int_t(1) << max_depth_ * dimension;
     for(size_t i = max_depth_ * dimension + 1; i < bits_; ++i) {
       id ^= int_t(1) << i;
     } // for
@@ -173,7 +172,7 @@ public:
     return value_;
   }
   //! Convert this key to coordinates in range.
-  virtual void coordinates(point_t & p) {}
+  virtual void coordinates(point_t &) {}
 
   // Operators
   filling_curve & operator=(const filling_curve & bid) {
@@ -256,7 +255,7 @@ public:
     assert(depth <= max_depth_);
     std::array<int_t, dimension> coords;
     // Convert the position to integer
-    for(int i = 0; i < dimension; ++i) {
+    for(std::size_t i = 0; i < dimension; ++i) {
       coords[i] = (p[i] - min_) / scale_ * max_value_;
     }
     // Handle 1D case
@@ -289,7 +288,7 @@ public:
 
   static void set_range(const range_t & range) {
     range_ = range;
-    for(int i = 0; i < dimension; ++i) {
+    for(std::size_t i = 0; i < dimension; ++i) {
       min_ = range_[0][i];
       scale_ = range_[1][i] - min_;
     }
@@ -299,7 +298,6 @@ public:
   void coordinates(point_t & p) {
     int_t key = value_;
     std::array<int_t, dimension> coords = {};
-    int i = 0;
     for(int_t mask = int_t(1); mask <= max_value_; mask <<= 1) {
       std::array<bool, dimension> r = {};
       if constexpr(dimension == 3) {
@@ -323,7 +321,7 @@ public:
     }
 
     assert(key == int_t(1));
-    for(int j = 0; j < dimension; ++j) {
+    for(std::size_t j = 0; j < dimension; ++j) {
       p[j] = min_ + scale_ * static_cast<double>(coords[j]) / max_value_ / 2;
     } // for
   }
@@ -482,7 +480,7 @@ public:
 
   static void set_range(const range_t & range) {
     range_ = range;
-    for(int i = 0; i < dimension; ++i) {
+    for(std::size_t i = 0; i < dimension; ++i) {
       min_ = range_[0][i];
       scale_ = range_[1][i] - min_;
     }

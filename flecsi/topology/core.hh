@@ -35,19 +35,19 @@ struct index_t;
 
 struct ntree_base;
 template<typename>
-class ntree;
+struct ntree;
 
 struct set_base_t;
 template<typename>
-class set;
+struct set;
 
 struct structured_mesh_base_t;
 template<typename>
-class structured_mesh;
+struct structured_mesh;
 
 struct unstructured_mesh_base_t;
 template<typename>
-class unstructured_mesh;
+struct unstructured_mesh;
 
 namespace detail {
 

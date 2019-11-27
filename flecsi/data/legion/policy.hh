@@ -106,6 +106,7 @@ inline topology_data<topology::index_t>::topology_data(
 inline topology_data<topology::unstructured_mesh_base_t>::topology_data(
   const type::coloring & coloring) {
 
+#if 0
   auto legion_runtime = Legion::Runtime::get_runtime();
   auto legion_context = Legion::Runtime::get_context();
   auto & flecsi_context = runtime::context_t::instance();
@@ -113,7 +114,6 @@ inline topology_data<topology::unstructured_mesh_base_t>::topology_data(
   auto & dense_field_info_store = flecsi_context.get_field_info_store(
     topology::id<type>(), storage_label_t::dense);
 
-#if 0
     for(size_t is{0}; is<coloring.index_spaces; ++is) {
 
       for(auto const & fi : field_info_store) {
@@ -130,6 +130,8 @@ inline topology_data<topology::unstructured_mesh_base_t>::topology_data(
     auto & sparse_field_info_store = flecsi_context.get_field_info_store(
       /* type */, storage_label_t::sparse);
 
+#else
+  (void)coloring;
 #endif
 }
 

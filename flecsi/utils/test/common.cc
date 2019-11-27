@@ -32,7 +32,7 @@ MyFun(double, int, long) {
 }
 
 int
-common(int argc, char ** argv) {
+common(int, char **) {
 
   FTEST();
 

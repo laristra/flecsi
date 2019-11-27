@@ -86,7 +86,7 @@ struct mesh_storage {
     size_t dim,
     mesh_entity_base_ * entities,
     utils::id_t * ids,
-    size_t size,
+    size_t,
     size_t num_entities,
     size_t num_exclusive,
     size_t num_shared,
@@ -144,12 +144,12 @@ struct mesh_storage {
     }
   } // init_entities
 
-  void init_index_subspace(size_t index_space,
+  void init_index_subspace(size_t,
     size_t index_subspace,
     size_t domain,
     size_t dim,
     utils::id_t * ids,
-    size_t num_entities,
+    size_t,
     bool read) {
 
     auto & context_ = runtime::context_t::instance();

@@ -26,7 +26,7 @@ using namespace flecsi::utils;
 //----------------------------------------------------------------------------//
 
 int
-sanity(int argc, char ** argv) {
+sanity(int, char **) {
 
   FTEST();
 
@@ -52,12 +52,12 @@ sanity(int argc, char ** argv) {
     ASSERT_EQ(v[4], 4.0);
 
     const auto m = serial_get<std::map<size_t, size_t>>(p);
-    ASSERT_EQ(m.at(0), 1);
-    ASSERT_EQ(m.at(1), 0);
+    ASSERT_EQ(m.at(0), 1u);
+    ASSERT_EQ(m.at(1), 0u);
 
     const auto um = serial_get<std::unordered_map<size_t, size_t>>(p);
-    ASSERT_EQ(um.at(2), 1);
-    ASSERT_EQ(um.at(3), 2);
+    ASSERT_EQ(um.at(2), 1u);
+    ASSERT_EQ(um.at(3), 2u);
 
     const auto s = serial_get<std::set<size_t>>(p);
     ASSERT_NE(s.find(0), s.end());
@@ -89,7 +89,7 @@ private:
 }; // struct type_t
 
 int
-user_type(int argc, char ** argv) {
+user_type(int, char **) {
 
   FTEST();
 
@@ -108,11 +108,11 @@ user_type(int argc, char ** argv) {
   {
     const auto * p = data.data();
 
-    ASSERT_EQ(serial_get<type_t>(p).id(), 0);
-    ASSERT_EQ(serial_get<type_t>(p).id(), 1);
-    ASSERT_EQ(serial_get<type_t>(p).id(), 2);
-    ASSERT_EQ(serial_get<type_t>(p).id(), 3);
-    ASSERT_EQ(serial_get<type_t>(p).id(), 4);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 0u);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 1u);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 2u);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 3u);
+    ASSERT_EQ(serial_get<type_t>(p).id(), 4u);
   } // scope
 
   return 0;
@@ -176,7 +176,7 @@ struct flecsi::utils::serial_convert<simple_context_t> {
 };
 
 int
-simple_context(int argc, char ** argv) {
+simple_context(int, char **) {
 
   FTEST();
 
@@ -241,11 +241,11 @@ simple_context(int argc, char ** argv) {
     ASSERT_EQ(map[key].id, value);                                             \
   }
 
-    check_entry(m0, 0, 10);
-    check_entry(m0, 1, 11);
-    check_entry(m0, 2, 12);
-    check_entry(m0, 3, 13);
-    check_entry(m0, 4, 14);
+    check_entry(m0, 0, 10u);
+    check_entry(m0, 1, 11u);
+    check_entry(m0, 2, 12u);
+    check_entry(m0, 3, 13u);
+    check_entry(m0, 4, 14u);
 
     {
       auto mita = element_map.find(1);
@@ -254,11 +254,11 @@ simple_context(int argc, char ** argv) {
 
     auto m1 = element_map[1];
 
-    check_entry(m1, 0, 20);
-    check_entry(m1, 1, 21);
-    check_entry(m1, 2, 22);
-    check_entry(m1, 3, 23);
-    check_entry(m1, 4, 24);
+    check_entry(m1, 0, 20u);
+    check_entry(m1, 1, 21u);
+    check_entry(m1, 2, 22u);
+    check_entry(m1, 3, 23u);
+    check_entry(m1, 4, 24u);
 
 #undef check_entry
 
@@ -274,7 +274,7 @@ ftest_register_driver(simple_context);
 //----------------------------------------------------------------------------//
 
 int
-flecsi_context(int argc, char ** argv) {
+flecsi_context(int, char **) {
   return 0;
 } // simple_context
 

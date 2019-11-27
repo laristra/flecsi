@@ -24,7 +24,7 @@
    Test various aspects of flecsi::utils::iterator
  */
 int
-iterator(int argc, char ** argv) {
+iterator(int, char **) {
 
   FTEST();
 

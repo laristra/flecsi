@@ -24,7 +24,7 @@ if(ENABLE_LEGION)
 
   set(CMAKE_PREFIX_PATH  ${CMAKE_PREFIX_PATH} ${LEGION_INSTALL_DIRS})
 
-  include_directories(${Legion_INCLUDE_DIRS})
+  include_directories(SYSTEM ${Legion_INCLUDE_DIRS})
 
   add_definitions(-DLEGION_USE_CMAKE)
   add_definitions(-DREALM_USE_CMAKE)

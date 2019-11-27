@@ -59,9 +59,9 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
   bind_accessors_t(Legion::Runtime * legion_runtime,
     Legion::Context & legion_context,
     std::vector<Legion::PhysicalRegion> const & regions,
-    std::vector<Legion::Future> const & futures)
+    std::vector<Legion::Future> const &)
     : legion_runtime_(legion_runtime), legion_context_(legion_context),
-      regions_(regions), futures_(futures) {}
+      regions_(regions) {}
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on storage class and topology
@@ -130,8 +130,10 @@ private:
   Legion::Context & legion_context_;
   size_t region = 0;
   const std::vector<Legion::PhysicalRegion> & regions_;
+#if 0 // these will be used to bind flecsi_future objects
   size_t future = 0;
   const std::vector<Legion::Future> & futures_;
+#endif
 
 }; // struct bind_accessors_t
 

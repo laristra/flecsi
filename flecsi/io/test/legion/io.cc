@@ -18,10 +18,10 @@
 #include <flecsi/io.hh>
 #include <flecsi/utils/ftest.hh>
 
-#include <assert.h>
 #include <legion.h>
 #include <mpi.h>
 
+#include <cstdlib>
 #include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
@@ -43,7 +43,7 @@ enum FieldIDs {
 };
 
 int
-io_sanity(int argc, char ** argv) {
+io_sanity(int, char **) {
 
   int num_elements = 1023;
   int num_files = 16;
@@ -199,10 +199,10 @@ io_sanity(int argc, char ** argv) {
     const FieldAccessor<READ_WRITE, double, 1> acc_x(input_region, FID_X);
     const FieldAccessor<READ_WRITE, double, 1> acc_y(input_region, FID_Y);
     for(PointInRectIterator<1> pir(elem_rect_1); pir(); pir++) {
-      double x = acc_x[*pir];
-      double y = acc_y[*pir];
-      assert(x == 0.29 + ct);
-      assert(y == 0.29 + ct);
+      if(acc_x[*pir] != 0.29 + ct)
+        std::abort();
+      if(acc_y[*pir] != 0.29 + ct)
+        std::abort();
       ct++;
     }
     runtime->unmap_region(ctx, input_region);
@@ -220,10 +220,8 @@ io_sanity(int argc, char ** argv) {
     const FieldAccessor<READ_WRITE,double,1> acc_x(input_region, FID_X);
     const FieldAccessor<READ_WRITE,double,1> acc_y(input_region, FID_Y);
     for (PointInRectIterator<1> pir(elem_rect_2); pir(); pir++) {
-      double x = acc_x[*pir];
-      double y = acc_y[*pir];
-      assert(x == 0.29 + ct);
-      assert(y == 0.29 + ct);
+      if(acc_x[*pir] != 0.29 + ct) std::abort();
+      if(acc_y[*pir] != 0.29 + ct) std::abort();
       ct ++;
     }
     runtime->unmap_region(ctx, input_region);

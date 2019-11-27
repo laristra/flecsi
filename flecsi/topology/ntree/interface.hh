@@ -87,8 +87,6 @@ public:
     assert(root_ != node_map_.end());
   }
 
-  ntree(const ntree & s) {}
-
   /**
    * @brief Set the range of the current domain.
    * This range is the same among all the processes and is used to compute the
@@ -255,7 +253,9 @@ public:
     // Work in parallel on the sub branches
     const int nwork = working_branches.size();
 
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
     for(int b = 0; b < nwork; ++b) {
       // Find the leave in order in these sub branches
       std::stack<node_t *> stk1;
@@ -293,7 +293,7 @@ public:
   /**
    * @brief Compute the COFM information for a dedicated branch
    */
-  void update_COM(node_t * b, bool local_only = false) {
+  void update_COM(node_t * b, bool /*local_only*/ = false) {
     // Starting branch
     element_t mass = 0;
     point_t bmax{}, bmin{};
@@ -304,11 +304,8 @@ public:
       bmax[d] = -DBL_MAX;
       bmin[d] = DBL_MAX;
     }
-    bool full_nonlocal = true, full_local = true;
     if(b->is_leaf()) {
       // For local branches, compute the radius
-      int start = -1;
-      int end = -1;
       for(auto child : *b) {
         auto ent = get(child);
         owner = ent.owner();

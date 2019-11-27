@@ -26,14 +26,11 @@ namespace detail {
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief A helper to identify if all types Ts are integral.
-//! \remark If they are not, this version is instantiated.
 ////////////////////////////////////////////////////////////////////////////////
 template<typename... Ts>
 class are_integral : public std::integral_constant<bool, true>
 {};
 
-/// \brief A helper to identify if all types Ts are integral.
-//! \remark If they are, this version is instantiated.
 template<typename T, typename... Ts>
 class are_integral<T, Ts...>
   : public std::integral_constant<bool,
@@ -75,7 +72,6 @@ template<std::size_t I = 0,
                               std::tuple_size<TupleA>::value >= 2>>
 bool
 less_than(const TupleA & a, const TupleB & b) {
-  constexpr auto N = std::tuple_size<TupleA>::value;
   if(std::get<I>(a) == std::get<I>(b))
     return less_than<I + 1>(a, b);
   else
@@ -112,8 +108,6 @@ template<std::size_t I = 0,
                               std::tuple_size<TupleA>::value >= 2>>
 bool
 equal_to(const TupleA & a, const TupleB & b) {
-  constexpr auto N = std::tuple_size<TupleA>::value;
-  auto test = (std::get<I>(a) < std::get<I>(b));
   if(std::get<I>(a) != std::get<I>(b))
     return false;
   else

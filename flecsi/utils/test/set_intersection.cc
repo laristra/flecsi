@@ -23,7 +23,7 @@ intersects(const CONTAINER & one, const CONTAINER & two) {
 }
 
 int
-set_intersection(int argc, char ** argv) {
+set_intersection(int, char **) {
 
   FTEST();
 

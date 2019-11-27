@@ -44,8 +44,7 @@ struct reduction_wrapper {
     Wrapper to convert the type-erased MPI function to the typed C++ method.
    */
 
-  static void
-  mpi_wrapper(void * in, void * inout, int * len, MPI_Datatype * dptr) {
+  static void mpi_wrapper(void * in, void * inout, int * len, MPI_Datatype *) {
 
     lhs_t * lhs = reinterpret_cast<lhs_t *>(inout);
     rhs_t * rhs = reinterpret_cast<rhs_t *>(in);

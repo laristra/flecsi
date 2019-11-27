@@ -38,8 +38,8 @@ using execution::legion::task_id;
  *----------------------------------------------------------------------------*/
 
 void
-top_level_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
+top_level_task(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
   Legion::Context ctx,
   Legion::Runtime * runtime) {
 
@@ -313,7 +313,7 @@ context_t::wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
 //----------------------------------------------------------------------------//
 
 void
-context_t::connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
+context_t::connect_with_mpi(Legion::Context &, Legion::Runtime *) {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
@@ -322,17 +322,6 @@ context_t::connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
     LegionRuntime::Arrays::Point<1>(size - 1));
 
   context_t::instance().set_all_processes(launch_bounds);
-
-  const std::map<int, Legion::AddressSpace> & forward_mapping =
-    runtime->find_forward_MPI_mapping();
-
-#if 0
-  for(std::map<int, Legion::AddressSpace>::const_iterator it =
-        forward_mapping.begin();
-      it != forward_mapping.end(); it++)
-    printf(
-      "MPI Rank %d maps to Legion Address Space %d\n", it->first, it->second);
-#endif
 } // context_t::connect_with_mpi
 
 } // namespace flecsi::runtime

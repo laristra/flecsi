@@ -16,7 +16,7 @@
 #include <flecsi/utils/hash.hh>
 
 int
-hash(int argc, char ** argv) {
+hash(int, char **) {
 
   FTEST();
 
@@ -342,7 +342,7 @@ hash(int argc, char ** argv) {
     } // if
   } // for
 
-  ASSERT_EQ(num_collisions, 0);
+  ASSERT_EQ(num_collisions, 0u);
 
   return 0;
 }

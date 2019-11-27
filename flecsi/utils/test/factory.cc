@@ -74,7 +74,7 @@ add_dd(double d1, double d2) {
 }
 
 int
-factory(int argc, char ** argv) {
+factory(int, char **) {
 
   FTEST();
 

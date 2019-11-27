@@ -23,6 +23,6 @@ if(ENABLE_GRAPHVIZ)
 
     message(STATUS "Found Graphviz: ${Graphviz_INCLUDE_DIRS}")
 
-    include_directories(${Graphviz_INCLUDE_DIRS})
+    include_directories(SYSTEM ${Graphviz_INCLUDE_DIRS})
     list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Graphviz_LIBRARIES})
 endif(ENABLE_GRAPHVIZ)

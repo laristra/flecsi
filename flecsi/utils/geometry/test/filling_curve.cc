@@ -29,7 +29,7 @@ using hc_2d = hilbert_curve<2, uint64_t>;
 using mc_2d = morton_curve<2, uint64_t>;
 
 int
-hilbert_sanity(int argc, char ** argv) {
+hilbert_sanity(int, char **) {
 
   FTEST();
   using namespace flecsi;
@@ -63,7 +63,7 @@ hilbert_sanity(int argc, char ** argv) {
 ftest_register_driver(hilbert_sanity);
 
 int
-hilbert_2d_rnd(int argc, char ** argv) {
+hilbert_2d_rnd(int, char **) {
   FTEST();
   using namespace flecsi;
   // Test the generation 2D
@@ -88,7 +88,7 @@ hilbert_2d_rnd(int argc, char ** argv) {
 ftest_register_driver(hilbert_2d_rnd);
 
 int
-hilbert_3d_rnd(int argc, char ** argv) {
+hilbert_3d_rnd(int, char **) {
   FTEST();
   using namespace flecsi;
   // Test the generation
@@ -133,7 +133,7 @@ hilbert_3d_rnd(int argc, char ** argv) {
 ftest_register_driver(hilbert_3d_rnd);
 
 int
-morton_sanity(int argc, char ** argv) {
+morton_sanity(int, char **) {
 
   FTEST();
 
@@ -166,7 +166,7 @@ morton_sanity(int argc, char ** argv) {
 ftest_register_driver(morton_sanity);
 
 int
-morton_2d_rnd(int argc, char ** argv) {
+morton_2d_rnd(int, char **) {
   FTEST();
   using namespace flecsi;
   // Test the generation 2d
@@ -204,7 +204,7 @@ morton_2d_rnd(int argc, char ** argv) {
 ftest_register_driver(morton_2d_rnd);
 
 int
-morton_3d_rnd(int argc, char ** argv) {
+morton_3d_rnd(int, char **) {
   FTEST();
   using namespace flecsi;
   range_t range;

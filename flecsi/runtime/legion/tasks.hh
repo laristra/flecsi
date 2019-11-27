@@ -35,10 +35,10 @@ namespace flecsi::runtime {
  */
 
 inline void
-handoff_to_mpi_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime) {
+handoff_to_mpi_task(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
+  Legion::Context,
+  Legion::Runtime *) {
   context_t::instance().handoff_to_mpi();
 } // handoff_to_mpi_task
 
@@ -50,10 +50,10 @@ handoff_to_mpi_task(const Legion::Task * task,
  */
 
 inline void
-wait_on_mpi_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime) {
+wait_on_mpi_task(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
+  Legion::Context,
+  Legion::Runtime *) {
   context_t::instance().wait_on_mpi();
 } // handoff_to_mpi_task
 
@@ -66,18 +66,18 @@ wait_on_mpi_task(const Legion::Task * task,
 #include <flecsi/utils/flog/state.hh>
 
 inline size_t
-flog_reduction_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime) {
+flog_reduction_task(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
+  Legion::Context,
+  Legion::Runtime *) {
   return utils::flog::flog_t::instance().packets().size();
 } // flog_reduction_task
 
 inline void
-flog_mpi_task(const Legion::Task * task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx,
-  Legion::Runtime * runtime) {
+flog_mpi_task(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
+  Legion::Context,
+  Legion::Runtime *) {
 
   std::function<void()> bound_mpi_task = utils::flog::send_to_one;
 
