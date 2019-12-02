@@ -42,7 +42,7 @@ class Flecsi(CMakePackage):
     depends_on('cmake@3.12:', type='build')
     depends_on('mpi', when='runtime=mpi')
     depends_on('mpi', when='runtime=legion')
-    depends_on('hpx', when='runtime=hpx')
+    depends_on('hpx@master cxxstd=14', when='runtime=hpx')
     depends_on('legion@ctrl-rep-2 +shared +mpi +hdf5', when='runtime=legion +hdf5')
     depends_on('legion@ctrl-rep-2 +shared +mpi', when='runtime=legion ~hdf5')
     depends_on('boost@1.59.0: cxxstd=11 +program_options')
