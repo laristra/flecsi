@@ -222,6 +222,21 @@ struct context_u : public CONTEXT_POLICY {
     return true;
   } // register_function
 
+
+#if defined(ENABLE_CALIPER)
+  template<size_t KEY,
+           typename RETURN,
+           typename ARG_TUPLE,
+           RETURN (*FUNCTION)(ARG_TUPLE)>
+  bool register_function(std::string name) {
+    auto ret = register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
+    if (ret) {
+      function_name_registry_[KEY] = name;
+    }
+    return ret;
+  } // register_function
+#endif
+
   /*!
     FIXME: Add description.
    */
@@ -229,6 +244,12 @@ struct context_u : public CONTEXT_POLICY {
   void * function(size_t key) {
     return function_registry_[key];
   } // function
+
+#if defined(ENABLE_CALIPER)
+  std::string function_name(size_t key) {
+    return function_name_registry_[key];
+  } // function_name
+#endif
 
   //--------------------------------------------------------------------------//
   // Serdez interface.
@@ -893,6 +914,9 @@ private:
   //--------------------------------------------------------------------------//
 
   std::unordered_map<size_t, void *> function_registry_;
+#if defined(ENABLE_CALIPER)
+  std::unordered_map<size_t, std::string> function_name_registry_;
+#endif
 
   //--------------------------------------------------------------------------//
   // Field info vector for registered fields in TLT
