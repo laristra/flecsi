@@ -217,9 +217,9 @@ struct task_wrapper_u {
 #if defined(ENABLE_CALIPER)
     cali::Annotation tw("FleCSI-Execution");
     std::string tname = task->get_task_name();
-    std::string tname1 = "execute_user_task init-handles "+tname;
+    std::string tname1 = "execute_task->init-handles->"+tname;
     tw.begin(tname1.c_str());
-#endif 
+#endif
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
@@ -228,53 +228,53 @@ struct task_wrapper_u {
 
 #if defined(ENABLE_CALIPER)
     tw.end();
-#endif 
- 
+#endif
+
     context_t & context_ = context_t::instance();
     context_.set_color(task->index_point.point_data[0]);
 
     if constexpr(std::is_same_v<RETURN, void>) {
 
 #if defined(ENABLE_CALIPER)
-    tname1 = "execute_user_task delegate "+tname;
-    tw.begin(tname1.c_str());
+      tname1 = "execute_task->user_task->"+tname;
+      tw.begin(tname1.c_str());
 #endif
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
 #if defined(ENABLE_CALIPER)
-    tw.end();
-    tname1 = "execute_user_task finalize-handles "+tname;
-    tw.begin(tname1.c_str());
+      tw.end();
+      tname1 = "execute_task->finalize-handles->"+tname;
+      tw.begin(tname1.c_str());
 #endif
 
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
 
 #if defined(ENABLE_CALIPER)
-    tw.end();
+      tw.end();
 #endif
 
     }
     else {
 
 #if defined(ENABLE_CALIPER)
-    tname1 = "execute_user_task delegate "+tname;
-    tw.begin(tname1.c_str());
+      tname1 = "execute_task->user_task->"+tname;
+      tw.begin(tname1.c_str());
 #endif
 
       RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
 #if defined(ENABLE_CALIPER)
-    tw.end();
-    tname1 = "execute_user_task finalize-handles "+tname;
-    tw.begin(tname1.c_str());
+      tw.end();
+      tname1 = "execute_task->finalize-handles->"+tname;
+      tw.begin(tname1.c_str());
 #endif
 
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
 
 #if defined(ENABLE_CALIPER)
-    tw.end();
+      tw.end();
 #endif
 
       return result;

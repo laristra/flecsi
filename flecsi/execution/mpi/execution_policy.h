@@ -166,7 +166,8 @@ struct mpi_execution_policy_t {
 
 #if defined(ENABLE_CALIPER)
     cali::Annotation ep("FleCSI-Execution");
-    std::string atag = "execute_user_task->" + context_.function_name(TASK);
+    auto tname = context_.function_name(TASK);
+    std::string atag = "execute_task->user->" + tname;
     ep.begin(atag.c_str());
 #endif
     auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
@@ -177,8 +178,16 @@ struct mpi_execution_policy_t {
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
 
+#if defined(ENABLE_CALIPER)
+    atag = "execute_task->finalize-handles->" + tname;
+    ep.begin(atag.c_str());
+#endif
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);
+#if defined(ENABLE_CALIPER)
+    ep.end();
+#endif
+
 
     constexpr size_t ZERO =
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
