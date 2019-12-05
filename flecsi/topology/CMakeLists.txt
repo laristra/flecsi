@@ -20,11 +20,11 @@
 set(topology_HEADERS
   base.hh
   array_buffer.hh
+  canonical/canonical.hh
   connectivity.hh
   entity_storage.hh
   index_space.hh
   utility_types.hh
-  internal/canonical.hh
   internal/global.hh
   internal/index.hh
   ntree/interface.hh
@@ -42,7 +42,7 @@ set(topology_HEADERS
 )
 
 set(topology_SOURCES
-  internal/canonical.cc
+  canonical/canonical.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")

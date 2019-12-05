@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/topology/internal/canonical.hh>
+#include <flecsi/topology/canonical/canonical.hh>
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 #include <flecsi/topology/ntree/types.hh>
