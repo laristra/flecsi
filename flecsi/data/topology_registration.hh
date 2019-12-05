@@ -485,9 +485,9 @@ struct topology_registration<topology::canonical<POLICY_TYPE>> {
  */
 
 template<>
-struct topology_registration<topology::global_t> {
+struct topology_registration<topology::global> {
 
-  using TOPOLOGY_TYPE = topology::global_t;
+  using TOPOLOGY_TYPE = topology::global;
 
   static bool register_fields() {
     return true;

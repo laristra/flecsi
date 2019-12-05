@@ -29,7 +29,7 @@ namespace flecsi {
   Default global topology instance.
  */
 
-inline data::topology_slot<topology::global_t> global_topology;
+inline data::topology_slot<topology::global> global_topology;
 
 /*
   Convenience type for global field members.
@@ -37,7 +37,7 @@ inline data::topology_slot<topology::global_t> global_topology;
 
 template<typename DATA_TYPE>
 using global_field_member = data::
-  field_member<DATA_TYPE, data::storage_label_t::dense, topology::global_t, 0>;
+  field_member<DATA_TYPE, data::storage_label_t::dense, topology::global, 0>;
 
 /*
   Per-process coloring.

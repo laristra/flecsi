@@ -107,10 +107,10 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-               topology::global_t,
+               topology::global,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, topology::global_t> & ref) {
+    const data::field_reference<DATA_TYPE, topology::global> & ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,

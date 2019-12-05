@@ -97,8 +97,8 @@ protected:
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::global_t> : legion::topology_base {
-  using type = topology::global_t;
+struct topology_data<topology::global> : legion::topology_base {
+  using type = topology::global;
   topology_data(const type::coloring &)
     : topology_base(Legion::Domain::from_rect<1>(
         LegionRuntime::Arrays::Rect<1>(LegionRuntime::Arrays::Point<1>(0),
@@ -115,7 +115,7 @@ struct topology_data<topology::global_t> : legion::topology_base {
 
     auto & field_info_store =
       runtime::context_t::instance().get_field_info_store(
-        topology::id<topology::global_t>(), storage_label_t::dense);
+        topology::id<topology::global>(), storage_label_t::dense);
 
     for(auto const & fi : field_info_store) {
       allocator.allocate_field(fi->type_size, fi->fid);
