@@ -21,7 +21,7 @@
 #include <flecsi/runtime/backend.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/core.hh>
-#include <flecsi/topology/unstructured_mesh/types.hh>
+#include <flecsi/topology/unstructured/types.hh>
 #include <flecsi/utils/flog.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
