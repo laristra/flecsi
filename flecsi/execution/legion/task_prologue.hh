@@ -27,8 +27,8 @@
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/set/interface.hh>
-#include <flecsi/topology/structured_mesh/interface.hh>
-//#include <flecsi/topology/unstructured_mesh/interface.hh>
+#include <flecsi/topology/structured/interface.hh>
+//#include <flecsi/topology/unstructured/interface.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
 

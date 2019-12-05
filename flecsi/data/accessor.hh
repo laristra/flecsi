@@ -24,7 +24,7 @@
 #endif
 
 #include <flecsi/data/field.hh>
-#include <flecsi/topology/structured_mesh/interface.hh>
+#include <flecsi/topology/structured/interface.hh>
 #include <flecsi/topology/unstructured/interface.hh>
 
 namespace flecsi {

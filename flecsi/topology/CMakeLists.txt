@@ -31,8 +31,8 @@ set(topology_HEADERS
   ntree/types.hh
   set/interface.hh
   set/types.hh
-  structured_mesh/interface.hh
-  structured_mesh/types.hh
+  structured/interface.hh
+  structured/types.hh
   unstructured/coloring.hh
   unstructured/interface.hh
   unstructured/partition.hh
