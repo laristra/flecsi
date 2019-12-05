@@ -11,21 +11,27 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#pragma once
 
 /*! @file */
 
-#if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
+#include <flecsi/execution.hh>
+#include <flecsi/topology/canonical/types.hh>
+
+#if !defined(FLECSI_ENABLE_MPI)
+#error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
-#include <flecsi/topology/canonical/interface.hh>
-#include <flecsi/topology/internal/global.hh>
-#include <flecsi/topology/internal/index.hh>
-#include <flecsi/topology/ntree/types.hh>
-#include <flecsi/topology/set/types.hh>
-#include <flecsi/topology/structured/types.hh>
-#include <flecsi/topology/unstructured/types.hh>
+#include <mpi.h>
 
-// FIXME: These files should be included directly where they are needed
-// once the structure is complete.
+namespace flecsi {
+namespace topology {
+
+canonical_base::coloring::coloring(std::string const & filename) {
+
+  std::cout << "process " << process() << " of " << processes() << " with "
+            << threads_per_process() << " (tpp) and input " << filename
+            << std::endl;
+}
+
+} // namespace topology
+} // namespace flecsi
