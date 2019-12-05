@@ -105,7 +105,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-    data::accessor<data::dense, topology::index_t, DATA_TYPE, PRIVILEGES> &
+    data::accessor<data::dense, topology::index, DATA_TYPE, PRIVILEGES> &
       accessor) {
     dense(accessor);
   }

@@ -67,7 +67,7 @@ struct unbind_accessors_t
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-    data::accessor<data::dense, topology::index_t, DATA_TYPE, PRIVILEGES> &) {
+    data::accessor<data::dense, topology::index, DATA_TYPE, PRIVILEGES> &) {
   } // visit
 
   /*--------------------------------------------------------------------------*

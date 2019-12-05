@@ -504,9 +504,9 @@ struct topology_registration<topology::global_t> {
  */
 
 template<>
-struct topology_registration<topology::index_t> {
+struct topology_registration<topology::index> {
 
-  using TOPOLOGY_TYPE = topology::index_t;
+  using TOPOLOGY_TYPE = topology::index;
 
   static bool register_fields() {
     return true;

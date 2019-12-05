@@ -137,10 +137,10 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-               topology::index_t,
+               topology::index,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, topology::index_t> & ref) {
+    const data::field_reference<DATA_TYPE, topology::index> & ref) {
     auto & instance_data = ref.topology().get();
 
     flog_assert(instance_data.colors == domain_,

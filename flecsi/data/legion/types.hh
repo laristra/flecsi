@@ -130,8 +130,8 @@ struct topology_data<topology::global_t> : legion::topology_base {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::index_t> : legion::topology_base {
-  using type = topology::index_t;
+struct topology_data<topology::index> : legion::topology_base {
+  using type = topology::index;
   topology_data(const type::coloring &);
   size_t colors;
   Legion::LogicalPartition color_partition;
