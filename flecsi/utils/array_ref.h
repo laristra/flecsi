@@ -356,5 +356,153 @@ private:
   iterator e; // past the last existing element
 };
 
+/// A very simple emulation of std::ranges::transform_view from C++20.
+template<class I, class F>
+struct transform_view {
+  struct iterator {
+  private:
+    using traits = std::iterator_traits<I>;
+
+  public:
+    using difference_type = typename traits::difference_type;
+    // TODO: notice a reference return from F and upgrade iterator_category
+    using reference = decltype(
+      std::declval<const F &>()(std::declval<typename traits::reference>()));
+    using value_type = std::decay_t<reference>;
+    using pointer = void;
+    // We provide all the operators, but we don't assume a real reference:
+    using iterator_category = std::input_iterator_tag;
+
+    constexpr iterator() noexcept
+      : iterator({}, nullptr) {} // null F won't be used
+    constexpr iterator(I p, const F * f) noexcept : p(p), f(f) {}
+
+    constexpr iterator & operator++() {
+      ++p;
+      return *this;
+    }
+    constexpr iterator operator++(int) {
+      const iterator ret = *this;
+      ++*this;
+      return ret;
+    }
+    constexpr iterator & operator--() {
+      --p;
+      return *this;
+    }
+    constexpr iterator operator--(int) {
+      const iterator ret = *this;
+      --*this;
+      return ret;
+    }
+    constexpr iterator & operator+=(difference_type n) {
+      p += n;
+      return *this;
+    }
+    friend constexpr iterator operator+(difference_type n, iterator i) {
+      i += n;
+      return i;
+    }
+    constexpr iterator operator+(difference_type n) const {
+      return n + *this;
+    }
+    constexpr iterator & operator-=(difference_type n) {
+      p -= n;
+      return *this;
+    }
+    constexpr iterator operator-(difference_type n) const {
+      iterator ret = *this;
+      ret -= n;
+      return ret;
+    }
+    constexpr difference_type operator-(const iterator & i) const {
+      return p - i.p;
+    }
+
+    constexpr bool operator==(const iterator & i) const noexcept {
+      return p == i.p;
+    }
+    constexpr bool operator!=(const iterator & i) const noexcept {
+      return !(*this == i);
+    }
+    constexpr bool operator<(const iterator & i) const noexcept {
+      return p < i.p;
+    }
+    constexpr bool operator>(const iterator & i) const noexcept {
+      return i < *this;
+    }
+    constexpr bool operator<=(const iterator & i) const noexcept {
+      return !(*this > i);
+    }
+    constexpr bool operator>=(const iterator & i) const noexcept {
+      return !(*this < i);
+    }
+
+    constexpr reference operator*() const {
+      return (*f)(*p);
+    }
+    // operator-> makes sense only for a true 'reference'
+    constexpr reference operator[](difference_type n) const {
+      return *(*this + n);
+    }
+
+  private:
+    I p;
+    const F * f;
+  };
+
+  /// Wrap an iterator pair.
+  constexpr transform_view(I b, I e, F f = {})
+    : b(std::move(b)), e(std::move(e)), f(std::move(f)) {}
+  /// Wrap a container.
+  /// \warning Destroying \a C invalidates this object if it owns its
+  ///   iterators or elements.  This implementation does not copy \a C if it
+  ///   is a view.
+  template<class C,
+    class = std::enable_if_t<
+      std::is_convertible_v<decltype(std::begin(std::declval<C &>())), I>>>
+  constexpr transform_view(C && c, F f = {})
+    : transform_view(std::begin(c), std::end(c), std::move(f)) {}
+
+  constexpr iterator begin() const noexcept {
+    return {b, &f};
+  }
+  constexpr iterator end() const noexcept {
+    return {e, &f};
+  }
+
+  constexpr bool empty() const {
+    return b == e;
+  }
+  constexpr explicit operator bool() const {
+    return !empty();
+  }
+
+  constexpr auto size() const {
+    return std::distance(b, e);
+  }
+
+  constexpr decltype(auto) front() const {
+    return *begin();
+  }
+  constexpr decltype(auto) back() const {
+    return *--end();
+  }
+  constexpr decltype(auto) operator[](
+    typename std::iterator_traits<I>::difference_type i) const {
+    return begin()[i];
+  }
+
+private:
+  I b, e;
+  F f;
+};
+
+template<class C, class F>
+transform_view(C &&, F)
+  ->transform_view<typename std::remove_reference_t<C>::iterator, F>;
+template<class C, class F>
+transform_view(const C &, F)->transform_view<typename C::const_iterator, F>;
+
 } // namespace utils
 } // namespace flecsi

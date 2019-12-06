@@ -289,6 +289,10 @@ TEST(array_ref, all) {
   EXPECT_EQ(vr[2], 0.25);
   EXPECT_EQ(vr.at(3), 2);
   vr.clear();
+
+  flecsi::utils::transform_view tv(b, [](auto & x) { return &x; });
+  EXPECT_EQ(*tv.begin(), &b.front());
+  EXPECT_EQ(tv.end()[-1], &b.back());
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*
