@@ -261,6 +261,34 @@ TEST(array_ref, all) {
   EXPECT_TRUE(CINCH_EQUAL_BLESSED("array_ref.blessed"));
 #endif
 
+  flecsi::utils::vector_ref vr{span(plain_array)};
+  EXPECT_TRUE(vr.empty());
+  EXPECT_EQ(vr.data(), plain_array);
+  EXPECT_EQ(vr.begin(), vr.end());
+  EXPECT_EQ(vr.capacity(), length);
+  vr.push_back(-1);
+  ASSERT_FALSE(vr.empty());
+  EXPECT_EQ(vr.size(), 1);
+  EXPECT_EQ(vr.back(), -1);
+  vr.assign(3, 2);
+  EXPECT_EQ(vr.size(), 3);
+  EXPECT_EQ(vr.front(), 2);
+  vr.back() = 0.5;
+  EXPECT_EQ(*vr.rbegin(), 0.5);
+  vr.pop_back();
+  EXPECT_EQ(vr.size(), vr.back());
+  vr.resize(3);
+  EXPECT_EQ(vr.back(), 0);
+  vr.insert(vr.begin(), 9);
+  EXPECT_EQ(vr.size(), 4);
+  EXPECT_EQ(vr.front(), 9);
+  EXPECT_EQ(vr.back(), 0);
+  vr.resize(2);
+  vr.insert(vr.begin() + 1, 2, 0.25); // inserting more than is moving
+  ASSERT_EQ(vr.size(), 4);
+  EXPECT_EQ(vr[2], 0.25);
+  EXPECT_EQ(vr.at(3), 2);
+  vr.clear();
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*

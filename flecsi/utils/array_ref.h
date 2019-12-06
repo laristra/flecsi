@@ -15,8 +15,11 @@
 
 /*! @file */
 
+#include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <memory>
+#include <stdexcept>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -135,6 +138,223 @@ to_vector(span<T> s) {
   // Work around GCC<8 having no deduction guide for vector:
   return std::vector<typename span<T>::value_type>(s.begin(), s.end());
 }
+
+/// A non-owning minimal std::vector interface backed by a fixed-size array.
+/// \warning The destructor does not destroy any elements; call \c clear first
+///   or call \c size to discover how many to destroy later.
+template<class T>
+struct vector_ref {
+private:
+  using span = utils::span<T>;
+
+public:
+  using value_type = typename span::value_type;
+  using size_type = typename span::size_type;
+  using difference_type = typename span::difference_type;
+  using reference = typename span::reference;
+  using const_reference = typename span::const_reference;
+  using pointer = typename span::pointer;
+  using const_pointer = typename span::const_pointer;
+  using iterator = typename span::iterator;
+  using const_iterator = typename span::const_iterator;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+  /// Wrap an array.  Elements past the size are taken to be out of lifetime.
+  /// \param s underlying array
+  /// \param sz number of existing elements
+  constexpr vector_ref(span s = {}, size_type sz = 0)
+    : s(s), e(s.begin() + sz) {}
+
+  constexpr void assign(size_type n, const value_type & v) {
+    reserve(n);
+    clear();
+    while(n--)
+      append(v);
+  }
+  template<class I, class = std::enable_if_t<!std::is_integral_v<I>>>
+  constexpr void assign(I a, I b) {
+    clear();
+    for(; a != b; ++a)
+      append(*a);
+  }
+
+  constexpr reference at(size_type i) const {
+    if(i >= size())
+      throw std::out_of_range("vector_ref::at");
+    return (*this)[i];
+  }
+  constexpr reference operator[](size_type i) const {
+    return s[i];
+  }
+  constexpr reference front() const {
+    return *begin();
+  }
+  constexpr reference back() const {
+    return end()[-1]; // not s.back()!
+  }
+
+  constexpr pointer data() const noexcept {
+    return s.data();
+  }
+
+  constexpr iterator begin() const noexcept {
+    return s.begin();
+  }
+  constexpr const_iterator cbegin() const noexcept {
+    return begin();
+  }
+  constexpr iterator end() const noexcept {
+    return e;
+  }
+  constexpr const_iterator cend() const noexcept {
+    return end();
+  }
+
+  constexpr reverse_iterator rbegin() const noexcept {
+    return reverse_iterator(end());
+  }
+  constexpr const_reverse_iterator crbegin() const noexcept {
+    return rbegin();
+  }
+  constexpr reverse_iterator rend() const noexcept {
+    return reverse_iterator(begin());
+  }
+  constexpr const_reverse_iterator crend() const noexcept {
+    return rend();
+  }
+
+  constexpr bool empty() const noexcept {
+    return begin() == end();
+  }
+  // FIXME: Spurious overflow for inordinately large containers
+  constexpr size_type size() const noexcept {
+    return end() - begin();
+  }
+  constexpr size_type max_size() const noexcept {
+    return capacity();
+  }
+  constexpr void reserve(size_type n) {
+    if(n > capacity())
+      throw std::length_error("vector_ref overfull");
+  }
+  constexpr size_type capacity() const noexcept {
+    return s.size();
+  }
+  constexpr void shrink_to_fit() noexcept {}
+
+  constexpr void clear() noexcept {
+    while(!empty())
+      pop_back();
+  }
+
+  constexpr iterator insert(const_iterator ci, const value_type & v) {
+    return put(ci, v);
+  }
+  constexpr iterator insert(const_iterator ci, value_type && v) {
+    return put(ci, std::move(v));
+  }
+  iterator insert(const_iterator ci, size_type n, const value_type & v) {
+    reserve(size() + n);
+    const iterator i = write(ci);
+    const size_type mv = e - i, nf = std::min(n, mv);
+    std::uninitialized_fill_n(e, n - nf, v); // fill the gap first
+    slide(i, n);
+    std::fill_n(i, nf, v);
+    return i;
+  }
+  template<class I, class = std::enable_if_t<!std::is_integral_v<I>>>
+  iterator insert(const_iterator ci, I a, I b) {
+    const iterator i = write(ci);
+    if constexpr(std::is_base_of_v<std::forward_iterator_tag,
+                   typename std::iterator_traits<I>::iterator_category>) {
+      const size_type n = std::distance(a, b);
+      reserve(size() + n);
+      const auto mid = std::next(a, std::min<size_type>(e - i, n));
+      std::uninitialized_copy(mid, b, e); // fill the gap first
+      slide(i, n);
+      std::copy(a, mid, i);
+    }
+    else
+      for(; a != b; ++a)
+        insert(i, *a); // no size available
+    return i;
+  }
+  constexpr void push_back(const value_type & v) {
+    append(v);
+  }
+  constexpr void push_back(value_type && v) {
+    append(std::move(v));
+  }
+  constexpr void pop_back() {
+    (--e)->~value_type();
+  }
+
+  constexpr void resize(size_type n) {
+    reserve(n);
+    auto sz = size();
+    struct cleanup {
+      vector_ref & v;
+      size_type sz0;
+      bool fail = true;
+      ~cleanup() {
+        if(fail)
+          v.resize(sz0);
+      }
+    } guard = {*this, sz};
+
+    for(; sz > n; --sz)
+      pop_back();
+    // uninitialized_value_construct isn't constexpr:
+    for(; sz < n; ++sz, ++e)
+      new(e) value_type();
+    guard.fail = false;
+  }
+
+  constexpr void swap(vector_ref & v) noexcept {
+    std::swap(s, v.s);
+    std::swap(e, v.e);
+  }
+
+private:
+  template<class U>
+  constexpr void append(U && u) {
+    if(e == s.end())
+      throw std::length_error("vector_ref full");
+    new(e) value_type(std::forward<U>(u));
+    ++e; // on success only
+  }
+  template<class U>
+  constexpr iterator put(const_iterator ci, U && u) {
+    const iterator i = write(ci);
+    if(i == end())
+      append(std::forward<U>(u));
+    else {
+      reserve(size() + 1);
+      slide(i, 1);
+      *i = std::forward<U>(u);
+    }
+    return i;
+  }
+  // Move elements to make space for n elements starting from i.  [end(),i+n)
+  // must already have been populated for exception safety; end() is adjusted
+  // here.  Note that std::uninitialized_move is not constexpr.
+  void slide(iterator i, size_type n) {
+    const size_type mv = e - i, nun = std::min(n, mv);
+    // Move some elements into the uninitialized space:
+    const iterator um = e - nun;
+    e += n - nun; // the caller already filled the gap
+    std::uninitialized_move_n(um, nun, um + n);
+    e += nun; // even in case of subsequent failure
+    std::move_backward(i, um, i + n); // never writes past the original e
+  }
+  constexpr static iterator write(const_iterator i) {
+    return const_cast<iterator>(i);
+  }
+
+  span s;
+  iterator e; // past the last existing element
+};
 
 } // namespace utils
 } // namespace flecsi
