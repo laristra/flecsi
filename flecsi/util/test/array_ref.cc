@@ -253,6 +253,10 @@ array_ref() {
     const flecsi::util::iota_view gap(24, 29); // between primes
     EXPECT_EQ(std::accumulate(gap.begin(), gap.end(), 0),
       (gap.front() + gap.back()) * gap.size() / 2);
+
+    flecsi::util::transform_view tv(b, [](auto & x) { return &x; });
+    EXPECT_EQ(*tv.begin(), &b.front());
+    EXPECT_EQ(tv.end()[-1], &b.back());
   };
 } // array_ref
 
