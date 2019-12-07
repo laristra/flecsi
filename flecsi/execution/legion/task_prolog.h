@@ -198,7 +198,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         rr_ghost.add_field(fids[handle]);
       }
 
-      if(!sparse) {
+      if(sparse) {
         Legion::IndexLauncher ghost_launcher(ghost_copy_tid, color_domain,
         Legion::TaskArgument(&args[first], sizeof(args[first])),
         Legion::ArgumentMap());
@@ -209,7 +209,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
         runtime->execute_index_space(context, ghost_launcher);
 
-      } else {
+     } else {
         Legion::IndexCopyLauncher ghost_copy_launcher (color_domain);
         ghost_copy_launcher.add_copy_requirements(rr_owners, rr_ghost);
         ghost_copy_launcher.add_src_indirect_field(rr_pos, ghost_owner_pos_fid);
