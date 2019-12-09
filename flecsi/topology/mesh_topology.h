@@ -999,7 +999,6 @@ public:
             std::memcpy(&num_to, buf + pos, sizeof(num_to));
             pos += sizeof(num_to);
             auto ta = (id_vector_t::value_type *)(buf + pos);
-            tv.resize(num_to);
             tv.assign(ta, ta + num_to);
             pos += num_to * sizeof(id_vector_t::value_type);
 
