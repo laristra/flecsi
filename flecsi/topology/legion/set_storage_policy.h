@@ -71,7 +71,7 @@ struct legion_set_topology_storage_policy_u {
     auto & is = index_spaces[itr->second];
     auto s = is.storage();
 
-    s->set_buffer(entities, num_entities, read);
+    *s = {{entities, num_entities}, read ? num_entities : 0};
 
     if(!read) {
       return;

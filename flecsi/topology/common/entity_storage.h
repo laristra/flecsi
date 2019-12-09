@@ -15,15 +15,15 @@
 
 /*! @file */
 
-#include <flecsi/topology/common/array_buffer.h>
 #include <flecsi/topology/index_space.h>
+#include <flecsi/utils/array_ref.h>
 #include <flecsi/utils/offset.h>
 
 namespace flecsi {
 namespace topology {
 
 template<typename T>
-using topology_storage_u = array_buffer_u<T>;
+using topology_storage_u = utils::vector_ref<T>;
 
 class offset_storage_
 {

@@ -47,7 +47,8 @@ struct mpi_topology_storage_policy_u {
                                       true,
                                       true,
                                       void,
-                                      topology_storage_u>,
+                                      topology_storage_u,
+                                      entity_storage_t>,
     NUM_DIMS + 1>;
 
   using index_subspaces_t = std::array<index_space_u<mesh_entity_base_ *,
@@ -55,7 +56,8 @@ struct mpi_topology_storage_policy_u {
                                          true,
                                          false,
                                          void,
-                                         topology_storage_u>,
+                                         topology_storage_u,
+                                         entity_storage_t>,
     NUM_INDEX_SUBSPACES>;
 
   using partition_index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
@@ -63,7 +65,8 @@ struct mpi_topology_storage_policy_u {
                                                 false,
                                                 true,
                                                 void,
-                                                topology_storage_u>,
+                                                topology_storage_u,
+                                                entity_storage_t>,
     NUM_DIMS + 1>;
 
   // array of array of domain_connectivity_u
@@ -100,7 +103,7 @@ struct mpi_topology_storage_policy_u {
     s->set_buffer(entities, num_entities, read);
 
     auto & id_storage = is.id_storage();
-    id_storage.set_buffer(ids, num_entities, true);
+    id_storage = full_array(ids, num_entities);
 
     for(auto & domain_connectivities : topology) {
       auto & domain_connectivity_u = domain_connectivities[domain];
@@ -166,7 +169,7 @@ struct mpi_topology_storage_policy_u {
     iss.set_storage(is.storage());
 
     auto & id_storage = iss.id_storage();
-    id_storage.set_buffer(ids, si.capacity, si.size);
+    id_storage = {{ids, si.capacity}, si.size};
 
     if(!read) {
       return;
@@ -190,9 +193,9 @@ struct mpi_topology_storage_policy_u {
     auto & conn = topology[from_domain][to_domain].get(from_dim, to_dim);
 
     auto & id_storage = conn.get_index_space().id_storage();
-    id_storage.set_buffer(indices, num_indices, read);
+    id_storage = full_array(indices, num_indices, read);
 
-    conn.offsets().storage().set_buffer(offsets, num_offsets, read);
+    conn.offsets().storage() = full_array(offsets, num_offsets, read);
 
     if(read) {
       conn.get_index_space().set_end(num_indices);
@@ -242,6 +245,13 @@ struct mpi_topology_storage_policy_u {
 
     return ent;
   } // make
+
+private:
+  template<class T>
+  static utils::vector_ref<T>
+  full_array(T * p, std::size_t n, bool full = true) {
+    return {{p, n}, full ? n : 0};
+  }
 }; // class mpi_topology_storage_policy_u
 
 } // namespace topology

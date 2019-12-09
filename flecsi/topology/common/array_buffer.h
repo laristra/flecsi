@@ -227,6 +227,10 @@ public:
 
 private:
   item_t buf_;
+  // Since objects of this type are routinely initialized as the wrong type
+  // and then subjected to reinterpret_cast, correct (undefined) behavior
+  // depends on storing counts instead of pointers (and not doing arithmetic
+  // except as the right type).
   size_t size_;
   size_t capacity_;
 };

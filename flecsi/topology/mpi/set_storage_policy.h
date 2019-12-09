@@ -40,7 +40,7 @@ struct mpi_set_topology_storage_policy_u {
                                       true,
                                       void,
                                       identity_storage_u,
-                                      topology_storage_u>,
+                                      entity_storage_t>,
     num_index_spaces>;
 
   index_spaces_t index_spaces;

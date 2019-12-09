@@ -977,7 +977,7 @@ public:
               buf = (char *)std::realloc(buf, size);
             }
 
-            std::memcpy(buf + pos, c.offsets().storage().buffer(), bytes);
+            std::memcpy(buf + pos, c.offsets().storage().data(), bytes);
             pos += bytes;
           }
         }
@@ -1031,10 +1031,12 @@ public:
             tv.assign(ta, ta + num_to);
             pos += num_to * sizeof(id_vector_t::value_type);
 
-            auto offsets_buf = c.offsets().storage().buffer();
+            auto & v = c.offsets().storage();
+            const auto offsets_buf = v.data();
             uint64_t num_offsets;
             std::memcpy(&num_offsets, buf + pos, sizeof(num_offsets));
             pos += sizeof(num_offsets);
+            v.resize(num_offsets); // initialization wasted
             std::memcpy(offsets_buf, buf + pos, num_offsets * sizeof(offset_t));
             pos += num_offsets * sizeof(offset_t);
           }
