@@ -1269,9 +1269,6 @@ private:
     using cell_type = entity_type<UsingDimension, Domain>;
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
-    auto & is = base_t::ms_->index_spaces[Domain][DimensionToBuild]
-                  .template cast<domain_entity_u<Domain, entity_type>>();
-
     auto & cis = base_t::ms_->index_spaces[Domain][UsingDimension]
                    .template cast<domain_entity_u<Domain, cell_type>>();
 
@@ -1853,11 +1850,6 @@ private:
     auto & cell_storage =
       base_t::ms_->index_spaces[FROM_DOM][cell_dim]
         .template cast<domain_entity_u<FROM_DOM, cell_type>>();
-
-    // get the entities from mesh storage
-    auto & binding_storage =
-      base_t::ms_->index_spaces[TO_DOM][TO_DIM]
-        .template cast<domain_entity_u<TO_DOM, binding_type>>();
 
     // Lookup the index space for the cell type.
     constexpr auto cell_index_space = find_index_space_from_dimension_u<
