@@ -27,6 +27,19 @@
 namespace flecsi {
 namespace utils {
 
+/// An emulation of std::to_address from C++20.
+template<class T>
+constexpr T *
+to_address(T * p) noexcept {
+  static_assert(!std::is_function_v<T>, "not an object pointer type");
+  return p;
+}
+template<class T>
+auto
+to_address(const T & p) noexcept {
+  return to_address(p.operator->());
+}
+
 /// A workalike for std::span from C++20 (only dynamic-extent, without ranges
 /// support).
 template<class T>
@@ -503,6 +516,110 @@ transform_view(C &&, F)
   ->transform_view<typename std::remove_reference_t<C>::iterator, F>;
 template<class C, class F>
 transform_view(const C &, F)->transform_view<typename C::const_iterator, F>;
+
+/// A very simple emulation of std::ranges::filter_view from C++20.
+template<class I, class F>
+struct filter_view {
+  struct iterator {
+  private:
+    using traits = std::iterator_traits<I>;
+
+  public:
+    using difference_type = typename traits::difference_type;
+    using value_type = typename traits::value_type;
+    using pointer = typename traits::pointer;
+    using reference = typename traits::reference;
+    // TODO: bidirectional
+    using iterator_category =
+      std::common_type_t<typename traits::iterator_category,
+        std::forward_iterator_tag>;
+
+    constexpr iterator() noexcept
+      : iterator({}, nullptr) {} // null F won't be used
+    constexpr iterator(I p, const filter_view * f) noexcept : p(p), f(f) {}
+
+    constexpr iterator & operator++() {
+      f->skip(++p);
+      return *this;
+    }
+    constexpr iterator operator++(int) {
+      const iterator ret = *this;
+      ++*this;
+      return ret;
+    }
+
+    constexpr bool operator==(const iterator & i) const noexcept {
+      return p == i.p;
+    }
+    constexpr bool operator!=(const iterator & i) const noexcept {
+      return !(*this == i);
+    }
+    constexpr bool operator<(const iterator & i) const noexcept {
+      return p < i.p;
+    }
+    constexpr bool operator>(const iterator & i) const noexcept {
+      return i < *this;
+    }
+    constexpr bool operator<=(const iterator & i) const noexcept {
+      return !(*this > i);
+    }
+    constexpr bool operator>=(const iterator & i) const noexcept {
+      return !(*this < i);
+    }
+
+    constexpr reference operator*() const {
+      return *p;
+    }
+    constexpr pointer operator->() const {
+      return to_address(p);
+    }
+
+  private:
+    I p;
+    const filter_view * f;
+  };
+
+  /// Wrap an iterator pair.
+  constexpr filter_view(I b, I e, F f = {})
+    : b(std::move(b)), e(std::move(e)), f(std::move(f)) {
+    skip(this->b);
+  }
+  /// Wrap a container.
+  /// \warning Destroying \a C invalidates this object if it owns its
+  ///   iterators or elements.  This implementation does not copy \a C if it
+  ///   is a view.
+  template<class C,
+    class = std::enable_if_t<
+      std::is_convertible_v<decltype(std::begin(std::declval<C &>())), I>>>
+  constexpr filter_view(C && c, F f = {})
+    : filter_view(std::begin(c), std::end(c), std::move(f)) {}
+
+  constexpr iterator begin() const noexcept {
+    return {b, this};
+  }
+  constexpr iterator end() const noexcept {
+    return {e, this};
+  }
+
+  constexpr auto size() const {
+    return std::distance(b, e);
+  }
+
+private:
+  constexpr void skip(I & i) const {
+    while(i != e && !f(*i))
+      ++i;
+  }
+
+  I b, e;
+  F f;
+};
+
+template<class C, class F>
+filter_view(C &&, F)
+  ->filter_view<typename std::remove_reference_t<C>::iterator, F>;
+template<class C, class F>
+filter_view(const C &, F)->filter_view<typename C::const_iterator, F>;
 
 } // namespace utils
 } // namespace flecsi

@@ -293,6 +293,10 @@ TEST(array_ref, all) {
   flecsi::utils::transform_view tv(b, [](auto & x) { return &x; });
   EXPECT_EQ(*tv.begin(), &b.front());
   EXPECT_EQ(tv.end()[-1], &b.back());
+
+  flecsi::utils::filter_view fv(vec, [](double x) { return x < 3; });
+  EXPECT_EQ(&*fv.begin(), &vec[1]);
+  EXPECT_EQ(++++fv.begin(), fv.end());
 } // TEST
 
 /*~-------------------------------------------------------------------------~-*
