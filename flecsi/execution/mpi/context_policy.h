@@ -618,10 +618,6 @@ struct mpi_context_policy_t {
     return sparse_field_metadata;
   };
 
-  std::map<size_t, MPI_Datatype> & reduction_types() {
-    return reduction_types_;
-  } // reduction_types
-
   std::map<size_t, MPI_Op> & reduction_operations() {
     return reduction_ops_;
   } // reduction_types
@@ -655,7 +651,6 @@ struct mpi_context_policy_t {
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;
 
-  std::map<size_t, MPI_Datatype> reduction_types_;
   std::map<size_t, MPI_Op> reduction_ops_;
 
 }; // class mpi_context_policy_t
