@@ -50,7 +50,7 @@ struct legion_topology_storage_policy_t_u {
 
   using id_t = utils::id_t;
 
-  using index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
+  using index_spaces_t = std::array<index_space_u<mesh_entity_base_,
                                       true,
                                       true,
                                       true,
@@ -59,7 +59,7 @@ struct legion_topology_storage_policy_t_u {
                                       entity_storage_t>,
     NUM_DIMS + 1>;
 
-  using index_subspaces_t = std::array<index_space_u<mesh_entity_base_ *,
+  using index_subspaces_t = std::array<index_space_u<mesh_entity_base_,
                                          false,
                                          true,
                                          false,
@@ -68,7 +68,7 @@ struct legion_topology_storage_policy_t_u {
                                          entity_storage_t>,
     NUM_INDEX_SUBSPACES>;
 
-  using partition_index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
+  using partition_index_spaces_t = std::array<index_space_u<mesh_entity_base_,
                                                 false,
                                                 false,
                                                 true,
@@ -214,9 +214,7 @@ struct legion_topology_storage_policy_t_u {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
-    using dtype = domain_entity_u<DOM, T>;
-
-    auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
+    auto & is = index_spaces[DOM][T::dimension];
     size_t entity = is.size();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
@@ -236,9 +234,7 @@ struct legion_topology_storage_policy_t_u {
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(const id_t & id, ARG_TYPES &&... args) {
-    using dtype = domain_entity_u<DOM, T>;
-
-    auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
+    auto & is = index_spaces[DOM][T::dimension];
 
     size_t entity = id.entity();
 

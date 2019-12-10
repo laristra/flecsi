@@ -394,11 +394,6 @@ public:
     return ms_->template make<T, DOM>(std::forward<S>(args)...);
   } // make
 
-  virtual void append_to_index_space_(size_t domain,
-    size_t dimension,
-    std::vector<entity_base_ *> & ents,
-    std::vector<id_t> & ids) = 0;
-
 protected:
   STORAGE_TYPE * ms_ = nullptr;
 

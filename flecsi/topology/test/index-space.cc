@@ -55,6 +55,7 @@ TEST(index_space, index_space) {
     is[i]->mass = rng.uniform(0.0, 1.0);
   }
 
+#if 0
   size_t cnt = 0;
   flecsi_for_each(o, is, {
     // std::cout << o->id << endl;
@@ -69,7 +70,6 @@ TEST(index_space, index_space) {
   int mass_check = total_mass * 100;
   ASSERT_EQ(mass_check, 500342);
 
-#if 0
   forall(is, o,
     cout << o->id << endl;
   );

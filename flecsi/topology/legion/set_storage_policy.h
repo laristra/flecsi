@@ -33,7 +33,7 @@ struct legion_set_topology_storage_policy_u {
 
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 
-  using index_spaces_t = std::array<index_space_u<set_entity_t *,
+  using index_spaces_t = std::array<index_space_u<set_entity_t,
                                       true,
                                       true,
                                       true,
@@ -85,7 +85,7 @@ struct legion_set_topology_storage_policy_u {
     constexpr size_t index_space =
       find_set_index_space_u<num_index_spaces, entity_types_t, T>::find();
 
-    auto & is = index_spaces[index_space].template cast<T *>();
+    auto & is = index_spaces[index_space];
     size_t entity = is.size();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;

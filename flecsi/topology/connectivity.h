@@ -312,7 +312,7 @@ public:
     offsets_.add_end(index_space_.size());
   } // end_from
 
-  index_space_u<entity_base_ *,
+  index_space_u<entity_base_,
     false,
     true,
     false,

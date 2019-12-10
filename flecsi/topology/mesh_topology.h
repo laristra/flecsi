@@ -480,7 +480,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto get_entities() const {
     using etype = entity_type<DIM, DOM>;
-    return static_cast<etype *>(base_t::ms_->index_spaces[DOM][DIM][0]);
+    return static_cast<etype *>(&this->ms_->index_spaces[DOM][DIM][0]);
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -574,33 +574,7 @@ public:
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity_u<TO_DOM, etype>;
 
-    return c.get_index_space().slice<dtype>(c.range(e->id()));
-  } // entities
-
-  //--------------------------------------------------------------------------//
-  //! Get the entities of topological dimension DIM connected to another entity
-  //! by specified connectivity from domain FROM_DOM and to domain TO_DOM.
-  //!
-  //! @tparam FROM_DOM from domain
-  //! @tparam TO_DOM to domain
-  //! @tparam DIM to topological dimension
-  //! @tparam ENT_TYPE entity type
-  //!
-  //! @param e from entity
-  //--------------------------------------------------------------------------//
-  template<size_t DIM,
-    size_t FROM_DOM,
-    size_t TO_DOM = FROM_DOM,
-    class ENT_TYPE>
-  auto entities(ENT_TYPE * e) {
-    connectivity_t & c =
-      get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
-    assert(!c.empty() && "empty connectivity");
-
-    using etype = entity_type<DIM, TO_DOM>;
-    using dtype = domain_entity_u<TO_DOM, etype>;
-
-    return c.get_index_space().slice<dtype>(c.range(e->id()));
+    return xform<dtype>(c.get_index_space().slice<etype>(c.range(e->id())));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -652,7 +626,8 @@ public:
   auto entities() const {
     using etype = entity_type<DIM, DOM>;
     using dtype = domain_entity_u<DOM, etype>;
-    return base_t::ms_->index_spaces[DOM][DIM].template slice<dtype>();
+    return xform<dtype>(
+      this->ms_->index_spaces[DOM][DIM].template slice<etype>());
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -669,8 +644,8 @@ public:
   auto entities(partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
     using dtype = domain_entity_u<DOM, etype>;
-    return base_t::ms_->partition_index_spaces[partition][DOM][DIM]
-      .template slice<dtype>();
+    return xform<dtype>(this->ms_->partition_index_spaces[partition][DOM][DIM]
+                          .template slice<etype>());
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -1045,17 +1020,6 @@ public:
     }
   }
 
-  //--------------------------------------------------------------------------//
-  //! Internal method to append entities to an index space.
-  //--------------------------------------------------------------------------//
-  void append_to_index_space_(size_t domain,
-    size_t dim,
-    std::vector<mesh_entity_base_ *> & ents,
-    std::vector<id_t> & ids) override {
-    auto & is = base_t::ms_->index_spaces[domain][dim];
-    is.append_(ents, ids);
-  }
-
   template<size_t INDEX_SUBSPACE>
   auto & get_index_subspace() {
     using entity_types_t = typename MESH_TYPE::entity_types;
@@ -1136,6 +1100,13 @@ private:
 
   template<size_t, size_t, class>
   friend struct compute_bindings_u;
+
+  template<class D, class IS>
+  static auto xform(IS && is) {
+    // We depend on the fact that slices do not own their iterators.
+    return utils::transform_view(
+      std::forward<IS>(is), [](auto & e) { return D(&e); });
+  }
 
   template<size_t DOM, typename VERT_TYPE>
   void init_cell_(entity_type<MESH_TYPE::num_dimensions, DOM> * cell,
@@ -1272,7 +1243,7 @@ private:
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
     auto & cis = base_t::ms_->index_spaces[Domain][UsingDimension]
-                   .template cast<domain_entity_u<Domain, cell_type>>();
+                   .template cast<cell_type>();
 
     // Lookup the index space for the entity type being created.
     constexpr size_t cell_index_space = find_index_space_from_dimension_u<
@@ -1316,7 +1287,7 @@ private:
       size_t c = citr.second;
 
       // Get the cell object
-      auto cell = static_cast<cell_type *>(cis[c]);
+      const auto cell = &cis[c];
       id_t cell_id = cell->global_id();
 
       // Get storage reference.

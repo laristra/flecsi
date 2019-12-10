@@ -26,31 +26,6 @@
 namespace flecsi {
 namespace topology {
 
-/*----------------------------------------------------------------------------*
- * class index_space_u
- *----------------------------------------------------------------------------*/
-
-template<size_t, class E>
-class domain_entity_u;
-
-//! helper classes for resolving types
-template<typename T>
-struct index_space_ref_type_u {
-  using type = T &;
-};
-
-//! helper classes for resolving types
-template<typename S>
-struct index_space_ref_type_u<S *> {
-  using type = S *;
-};
-
-//! helper classes for resolving types
-template<size_t M, class E>
-struct index_space_ref_type_u<domain_entity_u<M, E>> {
-  using type = domain_entity_u<M, E>;
-};
-
 //----------------------------------------------------------------------------//
 //! index_space_u provides a compile-time
 //! configurable and iterable container of objects, e.g. mesh/tree topology
@@ -102,14 +77,8 @@ public:
   template<typename T_, typename... Ts>
   using storage_type_arg = STORAGE_TYPE<T_>;
 
-  //! item, e.g. entity type
-  using item_t = typename std::remove_pointer<T>::type;
-
   //! Reference type
-  using ref_t = typename index_space_ref_type_u<T>::type;
-
-  //! reference casting type
-  using cast_t = std::decay_t<ref_t>;
+  using ref_t = T &;
 
   //! filter predicate function signature
   using filter_function = std::function<bool(T &)>;
@@ -189,6 +158,12 @@ public:
   public:
     // Seems be be unused anywhere in FleCSI... -MFS, 2019-04-19
     // using MS = typename std::remove_const<S>::type;
+
+    using difference_type = std::size_t;
+    using value_type = std::remove_cv_t<S>;
+    using pointer = S *;
+    using reference = S &;
+    using iterator_category = std::random_access_iterator_tag;
 
     /*
     // Is the default
@@ -293,8 +268,8 @@ public:
     //-----------------------------------------------------------------//
   protected:
     FLECSI_INLINE_TARGET
-    auto get_(size_t index) const {
-      return static_cast<cast_t>((*s_)[(*items_)[index].index_space_index()]);
+    reference get_(size_t index) const {
+      return (*s_)[(*items_)[index].index_space_index()];
     }
 
     //-----------------------------------------------------------------//
@@ -302,7 +277,7 @@ public:
     //-----------------------------------------------------------------//
   public:
     FLECSI_INLINE_TARGET
-    auto operator[](size_t index) const {
+    reference operator[](size_t index) const {
       return get_(index);
     }
 
@@ -490,9 +465,6 @@ public:
   public:
     using B = iterator_base_<S>;
 
-    // Seems be be unused anywhere in FleCSI... -MFS, 2019-04-19
-    // using ref_t = index_space_ref_type_u<S>;
-
     /*
     // Is the default
     //-----------------------------------------------------------------//
@@ -616,14 +588,14 @@ public:
     //! Dereference operator
     //-----------------------------------------------------------------//
     FLECSI_INLINE_TARGET
-    S operator*() {
+    S & operator*() const {
       return B::get_(B::index_);
     }
 
     //-----------------------------------------------------------------//
     //! Arrow operator
     //-----------------------------------------------------------------//
-    S * operator->() {
+    S * operator->() const {
       return &B::get_(B::index_);
     }
 
@@ -634,6 +606,9 @@ public:
       std::swap(a.B::s_, b.B::s_);
     }
   };
+
+  using iterator = iterator_<T, F>;
+  using const_iterator = iterator_<const T, F>;
 
   //-----------------------------------------------------------------//
   //! Constructor. If storage is true then allocate storage type,
@@ -670,8 +645,6 @@ public:
     : v_(is.v_), begin_(begin), end_(end), owned_(false), sorted_(is.sorted_),
       s_(reinterpret_cast<storage_t *>(is.s_)) {
 
-    static_assert(
-      std::is_convertible<T, S>::value, "invalid index space construction");
     static_assert(!STORAGE, "expected !STORAGE");
     static_assert(!OWNED, "expected !OWNED");
   }
@@ -812,8 +785,6 @@ public:
     class ID_STORAGE_TYPE2 = id_storage_type_arg,
     template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
   auto & cast() {
-    static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
-
     auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
       ID_STORAGE_TYPE2, STORAGE_TYPE2> *>(this);
     assert(res != nullptr && "invalid cast");
@@ -833,8 +804,6 @@ public:
     class ID_STORAGE_TYPE2 = id_storage_type_arg,
     template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
   auto & cast() const {
-    static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
-
     auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
       ID_STORAGE_TYPE2, STORAGE_TYPE2> *>(this);
     assert(res != nullptr && "invalid cast");
@@ -967,8 +936,7 @@ public:
   //-----------------------------------------------------------------//
   FLECSI_INLINE_TARGET
   ref_t get_(size_t offset) {
-    return static_cast<cast_t>(
-      (*s_)[(*v_)[begin_ + offset].index_space_index()]);
+    return (*s_)[(*v_)[begin_ + offset].index_space_index()];
   }
 
   //-----------------------------------------------------------------//
@@ -976,8 +944,7 @@ public:
   //-----------------------------------------------------------------//
   FLECSI_INLINE_TARGET
   const ref_t get_(size_t offset) const {
-    return static_cast<cast_t>(
-      (*s_)[(*v_)[begin_ + offset].index_space_index()]);
+    return (*s_)[(*v_)[begin_ + offset].index_space_index()];
   }
 
   //-----------------------------------------------------------------//
@@ -985,8 +952,7 @@ public:
   //-----------------------------------------------------------------//
   FLECSI_INLINE_TARGET
   ref_t get_end_(size_t offset) {
-    return static_cast<cast_t>(
-      (*s_)[(*v_)[end_ - 1 - offset].index_space_index()]);
+    return (*s_)[(*v_)[end_ - 1 - offset].index_space_index()];
   }
 
   //-----------------------------------------------------------------//
@@ -994,8 +960,7 @@ public:
   //-----------------------------------------------------------------//
   FLECSI_INLINE_TARGET
   const ref_t get_end_(size_t offset) const {
-    return static_cast<cast_t>(
-      (*s_)[(*v_)[end_ - 1 - offset].index_space_index()]);
+    return (*s_)[(*v_)[end_ - 1 - offset].index_space_index()];
   }
 
   //-----------------------------------------------------------------//
@@ -1654,15 +1619,13 @@ public:
   //-----------------------------------------------------------------//
   //! Helper method to get ID.
   //-----------------------------------------------------------------//
-  id_t id_(const item_t & item) {
-    return item.index_space_id();
-  }
-
-  //-----------------------------------------------------------------//
-  //! Helper method to get ID.
-  //-----------------------------------------------------------------//
-  id_t id_(const item_t * item) {
-    return item->index_space_id();
+  id_t id_(const T & item) {
+    const std::remove_pointer_t<T> * p;
+    if constexpr(std::is_pointer_v<T>)
+      p = item;
+    else
+      p = &item;
+    return p->index_space_id();
   }
 
   //-----------------------------------------------------------------//
