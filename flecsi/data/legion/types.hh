@@ -47,8 +47,7 @@ template<class T, void (Legion::Runtime::*D)(Legion::Context, T, bool)>
 struct unique_handle {
   unique_handle() = default;
   unique_handle(T t) : h(t) {}
-  unique_handle(unique_handle && u) noexcept
-    : h(std::exchange(u.h, {})) {}
+  unique_handle(unique_handle && u) noexcept : h(std::exchange(u.h, {})) {}
   ~unique_handle() {
     if(*this) // it's not clear whether empty handles can be deleted
       (run().*D)(ctx(), h, false);
