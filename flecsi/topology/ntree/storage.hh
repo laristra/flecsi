@@ -23,7 +23,6 @@
 #include "../index_space.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/runtime/context.hh>
-#include <flecsi/topology/ntree/storage.hh>
 #include <flecsi/topology/ntree/types.hh>
 #include <flecsi/utils/id.hh>
 
