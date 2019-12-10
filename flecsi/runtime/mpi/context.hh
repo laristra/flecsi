@@ -118,18 +118,6 @@ struct context_t : context {
     colors_ = colors;
   }
 
-  //--------------------------------------------------------------------------//
-  // Reduction interface.
-  //--------------------------------------------------------------------------//
-
-  /*!
-    Return the map of registered reduction types.
-   */
-
-  std::map<size_t, MPI_Datatype> & reduction_types() {
-    return reduction_types_;
-  } // reduction_types
-
 private:
   /*--------------------------------------------------------------------------*
     Runtime data members.
@@ -137,12 +125,6 @@ private:
 
   size_t color_ = std::numeric_limits<size_t>::max();
   size_t colors_ = std::numeric_limits<size_t>::max();
-
-  /*--------------------------------------------------------------------------*
-    Reduction data members.
-   *--------------------------------------------------------------------------*/
-
-  std::map<size_t, MPI_Datatype> reduction_types_;
 };
 
 } // namespace flecsi::runtime

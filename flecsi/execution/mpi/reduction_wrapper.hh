@@ -61,30 +61,6 @@ detail::register_reduction() {
                << utils::type<TYPE>() << std::endl;
   } // scope
 
-  // Get the runtime context
-  auto & context_ = runtime::context_t::instance();
-
-  // Create the MPI data type if it isn't P.O.D.
-  if constexpr(!std::is_pod_v<value_type>) {
-    // Get the datatype map from the context
-    auto & reduction_types = context_.reduction_types();
-
-    // Get a hash from the runtime type information
-    size_t typehash = typeid(value_type).hash_code();
-
-    // Search for this type...
-    auto dtype = reduction_types.find(typehash);
-
-    if(dtype == reduction_types.end()) {
-      // Add the MPI type if it doesn't exist
-      MPI_Datatype datatype;
-      constexpr size_t datatype_size = sizeof(typename TYPE::RHS);
-      MPI_Type_contiguous(datatype_size, MPI_BYTE, &datatype);
-      MPI_Type_commit(&datatype);
-      reduction_types[typehash] = datatype;
-    } // if
-  } // if
-
   // Create the operator and register it with the runtime
   MPI_Op_create(
     [](void * in, void * inout, int * len, MPI_Datatype *) {
