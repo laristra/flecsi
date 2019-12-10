@@ -17,7 +17,7 @@
   @file
  */
 
-#include <flecsi/topology/index_space.h>
+#include <algorithm>
 
 #ifdef FLECSI_ENABLE_KOKKOS
 
@@ -99,82 +99,39 @@ namespace flecsi {
 //----------------------------------------------------------------------------//
 //! Abstraction function for fine-grained, data-parallel interface.
 //!
-//! @tparam ENTITY_TYPE The entity type of the associated index space.
-//! @tparam STORAGE     A boolean indicating whether or not the associated
-//!                     index space has storage for the referenced entity types.
-//! @tparam OWNED       A boolean indicating whether or not the entity data are
-//!                     owned by the associated index space.
-//! @tparam SORTED      A boolean indicating whether or not the associated index
-//!                     space is sorted.
-//! @tparam PREDICATE   An optional predicate function used to select
-//!                     indices matching particular criteria.
+//! @tparam R range type
 //! @tparam FUNCTION    The calleable object type.
 //!
-//! @param index_space  The index space over which to execute the calleable
-//!                     object.
+//! @param r range over which to execute \a function
 //! @param function     The calleable object instance.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<typename ENTITY_TYPE,
-  bool STORAGE,
-  bool OWNED,
-  bool SORTED,
-  typename PREDICATE,
-  typename FUNCTION>
+template<class R, typename FUNCTION>
 inline void
-for_each_u(
-  flecsi::topology::
-    index_space_u<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
-  FUNCTION && function) {
-  const size_t end = index_space.end_offset();
-
-  for(size_t i(index_space.begin_offset()); i < end; ++i) {
-    function(std::forward<ENTITY_TYPE>(index_space.get_offset(i)));
-  } // for
+for_each_u(R && r, FUNCTION && function) {
+  std::for_each(r.begin(), r.end(), std::forward<FUNCTION>(function));
 } // for_each_u
 
 //----------------------------------------------------------------------------//
 //! Abstraction function for fine-grained, data-parallel interface.
 //!
-//! @tparam ENTITY_TYPE The entity type of the associated index space.
-//! @tparam STORAGE     A boolean indicating whether or not the associated
-//!                     index space has storage for the referenced entity types.
-//! @tparam OWNED       A boolean indicating whether or not the entity data are
-//!                     owned by the associated index space.
-//! @tparam SORTED      A boolean indicating whether or not the associated index
-//!                     space is sorted.
-//! @tparam PREDICATE   An optional predicate function used to select
-//!                     indices matching particular criteria.
+//! @tparam R range type
 //! @tparam FUNCTION    The calleable object type.
 //! @tparam REDUCTION   The reduction variabel type.
 //!
-//! @param index_space  The index space over which to execute the calleable
-//!                     object.
+//! @param r range over which to execute \a function
 //! @param function     The calleable object instance.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<typename ENTITY_TYPE,
-  bool STORAGE,
-  bool OWNED,
-  bool SORTED,
-  typename PREDICATE,
-  typename FUNCTION,
-  typename REDUCTION>
+template<class R, typename FUNCTION, typename REDUCTION>
 inline void
-reduce_each_u(
-  flecsi::topology::
-    index_space_u<ENTITY_TYPE, STORAGE, OWNED, SORTED, PREDICATE> & index_space,
-  REDUCTION & reduction,
-  FUNCTION && function) {
-  size_t end = index_space.end_offset();
-
-  for(size_t i(index_space.begin_offset()); i < end; ++i) {
-    function(std::forward<ENTITY_TYPE>(index_space.get_offset(i)), reduction);
-  } // for
+reduce_each_u(R && r, REDUCTION & reduction, FUNCTION && function) {
+  for(const auto & e : r)
+    function(e, reduction);
 } // reduce_each_u
 
 } // namespace flecsi
