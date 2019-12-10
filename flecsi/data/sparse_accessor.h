@@ -25,7 +25,6 @@
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/ragged_accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
-#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -43,8 +42,7 @@ protected:
   }
 
 public:
-  using index_space_t =
-    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
+  using entries_t = std::vector<std::size_t>;
 
   // for row 'index', return pointer to first entry not less
   // than 'entry'
@@ -100,10 +98,9 @@ public:
   //! Return all entries used over all indices.
   //-------------------------------------------------------------------------//
   FLECSI_INLINE_TARGET
-  index_space_t entries() const {
+  entries_t entries() const {
     auto & handle = ragged.handle;
-    size_t id = 0;
-    index_space_t is;
+    entries_t is;
     std::unordered_set<size_t> found;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
@@ -112,7 +109,7 @@ public:
       for(const auto & ev : row) {
         size_t entry = ev.entry;
         if(found.find(entry) == found.end()) {
-          is.push_back({id++, entry});
+          is.push_back(entry);
           found.insert(entry);
         }
       }
@@ -125,7 +122,7 @@ public:
   //! Return all entries used over the specified index.
   //-------------------------------------------------------------------------//
   FLECSI_INLINE_TARGET
-  index_space_t entries(size_t index) const {
+  entries_t entries(size_t index) const {
     auto & handle = ragged.handle;
 // FIXME this check should go to flog in refactor branch
 #ifndef FLECSI_ENABLE_KOKKOS
@@ -133,12 +130,11 @@ public:
       index < handle.num_total_, "sparse accessor: index out of bounds");
 #endif
 
-    index_space_t is;
+    entries_t is;
 
-    size_t id = 0;
     const auto & row = handle.rows[index];
     for(const auto & ev : row) {
-      is.push_back({id++, ev.entry});
+      is.push_back(ev.entry);
     }
 
     return is;
@@ -148,15 +144,14 @@ public:
   //! Return all indices allocated.
   //-------------------------------------------------------------------------//
   FLECSI_INLINE_TARGET
-  index_space_t indices() const {
+  entries_t indices() const {
     auto & handle = ragged.handle;
-    index_space_t is;
-    size_t id = 0;
+    entries_t is;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
       const auto & row = handle.rows[index];
       if(row.size() != 0) {
-        is.push_back({id++, index});
+        is.push_back(index);
       }
     }
 
@@ -167,16 +162,15 @@ public:
   //! Return all indices allocated for a given entry.
   //-------------------------------------------------------------------------//
   FLECSI_INLINE_TARGET
-  index_space_t indices(size_t entry) const {
+  entries_t indices(size_t entry) const {
     auto & handle = ragged.handle;
-    index_space_t is;
-    size_t id = 0;
+    entries_t is;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
       const auto & r = row(index);
       const auto itr = lower_bound(r, entry);
       if(itr != r.end() && itr->entry == entry) {
-        is.push_back({id++, index});
+        is.push_back(index);
       }
     }
 
@@ -240,8 +234,6 @@ private:
   using typename base::entry_value_t; // factor usage?
 
 public:
-  using typename base::index_space_t; // unless we can factor the usage?
-
   accessor_u(const typename base::ragged_t::handle_t & h) : base{h} {}
 
   //-------------------------------------------------------------------------//
