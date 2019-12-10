@@ -21,7 +21,6 @@
 
 #include <flecsi/data/mutator.h>
 #include <flecsi/data/sparse_accessor.h>
-#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 

@@ -19,7 +19,6 @@
 
 #include <flecsi/data/mutator.h>
 #include <flecsi/data/ragged_accessor.h>
-#include <flecsi/topology/index_space.h>
 
 //----------------------------------------------------------------------------//
 //! @file
