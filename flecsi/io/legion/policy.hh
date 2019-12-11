@@ -395,21 +395,6 @@ struct legion_policy_t {
   using field_reference_t = data::field_reference_t<topology::index_t>;
 
   //----------------------------------------------------------------------------//
-  // Implementation of legion_io_policy_t::~legion_io_policy_t.
-  //----------------------------------------------------------------------------//
-  ~legion_policy_t() {
-    Legion::Runtime * runtime = Legion::Runtime::get_runtime();
-    Legion::Context ctx = Legion::Runtime::get_context();
-    for(auto & it : file_map) {
-      auto is = it.second.index_space;
-      if(is != Legion::IndexSpace::NO_SPACE) {
-        // printf("clean up process_topology_file_is hash %ld\n", it->first);
-        runtime->destroy_index_space(ctx, is);
-      }
-    }
-  }
-
-  //----------------------------------------------------------------------------//
   // Implementation of legion_io_policy_t::init_hdf5_file.
   //----------------------------------------------------------------------------//
   legion_hdf5_t init_hdf5_file(const char * file_name, int num_files) {
@@ -493,7 +478,7 @@ struct legion_policy_t {
     Legion::Runtime * runtime = Legion::Runtime::get_runtime();
     Legion::Context ctx = Legion::Runtime::get_context();
     Legion::Rect<1> file_color_bounds(0, hdf5_file.num_files - 1);
-    Legion::IndexSpace process_topology_file_is =
+    data::legion::unique_index_space process_topology_file_is =
       runtime->create_index_space(ctx, file_color_bounds);
 #if 0 
     process_topology_file_ip = runtime->create_pending_partition(ctx, index_runtime_data.index_space, process_topology_file_is);
@@ -520,7 +505,7 @@ struct legion_policy_t {
       "null",
       field_string_map);
 
-    file_map[&index_runtime_data] = {process_topology_file_is,
+    file_map[&index_runtime_data] = {std::move(process_topology_file_is),
       process_topology_file_ip,
       process_topology_file_lp};
   } // add_process_topology
@@ -766,7 +751,7 @@ struct legion_policy_t {
 
 private:
   struct topology_data {
-    Legion::IndexSpace index_space;
+    data::legion::unique_index_space index_space;
     Legion::IndexPartition index_partition;
     Legion::LogicalPartition logical_partition;
   };

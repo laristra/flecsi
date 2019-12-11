@@ -46,8 +46,6 @@ set(utils_HEADERS
   graphviz.hh
   hash.hh
   id.hh
-  index_space.hh
-  iterator.hh
   macros.hh
   mpi_type_traits.hh
   offset.hh
@@ -214,24 +212,6 @@ ftest_add_unit(id
 )
 
 #------------------------------------------------------------------------------#
-# index_space
-#------------------------------------------------------------------------------#
-
-set(index_space_blessed_input test/index_space.blessed.gnug)
-
-if(MSVC)
-  set(index_space_blessed_input test/index_space.blessed.msvc)
-endif()
-
-ftest_add_unit(index_space
-  SOURCES
-    test/index_space.cc
-  INPUTS
-    test/index_space.blessed
-    ${index_space_blessed_input}
-)
-
-#------------------------------------------------------------------------------#
 # hash
 #------------------------------------------------------------------------------#
 
@@ -303,24 +283,6 @@ ftest_add_unit(tuple_type_converter
     test/tuple_type_converter.cc
   INPUTS
     ${tuple_type_converter_blessed_input}
-)
-
-#------------------------------------------------------------------------------#
-# utils_iterator
-#------------------------------------------------------------------------------#
-
-set(iterator_blessed_input test/iterator.blessed.gnug)
-
-if(MSVC)
-  set(iterator_blessed_input test/iterator.blessed.msvc)
-endif()
-
-ftest_add_unit(utils_iterator
-  SOURCES
-    test/iterator.cc
-  INPUTS
-    test/iterator.blessed
-    ${iterator_blessed_input}
 )
 
 #------------------------------------------------------------------------------#
