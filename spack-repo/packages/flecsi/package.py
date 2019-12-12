@@ -26,6 +26,8 @@ class Flecsi(CMakePackage):
             description='The build type to build', multi=False)
     variant('backend', default='mpi', values=('serial', 'mpi', 'legion', 'hpx'),
             description='Backend to use for distributed memory', multi=False)
+    variant('debug_backend', default=False,
+            description='Build Backend with Debug Mode')
     variant('minimal', default=False,
             description='Disable FindPackageMetis')
     variant('shared', default=True,
@@ -55,8 +57,11 @@ class Flecsi(CMakePackage):
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
     depends_on('mpi', when='backend=hpx')
+    depends_on('legion@ctrl-rep +shared +mpi build_type=Debug +hdf5', when='backend=legion +debug_backend +hdf5')
+    depends_on('legion@ctrl-rep +shared +mpi build_type=Debug', when='backend=legion +debug_backend ~hdf5')
     depends_on('legion@ctrl-rep +shared +mpi +hdf5', when='backend=legion +hdf5')
     depends_on('legion@ctrl-rep +shared +mpi', when='backend=legion ~hdf5')
+    depends_on('hpx@1.3.0 cxxstd=14 build_type=Debug', when='backend=hpx +debug_backend')
     depends_on('hpx@1.3.0 cxxstd=14', when='backend=hpx')
     depends_on('boost@1.70.0: cxxstd=14 +program_options')
     depends_on('metis@5.1.0:')

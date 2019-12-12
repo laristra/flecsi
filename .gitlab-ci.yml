@@ -42,7 +42,7 @@ variables:
   FLECSI_GCC_VERSION: "7.3.0"
   FLECSI_PYTHON_VERSION: "3.5.1"
   FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/flecsi-deps-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
-  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz +hdf5 backend=${RUNTIME} ^${FLECSI_MPI_PACKAGE}"
+  FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz +hdf5 backend=${RUNTIME}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
@@ -61,7 +61,12 @@ before_script:
     spack repo rm laristra_flecsi || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
-    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC}" || /bin/true;
+    if [[ ${BUILD_TYPE} =~ "Debug" ]];
+    then
+      spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC} +debug_backend ^${FLECSI_MPI_PACKAGE}" || /bin/true;
+    else
+      spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC} ^${FLECSI_MPI_PACKAGE}" || /bin/true;
+    fi;
     ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
@@ -180,8 +185,10 @@ before_script:
       spack repo rm laristra_flecsi || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install -v --only dependencies ${FLECSI_SPACK_SPEC}openmpi%gcc@${FLECSI_GCC_VERSION};
-      spack install -v --only dependencies ${FLECSI_SPACK_SPEC}mpich%gcc@${FLECSI_GCC_VERSION};
+      spack install -v --only dependencies ${FLECSI_SPACK_SPEC} ^openmpi%gcc@${FLECSI_GCC_VERSION};
+      spack install -v --only dependencies ${FLECSI_SPACK_SPEC} ^mpich%gcc@${FLECSI_GCC_VERSION};
+      spack install -v --only dependencies ${FLECSI_SPACK_SPEC} +debug_backend ^openmpi%gcc@${FLECSI_GCC_VERSION};
+      spack install -v --only dependencies ${FLECSI_SPACK_SPEC} +debug_backend ^mpich%gcc@${FLECSI_GCC_VERSION};
       ) 200>${DEPS_LOCK}
 
 ###############
