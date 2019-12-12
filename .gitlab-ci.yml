@@ -63,10 +63,10 @@ before_script:
     spack repo list;
     if [[ ${BUILD_TYPE} =~ "Debug" ]];
     then
-      spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC} +debug_backend ^{FLECSI_MPI_PACKAGE}" || /bin/true;
+      spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC} +debug_backend ^${FLECSI_MPI_PACKAGE}" || /bin/true;
     else
-      spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC} ^{FLECSI_MPI_PACKAGE}" || /bin/true;
-    fi
+      spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_SPEC} ^${FLECSI_MPI_PACKAGE}" || /bin/true;
+    fi;
     ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
