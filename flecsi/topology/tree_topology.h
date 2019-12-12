@@ -71,10 +71,10 @@ struct tree_geometry_u<T, 1> {
 
   //-----------------------------------------------------------------//
   //! Return true if point origin lies within the spheroid centered at center
-  with radius.
-    //-----------------------------------------------------------------//
-    static bool
-    within(const point_t & origin, const point_t & center, element_t radius) {
+  //! with radius.
+  //-----------------------------------------------------------------//
+  static bool
+  within(const point_t & origin, const point_t & center, element_t radius) {
     return distance(origin, center) <= radius;
   }
 
@@ -698,11 +698,10 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! Update is called when an entity's coordinates have changed and may trigger
-  a reinsertion.
-    //-----------------------------------------------------------------//
-    void
-    update(entity_t * ent) {
+  //! Update is called when an entity's coordinates have changed and may
+  //! trigger a reinsertion.
+  //-----------------------------------------------------------------//
+  void update(entity_t * ent) {
     branch_id_t bid = ent->get_branch_id();
     branch_id_t nid = to_branch_id(ent->coordinates(), bid.depth());
 
@@ -804,10 +803,9 @@ public:
 
   //-----------------------------------------------------------------//
   //! Return an index space containing all entities within the specified
-  spheroid.
-    //-----------------------------------------------------------------//
-    subentity_space_t
-    find_in_radius(const point_t & center, element_t radius) {
+  //! spheroid.
+  //-----------------------------------------------------------------//
+  subentity_space_t find_in_radius(const point_t & center, element_t radius) {
     subentity_space_t ents;
     ents.set_master(entities_);
 
