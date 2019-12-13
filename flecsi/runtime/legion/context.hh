@@ -282,18 +282,6 @@ struct context_t : context {
     return task_registry_.size(); // 0 is the top-level task
   } // register_task
 
-  //--------------------------------------------------------------------------//
-  // Reduction interface.
-  //--------------------------------------------------------------------------//
-
-  /*!
-    Return the map of registered reduction operations.
-   */
-
-  auto & reduction_operations() {
-    return reduction_ops_;
-  } // reduction_operations
-
 private:
   /*!
      Handoff to legion runtime from MPI.
@@ -383,12 +371,6 @@ private:
    *--------------------------------------------------------------------------*/
 
   std::vector<registration_function_t> task_registry_;
-
-  /*--------------------------------------------------------------------------*
-    Reduction data members.
-   *--------------------------------------------------------------------------*/
-
-  std::map<size_t, size_t> reduction_ops_;
 };
 
 } // namespace flecsi::runtime

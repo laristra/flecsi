@@ -76,8 +76,8 @@ context_t::start() {
     Register reduction operations.
    */
 
-  for(auto & ro : reduction_registry()) {
-    ro.second();
+  for(auto ro : reduction_registry_) {
+    ro();
   } // for
 
   context::threads_per_process_ = 1;
