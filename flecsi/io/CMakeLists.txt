@@ -18,8 +18,10 @@
 #------------------------------------------------------------------------------#
 
 set(io_HEADERS
+  backend.h
   io.h
   io_base.h
+  io_interface.h
   simple_definition.h
 )
 
@@ -29,7 +31,6 @@ set(io_SOURCES
 if(ENABLE_HDF5)
 
   set(io_HEADERS
-    backend.h
     io_hdf5.h
     ${io_HEADERS}
   )
@@ -44,6 +45,13 @@ set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
 # UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
 # runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+  set(io_HEADERS
+    mpi/policy.h
+    ${io_HEADERS}
+  )
+endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
@@ -74,7 +82,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(UNIT_POLICY MPI)
-  set(RUNTIME_DRIVER mpi/runtime_driver.cc)
+  set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
@@ -104,6 +112,31 @@ set(io_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+
+# TODO:  Test that we have parallel HDF5
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi" AND ENABLE_HDF5)
+  cinch_add_unit(hdf5_restart
+    SOURCES
+      test/hdf5_restart.cc
+      ../supplemental/coloring/add_colorings.cc
+      ${DRIVER_INITIALIZATION}
+      ${RUNTIME_DRIVER}
+    INPUTS
+      test/simple2d-16x16.msh
+    LIBRARIES
+      FleCSI
+      ${CINCH_RUNTIME_LIBRARIES}
+      ${COLORING_LIBRARIES}
+      ${HDF5_LIBRARIES}
+    DEFINES
+      -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+      -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      -DFLECSI_16_16_MESH
+    POLICY ${UNIT_POLICY}
+    THREADS 4
+  )
+endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" AND ENABLE_HDF5)
 
