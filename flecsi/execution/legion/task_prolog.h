@@ -182,7 +182,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       auto ghost_owner_pos_fid =
         LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
-
       // TODO - circular dependency including internal_task.h
       auto constexpr key =
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
@@ -200,17 +199,17 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       if(sparse) {
         Legion::IndexLauncher ghost_launcher(ghost_copy_tid, color_domain,
-        Legion::TaskArgument(&args[first], sizeof(args[first])),
-        Legion::ArgumentMap());
-        rr_pos.add_field(ghost_owner_pos_fid); 
+          Legion::TaskArgument(&args[first], sizeof(args[first])),
+          Legion::ArgumentMap());
+        rr_pos.add_field(ghost_owner_pos_fid);
         ghost_launcher.add_region_requirement(rr_owners);
         ghost_launcher.add_region_requirement(rr_ghost);
         ghost_launcher.add_region_requirement(rr_pos);
         ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
         runtime->execute_index_space(context, ghost_launcher);
-
-     } else {
-        Legion::IndexCopyLauncher ghost_copy_launcher (color_domain);
+      }
+      else {
+        Legion::IndexCopyLauncher ghost_copy_launcher(color_domain);
         ghost_copy_launcher.add_copy_requirements(rr_owners, rr_ghost);
         ghost_copy_launcher.add_src_indirect_field(rr_pos, ghost_owner_pos_fid);
         runtime->issue_copy_operation(context, ghost_copy_launcher);
