@@ -29,9 +29,8 @@
 #include <flecsi/execution/mpi/task_epilog.h>
 #include <flecsi/execution/mpi/task_prolog.h>
 
-
 #if defined(ENABLE_CALIPER)
-#include<caliper/Annotation.h>
+#include <caliper/Annotation.h>
 #endif
 
 namespace flecsi {
@@ -187,7 +186,6 @@ struct mpi_execution_policy_t {
 #if defined(ENABLE_CALIPER)
     ep.end();
 #endif
-
 
     constexpr size_t ZERO =
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();

@@ -30,9 +30,9 @@ using namespace boost::program_options;
 #endif
 
 #if defined(ENABLE_CALIPER)
-#include <caliper/cali.h>
 #include <caliper/cali-mpi.h>
-#endif 
+#include <caliper/cali.h>
+#endif
 
 //----------------------------------------------------------------------------//
 //! FleCSI runtime main function.
@@ -67,9 +67,9 @@ main(int argc, char ** argv) {
   MPI_Init(&argc, &argv);
 #endif
 
-//#if defined(ENABLE_CALIPER)
-//  cali_mpi_init();
-//#endif 
+  //#if defined(ENABLE_CALIPER)
+  //  cali_mpi_init();
+  //#endif
 
   // get the rank
   int rank{0};

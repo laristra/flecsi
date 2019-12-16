@@ -38,7 +38,7 @@
 #if defined(ENABLE_CALIPER)
 #include <caliper/Annotation.h>
 #include <caliper/cali.h>
-#endif 
+#endif
 
 clog_register_tag(task_wrapper);
 
@@ -161,11 +161,11 @@ struct task_wrapper_u {
       clog(info) << "registering task " << name << std::endl;
     }
 
-    //std::string short_name = name;
-    //for(int i = 0; i < 4; i++)
+    // std::string short_name = name;
+    // for(int i = 0; i < 4; i++)
     //  short_name = short_name.erase(0, short_name.find(":") + 2);
 
-    //Legion::TaskVariantRegistrar registrar(tid, short_name.c_str());
+    // Legion::TaskVariantRegistrar registrar(tid, short_name.c_str());
     Legion::TaskVariantRegistrar registrar(tid, name.c_str());
     Legion::Processor::Kind kind = processor_type == processor_type_t::toc
                                      ? Legion::Processor::TOC_PROC
@@ -174,7 +174,6 @@ struct task_wrapper_u {
     registrar.set_leaf(launch_leaf(launch));
     registrar.set_inner(launch_inner(launch));
     registrar.set_idempotent(launch_idempotent(launch));
-
 
     /*
       This section of conditionals is necessary because there is still
@@ -199,7 +198,7 @@ struct task_wrapper_u {
         registrar, name.c_str());
     } // if
 
-} // registration_callback
+  } // registration_callback
 
   /*!
     Execution wrapper method for user tasks.
@@ -217,7 +216,7 @@ struct task_wrapper_u {
 #if defined(ENABLE_CALIPER)
     cali::Annotation tw("FleCSI-Execution");
     std::string tname = task->get_task_name();
-    std::string tname1 = "execute_task->init-handles->"+tname;
+    std::string tname1 = "execute_task->init-handles->" + tname;
     tw.begin(tname1.c_str());
 #endif
     // Unpack task arguments
@@ -236,14 +235,14 @@ struct task_wrapper_u {
     if constexpr(std::is_same_v<RETURN, void>) {
 
 #if defined(ENABLE_CALIPER)
-      tname1 = "execute_task->user_task->"+tname;
+      tname1 = "execute_task->user_task->" + tname;
       tw.begin(tname1.c_str());
 #endif
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
 #if defined(ENABLE_CALIPER)
       tw.end();
-      tname1 = "execute_task->finalize-handles->"+tname;
+      tname1 = "execute_task->finalize-handles->" + tname;
       tw.begin(tname1.c_str());
 #endif
 
@@ -253,12 +252,11 @@ struct task_wrapper_u {
 #if defined(ENABLE_CALIPER)
       tw.end();
 #endif
-
     }
     else {
 
 #if defined(ENABLE_CALIPER)
-      tname1 = "execute_task->user_task->"+tname;
+      tname1 = "execute_task->user_task->" + tname;
       tw.begin(tname1.c_str());
 #endif
 
@@ -266,7 +264,7 @@ struct task_wrapper_u {
 
 #if defined(ENABLE_CALIPER)
       tw.end();
-      tname1 = "execute_task->finalize-handles->"+tname;
+      tname1 = "execute_task->finalize-handles->" + tname;
       tw.begin(tname1.c_str());
 #endif
 
