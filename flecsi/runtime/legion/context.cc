@@ -160,13 +160,6 @@ context_t::start() {
   } // scope
 
   /*
-    Setup internal launch domains.
-   */
-
-  set_launch_domain_size(single, 1);
-  set_launch_domain_size(index, 0);
-
-  /*
     Register tasks.
    */
 
@@ -202,8 +195,8 @@ context_t::start() {
     Register reduction operations.
    */
 
-  for(auto & ro : context::reduction_registry()) {
-    ro.second();
+  for(auto ro : reduction_registry_) {
+    ro();
   } // for
 
   /*

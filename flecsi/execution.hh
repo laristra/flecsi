@@ -20,11 +20,10 @@
 #endif
 
 #include <flecsi/execution/backend.hh>
-#include <flecsi/execution/internal.hh>
 #include <flecsi/execution/launch.hh>
+#include <flecsi/execution/reduction.hh>
 #include <flecsi/execution/task_attributes.hh>
 #include <flecsi/runtime/backend.hh>
-//#include <flecsi/execution/reduction.hh>
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface
@@ -178,14 +177,14 @@ colors() {
 
   @tparam TASK                The user task.
   @tparam LAUNCH_DOMAIN       The launch domain.
-  @tparam REDUCTION_OPERATION The reduction operation.
+  @tparam REDUCTION_OPERATION The reduction operation type.
   @tparam ATTRIBUTES          The task attributes mask.
   @tparam ARGS                The user-specified task arguments.
  */
 
 template<auto & TASK,
-  size_t LAUNCH_DOMAIN,
-  size_t REDUCTION_OPERATION,
+  const execution::launch_domain & LAUNCH_DOMAIN,
+  class REDUCTION_OPERATION,
   size_t ATTRIBUTES,
   typename... ARGS>
 decltype(auto) reduce(ARGS &&... args);
@@ -199,7 +198,7 @@ decltype(auto) reduce(ARGS &&... args);
     Legion return-value serialization interface, or any of several standard
     containers of such types.
     If \a ATTRIBUTES specifies an MPI task, parameters need merely be movable.
-  @tparam LAUNCH_DOMAIN The launch domain id.
+  @tparam LAUNCH_DOMAIN The launch domain object.
   @tparam ATTRIBUTES    The task attributes mask.
   @tparam ARGS The user-specified task arguments, implicitly converted to the
     parameter types for \a TASK.
@@ -211,12 +210,12 @@ decltype(auto) reduce(ARGS &&... args);
  */
 
 template<auto & TASK,
-  size_t LAUNCH_DOMAIN = flecsi::index,
+  const execution::launch_domain & LAUNCH_DOMAIN = flecsi::index,
   size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
   typename... ARGS>
 decltype(auto)
 execute(ARGS &&... args) {
-  return reduce<TASK, LAUNCH_DOMAIN, flecsi_internal_hash(0), ATTRIBUTES>(
+  return reduce<TASK, LAUNCH_DOMAIN, void, ATTRIBUTES>(
     std::forward<ARGS>(args)...);
 } // execute
 
