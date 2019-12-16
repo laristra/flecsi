@@ -27,8 +27,8 @@
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/set/interface.hh>
-#include <flecsi/topology/structured_mesh/interface.hh>
-//#include <flecsi/topology/unstructured_mesh/interface.hh>
+#include <flecsi/topology/structured/interface.hh>
+//#include <flecsi/topology/unstructured/interface.hh>
 #include <flecsi/utils/demangle.hh>
 #include <flecsi/utils/tuple_walker.hh>
 
@@ -107,10 +107,10 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-               topology::global_t,
+               topology::global,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, topology::global_t> & ref) {
+    const data::field_reference<DATA_TYPE, topology::global> & ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
@@ -137,10 +137,10 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense,
-               topology::index_t,
+               topology::index,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, topology::index_t> & ref) {
+    const data::field_reference<DATA_TYPE, topology::index> & ref) {
     auto & instance_data = ref.topology().get();
 
     flog_assert(instance_data.colors == domain_,

@@ -22,7 +22,8 @@
 #include "../entity_storage.hh"
 #include "../index_space.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/topology/unstructured_mesh/types.hh>
+#include <flecsi/topology/unstructured/storage.hh>
+#include <flecsi/topology/unstructured/types.hh>
 #include <flecsi/utils/id.hh>
 
 #include <array>

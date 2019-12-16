@@ -11,40 +11,27 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#pragma once
 
 /*! @file */
 
-#if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
+#include <flecsi/execution.hh>
+#include <flecsi/topology/canonical/types.hh>
+
+#if !defined(FLECSI_ENABLE_MPI)
+#error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
+
+#include <mpi.h>
 
 namespace flecsi {
 namespace topology {
 
-/*!
-  The \c index type allows users to register data on an
-  arbitrarily-sized set of indices that have an implicit one-to-one coloring.
+canonical_base::coloring::coloring(std::string const & filename) {
 
-  @ingroup topology
- */
-
-struct index {
-
-  index() = delete;
-
-  struct coloring {
-    coloring(size_t size) : size_(size) {}
-
-    size_t size() const {
-      return size_;
-    }
-
-  private:
-    size_t size_;
-  };
-
-}; // struct index
+  std::cout << "process " << process() << " of " << processes() << " with "
+            << threads_per_process() << " (tpp) and input " << filename
+            << std::endl;
+}
 
 } // namespace topology
 } // namespace flecsi

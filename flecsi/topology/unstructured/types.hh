@@ -22,8 +22,8 @@
 #include "../connectivity.hh"
 #include "../utility_types.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/topology/unstructured_mesh/partition.hh>
-#include <flecsi/topology/unstructured_mesh/utils.hh>
+#include <flecsi/topology/unstructured/partition.hh>
+#include <flecsi/topology/unstructured/utils.hh>
 
 #include <array>
 #include <cassert>

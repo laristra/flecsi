@@ -22,9 +22,9 @@ using namespace flecsi::data;
 using namespace flecsi::topology;
 
 namespace {
-static_assert(std::is_same_v<core_t<global_t>, global_t>);
-struct test_g : global_t {};
-static_assert(std::is_same_v<core_t<test_g>, global_t>);
+static_assert(std::is_same_v<core_t<global>, global>);
+struct test_g : global {};
+static_assert(std::is_same_v<core_t<test_g>, global>);
 
 struct test_policy {
   static constexpr std::size_t num_dimensions = 1, num_domains = 1;
@@ -60,7 +60,7 @@ check(global_field_t::accessor<ro> ga) {
 } // check
 
 int
-global(int, char **) {
+driver(int, char **) {
 
   execute<assign, single>(energy);
   execute<check>(energy);
@@ -68,4 +68,4 @@ global(int, char **) {
   return 0;
 }
 
-ftest_register_driver(global);
+ftest_register_driver(driver);
