@@ -385,14 +385,18 @@ struct mpi_policy_t {
       if(info.storage_class != data::dense)
         continue;
       size_t fid = info.fid;
+      size_t is = info.index_space;
       std::string field_name = "fid_" + std::to_string(fid);
       auto it = field_data.find(fid);
-      // TODO:  instantiate field if not already there!
-      //      if(it == field_data.end()) {
-      //        // TODO:  find size!
-      //        context.register_field_data(fid, size);
-      //        it = field_data.find(fid);
-      //      }
+      if(it == field_data.end()) {
+        // instantiate field if not already there
+        const auto & color_info =
+          (context.coloring_info(is)).at(context.color());
+        size_t size = info.size * (color_info.exclusive + color_info.shared +
+                                    color_info.ghost);
+        context.register_field_data(fid, size);
+        it = field_data.find(fid);
+      }
       assert(it != field_data.end() && "messed up");
       auto & data = field_data.at(fid);
       size_t size = data.size() / sizeof(int);
