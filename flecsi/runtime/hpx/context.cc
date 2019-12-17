@@ -71,7 +71,7 @@ context_t::finalize() {
 
 int
 context_t::start() {
-
+  return 0;
 }
 
 } // namespace flecsi::runtime

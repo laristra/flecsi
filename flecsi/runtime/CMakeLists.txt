@@ -48,6 +48,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/context.cc
   )
 
+  elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(runtime_HEADERS
+    ${runtime_HEADERS}
+    hpx/context.hh
+  )
+
+  set(runtime_SOURCES
+    ${runtime_SOURCES}
+    hpx/context.cc
+  )
+
 endif()
 
 #------------------------------------------------------------------------------#

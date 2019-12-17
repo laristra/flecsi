@@ -28,6 +28,8 @@
 #include <hpx/hpx.hpp>
 #include <hpx/hpx_init.hpp>
 
+#include <mpi.h>
+
 #include <vector>
 #include <string>
 #include <stdexcept>
