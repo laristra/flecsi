@@ -280,7 +280,8 @@ endif(ENABLE_CALIPER)
 #------------------------------------------------------------------------------#
 
 if(ENABLE_BOOST)
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+  find_package(Boost 1.59.0 REQUIRED)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES} Boost::boost)
 endif()
 
 #------------------------------------------------------------------------------#
