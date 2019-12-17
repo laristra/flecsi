@@ -26,12 +26,12 @@ namespace topology {
 
 // Declarations for the base topology types.
 
+struct global;
+struct index;
+
 struct canonical_base;
 template<typename>
 struct canonical;
-
-struct global_t;
-struct index_t;
 
 struct ntree_base;
 template<typename>
@@ -60,13 +60,13 @@ struct core<T, utils::voided<utils::base_specialization_t<canonical, T>>> {
 };
 
 template<class T>
-struct core<T, std::enable_if_t<std::is_base_of_v<global_t, T>>> {
-  using type = global_t;
+struct core<T, std::enable_if_t<std::is_base_of_v<global, T>>> {
+  using type = global;
 };
 
 template<class T>
-struct core<T, std::enable_if_t<std::is_base_of_v<index_t, T>>> {
-  using type = index_t;
+struct core<T, std::enable_if_t<std::is_base_of_v<index, T>>> {
+  using type = index;
 };
 
 template<class T>

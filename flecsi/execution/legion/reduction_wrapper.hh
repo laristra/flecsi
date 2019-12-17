@@ -19,9 +19,9 @@
 #error Do not include this file directly!
 #endif
 
+#include "../reduction.hh"
 #include "flecsi/runtime/backend.hh"
-#include <flecsi/runtime/types.hh>
-#include <flecsi/utils/common.hh>
+#include "flecsi/utils/demangle.hh"
 #include <flecsi/utils/flog.hh>
 
 #include <legion.h>
@@ -30,45 +30,37 @@ flog_register_tag(reduction_wrapper);
 
 namespace flecsi {
 namespace execution {
-namespace legion {
 
-template<size_t HASH, typename TYPE>
-struct reduction_wrapper {
+namespace detail {
+/*!
+  Register the user-defined reduction operator with the runtime.
+*/
 
-  using rhs_t = typename TYPE::RHS;
-  using lhs_t = typename TYPE::LHS;
+template<class>
+void register_reduction();
 
-  /*!
-    Register the user-defined reduction operator with the runtime.
-   */
+inline Legion::ReductionOpID reduction_id;
+} // namespace detail
 
-  static void registration_callback() {
+// NB: 0 is reserved by Legion.
+template<class R>
+inline const Legion::ReductionOpID
+  reduction_op = (runtime::context::instance().register_reduction_operation(
+                    detail::register_reduction<R>),
+    ++detail::reduction_id);
 
-    // Get the map of registered operations
-    auto & reduction_ops =
-      runtime::context_t::instance().reduction_operations();
+template<class TYPE>
+void
+detail::register_reduction() {
+  {
+    flog_tag_guard(reduction_wrapper);
+    flog_devel(info) << "registering reduction operation "
+                     << utils::type<TYPE>() << std::endl;
+  }
 
-    flog_assert(reduction_ops.find(HASH) == reduction_ops.end(),
-      typeid(TYPE).name() << " has already been registered with this name");
+  // Register the operation with the Legion runtime
+  Legion::Runtime::register_reduction_op<TYPE>(reduction_op<TYPE>);
+}
 
-    {
-      flog_tag_guard(reduction_wrapper);
-      flog_devel(info) << "registering reduction operation " << HASH
-                       << std::endl;
-    }
-
-    const size_t id = unique_oid_t::instance().next();
-
-    // Register the operation with the Legion runtime
-    Legion::Runtime::register_reduction_op<TYPE>(id);
-
-    // Save the id for invocation
-    reduction_ops[HASH] = id;
-
-  } // registration_callback
-
-}; // struct reduction_wrapper
-
-} // namespace legion
 } // namespace execution
 } // namespace flecsi

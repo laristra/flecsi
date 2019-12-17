@@ -15,7 +15,7 @@
 /*! @file */
 
 #include <flecsi/execution.hh>
-#include <flecsi/topology/internal/canonical.hh>
+#include <flecsi/topology/canonical/types.hh>
 
 #if !defined(FLECSI_ENABLE_MPI)
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!

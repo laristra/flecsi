@@ -24,8 +24,8 @@
 #endif
 
 #include <flecsi/data/field.hh>
-#include <flecsi/topology/structured_mesh/interface.hh>
-#include <flecsi/topology/unstructured_mesh/interface.hh>
+#include <flecsi/topology/structured/interface.hh>
+#include <flecsi/topology/unstructured/interface.hh>
 
 namespace flecsi {
 namespace data {
@@ -36,7 +36,7 @@ namespace data {
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
-  topology::global_t,
+  topology::global,
   DATA_TYPE,
   PRIVILEGES> : reference_base {
 
@@ -45,7 +45,7 @@ struct accessor<storage_label_t::dense,
   }
 
   using value_type = DATA_TYPE;
-  using topology_t = topology::global_t;
+  using topology_t = topology::global;
 
   accessor(field_reference<DATA_TYPE, topology_t> const & ref)
     : accessor(ref.info().fid) {}
@@ -79,11 +79,11 @@ private:
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
-  topology::index_t,
+  topology::index,
   DATA_TYPE,
   PRIVILEGES> : reference_base {
   using value_type = DATA_TYPE;
-  using topology_t = topology::index_t;
+  using topology_t = topology::index;
 
   accessor(field_reference<DATA_TYPE, topology_t> const & ref)
     : accessor(ref.info().fid) {}

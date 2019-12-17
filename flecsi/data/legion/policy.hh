@@ -21,7 +21,7 @@
 #include <flecsi/runtime/backend.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/topology/core.hh>
-#include <flecsi/topology/unstructured_mesh/types.hh>
+#include <flecsi/topology/unstructured/types.hh>
 #include <flecsi/utils/flog.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -54,7 +54,7 @@ struct topology_id {
   Index Topology.
  *----------------------------------------------------------------------------*/
 
-inline topology_data<topology::index_t>::topology_data(
+inline topology_data<topology::index>::topology_data(
   const type::coloring & coloring)
   : topology_base(Legion::Domain::from_rect<1>(
       LegionRuntime::Arrays::Rect<1>(0, coloring.size() - 1))),
@@ -65,7 +65,7 @@ inline topology_data<topology::index_t>::topology_data(
   auto & flecsi_context = runtime::context_t::instance();
 
   auto & field_info_store = flecsi_context.get_field_info_store(
-    topology::id<topology::index_t>(), storage_label_t::dense);
+    topology::id<topology::index>(), storage_label_t::dense);
 
   Legion::FieldAllocator allocator =
     legion_runtime->create_field_allocator(legion_context, field_space);

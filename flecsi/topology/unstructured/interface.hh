@@ -20,9 +20,9 @@
 #endif
 #include "flecsi/data/reference.hh"
 //#include "flecsi/runtime/backend.hh"
-//#include <flecsi/topology/unstructured_mesh/partition.hh>
-#include <flecsi/topology/unstructured_mesh/storage.hh>
-#include <flecsi/topology/unstructured_mesh/types.hh>
+//#include <flecsi/topology/unstructured/partition.hh>
+#include <flecsi/topology/unstructured/storage.hh>
+#include <flecsi/topology/unstructured/types.hh>
 //#include <flecsi/utils/common.hh>
 //#include <flecsi/utils/set_intersection.hh>
 //#include <flecsi/utils/static_verify.hh>
@@ -61,7 +61,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
 //----------------------------------------------------------------------------//
 
 /*!
-  unstructured_mesh is parameterized on a class (POLICY_TYPE) which
+  unstructured is parameterized on a class (POLICY_TYPE) which
   gives information about its entity types, connectivities and more. the mesh
   topology is responsibly for computing connectivity info between entities of
   different topological dimension, e.g: vertex -> cell, cell -> edge, etc. and

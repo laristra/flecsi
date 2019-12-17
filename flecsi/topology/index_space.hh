@@ -91,14 +91,8 @@ public:
   //! ID storage type
   using id_storage_t = ID_STORAGE_TYPE<id_t>;
 
-  template<typename T_, typename... Ts>
-  using id_storage_type_arg = ID_STORAGE_TYPE<T_>;
-
   //! Storage type
   using storage_t = STORAGE_TYPE<T>;
-
-  template<typename T_, typename... Ts>
-  using storage_type_arg = STORAGE_TYPE<T_>;
 
   //! item, e.g. entity type
   using item_t = typename std::remove_pointer<T>::type;
@@ -108,9 +102,6 @@ public:
 
   //! reference casting type
   using cast_t = std::decay_t<ref_t>;
-
-  //! filter predicate function signature
-  using filter_function = std::function<bool(T &)>;
 
   //! apply function signature
   using apply_function = std::function<void(T &)>;
@@ -170,8 +161,6 @@ public:
   class iterator_base_
   {
   public:
-    using MS = typename std::remove_const<S>::type;
-
     //-----------------------------------------------------------------//
     //! Initialize iterator from items and range
     //-----------------------------------------------------------------//
@@ -715,9 +704,8 @@ public:
     bool OWNED2 = OWNED,
     bool SORTED2 = SORTED,
     class F2 = F,
-    template<typename, typename...>
-    class ID_STORAGE_TYPE2 = id_storage_type_arg,
-    template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
+    template<typename, typename...> class ID_STORAGE_TYPE2 = ID_STORAGE_TYPE,
+    template<typename, typename...> class STORAGE_TYPE2 = STORAGE_TYPE>
   auto & cast() {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
@@ -741,9 +729,8 @@ public:
     bool OWNED2 = OWNED,
     bool SORTED2 = SORTED,
     class F2 = F,
-    template<typename, typename...>
-    class ID_STORAGE_TYPE2 = id_storage_type_arg,
-    template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
+    template<typename, typename...> class ID_STORAGE_TYPE2 = ID_STORAGE_TYPE,
+    template<typename, typename...> class STORAGE_TYPE2 = STORAGE_TYPE>
   auto & cast() const {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 

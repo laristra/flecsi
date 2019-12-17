@@ -51,6 +51,14 @@ const size_t FLECSI_MAPPER_COMPACTED_STORAGE = 0x00002000;
 const size_t FLECSI_MAPPER_SUBRANK_LAUNCH = 0x00003000;
 const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
+namespace legion {
+template<class R = void>
+using task = R(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
+  Legion::Context,
+  Legion::Runtime *);
+}
+
 struct context_t : context {
 
   /*
@@ -58,18 +66,7 @@ struct context_t : context {
     to avoid inadvertent corruption of initialization logic.
    */
 
-  friend void top_level_task(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & regions,
-    Legion::Context ctx,
-    Legion::Runtime * runtime);
-  friend void handoff_to_mpi_task(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & regions,
-    Legion::Context ctx,
-    Legion::Runtime * runtime);
-  friend void wait_on_mpi_task(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & regions,
-    Legion::Context ctx,
-    Legion::Runtime * runtime);
+  friend legion::task<> top_level_task, handoff_to_mpi_task, wait_on_mpi_task;
 
   /*!
      The registration_function_t type defines a function type for
@@ -285,18 +282,6 @@ struct context_t : context {
     return task_registry_.size(); // 0 is the top-level task
   } // register_task
 
-  //--------------------------------------------------------------------------//
-  // Reduction interface.
-  //--------------------------------------------------------------------------//
-
-  /*!
-    Return the map of registered reduction operations.
-   */
-
-  auto & reduction_operations() {
-    return reduction_ops_;
-  } // reduction_operations
-
 private:
   /*!
      Handoff to legion runtime from MPI.
@@ -386,12 +371,6 @@ private:
    *--------------------------------------------------------------------------*/
 
   std::vector<registration_function_t> task_registry_;
-
-  /*--------------------------------------------------------------------------*
-    Reduction data members.
-   *--------------------------------------------------------------------------*/
-
-  std::map<size_t, size_t> reduction_ops_;
 };
 
 } // namespace flecsi::runtime

@@ -20,29 +20,30 @@
 set(topology_HEADERS
   base.hh
   array_buffer.hh
+  canonical/interface.hh
+  canonical/types.hh
   connectivity.hh
   entity_storage.hh
   index_space.hh
   utility_types.hh
-  internal/canonical.hh
   internal/global.hh
   internal/index.hh
   ntree/interface.hh
   ntree/types.hh
   set/interface.hh
   set/types.hh
-  structured_mesh/interface.hh
-  structured_mesh/types.hh
-  unstructured_mesh/coloring.hh
-  unstructured_mesh/interface.hh
-  unstructured_mesh/partition.hh
-  unstructured_mesh/storage.hh
-  unstructured_mesh/types.hh
-  unstructured_mesh/utils.hh
+  structured/interface.hh
+  structured/types.hh
+  unstructured/coloring.hh
+  unstructured/interface.hh
+  unstructured/partition.hh
+  unstructured/storage.hh
+  unstructured/types.hh
+  unstructured/utils.hh
 )
 
 set(topology_SOURCES
-  internal/canonical.cc
+  canonical/types.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
@@ -102,7 +103,7 @@ set(topology_SOURCES
 #---------------------------   Unstructured Mesh  -----------------------------#
 
 ftest_add_unit(umesh_coloring
-  SOURCES unstructured_mesh/test/coloring.cc
+  SOURCES unstructured/test/coloring.cc
 )
 
 #----------------------------------  NTREE  -----------------------------------#

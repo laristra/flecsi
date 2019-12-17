@@ -58,6 +58,7 @@ struct utils::serial_convert<data::accessor<L, Topo, T, Priv>> {
 
 namespace execution {
 namespace legion {
+using runtime::legion::task;
 
 namespace detail {
 /*!
@@ -70,12 +71,7 @@ namespace detail {
   @ingroup legion-execution
  */
 
-template<typename RETURN,
-  RETURN (*TASK)(const Legion::Task *,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *),
-  std::size_t A>
+template<typename RETURN, task<RETURN> * TASK, std::size_t A>
 void register_task();
 
 template<class T>
@@ -109,19 +105,15 @@ tuple_get(const Legion::Task & t) {
  */
 
 template<auto & F, size_t A = loc | leaf>
-inline const size_t task_id = runtime::context_t::instance().register_task(
+// 'extern' works around GCC bug #90493
+extern const task_id_t task_id = runtime::context_t::instance().register_task(
   utils::symbol<F>(),
   detail::register_task<
     typename utils::function_traits<decltype(F)>::return_type,
     F,
     A>);
 
-template<typename RETURN,
-  RETURN (*TASK)(const Legion::Task *,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *),
-  std::size_t A>
+template<typename RETURN, task<RETURN> * TASK, std::size_t A>
 void
 detail::register_task() {
   constexpr auto processor_type = mask_to_processor_type(A);

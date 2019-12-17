@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 #include "flecsi/data/reference.hh"
-#include <flecsi/topology/structured_mesh/types.hh>
+#include <flecsi/topology/structured/types.hh>
 
 namespace flecsi {
 namespace topology {
@@ -33,7 +33,7 @@ namespace topology {
  */
 
 template<typename POLICY_TYPE>
-struct structured_mesh : structured_mesh_base_t,
+struct structured : structured_base_t,
                          data::reference_base {}; // struct structured_mesh
 
 } // namespace topology

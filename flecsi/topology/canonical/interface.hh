@@ -19,10 +19,27 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/utils/function_traits.hh>
+#include <flecsi/topology/canonical/types.hh>
 
-#define flecsi_internal_return_type(task)                                      \
-  typename flecsi::utils::function_traits<decltype(task)>::return_type
+#include <string>
 
-#define flecsi_internal_arguments_type(task)                                   \
-  typename flecsi::utils::function_traits<decltype(task)>::arguments_type
+namespace flecsi {
+namespace topology {
+
+/*!
+  The canonical type is a dummy topology for development and testing.
+
+  @ingroup topology
+ */
+
+template<typename TOPOLOGY_POLICY>
+struct canonical : canonical_base {
+
+  using coloring = canonical_base::coloring;
+
+  canonical() = delete;
+
+}; // struct canonical
+
+} // namespace topology
+} // namespace flecsi
