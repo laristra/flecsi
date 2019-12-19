@@ -42,6 +42,7 @@ variables:
   FLECSI_GCC_VERSION: "7.3.0"
   FLECSI_PYTHON_VERSION: "3.5.1"
   FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/flecsi-deps-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
+  FLECSI_SPACK_SCOPE: "lanl_ristra_flecsi"
   FLECSI_SPACK_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz +hdf5 backend=${RUNTIME}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
@@ -58,7 +59,7 @@ before_script:
     ( flock -e 200
     source ${SPACK_ROOT}/share/spack/setup-env.sh;
     # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true;
-    spack repo rm laristra_flecsi || /bin/true ;
+    spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
     if [[ ${BUILD_TYPE} =~ "Debug" ]];
@@ -160,6 +161,21 @@ before_script:
 .job_template: &job_def
   <<: *general_def
   <<: *cache_def
+
+.update_spackage: &update_spackage |-
+    echo 'Updating spackages...'
+    cd ${CI_PROJECT_DIR}
+    export last_commit=$(git log -n 1 --pretty=format:%H -- spack-repo/packages)
+    git diff ${last_commit}^ HEAD spack-repo/packages | tee spackage.patch
+    if [[ -s spackage.patch ]];
+    then
+      git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git;
+      cd ristra_spackages;
+      git apply ${CI_PROJECT_DIR}/spackage.patch;
+      git add -u;
+      git commit -m "Gitlab CI Automatic Spackage Update - FleCSI";
+      git push;
+    fi;
 
 #############
 # Env Stage #
@@ -352,6 +368,14 @@ env_hpx:
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
+
+env_update:
+  extends: env_mpi
+  only:
+    refs:
+      - master
+  script:
+    - *update_spackage
 
 ###############
 # Canary Jobs #
