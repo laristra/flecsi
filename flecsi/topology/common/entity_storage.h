@@ -115,14 +115,6 @@ public:
     return size_ - 1;
   }
 
-  void push_back(simple_id i) {
-    assert(false && "invalid operation");
-  }
-
-  void pushed() {
-    assert(false && "invalid operation");
-  }
-
   void clear() {
     size_ = 0;
   }
@@ -137,22 +129,6 @@ public:
 
   std::size_t size() const {
     return size_;
-  }
-
-  size_t capacity() const {
-    return size_;
-  }
-
-  template<typename... Args>
-  void assign(Args &&... args) {
-    assert(false && "invalid operation");
-  }
-
-  template<typename... Args>
-  void insert(Args &&... args) {}
-
-  void reserve(size_t n) {
-    assert(false && "invalid operation");
   }
 
   iterator begin() const {
