@@ -223,7 +223,7 @@ public:
               ++from_dim) {
             get_connectivity_(from_domain, to_domain, from_dim, to_dim)
               .get_index_space()
-              .set_master(master);
+              .data = master.data;
           } // for
         } // for
       } // for
@@ -358,7 +358,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
   decltype(auto) num_entities() const {
-    return base_t::ms_->index_spaces[DOM][DIM].size();
+    return this->ms_->index_spaces[DOM][DIM].ids.size();
   } // num_entities
 
   //--------------------------------------------------------------------------//
@@ -372,7 +372,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
   decltype(auto) num_entities(partition_t partition) const {
-    return base_t::ms_->partition_index_spaces[partition][DOM][DIM].size();
+    return this->ms_->partition_index_spaces[partition][DOM][DIM].ids.size();
   } // num_entities
 
   //--------------------------------------------------------------------------//
@@ -480,7 +480,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto get_entities() const {
     using etype = entity_type<DIM, DOM>;
-    return static_cast<etype *>(&this->ms_->index_spaces[DOM][DIM][0]);
+    return this->ms_->index_spaces[DOM][DIM].template cast<etype>().data.data();
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -493,8 +493,8 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto get_entity(id_t global_id) const {
     using etype = entity_type<DIM, DOM>;
-    return static_cast<etype *>(
-      base_t::ms_->index_spaces[DOM][DIM][global_id.entity()]);
+    return this->ms_->index_spaces[DOM][DIM].template cast<etype>().get_offset(
+      global_id.entity());
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -510,7 +510,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DOM = 0>
   auto get_entity(size_t dim, id_t global_id) {
-    return base_t::ms_->index_spaces[DOM][dim][global_id.entity()];
+    return this->ms_->index_spaces[DOM][dim].get_offset(global_id.entity());
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -528,9 +528,9 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto get_entity(id_t global_id, partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
-    return static_cast<etype *>(
-      base_t::ms_
-        ->partition_index_spaces[partition][DOM][DIM][global_id.entity()]);
+    return this->ms_->partition_index_spaces[partition][DOM][DIM]
+      .template cast<etype>()
+      .get_offset(global_id.entity());
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -546,8 +546,8 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DOM = 0>
   auto get_entity(size_t dim, id_t global_id, partition_t partition) {
-    return base_t::ms_
-      ->partition_index_spaces[partition][DOM][dim][global_id.entity()];
+    return this->ms_->partition_index_spaces[partition][DOM][dim].get_offset(
+      global_id.entity());
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -574,7 +574,8 @@ public:
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity_u<TO_DOM, etype>;
 
-    return xform<dtype>(c.get_index_space().slice<etype>(c.range(e->id())));
+    return xform<dtype>(
+      c.get_index_space().cast<etype>().slice(c.range(e->id())));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -627,7 +628,7 @@ public:
     using etype = entity_type<DIM, DOM>;
     using dtype = domain_entity_u<DOM, etype>;
     return xform<dtype>(
-      this->ms_->index_spaces[DOM][DIM].template slice<etype>());
+      this->ms_->index_spaces[DOM][DIM].template cast<etype>());
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -645,7 +646,7 @@ public:
     using etype = entity_type<DIM, DOM>;
     using dtype = domain_entity_u<DOM, etype>;
     return xform<dtype>(this->ms_->partition_index_spaces[partition][DOM][DIM]
-                          .template slice<etype>());
+                          .template cast<etype>());
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -656,8 +657,8 @@ public:
   //! @tparam DIM to topological dimension
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
-  auto entity_ids() const {
-    return base_t::ms_->index_spaces[DOM][DIM].ids();
+  const auto & entity_ids() const {
+    return this->ms_->index_spaces[DOM][DIM].ids;
   } // entity_ids
 
   //--------------------------------------------------------------------------//
@@ -670,8 +671,8 @@ public:
   //! @param partition e.g. all, owned, shared, etc.
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
-  auto entity_ids(partition_t partition) const {
-    return base_t::ms_->partition_index_spaces[partition][DOM][DIM].ids();
+  const auto & entity_ids(partition_t partition) const {
+    return this->ms_->partition_index_spaces[partition][DOM][DIM].ids;
   } // entity_ids
 
   //--------------------------------------------------------------------------//
@@ -714,7 +715,9 @@ public:
     const connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
-    return c.get_index_space().ids(c.range(e->id()));
+    const auto b = c.get_index_space().ids.data();
+    const auto r = c.range(e->id());
+    return utils::span(b + r.first, b + r.second);
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -808,18 +811,12 @@ public:
   //! @tparam INDEX_SUBSPACE index subspace id
   //--------------------------------------------------------------------------//
   template<size_t INDEX_SUBSPACE>
-  auto & subentities() {
+  auto subentities() const {
     return get_index_subspace<INDEX_SUBSPACE>();
   }
-
-  //--------------------------------------------------------------------------//
-  //! Get the subentities of the specified index subspace
-  //!
-  //! @tparam INDEX_SUBSPACE index subspace id
-  //--------------------------------------------------------------------------//
-  template<size_t INDEX_SUBSPACE>
-  const auto & subentities() const {
-    return get_index_subspace<INDEX_SUBSPACE>();
+  template<std::size_t Subspace>
+  auto & sub_ids() {
+    return this->storage()->index_subspaces[Subspace].ids;
   }
 
   //--------------------------------------------------------------------------//
@@ -829,7 +826,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t INDEX_SUBSPACE>
   auto num_subentities() const {
-    return base_t::ms_->index_subspaces[INDEX_SUBSPACE].size();
+    return this->ms_->index_subspaces[INDEX_SUBSPACE].ids.size();
   }
 
   //--------------------------------------------------------------------------//
@@ -1021,7 +1018,7 @@ public:
   }
 
   template<size_t INDEX_SUBSPACE>
-  auto & get_index_subspace() {
+  auto get_index_subspace() const {
     using entity_types_t = typename MESH_TYPE::entity_types;
 
     using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
@@ -1051,47 +1048,12 @@ public:
 
     using entity_t = typename std::tuple_element<2, entry_t>::type;
 
-    return base_t::ms_->index_subspaces[INDEX_SUBSPACE]
-      .template cast<domain_entity_u<domain_t::value, entity_t>>();
-  }
-
-  template<size_t INDEX_SUBSPACE>
-  const auto & get_index_subspace() const {
-    using entity_types_t = typename MESH_TYPE::entity_types;
-
-    using index_subspaces = typename get_index_subspaces_u<MESH_TYPE>::type;
-
-    constexpr size_t subspace_index =
-      find_index_subspace_from_id_u<std::tuple_size<index_subspaces>::value,
-        index_subspaces, INDEX_SUBSPACE>::find();
-
-    static_assert(subspace_index != -1, "invalid index subspace");
-
-    using subspace_entry_t =
-      typename std::tuple_element<subspace_index, index_subspaces>::type;
-
-    using index_space_t =
-      typename std::tuple_element<0, subspace_entry_t>::type;
-
-    constexpr size_t index =
-      find_index_space_from_id_u<std::tuple_size<entity_types_t>::value,
-        entity_types_t, index_space_t::value>::find();
-
-    // never gonna happen since index is a size_t, and cant be negative
-    static_assert(index != -1, "invalid index space");
-
-    using entry_t = typename std::tuple_element<index, entity_types_t>::type;
-
-    using domain_t = typename std::tuple_element<1, entry_t>::type;
-
-    using entity_t = typename std::tuple_element<2, entry_t>::type;
-
-    return base_t::ms_->index_subspaces[INDEX_SUBSPACE]
-      .template cast<domain_entity_u<domain_t::value, entity_t>>();
+    return xform<domain_entity_u<domain_t::value, entity_t>>(
+      this->ms_->index_subspaces[INDEX_SUBSPACE].template cast<entity_t>());
   }
 
   size_t get_index_subspace_size_(size_t index_subspace) {
-    return base_t::ms_->index_subspaces[index_subspace].size();
+    return this->ms_->index_subspaces[index_subspace].ids.size();
   }
 
 private:
@@ -1103,9 +1065,10 @@ private:
 
   template<class D, class IS>
   static auto xform(IS && is) {
-    // We depend on the fact that slices do not own their iterators.
+    // We depend on the fact that is.ids does not own its iterators/elements.
     return utils::transform_view(
-      std::forward<IS>(is), [](auto & e) { return D(&e); });
+      is.ids, [d = std::forward<IS>(is).data](
+                const auto & i) { return D(&d[i.index_space_index()]); });
   }
 
   template<size_t DOM, typename VERT_TYPE>
@@ -1155,12 +1118,12 @@ private:
 
   // Get the number of entities in a given domain and topological dimension
   size_t num_entities_(size_t dim, size_t domain = 0) const {
-    return base_t::ms_->index_spaces[domain][dim].size();
+    return this->ms_->index_spaces[domain][dim].ids.size();
   } // num_entities_
 
   // Get the number of entities in a given domain and topological dimension
   size_t num_entities_(size_t dim, size_t domain, partition_t partition) const {
-    return base_t::ms_->partition_index_spaces[partition][domain][dim].size();
+    return this->ms_->partition_index_spaces[partition][domain][dim].ids.size();
   } // num_entities_
 
   //--------------------------------------------------------------------------//
@@ -1242,8 +1205,8 @@ private:
     using cell_type = entity_type<UsingDimension, Domain>;
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
-    auto & cis = base_t::ms_->index_spaces[Domain][UsingDimension]
-                   .template cast<cell_type>();
+    const auto cis = this->ms_->index_spaces[Domain][UsingDimension]
+                       .template cast<cell_type>();
 
     // Lookup the index space for the entity type being created.
     constexpr size_t cell_index_space = find_index_space_from_dimension_u<
@@ -1287,7 +1250,7 @@ private:
       size_t c = citr.second;
 
       // Get the cell object
-      const auto cell = &cis[c];
+      const auto cell = &cis.get_offset(c);
       id_t cell_id = cell->global_id();
 
       // Get storage reference.
@@ -1813,9 +1776,8 @@ private:
     using binding_type = entity_type<TO_DIM, TO_DOM>;
 
     // get the cells from mesh storage
-    auto & cell_storage =
-      base_t::ms_->index_spaces[FROM_DOM][cell_dim]
-        .template cast<domain_entity_u<FROM_DOM, cell_type>>();
+    const auto cell_storage =
+      this->ms_->index_spaces[FROM_DOM][cell_dim].template cast<cell_type>();
 
     // Lookup the index space for the cell type.
     constexpr auto cell_index_space = find_index_space_from_dimension_u<
@@ -1889,7 +1851,7 @@ private:
 
       // Get the cell object
       auto c = cell_itr.second;
-      auto cell = static_cast<cell_type *>(cell_storage[c]);
+      const auto cell = &cell_storage.data[c];
       auto cell_id = cell->global_id();
 
       // This call allows the users specialization to create

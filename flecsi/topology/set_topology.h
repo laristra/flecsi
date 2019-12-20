@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include "flecsi/utils/array_ref.h"
 #include <flecsi/topology/set_storage.h>
 #include <flecsi/topology/set_types.h>
 #include <flecsi/topology/set_utils.h>
@@ -50,7 +51,10 @@ public:
   template<size_t INDEX_SPACE>
   auto entities() {
     using etype = entity_type<INDEX_SPACE>;
-    return base_t::ss_->index_spaces[INDEX_SPACE].template slice<etype *>();
+    auto is = this->ss_->index_spaces[INDEX_SPACE].template cast<etype>();
+    return utils::transform_view(
+      is.ids, [d = std::move(is).data](
+                const auto & i) { return &d[i.index_space_index()]; });
   } // entities
 };
 

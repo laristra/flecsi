@@ -53,22 +53,22 @@ public:
   connectivity_t & operator=(connectivity_t &&) = default;
 
   //! Constructor.
-  connectivity_t() : index_space_(false) {}
+  connectivity_t() = default;
 
-  auto entity_storage() {
-    return index_space_.storage();
+  // We don't ever mutate this ourselves:
+  auto & entity_storage() {
+    return index_space_.data;
   }
 
-  template<class STORAGE_TYPE>
-  void set_entity_storage(STORAGE_TYPE s) {
-    index_space_.set_storage(s);
+  void set_entity_storage(entity_storage_t<entity_base_> s) {
+    index_space_.data = std::move(s);
   }
 
   //-----------------------------------------------------------------//
   //! Clear the storage arrays for this instance.
   //-----------------------------------------------------------------//
   void clear() {
-    index_space_.clear();
+    index_space_.ids.clear();
     offsets_.clear();
   } // clear
 
@@ -84,21 +84,17 @@ public:
 
     // populate the to id's and add from offsets for each connectivity group
 
-    size_t start = index_space_.begin_push_();
-
     size_t n = cv.size();
 
     for(size_t i = 0; i < n; ++i) {
       const id_vector_t & iv = cv[i];
 
       for(id_t id : iv) {
-        index_space_.batch_push_(id);
+        push(id);
       } // for
 
       offsets_.add_count(static_cast<std::uint32_t>(iv.size()));
     } // for
-
-    index_space_.end_push_(start);
   } // init
 
   //-----------------------------------------------------------------//
@@ -119,31 +115,31 @@ public:
       size += count;
     } // for
 
-    index_space_.resize_(size);
-    index_space_.fill_(id_t(0));
+    index_space_.ids.resize(size);
   } // resize
 
   //-----------------------------------------------------------------//
   //! Push a single id into the current from group.
   //-----------------------------------------------------------------//
   void push(id_t id) {
-    index_space_.push_(id);
+    index_space_.ids.push_back(id);
   } // push
 
   //-----------------------------------------------------------------//
   //! Debugging method. Dump the raw vectors of the connection.
   //-----------------------------------------------------------------//
-  std::ostream & dump(std::ostream & stream) {
+  std::ostream & dump(std::ostream & stream) const {
+    auto & ids = index_space_.ids;
     for(size_t i = 0; i < offsets_.size(); ++i) {
       offset_t oi = offsets_[i];
       for(size_t j = 0; j < oi.count(); ++j) {
-        stream << index_space_(oi.start() + j).entity() << std::endl;
+        stream << ids[oi.start() + j].entity() << std::endl;
       }
       stream << std::endl;
     }
 
     stream << "=== indices" << std::endl;
-    for(id_t id : index_space_.ids()) {
+    for(const id_t id : ids) {
       stream << id.entity() << std::endl;
     } // for
 
@@ -163,10 +159,10 @@ public:
   //! Get the to id's vector.
   //-----------------------------------------------------------------//
   auto & get_entities() {
-    return index_space_.id_storage();
+    return index_space_.ids;
   }
   const auto & get_entities() const {
-    return index_space_.id_storage();
+    return index_space_.ids;
   }
 
 private:
@@ -199,8 +195,8 @@ public:
   void reverse_entities(size_t index) {
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
-    std::reverse(index_space_.index_begin_() + o.start(),
-      index_space_.index_begin_() + o.end());
+    const auto b = index_space_.ids.begin();
+    std::reverse(b + o.start(), b + o.end());
   }
 
   //-----------------------------------------------------------------//
@@ -212,21 +208,21 @@ public:
     offset_t o = offsets_[index];
     assert(order.size() == o.count());
     utils::reorder(
-      order.begin(), order.end(), index_space_.id_array() + o.start());
+      order.begin(), order.end(), index_space_.ids.begin() + o.start());
   }
 
   //-----------------------------------------------------------------//
   //! True if the connectivity is empty (hasn't been populated).
   //-----------------------------------------------------------------//
   bool empty() const {
-    return index_space_.empty();
+    return index_space_.ids.empty();
   }
 
   //-----------------------------------------------------------------//
   //! Set a single connection.
   //-----------------------------------------------------------------//
   void set(size_t from_local_id, id_t to_id, size_t pos) {
-    index_space_(offsets_[from_local_id].start() + pos) = to_id;
+    index_space_.ids[offsets_[from_local_id].start() + pos] = to_id;
   }
 
   //-----------------------------------------------------------------//
@@ -240,7 +236,7 @@ public:
   //! Return the number of to entities.
   //-----------------------------------------------------------------//
   size_t to_size() const {
-    return index_space_.size();
+    return index_space_.ids.size();
   }
 
   //-----------------------------------------------------------------//
@@ -260,24 +256,22 @@ public:
       size += count;
     }
 
-    index_space_.begin_push_(size);
-
     for(size_t i = 0; i < n; ++i) {
       const id_vector_t & conn = conns[i];
       uint64_t m = conn.size();
 
       for(size_t j = 0; j < m; ++j) {
-        index_space_.batch_push_(ev[conn[j]]->template global_id<DOM>());
+        index_space_.ids.push_back(ev[conn[j]]->template global_id<DOM>());
       }
     }
   }
 
   const auto & to_id_storage() const {
-    return index_space_.id_storage();
+    return index_space_.ids;
   }
 
   auto & to_id_storage() {
-    return index_space_.id_storage_();
+    return index_space_.ids;
   }
 
   auto & get_index_space() {
@@ -309,16 +303,10 @@ public:
   //! from connection vector.
   //-----------------------------------------------------------------//
   void end_from() {
-    offsets_.add_end(index_space_.size());
+    offsets_.add_end(to_size());
   } // end_from
 
-  index_space_u<entity_base_,
-    false,
-    true,
-    false,
-    void,
-    topology_storage_u,
-    entity_storage_t>
+  index_space_u<entity_base_, topology_storage_u, entity_storage_t>
     index_space_;
 
   offset_storage_t offsets_;

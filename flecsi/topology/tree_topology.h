@@ -23,16 +23,17 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory> // make_unique
 #include <mutex>
 #include <set>
 #include <unordered_map>
 #include <vector>
 
+#include "flecsi/utils/array_ref.h"
 #include <flecsi/concurrency/thread_pool.h>
 #include <flecsi/data/data_client.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/geometry/point.h>
-#include <flecsi/topology/index_space.h>
 
 /*
   Tree topology is a statically configured N-dimensional hashed tree for
@@ -518,36 +519,6 @@ private:
   constexpr branch_id_u(int_t id) : id_(id) {}
 };
 
-//-----------------------------------------------------------------//
-//! All tree entities have an associated entity id of this type which is needed
-to interface with the index space.
-  //-----------------------------------------------------------------//
-  class entity_id_t
-{
-public:
-  entity_id_t() {}
-
-  entity_id_t(const entity_id_t & id) : id_(id.id_) {}
-
-  entity_id_t(size_t id) : id_(id) {}
-
-  operator size_t() const {
-    return id_;
-  }
-
-  entity_id_t & operator=(const entity_id_t & id) {
-    id_ = id.id_;
-    return *this;
-  }
-
-  size_t index_space_index() const {
-    return id_;
-  }
-
-private:
-  size_t id_;
-};
-
 template<typename T, size_t DIM>
 std::ostream &
 operator<<(std::ostream & ostr, const branch_id_u<T, DIM> & id) {
@@ -602,15 +573,7 @@ public:
 
   using apply_function = std::function<void(branch_t &)>;
 
-  using entity_id_vector_t = std::vector<entity_id_t>;
-
   using geometry_t = tree_geometry_u<element_t, dimension>;
-
-  using entity_space_t = index_space_u<entity_t *, true, true, false>;
-
-  using branch_space_t = index_space_u<branch_t *, true, true, false>;
-
-  using subentity_space_t = index_space_u<entity_t *, false, true, false>;
 
   struct filter_valid {
     bool operator()(entity_t * ent) const {
@@ -676,18 +639,17 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! Return an index space containing all entities (including those removed).
+  //! Return a span over all entities (including those removed).
   //-----------------------------------------------------------------//
-  auto all_entities() const {
-    return entities_.template slice<>();
+  utils::span<entity_t * const> all_entities() const {
+    return entities_;
   }
 
   //-----------------------------------------------------------------//
-  //! Return an index space containing all non-removed entities.
+  //! Return a range containing all non-removed entities.
   //-----------------------------------------------------------------//
   auto entities() {
-    return entities_
-      .template cast<entity_t *, false, false, false, filter_valid>();
+    return utils::filter_view(entities_, filter_valid());
   }
 
   //-----------------------------------------------------------------//
@@ -805,9 +767,8 @@ public:
   //! Return an index space containing all entities within the specified
   //! spheroid.
   //-----------------------------------------------------------------//
-  subentity_space_t find_in_radius(const point_t & center, element_t radius) {
-    subentity_space_t ents;
-    ents.set_master(entities_);
+  entity_vector_t find_in_radius(const point_t & center, element_t radius) {
+    entity_vector_t ents;
 
     auto ef = [&](entity_t * ent, const point_t & center,
                 element_t radius) -> bool {
@@ -827,7 +788,7 @@ public:
     Return an index space containing all entities within the specified
     spheroid. (Concurrent version.)
    */
-  subentity_space_t
+  entity_vector_t
   find_in_radius(thread_pool & pool, const point_t & center, element_t radius) {
 
     size_t queue_depth = get_queue_depth(pool);
@@ -841,8 +802,7 @@ public:
     virtual_semaphore sem(1 - int(m));
     std::mutex mtx;
 
-    subentity_space_t ents;
-    ents.set_master(entities_);
+    entity_vector_t ents;
 
     size_t depth;
     element_t size;
@@ -861,9 +821,8 @@ public:
   //! Return an index space containing all entities within the specified
   //! box.
   //-----------------------------------------------------------------//
-  subentity_space_t find_in_box(const point_t & min, const point_t & max) {
-    subentity_space_t ents;
-    ents.set_master(entities_);
+  entity_vector_t find_in_box(const point_t & min, const point_t & max) {
+    entity_vector_t ents;
 
     auto ef = [&](entity_t * ent, const point_t & min,
                 const point_t & max) -> bool {
@@ -894,7 +853,7 @@ public:
     Return an index space containing all entities within the specified
     box. (Concurrent version.)
    */
-  subentity_space_t
+  entity_vector_t
   find_in_box(thread_pool & pool, const point_t & min, const point_t & max) {
     size_t queue_depth = get_queue_depth(pool);
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
@@ -919,8 +878,7 @@ public:
     element_t size;
     branch_t * b = find_start_(center, radius, depth, size);
 
-    subentity_space_t ents;
-    ents.set_master(entities_);
+    entity_vector_t ents;
 
     queue_depth += depth;
 
@@ -1074,11 +1032,9 @@ public:
   //-----------------------------------------------------------------//
   template<class... Args>
   entity_t * make_entity(Args &&... args) {
-    auto ent = new entity_t(std::forward<Args>(args)...);
-    entity_id_t id = entities_.size();
-    ent->set_id_(id);
-    entities_.push_back(ent);
-    return ent;
+    auto safe = std::make_unique<entity_t>(std::forward<Args>(args)...);
+    entities_.push_back(safe.get());
+    return safe.release();
   }
 
   //-----------------------------------------------------------------//
@@ -1091,9 +1047,9 @@ public:
   //-----------------------------------------------------------------//
   //! Get an entity by entity id.
   //-----------------------------------------------------------------//
-  entity_t * get(entity_id_t id) {
+  entity_t * get(std::size_t id) {
     assert(id < entities_.size());
-    return entities_[id];
+    return entities_[id].get();
   }
 
   branch_t * get(branch_id_t id) {
@@ -1509,7 +1465,7 @@ private:
   template<typename EF, typename BF, typename... ARGS>
   void find_(branch_t * b,
     element_t size,
-    subentity_space_t & ents,
+    entity_vector_t & ents,
     EF && ef,
     BF && bf,
     ARGS &&... args) {
@@ -1544,7 +1500,7 @@ private:
     size_t depth,
     branch_t * b,
     element_t size,
-    subentity_space_t & ents,
+    entity_vector_t & ents,
     EF && ef,
     BF && bf,
     ARGS &&... args) {
@@ -1578,13 +1534,13 @@ private:
         if(depth == queue_depth) {
 
           auto f = [&, size, ci]() {
-            subentity_space_t branch_ents;
+            entity_vector_t branch_ents;
 
             find_(ci, size, branch_ents, std::forward<EF>(ef),
               std::forward<BF>(bf), std::forward<ARGS>(args)...);
 
             mtx.lock();
-            ents.append(branch_ents);
+            ents.insert(ents.end(), branch_ents.begin(), branch_ents.end());
             mtx.unlock();
 
             sem.release();
@@ -1718,7 +1674,7 @@ private:
   branch_map_t branch_map_;
   size_t max_depth_;
   branch_t * root_;
-  entity_space_t entities_;
+  entity_vector_t entities_;
   std::array<point<element_t, dimension>, 2> range_;
   point<element_t, dimension> scale_;
   element_t max_scale_;
@@ -1731,22 +1687,12 @@ template<typename T, size_t DIM>
 class tree_entity
 {
 public:
-  using id_t = entity_id_t;
-
   using branch_id_t = branch_id_u<T, DIM>;
 
   tree_entity() : branch_id_(branch_id_t::null()) {}
 
   branch_id_t get_branch_id() const {
     return branch_id_;
-  }
-
-  entity_id_t id() const {
-    return id_;
-  }
-
-  entity_id_t index_space_id() const {
-    return id_;
   }
 
   //-----------------------------------------------------------------//
@@ -1760,16 +1706,11 @@ private:
   template<class P>
   friend class tree_topology;
 
-  void set_id_(entity_id_t id) {
-    id_ = id;
-  }
-
   void set_branch_id_(branch_id_t bid) {
     branch_id_ = bid;
   }
 
   branch_id_t branch_id_;
-  entity_id_t id_;
 };
 
 //-----------------------------------------------------------------//

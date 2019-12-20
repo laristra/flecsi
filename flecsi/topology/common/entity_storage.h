@@ -72,9 +72,7 @@ private:
 };
 
 template<typename T>
-class identity_storage_u
-{
-public:
+struct identity_storage_u : view_tag {
   class iterator
   {
   public:
