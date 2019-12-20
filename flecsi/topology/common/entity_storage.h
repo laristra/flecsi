@@ -77,36 +77,28 @@ class identity_storage_u
 public:
   class iterator
   {
-    /*
-    // The content of this class appears to be unnecessary; FleCSI builds
-    // without it. However, the class name itself is used here and there.
-    //
-    // I'll comment out the content, for now, in case it does prove to be
-    // needed somewhere. -MFS, 2019-04-19.
-    //
-    public:
-      iterator(simple_id i) : i_(i) {}
+  public:
+    iterator(simple_id i) : i_(i) {}
 
-      bool operator==(const iterator & itr) const {
-        return i_ == itr.i_;
-      }
+    bool operator==(const iterator & itr) const {
+      return i_ == itr.i_;
+    }
 
-      bool operator!=(const iterator & itr) const {
-        return i_ != itr.i_;
-      }
+    bool operator!=(const iterator & itr) const {
+      return i_ != itr.i_;
+    }
 
-      simple_id operator*() {
-        return i_;
-      }
+    simple_id operator*() {
+      return i_;
+    }
 
-      iterator & operator++() {
-        ++i_;
-        return *this;
-      }
+    iterator & operator++() {
+      ++i_;
+      return *this;
+    }
 
-    private:
-      size_t i_;
-    */
+  private:
+    size_t i_;
   };
 
   simple_id operator[](size_t i) const {
@@ -153,11 +145,6 @@ public:
     assert(false && "invalid operation");
   }
 
-  /*
-  // See comment regarding class iterator, above. The enclosing container's
-  // begin() and end() also appear to be unused. This may be old code that
-  // should just be removed. For now, I'll comment it out. -MFS, 2019-04-19.
-
   iterator begin() const {
     return iterator(0);
   }
@@ -165,7 +152,6 @@ public:
   iterator end() const {
     return iterator(size_);
   }
-  */
 
 private:
   size_t size_;
