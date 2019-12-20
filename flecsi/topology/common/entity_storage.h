@@ -78,6 +78,12 @@ public:
   class iterator
   {
   public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = simple_id;
+    using pointer = void;
+    using reference = value_type;
+    using iterator_category = std::input_iterator_tag;
+
     iterator(simple_id i) : i_(i) {}
 
     bool operator==(const iterator & itr) const {
@@ -88,7 +94,7 @@ public:
       return i_ != itr.i_;
     }
 
-    simple_id operator*() {
+    simple_id operator*() const {
       return i_;
     }
 
@@ -127,6 +133,10 @@ public:
 
   void resize(size_t n) {
     size_ = n;
+  }
+
+  std::size_t size() const {
+    return size_;
   }
 
   size_t capacity() const {
