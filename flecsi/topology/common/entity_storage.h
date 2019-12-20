@@ -163,7 +163,7 @@ public:
   }
 
   iterator end() const {
-    return iterator(size_ - 1);
+    return iterator(size_);
   }
   */
 
