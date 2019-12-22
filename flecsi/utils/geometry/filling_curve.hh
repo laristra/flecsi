@@ -286,6 +286,12 @@ public:
     value_ >>= (max_depth_ - depth) * dimension;
   }
 
+  // Operators
+  hilbert_curve & operator=(const hilbert_curve & bid) {
+    value_ = bid.value_;
+    return *this;
+  }
+
   static void set_range(const range_t & range) {
     range_ = range;
     for(std::size_t i = 0; i < dimension; ++i) {
@@ -477,6 +483,12 @@ public:
       ++k;
     } // for
   } // morton_curve
+
+  // Operators
+  morton_curve & operator=(const morton_curve & bid) {
+    value_ = bid.value_;
+    return *this;
+  }
 
   static void set_range(const range_t & range) {
     range_ = range;
