@@ -26,7 +26,6 @@
 #include <flecsi/runtime/legion/tasks.hh>
 #include <flecsi/runtime/program_options.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/utils/const_string.hh>
 
 namespace flecsi::runtime {
 
@@ -121,18 +120,15 @@ context_t::initialize(int argc, char ** argv, bool dependent) {
 // Implementation of context_t::finalize.
 //----------------------------------------------------------------------------//
 
-int
+void
 context_t::finalize() {
-
-  auto status = context::finalize_generic();
+  context::finalize_generic();
 
 #ifndef GASNET_CONDUIT_MPI
-  if(status == success && context::initialize_dependent_) {
+  if(context::initialize_dependent_) {
     MPI_Finalize();
   } // if
 #endif
-
-  return status;
 } // finalize
 
 //----------------------------------------------------------------------------//

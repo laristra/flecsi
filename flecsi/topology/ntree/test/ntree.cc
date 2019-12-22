@@ -26,7 +26,7 @@ using namespace flecsi;
 struct sph_tree_policy {
   static constexpr size_t dimension = 3;
   using element_t = double;
-  using point_t = point<element_t, dimension>;
+  using point_t = utils::point<element_t, dimension>;
   using key_t = morton_curve<dimension, int64_t>;
 
   // ------- Tree topology

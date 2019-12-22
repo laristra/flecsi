@@ -309,37 +309,4 @@ private:
 } // namespace utils
 } // namespace flecsi
 
-#if 0
-#define send_to_one(message)                                                   \
-                                                                               \
-  if(flog_t::instance().initialized()) {                                       \
-    packet_t pkt(message);                                                     \
-                                                                               \
-    packet_t * pkts = flog_t::instance().process() == 0                        \
-                        ? new packet_t[flog_t::instance().size()]              \
-                        : nullptr;                                             \
-                                                                               \
-    MPI_Gather(pkt.data(),                                                     \
-      pkt.bytes(),                                                             \
-      MPI_BYTE,                                                                \
-      pkts,                                                                    \
-      pkt.bytes(),                                                             \
-      MPI_BYTE,                                                                \
-      0,                                                                       \
-      MPI_COMM_WORLD);                                                         \
-                                                                               \
-    if(flog_t::instance().process() == 0) {                                    \
-                                                                               \
-      std::lock_guard<std::mutex> guard(flog_t::instance().packets_mutex());   \
-                                                                               \
-      for(size_t i{0}; i < flog_t::instance().size(); ++i) {                   \
-        flog_t::instance().packets().push_back(pkts[i]);                       \
-      } /* for */                                                              \
-                                                                               \
-      delete[] pkts;                                                           \
-                                                                               \
-    } /* if */                                                                 \
-  } /* if */
-#endif
-
 #endif // FLECSI_ENABLE_FLOG

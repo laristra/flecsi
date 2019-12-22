@@ -68,15 +68,11 @@ start() {
   Perform FleCSI runtime finalization. If FleCSI was initialized with the \em
   dependent flag set to true, FleCSI will also finalize any runtimes on which
   it depends.
-
-  @return An integer indicating the finalization status. This will either
-          be 0 for successful completion, or an error code from
-          flecsi::runtime::status.
  */
 
-inline int
+inline void
 finalize() {
-  return runtime::context_t::instance().finalize();
+  runtime::context_t::instance().finalize();
 }
 
 /*!

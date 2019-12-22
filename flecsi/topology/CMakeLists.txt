@@ -35,8 +35,10 @@ set(topology_HEADERS
   structured/interface.hh
   structured/types.hh
   unstructured/coloring.hh
+  unstructured/definition.hh
   unstructured/interface.hh
   unstructured/partition.hh
+  unstructured/simple_definition.hh
   unstructured/storage.hh
   unstructured/types.hh
   unstructured/utils.hh
@@ -104,6 +106,11 @@ set(topology_SOURCES
 
 ftest_add_unit(umesh_coloring
   SOURCES unstructured/test/coloring.cc
+)
+
+ftest_add_unit(simple_definition
+  SOURCES unstructured/test/simple_definition.cc
+  INPUTS unstructured/test/simple2d-16x16.msh
 )
 
 #----------------------------------  NTREE  -----------------------------------#

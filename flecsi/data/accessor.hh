@@ -35,10 +35,8 @@ namespace data {
  *----------------------------------------------------------------------------*/
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<storage_label_t::dense,
-  topology::global,
-  DATA_TYPE,
-  PRIVILEGES> : reference_base {
+struct accessor<storage_label_t::dense, topology::global, DATA_TYPE, PRIVILEGES>
+  : reference_base {
 
   friend void bind(accessor & a, DATA_TYPE * data) {
     a.data_ = data;
@@ -78,10 +76,8 @@ private:
  *----------------------------------------------------------------------------*/
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<storage_label_t::dense,
-  topology::index,
-  DATA_TYPE,
-  PRIVILEGES> : reference_base {
+struct accessor<storage_label_t::dense, topology::index, DATA_TYPE, PRIVILEGES>
+  : reference_base {
   using value_type = DATA_TYPE;
   using topology_t = topology::index;
 

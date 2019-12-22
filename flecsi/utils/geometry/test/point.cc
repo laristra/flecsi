@@ -18,9 +18,9 @@
 
 using namespace flecsi;
 
-using point_1d_t = point<double, 1>;
-using point_2d_t = point<double, 2>;
-using point_3d_t = point<double, 3>;
+using point_1d_t = utils::point<double, 1>;
+using point_2d_t = utils::point<double, 2>;
+using point_3d_t = utils::point<double, 3>;
 
 int
 point_sanity(int, char **) {

@@ -223,7 +223,7 @@ struct context {
     return status::success;
   } // initialize_generic
 
-  inline int finalize_generic() {
+  inline void finalize_generic() {
 #if defined(FLECSI_ENABLE_FLOG)
     flog_finalize();
 #endif
@@ -233,8 +233,6 @@ struct context {
       Kokkos::finalize();
 #endif
     } // if
-
-    return success;
   } // finalize_generic
 
 #ifdef DOXYGEN // these functions are implemented per-backend
@@ -248,13 +246,9 @@ struct context {
     Perform FleCSI runtime finalization. If FleCSI was initialized with
     the \em dependent flag set to true, FleCSI will also finalize any runtimes
     on which it depends.
-
-    @return An integer indicating the finalization status. This will either
-            be 0 for successful completion, or an error code from
-            flecsi::runtime::status.
    */
 
-  int finalize();
+  void finalize();
 
   /*!
     Start the FleCSI runtime.

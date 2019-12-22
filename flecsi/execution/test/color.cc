@@ -30,16 +30,19 @@ color_raw(int, char **) {
   FTEST();
 
   auto & c = flecsi::runtime::context_t::instance();
-  ASSERT_EQ(c.task_depth(), 1u);
+  flog(info) << "task depth: " << c.task_depth() << std::endl;
+  ASSERT_EQ(c.task_depth(), 0u);
+
   auto process = c.process();
   auto processes = c.processes();
   auto tpp = c.threads_per_process();
 
   {
     flog_tag_guard(color);
-    flog(info) << "color(raw): " << process << std::endl
-               << "colors(raw): " << processes << std::endl
-               << "threads_per_process(raw): " << tpp << std::endl;
+    flog(info) << "(raw)" << std::endl
+               << "\tprocess: " << process << std::endl
+               << "\tprocesses: " << processes << std::endl
+               << "\tthreads_per_process: " << tpp << std::endl;
   }
 
   ASSERT_EQ(processes, 4u);
