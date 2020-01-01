@@ -27,12 +27,19 @@
 
 #include <hpx/hpx.hpp>
 #include <hpx/hpx_init.hpp>
+#include <hpx/hpx_start.hpp>
+#include <hpx/include/lcos.hpp>
+#include <hpx/include/parallel_execution.hpp>
+#include <hpx/runtime_fwd.hpp>
 
 #include <mpi.h>
 
 #include <vector>
 #include <string>
 #include <stdexcept>
+
+#include <mutex>
+#include <condition_variable>
 
 #include "../context.hh"
 
@@ -43,6 +50,8 @@ struct context_t : context {
   //--------------------------------------------------------------------------//
   //  Runtime.
   //--------------------------------------------------------------------------//
+
+  int hpx_main(bool dependent, int argc, char** argv);
 
   /*!
     Documnetation for this interface is in the top-level context type.
@@ -141,6 +150,15 @@ private:
   size_t color_ = std::numeric_limits<size_t>::max();
   size_t colors_ = std::numeric_limits<size_t>::max();
 
+  hpx::threads::executors::pool_executor exec_;
+  hpx::threads::executors::pool_executor mpi_exec_;
+
+  std::mutex m;
+  std::condition_variable cv;
+  std::atomic<bool> initial_status_set = false;
+  std::atomic<bool> final_status_set = false;
+  status initial_stat;
+  status final_stat;
 };
 
 } // namespace flecsi::runtime
