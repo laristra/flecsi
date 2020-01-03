@@ -15,35 +15,39 @@
 
 /*! @file */
 
-// #if !defined(__FLECSI_PRIVATE__)
-// #error Do not include this file directly!
-// #endif
+#if !defined(__FLECSI_PRIVATE__)
+#error Do not include this file directly!
+#endif
 
-// #include "flecsi/utils/function_traits.hh"
-// #include "future.hh"
-// #include <flecsi/execution/mpi/reduction_wrapper.hh>
-// #include <flecsi/utils/flog.hh>
+#include <hpx/include/future.hpp>
+#include <hpx/include/async.hpp>
 
-// #include <type_traits>
-// #include <utility> // forward
+#include "flecsi/utils/function_traits.hh"
+#include <flecsi/utils/flog.hh>
 
-// namespace flecsi {
+#include <type_traits>
+#include <utility> // forward
 
-// template<auto & F,
-//   size_t LAUNCH_DOMAIN,
-//   size_t REDUCTION,
-//   size_t ATTRIBUTES,
-//   typename... ARGS>
-// decltype(auto)
-// reduce(ARGS &&... args) {
-//   using R = typename utils::function_traits<decltype(F)>::return_type;
+namespace flecsi {
+
+template<auto & F,
+  size_t LAUNCH_DOMAIN,
+  size_t REDUCTION,
+  size_t ATTRIBUTES,
+  typename... ARGS>
+decltype(auto)
+reduce(ARGS &&... args) {
+  using R = typename utils::function_traits<decltype(F)>::return_type;
+  hpx::future<R> f = hpx::async(F, std::forward<ARGS>(args)...);
+
+  return f.get();
 //   execution::mpi_future<R> ret;
 //   if constexpr(std::is_same_v<R, void>)
 //     F(std::forward<ARGS>(args)...);
 //   else
 //     ret.set(F(std::forward<ARGS>(args)...));
 //   return ret;
-// }
+}
 
 // namespace execution {
 
@@ -55,4 +59,4 @@
 // using reduction_wrapper = mpi::reduction_wrapper<HASH, TYPE>;
 
 // } // namespace execution
-// } // namespace flecsi
+} // namespace flecsi

@@ -26,35 +26,18 @@ namespace flecsi::runtime {
 //----------------------------------------------------------------------------//
 
 int
-context_t::hpx_main(bool dependent, int argc, char ** argv) {
+context_t::hpx_main(int argc, char ** argv) {
 
   // initialize executors (possible only after runtime is active)
   exec_ = hpx::threads::executors::pool_executor{"default"};
   mpi_exec_ = hpx::threads::executors::pool_executor{"mpi"};
 
   context::process_ = hpx::get_locality_id();
-  context::processes_ = hpx::get_num_localities().get();
-
-  auto initialize_status = context::initialize_generic(argc, argv, dependent);
-
-  if(initialize_status != success && dependent) {
-    hpx::finalize();
-  } // if
-
-  initial_status_set = true;
-  initial_stat = static_cast<status>(initialize_status);
-  cv.notify_one();
+  context::processes_ = hpx::find_all_localities().size();
 
   int ret_val = top_level_action()(argc, argv);
 
-  auto finalize_status = context::finalize_generic();
-  final_status_set = true;
-  final_stat = static_cast<status>(finalize_status);
-  cv.notify_one();
-
   return hpx::finalize();
-
-  // return ret_val;
 }
 
 //----------------------------------------------------------------------------//
@@ -63,7 +46,68 @@ context_t::hpx_main(bool dependent, int argc, char ** argv) {
 
 int
 context_t::initialize(int argc, char ** argv, bool dependent) {
-    // Create the resource partitioner
+  if(dependent) {
+    MPI_Init(&argc, &argv);
+  } // if
+
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  context::process_ = rank;
+  context::processes_ = size;
+
+  auto status = context::initialize_generic(argc, argv, dependent);
+
+  if(status != success && dependent) {
+    MPI_Finalize();
+  } // if
+
+  return status;
+}
+
+//----------------------------------------------------------------------------//
+// Implementation of context_t::finalize.
+//----------------------------------------------------------------------------//
+
+int
+context_t::finalize() {
+  auto status = context::finalize_generic();
+
+#ifndef GASNET_CONDUIT_MPI
+  if(status == success && context::initialize_dependent_) {
+    MPI_Finalize();
+  } // if
+#endif
+
+  return status;
+} // finalize
+
+//----------------------------------------------------------------------------//
+// Implementation of context_t::start.
+//----------------------------------------------------------------------------//
+
+int
+context_t::start() {
+  /*
+    Initialize the runtime arguments
+  */
+  std::vector<char *> largv;
+  largv.push_back(argv_[0]);
+  context::threads_per_process_ = 1;
+
+  for(auto opt = unrecognized_options_.begin();
+      opt != unrecognized_options_.end();
+      ++opt) {
+      largv.push_back(opt->data());
+  } // for
+
+  context::threads_ = context::processes_ * context::threads_per_process_;
+
+  /*
+    Initialize the hpx runtime
+  */
+  // Create the resource partitioner
   std::vector<std::string> const cfg = {// allocate at least two cores
     "hpx.force_min_os_threads!=2",
     // make sure hpx_main is always executed
@@ -74,8 +118,8 @@ context_t::initialize(int argc, char ** argv, bool dependent) {
     "hpx.commandline.aliasing!=0"};
 
   hpx::resource::partitioner rp{
-    hpx::util::bind_front(&context_t::hpx_main, this, dependent), argc,
-    argv, cfg};
+    hpx::util::bind_front(&context_t::hpx_main, this), largv.size(),
+    largv.data(), cfg};
 
   // Create a thread pool encapsulating the default scheduler
   rp.create_thread_pool("default", hpx::resource::local_priority_fifo);
@@ -87,46 +131,7 @@ context_t::initialize(int argc, char ** argv, bool dependent) {
   rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
 
   // Now, initialize and run the HPX runtime.
-  hpx::start();
-
-  std::unique_lock<std::mutex> ul(m);
-  cv.wait(ul, [this](){ return initial_status_set.load(std::memory_order_relaxed); });
-
-  return initial_stat;
-} // initialize
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::finalize.
-//----------------------------------------------------------------------------//
-
-int
-context_t::finalize() {
-
-  std::unique_lock<std::mutex> ul(m);
-  cv.wait(ul, [this](){ return final_status_set.load(std::memory_order_relaxed); });
-
-  hpx::stop();
-
-  return final_stat;
-
-//   auto status = context::finalize_generic();
-
-// #ifndef GASNET_CONDUIT_MPI
-//   if(status == success && context::initialize_dependent_) {
-//     MPI_Finalize();
-//   } // if
-// #endif
-
-//   return status;
-} // finalize
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::start.
-//----------------------------------------------------------------------------//
-
-int
-context_t::start() {
-  return 0;
+  return hpx::init();
 }
 
 } // namespace flecsi::runtime

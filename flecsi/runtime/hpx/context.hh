@@ -51,7 +51,7 @@ struct context_t : context {
   //  Runtime.
   //--------------------------------------------------------------------------//
 
-  int hpx_main(bool dependent, int argc, char** argv);
+  int hpx_main(int argc, char** argv);
 
   /*!
     Documnetation for this interface is in the top-level context type.
@@ -104,7 +104,7 @@ struct context_t : context {
    */
 
 
-  // TODO: Set the value for color, colors, process and processes
+  // TODO: Set the value for color, colors
   // according to what Rod tells
 
   // Currently it returns the process id.
@@ -153,12 +153,12 @@ private:
   hpx::threads::executors::pool_executor exec_;
   hpx::threads::executors::pool_executor mpi_exec_;
 
-  std::mutex m;
-  std::condition_variable cv;
-  std::atomic<bool> initial_status_set = false;
-  std::atomic<bool> final_status_set = false;
-  status initial_stat;
-  status final_stat;
+  // std::mutex m;
+  // std::condition_variable cv;
+  // std::atomic<bool> initial_status_set = false;
+  // std::atomic<bool> final_status_set = false;
+  // status initial_stat;
+  // status final_stat;
 };
 
 } // namespace flecsi::runtime
