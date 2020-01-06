@@ -53,10 +53,6 @@ protected:
 
 public:
   filling_curve() : value_(0) {}
-  filling_curve(const filling_curve & key) : value_(key) {}
-  ~filling_curve() {
-    value_ = 0;
-  }
 
   static size_t max_depth() {
     return max_depth_;
@@ -174,12 +170,6 @@ public:
   //! Convert this key to coordinates in range.
   virtual void coordinates(point_t &) {}
 
-  // Operators
-  filling_curve & operator=(const filling_curve & bid) {
-    value_ = bid.value_;
-    return *this;
-  }
-
   constexpr bool operator==(const filling_curve & bid) const {
     return value_ == bid.value_;
   }
@@ -284,12 +274,6 @@ public:
     assert(value_ & int_t(1) << (max_depth_ * dimension));
     // Then truncate the key to the depth
     value_ >>= (max_depth_ - depth) * dimension;
-  }
-
-  // Operators
-  hilbert_curve & operator=(const hilbert_curve & bid) {
-    value_ = bid.value_;
-    return *this;
   }
 
   static void set_range(const range_t & range) {
@@ -483,12 +467,6 @@ public:
       ++k;
     } // for
   } // morton_curve
-
-  // Operators
-  morton_curve & operator=(const morton_curve & bid) {
-    value_ = bid.value_;
-    return *this;
-  }
 
   static void set_range(const range_t & range) {
     range_ = range;
