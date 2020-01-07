@@ -114,10 +114,8 @@ $ module load cmake/3.12.4
 $ module load python/3.5.1
 $ module load mpich/3.2.1-gcc_7.3.0
 ```
-and clone FleCSI
-```
-$ git clone --recursive https://github.com/laristra/flecsi.git
-```
+and get FleCSI on your desired branch following the *Download* step
+under *Installing FleCSI*
 
 First, you need to download Spack if you don't already have one.
 ```
@@ -151,15 +149,11 @@ Now, assuming you have the compiler you want recognized by Spack
 and added the folder, you could just do the install for a legion backend
 using mpich like this
 ```
-$ spack install -v flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
+$ spack install -v --only dependencies flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
 ```
 to get all the dependencies and all their dependencies installed from
 scratch and go on to building flecsi from source by loading them into
 your environment by either doing
-```
-$ spack load -r flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
-```
-or
 ```
 $ spack build-env --dump flecsi-deps.sh "flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0"
 $ source flecsi-deps.sh
