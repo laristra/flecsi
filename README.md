@@ -46,8 +46,8 @@ a C++17-capable compiler.
 
 You'll need the following tools in order to build FleCSI:
 
-   * Boost >= 1.56
-   * CMake >= 3.0
+   * Boost >= 1.59
+   * CMake >= 3.12
    * GCC >= 7.3.0
 
 Install tools in the customary manner for your machine, e.g. by using
