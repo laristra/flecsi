@@ -35,7 +35,7 @@ context_t::hpx_main(int argc, char ** argv) {
   context::process_ = hpx::get_locality_id();
   context::processes_ = hpx::find_all_localities().size();
 
-  int ret_val = top_level_action()(argc, argv);
+  top_level_action()(argc, argv);
 
   return hpx::finalize();
 }
@@ -118,7 +118,7 @@ context_t::start() {
     "hpx.commandline.aliasing!=0"};
 
   hpx::resource::partitioner rp{
-    hpx::util::bind_front(&context_t::hpx_main, this), largv.size(),
+    hpx::util::bind_front(&context_t::hpx_main, this), static_cast<int>(largv.size()),
     largv.data(), cfg};
 
   // Create a thread pool encapsulating the default scheduler
