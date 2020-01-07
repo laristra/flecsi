@@ -137,7 +137,7 @@ $ source flecsi-deps.sh
 ```
 But if you want to save some time, you could let Spack know what
 packages or modules you already have on the system by adding
-`packages.yaml` to your ~/.spack, which could look something like this
+`packages.yaml` to your `~/.spack`, which could look something like this
 ```
 packages:
     perl:
@@ -160,7 +160,7 @@ packages:
         modules:
             cmake@3.12.4: cmake/3.12.4
 ```
-Then the installation from Spack will take a lot less time.
+Then the installation from Spack will take less time.
 
 ## Download
 
