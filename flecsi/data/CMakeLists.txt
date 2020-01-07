@@ -59,6 +59,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   set(data_HEADERS ${data_HEADERS}
+    hpx/policy.hh
   )
 
   set(data_SOURCES
@@ -89,37 +90,37 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(canonical
-  SOURCES
-    test/canonical.cc
-  THREADS 2
-)
+# ftest_add_unit(canonical
+#   SOURCES
+#     test/canonical.cc
+#   THREADS 2
+# )
 
 
-ftest_add_unit(global
-  SOURCES
-    test/global.cc
-  THREADS 2
-)
+# ftest_add_unit(global
+#   SOURCES
+#     test/global.cc
+#   THREADS 2
+# )
 
-ftest_add_unit(identifiers
-  SOURCES
-    test/identifiers.cc
-)
+# ftest_add_unit(identifiers
+#   SOURCES
+#     test/identifiers.cc
+# )
 
-ftest_add_unit(index
-  SOURCES
-    test/index.cc
-  THREADS 2
-)
+# ftest_add_unit(index
+#   SOURCES
+#     test/index.cc
+#   THREADS 2
+# )
 
-ftest_add_unit(privilege
-  SOURCES
-    test/privilege.cc
-)
+# ftest_add_unit(privilege
+#   SOURCES
+#     test/privilege.cc
+# )
 
-ftest_add_unit(umesh
-  SOURCES
-    test/umesh.cc
-  THREADS 2
-)
+# ftest_add_unit(umesh
+#   SOURCES
+#     test/umesh.cc
+#   THREADS 2
+# )
