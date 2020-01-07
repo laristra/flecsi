@@ -72,6 +72,99 @@ Before installing FleCSI, you should install the FleCSI third-party
 libraries. We'll assume that you wish to install the FleCSI third-party
 libraries in your home directory.
 
+## Spack
+
+If you want to install the third-party libraries from source yourself, then refer to the next
+section.
+
+Here we talk about how to install them through Spack.
+
+Setup your environment and load your modules such as
+```
+$ module load gcc/7.3.0
+$ module load cmake/3.12.4
+$ module load python/3.5.1
+$ module load mpich/3.2.1-gcc_7.3.0
+```
+and clone FleCSI
+```
+$ git clone --recursive https://github.com/laristra/flecsi.git
+```
+
+First, you need to download Spack if you don't already have one.
+```
+$ git clone https://github.com/spack/spack.git
+```
+Then do
+```
+$ source spack/share/spack/setup-env.sh
+$ spack compiler find
+$ spack compiler list
+```
+to get Spack into your environment and see what compilers you have that
+Spack can find automatically. The output should look something like this
+```
+==> Available compilers
+-- gcc centos7-x86_64 -------------------------------------------
+gcc@7.3.0
+```
+Next, add the folder that contains custom flecsi spackage to Spack
+```
+$ spack repo add flecsi/spack-repo
+$ spack repo list
+```
+and you should have output like this
+```
+==> 2 package repositories.
+lanl_ristra_flecsi       /home/<user>/flecsi/spack-repo
+builtin                  /home/<user>/spack/var/spack/repos/builtin
+```
+Now, assuming you have the compiler you want recognized by Spack
+and added the folder, you could just do
+```
+$ spack install -v flecsi%gcc@7.3.0
+~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
+```
+to get all the dependencies and all their dependencies installed from
+scratch and go on to building flecsi from source by loading them into
+your environment by either doing
+```
+$ spack load -r flecsi%gcc@7.3.0
+~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
+```
+or
+```
+$ spack build-env --dump flecsi-deps.sh
+"flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0"
+$ source flecsi-deps.sh
+```
+But if you want to save some time, you could let Spack know what
+packages or modules you already have on the system by adding
+`packages.yaml` to your ~/.spack, which could look something like this
+```
+packages:
+    perl:
+        paths:
+            perl@5.16.3: /usr
+    numactl:
+        paths:
+            numactl@system: /usr
+    python:
+        modules:
+            python@2.7.3: python/2.7.3
+            python@3.5.1: python/3.5.1
+    mpich:
+        modules:
+           mpich@3.2.1%gcc@7.3.0: mpich/3.2.1-gcc_7.3.0
+    openmpi:
+        modules:
+            openmpi@3.1.3%gcc@7.3.0: openmpi/3.1.3-gcc_7.3.0
+    cmake:
+        modules:
+            cmake@3.12.4: cmake/3.12.4
+```
+Then the installation from Spack will take a lot less time.
+
 ## Download
 
 Begin by downloading the FleCSI third-party libraries:
