@@ -72,12 +72,40 @@ Before installing FleCSI, you should install the FleCSI third-party
 libraries. We'll assume that you wish to install the FleCSI third-party
 libraries in your home directory.
 
+## Build from Source
+
+Begin by downloading the FleCSI third-party libraries:
+```
+$ cd
+$ git clone --recursive https://github.com/laristra/flecsi-third-party.git
+```
+
+Next, enter *flecsi-third-party* and make a build directory:
+```
+$ cd flecsi-third-party
+$ mkdir build
+$ cd build
+```
+Then, for example, you can do the following for a debug-mode build:
+```
+$ cmake .. \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=$HOME/flecsi-third-party-debug/
+```
+Alternatively, you can run *ccmake* in place of *cmake*, and use
+*ccmake*'s interface to set the options.
+
+Finally:
+```
+$ make
+$ make install
+```
+builds and installs the FleCSI third-party libraries in the prefix
+that you specified.
+
 ## Spack
 
-If you want to install the third-party libraries from source yourself, then refer to the next
-section.
-
-Here we talk about how to install them through Spack.
+Here we talk about how to install those dependencies through Spack.
 
 Setup your environment and load your modules such as
 ```
@@ -120,7 +148,8 @@ lanl_ristra_flecsi       /home/<user>/flecsi/spack-repo
 builtin                  /home/<user>/spack/var/spack/repos/builtin
 ```
 Now, assuming you have the compiler you want recognized by Spack
-and added the folder, you could just do
+and added the folder, you could just do the install for a legion backend
+using mpich like this
 ```
 $ spack install -v flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
 ```
@@ -161,39 +190,6 @@ packages:
             cmake@3.12.4: cmake/3.12.4
 ```
 Then the installation from Spack will take less time.
-
-## Download
-
-Begin by downloading the FleCSI third-party libraries:
-```
-$ cd
-$ git clone --recursive https://github.com/laristra/flecsi-third-party.git
-```
-
-## Build
-
-Next, enter *flecsi-third-party* and make a build directory:
-```
-$ cd flecsi-third-party
-$ mkdir build
-$ cd build
-```
-Then, for example, you can do the following for a debug-mode build:
-```
-$ cmake .. \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_INSTALL_PREFIX=$HOME/flecsi-third-party-debug/
-```
-Alternatively, you can run *ccmake* in place of *cmake*, and use
-*ccmake*'s interface to set the options.
-
-Finally:
-```
-$ make
-$ make install
-```
-builds and installs the FleCSI third-party libraries in the prefix
-that you specified.
 
 # Installing FleCSI
 
