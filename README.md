@@ -122,20 +122,17 @@ builtin                  /home/<user>/spack/var/spack/repos/builtin
 Now, assuming you have the compiler you want recognized by Spack
 and added the folder, you could just do
 ```
-$ spack install -v flecsi%gcc@7.3.0
-~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
+$ spack install -v flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
 ```
 to get all the dependencies and all their dependencies installed from
 scratch and go on to building flecsi from source by loading them into
 your environment by either doing
 ```
-$ spack load -r flecsi%gcc@7.3.0
-~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
+$ spack load -r flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
 ```
 or
 ```
-$ spack build-env --dump flecsi-deps.sh
-"flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0"
+$ spack build-env --dump flecsi-deps.sh "flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0"
 $ source flecsi-deps.sh
 ```
 But if you want to save some time, you could let Spack know what
