@@ -70,6 +70,7 @@ struct dag_node : public NODE_POLICY {
   std::string const & label() const {
     return label_;
   }
+
   std::string & label() {
     return label_;
   }
@@ -77,6 +78,7 @@ struct dag_node : public NODE_POLICY {
   edge_list_t const & edges() const {
     return edge_list_;
   }
+
   edge_list_t & edges() {
     return edge_list_;
   }
@@ -97,16 +99,6 @@ struct dag_node : public NODE_POLICY {
     label_ = node.label_;
     return NODE_POLICY::initialize(node);
   } // update
-
-  dag_node & operator=(dag_node const & node) {
-    NODE_POLICY::operator=(node);
-
-    hash_ = node.hash_;
-    label_ = node.label_;
-    edge_list_ = node.edge_list_;
-
-    return *this;
-  } // operator =
 
 private:
   size_t hash_ = 0;

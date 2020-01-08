@@ -53,10 +53,6 @@ protected:
 
 public:
   filling_curve() : value_(0) {}
-  filling_curve(const filling_curve & key) : value_(key) {}
-  ~filling_curve() {
-    value_ = 0;
-  }
 
   static size_t max_depth() {
     return max_depth_;
@@ -173,12 +169,6 @@ public:
   }
   //! Convert this key to coordinates in range.
   virtual void coordinates(point_t &) {}
-
-  // Operators
-  filling_curve & operator=(const filling_curve & bid) {
-    value_ = bid.value_;
-    return *this;
-  }
 
   constexpr bool operator==(const filling_curve & bid) const {
     return value_ == bid.value_;
