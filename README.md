@@ -114,8 +114,8 @@ $ module load cmake/3.12.4
 $ module load python/3.5.1
 $ module load mpich/3.2.1-gcc_7.3.0
 ```
-and get FleCSI on your desired branch following the *Download* step
-under *Installing FleCSI*
+and get FleCSI on your desired branch following the
+[Download](#download) section under *Installing FleCSI*.
 
 First, you need to download Spack if you don't already have one.
 ```
