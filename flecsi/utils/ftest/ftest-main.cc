@@ -22,7 +22,9 @@ main(int argc, char ** argv) {
     return status == flecsi::runtime::status::help ? 0 : status;
   } // if
 
-  flecsi::start();
+  status = flecsi::start();
 
-  return flecsi::finalize();
+  flecsi::finalize();
+
+  return status;
 } // main

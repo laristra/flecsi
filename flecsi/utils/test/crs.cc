@@ -12,27 +12,27 @@
    All rights reserved.
                                                                               */
 
-/*! @file */
-
 #include <flecsi/execution.hh>
-#include <flecsi/topology/canonical/types.hh>
-#include <flecsi/utils/flog.hh>
+#include <flecsi/topology/unstructured/simple_definition.hh>
+#include <flecsi/utils/ftest.hh>
 
-#if !defined(FLECSI_ENABLE_MPI)
-#error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
-#endif
+using namespace flecsi;
 
-#include <mpi.h>
+int
+simple2d_16x16() {
+  FTEST();
 
-namespace flecsi {
-namespace topology {
+  topology::simple_definition sd("simple2d-16x16.msh");
 
-canonical_base::coloring::coloring(std::string const & filename) {
+  return FTEST_RESULT();
+} // simple2d_16x16
 
-  flog(info) << "process " << process() << " of " << processes() << " with "
-             << threads_per_process() << " (tpp) and input " << filename
-             << std::endl;
-}
+int
+dcrs_driver(int argc, char ** argv) {
 
-} // namespace topology
-} // namespace flecsi
+  execute<simple2d_16x16, flecsi::index, mpi>();
+
+  return 0;
+} // simple2d_8x8
+
+ftest_register_driver(dcrs_driver);

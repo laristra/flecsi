@@ -47,11 +47,22 @@ const cell_field_t cell_field;
 auto pressure = cell_field(canonical);
 
 int
+check() {
+  FTEST();
+
+  flog(info) << "check" << std::endl;
+
+  return FTEST_RESULT();
+} // check
+
+int
 canonical_driver(int, char **) {
 
   const std::string filename = "input.txt";
   coloring.allocate(filename);
   canonical.allocate(coloring.get());
+
+  execute<check>();
 
   return 0;
 } // index

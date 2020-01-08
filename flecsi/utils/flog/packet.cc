@@ -11,6 +11,9 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
+
+#include <flecsi-config.h>
+
 #include "packet.hh"
 #include "state.hh"
 #include "types.hh"

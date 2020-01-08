@@ -48,7 +48,7 @@ public:
   enum LOCALITY : int { LOCAL = 0, NON_LOCAL = 1, SHARED = 2 };
 
   static constexpr size_t dimension = DIM;
-  using point_t = point<double, dimension>;
+  using point_t = utils::point<double, dimension>;
   using id_t = flecsi::utils::id_t;
   using key_t = KEY;
 
@@ -129,7 +129,7 @@ class ntree_entity_holder : public ntree_entity_base_t
 {
 public:
   static constexpr size_t dimension = DIM;
-  using point_t = point<double, dimension>;
+  using point_t = utils::point<double, dimension>;
   using id_t = flecsi::utils::id_t;
   using key_t = KEY;
 
@@ -170,7 +170,7 @@ public:
   static constexpr size_t dimension = DIM;
   using entity_id_t = typename TREE_ENTITY_TYPE::id_t;
   using id_t = flecsi::utils::id_t;
-  using point_t = point<double, dimension>;
+  using point_t = utils::point<double, dimension>;
   using key_t = KEY;
 
   ntree_node() : size_(0), is_leaf_(true) {}

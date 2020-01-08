@@ -50,7 +50,7 @@ struct context_t : context {
     Documnetation for this interface is in the top-level context type.
    */
 
-  int finalize();
+  void finalize();
 
   /*!
     Documnetation for this interface is in the top-level context type.
@@ -63,11 +63,11 @@ struct context_t : context {
    */
 
   size_t process() const {
-    return color_;
+    return process_;
   }
 
   size_t processes() const {
-    return colors_;
+    return processes_;
   }
 
   size_t threads_per_process() const {
@@ -91,15 +91,7 @@ struct context_t : context {
    */
 
   size_t color() const {
-    return color_;
-  }
-
-  /*
-    Documnetation for this interface is in the top-level context type.
-   */
-
-  void set_color(size_t color) {
-    color_ = color;
+    return process_;
   }
 
   /*
@@ -107,24 +99,8 @@ struct context_t : context {
    */
 
   size_t colors() const {
-    return colors_;
+    return processes_;
   }
-
-  /*
-    Documnetation for this interface is in the top-level context type.
-   */
-
-  void set_colors(size_t colors) {
-    colors_ = colors;
-  }
-
-private:
-  /*--------------------------------------------------------------------------*
-    Runtime data members.
-   *--------------------------------------------------------------------------*/
-
-  size_t color_ = std::numeric_limits<size_t>::max();
-  size_t colors_ = std::numeric_limits<size_t>::max();
 };
 
 } // namespace flecsi::runtime

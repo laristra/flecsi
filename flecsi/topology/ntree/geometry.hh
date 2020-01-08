@@ -50,7 +50,7 @@ struct ntree_geometry {};
 template<typename T>
 struct ntree_geometry<T, 1> {
 
-  using point_t = point<T, 1>;
+  using point_t = utils::point<T, 1>;
   using element_t = T;
   //! Tolerance for the computations
   static constexpr element_t tol =
@@ -60,7 +60,7 @@ struct ntree_geometry<T, 1> {
   //! center with radius.
   static bool
   within(const point_t & origin, const point_t & center, element_t r1) {
-    return distance(origin, center) - r1 <= tol;
+    return utils::distance(origin, center) - r1 <= tol;
   }
 
   //! Return true if dist^2 < radius^2
@@ -68,7 +68,7 @@ struct ntree_geometry<T, 1> {
     const point_t & center,
     element_t r1,
     element_t r2) {
-    return distance(origin, center) <= std::max(r1, r2);
+    return utils::distance(origin, center) <= std::max(r1, r2);
   }
 
   //! Return true if point origin lies within the box specified by
@@ -91,7 +91,7 @@ struct ntree_geometry<T, 1> {
     const element_t r1,
     const point_t & c2,
     const element_t r2) {
-    return distance(c1, c2) - (r1 + r2) <= tol;
+    return utils::distance(c1, c2) - (r1 + r2) <= tol;
   }
 
   //! Intersection of sphere and box; Compute the closest point from the
@@ -101,7 +101,7 @@ struct ntree_geometry<T, 1> {
     const point_t & c,
     const element_t r) {
     point_t x = point_t(std::max(min[0], std::min(c[0], max[0])));
-    element_t dist = distance(x, c);
+    element_t dist = utils::distance(x, c);
     return dist - r <= tol;
   }
 
@@ -115,8 +115,8 @@ struct ntree_geometry<T, 1> {
     const point_t & box_source_min,
     const point_t & box_source_max,
     double macangle) {
-    double dmax = flecsi::distance(box_source_min, box_source_max);
-    double disttoc = flecsi::distance(position_sink, position_source);
+    double dmax = flecsi::utils::distance(box_source_min, box_source_max);
+    double disttoc = flecsi::utils::distance(position_sink, position_source);
     return dmax / disttoc - macangle <= tol;
   }
 }; // class ntree_geometry specification for 1D
@@ -126,7 +126,7 @@ struct ntree_geometry<T, 1> {
  *-----------------------------------------------------------------------------*/
 template<typename T>
 struct ntree_geometry<T, 2> {
-  using point_t = point<T, 2>;
+  using point_t = utils::point<T, 2>;
   using element_t = T;
 
   //! Tolerance for the computations
@@ -137,7 +137,7 @@ struct ntree_geometry<T, 2> {
   //! center with radius.
   static bool
   within(const point_t & origin, const point_t & center, element_t r1) {
-    return distance(origin, center) - r1 <= tol;
+    return utils::distance(origin, center) - r1 <= tol;
   }
 
   //! Return true if dist^2 < radius^2
@@ -145,7 +145,7 @@ struct ntree_geometry<T, 2> {
     const point_t & center,
     element_t r1,
     element_t r2) {
-    return distance(origin, center) <= std::max(r1, r2);
+    return utils::distance(origin, center) <= std::max(r1, r2);
   }
 
   //! Return true if point origin lies within the box specified by
@@ -170,7 +170,7 @@ struct ntree_geometry<T, 2> {
     const element_t r1,
     const point_t & c2,
     const element_t r2) {
-    return distance(c1, c2) - (r1 + r2) <= tol;
+    return utils::distance(c1, c2) - (r1 + r2) <= tol;
   }
 
   //! Intersection of sphere and box; Compute the closest point from the
@@ -181,7 +181,7 @@ struct ntree_geometry<T, 2> {
     const element_t r) {
     point_t x = point_t(std::max(min[0], std::min(c[0], max[0])),
       std::max(min[1], std::min(c[1], max[1])));
-    element_t dist = distance(x, c);
+    element_t dist = utils::distance(x, c);
     return dist - r <= tol;
   }
 
@@ -195,8 +195,8 @@ struct ntree_geometry<T, 2> {
     const point_t & box_source_min,
     const point_t & box_source_max,
     double macangle) {
-    double dmax = flecsi::distance(box_source_min, box_source_max);
-    double disttoc = flecsi::distance(position_sink, position_source);
+    double dmax = flecsi::utils::distance(box_source_min, box_source_max);
+    double disttoc = flecsi::utils::distance(position_sink, position_source);
     return dmax / disttoc < macangle;
   }
 }; // class tree_geometry specification for 2D
@@ -206,7 +206,7 @@ struct ntree_geometry<T, 2> {
  *-----------------------------------------------------------------------------*/
 template<typename T>
 struct ntree_geometry<T, 3> {
-  using point_t = point<T, 3>;
+  using point_t = utils::point<T, 3>;
   using element_t = T;
   //! Tolerance for the computations
   static constexpr element_t tol =
@@ -216,7 +216,7 @@ struct ntree_geometry<T, 3> {
   //! center with radius.
   static bool
   within(const point_t & origin, const point_t & center, element_t r1) {
-    return distance(origin, center) - r1 <= tol;
+    return utils::distance(origin, center) - r1 <= tol;
   }
 
   //! Return true if dist^2 < radius^2
@@ -224,7 +224,7 @@ struct ntree_geometry<T, 3> {
     const point_t & center,
     const element_t & r1,
     const element_t & r2) {
-    return distance(origin, center) <= std::max(r1, r2);
+    return utils::distance(origin, center) <= std::max(r1, r2);
   }
 
   //! Return true if point origin lies within the box specified by
@@ -285,8 +285,8 @@ struct ntree_geometry<T, 3> {
     const point_t & box_source_min,
     const point_t & box_source_max,
     double macangle) {
-    double dmax = flecsi::distance(box_source_min, box_source_max);
-    double disttoc = flecsi::distance(position_sink, position_source);
+    double dmax = flecsi::utils::distance(box_source_min, box_source_max);
+    double disttoc = flecsi::utils::distance(position_sink, position_source);
     return dmax / disttoc < macangle;
   }
 }; // class ntree_geometry specification for 3D

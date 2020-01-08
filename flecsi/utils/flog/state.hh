@@ -25,6 +25,8 @@
 
 #include <bitset>
 #include <cassert>
+#include <sstream>
+#include <string>
 #include <unordered_map>
 
 namespace flecsi {
@@ -173,6 +175,8 @@ public:
       send_to_one();
 
       if(process_ == 0) {
+        // Give the flusher a chance to run at least once.
+        usleep(FLOG_PACKET_FLUSH_INTERVAL);
         end_flusher();
         flusher_thread_.join();
       } // if
@@ -357,7 +361,19 @@ public:
   }
 
   void buffer_output() {
-    packets_.push_back({buffer_stream().str().c_str()});
+    std::string tmp = buffer_stream().str();
+
+    // Make sure that the string fits within the packet size.
+    if(tmp.size() > FLOG_MAX_MESSAGE_SIZE) {
+      tmp.resize(FLOG_MAX_MESSAGE_SIZE - 100);
+      std::stringstream stream;
+      stream << tmp << FLOG_COLOR_LTRED << " OUTPUT BUFFER TRUNCATED "
+             << FLOG_MAX_MESSAGE_SIZE << "(" << buffer_stream().str().size()
+             << ")" << FLOG_COLOR_PLAIN << std::endl;
+      tmp = stream.str();
+    } // if
+
+    packets_.push_back({tmp.c_str()});
   }
 
   std::vector<packet_t> & packets() {

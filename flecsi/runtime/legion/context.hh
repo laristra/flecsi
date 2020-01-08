@@ -89,7 +89,7 @@ struct context_t : context {
     Documentation for this interface is in the top-level context type.
    */
 
-  int finalize();
+  void finalize();
 
   /*
     Documentation for this interface is in the top-level context type.

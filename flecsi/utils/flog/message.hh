@@ -116,7 +116,7 @@ protected:
                                                                                \
     ~severity##_log_message_t() {                                              \
       /* Clean colors from the stream */                                       \
-      if(clean_color_) {                                                       \
+      if(clean_color_ && !flog_t::instance().buffer_stream().str().empty()) {  \
         auto str = flog_t::instance().buffer_stream().str();                   \
         if(str.back() == '\n') {                                               \
           str = str.substr(0, str.size() - 1);                                 \
