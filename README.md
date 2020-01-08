@@ -107,15 +107,6 @@ that you specified.
 
 Here we talk about how to install those dependencies through Spack.
 
-Setup your environment and load your modules such as
-```
-$ module load gcc/7.3.0
-$ module load cmake/3.12.4
-$ module load python/3.5.1
-$ module load mpich/3.2.1-gcc_7.3.0
-```
-and get FleCSI on your desired branch following the
-[Download](#download) section under *Installing FleCSI*.
 
 First, you need to download Spack if you don't already have one.
 ```
@@ -136,9 +127,19 @@ The output should look something like this
 -- gcc centos7-x86_64 -------------------------------------------
 gcc@7.3.0
 ```
+Setup your environment and load your modules such as
+```
+$ module load gcc/7.3.0
+$ module load cmake/3.12.4
+$ module load python/3.5.1
+$ module load mpich/3.2.1-gcc_7.3.0
+```
+and get FleCSI on your desired branch following the
+[Download](#download) section under *Installing FleCSI*.
+
 Next, add the folder that contains custom flecsi spackage to Spack
 ```
-$ spack repo add flecsi/spack-repo
+$ spack repo add spack-repo
 $ spack repo list
 ```
 and you should have output like this
@@ -186,6 +187,9 @@ packages:
             cmake@3.12.4: cmake/3.12.4
 ```
 Then the installation from Spack will take less time.
+
+Either way, you can proceed to [Build](#build) section under
+*Installing FleCSI*.
 
 # Installing FleCSI
 
