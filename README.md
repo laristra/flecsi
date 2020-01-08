@@ -128,7 +128,9 @@ $ spack compiler find
 $ spack compiler list
 ```
 to get Spack into your environment and see what compilers you have that
-Spack can find automatically. The output should look something like this
+Spack can find automatically. 
+
+The output should look something like this
 ```
 ==> Available compilers
 -- gcc centos7-x86_64 -------------------------------------------
