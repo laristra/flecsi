@@ -137,7 +137,9 @@ $ module load mpich/3.2.1-gcc_7.3.0
 and get FleCSI on your desired branch following the
 [Download](#download) section under *Installing FleCSI*.
 
-Next, add the folder that contains custom flecsi spackage to Spack
+Next, add the folder that contains custom flecsi spackage to Spack (you
+should be in flecsi folder if you followed the steps in the Download
+section)
 ```
 $ spack repo add spack-repo
 $ spack repo list
