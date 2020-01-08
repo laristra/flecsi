@@ -107,6 +107,10 @@ that you specified.
 
 Here we talk about how to install those dependencies through Spack.
 
+Clean environment
+```
+$ module purge
+```
 
 First, you need to download Spack if you don't already have one.
 ```
