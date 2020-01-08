@@ -233,13 +233,13 @@ $ mkdir build
 $ cd build
 $ cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug \
     -DENABLE_UNIT_TESTS=ON \
     -DFLECSI_RUNTIME_MODEL=legion
 $ make
 ```
-where *cmake*'s *-DCMAKE_PREFIX_PATH* should be the path that
-you used for your FleCSI third-party library installation.
+where you should add *cmake*'s *-DCMAKE_PREFIX_PATH* that points to
+your FleCSI third-party library installation if you built
+from source.
 
 Again, you can run *ccmake* in place of *cmake*.
 
@@ -251,7 +251,6 @@ the CMake configuration line:
 ```
 $ cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug/ \
     -DENABLE_UNIT_TESTS=ON \
     -DFLECSI_RUNTIME_MODEL=legion \
     -DENABLE_SPHINX=ON \
