@@ -158,6 +158,7 @@ $ spack install -v --only dependencies flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=
 ```
 to get all the dependencies and all their dependencies installed from
 scratch. 
+
 After Spack finishes the installation, you can load them into
 your environment by doing
 ```
