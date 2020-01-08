@@ -157,8 +157,9 @@ using mpich like this
 $ spack install -v --only dependencies flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0
 ```
 to get all the dependencies and all their dependencies installed from
-scratch and go on to building flecsi from source by loading them into
-your environment by either doing
+scratch. 
+After Spack finishes the installation, you can load them into
+your environment by doing
 ```
 $ spack build-env --dump flecsi-deps.sh "flecsi%gcc@7.3.0 ~graphviz +hdf5 backend=legion ^mpich%gcc@7.3.0"
 $ source flecsi-deps.sh
