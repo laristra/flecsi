@@ -373,6 +373,7 @@ env_hpx:
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
+  allow_failure: true
 
 env_update:
   extends: env_mpi
@@ -381,7 +382,7 @@ env_update:
       - master
   script:
     - *update_spackage
-  allow_failure: true 
+  allow_failure: true
 
 ###############
 # Canary Jobs #
