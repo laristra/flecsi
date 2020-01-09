@@ -60,7 +60,7 @@ before_script:
     ( flock -e 200
     source ${SPACK_ROOT}/share/spack/setup-env.sh;
     # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true;
-    spack repo rm laristra_flecsi || /bin/true ;
+    spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
     if [[ ${BUILD_TYPE} =~ "Debug" ]];
@@ -164,6 +164,22 @@ before_script:
   <<: *general_def
   <<: *cache_def
 
+.update_spackage: &update_spackage |-
+    echo 'Updating spackages...'
+    cd ${CI_PROJECT_DIR}
+    git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git
+    echo $(diff -r ${CI_PROJECT_DIR}/spack-repo/packages/ ${CI_PROJECT_DIR}/ristra_spackages/spack-repo/packages/ | grep "${CI_PROJECT_DIR}/spack-repo" | tee thediff)
+    export last_commit=$(git log -n 1 --pretty=format:%H -- spack-repo/packages)
+    git diff ${last_commit}^ HEAD spack-repo/packages | tee spackage.patch
+    if [[ -s spackage.patch && -s thediff ]];
+    then
+      cd ristra_spackages;
+      git apply ${CI_PROJECT_DIR}/spackage.patch;
+      git add -u;
+      git commit -m "Gitlab CI Automatic Spackage Update - FleCSI";
+      git push;
+    fi;
+
 #############
 # Env Stage #
 #############
@@ -185,7 +201,7 @@ before_script:
         git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
       fi;
       source ${SPACK_ROOT}/share/spack/setup-env.sh;
-      spack repo rm laristra_flecsi || /bin/true ;
+      spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
       spack install -v --only dependencies ${FLECSI_SPACK_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION};
@@ -356,6 +372,15 @@ env_hpx:
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
+
+env_update:
+  extends: env_mpi
+  only:
+    refs:
+      - master
+  script:
+    - *update_spackage
+  allow_failure: true 
 
 ###############
 # Canary Jobs #
