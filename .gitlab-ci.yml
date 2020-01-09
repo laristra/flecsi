@@ -83,8 +83,10 @@ before_script:
       module load intel/${FLECSI_INTEL_VERSION};
     fi
   - module list
-  - echo $CC;
-  - echo $CXX;
+  - echo $CC
+  - echo $CXX
+  - echo $CMAKE_PREFIX_PATH
+  - echo $LEGION_INCLUDE_DIRS
 
 ##########################
 # Build Matrix Variables #
