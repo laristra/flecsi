@@ -33,10 +33,13 @@ write_task(data_client_handle_u<mesh_t, ro> mesh,
   for(auto c : mesh.cells(flecsi::owned)) {
     auto id = map.at(c.id());
     f1(c) = id;
-    if(id % 2 == 0)
-      f2(c, 0) = 2 * id;
-    else
-      f2(c, 1) = 2 * id;
+    if(id % 2 == 0) {
+      f2(c, 0) = 100 * id;
+      f2(c, 2) = 100 * id + 2;
+    }
+    else {
+      f2(c, 1) = 100 * id + 1;
+    }
   }
 } // write_task
 
@@ -49,10 +52,13 @@ clear_task(data_client_handle_u<mesh_t, ro> mesh,
   for(auto c : mesh.cells(flecsi::owned)) {
     auto id = map.at(c.id());
     f1(c) = 0;
-    if(id % 2 == 0)
+    if(id % 2 == 0) {
       f2.erase(c, 0);
-    else
+      f2.erase(c, 2);
+    }
+    else {
       f2.erase(c, 1);
+    }
   }
 } // clear_task
 
@@ -64,11 +70,14 @@ read_task(data_client_handle_u<mesh_t, ro> mesh,
   const auto & map = context.index_map(cells);
   for(auto c : mesh.cells()) {
     auto id = map.at(c.id());
-    EXPECT_EQ(f1(c), id);
-    //    if(id % 2 == 0)
-    //      EXPECT_EQ(f2(c, 0), 2 * id);
-    //    else
-    //      EXPECT_EQ(f2(c, 1), 2 * id);
+    ASSERT_EQ(f1(c), id);
+    if(id % 2 == 0) {
+      ASSERT_EQ(f2(c, 0), 100 * id);
+      ASSERT_EQ(f2(c, 2), 100 * id + 2);
+    }
+    else {
+      ASSERT_EQ(f2(c, 1), 100 * id + 1);
+    }
   }
 } // read_task
 
