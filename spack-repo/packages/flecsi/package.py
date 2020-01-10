@@ -50,10 +50,12 @@ class Flecsi(CMakePackage):
             description='Build FleCSI Tutorials')
     variant('flecstan', default=False,
             description='Build FleCSI Static Analyzer')
+    variant('cinch', default=False,
+            description='Enable External Cinch')
 
     depends_on('cmake@3.12:',  type='build')
     # Requires cinch > 1.0 due to cinchlog installation issue
-    #depends_on('cinch@1.01:', type='build')
+    depends_on('cinch@1.01:', type='build', when='+cinch')
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
     depends_on('mpi', when='backend=hpx')
@@ -85,7 +87,9 @@ class Flecsi(CMakePackage):
                    '-DENABLE_COLORING=ON',
                    '-DENABLE_DEVEL_TARGETS=ON'
                    ]
-        #options.append('-DCINCH_SOURCE_DIR=' + spec['cinch'].prefix)
+        if '+cinch' in spec:
+            options.append('-DCINCH_SOURCE_DIR=' + spec['cinch'].prefix)
+
 
         if spec.variants['backend'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
