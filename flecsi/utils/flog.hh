@@ -410,9 +410,23 @@ dumpstack() {
   @ingroup flog
  */
 
+/*
+  This implementation avoids unused variables error
+  Attribution: https://stackoverflow.com/questions/777261/
+  avoiding-unused-variables-warnings-when-using-assert-in-a-release-build
+ */
+#ifdef NDEBUG
+#define flog_assert(test, message)                                             \
+  /* MACRO IMPLEMENTATION */                                                   \
+                                                                               \
+  do {                                                                         \
+    (void)sizeof(test);                                                        \
+  } while(0)
+#else
 #define flog_assert(test, message)                                             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   if(!(test)) {                                                                \
     flog_fatal(message);                                                       \
   }
+#endif // NDEBUG

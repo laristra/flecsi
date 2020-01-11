@@ -26,7 +26,6 @@
 #include <flecsi/topology/unstructured/utils.hh>
 
 #include <array>
-#include <cassert>
 #include <cstdint>
 #include <iostream>
 #include <vector>
@@ -198,26 +197,26 @@ public:
   template<size_t FROM_DIM>
   connectivity_t & get(size_t to_dim) {
     static_assert(FROM_DIM <= DIM, "invalid from dimension");
-    assert(to_dim <= DIM && "invalid to dimension");
+    flog_assert(to_dim <= DIM, "invalid to dimension");
     return conns_[FROM_DIM][to_dim];
   }
 
   template<size_t FROM_DIM>
   const connectivity_t & get(size_t to_dim) const {
     static_assert(FROM_DIM <= DIM, "invalid from dimension");
-    assert(to_dim <= DIM && "invalid to dimension");
+    flog_assert(to_dim <= DIM, "invalid to dimension");
     return conns_[FROM_DIM][to_dim];
   }
 
   connectivity_t & get(size_t from_dim, size_t to_dim) {
-    assert(from_dim <= DIM && "invalid from dimension");
-    assert(to_dim <= DIM && "invalid to dimension");
+    flog_assert(from_dim <= DIM, "invalid from dimension");
+    flog_assert(to_dim <= DIM, "invalid to dimension");
     return conns_[from_dim][to_dim];
   }
 
   const connectivity_t & get(size_t from_dim, size_t to_dim) const {
-    assert(from_dim <= DIM && "invalid from dimension");
-    assert(to_dim <= DIM && "invalid to dimension");
+    flog_assert(from_dim <= DIM, "invalid from dimension");
+    flog_assert(to_dim <= DIM, "invalid to dimension");
     return conns_[from_dim][to_dim];
   }
 

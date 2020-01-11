@@ -104,13 +104,21 @@ set(topology_SOURCES
 
 #---------------------------   Unstructured Mesh  -----------------------------#
 
-ftest_add_unit(umesh_coloring
-  SOURCES unstructured/test/coloring.cc
+ftest_add_unit(dcrs
+  SOURCES unstructured/test/dcrs.cc
+  INPUTS
+    unstructured/test/simple2d-16x16.msh
+    unstructured/test/simple2d-8x8.msh
+  THREADS 5
 )
 
 ftest_add_unit(simple_definition
   SOURCES unstructured/test/simple_definition.cc
   INPUTS unstructured/test/simple2d-16x16.msh
+)
+
+ftest_add_unit(umesh_coloring
+  SOURCES unstructured/test/coloring.cc
 )
 
 #----------------------------------  NTREE  -----------------------------------#

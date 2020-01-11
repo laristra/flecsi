@@ -62,7 +62,7 @@ public:
   simple_definition & operator=(const simple_definition &) = delete;
 
   size_t num_entities(size_t dimension) const override {
-    flog_assert(dimension < 2, "invalid dimension");
+    flog_assert(dimension == 0 || dimension == 2, "invalid dimension");
     return dimension == 0 ? num_vertices_ : num_cells_;
   }
 
