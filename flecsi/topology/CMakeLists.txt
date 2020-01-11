@@ -45,7 +45,6 @@ set(topology_HEADERS
 )
 
 set(topology_SOURCES
-  canonical/types.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")

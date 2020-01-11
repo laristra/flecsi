@@ -128,14 +128,14 @@ private:
  *----------------------------------------------------------------------------*/
 
 // TODO: Do we need POLICY_TYPE, or should we avoid redundant instantiation by
-// keying on unstructured_mesh_base_t (or some equivalent enum)?
+// keying on unstructured_base (or some equivalent enum)?
 template<typename POLICY_TYPE, typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<storage_label_t::dense,
-  topology::unstructured_mesh<POLICY_TYPE>,
+  topology::unstructured<POLICY_TYPE>,
   DATA_TYPE,
   PRIVILEGES> : reference_base {
   using value_type = DATA_TYPE;
-  using topology_t = topology::unstructured_mesh<POLICY_TYPE>;
+  using topology_t = topology::unstructured<POLICY_TYPE>;
 
   accessor(field_reference<DATA_TYPE, topology_t> const & ref)
     : accessor(ref.info().fid) {}

@@ -280,17 +280,17 @@ private:
 };
 
 /*!
-  The unstructured_mesh_base_t type allows identification of
+  The unstructured_base type allows identification of
   unstructured meshes.
  */
 
-struct unstructured_mesh_base_t {
+struct unstructured_base {
   using coloring = size_t;
 };
 
 #if 0
 template<class STORAGE_TYPE>
-class mesh_base : data::data_client_t, unstructured_mesh_base_t
+class mesh_base : data::data_client_t, unstructured_base
 {
 public:
   using id_t = utils::id_t;

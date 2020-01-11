@@ -50,6 +50,11 @@ struct ntree : ntree_base {
 public:
   using Policy = POLICY_TYPE;
 
+  template<typename... ARGS>
+  static coloring color(ARGS &&... args) {
+    return POLICY_TYPE::color(std::forward<ARGS>(args)...);
+  } // color
+
   // tree storage type definition
   using storage_t = ntree_storage<Policy>;
   // entity ID type

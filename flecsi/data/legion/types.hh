@@ -153,8 +153,8 @@ struct topology_data<topology::ntree_base> {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::unstructured_mesh_base_t> {
-  using type = topology::unstructured_mesh_base_t;
+struct topology_data<topology::unstructured_base> {
+  using type = topology::unstructured_base;
   topology_data(const type::coloring &);
 
 #if 0
@@ -168,21 +168,31 @@ struct topology_data<topology::unstructured_mesh_base_t> {
 };
 
 #if 0
-struct unstructured_mesh_dense_runtime_data_t {
-}; // struct unstructured_mesh_dense_runtime_data_t
+struct unstructured_dense_runtime_data_t {
+}; // struct unstructured_dense_runtime_data_t
 
-struct unstructured_mesh_ragged_runtime_data_t {
-}; // struct unstructured_mesh_ragged_runtime_data_t
+struct unstructured_ragged_runtime_data_t {
+}; // struct unstructured_ragged_runtime_data_t
 
-struct unstructured_mesh_sparse_runtime_data_t {
-}; // struct unstructured_mesh_sparse_runtime_data_t
+struct unstructured_sparse_runtime_data_t {
+}; // struct unstructured_sparse_runtime_data_t
 
-struct unstructured_mesh_subspace_runtime_data_t {
-}; // struct unstructured_mesh_subspace_runtime_data_t
+struct unstructured_subspace_runtime_data_t {
+}; // struct unstructured_subspace_runtime_data_t
 
 struct structured_mesh_runtime_data_t {
 }; // struct structured_mesh_runtime_data_t
 #endif
+
+/*----------------------------------------------------------------------------*
+  Structured Mesh Topology.
+ *----------------------------------------------------------------------------*/
+
+template<>
+struct topology_data<topology::structured_base> {
+  using type = topology::structured_base;
+  topology_data(const type::coloring &);
+};
 
 } // namespace data
 } // namespace flecsi

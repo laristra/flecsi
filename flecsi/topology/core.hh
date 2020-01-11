@@ -41,13 +41,13 @@ struct set_base_t;
 template<typename>
 struct set;
 
-struct structured_mesh_base_t;
+struct structured_base;
 template<typename>
-struct structured_mesh;
+struct structured;
 
-struct unstructured_mesh_base_t;
+struct unstructured_base;
 template<typename>
-struct unstructured_mesh;
+struct unstructured;
 
 namespace detail {
 
@@ -80,15 +80,13 @@ struct core<T, utils::voided<utils::base_specialization_t<set, T>>> {
 };
 
 template<class T>
-struct core<T,
-  utils::voided<utils::base_specialization_t<structured_mesh, T>>> {
-  using type = utils::base_specialization_t<structured_mesh, T>;
+struct core<T, utils::voided<utils::base_specialization_t<structured, T>>> {
+  using type = utils::base_specialization_t<structured, T>;
 };
 
 template<class T>
-struct core<T,
-  utils::voided<utils::base_specialization_t<unstructured_mesh, T>>> {
-  using type = utils::base_specialization_t<unstructured_mesh, T>;
+struct core<T, utils::voided<utils::base_specialization_t<unstructured, T>>> {
+  using type = utils::base_specialization_t<unstructured, T>;
 };
 
 template<class T>
@@ -103,9 +101,9 @@ struct category<ntree<P>> : category<ntree_base> {};
 template<class P>
 struct category<set<P>> : category<set_base_t> {};
 template<class P>
-struct category<structured_mesh<P>> : category<structured_mesh_base_t> {};
+struct category<structured<P>> : category<structured_base> {};
 template<class P>
-struct category<unstructured_mesh<P>> : category<unstructured_mesh_base_t> {};
+struct category<unstructured<P>> : category<unstructured_base> {};
 
 inline std::size_t next_id;
 // Use functions because these are needed during non-local initialization:

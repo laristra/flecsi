@@ -95,7 +95,6 @@ ftest_add_unit(canonical
   THREADS 2
 )
 
-
 ftest_add_unit(global
   SOURCES
     test/global.cc
@@ -116,6 +115,12 @@ ftest_add_unit(index
 ftest_add_unit(privilege
   SOURCES
     test/privilege.cc
+)
+
+ftest_add_unit(structured
+  SOURCES
+    test/structured.cc
+  THREADS 2
 )
 
 ftest_add_unit(umesh

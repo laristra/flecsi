@@ -190,13 +190,12 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename POLICY_TYPE, size_t PRIVILEGES>
-  using structured_mesh_accessor =
-    data::topology_accessor<topology::structured_mesh<POLICY_TYPE>, PRIVILEGES>;
+  using structured_accessor =
+    data::topology_accessor<topology::structured<POLICY_TYPE>, PRIVILEGES>;
 
   template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(
-    structured_mesh_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::structured_mesh<POLICY_TYPE>> &) {
+  void visit(structured_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<T, topology::structured<POLICY_TYPE>> &) {
   } // visit
 
   /*--------------------------------------------------------------------------*

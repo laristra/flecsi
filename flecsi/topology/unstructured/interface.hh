@@ -109,7 +109,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
  */
 
 template<typename POLICY_TYPE>
-struct unstructured_mesh : unstructured_mesh_base_t, data::reference_base {
+struct unstructured : unstructured_base, data::reference_base {
 
   //--------------------------------------------------------------------------//
   // static verification of mesh policy
@@ -156,11 +156,11 @@ private:
     num_index_subspaces<POLICY_TYPE>::value>
     ms_;
 
-}; // struct unstructured_mesh
+}; // struct unstructured
 
 #if 0
 template<class POLICY_TYPE>
-class unstructured_mesh
+class unstructured
   : mesh_base<mesh_storage<POLICY_TYPE::num_dimensions,
       POLICY_TYPE::num_domains,
       num_index_subspaces<POLICY_TYPE>::value>>
@@ -186,31 +186,31 @@ public:
 
   // Don't allow the mesh to be copied or copy constructed
 
-  // don't allow mesh to be assigned unstructured_mesh & operator=(
-    const unstructured_mesh &) = delete;
+  // don't allow mesh to be assigned unstructured & operator=(
+    const unstructured &) = delete;
 
-  Allow move operations unstructured_mesh(
-    unstructured_mesh && o) = default;
+  Allow move operations unstructured(
+    unstructured && o) = default;
 
-  override default move assignement unstructured_mesh & operator=(
-    unstructured_mesh && o) = default;
+  override default move assignement unstructured & operator=(
+    unstructured && o) = default;
 
   Constructor, takes as input a mesh storage or
-                 storage can later be set unstructured_mesh(
+                 storage can later be set unstructured(
                    storage_t * ms = nullptr)
     : base_t(ms) {
     if(ms != nullptr) {
       initialize_storage();
     } // if
-  } // unstructured_mesh()
+  } // unstructured()
 
-  Copy constructor : alias another mesh unstructured_mesh(
-                       const unstructured_mesh & m)
+  Copy constructor : alias another mesh unstructured(
+                       const unstructured & m)
     : base_t(m.ms_) {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
-  virtual ~unstructured_mesh() {}
+  virtual ~unstructured() {}
 
   /*!
     Initialize the mesh storage after it has been set
@@ -2250,7 +2250,7 @@ private:
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-}; // class unstructured_mesh
+}; // class unstructured
 #endif
 
 } // namespace topology
