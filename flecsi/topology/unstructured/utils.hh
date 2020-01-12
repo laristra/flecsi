@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <flecsi/utils/common.hh>
+#include <flecsi/utils/flog.hh>
 #include <flecsi/utils/static_verify.hh>
 
 #include <vector>
@@ -240,7 +241,7 @@ struct find_index_space_from_id<0, TUPLE, ID> {
   //--------------------------------------------------------------------------//
 
   static constexpr size_t find() {
-    assert("didnt find index space");
+    assert(false && "failed to find index space");
     // why return -1 when size_t unsigned?
     return -1;
   } // find

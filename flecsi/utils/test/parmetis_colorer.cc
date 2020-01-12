@@ -15,6 +15,7 @@
 #include <flecsi/execution.hh>
 #include <flecsi/topology/unstructured/simple_definition.hh>
 #include <flecsi/utils/ftest.hh>
+#include <flecsi/utils/graph/parmetis_colorer.hh>
 
 using namespace flecsi;
 
@@ -22,21 +23,17 @@ int
 simple2d_16x16() {
   FTEST();
 
-  topology::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
-
-  ASSERT_EQ(sd.dimension(), 2lu);
-  ASSERT_EQ(sd.num_entities(0), 289lu);
-  ASSERT_EQ(sd.num_entities(2), 256lu);
+  topology::simple_definition sd("simple2d-16x16.msh");
 
   return FTEST_RESULT();
-}
+} // simple2d_16x16
 
 int
-driver(int, char **) {
+colorer_driver(int argc, char ** argv) {
 
   execute<simple2d_16x16, flecsi::index, mpi>();
 
   return 0;
-}
+} // simple2d_8x8
 
-ftest_register_driver(driver);
+ftest_register_driver(colorer_driver);

@@ -33,7 +33,7 @@ namespace control {
  */
 
 template<size_t POINT>
-using point_ = flecsi::utils::typeify<size_t, POINT>;
+using point_ = utils::typeify<size_t, POINT>;
 
 /*!
   Allow users to define cyclic control points. Cycles can be nested.
@@ -71,8 +71,7 @@ struct cycle {
  */
 
 template<typename CONTROL_POLICY>
-struct point_walker
-  : public flecsi::utils::tuple_walker<point_walker<CONTROL_POLICY>> {
+struct point_walker : public utils::tuple_walker<point_walker<CONTROL_POLICY>> {
   point_walker(int argc, char ** argv) : argc_(argc), argv_(argv) {}
 
   /*!

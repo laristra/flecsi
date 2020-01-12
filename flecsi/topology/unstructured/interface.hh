@@ -29,7 +29,6 @@
 
 //#include <algorithm>
 //#include <array>
-//#include <cassert>
 //#include <cstddef>
 //#include <cstring>
 //#include <functional>
@@ -591,7 +590,7 @@ public:
 
     const connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
-    assert(!c.empty() && "empty connectivity");
+    flog_assert(!c.empty(), "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity<TO_DOM, etype>;
@@ -619,7 +618,7 @@ public:
   auto entities(ENT_TYPE * e) {
     connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
-    assert(!c.empty() && "empty connectivity");
+    flog_assert(!c.empty(), "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity<TO_DOM, etype>;
@@ -771,7 +770,7 @@ public:
   auto entity_ids(const ENT_TYPE * e) const {
     const connectivity_t & c =
       get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
-    assert(!c.empty() && "empty connectivity");
+    flog_assert(!c.empty(), "empty connectivity");
     return c.get_index_space().ids(c.range(e->template id<FROM_DOM>()));
   } // entities
 
@@ -793,7 +792,7 @@ public:
     class ENT_TYPE>
   void reverse_entities(ENT_TYPE * e) {
     auto & c = get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
-    assert(!c.empty() && "empty connectivity");
+    flog_assert(!c.empty(), "empty connectivity");
     c.reverse_entities(e->template id<FROM_DOM>());
   } // entities
 
@@ -837,7 +836,7 @@ public:
     class U>
   void reorder_entities(ENT_TYPE * e, U && order) {
     auto & c = get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
-    assert(!c.empty() && "empty connectivity");
+    flog_assert(!c.empty(), "empty connectivity");
     c.reorder_entities(e->template id<FROM_DOM>(), std::forward<U>(order));
   } // entities
 
@@ -1044,13 +1043,13 @@ public:
     uint32_t num_domains;
     std::memcpy(&num_domains, buf + pos, sizeof(num_domains));
     pos += sizeof(num_domains);
-    assert(num_domains == POLICY_TYPE::num_domains && "domain size mismatch");
+    flog_assert(num_domains == POLICY_TYPE::num_domains, "domain size mismatch");
 
     uint32_t num_dimensions;
     std::memcpy(&num_dimensions, buf + pos, sizeof(num_dimensions));
     pos += sizeof(num_dimensions);
-    assert(
-      num_dimensions == POLICY_TYPE::num_dimensions && "dimension size mismatch");
+    flog_assert(
+      num_dimensions == POLICY_TYPE::num_dimensions, "dimension size mismatch");
 
     unserialize_domains_<storage_t,
       POLICY_TYPE,
@@ -1194,7 +1193,7 @@ private:
     VERT_TYPE && verts) {
     auto & c = get_connectivity_(DOM, POLICY_TYPE::num_dimensions, 0);
 
-    assert(cell->template id<DOM>() == c.from_size() && "id mismatch");
+    flog_assert(cell->template id<DOM>() == c.from_size(), "id mismatch");
 
     for(entity_type<0, DOM> * v : std::forward<VERT_TYPE>(verts)) {
       c.push(v->template global_id<DOM>());
@@ -1207,7 +1206,7 @@ private:
   void init_entity_(entity_type<FROM_DIM, DOM> * super, ENT_TYPE2 && subs) {
     auto & c = get_connectivity_(DOM, FROM_DIM, TO_DIM);
 
-    assert(super->template id<DOM>() == c.from_size() && "id mismatch");
+    flog_assert(super->template id<DOM>() == c.from_size(), "id mismatch");
 
     for(auto e : std::forward<ENT_TYPE2>(subs)) {
       c.push(e->template global_id<DOM>());
@@ -1238,7 +1237,7 @@ private:
   typename std::enable_if<(
     UsingDimension <= 1 || UsingDimension > POLICY_TYPE::num_dimensions)>::type
   build_connectivity() {
-    assert(false && "shouldn't be in here");
+    flog_assert(false, "shouldn't be in here");
   }
 
   /*!
@@ -1287,7 +1286,7 @@ private:
 
     // Get connectivity for cells to vertices.
     connectivity_t & cell_to_vertex = dc.template get<UsingDimension>(0);
-    assert(!cell_to_vertex.empty());
+    flog_assert(!cell_to_vertex.empty(), "empty map");
 
     const size_t _num_cells = num_entities<UsingDimension, Domain>();
 
@@ -1614,10 +1613,10 @@ private:
 
     // Read connectivities
     connectivity_t & c = get_connectivity_(FROM_DOM, FROM_DIM, DIM);
-    assert(!c.empty());
+    flog_assert(!c.empty(), "empty map");
 
     connectivity_t & c2 = get_connectivity_(TO_DOM, TO_DIM, DIM);
-    assert(!c2.empty());
+    flog_assert(!c2.empty(), "empty map");
 
     // Iterate through entities in "from" topological dimension
     for(auto from_entity : entities<FROM_DIM, FROM_DOM>()) {
@@ -1726,8 +1725,8 @@ private:
       "this needs to be re-thought for higher dimensions");
 
     if(get_connectivity_(DOM, POLICY_TYPE::num_dimensions, 0).empty()) {
-      assert(
-        !get_connectivity_(DOM, POLICY_TYPE::num_dimensions - 1, 0).empty() &&
+      flog_assert(
+        !get_connectivity_(DOM, POLICY_TYPE::num_dimensions - 1, 0).empty(),
         " need at least edges(2d)/faces(3) -> vertex connectivity");
       // assume we have cell -> faces, so invert it to get faces -> cells
       transpose<DOM,
@@ -2181,8 +2180,8 @@ private:
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) const {
-    assert(from_domain < POLICY_TYPE::num_domains && "invalid from domain");
-    assert(to_domain < POLICY_TYPE::num_domains && "invalid to domain");
+    flog_assert(from_domain < POLICY_TYPE::num_domains, "invalid from domain");
+    flog_assert(to_domain < POLICY_TYPE::num_domains, "invalid to domain");
     return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
@@ -2195,8 +2194,8 @@ private:
     size_t to_domain,
     size_t from_dim,
     size_t to_dim) {
-    assert(from_domain < POLICY_TYPE::num_domains && "invalid from domain");
-    assert(to_domain < POLICY_TYPE::num_domains && "invalid to domain");
+    flog_assert(from_domain < POLICY_TYPE::num_domains, "invalid from domain");
+    flog_assert(to_domain < POLICY_TYPE::num_domains, "invalid to domain");
     return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 

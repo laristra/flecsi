@@ -24,9 +24,10 @@ set(utils_HEADERS
   checksum.hh
   common.hh
   const_string.hh
-  dag.hh
-  debruijn.hh
+  crs.hh
+  dag.hh debruijn.hh
   demangle.hh
+  dimensioned_array.hh
   export_definitions.hh
   factory.hh
   flog.hh
@@ -43,6 +44,8 @@ set(utils_HEADERS
   function_traits.hh
   geometry/filling_curve.hh
   geometry/point.hh
+  graph/colorer.hh
+  graph/parmetis_colorer.hh
   graphviz.hh
   hash.hh
   id.hh
@@ -61,8 +64,8 @@ set(utils_HEADERS
   tuple_visitor.hh
   tuple_walker.hh
   tuple_wrapper.hh
-  type_traits.hh
   typeify.hh
+  type_traits.hh
   uint128.hh
 )
 
@@ -136,6 +139,20 @@ ftest_add_unit(common
     test/common.blessed
     ${common_blessed_input}
 )
+
+#------------------------------------------------------------------------------#
+# crs
+#------------------------------------------------------------------------------#
+
+if(FLECSI_ENABLE_PARMETIS)
+
+ftest_add_unit(crs
+  SOURCES
+    test/crs.cc
+)
+
+endif()
+    
 
 #------------------------------------------------------------------------------#
 # demangle

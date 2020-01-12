@@ -103,7 +103,7 @@ struct crs {
     // resize arrays
     std::swap(offsets, new_offsets);
     std::swap(indices, new_indices);
-  }
+  } // erase
 
   /// \brief clears the current storage
   void clear() {
