@@ -32,7 +32,7 @@ struct test_policy {
   static void create_entity();
 };
 
-using u_base = unstructured_mesh<test_policy>;
+using u_base = unstructured<test_policy>;
 static_assert(std::is_same_v<core_t<u_base>, u_base>);
 struct test : u_base {};
 static_assert(std::is_same_v<core_t<test>, u_base>);

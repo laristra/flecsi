@@ -32,12 +32,17 @@ namespace topology {
   @ingroup topology
  */
 
-template<typename TOPOLOGY_POLICY>
+template<typename Policy>
 struct canonical : canonical_base {
 
   using coloring = canonical_base::coloring;
 
   canonical() = delete;
+
+  template<typename... ARGS>
+  static coloring color(ARGS &&... args) {
+    return Policy::color(std::forward<ARGS>(args)...);
+  } // color
 
 }; // struct canonical
 

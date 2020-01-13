@@ -444,6 +444,22 @@ struct topology_registration<
  */
 
 //----------------------------------------------------------------------------//
+// Structured.
+//----------------------------------------------------------------------------//
+
+template<typename POLICY_TYPE>
+struct topology_registration<flecsi::topology::structured<POLICY_TYPE>> {
+
+  using TOPOLOGY_TYPE = flecsi::topology::structured<POLICY_TYPE>;
+
+  static bool register_fields() {
+    flog(info) << "topology_registration::register_fields()" << std::endl;
+    return true;
+  } // register_fields
+
+}; // class topology_registration
+
+//----------------------------------------------------------------------------//
 // NTree.
 //----------------------------------------------------------------------------//
 

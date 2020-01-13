@@ -537,6 +537,7 @@ make_dcrs_distributed(const parallel_definition<MESH_DIMENSION> & md,
     1,
     mpi_size_t,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertex counts");
 
@@ -555,6 +556,7 @@ make_dcrs_distributed(const parallel_definition<MESH_DIMENSION> & md,
     recvcounts,
     recvdispls,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertices");
 
@@ -648,6 +650,7 @@ make_dcrs_distributed(const parallel_definition<MESH_DIMENSION> & md,
     1,
     mpi_size_t,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating back vertex counts");
 
@@ -668,6 +671,7 @@ make_dcrs_distributed(const parallel_definition<MESH_DIMENSION> & md,
     recvcounts,
     recvdispls,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating new vertices");
 
@@ -680,9 +684,11 @@ make_dcrs_distributed(const parallel_definition<MESH_DIMENSION> & md,
       // get vertex
       auto vertex = recvbuf[i];
       ++i;
+
       // keep track of ranks that share this vertex
       vertex2rank[vertex].emplace_back(r);
       flog_assert(i < recvdispls[r + 1], "invalid index");
+
       // unpack cell neighbors
       auto n = recvbuf[i];
       ++i;
@@ -767,6 +773,7 @@ migrate(size_t dimension,
   //----------------------------------------------------------------------------
 
   using byte_t = typename parallel_definition<DIMENSION>::byte_t;
+
   std::vector<size_t> sendcounts(comm_size, 0);
   std::vector<size_t> senddispls(comm_size + 1);
   std::vector<byte_t> sendbuf;
@@ -845,6 +852,7 @@ migrate(size_t dimension,
   const auto mpi_size_t = utils::mpi_typetraits<size_t>::type();
 
   std::vector<size_t> recvcounts(comm_size, 0);
+
   auto ret = MPI_Alltoall(sendcounts.data(),
     1,
     mpi_size_t,
@@ -852,6 +860,7 @@ migrate(size_t dimension,
     1,
     mpi_size_t,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertex counts");
 
@@ -870,6 +879,7 @@ migrate(size_t dimension,
     recvcounts,
     recvdispls,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertices");
 
@@ -1617,6 +1627,7 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
     1,
     mpi_size_t,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertex counts");
 
@@ -1635,6 +1646,7 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
     recvcounts,
     recvdispls,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertices");
 
@@ -1725,6 +1737,7 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
     1,
     mpi_size_t,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertex counts");
 
@@ -1743,6 +1756,7 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
     recvcounts,
     recvdispls,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertices");
 
@@ -1768,12 +1782,15 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
     // convert to global ids
     global_vs.clear();
     global_vs.reserve(vs.size());
+
     for(auto v : vs)
       global_vs.emplace_back(vertex_local2global.at(v));
+
     // sort the vertices and find the edge
     std::sort(global_vs.begin(), global_vs.end());
     auto it = entities.find(global_vs);
     flog_assert(it != entities.end(), "messed up setting entity ids");
+
     // figure out the edges global id
     auto global_id = it->second;
     global2local.emplace(global_id, local2global.size());
@@ -1866,6 +1883,7 @@ ghost_connectivity(const flecsi::utils::crs & from2to,
     1,
     mpi_size_t,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertex counts");
 
@@ -1884,6 +1902,7 @@ ghost_connectivity(const flecsi::utils::crs & from2to,
     recvcounts,
     recvdispls,
     MPI_COMM_WORLD);
+
   if(ret != MPI_SUCCESS)
     flog_error("Error communicating vertices");
 

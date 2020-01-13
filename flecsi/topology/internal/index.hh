@@ -44,6 +44,10 @@ struct index {
     size_t size_;
   };
 
+  static coloring color(size_t size) {
+    return {size};
+  } // color
+
 }; // struct index
 
 } // namespace topology

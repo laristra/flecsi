@@ -103,7 +103,7 @@ inline topology_data<topology::index>::topology_data(
   }; // struct entity_walker_t
 #endif
 
-inline topology_data<topology::unstructured_mesh_base_t>::topology_data(
+inline topology_data<topology::unstructured_base>::topology_data(
   const type::coloring & coloring) {
 
 #if 0

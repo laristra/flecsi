@@ -42,7 +42,7 @@ struct coloring_slot {
   template<typename... ARGS>
   color_type & allocate(ARGS &&... args) {
     constexpr auto f = [](coloring_slot & s, ARGS &&... aa) {
-      s.coloring.emplace(std::forward<ARGS>(aa)...);
+      s.coloring.emplace(Topo::color(std::forward<ARGS>(aa)...));
     };
     execute<*f, index, mpi>(*this, std::forward<ARGS>(args)...);
     return get();
