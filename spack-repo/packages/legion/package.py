@@ -48,7 +48,7 @@ class Legion(CMakePackage):
     variant('shared', default=True, description='Build shared libraries')
     variant('hdf5', default=True, description='Enable HDF5 support')
     variant('build_type', default='Release', values=('Debug', 'Release'),
-            description='The build type to build')
+            description='The build type to build', multi=False)
 
     depends_on("cmake@3.1:", type='build')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB'", when='~mpi')
