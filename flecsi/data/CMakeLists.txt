@@ -123,8 +123,8 @@ ftest_add_unit(structured
   THREADS 2
 )
 
-ftest_add_unit(umesh
+ftest_add_unit(unstructured
   SOURCES
-    test/umesh.cc
+    test/unstructured.cc
   THREADS 2
 )

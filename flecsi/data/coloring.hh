@@ -55,6 +55,7 @@ struct coloring_slot {
   color_type & get() {
     return *coloring;
   }
+
   const color_type & get() const {
     return *coloring;
   }
