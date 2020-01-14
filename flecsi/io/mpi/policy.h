@@ -215,7 +215,7 @@ struct mpi_policy_t {
 
     if(offset_buf) {
       herr_t status;
-      hsize_t dims[1] = {new_world_size + 1};
+      hsize_t dims[1] = {static_cast<hsize_t>(new_world_size + 1)};
       hid_t attribute_space_id = H5Screate_simple(1, dims, NULL);
       hid_t attribute_id = H5Acreate(dataset_id, "offsets", H5T_NATIVE_UINT,
         attribute_space_id, H5P_DEFAULT, H5P_DEFAULT);
