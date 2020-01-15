@@ -402,12 +402,13 @@ build:centOS_mpi:
   script:
     - *build_script
     - *test_script
-  allow_failure: true 
+  allow_failure: false
 
 build:centOS_mpi_release:
   extends: build:centOS_mpi
   variables:
     <<: *buildtype_release
+  allow_failure: true
 
 build:centOS_mpi_clang:
   extends: build:centOS_mpi
@@ -423,6 +424,7 @@ build:centOS_mpi_intel:
   extends: build:centOS_mpi
   variables:
     <<: *compiler_intel
+  allow_failure: true
 
 build:centOS_mpi_intel_release:
   extends: build:centOS_mpi_intel
@@ -440,12 +442,13 @@ build:centOS_mpich_mpi:
   script:
     - *build_script
     - *test_script
-  allow_failure: true 
+  allow_failure: false
 
 build:centOS_mpich_mpi_release:
   extends: build:centOS_mpich_mpi
   variables:
     <<: *buildtype_release
+  allow_failure: true
 
 build:centOS_mpich_mpi_clang:
   extends: build:centOS_mpich_mpi
@@ -461,6 +464,7 @@ build:centOS_mpich_mpi_intel:
   extends: build:centOS_mpich_mpi
   variables:
     <<: *compiler_intel
+  allow_failure: true
 
 build:centOS_mpich_mpi_intel_release:
   extends: build:centOS_mpich_mpi_intel
