@@ -48,13 +48,13 @@ class Legion(CMakePackage):
     variant('shared', default=True, description='Build shared libraries')
     variant('hdf5', default=True, description='Enable HDF5 support')
     variant('build_type', default='Release', values=('Debug', 'Release'),
-            description='The build type to build')
+            description='The build type to build', multi=False)
 
     depends_on("cmake@3.1:", type='build')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB'", when='~mpi')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB' +mpi", when='+mpi')
     depends_on("gasnet~aligned-segments~pshm segment-mmap-max='16GB' +ibv", when='+ibv')
-    depends_on("hdf5~mpi", when='+hdf5')
+    depends_on("hdf5", when='+hdf5')
 
     def cmake_args(self):
         cmake_cxx_flags = [
