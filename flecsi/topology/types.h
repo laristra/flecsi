@@ -100,18 +100,22 @@ public:
   //!
   //! \return The id of the entity.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const id_t & global_id() const {
     return id_;
   } // id
 
+  FLECSI_INLINE_TARGET
   id_t & global_id() {
     return id_;
   } // id
 
+  FLECSI_INLINE_TARGET
   size_t id() const {
     return id_.entity();
   } // id
 
+  FLECSI_INLINE_TARGET
   uint16_t info() const {
     return global_id() >> 48;
   } // info
@@ -119,13 +123,14 @@ public:
   //-----------------------------------------------------------------//
   //! Set the id of this entity.
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   void set_global_id(const id_t & id) {
     id_ = id;
   } // id
 
   /*!
    */
-
+  FLECSI_INLINE_TARGET
   static constexpr size_t get_dim_(size_t meshDim, size_t dim) {
     return dim > meshDim ? meshDim : dim;
   } // get_dim_

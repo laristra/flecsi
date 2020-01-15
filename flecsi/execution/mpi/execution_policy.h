@@ -29,6 +29,10 @@
 #include <flecsi/execution/mpi/task_epilog.h>
 #include <flecsi/execution/mpi/task_prolog.h>
 
+#if defined(ENABLE_CALIPER)
+#include <caliper/Annotation.h>
+#endif
+
 namespace flecsi {
 namespace execution {
 
@@ -43,9 +47,11 @@ struct executor_u {
    */
   template<typename T, typename A>
   static decltype(auto) execute(T function, A && targs) {
+
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function));
     mpi_future_u<RETURN> future;
     future.set(user_fun(std::forward<A>(targs)));
+
     return future;
   } // execute
 }; // struct executor_u
@@ -61,6 +67,7 @@ struct executor_u<void, ARG_TUPLE> {
    */
   template<typename T, typename A>
   static decltype(auto) execute(T function, A && targs) {
+
     auto user_fun = (reinterpret_cast<void (*)(ARG_TUPLE)>(function));
 
     mpi_future_u<void> future;
@@ -123,8 +130,13 @@ struct mpi_execution_policy_t {
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
+#if defined(ENABLE_CALIPER)
+    return context_t::instance()
+      .template register_function<TASK, RETURN, ARG_TUPLE, DELEGATE>(name);
+#else
     return context_t::instance()
       .template register_function<TASK, RETURN, ARG_TUPLE, DELEGATE>();
+#endif
   } // register_task
 
   /*!
@@ -154,13 +166,29 @@ struct mpi_execution_policy_t {
     task_prolog.launch_copies();
 #endif
 
+#if defined(ENABLE_CALIPER)
+    cali::Annotation ep("FleCSI-Execution");
+    auto tname = context_.function_name(TASK);
+    std::string atag = "execute_task->user->" + tname;
+    ep.begin(atag.c_str());
+#endif
     auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
+#if defined(ENABLE_CALIPER)
+    ep.end();
+#endif
 
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
 
+#if defined(ENABLE_CALIPER)
+    atag = "execute_task->finalize-handles->" + tname;
+    ep.begin(atag.c_str());
+#endif
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);
+#if defined(ENABLE_CALIPER)
+    ep.end();
+#endif
 
     constexpr size_t ZERO =
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();

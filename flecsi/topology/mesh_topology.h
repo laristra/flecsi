@@ -284,7 +284,8 @@ public:
     class ENT_TYPE1,
     class ENT_TYPE2>
   void init_entity(ENT_TYPE1 * super, ENT_TYPE2 && subs) {
-    init_entity_<FROM_DOM, TO_DOM, FROM_DIM, TO_DIM>(super, std::forward<ENT_TYPE2>(subs));
+    init_entity_<FROM_DOM, TO_DOM, FROM_DIM, TO_DIM>(
+      super, std::forward<ENT_TYPE2>(subs));
   } // init_entity
 
   //--------------------------------------------------------------------------//
@@ -479,8 +480,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto get_entities() const {
     using etype = entity_type<DIM, DOM>;
-    return static_cast<etype *>(
-      base_t::ms_->index_spaces[DOM][DIM][0]);
+    return static_cast<etype *>(base_t::ms_->index_spaces[DOM][DIM][0]);
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -574,8 +574,7 @@ public:
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity_u<TO_DOM, etype>;
 
-    return c.get_index_space().slice<dtype>(
-      c.range(e->id()));
+    return c.get_index_space().slice<dtype>(c.range(e->id()));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -601,8 +600,7 @@ public:
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity_u<TO_DOM, etype>;
 
-    return c.get_index_space().slice<dtype>(
-      c.range(e->id()));
+    return c.get_index_space().slice<dtype>(c.range(e->id()));
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -1164,9 +1162,13 @@ private:
     c.add_count(subs.size());
   } // init_entity
 
-  template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM,
+  template<size_t FROM_DOM,
+    size_t TO_DOM,
+    size_t FROM_DIM,
+    size_t TO_DIM,
     class ENT_TYPE2>
-  void init_entity_(entity_type<FROM_DIM, FROM_DOM> * super, ENT_TYPE2 && subs) {
+  void init_entity_(entity_type<FROM_DIM, FROM_DOM> * super,
+    ENT_TYPE2 && subs) {
     auto & c = get_connectivity_(FROM_DOM, TO_DOM, FROM_DIM, TO_DIM);
 
     assert(super->id() == c.from_size() && "id mismatch");
@@ -1482,8 +1484,7 @@ private:
     for(auto to_entity : to_entities) {
       for(auto from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
         auto from_lid = from_id.entity();
-        out_conn.set(
-          from_lid, to_entity->global_id(), pos[from_lid]++);
+        out_conn.set(from_lid, to_entity->global_id(), pos[from_lid]++);
       }
     }
 
@@ -1638,7 +1639,7 @@ private:
 
       max_size = std::max(ents.size(), max_size);
     } // for
-    
+
     // Finally create the connection from the temporary conns
     out_conn.init(conns);
 

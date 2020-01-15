@@ -29,6 +29,7 @@ set(execution_HEADERS
   global_object_wrapper.h
   internal_index_space.h
   kernel.h
+  remap_shared.h
   task.h
 )
 
@@ -175,6 +176,7 @@ cinch_add_unit(simple_task
 )
 
 
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "legion")
 #
 # Test basic task calling gpu_task
 #
@@ -196,6 +198,33 @@ cinch_add_unit(gpu_task
   THREADS 2
   NOCI
 )
+endif()
+
+if (FLECSI_ENABLE_KOKKOS)
+  cinch_add_unit(kokkos_test
+      SOURCES
+        test/kokkos.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+        test/data_client_handle.blessed
+      LIBRARIES
+        FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+    )
+endif()
+
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 #

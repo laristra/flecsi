@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <iostream>
 
+#include <flecsi/utils/target.h>
 namespace flecsi {
 namespace utils {
 
@@ -88,20 +89,25 @@ public:
     global_ = global;
   }
 
+  void set_local(const std::size_t local) {
+    entity_ = local;
+  }
+
   // Getters...
 
+  FLECSI_INLINE_TARGET
   std::size_t dimension() const {
     return dimension_;
   }
-
+  FLECSI_INLINE_TARGET
   std::size_t domain() const {
     return domain_;
   }
-
+  FLECSI_INLINE_TARGET
   std::size_t partition() const {
     return partition_;
   }
-
+  FLECSI_INLINE_TARGET
   std::size_t entity() const {
     return entity_;
   }
@@ -115,6 +121,7 @@ public:
   }
 
   // index_space_index(): same as entity getter
+  FLECSI_INLINE_TARGET
   std::size_t index_space_index() const {
     return entity_;
   }
@@ -129,6 +136,7 @@ public:
   //    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee pppppppppppppppppppp mm dd
   // as the return value. In short, it tosses flags and global, and reverses
   // the order of dimension, domain, partition, and entity.
+  FLECSI_INLINE_TARGET
   local_id_t local_id() const {
     local_id_t r = dimension_;
     r |= local_id_t(domain_) << 2;
@@ -139,14 +147,17 @@ public:
 
   // Comparison (<, ==, !=)...
 
+  FLECSI_INLINE_TARGET
   bool operator<(const id_ & id) const {
     return local_id() < id.local_id();
   }
 
+  FLECSI_INLINE_TARGET
   bool operator==(const id_ & id) const {
     return local_id() == id.local_id();
   }
 
+  FLECSI_INLINE_TARGET
   bool operator!=(const id_ & id) const {
     return !(*this == id);
   }

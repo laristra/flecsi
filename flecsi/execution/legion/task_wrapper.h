@@ -36,9 +36,9 @@
 #include <flecsi/utils/tuple_type_converter.h>
 
 #if defined(ENABLE_CALIPER)
-// Caliper include
+#include <caliper/Annotation.h>
 #include <caliper/cali.h>
-#endif // ENABLE_CALIPER
+#endif
 
 clog_register_tag(task_wrapper);
 
@@ -161,11 +161,12 @@ struct task_wrapper_u {
       clog(info) << "registering task " << name << std::endl;
     }
 
-    std::string short_name = name;
-    for(int i = 0; i < 4; i++)
-      short_name = short_name.erase(0, short_name.find(":") + 2);
+    // std::string short_name = name;
+    // for(int i = 0; i < 4; i++)
+    //  short_name = short_name.erase(0, short_name.find(":") + 2);
 
-    Legion::TaskVariantRegistrar registrar(tid, short_name.c_str());
+    // Legion::TaskVariantRegistrar registrar(tid, short_name.c_str());
+    Legion::TaskVariantRegistrar registrar(tid, name.c_str());
     Legion::Processor::Kind kind = processor_type == processor_type_t::toc
                                      ? Legion::Processor::TOC_PROC
                                      : Legion::Processor::LOC_PROC;
@@ -185,17 +186,18 @@ struct task_wrapper_u {
     if constexpr(std::is_same_v<RETURN, void>) {
       if(processor_type == processor_type_t::mpi) {
         Legion::Runtime::preregister_task_variant<execute_mpi_task>(
-          registrar, short_name.c_str());
+          registrar, name.c_str());
       }
       else {
         Legion::Runtime::preregister_task_variant<execute_user_task>(
-          registrar, short_name.c_str());
+          registrar, name.c_str());
       } // if
     }
     else {
       Legion::Runtime::preregister_task_variant<RETURN, execute_user_task>(
-        registrar, short_name.c_str());
+        registrar, name.c_str());
     } // if
+
   } // registration_callback
 
   /*!
@@ -211,50 +213,71 @@ struct task_wrapper_u {
       clog(info) << "In execute_user_task" << std::endl;
     }
 
+#if defined(ENABLE_CALIPER)
+    cali::Annotation tw("FleCSI-Execution");
+    std::string tname = task->get_task_name();
+    std::string tname1 = "execute_task->init-handles->" + tname;
+    tw.begin(tname1.c_str());
+#endif
     // Unpack task arguments
     ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
-
-#if defined(ENABLE_CALIPER)
-    // [Caliper] Mark this function
-    CALI_CXX_MARK_FUNCTION;
-
-    CALI_MARK_BEGIN("FleCSI_Execution init_handles");
-#endif // ENABLE_CALIPER
 
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(task_args);
 
-#ifdef ENABLE_CALIPER
-    CALI_MARK_END("FleCSI_Execution init_handles");
-    CALI_MARK_BEGIN("FleCSI_Execution context");
-#endif // ENABLE_CALIPER
+#if defined(ENABLE_CALIPER)
+    tw.end();
+#endif
 
     context_t & context_ = context_t::instance();
     context_.set_color(task->index_point.point_data[0]);
 
-#ifdef ENABLE_CALIPER
-    CALI_MARK_END("FleCSI_Execution context");
-    CALI_MARK_BEGIN("FleCSI_Execution finalize_handles");
-#endif // ENABLE_CALIPER
-
     if constexpr(std::is_same_v<RETURN, void>) {
+
+#if defined(ENABLE_CALIPER)
+      tname1 = "execute_task->user_task->" + tname;
+      tw.begin(tname1.c_str());
+#endif
       (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
 
-      finalize_handles_t finalize_handles;
-      finalize_handles.walk(task_args);
-    }
-    else {
-      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+#if defined(ENABLE_CALIPER)
+      tw.end();
+      tname1 = "execute_task->finalize-handles->" + tname;
+      tw.begin(tname1.c_str());
+#endif
 
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
+
+#if defined(ENABLE_CALIPER)
+      tw.end();
+#endif
+    }
+    else {
+
+#if defined(ENABLE_CALIPER)
+      tname1 = "execute_task->user_task->" + tname;
+      tw.begin(tname1.c_str());
+#endif
+
+      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+
+#if defined(ENABLE_CALIPER)
+      tw.end();
+      tname1 = "execute_task->finalize-handles->" + tname;
+      tw.begin(tname1.c_str());
+#endif
+
+      finalize_handles_t finalize_handles;
+      finalize_handles.walk(task_args);
+
+#if defined(ENABLE_CALIPER)
+      tw.end();
+#endif
 
       return result;
     } // if
 
-#ifdef ENABLE_CALIPER
-    CALI_MARK_END("FleCSI_Execution finalize_handles");
-#endif // ENABLE_CALIPER
   } // execute_user_task
 
   /*!

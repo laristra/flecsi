@@ -128,14 +128,12 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     EXCLUSIVE_PERMISSIONS,
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
-    using base_t = typename sparse_accessor<T, EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS, GHOST_PERMISSIONS>::base_t;
-    handle(static_cast<base_t &>(a));
+    handle(a.ragged);
   } // handle
 
   template<typename T>
   void handle(ragged_mutator<T> & m) {
-    auto & h = m.h_;
+    auto & h = m.handle;
 
     if((*h.write_phase_started)) {
       clog(trace) << " WRITE PHASE EPILOGUE" << std::endl;
@@ -145,8 +143,32 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
   template<typename T>
   void handle(sparse_mutator<T> & m) {
-    using base_t = typename sparse_mutator<T>::base_t;
-    handle(static_cast<base_t &>(m));
+    handle(m.ragged);
+  }
+
+  template<typename T, size_t PERMISSIONS>
+  typename std::enable_if_t<
+    std::is_base_of<topology::mesh_topology_base_t, T>::value>
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+    bool write_phase;
+    write_phase = (PERMISSIONS == wo) || (PERMISSIONS == rw);
+
+    if(write_phase) {
+
+      for(size_t i = 0; i < h.num_handle_entities; ++i) {
+        auto & ent = h.handle_entities[i];
+        if(*ent.write_phase_started) {
+          {
+            clog(trace) << " DATA CLIENT WRITE PHASE EPILOGUE" << std::endl;
+          } // scope
+
+          // As user
+          // Phase READ
+          *(ent.write_phase_started) = false;
+        }
+      } // for
+
+    } // if write phase
   }
 
   /*!

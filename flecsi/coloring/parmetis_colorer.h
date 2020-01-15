@@ -262,7 +262,7 @@ struct parmetis_colorer_t : public colorer_t {
     idx_t wgtflag = 0;
     idx_t numflag = 0;
     idx_t ncon = 1;
-    std::vector<real_t> tpwgts(ncon*size, 1.0 / size);
+    std::vector<real_t> tpwgts(ncon * size, 1.0 / size);
 
     // We may need to expose some of the ParMETIS configuration options.
     std::vector<real_t> ubvec(ncon, 1.05);
@@ -278,11 +278,12 @@ struct parmetis_colorer_t : public colorer_t {
 
     // Actual call to ParMETIS.
     int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0],
-      nullptr, nullptr, &wgtflag, &numflag, &ncon, &size, &tpwgts[0], ubvec.data(),
-      options, &edgecut, &part[0], &comm);
-    if (result != METIS_OK) clog_error( "Parmetis failed!" );
+      nullptr, nullptr, &wgtflag, &numflag, &ncon, &size, &tpwgts[0],
+      ubvec.data(), options, &edgecut, &part[0], &comm);
+    if(result != METIS_OK)
+      clog_error("Parmetis failed!");
 
-    std::vector<size_t> partitioning( part.begin(), part.end() );
+    std::vector<size_t> partitioning(part.begin(), part.end());
 
     return partitioning;
 

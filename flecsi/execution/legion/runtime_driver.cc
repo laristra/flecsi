@@ -26,8 +26,13 @@
 #include <flecsi/execution/legion/internal_field.h>
 #include <flecsi/execution/legion/legion_tasks.h>
 #include <flecsi/execution/legion/mapper.h>
+#include <flecsi/execution/remap_shared.h>
 #include <flecsi/runtime/types.h>
 #include <flecsi/utils/common.h>
+
+#if defined(ENABLE_CALIPER)
+#include <caliper/Annotation.h>
+#endif // ENABLE_CALIPER
 
 clog_register_tag(runtime_driver);
 
@@ -45,6 +50,11 @@ runtime_driver(const Legion::Task * task,
   Legion::Runtime * runtime) {
   using namespace data;
   // using data::storage_label_type_t;
+
+#if defined(ENABLE_CALIPER)
+  cali::Annotation rd("FleCSI-Execution");
+  rd.begin("set-up");
+#endif // ENABLE_CALIPER
 
   {
     clog_tag_guard(runtime_driver);
@@ -137,6 +147,11 @@ runtime_driver(const Legion::Task * task,
     context_.set_sparse_metadata(md);
   } // if
 
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("spl-tlt-init");
+#endif // ENABLE_CALIPER
+
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
     clog_tag_guard(runtime_driver);
@@ -145,9 +160,15 @@ runtime_driver(const Legion::Task * task,
 
   // Invoke the specialization top-level task initialization function.
   specialization_tlt_init(args.argc, args.argv);
+  remap_shared_entities();
 
   context_.advance_state();
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("create-regions");
+#endif // ENABLE_CALIPER
 
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
@@ -391,37 +412,6 @@ runtime_driver(const Legion::Task * task,
   bool silence_warnings = true;
   future.wait_all_results(silence_warnings);
 
-#if 0
-  //launch a task that willl fill ghost_owner_pos_fid for the sparse
-  //entity Logical Region
-  const auto sparse_set_pos_id =
-    context_.task_id<flecsi_internal_task_key(
-    sparse_set_owner_position_task)>();
-  Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
-    data.color_domain(), Legion::TaskArgument(nullptr, 0),
-    Legion::ArgumentMap());
-
-  for(auto is: context_.coloring_map()) {
-    size_t idx_space = is.first;
-    size_tsparse_idx_space = idx_space + 8192;
-    auto& flecsi_is = data.index_space(idx_space);
-    auto& flecsi_sis = data.index_space(sparse_idx_space);
-
-    Legion::LogicalPartition color_lpart = runtime->get_logical_partition(ctx,
-        flecsi_ispace.logical_region, flecsi_ispace.color_partition);
-    Legion::LogicalPartition color_lpart = runtime->get_logical_partition(ctx,
-        flecsi_ispace.logical_region, flecsi_ispace.color_partition);    
-
-    sparse_pos_launcher.add_region_requirement(
-        Legion::RegionRequirement(color_lpart, 0/*projection ID*/,
-            WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
-                .add_field(ghost_owner_pos_fid);
-  } // for idx_space
-
-  pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-  runtime->execute_index_space(ctx, pos_compaction_launcher);
-#endif
-
   // Add additional setup.
 
   auto & ispace_dmap = context_.index_space_data_map();
@@ -433,26 +423,6 @@ runtime_driver(const Legion::Task * task,
   for(auto is : context_.coloring_map()) {
     size_t idx_space = is.first;
     auto & flecsi_ispace = data.index_space(idx_space);
-
-    size_t sparse_idx_space;
-
-    const sparse_index_space_info_t * sparse_info;
-
-    if(number_of_sparse_fields == 0) {
-      sparse_info = nullptr;
-    }
-    else {
-      auto sitr = sis_map.find(idx_space);
-      if(sitr != sis_map.end() &&
-         (sitr->second.sparse_fields_registered_ > 0)) {
-        sparse_info = &sitr->second;
-        // TODO: formalize sparse index space offset
-        sparse_idx_space = idx_space + 8192;
-      }
-      else {
-        sparse_info = nullptr;
-      } // if
-    } // if
 
     Legion::LogicalPartition access_lp = runtime->get_logical_partition(
       ctx, flecsi_ispace.logical_region, flecsi_ispace.access_partition);
@@ -504,145 +474,14 @@ runtime_driver(const Legion::Task * task,
     runtime->attach_name(
       ispace_dmap[idx_space].ghost_owners_lp, "ghost owners logical partition");
 
-    if(sparse_info) {
-      auto & flecsi_sis = data.sparse_index_space(idx_space);
-
-      ispace_dmap[sparse_idx_space].entire_region = flecsi_sis.logical_region;
-
-      Legion::LogicalPartition sis_access_lp = runtime->get_logical_partition(
-        ctx, flecsi_sis.logical_region, flecsi_sis.access_partition);
-      Legion::LogicalRegion sis_primary_lr =
-        runtime->get_logical_subregion_by_color(
-          ctx, sis_access_lp, PRIMARY_ACCESS);
-      Legion::LogicalRegion sis_ghost_lr =
-        runtime->get_logical_subregion_by_color(
-          ctx, sis_access_lp, GHOST_ACCESS);
-
-      ispace_dmap[sparse_idx_space].primary_lp = runtime->get_logical_partition(
-        ctx, sis_primary_lr, flecsi_sis.primary_partition);
-      runtime->attach_name(
-        ispace_dmap[sparse_idx_space].primary_lp, "primary logical partition");
-
-      ispace_dmap[sparse_idx_space].exclusive_lp =
-        runtime->get_logical_partition(
-          ctx, sis_primary_lr, flecsi_sis.exclusive_partition);
-      runtime->attach_name(ispace_dmap[sparse_idx_space].exclusive_lp,
-        "exclusive logical partition");
-
-      ispace_dmap[sparse_idx_space].shared_lp = runtime->get_logical_partition(
-        ctx, sis_primary_lr, flecsi_sis.shared_partition);
-      runtime->attach_name(
-        ispace_dmap[sparse_idx_space].shared_lp, "shared logical partition");
-
-      ispace_dmap[sparse_idx_space].ghost_lp = runtime->get_logical_partition(
-        ctx, sis_ghost_lr, flecsi_sis.ghost_partition);
-      runtime->attach_name(
-        ispace_dmap[sparse_idx_space].ghost_lp, "ghost logical partition");
-#if 0
-      const auto sparse_set_pos_id =
-        context_.task_id<flecsi_internal_task_key(
-    		sparse_set_owner_position_task)>();
-  		Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
-    		data.color_domain(), Legion::TaskArgument(nullptr, 0),
-    		Legion::ArgumentMap());
-
-      sparse_pos_launcher.add_region_requirement(
-        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lp,
-						0/*projection ID*/,
-            READ_ONLY, EXCLUSIVE, flecsi_ispace.logical_region))
-                .add_field(ghost_owner_pos_fid);
-
-      Legion::FieldID fid;
-      for ( const field_info_t & fi : context_.registered_fields()){
-        if (fi.index_space == idx_space)
-          if(!utils::hash::is_internal(fi.key))
-            //if (sizeof(utils::offset_t) == fi.size)
-              fid = fi.fid;
-      }
-     // fid =38;
-      sparse_pos_launcher.add_region_requirement(
-        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_owners_lp,
-            0/*projection ID*/,
-            READ_ONLY, EXCLUSIVE, flecsi_ispace.logical_region))
-                .add_field(fid);
-      sparse_pos_launcher.add_region_requirement(
-        Legion::RegionRequirement(ispace_dmap[sparse_idx_space].ghost_lp,
-            0/*projection ID*/,
-            WRITE_DISCARD, EXCLUSIVE, flecsi_sis.logical_region))
-                .add_field(ghost_owner_pos_fid);
-
-      sparse_pos_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-      auto future = runtime->execute_index_space(ctx, sparse_pos_launcher); 
-      future.wait_all_results(false);
-
-      ispace_dmap[sparse_idx_space].ghost_owners_ip =
-        runtime->create_partition_by_image(ctx,
-        sis_primary_lr.get_index_space(),
-				ispace_dmap[sparse_idx_space].ghost_lp,
-        flecsi_sis.logical_region, ghost_owner_pos_fid, is_of_colors);
-
-     runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_ip,
-        "ghost owners index partition");
-     ispace_dmap[sparse_idx_space].ghost_owners_lp =
-			runtime->get_logical_partition(
-      ctx, sis_primary_lr, ispace_dmap[sparse_idx_space].ghost_owners_ip);
-     runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_lp,
-        "ghost owners logical partition");
-
-#endif
-
-#if 0
-			ispace_dmap[sparse_idx_space].ghost_owners_lp =
-				runtime->get_logical_partition(
-        ctx, flecsi_sis.logical_region, flecsi_sis.all_shared_partition);
-#endif
-      //    runtime->attach_name(ispace_dmap[sparse_idx_space].ghost_owners_lp,
-      //		"ghost owners logical partition");
-    }
-    //  } // idx_space
-
     // initialize read/write flags for task_prolog
     //  for(auto is: context_.coloring_map()) {
     //    size_t idx_space = is.first;
     for(const field_info_t * field_info : fields_map[idx_space]) {
       ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
       ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
-
-      if(sparse_info) {
-        ispace_dmap[sparse_idx_space].ghost_is_readable[field_info->fid] = true;
-        ispace_dmap[sparse_idx_space].write_phase_started[field_info->fid] =
-          false;
-      }
     } // end field_info
   } // end for idx_space
-#if 0
- if (sparse)
-    //launch a task that willl fill ghost_owner_pos_fid for the sparse
-    //entity Logical Region
-    const auto sparse_set_pos_id =
-    context_.task_id<flecsi_internal_task_key(
-    sparse_set_owner_position_task)>();
-  Legion::IndexLauncher sparse_pos_launcher(sparse_set_pos_id,
-    data.color_domain(), Legion::TaskArgument(nullptr, 0),
-    Legion::ArgumentMap());
-
-  for(auto is: context_.coloring_map()) {
-    size_t idx_space = is.first;
-    size_tsparse_idx_space = idx_space + 8192;
-    auto& flecsi_is = data.index_space(idx_space);
-    auto& flecsi_sis = data.index_space(sparse_idx_space);
-
-
-    sparse_pos_launcher.add_region_requirement(
-        Legion::RegionRequirement(color_lpart, 0/*projection ID*/,
-            WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
-                .add_field(ghost_owner_pos_fid);
-  } // for idx_space
-
-  pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-  runtime->execute_index_space(ctx, pos_compaction_launcher);
-  }//endif
-#endif
 
   for(size_t idx : data.adjacencies()) {
     auto & adjacency = data.adjacency(idx);
@@ -650,6 +489,8 @@ runtime_driver(const Legion::Task * task,
     ispace_dmap[idx].entire_region = adjacency.logical_region;
     ispace_dmap[idx].color_partition = runtime->get_logical_partition(
       ctx, adjacency.logical_region, adjacency.index_partition);
+    ispace_dmap[idx].ghost_is_readable[0] = true;
+    ispace_dmap[idx].write_phase_started[0] = true;
   }
 
   // add subspace info to context
@@ -690,6 +531,11 @@ runtime_driver(const Legion::Task * task,
         ctx, color_ispace.logical_region, color_ispace.color_partition);
   } // if
 
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("spl-spmd-init");
+#endif // ENABLE_CALIPER
+
 #if defined FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
   {
     clog_tag_guard(runtime_driver);
@@ -702,15 +548,29 @@ runtime_driver(const Legion::Task * task,
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
+
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("driver");
+#endif // ENABLE_CALIPER
+
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
+#if defined(ENABLE_CALIPER)
+  rd.end();
+  rd.begin("finish");
+#endif // ENABLE_CALIPER
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
   // ----------------------------------------------------------------------//
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
+
+#if defined(ENABLE_CALIPER)
+  rd.end();
+#endif // ENABLE_CALIPER
 } // runtime_driver
 
 void
@@ -877,7 +737,6 @@ setup_rank_context_task(const Legion::Task * task,
       _gis_to_cis[gid] = cid;
       ++cid;
     } // for
-
     for(auto entity : is.second.ghost) {
       size_t gid = _rank_offsets[entity.rank] + entity.offset;
       _cis_to_gis[cid] = gid;
@@ -948,9 +807,8 @@ setup_rank_context_task(const Legion::Task * task,
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
       sparse_field_data_t * metadata = ac.template raw_rect_ptr<2>(dr, sr, bo);
-      *metadata =
-        sparse_field_data_t(fi.size, ci.exclusive, ci.shared, ci.ghost,
-          si->second.max_entries_per_index, si->second.exclusive_reserve);
+      *metadata = sparse_field_data_t(fi.size, ci.exclusive, ci.shared,
+        ci.ghost, si->second.max_entries_per_index);
 
       /*      md = sparse_field_data_t(fi.size, ci.exclusive,
               ci.shared,

@@ -19,6 +19,9 @@
 #include <string>
 #include <tuple>
 
+#include <flecsi/data/common/data_types.h>
+#include <flecsi/data/common/row_vector.h>
+#include <flecsi/data/common/serdez.h>
 #include <flecsi/data/data_constants.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
@@ -73,6 +76,16 @@ struct field_registration_wrapper_u {
     fi.key = key;
 
     execution::context_t::instance().register_field_info(fi);
+
+    // register custom serdez op, if applicable
+    if constexpr(STORAGE_CLASS == ragged) {
+      using serdez_t = serdez_u<row_vector_u<DATA_TYPE>>;
+      execution::context_t::instance().register_serdez<serdez_t>(fid);
+    } // if
+    else if constexpr(STORAGE_CLASS == sparse) {
+      using serdez_t = serdez_u<row_vector_u<sparse_entry_value_u<DATA_TYPE>>>;
+      execution::context_t::instance().register_serdez<serdez_t>(fid);
+    }
   } // register_callback
 
 }; // class field_registration_wrapper_u

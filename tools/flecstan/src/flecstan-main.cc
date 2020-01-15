@@ -734,21 +734,15 @@ main(const int argc, const char * const * const argv) {
 
   std::size_t arg = 0;
   while(arg + 1 < std::size_t(argc)) {
-    if(flecstan::option_version(argv[arg + 1])) {
-      static bool already = false;
-      if(!already)
-        flecstan::print_version();
-      already = true;
-    }
-    else if(flecstan::option_help(argv[arg + 1])) {
-      static bool already = false;
-      if(!already)
-        flecstan::print_help();
-      already = true;
-    }
+    if(flecstan::option_version(argv[arg + 1]))
+      flecstan::print_version();
+    else if(flecstan::option_help(argv[arg + 1]))
+      flecstan::print_help(true); // with coloring
+    else if(flecstan::option_h(argv[arg + 1]))
+      flecstan::print_help(false); // without coloring
     else
       break;
-    // no arguments other than version or help?
+    // no arguments other than version and/or help?
     if(++arg + 1 == std::size_t(argc))
       return exit_clean;
   }

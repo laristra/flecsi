@@ -18,8 +18,8 @@
 #include <set>
 #include <vector>
 
-#include <flecsi/geometry/point.h>
 #include <flecsi/coloring/crs.h>
+#include <flecsi/geometry/point.h>
 
 namespace flecsi {
 namespace topology {
@@ -35,10 +35,10 @@ class mesh_definition_u
 {
 public:
   using point_t = point_u<double, DIMENSION>;
-  
+
   //! \brief the data type for connectivity
   using connectivity_t = std::vector<std::vector<size_t>>;
-  
+
   /// Default constructor
   mesh_definition_u() {}
 
@@ -89,8 +89,8 @@ public:
   //! @param to_dimension   The dimension of the entities of the definition.
   //--------------------------------------------------------------------------//
 
-  virtual const connectivity_t &
-  entities(size_t from_dimension, size_t to_dimension) const {};
+  virtual const connectivity_t & entities(size_t from_dimension,
+    size_t to_dimension) const {};
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the entities of dimension \em to that define

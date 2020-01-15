@@ -42,8 +42,8 @@ void check_entities_task(
 flecsi_register_task_simple(check_entities_task, loc, index);
 
 void set_primary_entities_task(
-  dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
-  dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
+  dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
+  dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::na> test,
   int my_color,
   size_t cycle,
   size_t index_id);
@@ -540,8 +540,8 @@ add_colorings(int dummy) {
 
 void
 set_primary_entities_task(
-  dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::ro> cell_ID,
-  dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::ro> test,
+  dense_accessor<size_t, flecsi::rw, flecsi::rw, flecsi::na> cell_ID,
+  dense_accessor<double, flecsi::rw, flecsi::rw, flecsi::na> test,
   int my_color,
   size_t cycle,
   size_t index_id) {
