@@ -37,7 +37,7 @@ variables:
   #lock_fd: 314
   FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
   FLECSI_MPI_PACKAGE: ""
-  FLECSI_MPICH_VERSION: "3.2.1" 
+  FLECSI_MPICH_VERSION: "3.2.1"
   FLECSI_OPENMPI_VERSION: "3.1.3"
   FLECSI_INTEL_VERSION: "19.0.2"
   FLECSI_CLANG_VERSION: "8.0.1"
@@ -349,10 +349,10 @@ env_mpi:
 
 env_legion:
   extends: .env_template
-  <<: *shell_def 
-  variables: 
-    <<: *runtime_legion 
-    <<: *buildtype_debug 
+  <<: *shell_def
+  variables:
+    <<: *runtime_legion
+    <<: *buildtype_debug
     <<: *compiler_gcc
 
 ###############
