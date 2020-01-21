@@ -3,9 +3,9 @@
 
 # Rules defined later in the file take precedence over the rules defined before.
 
-.travis.yml @ktsai
-docker/ @ktsai
-.gitlab-ci.yml @ktsai
-spack-repo/ @ktsai
+.travis.yml @laristra
+docker/ @laristra
+.gitlab-ci.yml @laristra
+spack-repo/ @laristra
 
-CODEOWNERS @ktsai @ddd
+CODEOWNERS @laristra @ddd
