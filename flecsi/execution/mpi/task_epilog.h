@@ -83,7 +83,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     SHARED_PERMISSIONS,
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
-#ifndef FLECSI_USE_AGGCOMM
+#if !defined(FLECSI_USE_AGGCOMM)
     // Skip Read Only handles
     if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
       return;

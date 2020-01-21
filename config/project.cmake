@@ -450,12 +450,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   option(FLECSI_USE_AGGCOMM
 	"Use (lazy) aggregated communication for dense fields"
 	OFF)
-  #------------------------------------------------------------------------------#
-  # Use Tausch for dense halo exchanges
-  #------------------------------------------------------------------------------#
-  option(FLECSI_USE_TAUSCH_AGGCOMM
-    "Use Tausch for aggregated communication (dense handle)"
-    OFF)
 endif()
 
 #------------------------------------------------------------------------------#

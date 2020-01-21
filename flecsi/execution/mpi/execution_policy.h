@@ -162,7 +162,7 @@ struct mpi_execution_policy_t {
     // run task_prolog to copy ghost cells.
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
-#ifdef FLECSI_USE_AGGCOMM
+#if defined(FLECSI_USE_AGGCOMM)
     task_prolog.launch_copies();
 #endif
 
