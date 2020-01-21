@@ -146,6 +146,11 @@ clog_register_tag(execution);
       .template register_global_object<flecsi_internal_hash(nspace), index,    \
         type>();
 
+#define flecsi_register_global_object_at_runtime(index, nspace, type)          \
+  flecsi::execution::context_t::instance()                                     \
+    .template register_global_object<flecsi_internal_hash(nspace), type>(      \
+      index);
+
 /*!
   @def flecsi_set_global_object
 

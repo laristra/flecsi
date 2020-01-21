@@ -90,7 +90,7 @@ public:
   //--------------------------------------------------------------------------//
 
   virtual const connectivity_t & entities(size_t from_dimension,
-    size_t to_dimension) const {};
+    size_t to_dimension) const = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the entities of dimension \em to that define
