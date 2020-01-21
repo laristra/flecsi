@@ -38,6 +38,26 @@ public:
 
   virtual std::vector<size_t>
   entities(size_t from_dimension, size_t to_dimension, size_t id) const = 0;
+  
+  virtual const flecsi::coloring::crs_t &
+  entities_crs(size_t from_dim, size_t to_dim) const = 0;
+  
+  virtual const std::vector<size_t> &
+  local_to_global(size_t dim) const = 0;
+
+  virtual const std::map<size_t, size_t> &
+  global_to_local(size_t dim) const = 0;
+
+  virtual void create_graph(
+      size_t from_dimension,
+      size_t to_dimension,
+      size_t min_connections,
+      flecsi::coloring::dcrs_t & dcrs ) const = 0;
+
+  virtual void pack(
+    size_t dimension,
+    size_t local_id,
+    std::vector<byte_t> & buffer ) const = 0;
 
   virtual const flecsi::coloring::crs_t & entities_crs(size_t from_dim,
     size_t to_dim) const {}
@@ -68,6 +88,12 @@ public:
 
   virtual const std::vector<size_t> & face_owners() const = 0;
   virtual const std::vector<size_t> & region_ids() const = 0;
+
+  virtual std::vector<size_t> element_sides(size_t id) const = 0;
+
+  virtual const flecsi::coloring::crs_t & side_vertices() const = 0;
+  virtual const std::vector<size_t> & side_ids() const = 0;
+
 };
 
 //----------------------------------------------------------------------------

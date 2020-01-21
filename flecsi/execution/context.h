@@ -161,6 +161,18 @@ struct context_u : public CONTEXT_POLICY {
   // Object interface.
   //--------------------------------------------------------------------------//
 
+  template<size_t NAMESPACE_HASH, typename OBJECT_TYPE>
+  bool register_global_object(size_t index) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+
+    using wrapper_t = global_object_wrapper_u<OBJECT_TYPE>;
+
+    std::get<0>(global_object_registry_[KEY]) = {};
+    std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
+
+    return true;
+  } // register_global_object
+
   template<size_t NAMESPACE_HASH, size_t INDEX, typename OBJECT_TYPE>
   bool register_global_object() {
     size_t KEY = NAMESPACE_HASH ^ INDEX;
