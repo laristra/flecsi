@@ -129,6 +129,7 @@ driver(int argc, char ** argv) {
 
   auto & context = execution::context_t::instance();
   io::io_interface_t cp_io;
+  cp_io.ranks_per_file = 2;
   std::string outfile{"restart.rst."};
 
   auto ch = flecsi_get_client_handle(mesh_t, meshes, mesh1);

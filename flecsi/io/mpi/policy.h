@@ -288,12 +288,11 @@ struct mpi_policy_t {
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    assert(world_size % nb_files == 0);
-    RANKS_PER_FILE = world_size / nb_files;
+    nb_files = std::ceil(((double) world_size) / ranks_per_file);
 
     MPI_Comm new_comm;
-    new_color = rank / RANKS_PER_FILE;
-    nb_new_comms = world_size / RANKS_PER_FILE;
+    new_color = rank / ranks_per_file;
+    nb_new_comms = world_size / ranks_per_file;
     MPI_Comm_split(MPI_COMM_WORLD, new_color, rank, &new_comm);
 
     mpi_hdf5_comm = new_comm;
@@ -557,9 +556,8 @@ struct mpi_policy_t {
     assert(return_val);
   } // recover_all_fields
 
-  int RANKS_PER_FILE;
-  // TODO:  make this user-settable
-  int nb_files = 2;
+  int ranks_per_file = 1;
+  int nb_files;
 
   int world_size, rank, new_world_size, new_rank;
 
