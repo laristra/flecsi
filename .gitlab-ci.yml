@@ -5,7 +5,7 @@
 stages:
   - Env
   - Canary
-  - Build
+  - Build_n_Test
   - Test
   - Tutorials
   - Apps
@@ -46,6 +46,7 @@ variables:
   FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/build/flecsi-deps-${RUNTIME}-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
   FLECSI_SPACK_SCOPE: "lanl_ristra_flecsi"
   FLECSI_SPACK_BASE_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz +hdf5 backend=${RUNTIME}"
+  FLECSI_SPACK_FULL_SPEC: "${FLECSI_SPACK_BASE_SPEC} $([ ${BUILD_TYPE} == 'Debug' ] && echo +debug_backend || echo '' ) ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} == 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
@@ -56,7 +57,7 @@ before_script:
   - module unload gcc
   - module load gcc/${FLECSI_GCC_VERSION}
   - echo ${FLECSI_ENV_SOURCE_FILE}
-  - echo ${FLECSI_SPACK_BASE_SPEC}
+  - echo ${FLECSI_SPACK_FULL_SPEC}
   - rm ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
     ( flock -e 200
@@ -65,7 +66,8 @@ before_script:
     spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
-    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_BASE_SPEC} $([ ${BUILD_TYPE} = 'Debug' ] && echo +debug_backend || echo ) ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} = 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}" || /bin/true;
+    echo ${FLECSI_SPACK_FULL_SPEC};
+    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} ${FLECSI_SPACK_FULL_SPEC} || /bin/true;
     spack repo rm ${FLECSI_SPACK_SCOPE};
     ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
@@ -217,7 +219,7 @@ before_script:
 .build: &build_def
   <<: *job_def
   <<: *artifacts_def
-  stage: Build
+  stage: Build_n_Test
   script: &build_script |-
     echo 'Start building'
     ccache -z
