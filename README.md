@@ -46,8 +46,8 @@ a C++17-capable compiler.
 
 You'll need the following tools in order to build FleCSI:
 
-   * Boost >= 1.56
-   * CMake >= 3.0
+   * Boost >= 1.59
+   * CMake >= 3.12
    * GCC >= 7.3.0
 
 Install tools in the customary manner for your machine, e.g. by using
@@ -72,15 +72,111 @@ Before installing FleCSI, you should install the FleCSI third-party
 libraries. We'll assume that you wish to install the FleCSI third-party
 libraries in your home directory.
 
-## Download
+## Spack
+
+Here we talk about how to install those dependencies through Spack.
+
+Setup your environment and load your modules such as
+```
+$ module purge
+$ module load gcc/7.3.0
+$ module load cmake/3.12.4
+$ module load python/3.5.1
+$ module load mpich/3.2.1-gcc_7.3.0
+```
+
+First, you need to download Spack if you don't already have one.
+```
+$ git clone https://github.com/spack/spack.git
+```
+Then do
+```
+$ source spack/share/spack/setup-env.sh
+$ spack compiler find
+==> Added 2 new compilers to /home/<user>/.spack/linux/compilers.yaml
+    gcc@7.3.0  gcc@4.8.5
+==> Compilers are defined in the following files:
+    /home/<user>/.spack/linux/compilers.yaml
+
+$ spack compiler list
+==> Available compilers
+-- gcc centos7-x86_64 -------------------------------------------
+gcc@7.3.0  gcc@4.8.5
+```
+to get Spack into your environment and see what compilers you have that
+Spack can find automatically. 
+
+Get FleCSI on your desired branch following the
+[Download](#download) section under *Installing FleCSI*.
+
+Next, add the folder that contains custom flecsi spackage to Spack (you
+should be in flecsi folder if you followed the steps in the Download
+section)
+```
+$ spack repo add spack-repo
+==> Added repo with namespace 'lanl_ristra_flecsi'.
+
+$ spack repo list
+==> 2 package repositories.
+laristra_flecsi    /home/<user>/flecsi/spack-repo
+builtin            /home/<user>/spack/var/spack/repos/builtin
+```
+Now, assuming you have the compiler you want recognized by Spack
+and added the folder, you could just do the install for a legion backend
+using mpich like this
+```
+$ spack install -v --only dependencies flecsi%gcc@7.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@7.3.0
+```
+to get all the dependencies and all their dependencies installed from
+scratch.
+
+[NOTE: For internal developers and users, you might need to download tar
+files for spack.] 
+
+After Spack finishes the installation, you can load them into
+your environment by doing
+```
+$ spack build-env --dump flecsi-deps.sh "flecsi%gcc@7.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@7.3.0"
+$ source flecsi-deps.sh
+```
+But if you want to save time or there is some packages that spack
+has trouble installing, you could let Spack know what
+packages or modules you already have on the system by adding
+`packages.yaml` to your `~/.spack`, which could look something like this
+```
+packages:
+    perl:
+        paths:
+            perl@5.16.3: /usr
+    numactl:
+        paths:
+            numactl@system: /usr
+    python:
+        modules:
+            python@2.7.3: python/2.7.3
+            python@3.5.1: python/3.5.1
+    mpich:
+        modules:
+           mpich@3.2.1%gcc@7.3.0: mpich/3.2.1-gcc_7.3.0
+    openmpi:
+        modules:
+            openmpi@3.1.3%gcc@7.3.0: openmpi/3.1.3-gcc_7.3.0
+    cmake:
+        modules:
+            cmake@3.12.4: cmake/3.12.4
+```
+Then the installation from Spack will take less time.
+
+Either way, you can proceed to [Build](#build) section under
+*Installing FleCSI*.
+
+## Build from Source
 
 Begin by downloading the FleCSI third-party libraries:
 ```
 $ cd
 $ git clone --recursive https://github.com/laristra/flecsi-third-party.git
 ```
-
-## Build
 
 Next, enter *flecsi-third-party* and make a build directory:
 ```
@@ -137,13 +233,13 @@ $ mkdir build
 $ cd build
 $ cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug \
     -DENABLE_UNIT_TESTS=ON \
     -DFLECSI_RUNTIME_MODEL=legion
 $ make
 ```
-where *cmake*'s *-DCMAKE_PREFIX_PATH* should be the path that
-you used for your FleCSI third-party library installation.
+where you should add *cmake*'s *-DCMAKE_PREFIX_PATH* that points to
+your FleCSI third-party library installation if you built
+from source.
 
 Again, you can run *ccmake* in place of *cmake*.
 
@@ -155,7 +251,6 @@ the CMake configuration line:
 ```
 $ cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug/ \
     -DENABLE_UNIT_TESTS=ON \
     -DFLECSI_RUNTIME_MODEL=legion \
     -DENABLE_SPHINX=ON \
