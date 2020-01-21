@@ -114,7 +114,7 @@ check_results(mesh<ro> mesh, field<ro, ro, ro> values, size_t global_target) {
     size_t j = c->index()[1];
     auto t = (*target)[i][j];
 
-    if( std::abs(v-t) > test_tolerance ) {
+    if(std::abs(v - t) > test_tolerance) {
       printf("[Rank %lu] at [%lu,%lu] %.15e != %.15e\n", rank, i, j, v, t);
       throw std::runtime_error("Got wrong result");
     }

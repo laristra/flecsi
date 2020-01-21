@@ -234,15 +234,14 @@ struct context_u : public CONTEXT_POLICY {
     return true;
   } // register_function
 
-
 #if defined(ENABLE_CALIPER)
   template<size_t KEY,
-           typename RETURN,
-           typename ARG_TUPLE,
-           RETURN (*FUNCTION)(ARG_TUPLE)>
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE)>
   bool register_function(std::string name) {
     auto ret = register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
-    if (ret) {
+    if(ret) {
       function_name_registry_[KEY] = name;
     }
     return ret;
