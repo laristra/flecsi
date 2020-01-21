@@ -40,7 +40,7 @@ public:
   entities(size_t from_dimension, size_t to_dimension, size_t id) const = 0;
 
   virtual const flecsi::coloring::crs_t & entities_crs(size_t from_dim,
-    size_t to_dim) const {}
+    size_t to_dim) const = 0;
 
   virtual const std::vector<size_t> & local_to_global(size_t dim) const = 0;
 
@@ -68,6 +68,11 @@ public:
 
   virtual const std::vector<size_t> & face_owners() const = 0;
   virtual const std::vector<size_t> & region_ids() const = 0;
+
+  virtual std::vector<size_t> element_sides(size_t id) const = 0;
+
+  virtual const flecsi::coloring::crs_t & side_vertices() const = 0;
+  virtual const std::vector<size_t> & side_ids() const = 0;
 };
 
 //----------------------------------------------------------------------------
