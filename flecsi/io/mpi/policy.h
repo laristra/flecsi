@@ -290,7 +290,7 @@ struct mpi_policy_t {
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    nb_files = std::ceil(((double) world_size) / ranks_per_file);
+    nb_files = std::ceil(((double)world_size) / ranks_per_file);
 
     MPI_Comm new_comm;
     new_color = rank / ranks_per_file;
@@ -308,7 +308,7 @@ struct mpi_policy_t {
     const void * buffer,
     const int size) {
     // TODO:  do these calcs only once per index space
-    int nsize = std::ceil(((double) size) / sizeof(std::uint32_t));
+    int nsize = std::ceil(((double)size) / sizeof(std::uint32_t));
     int sum_nsize;
     MPI_Allreduce(&nsize, &sum_nsize, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
     int displ;
@@ -343,8 +343,7 @@ struct mpi_policy_t {
     nsize /= sizeof(std::uint32_t);
 
     int sum_nsize;
-    MPI_Allreduce(
-      &nsize, &sum_nsize, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
+    MPI_Allreduce(&nsize, &sum_nsize, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
     int displ;
     MPI_Exscan(&nsize, &displ, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
     if(new_rank == 0)
@@ -377,7 +376,7 @@ struct mpi_policy_t {
     const std::string & field_name,
     void * buffer,
     const int size) {
-    int nsize = std::ceil(((double) size) / sizeof(std::uint32_t));
+    int nsize = std::ceil(((double)size) / sizeof(std::uint32_t));
     int displ;
     MPI_Exscan(&nsize, &displ, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
     if(new_rank == 0)
