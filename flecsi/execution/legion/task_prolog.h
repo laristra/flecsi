@@ -32,6 +32,7 @@
 
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/tuple_walker.h>
+#include <flecsi/utils/type_traits.h>
 
 clog_register_tag(prolog);
 
@@ -181,18 +182,12 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       auto ghost_owner_pos_fid =
         LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
-      rr_pos.add_field(ghost_owner_pos_fid);
-
       // TODO - circular dependency including internal_task.h
       auto constexpr key =
         flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(ghost_copy_task)}
           .hash();
 
       const auto ghost_copy_tid = flecsi_context.task_id<key>();
-
-      Legion::IndexLauncher ghost_launcher(ghost_copy_tid, color_domain,
-        Legion::TaskArgument(&args[first], sizeof(args[first])),
-        Legion::ArgumentMap());
 
       for(auto handle_itr = handle_groups[group].begin();
           handle_itr != handle_groups[group].end(); handle_itr++) {
@@ -202,12 +197,23 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         rr_ghost.add_field(fids[handle]);
       }
 
-      ghost_launcher.add_region_requirement(rr_owners);
-      ghost_launcher.add_region_requirement(rr_ghost);
-      ghost_launcher.add_region_requirement(rr_pos);
-
-      ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-      runtime->execute_index_space(context, ghost_launcher);
+      if(sparse) {
+        Legion::IndexLauncher ghost_launcher(ghost_copy_tid, color_domain,
+          Legion::TaskArgument(&args[first], sizeof(args[first])),
+          Legion::ArgumentMap());
+        rr_pos.add_field(ghost_owner_pos_fid);
+        ghost_launcher.add_region_requirement(rr_owners);
+        ghost_launcher.add_region_requirement(rr_ghost);
+        ghost_launcher.add_region_requirement(rr_pos);
+        ghost_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+        runtime->execute_index_space(context, ghost_launcher);
+      }
+      else {
+        Legion::IndexCopyLauncher ghost_copy_launcher(color_domain);
+        ghost_copy_launcher.add_copy_requirements(rr_owners, rr_ghost);
+        ghost_copy_launcher.add_src_indirect_field(rr_pos, ghost_owner_pos_fid);
+        runtime->issue_copy_operation(context, ghost_copy_launcher);
+      }
     } // for group
 
   } // launch copies
@@ -329,6 +335,58 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     handle(m.ragged);
   }
 
+  template<typename T, size_t PERMISSIONS>
+  typename std::enable_if_t<
+    std::is_base_of<topology::mesh_topology_base_t, T>::value>
+  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+
+    auto & flecsi_context = context_t::instance();
+    const int my_color = runtime->find_local_MPI_rank();
+    bool read_phase, write_phase;
+    read_phase = (PERMISSIONS == ro);
+    write_phase = (PERMISSIONS == wo) || (PERMISSIONS == rw);
+
+    if(read_phase) {
+
+      for(size_t i{0}; i < h.num_handle_entities; ++i) {
+        auto & ent = h.handle_entities[i];
+
+        if(!*(ent.ghost_is_readable)) {
+          clog_tag_guard(prolog);
+          clog(trace) << "rank " << my_color
+                      << "DATA CLIENT READ PHASE PROLOGUE" << std::endl;
+
+          ghost_owners_partitions.push_back(ent.ghost_owner_partition);
+          ghost_partitions.push_back(ent.ghost_partition);
+          entire_regions.push_back(ent.entire_region);
+
+          fids.push_back(ent.fid);
+          // FIXME : fids.push_back(ent.id_fid);
+
+          ghost_copy_args local_args;
+          local_args.data_client_hash = h.type_hash;
+          local_args.index_space = ent.index_space;
+          local_args.sparse = false;
+          args.push_back(local_args);
+
+          *(ent.ghost_is_readable) = true;
+        } // !ghost_is_readable
+
+      } // for entities
+
+    } // read_phase
+
+    if(write_phase) {
+      for(size_t i{0}; i < h.num_handle_entities; ++i) {
+        auto & ent = h.handle_entities[i];
+        if(*ent.ghost_is_readable) {
+          *(ent.ghost_is_readable) = false;
+          *(ent.write_phase_started) = true;
+        }
+      }
+    } // if
+  }
+
   /*!
    Handle individual list items
    */
@@ -342,6 +400,27 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     for(auto & item : list)
       handle(item);
   }
+
+  /*!
+   * Handle tuple of items
+   */
+
+  template<typename... Ts, size_t... I>
+  void handle_tuple_items(std::tuple<Ts...> & items,
+    std::index_sequence<I...>) {
+    (handle(std::get<I>(items)), ...);
+  }
+
+  template<typename... Ts,
+    typename = std::enable_if_t<
+      utils::are_base_of_t<data::data_reference_base_t, Ts...>::value>>
+  void handle(std::tuple<Ts...> & items) {
+    handle_tuple_items(items, std::make_index_sequence<sizeof...(Ts)>{});
+  }
+
+  /*!
+    If this is not a data handle, then simply skip it.
+   */
 
   /*!
     Don't do anything with flecsi task argument that are not data handles.

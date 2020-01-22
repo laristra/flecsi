@@ -247,7 +247,8 @@ void diagnostic(const std::string &, // label
   const std::string &, // text
   std::string, // color: label
   std::string = "", // color: text
-  const bool = false // force long form
+  const bool = false, // force long form
+  const bool = true // ":" after label
 );
 
 // ------------------------
@@ -314,7 +315,10 @@ debug(const std::string & varname, const T & value) {
 // title
 // ------------------------
 
-void title(const std::string &, const bool);
+void title(const std::string &,
+  const bool,
+  const int length = 80,
+  const std::string & = color::title);
 
 inline void
 title(const std::ostringstream & oss, const bool emit_section) {
@@ -390,17 +394,20 @@ filename(std::string outer, std::string inner) {
 inline exit_status_t
 report(const std::string & label,
   const std::string & str,
-  const bool keep_long_form) {
+  const bool keep_long_form,
+  const bool colon = true) {
   if(section_on && emit_report)
-    diagnostic(label, str, color::report1, color::report2, keep_long_form);
+    diagnostic(
+      label, str, color::report1, color::report2, keep_long_form, colon);
   return exit_clean;
 }
 
 inline exit_status_t
 report(const std::string & label,
   const std::ostringstream & oss,
-  const bool keep_long_form) {
-  return report(label, oss.str(), keep_long_form);
+  const bool keep_long_form,
+  const bool colon = true) {
+  return report(label, oss.str(), keep_long_form, colon);
 }
 
 // ------------------------
@@ -501,21 +508,23 @@ interr(const std::ostringstream & oss) {
 
 // ------------------------
 // print_version
-// print_help
+// print_help (declaration)
 // ------------------------
 
 inline void
 print_version() {
+  static bool first = true;
+  if(!first)
+    return;
+
   // absolutely plain old printing; no colorization
   std::cout << "flecstan (FleCSI Static Analyzer) version " << version
             << std::endl;
+
+  first = false;
 }
 
-inline void
-print_help() {
-  report(
-    "Help", "Sorry, no command-line help is available at this time.", false);
-}
+void print_help(const bool);
 
 } // namespace flecstan
 
@@ -772,7 +781,7 @@ public:
   }
 
   // report
-  // print report regarding this macro call
+  // print a report regarding this macro call
   void report(const clang::Sema & sema) const {
     std::ostringstream oss;
     oss << "Name: " << macname

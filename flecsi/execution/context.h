@@ -161,6 +161,18 @@ struct context_u : public CONTEXT_POLICY {
   // Object interface.
   //--------------------------------------------------------------------------//
 
+  template<size_t NAMESPACE_HASH, typename OBJECT_TYPE>
+  bool register_global_object(size_t index) {
+    size_t KEY = NAMESPACE_HASH ^ index;
+
+    using wrapper_t = global_object_wrapper_u<OBJECT_TYPE>;
+
+    std::get<0>(global_object_registry_[KEY]) = {};
+    std::get<1>(global_object_registry_[KEY]) = &wrapper_t::cleanup;
+
+    return true;
+  } // register_global_object
+
   template<size_t NAMESPACE_HASH, size_t INDEX, typename OBJECT_TYPE>
   bool register_global_object() {
     size_t KEY = NAMESPACE_HASH ^ INDEX;
@@ -222,6 +234,20 @@ struct context_u : public CONTEXT_POLICY {
     return true;
   } // register_function
 
+#if defined(ENABLE_CALIPER)
+  template<size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE)>
+  bool register_function(std::string name) {
+    auto ret = register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
+    if(ret) {
+      function_name_registry_[KEY] = name;
+    }
+    return ret;
+  } // register_function
+#endif
+
   /*!
     FIXME: Add description.
    */
@@ -229,6 +255,12 @@ struct context_u : public CONTEXT_POLICY {
   void * function(size_t key) {
     return function_registry_[key];
   } // function
+
+#if defined(ENABLE_CALIPER)
+  std::string function_name(size_t key) {
+    return function_name_registry_[key];
+  } // function_name
+#endif
 
   //--------------------------------------------------------------------------//
   // Serdez interface.
@@ -643,6 +675,10 @@ struct context_u : public CONTEXT_POLICY {
     return colorings_;
   } // colorings
 
+  auto & coloring_map() {
+    return colorings_;
+  } // colorings
+
   /*!
     Return the coloring info map (convenient for iterating through all
     of the colorings.
@@ -650,8 +686,8 @@ struct context_u : public CONTEXT_POLICY {
     @return The map of index coloring information.
    */
 
-  const std::map<size_t, std::unordered_map<size_t, coloring_info_t>> &
-  coloring_info_map() const {
+  std::map<size_t, std::unordered_map<size_t, coloring_info_t>> &
+  coloring_info_map() {
     return coloring_info_;
   } // colorings
 
@@ -667,8 +703,7 @@ struct context_u : public CONTEXT_POLICY {
       adjacency_info_.find(adjacency_info.index_space) == adjacency_info_.end(),
       "adjacency exists");
 
-    adjacency_info_.emplace(
-      adjacency_info.index_space, std::move(adjacency_info));
+    adjacency_info_.emplace(adjacency_info.index_space, adjacency_info);
   } // add_adjacency
 
   /*!
@@ -734,6 +769,23 @@ struct context_u : public CONTEXT_POLICY {
   auto & adjacencies() const {
     return adjacencies_;
   }
+
+  auto local_index_map(size_t index_space) const {
+    const auto & is = coloring_map().at(index_space);
+
+    std::vector<std::pair<size_t, size_t>> _map;
+    _map.reserve(is.exclusive.size() + is.shared.size());
+
+    for(auto index : is.exclusive) {
+      _map.emplace_back(std::make_pair(_map.size(), index.offset));
+    } // for
+
+    for(auto index : is.shared) {
+      _map.emplace_back(std::make_pair(_map.size(), index.offset));
+    } // for
+
+    return _map;
+  } // for
 
   /*!
     Put field info for index space and field id.
@@ -873,6 +925,9 @@ private:
   //--------------------------------------------------------------------------//
 
   std::unordered_map<size_t, void *> function_registry_;
+#if defined(ENABLE_CALIPER)
+  std::unordered_map<size_t, std::string> function_name_registry_;
+#endif
 
   //--------------------------------------------------------------------------//
   // Field info vector for registered fields in TLT
@@ -1022,6 +1077,83 @@ private:
   //--------------------------------------------------------------------------//
 
   size_t execution_state_ = SPECIALIZATION_TLT_INIT;
+
+public:
+  void write_all_fields(const char * filename) {
+
+    std::ofstream file(filename, std::ios::out | std::ios::binary);
+
+    size_t nfields = CONTEXT_POLICY::field_data.size();
+    file.write((char *)&nfields, sizeof(size_t));
+
+    for(const auto & [id, data] : CONTEXT_POLICY::field_data) {
+      size_t fid = id;
+      file.write((char *)&fid, sizeof(size_t));
+      size_t len = data.size();
+      file.write((char *)&len, sizeof(size_t));
+      file.write((char *)data.data(), len);
+    }
+
+    nfields = CONTEXT_POLICY::sparse_field_data.size();
+    file.write((char *)&nfields, sizeof(size_t));
+
+    for(const auto & [id, data] : CONTEXT_POLICY::sparse_field_data) {
+      size_t fid = id;
+      file.write((char *)&fid, sizeof(size_t));
+      auto serdez = get_serdez(fid);
+      data.write(file, serdez);
+    }
+
+    file.close();
+  }
+
+  void read_fields(const char * filename) {
+
+    std::ifstream file(filename, std::ios::in | std::ios::binary);
+
+    size_t nfields;
+    file.read((char *)&nfields, sizeof(size_t));
+
+    for(size_t i = 0; i < nfields; ++i) {
+      size_t fid;
+      file.read((char *)&fid, sizeof(size_t));
+      size_t len;
+      file.read((char *)&len, sizeof(size_t));
+
+      auto it = CONTEXT_POLICY::field_data.find(fid);
+      if(it == CONTEXT_POLICY::field_data.end()) {
+        CONTEXT_POLICY::register_field_data(fid, len);
+        it = CONTEXT_POLICY::field_data.find(fid);
+      }
+      assert(it != CONTEXT_POLICY::field_data.end() && "messed up");
+
+      it->second.resize(len);
+      file.read((char *)it->second.data(), len);
+    }
+
+    file.read((char *)&nfields, sizeof(size_t));
+
+    for(size_t i = 0; i < nfields; ++i) {
+      size_t fid;
+      file.read((char *)&fid, sizeof(size_t));
+
+      auto it = CONTEXT_POLICY::sparse_field_data.find(fid);
+      if(it == CONTEXT_POLICY::sparse_field_data.end()) {
+        using map_type =
+          typename decltype(CONTEXT_POLICY::sparse_field_data)::value_type;
+        using value_type = typename std::tuple_element<1, map_type>::type;
+        auto ret = CONTEXT_POLICY::sparse_field_data.emplace(fid, value_type{});
+        it = ret.first;
+      }
+      assert(
+        it != CONTEXT_POLICY::sparse_field_data.end() && "sparse messed up");
+
+      auto serdez = get_serdez(fid);
+      it->second.read(file, serdez);
+    }
+
+    file.close();
+  }
 
 }; // class context_u
 

@@ -125,6 +125,12 @@ option_help(const std::string & opt) {
   flecstan_setnfind("-help", "--help");
 }
 
+// h (uncolored help)
+bool
+option_h(const std::string & opt) {
+  flecstan_setnfind("-h", "--h");
+}
+
 // quiet
 bool
 option_quiet(const std::string & opt) {
@@ -264,9 +270,6 @@ option_no_summary(const std::string & opt) {
 #undef flecstan_toggle
 #undef flecstan_toggles
 
-// was #defined in header; no longer any point with this...
-// #undef flecstan_setnfind
-
 // ------------------------
 // Any of the above flags
 // ------------------------
@@ -275,9 +278,9 @@ option_no_summary(const std::string & opt) {
 // This is part of the aforementioned maintenance headache.
 inline bool
 option_any(const std::string & opt) {
-  return option_version(opt) || option_help(opt) || option_quiet(opt) ||
-         option_verbose(opt) || option_short(opt) || option_long(opt) ||
-         option_print(opt) || option_debug(opt) ||
+  return option_version(opt) || option_help(opt) || option_h(opt) ||
+         option_quiet(opt) || option_verbose(opt) || option_short(opt) ||
+         option_long(opt) || option_print(opt) || option_debug(opt) ||
 
          option_file_long(opt) || option_file_medium(opt) ||
          option_file_short(opt) || option_file_full(opt) ||
@@ -911,7 +914,10 @@ option_toggle(const std::string & opt) {
     print_version();
   }
   if(option_help(opt)) {
-    print_help();
+    print_help(true);
+  }
+  if(option_h(opt)) {
+    print_help(false);
   }
 
   // quiet?

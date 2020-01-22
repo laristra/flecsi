@@ -8,7 +8,7 @@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
 
-   Copyright (c) 2016, Los Alamos National Security, LLC
+   Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
 #pragma once
@@ -22,16 +22,44 @@ namespace flecsi {
 namespace utils {
 
 ////////////////////////////////////////////////////////////////////////////////
+//! \brief Test to see if all variadic template arguments Ts are of base type.
+////////////////////////////////////////////////////////////////////////////////
+namespace detail {
+template<typename... Conds>
+struct and_ : std::true_type {};
+
+//! \brief Combine conditions.
+//! \remark Main template expansion function.
+template<typename Cond, typename... Conds>
+struct and_<Cond, Conds...>
+  : std::conditional<Cond::value, and_<Conds...>, std::false_type>::type {};
+} // namespace detail
+
+template<typename Base, typename... Ts>
+using are_base_of_t =
+  detail::and_<std::is_base_of<std::decay_t<Base>, std::decay_t<Ts>>...>;
+
+////////////////////////////////////////////////////////////////////////////////
 // A type trait utility to detect if a type is a strict STL container.
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace detail {
 
-//! \brief A helper type to check if a particular type is a container.
 template<typename... Ts>
-struct is_container {};
+struct hold {};
+
+template<class T>
+struct nonvoid {
+  using type = T;
+};
+template<>
+struct nonvoid<void> {};
 
 } // namespace detail
+
+// Workaround for Clang's eager reduction of void_t (see also CWG1980)
+template<class... TT>
+using voided = std::conditional_t<false, detail::hold<TT...>, void>;
 
 //! \brief Check if a particular type T is a container.
 //! \remark If T is not, this version is instantiated.
@@ -44,19 +72,17 @@ struct is_container : std::false_type {};
 //! \remark This version adheres to the strict requirements of an STL container.
 template<typename T>
 struct is_container<T,
-  std::conditional_t<false,
-    detail::is_container<typename T::value_type,
-      typename T::size_type,
-      typename T::allocator_type,
-      typename T::iterator,
-      typename T::const_iterator,
-      decltype(std::declval<T>().size()),
-      decltype(std::declval<T>().begin()),
-      decltype(std::declval<T>().end()),
-      decltype(std::declval<T>().cbegin()),
-      decltype(std::declval<T>().cend()),
-      decltype(std::declval<T>().data())>,
-    void>> : public std::true_type {};
+  voided<typename T::value_type,
+    typename T::size_type,
+    typename T::allocator_type,
+    typename T::iterator,
+    typename T::const_iterator,
+    decltype(std::declval<T>().size()),
+    decltype(std::declval<T>().begin()),
+    decltype(std::declval<T>().end()),
+    decltype(std::declval<T>().cbegin()),
+    decltype(std::declval<T>().cend()),
+    decltype(std::declval<T>().data())>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version adheres to the strict requirements of an STL container.
@@ -81,10 +107,8 @@ struct is_minimal_container : std::false_type {};
 //! \remark This version uses to a reduced set of requirements for a container.
 template<typename T>
 struct is_minimal_container<T,
-  std::conditional_t<false,
-    is_container<decltype(std::declval<T>().size()),
-      decltype(std::declval<T>().data())>,
-    void>> : public std::true_type {};
+  voided<decltype(std::declval<T>().size()),
+    decltype(std::declval<T>().data())>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version uses to a reduced set of requirements for a container.
@@ -109,10 +133,8 @@ struct is_iterative_container : std::false_type {};
 //! \remark This version uses to a reduced set of requirements for a container.
 template<typename T>
 struct is_iterative_container<T,
-  std::conditional_t<false,
-    is_container<decltype(std::declval<T>().begin()),
-      decltype(std::declval<T>().end())>,
-    void>> : public std::true_type {};
+  voided<decltype(std::declval<T>().begin()),
+    decltype(std::declval<T>().end())>> : public std::true_type {};
 
 //! \brief Equal to true if T is a container.
 //! \remark This version uses to a reduced set of requirements for a container.

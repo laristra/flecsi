@@ -49,6 +49,7 @@ using point_t = std::array<double, 2>;
 using index_t = std::array<size_t, 2>;
 
 struct vertex_t : public flecsi::topology::mesh_entity_u<0, 1> {
+  static constexpr size_t domain = 0;
   vertex_t(point_t const & p, index_t const & index) : p_(p), index_(index) {}
 
   point_t const & coordinates() const {
@@ -65,13 +66,16 @@ private:
 }; // struct vertex_t
 
 struct edge_t : public flecsi::topology::mesh_entity_u<1, 1> {
+  static constexpr size_t domain = 0;
 }; // struct edge_t
 
 struct face_t : public flecsi::topology::mesh_entity_u<1, 1> {
+  static constexpr size_t domain = 0;
 }; // struct face_t
 
 struct cell_t : public flecsi::topology::mesh_entity_u<2, 1> {
   using id_t = flecsi::utils::id_t;
+  static constexpr size_t domain = 0;
 
   cell_t(const index_t & index) : index_(index) {
     neighbors_.fill(nullptr);
@@ -221,6 +225,10 @@ struct test_mesh_2d_t
   auto vertices() {
     return entities<0, 0>();
   } // cells
+
+  using types_t = test_mesh_2d_policy_t;
+
+  static constexpr size_t num_domains = 1;
 
 }; // struct test_mesh_2d_t
 

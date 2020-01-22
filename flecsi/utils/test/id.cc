@@ -29,13 +29,15 @@
 
 // print
 // Print a flecsi::utils::id_.
-template<std::size_t P, std::size_t E>
+template<std::size_t P, std::size_t E, std::size_t F, std::size_t G>
 void
-print(const flecsi::utils::id_<P, E> & value) {
+print(const flecsi::utils::id_<P, E, F, G> & value) {
   CINCH_CAPTURE() << "\ndimension == " << value.dimension();
   CINCH_CAPTURE() << "\ndomain    == " << value.domain();
   CINCH_CAPTURE() << "\npartition == " << value.partition();
   CINCH_CAPTURE() << "\nentity    == " << value.entity();
+  CINCH_CAPTURE() << "\nflags     == " << value.flags();
+  CINCH_CAPTURE() << "\nglobal    == " << value.global();
   CINCH_CAPTURE() << std::endl;
 }
 
@@ -54,12 +56,16 @@ binary(const T value, const std::size_t nbit = sizeof(T) * CHAR_BIT) {
 
 // identical
 // Check that the two id_s have identical content.
-template<std::size_t PBITS, std::size_t EBITS>
+template<std::size_t PBITS,
+  std::size_t EBITS,
+  std::size_t FBITS,
+  std::size_t GBITS>
 inline bool
-identical(const flecsi::utils::id_<PBITS, EBITS> & lhs,
-  const flecsi::utils::id_<PBITS, EBITS> & rhs) {
+identical(const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
+  const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & rhs) {
   return lhs.dimension() == rhs.dimension() && lhs.domain() == rhs.domain() &&
-         lhs.partition() == rhs.partition() && lhs.entity() == rhs.entity();
+         lhs.partition() == rhs.partition() && lhs.entity() == rhs.entity() &&
+         lhs.flags() == rhs.flags() && lhs.global() == rhs.global();
 }
 
 // =============================================================================
@@ -70,12 +76,14 @@ identical(const flecsi::utils::id_<PBITS, EBITS> & lhs,
 // Note: we really should test with far more than just one set of these.
 #define PBITS 20 /* for partition */
 #define EBITS 40 /* for entity    */
+#define FBITS 4 /* for flags     */
+#define GBITS 60 /* for global    */
 
 // TEST
 TEST(id, all) {
 
-  // type: id == id_<PBITS,EBITS>
-  using id = flecsi::utils::id_<PBITS, EBITS>;
+  // type: id == id_<PBITS,EBITS,FBITS,GBITS>
+  using id = flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS>;
   using flecsi::utils::local_id_t;
 
   // ------------------------
@@ -83,7 +91,7 @@ TEST(id, all) {
   // ------------------------
 
   // local_id_t
-  /// print_type<flecsi::utils::local_id_t>();
+  print_type<flecsi::utils::local_id_t>();
   CINCH_CAPTURE() << "sizeof(flecsi::utils::local_id_t) == "
                   << sizeof(flecsi::utils::local_id_t) << "\n";
   CINCH_CAPTURE() << std::endl;
@@ -119,9 +127,33 @@ TEST(id, all) {
 
   {
     // make<DIMENSION,DOMAIN>
-    // Arguments: (local_id,partition_id)
+    // Arguments: (local_id [,partition_id [,flags [,global]]])
+    const id a = id::make<1, 2>(3);
     const id b = id::make<1, 2>(3, 4);
+    const id c = id::make<1, 2>(3, 4, 0, 5);
+    const id d = id::make<1, 2>(3, 4, 6, 5);
+    print(a);
     print(b);
+    print(c);
+    print(d);
+
+    /*
+    // make<DOMAIN>
+    // Arguments: (dimension, local_id [,partition_id [,flags [,global]]])
+    const id e = id::make<2>(1, 3);
+    const id f = id::make<2>(1, 3, 4);
+    const id g = id::make<2>(1, 3, 4, 5);
+    const id h = id::make<2>(1, 3, 4, 5, 6);
+    print(e);
+    print(f);
+    print(g);
+    print(h);
+
+    EXPECT_TRUE(identical(a, e));
+    EXPECT_TRUE(identical(b, f));
+    EXPECT_TRUE(identical(c, g));
+    EXPECT_TRUE(identical(d, h));
+    */
   }
 
   // ------------------------
@@ -129,7 +161,7 @@ TEST(id, all) {
   // ------------------------
 
   {
-    const id a = id::make<1, 2>(3, 4);
+    const id a = id::make<1, 2>(3, 4, 6, 5);
     print(a);
 
     CINCH_CAPTURE() << std::endl;
@@ -152,10 +184,23 @@ TEST(id, all) {
   // ------------------------
 
   {
-    id a = id::make<1, 2>(3, 4);
+    id a = id::make<1, 2>(3, 4, 6, 5);
     id b = id{};
     a = b = id{};
     b = a = a;
+  }
+
+  // ------------------------
+  // setters
+  // ------------------------
+
+  {
+    id a = id::make<1, 2>(3, 4, 6, 5);
+    print(a);
+    a.set_global(100);
+    a.set_partition(200);
+    a.set_flags(15);
+    print(a);
   }
 
   // ------------------------
@@ -163,12 +208,14 @@ TEST(id, all) {
   // ------------------------
 
   {
-    id a = id::make<1, 2>(3, 4);
+    id a = id::make<1, 2>(3, 4, 6, 5);
 
     CINCH_CAPTURE() << a.dimension() << std::endl;
     CINCH_CAPTURE() << a.domain() << std::endl;
     CINCH_CAPTURE() << a.partition() << std::endl;
     CINCH_CAPTURE() << a.entity() << std::endl;
+    CINCH_CAPTURE() << a.flags() << std::endl;
+    CINCH_CAPTURE() << a.global() << std::endl;
     CINCH_CAPTURE() << std::endl;
 
     EXPECT_EQ(a.entity(), a.index_space_index());
@@ -191,10 +238,10 @@ TEST(id, all) {
     // Where:
     //    local_id() == bits from: [entity partition domain dimension]
 
-    // <dimension,domain>(entity,partition)...
-    const id a = id::make<2, 3>(10, 20);
-    const id b = id::make<2, 3>(50, 60);
-    const id c = id::make<2, 3>(50, 60);
+    // <dimension,domain>(entity,partition,flags,global)...
+    const id a = id::make<2, 3>(10, 20, 40, 30);
+    const id b = id::make<2, 3>(50, 60, 80, 70);
+    const id c = id::make<2, 3>(50, 60, 8000, 7000);
 
     CINCH_CAPTURE() << a.local_id() << std::endl;
     CINCH_CAPTURE() << b.local_id() << std::endl;

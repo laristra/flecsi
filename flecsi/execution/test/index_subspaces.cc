@@ -99,7 +99,7 @@ print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
   auto & cell_map = context.index_map(index_spaces::cells);
 
   for(auto c : m.cells(owned)) {
-    const size_t cid = c->template id<0>();
+    const size_t cid = c->id();
 
     {
       clog_tag_guard(devel_handle);
@@ -111,7 +111,7 @@ print_mesh(mesh<ro> m, field<ro, ro, ro> p) {
 
     size_t vcount(0);
     for(auto v : m.vertices(c)) {
-      const size_t vid = v->template id<0>();
+      const size_t vid = v->id();
 
       {
         clog_tag_guard(devel_handle);

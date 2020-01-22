@@ -29,6 +29,7 @@
 #cmakedefine FLECSI_ENABLE_MPI
 #cmakedefine FLECSI_ENABLE_LEGION
 #cmakedefine FLECSI_ENABLE_HPX
+#cmakedefine FLECSI_ENABLE_KOKKOS
 
 //----------------------------------------------------------------------------//
 // Control Model

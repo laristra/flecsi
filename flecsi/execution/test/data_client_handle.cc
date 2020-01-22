@@ -51,10 +51,10 @@ print_task(client_handle_t<test_mesh_t, ro> mesh,
   CINCH_CAPTURE() << "IN PRINT_TASK" << std::endl;
 
   for(auto c : mesh.entities<2, 0>()) {
-    CINCH_CAPTURE() << "cell id: " << c->template id<0>() << std::endl;
+    CINCH_CAPTURE() << "cell id: " << c->id() << std::endl;
 
     for(auto v : mesh.entities<0, 0>(c)) {
-      CINCH_CAPTURE() << "vertex id: " << v->template id<0>() << std::endl;
+      CINCH_CAPTURE() << "vertex id: " << v->id() << std::endl;
     } // for
 
     clog(info) << "presure: " << pressure(c) << std::endl;

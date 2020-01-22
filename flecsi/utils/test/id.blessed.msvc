@@ -1,4 +1,5 @@
-sizeof(flecsi::utils::local_id_t) == 8
+class flecsi::utils::uint128
+sizeof(flecsi::utils::local_id_t) == 16
 
 00000000000000000000000000000000
 00000000000000000000000000000001
@@ -15,16 +16,43 @@ dimension == 0
 domain    == 0
 partition == 0
 entity    == 12345
+flags     == 0
+global    == 0
+
+dimension == 1
+domain    == 2
+partition == 0
+entity    == 3
+flags     == 0
+global    == 0
 
 dimension == 1
 domain    == 2
 partition == 4
 entity    == 3
+flags     == 0
+global    == 0
 
 dimension == 1
 domain    == 2
 partition == 4
 entity    == 3
+flags     == 5
+global    == 0
+
+dimension == 1
+domain    == 2
+partition == 4
+entity    == 3
+flags     == 5
+global    == 6
+
+dimension == 1
+domain    == 2
+partition == 4
+entity    == 3
+flags     == 5
+global    == 6
 
 entity    : 0000000000000000000000000000000000000011
 partition : 00000000000000000100
@@ -33,19 +61,35 @@ dimension : 01
 
 local_id(): 0000000000000000000000000000000000000011000000000000000001001001
 
-local_id()  == 50331721
+local_id()  == 0:50331721
 
+
+dimension == 1
+domain    == 2
+partition == 4
+entity    == 3
+flags     == 5
+global    == 6
+
+dimension == 1
+domain    == 2
+partition == 200
+entity    == 3
+flags     == 15
+global    == 100
 1
 2
 4
 3
+5
+6
 
-167772494
-838861774
+0:167772494
+0:838861774
 
-0000000000000000000000000000000000001010000000000000000101001110
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001010000000000000000101001110
 
-0000000000000000000000000000000000110010000000000000001111001110
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000110010000000000000001111001110
 
-1
-2
+0:1
+0:2

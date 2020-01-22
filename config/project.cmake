@@ -298,6 +298,44 @@ if(ENABLE_CLOG)
 endif()
 
 #------------------------------------------------------------------------------#
+# HDF5
+#------------------------------------------------------------------------------#
+
+option(ENABLE_HDF5 "Enable HDF5" OFF)
+
+if(ENABLE_HDF5)
+
+  # CMake's FindHDF5 package ignores any path in CMAKE_PREFIX_PATH that
+  # doesn't contain the hdf5-config.cmake file in a certain location.
+  # Some of our HDF5 builds don't have this.  So we have to give CMake
+  # a little extra help...
+  if(NOT HDF5_ROOT)
+    find_path(HDF5_INCLUDE_DIR hdf5.h
+      HINTS ENV HDF5_ROOT
+      PATH_SUFFIXES include)
+    get_filename_component(HDF5_ROOT ${HDF5_INCLUDE_DIR} DIRECTORY)
+  endif()
+
+  find_package(HDF5 REQUIRED)
+
+  if(HDF5_FOUND)
+    include_directories(${HDF5_INCLUDE_DIRS})
+    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${HDF5_LIBRARIES})
+  else()
+    message(FATAL_ERROR "HDF5 requested, but not found")
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
+# Add option for Kokkos
+#------------------------------------------------------------------------------#
+
+if (ENABLE_KOKKOS)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Kokkos_LIBRARIES})
+  set (FLECSI_ENABLE_KOKKOS TRUE)
+endif()
+
+#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
@@ -383,6 +421,10 @@ if(ENABLE_MPI)
   # Counter-intuitive variable: set to TRUE to disable test
   set(PARMETIS_TEST_RUNS TRUE)
   find_package(ParMETIS 4.0)
+  if ( ParMETIS_LIBRARIES AND NOT PARMETIS_LIBRARIES )
+    set(PARMETIS_LIBRARIES ${ParMETIS_LIBRARIES})
+    set(PARMETIS_INCLUDE_DIRS ${ParMETIS_INCLUDE_DIRS})
+  endif()
 endif()
 
 set(COLORING_LIBRARIES)
@@ -513,6 +555,15 @@ install(
 if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   cinch_target_link_libraries(
     FleCSI ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
+  )
+endif()
+
+if (ENABLE_KOKKOS)
+  cinch_target_link_libraries(
+    FleCSI ${Kokkos_LIBRARIES}
+  )
+  cinch_target_link_libraries(
+    FleCSI-Tut ${Kokkos_LIBRARIES}
   )
 endif()
 

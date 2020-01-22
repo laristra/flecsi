@@ -49,7 +49,6 @@ RUN cmake -DMPIEXEC_PREFLAGS=$([ "$DISTRO" = "fedora" ] || [ "$DISTRO" = "ubuntu
           -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_DOCUMENTATION=ON \
-	  -DENABLE_FLECSTAN=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2

@@ -23,6 +23,7 @@
 
 #include <flecsi/data/accessor.h>
 #include <flecsi/data/common/data_types.h>
+#include <flecsi/data/ragged_accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/topology/index_space.h>
 
@@ -35,6 +36,9 @@ protected:
   using entry_value_t = typename ragged_t::value_type;
   using vector_t = typename ragged_t::handle_t::vector_t;
   vector_t & row(std::size_t i) {
+    return ragged.handle[i];
+  }
+  const vector_t & row(std::size_t i) const {
     return ragged.handle[i];
   }
 
@@ -66,6 +70,7 @@ public:
   } // lower_bound
 
   // for row 'index', test whether entry 'entry' is present
+  FLECSI_INLINE_TARGET
   bool contains(size_t index, size_t entry) const {
     auto & r = row(index);
     const auto itr = lower_bound(r, entry);
@@ -94,6 +99,7 @@ public:
   //-------------------------------------------------------------------------//
   //! Return all entries used over all indices.
   //-------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   index_space_t entries() const {
     auto & handle = ragged.handle;
     size_t id = 0;
@@ -118,10 +124,14 @@ public:
   //-------------------------------------------------------------------------//
   //! Return all entries used over the specified index.
   //-------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   index_space_t entries(size_t index) const {
     auto & handle = ragged.handle;
+// FIXME this check should go to flog in refactor branch
+#ifndef FLECSI_ENABLE_KOKKOS
     clog_assert(
       index < handle.num_total_, "sparse accessor: index out of bounds");
+#endif
 
     index_space_t is;
 
@@ -137,6 +147,7 @@ public:
   //-------------------------------------------------------------------------//
   //! Return all indices allocated.
   //-------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   index_space_t indices() const {
     auto & handle = ragged.handle;
     index_space_t is;
@@ -155,13 +166,14 @@ public:
   //-------------------------------------------------------------------------//
   //! Return all indices allocated for a given entry.
   //-------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   index_space_t indices(size_t entry) const {
     auto & handle = ragged.handle;
     index_space_t is;
     size_t id = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      auto & r = row(index);
+      const auto & r = row(index);
       const auto itr = lower_bound(r, entry);
       if(itr != r.end() && itr->entry == entry) {
         is.push_back({id++, index});
@@ -238,6 +250,7 @@ public:
   //! Access a sparse element.  The element has to exist because we
   //! return a reference to it.
   //-------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   T & operator()(size_t index, size_t entry) {
     auto & r = this->row(index);
     const auto itr = base::lower_bound(r, entry);
@@ -247,6 +260,7 @@ public:
     return itr->value;
   } // operator ()
 
+  FLECSI_INLINE_TARGET
   const T & operator()(size_t index, size_t entry) const {
     return const_cast<accessor_u &>(*this)(index, entry);
   } // operator ()
@@ -264,7 +278,7 @@ public:
   //! found), and a boolean specifying whether the element existed.
   //-------------------------------------------------------------------------//
   result_t at(size_t index, size_t entry) const {
-    auto & r = this->row(index);
+    const auto & r = this->row(index);
     const auto itr = base::lower_bound(r, entry);
 
     if(itr != r.end() && itr->entry == entry)
@@ -274,8 +288,8 @@ public:
   } // at()
 
   template<typename E>
-  T & operator()(E * e, size_t entry) {
-    return this->operator()(e->template id<0>(), entry);
+  FLECSI_INLINE_TARGET T & operator()(E * e, size_t entry) {
+    return this->operator()(e->id(), entry);
   } // operator ()
 
   //-------------------------------------------------------------------------//
