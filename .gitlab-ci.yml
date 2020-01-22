@@ -5,7 +5,7 @@
 stages:
   - Env
   - Canary
-  - Build
+  - Build_n_Test
   - Test
   - Tutorials
   - Apps
@@ -56,7 +56,7 @@ before_script:
   - module unload gcc
   - module load gcc/${FLECSI_GCC_VERSION}
   - echo ${FLECSI_ENV_SOURCE_FILE}
-  - echo ${FLECSI_SPACK_BASE_SPEC}
+  - export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_BASE_SPEC} ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} == 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}"
   - rm ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
     ( flock -e 200
@@ -65,7 +65,8 @@ before_script:
     spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
-    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_BASE_SPEC} ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} = 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}" || /bin/true;
+    echo ${FLECSI_SPACK_FULL_SPEC};
+    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_FULL_SPEC}" || /bin/true;
     spack repo rm ${FLECSI_SPACK_SCOPE};
     ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
@@ -207,7 +208,7 @@ before_script:
 .build: &build_def
   <<: *job_def
   <<: *artifacts_def
-  stage: Build
+  stage: Build_n_Test
   script: &build_script |-
     echo 'Start building'
     ccache -z
