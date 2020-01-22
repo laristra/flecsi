@@ -1,0 +1,12 @@
+# Lines starting with a `#` will be ignored
+# https://docs.gitlab.com/ee/user/project/code_owners.html#the-syntax-of-code-owners-files
+# This will ping the code owner(s) if we have the approval setup (not available with community edition)
+
+# Rules defined later in the file take precedence over the rules defined before
+
+.travis.yml @laristra
+docker/ @laristra
+.gitlab-ci.yml @laristra
+spack-repo/ @laristra
+
+CODEOWNERS @laristra @ddd
