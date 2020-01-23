@@ -165,20 +165,16 @@ before_script:
   <<: *cache_def
 
 .update_spackage: &update_spackage |-
-    echo 'Updating spackages...'
-    cd ${CI_PROJECT_DIR}
-    git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git
-    echo $(diff -r ${CI_PROJECT_DIR}/spack-repo/packages/ ${CI_PROJECT_DIR}/ristra_spackages/spack-repo/packages/ | grep "${CI_PROJECT_DIR}/spack-repo" | tee thediff)
-    export last_commit=$(git log -n 1 --pretty=format:%H -- spack-repo/packages)
-    git diff ${last_commit}^ HEAD spack-repo/packages | tee spackage.patch
-    if [[ -s spackage.patch && -s thediff ]];
-    then
-      cd ristra_spackages;
-      git apply ${CI_PROJECT_DIR}/spackage.patch;
-      git add -u;
-      git commit -m "Gitlab CI Automatic Spackage Update - FleCSI";
-      git push;
-    fi;
+  echo 'Updating spackages...'
+  cd ${CI_PROJECT_DIR}
+  git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git
+  for f in $(find ./spack-repo/packages/ -type f); do diff -urN ${CI_PROJECT_DIR}/ristra_spackages/$f $f; done | tee $f.patch
+  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do patch -i $f ${CI_PROJECT_DIR}/ristra_spackages/$f; done
+  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do rm $f; done
+  cd ${CI_PROJECT_DIR}/ristra_spackages
+  git add spack-repo/packages/*
+  git commit -m "Gitlab CI Automatic Spackage Update - Libristra"
+  git push
 
 #############
 # Env Stage #
