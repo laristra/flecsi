@@ -76,7 +76,6 @@ class Flecsi(CMakePackage):
 
     conflicts('+tutorial', when='backend=hpx')
 #    conflicts('+hdf5', when='backend=hpx')
-#    conflicts('+hdf5', when='backend=mpi')
 
     def cmake_args(self):
         spec = self.spec
@@ -118,7 +117,7 @@ class Flecsi(CMakePackage):
         else:
             options.append('-DBUILD_SHARED_LIBS=OFF')
 
-        if '+hdf5' in spec and spec.variants['backend'].value == 'legion':
+        if '+hdf5' in spec and spec.variants['backend'].value != 'hpx':
             options.append('-DENABLE_HDF5=ON')
         else:
             options.append('-DENABLE_HDF5=OFF')
