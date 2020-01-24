@@ -430,7 +430,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     )
   
   if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-    cinch_add_unit(restart
+    cinch_add_unit(legacy_restart
       SOURCES
         test/restart.cc
         ../supplemental/coloring/add_colorings.cc

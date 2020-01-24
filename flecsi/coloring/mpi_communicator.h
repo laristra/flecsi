@@ -460,9 +460,8 @@ public:
 
     // Wait on the receive operations
     std::vector<MPI_Status> status(requests.size());
-    if(!requests.empty()) {
-      MPI_Waitall(static_cast<int>(requests.size()), &requests[0], &status[0]);
-    }
+    MPI_Waitall(
+      static_cast<int>(requests.size()), requests.data(), status.data());
 
     // Set the offsets for each requested index in the send buffer.
     for(size_t r(0); r < colors; ++r) {
@@ -504,9 +503,8 @@ public:
 
     // Wait on the receive operations
     status.resize(requests.size());
-    if(!requests.empty()) {
-      MPI_Waitall(static_cast<int>(requests.size()), &requests[0], &status[0]);
-    }
+    MPI_Waitall(
+      static_cast<int>(requests.size()), requests.data(), status.data());
 
     std::vector<std::set<size_t>> remote(colors);
     for(size_t r(0); r < colors; ++r) {

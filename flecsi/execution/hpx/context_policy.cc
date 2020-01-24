@@ -8,6 +8,12 @@
 //! @date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
+#include <flecsi-config.h>
+
+#if !defined(ENABLE_HPX)
+#error ENABLE_HPX not defined! This file depends on HPX!
+#endif
+
 #include <hpx/hpx.hpp>
 #include <hpx/hpx_init.hpp>
 

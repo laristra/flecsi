@@ -284,7 +284,8 @@ endif(ENABLE_CALIPER)
 #------------------------------------------------------------------------------#
 
 if(ENABLE_BOOST)
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
+  find_package(Boost 1.59.0 REQUIRED)
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES} Boost::boost)
 endif()
 
 #------------------------------------------------------------------------------#
@@ -536,8 +537,6 @@ if(ENABLE_FLECSI_TUTORIAL)
   endif()
 
   cinch_add_library_target(FleCSI-Tut flecsi-tutorial/specialization)
-
-  set_target_properties(FleCSI-Tut PROPERTIES FOLDER "Tutorial")
 endif()
 
 #------------------------------------------------------------------------------#
@@ -569,7 +568,7 @@ endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
-  hpx_setup_target(FleCSI NONAMEPREFIX NOTLLKEYWORD)
+  hpx_setup_target(FleCSI NONAMEPREFIX)
 
 endif()
 

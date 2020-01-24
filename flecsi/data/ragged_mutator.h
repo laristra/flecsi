@@ -67,7 +67,6 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
 
   } // operator ()
 
-      max_so_far = std::max(max_so_far, h_.new_count(index));
   void resize(size_t index, size_t size) {
     auto & row = this->handle[index];
     row.resize(size);
@@ -76,7 +75,6 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
   void erase(size_t index, size_t ragged_index) {
     auto & row = this->handle[index];
     row.erase(row.begin() + ragged_index);
-    size_t ncopy = std::min(n, nnew);
   } // erase
 
   void push_back(size_t index, const T & value) {
@@ -90,7 +88,6 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
     assert(ragged_index <= row.size());
     auto itr = row.insert(row.begin() + ragged_index, value);
     return &(*itr);
-    size_t ncopy = std::min(n - 1, nnew);
   } // insert
 };
 

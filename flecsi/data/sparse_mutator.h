@@ -77,7 +77,6 @@ public:
 
   } // operator ()
 
-        size_t nbase = std::min(n, nnew);
   void erase(size_t index, size_t entry) {
     auto & r = this->row(index);
     const auto itr = base::lower_bound(r, entry);
@@ -89,13 +88,9 @@ public:
     }
 
     // otherwise, erase
-    entry_value_t * end = start + std::min(n, nnew);
-    const entry_value_t * end = start + std::min(n, nnew);
-      size_t nbase = std::min(n, nnew);
     r.erase(itr);
 
   } // erase
-    size_t nbase = std::min(n, nnew);
 }; // mutator_u
 
 template<typename T>

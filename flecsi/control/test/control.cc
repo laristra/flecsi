@@ -145,7 +145,7 @@ define_action(init_mesh) define_action(init_fields) define_action(init_species)
         define_action(fixup_mesh) define_action(finalize)
           define_action(super_duper)
 
-#define flecsi_register_action(phase, name, action)                                   \
+#define flecsi_register_action(phase, name, action)                            \
   bool name##_registered =                                                     \
     control_t::instance()                                                      \
       .phase_map(phase, EXPAND_AND_STRINGIFY(phase))                           \
@@ -170,7 +170,9 @@ flecsi_register_action(initialize, init_species, action_init_species);
 
 // Advance
 flecsi_register_action(advance, advance_particles, action_advance_particles);
-flecsi_register_action(advance, accumulate_currents, action_accumulate_currents);
+flecsi_register_action(advance,
+  accumulate_currents,
+  action_accumulate_currents);
 flecsi_register_action(advance, update_fields, action_update_fields);
 
 // Analysis

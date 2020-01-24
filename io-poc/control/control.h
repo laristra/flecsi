@@ -14,7 +14,7 @@ using control_t = flecsi::control::control_u<io_poc::control_policy_t>;
 #define hash_name(name)                                                        \
   flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
 
-#define flecsi_register_action(phase, name, action, ...)                              \
+#define flecsi_register_action(phase, name, action, ...)                       \
   bool name##_registered =                                                     \
     io_poc::control_t::instance()                                              \
       .phase_map(phase, EXPAND_AND_STRINGIFY(phase))                           \

@@ -40,8 +40,8 @@ struct ragged_access { // shared between accessor/mutator
     size_t max_so_far = 0;
 
     for(size_t index = 0; index < handle.num_total_; ++index) {
-      const vector_t & row = handle.new_entries[index];
-      max_so_far = std::max(max_so_far, oi.count());
+      const vector_t & row = handle.rows[index];
+      max_so_far = std::max(max_so_far, row.size());
     }
 
     return max_so_far;

@@ -46,16 +46,13 @@ namespace execution {
  */
 
 struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
-
   /*!
    Construct a task_epilog_t instance.
    */
-
   task_epilog_t() = default;
 
   /*!
    FIXME: Need a description.
-  
    @tparam T                     The data type referenced by the handle.
    @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
                                  indices of the index partition.
@@ -63,7 +60,6 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t> {
                                  indices of the index partition.
    @tparam GHOST_PERMISSIONS     The permissions required on the ghost
                                  indices of the index partition.
-  
    */
 
   template<typename T,
