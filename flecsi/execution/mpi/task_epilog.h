@@ -110,9 +110,9 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     auto & context = context_t::instance();
 
     if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
-      context.hasBeenModified[h.fid] = false;
+      *(h.ghost_is_readable) = true;
     else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
-      context.hasBeenModified[h.fid] = true;
+      *(h.ghost_is_readable) = false;
 #endif
   } // handle
 

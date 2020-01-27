@@ -162,6 +162,8 @@ struct storage_class_u<dense> {
         field_info.fid, color_info, index_coloring);
     }
 
+    auto & ism = context.index_space_data_map();
+
     auto data = registered_field_data[field_info.fid].data();
     // populate data member of data_handle_t
     auto & hb = dynamic_cast<dense_data_handle_u<DATA_TYPE, 0, 0, 0> &>(h);
@@ -182,6 +184,8 @@ struct storage_class_u<dense> {
     hb.ghost_size = color_info.ghost;
     hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
     hb.combined_size += color_info.ghost;
+
+    hb.ghost_is_readable = &(ism[field_info.index_space].ghost_is_readable[field_info.fid]);
 
     return h;
   }

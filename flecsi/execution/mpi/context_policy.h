@@ -204,7 +204,7 @@ struct mpi_context_policy_t {
   //--------------------------------------------------------------------------//
 
   struct index_space_data_t {
-    // TODO: to be defined.
+    std::map<field_id_t, bool> ghost_is_readable;
   };
 
   struct index_subspace_data_t {
@@ -239,6 +239,15 @@ struct mpi_context_policy_t {
     std::map<int, MPI_Datatype> target_types;
 
     MPI_Win win;
+
+#if defined(FLECSI_USE_AGGCOMM)
+    std::vector<std::vector<std::array<size_t, 2>>> shared_indices;
+    std::vector<std::vector<std::array<size_t, 2>>> ghost_indices;
+    std::vector<size_t> shared_field_sizes;
+    std::vector<size_t> ghost_field_sizes;
+    unsigned char *shared_data_buffer;
+    unsigned char *ghost_data_buffer;
+#endif
   };
 
   /*!
@@ -309,15 +318,16 @@ struct mpi_context_policy_t {
 
     field_metadata.insert({fid, metadata});
 #else
+    field_metadata_t metadata;
     int mpiSize;
     MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
 
-  // FIXME: Do this per index_space instead of per field id
+    // FIXME: Do this per index_space instead of per field id
 
-    sharedIndices[fid].resize(mpiSize);
-    ghostIndices[fid].resize(mpiSize);
-    ghostFieldSizes[fid].resize(mpiSize);
-    sharedFieldSizes[fid].resize(mpiSize);
+    metadata.shared_indices.resize(mpiSize);
+    metadata.ghost_indices.resize(mpiSize);
+    metadata.ghost_field_sizes.resize(mpiSize);
+    metadata.shared_field_sizes.resize(mpiSize);
 
     // indices are stored as vectors of pairs, each pair consisting of: starting index, how many consecutive indices
 
@@ -325,15 +335,11 @@ struct mpi_context_policy_t {
 
     for(auto const & ghost : index_coloring.ghost) {
 
-      if(ghostIndices[fid][ghost.rank].size() == 0 ||
-         ghost_cnt*sizeof(T) != (ghostIndices[fid][ghost.rank].back()[0]+ghostIndices[fid][ghost.rank].back()[1]))
-
-        ghostIndices[fid][ghost.rank].push_back({ghost_cnt*sizeof(T), sizeof(T)});
-
+      if(metadata.ghost_indices[ghost.rank].size() == 0 ||
+         ghost_cnt*sizeof(T) != (metadata.ghost_indices[ghost.rank].back()[0]+metadata.ghost_indices[ghost.rank].back()[1]))
+        metadata.ghost_indices[ghost.rank].push_back({ghost_cnt*sizeof(T), sizeof(T)});
       else
-
-        ghostIndices[fid][ghost.rank].back()[1] += sizeof(T);
-
+        metadata.ghost_indices[ghost.rank].back()[1] += sizeof(T);
       ++ghost_cnt;
 
     }
@@ -342,25 +348,27 @@ struct mpi_context_policy_t {
 
       for(auto const & s : shared.shared) {
 
-        if(sharedIndices[fid][s].size() == 0 ||
-           shared.offset*sizeof(T) != (sharedIndices[fid][s].back()[0]+sharedIndices[fid][s].back()[1]))
+        if(metadata.shared_indices[s].size() == 0 ||
+           shared.offset*sizeof(T) != (metadata.shared_indices[s].back()[0]+metadata.shared_indices[s].back()[1]))
 
-          sharedIndices[fid][s].push_back({shared.offset*sizeof(T), sizeof(T)});
+          metadata.shared_indices[s].push_back({shared.offset*sizeof(T), sizeof(T)});
 
         else
 
-          sharedIndices[fid][s].back()[1] += sizeof(T);
+          metadata.shared_indices[s].back()[1] += sizeof(T);
 
       }
 
     }
 
     for(int rank = 0; rank < mpiSize; ++rank) {
-      for(auto const & ind : ghostIndices[fid][rank])
-        ghostFieldSizes[fid][rank] += ind[1];
-      for(auto const & ind : sharedIndices[fid][rank])
-        sharedFieldSizes[fid][rank] += ind[1];
+      for(auto const & ind : metadata.ghost_indices[rank])
+        metadata.ghost_field_sizes[rank] += ind[1];
+      for(auto const & ind : metadata.shared_indices[rank])
+        metadata.shared_field_sizes[rank] += ind[1];
     }
+
+    field_metadata.insert({fid, metadata});
 #endif
   }
 
@@ -617,15 +625,6 @@ struct mpi_context_policy_t {
   } // reduction_types
 
   int rank;
-
-#if defined(FLECSI_USE_AGGCOMM)
-  std::map<field_id_t, bool> hasBeenModified;
-
-  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > sharedIndices;
-  std::map<int, std::vector<std::vector<std::array<size_t, 2> > > > ghostIndices;
-  std::map<int, std::vector<size_t> > sharedFieldSizes;
-  std::map<int, std::vector<size_t> > ghostFieldSizes;
-#endif
 
   // private:
   int color_ = 0;
