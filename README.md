@@ -79,10 +79,8 @@ Here we talk about how to install those dependencies through Spack.
 Setup your environment and load your modules such as
 ```
 $ module purge
-$ module load gcc/7.3.0
-$ module load cmake/3.12.4
+$ module load gcc/8.3.0
 $ module load python/3.5.1
-$ module load mpich/3.2.1-gcc_7.3.0
 ```
 
 First, you need to download Spack if you don't already have one.
@@ -94,14 +92,14 @@ Then do
 $ source spack/share/spack/setup-env.sh
 $ spack compiler find
 ==> Added 2 new compilers to /home/<user>/.spack/linux/compilers.yaml
-    gcc@7.3.0  gcc@4.8.5
+    gcc@8.3.0  gcc@4.8.5
 ==> Compilers are defined in the following files:
     /home/<user>/.spack/linux/compilers.yaml
 
 $ spack compiler list
 ==> Available compilers
 -- gcc centos7-x86_64 -------------------------------------------
-gcc@7.3.0  gcc@4.8.5
+gcc@8.3.0  gcc@4.8.5
 ```
 to get Spack into your environment and see what compilers you have that
 Spack can find automatically. 
@@ -125,7 +123,7 @@ Now, assuming you have the compiler you want recognized by Spack
 and added the folder, you could just do the install for a legion backend
 using mpich like this
 ```
-$ spack install -v --only dependencies flecsi%gcc@7.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@7.3.0
+$ spack install -v --only dependencies flecsi%gcc@8.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@8.3.0
 ```
 to get all the dependencies and all their dependencies installed from
 scratch.
@@ -136,7 +134,7 @@ files for spack.]
 After Spack finishes the installation, you can load them into
 your environment by doing
 ```
-$ spack build-env --dump flecsi-deps.sh "flecsi%gcc@7.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@7.3.0"
+$ spack build-env --dump flecsi-deps.sh "flecsi%gcc@8.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@8.3.0"
 $ source flecsi-deps.sh
 ```
 But if you want to save time or there is some packages that spack
