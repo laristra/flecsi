@@ -34,12 +34,12 @@ options, but is not necessary for a particular build:
 
 * **MPI** |br|
   If Legion support is enabled, the MPI implementation must have support
-  for *MPI_THREAD_MULTIPLE*.
+  for *MPI_THREAD_MULTIPLE*. |br|
   CI: mpich 3.2.1, openmpi 3.1.3
 
 * **Legion** |br|
   We are currently using the most up-to-date version of the master
-  branch.
+  branch. |br|
   CI: control_replication branch
 
 * **GASNet** |br|
@@ -49,7 +49,7 @@ options, but is not necessary for a particular build:
   We currently require CMake version 3.12 or greater.
 
 * **Boost** |br|
-  We require *program_options* and *stacktrace*.
+  We require *program_options* and *stacktrace*. |br|
   CI: 1.70.0
 
 * **Doxygen** |br|
