@@ -9,8 +9,7 @@ import sys
 # Sphinx extensions as list of strings
 extensions = [
     'sphinx.ext.mathjax',
-    'sphinx.ext.githubpages',
-    'breathe'
+    'sphinx.ext.githubpages'
 ]
 
 # Add any paths that contain templates
@@ -25,8 +24,8 @@ source_parsers = {
 }
 
 # This is required for the Breathe configuration
-breathe_projects = { "FleCSI": "@CMAKE_BINARY_DIR@/doc/doxygen/xml" }
-breathe_default_project = "FleCSI"
+#breathe_projects = { "FleCSI": "@CMAKE_BINARY_DIR@/doc/doxygen/xml" }
+#breathe_default_project = "FleCSI"
 
 # Master toctree document
 master_doc = 'index'

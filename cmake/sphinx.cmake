@@ -137,7 +137,7 @@ if(ENABLE_SPHINX)
     #--------------------------------------------------------------------------#
 
     add_custom_target(${CINCH_CONFIG_INFOTAG}sphinx
-        COMMAND ${SPHINX_EXECUTABLE} -q -b html
+        COMMAND ${SPHINX_EXECUTABLE} -Q -b html
             -c ${_directory}/.sphinx
             ${CMAKE_CURRENT_SOURCE_DIR}/sphinx
             ${_directory}/sphinx
