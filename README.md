@@ -79,10 +79,8 @@ Here we talk about how to install those dependencies through Spack.
 Setup your environment and load your modules such as
 ```
 $ module purge
-$ module load gcc/7.3.0
-$ module load cmake/3.12.4
+$ module load gcc/8.3.0
 $ module load python/3.5.1
-$ module load mpich/3.2.1-gcc_7.3.0
 ```
 
 First, you need to download Spack if you don't already have one.
@@ -94,14 +92,14 @@ Then do
 $ source spack/share/spack/setup-env.sh
 $ spack compiler find
 ==> Added 2 new compilers to /home/<user>/.spack/linux/compilers.yaml
-    gcc@7.3.0  gcc@4.8.5
+    gcc@8.3.0  gcc@4.8.5
 ==> Compilers are defined in the following files:
     /home/<user>/.spack/linux/compilers.yaml
 
 $ spack compiler list
 ==> Available compilers
 -- gcc centos7-x86_64 -------------------------------------------
-gcc@7.3.0  gcc@4.8.5
+gcc@8.3.0  gcc@4.8.5
 ```
 to get Spack into your environment and see what compilers you have that
 Spack can find automatically. 
@@ -125,7 +123,7 @@ Now, assuming you have the compiler you want recognized by Spack
 and added the folder, you could just do the install for a legion backend
 using mpich like this
 ```
-$ spack install -v --only dependencies flecsi%gcc@7.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@7.3.0
+$ spack install -v --only dependencies flecsi%gcc@8.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@8.3.0
 ```
 to get all the dependencies and all their dependencies installed from
 scratch.
@@ -136,7 +134,7 @@ files for spack.]
 After Spack finishes the installation, you can load them into
 your environment by doing
 ```
-$ spack build-env --dump flecsi-deps.sh "flecsi%gcc@7.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@7.3.0"
+$ spack build-env --dump flecsi-deps.sh "flecsi%gcc@8.3.0 +hdf5 backend=legion ^mpich@3.2.1%gcc@8.3.0"
 $ source flecsi-deps.sh
 ```
 But if you want to save time or there is some packages that spack
@@ -313,19 +311,44 @@ been assigned **LA-CC-16-022**.
 
 # Copyright
 
-Copyright (c) 2016, Los Alamos National Security, LLC
+Copyright (c) 2016, Triad National Security, LLC.
 All rights reserved.
 
-Copyright 2016. Los Alamos National Security, LLC. This software was produced under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National Laboratory (LANL), which is operated by Los Alamos National Security, LLC for the U.S. Department of Energy. The U.S. Government has rights to use, reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LIABILITY FOR THE USE OF THIS SOFTWARE.  If software is modified to produce derivative works, such modified software should be clearly marked, so as not to confuse it with the version available from LANL.
+This program was produced under U.S. Government contract 89233218CNA000001 for
+Los Alamos National Laboratory (LANL), which is operated by Triad National
+Security, LLC for the U.S. Department of Energy/National Nuclear Security
+Administration.
 
-Additionally, redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+All rights in the program are reserved by Triad National Security, LLC, and the
+U.S. Department of Energy/National Nuclear Security Administration. The
+Government is granted for itself and others acting on its behalf a
+nonexclusive, paid-up, irrevocable worldwide license in this material to
+reproduce, prepare derivative works, distribute copies to the public, perform
+publicly and display publicly, and to permit others to do so.
 
-1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Additionally, redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the following conditions are
+met:
 
-2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+1. Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. Neither the name of Los Alamos National Security, LLC, Los Alamos
+   National Laboratory, LANL, the U.S. Government, nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
 
-3. Neither the name of Los Alamos National Security, LLC, Los Alamos National Laboratory, LANL, the U.S. Government, nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY LOS ALAMOS NATIONAL SECURITY, LLC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL LOS ALAMOS NATIONAL SECURITY, LLC OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY Triad National Security, LLC. AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL Triad National Security, LLC. OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
