@@ -98,7 +98,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../user-guide.html">FleCSI User Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../developer-guide.html">FleCSI Developer Guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="style-guide.html">Style Guide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="style-guide.html#appendix-a-style-examples">Appendix A: Style Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="patterns.html">FleCSI Design Patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="versioning.html">Branch Naming Conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="execution.html">Task Invocation</a></li>
@@ -250,10 +249,10 @@ requirements for the Legion implementation of <em>flecsi_execute_task</em>:</p>
 <span class="n">flecsi</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">tuple_walker</span><span class="o">&lt;</span><span class="n">task_prologue_t</span><span class="o">&gt;</span> <span class="p">{</span>
 
   <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">DATA_TYPE</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">PRIVILEGES</span><span class="o">&gt;</span>
-  <span class="kt">void</span> <span class="n">visit</span><span class="p">(</span><span class="n">index_topology</span><span class="o">::</span><span class="n">accessor</span><span class="o">&lt;</span><span class="n">DATA_TYPE</span><span class="p">,</span> <span class="n">PRIVILEGES</span><span class="o">&gt;</span> <span class="o">&amp;</span>
+  <span class="kt">void</span> <span class="n">visit</span><span class="p">(</span><span class="n">index_t</span><span class="o">::</span><span class="n">accessor</span><span class="o">&lt;</span><span class="n">DATA_TYPE</span><span class="p">,</span> <span class="n">PRIVILEGES</span><span class="o">&gt;</span> <span class="o">&amp;</span>
   <span class="n">accessor</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Implmentation for type</span>
-    <span class="c1">// index_topology::accessor&lt;DATA_TYPE, PRIVILEGES&gt;.</span>
+    <span class="c1">// index_t::accessor&lt;DATA_TYPE, PRIVILEGES&gt;.</span>
   <span class="p">}</span> <span class="c1">// visit</span>
 
 <span class="p">};</span> <span class="c1">// struct task_prologue_t</span>
@@ -277,11 +276,11 @@ directory named for the new topology type, e.g., <em>ntree</em>.</p>
 <span class="k">namespace</span> <span class="n">topology</span> <span class="p">{</span>
 
 <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">POLICY_TYPE</span><span class="o">&gt;</span>
-<span class="k">struct</span> <span class="nl">ntree_topology</span> <span class="p">:</span> <span class="k">public</span> <span class="n">ntree_topology_base_t</span> <span class="p">{</span>
+<span class="k">struct</span> <span class="nl">ntree</span> <span class="p">:</span> <span class="n">ntree_base</span> <span class="p">{</span>
 
   <span class="c1">// interface ...</span>
 
-<span class="p">};</span> <span class="c1">// struct ntree_topology</span>
+<span class="p">};</span> <span class="c1">// struct ntree</span>
 
 <span class="p">}</span> <span class="c1">// namespace flecsi</span>
 <span class="p">}</span> <span class="c1">// namespace topology</span>
@@ -291,23 +290,23 @@ directory named for the new topology type, e.g., <em>ntree</em>.</p>
 <li><p>types.h: This file defines types that are used by FleCSI, and by
 the new topology type. At a minimum, this file should define a base
 type from which the new topology type shall inherit, and a
-<em>coloring_t</em> type. The base class will be used to identify
+<em>coloring</em> type. The base class will be used to identify
 specializations of the new type in explicit/partial specializations
 and template function overloads. The coloring type should include
 whatever interface and data members are required to form a
 distributed-memory representation of the new topology:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ntree_topology_base_t</span> <span class="p">{</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ntree_base</span> <span class="p">{</span>
 
-<span class="k">using</span> <span class="n">coloring_t</span> <span class="o">=</span> <span class="n">ntree_topology_coloring_t</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">coloring</span> <span class="o">=</span> <span class="n">ntree_coloring_t</span><span class="p">;</span>
 
   <span class="c1">// interface ...</span>
 
-<span class="p">};</span> <span class="c1">// struct ntree_topology_base_t</span>
+<span class="p">};</span> <span class="c1">// struct ntree_base</span>
 </pre></div>
 </div>
 <p>The base type should be named consistently with the new topology
 type name, and should follow FleCSI naming conventions. The base
-type must define the public <em>coloring_t</em> type.</p>
+type must define the public <em>coloring</em> type.</p>
 </li>
 </ul>
 </li>
@@ -322,18 +321,18 @@ topology type.</p></li>
 supported backend runtime type, e.g., Legion, MPI, and HPX
 (currently).</p>
 <p>The new type must define a <em>set_coloring</em> method that takes the
-<em>coloring_t</em> type defined in assocaited <em>types.h</em> file:</p>
+<em>coloring</em> type defined in assocaited <em>types.h</em> file:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">POLICY_TYPE</span><span class="o">&gt;</span>
-<span class="k">struct</span>  <span class="n">topology_instance</span><span class="o">&lt;</span><span class="n">ntree_topology</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+<span class="k">struct</span>  <span class="n">topology_instance</span><span class="o">&lt;</span><span class="n">ntree</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
 
   <span class="k">using</span> <span class="n">topology_reference_t</span> <span class="o">=</span>
-    <span class="n">topology_reference</span><span class="o">&lt;</span><span class="n">ntree_topology</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+    <span class="n">topology_reference</span><span class="o">&lt;</span><span class="n">ntree</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 
   <span class="k">static</span> <span class="kt">void</span> <span class="nf">set_coloring</span><span class="p">(</span><span class="n">topology_reference_t</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">topology_reference</span><span class="p">,</span>
-    <span class="n">ntree_topology</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;::</span><span class="n">coloring_t</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">colorint</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ntree</span><span class="o">&lt;</span><span class="n">POLICY_TYPE</span><span class="o">&gt;::</span><span class="n">coloring</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">colorint</span><span class="p">)</span> <span class="p">{</span>
   <span class="p">}</span> <span class="c1">// set_coloring</span>
 
-<span class="p">};</span> <span class="c1">// topology_instance&lt;ntree_topology&lt;POLICY_TYPE&gt;&gt;</span>
+<span class="p">};</span> <span class="c1">// topology_instance&lt;ntree&lt;POLICY_TYPE&gt;&gt;</span>
 </pre></div>
 </div>
 </li>

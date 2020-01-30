@@ -181,7 +181,7 @@ the global topology.)* Let's see how:
   // Namespace scope
 
   /* Register a named instance of the index topology. */
-  flecsi_register_topology(index_topology_t, "toplogies", "hydro indices");
+  flecsi_register_topology(index_t, "toplogies", "hydro indices");
 
   // Top-level action scope
 
