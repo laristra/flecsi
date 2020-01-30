@@ -35,8 +35,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 include(version)
 
+set(FleCSI_VERSION ${${PROJECT_NAME}_VERSION})
 message(STATUS "FleCSI version ${FleCSI_VERSION}")
-set(FleCSI_VERSION ${Project_VERSION})
 
 #------------------------------------------------------------------------------#
 # Add format target.

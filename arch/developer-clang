@@ -1,13 +1,9 @@
 #! /usr/bin/env bash
-#~----------------------------------------------------------------------------~#
-# placeholder
-#~----------------------------------------------------------------------------~#
-
 #------------------------------------------------------------------------------#
 # Get the path to the project from which this script was called
 #------------------------------------------------------------------------------#
 
-cinch_dir="$(dirname "$(cd "$(dirname "$0")"; pwd)")"
+cwd="$(dirname "$(cd "$(dirname "$0")"; pwd)")"
 
 #------------------------------------------------------------------------------#
 # Check required environment variables
@@ -58,29 +54,46 @@ done
 # Call CMake command
 #------------------------------------------------------------------------------#
 
+SCRIPT_BUILD_TYPE=debug
+SCRIPT_CXX_COMPILER=clang++
+SCRIPT_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+SCRIPT_C_COMPILER=clang
+SCRIPT_C_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+
 echo "Executing:"
-echo "$cmake_mode -DCMAKE_BUILD_TYPE=debug -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS=\"-fcolor-diagnostics\" -DCMAKE_C_COMPILER=clang -DCMAKE_C_FLAGS=\"-fcolor-diagnostics\" -DFLECSI_RUNTIME_MODEL=$runtime -DENABLE_BOOST=ON -DENABLE_FLOG=ON -DENABLE_UNIT_TESTS=ON -DENABLE_FLECSIT=ON -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cinch_dir"
+echo "$cmake_mode" \
+  "-DCMAKE_BUILD_TYPE=$SCRIPT_BUILD_TYPE" \
+  "-DCMAKE_CXX_COMPILER=$SCRIPT_CXX_COMPILER" \
+  "-DCMAKE_CXX_FLAGS=\"$SCRIPT_CXX_FLAGS\"" \
+  "-DCMAKE_C_COMPILER=$SCRIPT_C_COMPILER" \
+  "-DCMAKE_C_FLAGS=\"$SCRIPT_C_FLAGS\"" \
+  "-DFLECSI_RUNTIME_MODEL=$runtime" \
+  "-DENABLE_BOOST=ON" \
+  "-DENABLE_FLOG=ON" \
+  "-DFLOG_ENABLE_DEVELOPER_MODE=ON" \
+  "-DENABLE_UNIT_TESTS=ON" \
+  "-DENABLE_SPHINX=ON" \
+  "-DENABLE_DOXYGEN=ON" \
+  "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cwd"
 echo ""
 
 $cmake_mode \
-  -DCMAKE_BUILD_TYPE=debug \
-  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_BUILD_TYPE=$SCRIPT_BUILD_TYPE \
+  -DCMAKE_CXX_COMPILER=$SCRIPT_CXX_COMPILER \
   -DCMAKE_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror" \
-  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_C_COMPILER=$SCRIPT_C_COMPILER \
   -DCMAKE_C_FLAGS="-fcolor-diagnostics -Wall -W -Werror" \
   -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
   -DENABLE_BOOST=ON \
   -DENABLE_FLOG=ON \
+  -DFLOG_ENABLE_DEVELOPER_MODE=ON \
   -DENABLE_UNIT_TESTS=ON \
-  -DENABLE_FLECSIT=ON \
+  -DENABLE_SPHINX=ON \
+  -DENABLE_DOXYGEN=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
   $cmake_args \
-  $cinch_dir
+  $cwd
 
 #------------------------------------------------------------------------------#
 # vim: syntax=sh
 #------------------------------------------------------------------------------#
-
-#~---------------------------------------------------------------------------~-#
-# placeholder
-#~---------------------------------------------------------------------------~-#

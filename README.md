@@ -32,6 +32,12 @@ FleCSI's data model provides a low-buy-in approach that makes it an
 attractive option for many application projects, as developers are
 not locked into particular layouts or data structure representations.
 
+[flecsi](http://laristra.github.io/flecsi/src/build.html#spack)
+
+# Users
+
+If you are a FleCSI user, please start here.
+
 # Developers
 
 If you are doing development of FleCSI, please take some time to read
