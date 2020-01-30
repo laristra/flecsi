@@ -21,17 +21,26 @@ Requirements & Prerequisites
 The following list of requirements provides a complete set of build
 options, but is not necessary for a particular build:
 
+.. note::
+
+  CI listings indicate specific versions used by FleCSI's continuous
+  integration tests. If nothing is indicated, there is no specific
+  version tested.
+
 * **C++17 compliant compiler** |br|
   At the current time, FleCSI has been tested with GNU, Clang, and Intel
-  C++ compilers.
+  C++ compilers. |br|
+  CI: gcc 8.3.0, clang 8.0.1, icpc 19.0.2
 
 * **MPI** |br|
   If Legion support is enabled, the MPI implementation must have support
   for *MPI_THREAD_MULTIPLE*.
+  CI: mpich 3.2.1, openmpi 3.1.3
 
 * **Legion** |br|
   We are currently using the most up-to-date version of the master
   branch.
+  CI: control_replication branch
 
 * **GASNet** |br|
   GASNet is only required if Legion support is enabled.
@@ -41,6 +50,7 @@ options, but is not necessary for a particular build:
 
 * **Boost** |br|
   We require *program_options* and *stacktrace*.
+  CI: 1.70.0
 
 * **Doxygen** |br|
   Doxygen is only required to build the interface documentation.
@@ -52,7 +62,7 @@ options, but is not necessary for a particular build:
   using pip.
 
 * **Python** |br|
-  We currently require Python 2.7 or greater.
+  We currently require Python 3.0 or greater.
 
 Spack
 *****
