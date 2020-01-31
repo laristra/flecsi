@@ -248,8 +248,9 @@ install and configure:</p>
 </pre></div>
 </div>
 <p>If you are a developer, and would like to install only the dependencies of
-FleCSI (assuming that you will build FleCSI from source), you can use
-spack’s <em>–only</em> option:</p>
+FleCSI (assuming that you will build FleCSI from
+[source](<a class="reference external" href="http://laristra.github.io/flecsi/src/build.html#getting">http://laristra.github.io/flecsi/src/build.html#getting</a>-<a href="#id2"><span class="problematic" id="id3">the-code_</span></a>),
+you can use spack’s <em>–only</em> option:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack install --only dependencies flecsi <span class="nv">backend</span><span class="o">=</span>legion +hdf5 ^mpich
 </pre></div>
 </div>
@@ -261,7 +262,7 @@ repo:</p>
 </div>
 <p>This will prepend a spack repository path to your spack configuration,
 such that the specific branch of FleCSI can override the normal spack
-dependencies to provide whatever features are required for a successfully
+dependencies to provide whatever features are required for a successful
 build.</p>
 </div>
 <div class="section" id="getting-the-code">
