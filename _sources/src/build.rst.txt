@@ -69,7 +69,7 @@ Getting The Code
 
 .. note::
 
-  If you only want to install FleCSI, you can skip this step.  
+  If you are a user and only want to install FleCSI, you can skip this step.  
 
 Clone the FleCSI git repository, and create an out-of-source build area
 (FleCSI prohibits in-source builds):
@@ -134,20 +134,6 @@ This will prepend a spack repository path to your spack configuration,
 such that the specific branch of FleCSI can override the normal spack
 dependencies to provide whatever features are required for a successful
 build.
-
-Build Environment
-*****************
-
-FleCSI uses CMake as part of its build system. A convenient mechanism
-for identifying directory paths that should be searched by CMake's
-*find_package* function is to set the *CMAKE_PREFIX_PATH* environment
-variable. If you are using the FleCSI TPLs discussed above, you can set
-*CMAKE_PREFIX_PATH* to include the path to your TPL installation
-directory and FleCSI will automatically find all of its dependencies:
-
-.. code-block:: console
-
-  $ export CMAKE_PREFIX_PATH=/path/to/install/directory (bash)
 
 Configuration & Build
 *********************

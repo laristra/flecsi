@@ -98,7 +98,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#getting-the-code">Getting The Code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#spack">Spack</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#developers">Developers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#build-environment">Build Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-build">Configuration &amp; Build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-the-unit-tests">Building the Unit Tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-the-documentation">Building the Documentation</a></li>
@@ -231,7 +230,7 @@ We currently require Python 3.0 or greater.</p></li>
 <h2>Getting The Code<a class="headerlink" href="#getting-the-code" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you only want to install FleCSI, you can skip this step.</p>
+<p>If you are a user and only want to install FleCSI, you can skip this step.</p>
 </div>
 <p>Clone the FleCSI git repository, and create an out-of-source build area
 (FleCSI prohibits in-source builds):</p>
@@ -282,18 +281,6 @@ repo:</p>
 such that the specific branch of FleCSI can override the normal spack
 dependencies to provide whatever features are required for a successful
 build.</p>
-</div>
-<div class="section" id="build-environment">
-<h2>Build Environment<a class="headerlink" href="#build-environment" title="Permalink to this headline">¶</a></h2>
-<p>FleCSI uses CMake as part of its build system. A convenient mechanism
-for identifying directory paths that should be searched by CMake’s
-<em>find_package</em> function is to set the <em>CMAKE_PREFIX_PATH</em> environment
-variable. If you are using the FleCSI TPLs discussed above, you can set
-<em>CMAKE_PREFIX_PATH</em> to include the path to your TPL installation
-directory and FleCSI will automatically find all of its dependencies:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">export</span> <span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/install/directory <span class="o">(</span>bash<span class="o">)</span>
-</pre></div>
-</div>
 </div>
 <div class="section" id="configuration-build">
 <h2>Configuration &amp; Build<a class="headerlink" href="#configuration-build" title="Permalink to this headline">¶</a></h2>
