@@ -111,6 +111,9 @@ For a complete list of versions and variants, type:
 
   $ spack info flecsi
 
+Developers
+**********
+
 If you are a developer, and would like to install only the dependencies of
 FleCSI (assuming that you will build FleCSI from source), you can use
 spack's *--only* option:
