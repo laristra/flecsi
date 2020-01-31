@@ -97,7 +97,7 @@ For a complete list of versions and variants, type:
 If you are a developer, and would like to install only the dependencies of
 FleCSI (assuming that you will build FleCSI from
 `source
-<http://laristra.github.io/flecsi/src/build.html#getting-the-code_>`_,
+<http://laristra.github.io/flecsi/src/build.html#getting-the-code_>`_),
 you can use spack's *--only* option:
 
 .. code-block:: console
