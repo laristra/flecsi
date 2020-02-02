@@ -53,6 +53,8 @@ Christoph Junghans
       systems. His interests lie in understanding modern computing
       architectures and the design of sustainable code.
 
+|br|
+
 David Daniel
 ************
 
@@ -75,6 +77,8 @@ David Daniel
       multi-physics codes based on FleCSI targeting exascale-class
       computers and beyond.
 
+|br|
+
 Irina Demeshko
 **************
 
@@ -96,6 +100,8 @@ Irina Demeshko
       current work is directed at integrating task-based runtime systems
       into several software projects at LANL, including the FleCSI and
       CANGA projects.
+
+|br|
 
 Jonas Lippuner
 **************
@@ -122,6 +128,8 @@ Jonas Lippuner
       has extensive experience with developing highly optimized code for
       GPUs. He is working on implementing physics applications on top of
       the FleCSI framework.
+
+|br|
 
 Jonathan Graham
 ***************
@@ -152,6 +160,8 @@ Jonathan Graham
       for exascale computing both in proxy applications and in the
       development of FleCSI.
 
+|br|
+
 Nick Moss
 *********
 
@@ -179,6 +189,8 @@ Nick Moss
       and more recently has worked on the Kitsune project to produce a
       specialized FleCSI compiler.
 
+|br|
+
 Oleg Korobkin
 *************
 
@@ -204,6 +216,8 @@ Oleg Korobkin
       mergers and investigating a variety of potentially observable
       signals.
 
+|br|
+
 Li-Ta (Ollie) Lo
 ****************
 
@@ -225,6 +239,8 @@ Li-Ta (Ollie) Lo
       analysis, data-parallel programming and software engineering for
       scientific computing. His work for FleCSI focuses on providing an
       efficient and scalable MPI backend.
+
+|br|
 
 Karen Tsai
 **********
@@ -250,6 +266,8 @@ Karen Tsai
       Computer Science from the University of Texas – Austin.
       Karen joined the Co-Design Team in the fall of 2017 to work on the
       Ristra and FleCSI projects.
+
+|br|
 
 Wei Wu
 ******
