@@ -273,7 +273,7 @@ spack’s <em>–only</em> option:</p>
 </div>
 <p>If you are developing against a particular branch of FleCSI, you can
 capture branch-specific spack dependencies by adding the FleCSI spack
-repo:</p>
+repo (before performing the above step):</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack repo add path/to/flecsi/spack-repo
 </pre></div>
 </div>
@@ -284,20 +284,6 @@ build.</p>
 </div>
 <div class="section" id="configuration-build">
 <h2>Configuration &amp; Build<a class="headerlink" href="#configuration-build" title="Permalink to this headline">¶</a></h2>
-<p>Configuration of FleCSI requires the selection of the backend runtimes
-that will be used by the FleCSI programming model abstraction to invoke
-tasks and kernels. There are currently two supported distributed-memory
-runtimes, a serial runtime, and one supported node-level runtime:</p>
-<ul class="simple">
-<li><p><strong>Distributed-Memory</strong> <br />
-Legion or MPI</p></li>
-<li><p><strong>Serial [supported thorugh MPI runtime]</strong> <br />
-<strong>The serial build is no longer supported.</strong> Users wishing to emulate
-this build mode should select the MPI runtime and run executables with
-a single-rank.</p></li>
-<li><p><strong>Node-Level</strong> <br />
-OpenMP</p></li>
-</ul>
 <p>Example configuration: <strong>MPI</strong></p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> cmake -DFLECSI_RUNTIME_MODEL<span class="o">=</span>mpi ..
 </pre></div>

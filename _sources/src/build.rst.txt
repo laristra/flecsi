@@ -124,7 +124,7 @@ spack's *--only* option:
 
 If you are developing against a particular branch of FleCSI, you can
 capture branch-specific spack dependencies by adding the FleCSI spack
-repo:
+repo (before performing the above step):
 
 .. code-block:: console
 
@@ -137,22 +137,6 @@ build.
 
 Configuration & Build
 *********************
-
-Configuration of FleCSI requires the selection of the backend runtimes
-that will be used by the FleCSI programming model abstraction to invoke
-tasks and kernels. There are currently two supported distributed-memory
-runtimes, a serial runtime, and one supported node-level runtime:
-
-* **Distributed-Memory** |br|
-  Legion or MPI
-
-* **Serial [supported thorugh MPI runtime]** |br|
-  **The serial build is no longer supported.** Users wishing to emulate
-  this build mode should select the MPI runtime and run executables with
-  a single-rank.
-
-* **Node-Level** |br|
-  OpenMP
 
 Example configuration: **MPI**
 
