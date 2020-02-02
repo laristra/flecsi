@@ -2,6 +2,10 @@
 
    <br />
 
+.. |clearboth| raw:: html
+
+   <hr style="clear:both;">
+
 FleCSI Contributors
 ===================
 
@@ -30,7 +34,7 @@ Ben Bergen
       Technology Development & Mitigation (ATDM) Program under the
       Department of Energy (DOE).
 
-|
+|clearboth|
 
 Christoph Junghans
 ******************
@@ -53,7 +57,7 @@ Christoph Junghans
       systems. His interests lie in understanding modern computing
       architectures and the design of sustainable code.
 
-|
+|clearboth|
 
 David Daniel
 ************
@@ -77,6 +81,8 @@ David Daniel
       multi-physics codes based on FleCSI targeting exascale-class
       computers and beyond.
 
+|clearboth|
+
 Irina Demeshko
 **************
 
@@ -98,6 +104,8 @@ Irina Demeshko
       current work is directed at integrating task-based runtime systems
       into several software projects at LANL, including the FleCSI and
       CANGA projects.
+
+|clearboth|
 
 Jonas Lippuner
 **************
@@ -124,6 +132,8 @@ Jonas Lippuner
       has extensive experience with developing highly optimized code for
       GPUs. He is working on implementing physics applications on top of
       the FleCSI framework.
+
+|clearboth|
 
 Jonathan Graham
 ***************
@@ -154,6 +164,8 @@ Jonathan Graham
       for exascale computing both in proxy applications and in the
       development of FleCSI.
 
+|clearboth|
+
 Nick Moss
 *********
 
@@ -181,6 +193,8 @@ Nick Moss
       and more recently has worked on the Kitsune project to produce a
       specialized FleCSI compiler.
 
+|clearboth|
+
 Oleg Korobkin
 *************
 
@@ -206,6 +220,8 @@ Oleg Korobkin
       mergers and investigating a variety of potentially observable
       signals.
 
+|clearboth|
+
 Li-Ta (Ollie) Lo
 ****************
 
@@ -227,6 +243,8 @@ Li-Ta (Ollie) Lo
       analysis, data-parallel programming and software engineering for
       scientific computing. His work for FleCSI focuses on providing an
       efficient and scalable MPI backend.
+
+|clearboth|
 
 Karen Tsai
 **********
@@ -252,6 +270,8 @@ Karen Tsai
       Computer Science from the University of Texas – Austin.
       Karen joined the Co-Design Team in the fall of 2017 to work on the
       Ristra and FleCSI projects.
+
+|clearboth|
 
 Wei Wu
 ******
