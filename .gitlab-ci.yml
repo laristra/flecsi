@@ -5,7 +5,7 @@
 stages:
   - Env
   - Canary
-  - Build
+  - Build_n_Test
   - Test
   - Tutorials
   - Apps
@@ -56,7 +56,7 @@ before_script:
   - module unload gcc
   - module load gcc/${FLECSI_GCC_VERSION}
   - echo ${FLECSI_ENV_SOURCE_FILE}
-  - echo ${FLECSI_SPACK_BASE_SPEC}
+  - export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_BASE_SPEC} $([ ${BUILD_TYPE} == 'Debug' ] && echo +debug_backend || echo '' ) ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} == 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}"
   - rm ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
     ( flock -e 200
@@ -65,7 +65,8 @@ before_script:
     spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
-    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_BASE_SPEC} $([ ${BUILD_TYPE} = 'Debug' ] && echo +debug_backend || echo ) ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} = 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}" || /bin/true;
+    echo ${FLECSI_SPACK_FULL_SPEC};
+    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_FULL_SPEC}" || /bin/true;
     spack repo rm ${FLECSI_SPACK_SCOPE};
     ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
@@ -164,20 +165,16 @@ before_script:
   <<: *cache_def
 
 .update_spackage: &update_spackage |-
-    echo 'Updating spackages...'
-    cd ${CI_PROJECT_DIR}
-    git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git
-    echo $(diff -r ${CI_PROJECT_DIR}/spack-repo/packages/ ${CI_PROJECT_DIR}/ristra_spackages/spack-repo/packages/ | grep "${CI_PROJECT_DIR}/spack-repo" | tee thediff)
-    export last_commit=$(git log -n 1 --pretty=format:%H -- spack-repo/packages)
-    git diff ${last_commit}^ HEAD spack-repo/packages | tee spackage.patch
-    if [[ -s spackage.patch && -s thediff ]];
-    then
-      cd ristra_spackages;
-      git apply ${CI_PROJECT_DIR}/spackage.patch;
-      git add -u;
-      git commit -m "Gitlab CI Automatic Spackage Update - FleCSI";
-      git push;
-    fi;
+  echo 'Updating spackages...'
+  cd ${CI_PROJECT_DIR}
+  git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git
+  for f in $(find ./spack-repo/packages/ -type f); do diff -urN ${CI_PROJECT_DIR}/ristra_spackages/$f $f; done | tee $f.patch
+  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do patch -i $f ${CI_PROJECT_DIR}/ristra_spackages/$f; done
+  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do rm $f; done
+  cd ${CI_PROJECT_DIR}/ristra_spackages
+  git add spack-repo/packages/*
+  git commit -m "Gitlab CI Automatic Spackage Update - Libristra"
+  git push
 
 #############
 # Env Stage #
@@ -217,7 +214,7 @@ before_script:
 .build: &build_def
   <<: *job_def
   <<: *artifacts_def
-  stage: Build
+  stage: Build_n_Test
   script: &build_script |-
     echo 'Start building'
     ccache -z
@@ -234,7 +231,7 @@ before_script:
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_UNIT_TESTS=ON \
-        -DENABLE_HDF5=$([ "$RUNTIME" = "legion" ] && echo ON || echo OFF) \
+        -DENABLE_HDF5=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_DOXYGEN=ON \
         -DENABLE_DOCUMENTATION=OFF \
         -DENABLE_COVERAGE_BUILD=ON \

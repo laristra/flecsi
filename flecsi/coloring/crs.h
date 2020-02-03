@@ -214,8 +214,8 @@ struct crs_t {
     append(init.begin(), init.end());
   }
 
-  template<typename U, template<typename> class Vector>
-  void push_back(const Vector<U> & init) {
+  template<typename U, typename...Args, template<typename, typename...> class Vector>
+  void push_back(const Vector<U,Args...> & init) {
     append(init.begin(), init.end());
   }
 

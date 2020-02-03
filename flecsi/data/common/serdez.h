@@ -110,7 +110,13 @@ public:
 
   virtual ~serdez_untyped_t(void) {}
 
+  virtual size_t serialized_size(const void * field_ptr) const = 0;
+
+  virtual size_t serialize(const void * field_ptr, void * buffer) const = 0;
+
   virtual size_t serialize(const void * field_ptr, std::ostream & os) const = 0;
+
+  virtual size_t deserialize(void * field_ptr, const void * buffer) const = 0;
 
   virtual size_t deserialize(void * field_ptr, std::istream & is) const = 0;
 
@@ -126,10 +132,28 @@ public:
 
   virtual ~serdez_wrapper_u(void) {}
 
+  virtual size_t serialized_size(const void * field_ptr) const {
+    using TYPE = typename SERDEZ::FIELD_TYPE;
+    auto item_ptr = static_cast<const TYPE *>(field_ptr);
+    return SERDEZ::serialized_size(*item_ptr);
+  }
+
+  virtual size_t serialize(const void * field_ptr, void * buffer) const {
+    using TYPE = typename SERDEZ::FIELD_TYPE;
+    auto item_ptr = static_cast<const TYPE *>(field_ptr);
+    return SERDEZ::serialize(*item_ptr, buffer);
+  }
+
   virtual size_t serialize(const void * field_ptr, std::ostream & os) const {
     using TYPE = typename SERDEZ::FIELD_TYPE;
     auto item_ptr = static_cast<const TYPE *>(field_ptr);
     return SERDEZ::serialize(*item_ptr, os);
+  }
+
+  virtual size_t deserialize(void * field_ptr, const void * buffer) const {
+    using TYPE = typename SERDEZ::FIELD_TYPE;
+    auto item_ptr = static_cast<TYPE *>(field_ptr);
+    return SERDEZ::deserialize(*item_ptr, buffer);
   }
 
   virtual size_t deserialize(void * field_ptr, std::istream & is) const {
