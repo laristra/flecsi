@@ -10,7 +10,7 @@ Building FleCSI
 FleCSI can be configured to run with different distributed-memory
 runtimes, including Legion, and MPI. FleCSI also has support for various
 fine-grained, node-level runtimes, including OpenMP, Kokkos, and
-the C++17 extensions for parallelism. Full documentation of FleCSI
+the C++17 extensions for parallelism. Full documentation for FleCSI
 requires both Sphinx and Doxygen. These configuration options are listed
 to convey to the reader that the FleCSI build system has several paths
 that can be taken to tailor FleCSI to a given system and architecture.
@@ -21,17 +21,26 @@ Requirements & Prerequisites
 The following list of requirements provides a complete set of build
 options, but is not necessary for a particular build:
 
+.. note::
+
+  CI listings indicate specific versions used by FleCSI's continuous
+  integration tests. If nothing is indicated, there is no specific
+  version tested.
+
 * **C++17 compliant compiler** |br|
   At the current time, FleCSI has been tested with GNU, Clang, and Intel
-  C++ compilers.
+  C++ compilers. |br|
+  CI: gcc 8.3.0, clang 8.0.1, icpc 19.0.2
 
 * **MPI** |br|
   If Legion support is enabled, the MPI implementation must have support
-  for *MPI_THREAD_MULTIPLE*.
+  for *MPI_THREAD_MULTIPLE*. |br|
+  CI: mpich 3.2.1, openmpi 3.1.3
 
 * **Legion** |br|
   We are currently using the most up-to-date version of the master
-  branch.
+  branch. |br|
+  CI: control_replication branch
 
 * **GASNet** |br|
   GASNet is only required if Legion support is enabled.
@@ -40,7 +49,8 @@ options, but is not necessary for a particular build:
   We currently require CMake version 3.12 or greater.
 
 * **Boost** |br|
-  We require *program_options* and *stacktrace*.
+  We require *program_options* and *stacktrace*. |br|
+  CI: 1.70.0
 
 * **Doxygen** |br|
   Doxygen is only required to build the interface documentation.
@@ -52,18 +62,45 @@ options, but is not necessary for a particular build:
   using pip.
 
 * **Python** |br|
-  We currently require Python 2.7 or greater.
+  We currently require Python 3.0 or greater.
+
+Spack
+*****
+
+Getting The Code
+****************
+
+.. note::
+
+  If you are a user and only want to install FleCSI, you can skip this step.  
+
+Clone the FleCSI git repository, and create an out-of-source build area
+(FleCSI prohibits in-source builds):
+
+.. code-block:: console
+
+  $ git clone https://github.com/laristra/flecsi.git
+  $ cd flecsi
+  $ mkdir build
+  $ cd build
 
 Spack
 *****
 
 The preferred method for installing FleCSI is to use the
-`spack <https://github.com/spack/spack>`_ package:
+`spack <https://github.com/spack/spack>`_ package. Spack is easy to
+install and configure:
+
+.. code-block:: console
+
+  $ git clone git@github.com:spack/spack.git
+  $ source path/to/spack/repository/share/spack/setup-env.sh
+
+Once spack is installed, you can install FleCSI like:
 
 .. code-block:: console
 
   $ spack install flecsi
-  $ spack load -r flecsi
 
 FleCSI supports several different versions and variants, e.g.:
 
@@ -77,121 +114,32 @@ For a complete list of versions and variants, type:
 
   $ spack info flecsi
 
-Currently, FleCSI depends on the following spack packages:
+Developers
+**********
+
+If you are a developer, and would like to install only the dependencies of
+FleCSI (assuming that you will build FleCSI from source), you can use
+spack's *--only* option:
 
 .. code-block:: console
 
-  $ spack install cmake
-  $ spack install boost@1.68.0
-  $ spack install parmetis
-  $ spack install hdf5
-  $ spack install kokkos
-  $ spack install legion@ctrl-rep
+  $ spack install --only dependencies flecsi backend=legion +hdf5 ^mpich
 
-.. note::
-
-  Users of spack can safely ignore the remaining sections on this page.
-  Loading the flecsi spack package will properly configure your
-  environment.
-
-FleCSI Third Party Libraries Project
-************************************
-
-.. warning::
-
-  The FleCSI superbuild project is deprecated in favor of Spack, and
-  will eventually be removed.
-
-To facilitate FleCSI adoption by a broad set of users, we have provided
-a superbuild project that can build many of the libraries and tools
-required to build and use FleCSI. The FleCSI Third Party Libraries (TPL)
-project is available from github at
-`https://github.com/laristra/flecsi-third-party
-<https://github.com/laristra/flecsi-third-party>`_.
-Note that a suitable version of MPI is required for the superbuild.
-
-.. admonition:: Admonishment
-
-  Users should note that, while this approach is easier, it may not
-  provide as robust a solution as individually building each dependency,
-  and that care should be taken before installing these libraries on a
-  production system to avoid possible conflicts or duplication.
-  Production deployments of some of these tools may have architecture or
-  system specific needs that will not be met by our superbuild. Users
-  who are working with development branches of FleCSI are encouraged to
-  build each package separately.
-
-Build instructions for the TPLs:
+If you are developing against a particular branch of FleCSI, you can
+capture branch-specific spack dependencies by adding the FleCSI spack
+repo (before performing the above step):
 
 .. code-block:: console
 
-  $ git clone --recursive https://github.com/laristra/flecsi-third-party.git
-  $ cd flecsi-third-party
-  $ mkdir build
-  $ cd build
-  $ cmake -DCMAKE_INSTALL_PREFIX=/path/to/install/directory ..
-  $ make
-  $ make install
+  $ spack repo add path/to/flecsi/spack-repo
 
-**It is recommended that users remove the install directory before
-updating or re-compiling the TPLs to insure a clean build.**
-
-Build Environment
-*****************
-
-FleCSI uses CMake as part of its build system. A convenient mechanism
-for identifying directory paths that should be searched by CMake's
-*find_package* function is to set the *CMAKE_PREFIX_PATH* environment
-variable. If you are using the FleCSI TPLs discussed above, you can set
-*CMAKE_PREFIX_PATH* to include the path to your TPL installation
-directory and FleCSI will automatically find all of its dependencies:
-
-.. code-block:: console
-
-  $ export CMAKE_PREFIX_PATH=/path/to/install/directory (bash)
-
-Getting The Code
-****************
-
-Clone the FleCSI git repository, and create an out-of-source build area
-(FleCSI prohibits in-source builds):
-
-.. code-block:: console
-
-  $ git clone --recursive https://github.com/laristra/flecsi.git
-  $ cd flecsi
-  $ mkdir build
-  $ cd build
-
-**Note: FleCSI developers, i.e., those who have permission to create
-new branches and pull requests, should clone the source code using their
-github account and the *git* user:**
-
-.. code-block:: console
-
-  $ git clone --recursive git@github.com:laristra/flecsi.git
-  $ cd flecsi
-  $ mkdir build
-  $ cd build
+This will prepend a spack repository path to your spack configuration,
+such that the specific branch of FleCSI can override the normal spack
+dependencies to provide whatever features are required for a successful
+build.
 
 Configuration & Build
 *********************
-
-Configuration of FleCSI requires the selection of the backend runtimes
-that will be used by the FleCSI programming model abstraction to invoke
-tasks and kernels. There are currently two supported distributed-memory
-runtimes, a serial runtime, and one supported node-level runtime:
-
-* **Distributed-Memory** |br|
-  Legion or MPI
-
-* **Serial [supported thorugh MPI runtime]** |br|
-  **The serial build is no longer supported.** Users wishing to emulate
-  this build mode should select the MPI runtime and run executables with
-  a single-rank.
-
-* **Node-Level** |br|
-  OpenMP
 
 Example configuration: **MPI**
 

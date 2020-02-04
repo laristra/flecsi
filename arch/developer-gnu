@@ -59,7 +59,7 @@ done
 #------------------------------------------------------------------------------#
 
 echo "Executing:"
-echo "$cmake_mode -DCMAKE_BUILD_TYPE=debug -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS=\"-fmax-errors=5 -fdiagnostics-color=always\" -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS=\"-fmax-errors=5 -fdiagnostics-color=always\" -DFLECSI_RUNTIME_MODEL=$runtime -DENABLE_FLOG=ON -DENABLE_UNIT_TESTS=ON -DENABLE_FLECSIT=ON -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cinch_dir"
+echo "$cmake_mode -DCMAKE_BUILD_TYPE=debug -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS=\"-fmax-errors=5 -fdiagnostics-color=always\" -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS=\"-fmax-errors=5 -fdiagnostics-color=always\" -DFLECSI_RUNTIME_MODEL=$runtime -DENABLE_FLOG=ON -DFLOG_ENABLE_DEVELOPER_MODE=ON -DENABLE_UNIT_TESTS=ON -DENABLE_FLECSIT=ON -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cinch_dir"
 echo ""
 
 $cmake_mode \
@@ -70,6 +70,7 @@ $cmake_mode \
   -DCMAKE_C_FLAGS="-fmax-errors=5 -fdiagnostics-color=always -Wall -W -Werror" \
   -DFLECSI_RUNTIME_MODEL=$runtime \
   -DENABLE_FLOG=ON \
+  -DFLOG_ENABLE_DEVELOPER_MODE=ON \
   -DENABLE_UNIT_TESTS=ON \
   -DENABLE_FLECSIT=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
