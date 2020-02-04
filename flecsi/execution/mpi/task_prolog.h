@@ -16,6 +16,7 @@ All rights reserved.
 /*! @file */
 
 #include <vector>
+#include <queue>
 
 #include "mpi.h"
 #include <flecsi/coloring/mpi_utils.h>
@@ -50,6 +51,37 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
    */
 
   task_prolog_t() = default;
+
+#if defined(FLECSI_USE_AGGCOMM)
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(dense_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+
+    auto & h = a.handle;
+    auto & context = context_t::instance();
+
+    auto rank = context_t::instance().color();
+
+    if (*(h.ghost_is_readable)) return;
+
+    auto & field_metadata = context.registered_field_metadata().at(h.fid);
+
+    auto & my_coloring_info = context.coloring_info(h.index_space).at(context.color());
+
+    auto data = context.registered_field_data().at(h.fid).data();
+    auto shared_data = data + my_coloring_info.exclusive * sizeof(T);
+    auto ghost_data = shared_data + my_coloring_info.shared * sizeof(T);
+
+    field_metadata.shared_data_buffer = shared_data;
+    field_metadata.ghost_data_buffer = ghost_data;
+    exchange_queue.emplace(h.index_space, h.fid);
+  }
+#endif
 
   template<typename T, size_t PERMISSIONS>
   void handle(global_accessor_u<T, PERMISSIONS> & a) {
@@ -274,6 +306,143 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   template<typename T>
   void handle(T &) {} // handle
+
+#if defined(FLECSI_USE_AGGCOMM)
+  void launch_copies() {
+    auto & context = context_t::instance();
+    const int my_color = context.color();
+    const int num_colors = context.colors();
+
+    auto & ispace_dmap = context.index_space_data_map();
+
+    std::vector<int> sharedSize(num_colors, 0);
+    std::vector<int> ghostSize(num_colors, 0);
+
+    std::vector<std::pair<size_t, field_id_t>> modified_fields;
+
+    while (not exchange_queue.empty()) {
+      auto & fi = exchange_queue.front();
+      auto & field_metadata = context.registered_field_metadata().at(fi.second);
+      modified_fields.emplace_back(fi.first, fi.second);
+
+      for(auto rank = 0; rank < num_colors; ++rank) {
+        ghostSize[rank] += field_metadata.ghost_field_sizes[rank];
+        sharedSize[rank] += field_metadata.shared_field_sizes[rank];
+      }
+
+      exchange_queue.pop();
+    }
+
+    std::vector<unsigned char*> allSendBuffer(num_colors);
+    std::vector<unsigned char*> allRecvBuffer(num_colors);
+
+    std::vector<MPI_Request> allSendRequests(num_colors);
+    std::vector<MPI_Request> allRecvRequests(num_colors);
+
+    // Post receives
+
+    for(int rank = 0; rank < num_colors; ++rank) {
+
+      const auto & bufSize = ghostSize[rank];
+
+      if(bufSize == 0) {
+        allRecvRequests[rank] = MPI_REQUEST_NULL;
+        continue;
+      }
+
+      const int resultAlloc = MPI_Alloc_mem(bufSize, MPI_INFO_NULL, &allRecvBuffer[rank]);
+      if(resultAlloc != MPI_SUCCESS) {
+        clog(fatal) << "MPI failed to alloc memory on rank: " << my_color << " with error code: " << resultAlloc << std::endl;
+      }
+
+      const int resultRecv = MPI_Irecv(allRecvBuffer[rank], bufSize, MPI_CHAR, rank, rank, MPI_COMM_WORLD, &allRecvRequests[rank]);
+      if(resultRecv != MPI_SUCCESS) {
+        clog(error) << "MPI_Irecv failed on rank " << my_color << " with error code: " << resultRecv << std::endl;
+      }
+
+    }
+
+    // pack and send data
+
+    for(int rank = 0; rank < num_colors; ++rank) {
+
+      const auto & bufSize = sharedSize[rank];
+
+      if(bufSize == 0) {
+        allSendRequests[rank] = MPI_REQUEST_NULL;
+        continue;
+      }
+
+      const int resultAlloc = MPI_Alloc_mem(bufSize, MPI_INFO_NULL, &allSendBuffer[rank]);
+      if(resultAlloc != MPI_SUCCESS) {
+        clog(fatal) << "MPI failed to alloc memory on rank: " << my_color << " with error code: " << resultAlloc << std::endl;
+      }
+
+      size_t sendBufferOffset = 0;
+
+      for(auto & fi : modified_fields) {
+        auto & field_metadata = context.registered_field_metadata().at(fi.second);
+
+        for(auto const & ind : field_metadata.shared_indices[rank]) {
+
+          memcpy(&allSendBuffer[rank][sendBufferOffset], &field_metadata.shared_data_buffer[ind[0]], ind[1]);
+          sendBufferOffset += ind[1];
+
+        }
+
+      }
+
+      const int resultSend = MPI_Isend(allSendBuffer[rank], bufSize, MPI_CHAR, rank, my_color, MPI_COMM_WORLD, &allSendRequests[rank]);
+      if(resultSend != MPI_SUCCESS) {
+        clog(error) << "ERROR: MPI_Isend of rank " << my_color << " for data sent to " << rank << " failed with error code: " << resultSend << std::endl;
+      }
+
+    }
+
+
+    // wait for data to arrive
+    const int result = MPI_Waitall(allRecvRequests.size(), allRecvRequests.data(), MPI_STATUSES_IGNORE);
+    if(result != MPI_SUCCESS) {
+      clog(fatal) << "ERROR: MPI_Waitall of rank " << my_color << " on recv requests failed with error code: " << result << std::endl;
+    }
+
+    // unpack data
+    for(int rank = 0; rank < num_colors; ++rank) {
+
+      const auto & bufSize = ghostSize[rank];
+
+      if(bufSize == 0)
+        continue;
+
+      size_t recvBufferOffset = 0;
+
+      for (auto & fi : modified_fields) {
+
+        auto & field_metadata = context.registered_field_metadata().at(fi.second);
+
+        for (auto const & ind : field_metadata.ghost_indices[rank]) {
+
+          memcpy(&field_metadata.ghost_data_buffer[ind[0]], &allRecvBuffer[rank][recvBufferOffset], ind[1]);
+          recvBufferOffset += ind[1];
+
+        }
+
+      }
+
+      MPI_Free_mem(allRecvBuffer[rank]);
+
+    }
+
+    // ensure all send are completed
+    MPI_Waitall(allSendRequests.size(), allSendRequests.data(), MPI_STATUSES_IGNORE);
+
+    for(int rank = 0; rank < num_colors; ++rank)
+      MPI_Free_mem(allSendBuffer[rank]);
+
+  }
+
+  std::queue<std::pair<size_t, field_id_t>> exchange_queue;
+#endif
 
 }; // struct task_prolog_t
 
