@@ -64,6 +64,9 @@ options, but is not necessary for a particular build:
 * **Python** |br|
   We currently require Python 3.0 or greater.
 
+Spack
+*****
+
 Getting The Code
 ****************
 
