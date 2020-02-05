@@ -134,7 +134,7 @@ before_script:
     refs:
       - merge_requests
       - master
-      - refactor
+      - devel
   except:
     variables:
       - $RUNTIME == "hpx"
