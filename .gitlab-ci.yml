@@ -132,7 +132,7 @@ before_script:
   retry: 1
   only:
     - merge_requests
-    - 1
+    - "1"
     - devel
 
 .cache_template: &cache_def
@@ -375,7 +375,7 @@ env_update:
   extends: env_mpi
   only:
     refs:
-      - 1
+      - "1"
   script:
     - *update_spackage
   allow_failure: true
