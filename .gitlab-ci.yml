@@ -132,7 +132,7 @@ before_script:
   retry: 1
   only:
     - merge_requests
-    - master
+    - "1.4"
     - refactor
 
 .cache_template: &cache_def
@@ -375,7 +375,7 @@ env_update:
   extends: env_mpi
   only:
     refs:
-      - master
+      - "1.4"
   script:
     - *update_spackage
   allow_failure: true
