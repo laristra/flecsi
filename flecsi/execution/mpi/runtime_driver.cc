@@ -116,6 +116,14 @@ runtime_driver(int argc, char ** argv) {
     context_.add_index_map(is.first, _map);
   } // for
 
+#if defined(FLECSI_USE_AGGCOMM)
+  auto & ispace_dmap = context_.index_space_data_map();
+  for (const auto & fi : context_.registered_fields()) {
+    auto & ispace_data = ispace_dmap[fi.index_space];
+    ispace_data.ghost_is_readable[fi.fid] = true;
+  }
+#endif
+
 #if defined(FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL)
 
   // Execute control

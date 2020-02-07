@@ -48,12 +48,19 @@
   #if !defined(REALM_USE_CMAKE)
     #define REALM_USE_CMAKE
   #endif
-  
+
   #if !defined(ENABLE_LEGION_TLS)
     #define ENABLE_LEGION_TLS
   #endif
 
 #endif
+
+//----------------------------------------------------------------------------//
+// Use aggregated communicatin for MPI backend
+//----------------------------------------------------------------------------//
+
+#cmakedefine FLECSI_USE_AGGCOMM
+
 
 //----------------------------------------------------------------------------//
 // Process id bits

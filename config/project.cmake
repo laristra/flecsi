@@ -448,6 +448,15 @@ endif()
 
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+  #------------------------------------------------------------------------------#
+  # Use lazy aggregated dense field communication
+  #------------------------------------------------------------------------------#
+  option(FLECSI_USE_AGGCOMM
+	"Use (lazy) aggregated communication for dense fields"
+	OFF)
+endif()
+
 #------------------------------------------------------------------------------#
 # Process id bits
 #------------------------------------------------------------------------------#

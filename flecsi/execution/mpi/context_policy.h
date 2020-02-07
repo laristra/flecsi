@@ -204,7 +204,7 @@ struct mpi_context_policy_t {
   //--------------------------------------------------------------------------//
 
   struct index_space_data_t {
-    // TODO: to be defined.
+    std::map<field_id_t, bool> ghost_is_readable;
   };
 
   struct index_subspace_data_t {
@@ -239,6 +239,15 @@ struct mpi_context_policy_t {
     std::map<int, MPI_Datatype> target_types;
 
     MPI_Win win;
+
+#if defined(FLECSI_USE_AGGCOMM)
+    std::vector<std::vector<std::array<size_t, 2>>> shared_indices;
+    std::vector<std::vector<std::array<size_t, 2>>> ghost_indices;
+    std::vector<size_t> shared_field_sizes;
+    std::vector<size_t> ghost_field_sizes;
+    unsigned char *shared_data_buffer;
+    unsigned char *ghost_data_buffer;
+#endif
   };
 
   /*!
@@ -270,6 +279,7 @@ struct mpi_context_policy_t {
   void register_field_metadata(const field_id_t fid,
     const coloring_info_t & coloring_info,
     const index_coloring_t & index_coloring) {
+#if !defined(FLECSI_USE_AGGCOMM)
     std::map<int, std::vector<int>> compact_origin_lengs;
     std::map<int, std::vector<int>> compact_origin_disps;
 
@@ -307,6 +317,59 @@ struct mpi_context_policy_t {
       MPI_INFO_NULL, MPI_COMM_WORLD, &metadata.win);
 
     field_metadata.insert({fid, metadata});
+#else
+    field_metadata_t metadata;
+    int mpiSize;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
+
+    // FIXME: Do this per index_space instead of per field id
+
+    metadata.shared_indices.resize(mpiSize);
+    metadata.ghost_indices.resize(mpiSize);
+    metadata.ghost_field_sizes.resize(mpiSize);
+    metadata.shared_field_sizes.resize(mpiSize);
+
+    // indices are stored as vectors of pairs, each pair consisting of: starting index, how many consecutive indices
+
+    size_t ghost_cnt = 0;
+
+    for(auto const & ghost : index_coloring.ghost) {
+
+      if(metadata.ghost_indices[ghost.rank].size() == 0 ||
+         ghost_cnt*sizeof(T) != (metadata.ghost_indices[ghost.rank].back()[0]+metadata.ghost_indices[ghost.rank].back()[1]))
+        metadata.ghost_indices[ghost.rank].push_back({ghost_cnt*sizeof(T), sizeof(T)});
+      else
+        metadata.ghost_indices[ghost.rank].back()[1] += sizeof(T);
+      ++ghost_cnt;
+
+    }
+
+    for(auto const & shared : index_coloring.shared) {
+
+      for(auto const & s : shared.shared) {
+
+        if(metadata.shared_indices[s].size() == 0 ||
+           shared.offset*sizeof(T) != (metadata.shared_indices[s].back()[0]+metadata.shared_indices[s].back()[1]))
+
+          metadata.shared_indices[s].push_back({shared.offset*sizeof(T), sizeof(T)});
+
+        else
+
+          metadata.shared_indices[s].back()[1] += sizeof(T);
+
+      }
+
+    }
+
+    for(int rank = 0; rank < mpiSize; ++rank) {
+      for(auto const & ind : metadata.ghost_indices[rank])
+        metadata.ghost_field_sizes[rank] += ind[1];
+      for(auto const & ind : metadata.shared_indices[rank])
+        metadata.shared_field_sizes[rank] += ind[1];
+    }
+
+    field_metadata.insert({fid, metadata});
+#endif
   }
 
   /*!
