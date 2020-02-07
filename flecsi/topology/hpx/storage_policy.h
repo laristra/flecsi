@@ -73,6 +73,7 @@ struct hpx_topology_storage_policy_u {
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
 
+  index_subspaces_t index_subspaces;
   std::array<std::array<partition_index_spaces_t, NUM_DOMS>, num_partitions>
     partition_index_spaces;
 
