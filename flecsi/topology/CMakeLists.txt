@@ -18,66 +18,44 @@
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
-  base.hh
   array_buffer.hh
+  base.hh
   canonical/interface.hh
   canonical/types.hh
   connectivity.hh
+  core.hh
   entity_storage.hh
   index_space.hh
-  utility_types.hh
   internal/global.hh
   internal/index.hh
+  ntree/coloring.hh
+  ntree/geometry.hh
+  ntree/hash_table.hh
   ntree/interface.hh
+  ntree/storage.hh
   ntree/types.hh
   set/interface.hh
   set/types.hh
   structured/interface.hh
   structured/types.hh
+  unstructured/closure_utils.hh
   unstructured/coloring.hh
+  unstructured/coloring_types.hh
+  unstructured/dcrs_utils.hh
   unstructured/definition.hh
+  unstructured/index_coloring.hh
   unstructured/interface.hh
+  unstructured/parallel_definition.hh
   unstructured/partition.hh
   unstructured/simple_definition.hh
   unstructured/storage.hh
   unstructured/types.hh
   unstructured/utils.hh
+  utility_types.hh
 )
 
 set(topology_SOURCES
 )
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-
-  set(topology_HEADERS
-    ${topology_HEADERS}
-  )
-
-  set(topology_SOURCES
-    ${topology_SOURCES}
-  )
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-
-  set(topology_HEADERS
-    ${topology_HEADERS}
-  )
-
-  set(topology_SOURCES
-    ${topology_SOURCES}
-  )
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-
-  set(topology_HEADERS
-    ${topology_HEADERS}
-  )
-
-  set(topology_SOURCES
-    ${topology_SOURCES}
-  )
-
-endif()
 
 #------------------------------------------------------------------------------#
 # Export header list to parent scope.

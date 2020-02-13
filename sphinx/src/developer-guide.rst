@@ -2,8 +2,8 @@
 
    <br />
 
-FleCSI Developer Guide
-======================
+Developer Guide
+===============
 
 .. .. doxygenstruct:: flecsi::control::control
 

@@ -66,9 +66,9 @@ send_to_one() {
       0,
       MPI_COMM_WORLD);
 
+    flog_t::instance().packets().clear();
+  
     if(flog_t::instance().process() == 0) {
-
-      flog_t::instance().packets().clear();
 
       for(size_t p{0}; p < flog_t::instance().processes(); ++p) {
 
@@ -87,9 +87,6 @@ send_to_one() {
 
       delete[] sizes;
       delete[] offsets;
-    }
-    else {
-      flog_t::instance().packets().clear();
     } // if
 
     flog_t::instance().set_serialized();
