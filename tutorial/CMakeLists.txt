@@ -40,9 +40,9 @@ include_directories(${FleCSI_INCLUDE_DIRS})
 # FleCSI-Tutorial library.
 #------------------------------------------------------------------------------#
 
-include(library)
-
-add_library_target(FleCSI-Tutorial support)
+add_library(FleCSI-Tutorial
+  ${CMAKE_SOURCE_DIR}/specialization/dummy/dummy.cc
+)
 
 #------------------------------------------------------------------------------#
 # 1-runtime
@@ -61,7 +61,11 @@ target_link_libraries(flog ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
 
 #------------------------------------------------------------------------------#
-# 2-tasks
+# 2-control
+#------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
+# 3-control
 #------------------------------------------------------------------------------#
 
 #add_executable(trivial 2-tasks/1-trivial.cc)
