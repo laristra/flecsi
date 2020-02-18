@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include "../core.hh"
+#include <flecsi/topology/core.hh>
 
 namespace flecsi {
 namespace topology {

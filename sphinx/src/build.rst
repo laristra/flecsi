@@ -4,7 +4,7 @@
 
 .. _build:
 
-Building FleCSI
+Build & Install
 ===============
 
 FleCSI can be configured to run with different distributed-memory
@@ -27,33 +27,37 @@ options, but is not necessary for a particular build:
   integration tests. If nothing is indicated, there is no specific
   version tested.
 
+* **Boost** |br|
+  We require *program_options* and *stacktrace*. |br|
+  *CI: 1.70.0*
+
 * **C++17 compliant compiler** |br|
   At the current time, FleCSI has been tested with GNU, Clang, and Intel
   C++ compilers. |br|
-  CI: gcc 8.3.0, clang 8.0.1, icpc 19.0.2
+  *CI: gcc 8.3.0, clang 8.0.1, icpc 19.0.2*
 
-* **MPI** |br|
-  If Legion support is enabled, the MPI implementation must have support
-  for *MPI_THREAD_MULTIPLE*. |br|
-  CI: mpich 3.2.1, openmpi 3.1.3
-
-* **Legion** |br|
-  We are currently using the most up-to-date version of the master
-  branch. |br|
-  CI: control_replication branch
+* **Doxygen** |br|
+  Doxygen is only required to build the interface documentation.
 
 * **GASNet** |br|
   GASNet is only required if Legion support is enabled.
 
+* **MPI** |br|
+  If Legion support is enabled, the MPI implementation must have support
+  for *MPI_THREAD_MULTIPLE*. |br|
+  *CI: mpich 3.2.1, openmpi 3.1.3*
+
+* **Legion** |br|
+  We are currently using the most up-to-date version of the master
+  branch. |br|
+  *CI: control_replication branch*
+
+* **parMETIS/METIS** |br|
+  *CI: 4.0.3 (parMETIS), 5.1.0 (METIS)*
+
 * **CMake** |br|
   We currently require CMake version 3.12 or greater.
-
-* **Boost** |br|
-  We require *program_options* and *stacktrace*. |br|
-  CI: 1.70.0
-
-* **Doxygen** |br|
-  Doxygen is only required to build the interface documentation.
+  *CI: 3.12*
 
 * **Sphinx** |br|
   Sphinx is only required to build the web-based documentation. We are
@@ -64,15 +68,13 @@ options, but is not necessary for a particular build:
 * **Python** |br|
   We currently require Python 3.0 or greater.
 
-Spack
-*****
-
 Getting The Code
 ****************
 
 .. note::
 
-  If you are a user and only want to install FleCSI, you can skip this step.  
+  If you are a user and only want to install FleCSI, you can skip this
+  step and use the instructions for installing FleCSI using Spack.
 
 Clone the FleCSI git repository, and create an out-of-source build area
 (FleCSI prohibits in-source builds):
@@ -87,9 +89,9 @@ Clone the FleCSI git repository, and create an out-of-source build area
 Spack
 *****
 
-The preferred method for installing FleCSI is to use the
-`spack <https://github.com/spack/spack>`_ package. Spack is easy to
-install and configure:
+The preferred method for installing FleCSI and its dependencies is to
+use `Spack <https://github.com/spack/spack>`_. Spack is easy
+to install and configure:
 
 .. code-block:: console
 
@@ -114,6 +116,9 @@ For a complete list of versions and variants, type:
 
   $ spack info flecsi
 
+More documentation and information on Spack is available `here
+<https://spack.readthedocs.io/en/latest>`_.
+
 Developers
 **********
 
@@ -134,9 +139,9 @@ repo (before performing the above step):
   $ spack repo add path/to/flecsi/spack-repo
 
 This will prepend a spack repository path to your spack configuration,
-such that the specific branch of FleCSI can override the normal spack
-dependencies to provide whatever features are required for a successful
-build.
+such that the specific branch of FleCSI can override the normal builtin
+spack dependencies to provide whatever features are required for a
+successful build.
 
 Configuration & Build
 *********************
@@ -205,7 +210,6 @@ like:
 
   $ sudo apt install doxygen
   $ sudo apt install python3-pip
-  $ sudo apt install python3-breathe
   $ pip3 install Sphinx
   $ pip3 install recommonmark
   $ pip3 install sphinx_rtd_theme

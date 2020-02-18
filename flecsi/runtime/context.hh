@@ -46,6 +46,7 @@ struct context_t; // supplied by backend
 enum status : int {
   success,
   help,
+  command_line_error,
   error, // add specific error modes
 }; // initialization_codes
 
@@ -180,20 +181,29 @@ struct context {
         .allow_unregistered()
         .run();
 
-    boost::program_options::store(parsed, variables_map_);
-    boost::program_options::notify(variables_map_);
+    try {
+      boost::program_options::store(parsed, variables_map_);
+
+      if(variables_map_.count("help")) {
+        if(process_ == 0) {
+          std::cout << master << std::endl;
+        } // if
+
+        return status::help;
+      } // if
+
+      boost::program_options::notify(variables_map_);
+    }
+    catch(boost::program_options::error & e) {
+      std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED << e.what() << "!!!" << FLOG_COLOR_PLAIN << std::endl << std::endl;
+      std::cerr << master << std::endl;
+      return status::command_line_error;
+    } // try
+
     unrecognized_options_ = boost::program_options::collect_unrecognized(
       parsed.options, boost::program_options::include_positional);
 
     program_options_initialized_ = true;
-
-    if(variables_map_.count("help")) {
-      if(process_ == 0) {
-        std::cout << master << std::endl;
-      } // if
-
-      return status::help;
-    } // if
 
 #if defined(FLECSI_ENABLE_FLOG)
     if(flog_tags_ == "0") {
@@ -308,13 +318,11 @@ struct context {
   std::size_t colors() const;
 #endif
 
-  using top_level_action_t = std::function<int(int, char **)>;
-
   /*!
     Set the top-level action.
    */
 
-  bool register_top_level_action(top_level_action_t tla) {
+  bool register_top_level_action(std::function<int(int, char **)> tla) {
     top_level_action_ = tla;
     return true;
   } // register_top_level_action
@@ -323,7 +331,8 @@ struct context {
     Return the top-level action.
    */
 
-  top_level_action_t & top_level_action() {
+  std::function<int(int, char **)> & top_level_action() {
+    flog_assert(top_level_action_, "you must set the top-level action");
     return top_level_action_;
   } // top_level_action
 
@@ -528,7 +537,7 @@ protected:
   size_t threads_ = std::numeric_limits<size_t>::max();
 
   int exit_status_ = 0;
-  top_level_action_t top_level_action_ = {};
+  std::function<int(int, char **)> top_level_action_ = {};
 
   /*--------------------------------------------------------------------------*
     Reduction data members.

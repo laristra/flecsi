@@ -8,7 +8,7 @@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
 # //       ///  //////   //////  ////////  //
 #
-# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# Copyright (c) 2016, Triad National Security, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
 
@@ -435,8 +435,17 @@ string (REGEX MATCHALL "(^|;)FLECSI_[A-Za-z0-9_]*"
   _matchedVars "${_variableNames}")
 
 foreach(_variableName ${_matchedVars})
+  string(REGEX REPLACE "FLECSI" "FleCSI" _variableName ${_variableName})
   set(FLECSI_CONFIG_CODE
     "${FLECSI_CONFIG_CODE}\nset(${_variableName} \"${${_variableName}}\")")
+endforeach()
+
+string(REGEX MATCHALL "(^|;)FLOG_[A-Za-z0-9_]*"
+  _matchedVars "${_variableNames}")
+
+foreach(_variableName ${_matchedVars})
+  set(FLOG_CONFIG_CODE
+    "${FLOG_CONFIG_CODE}\nset(${_variableName} \"${${_variableName}}\")")
 endforeach()
 
 #------------------------------------------------------------------------------#
@@ -454,6 +463,11 @@ export(PACKAGE FleCSI)
 # Tutorial.
 #------------------------------------------------------------------------------#
 
+include(tutorial)
+
+update_sphinx_tutorial_sources(${CMAKE_SOURCE_DIR}/tutorial
+  ${CMAKE_SOURCE_DIR}/sphinx/src/tutorial/sources)
+
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   option(ENABLE_FLECSI_TUTORIAL
     "Enable library support for the FleCSI tutorial" OFF)
@@ -461,10 +475,6 @@ else()
   option(ENABLE_FLECSI_TUTORIAL
     "Enable library support for the FleCSI tutorial" ON)
 endif()
-
-install(
-  FILES ${PROJECT_SOURCE_DIR}/tutorial/specialization/inputs/simple2d-16x16.msh
-  DESTINATION share/FleCSI-Tut/inputs)
 
 #------------------------------------------------------------------------------#
 # Link necessary libraries.
@@ -602,6 +612,7 @@ summary_info("CMAKE_CXX_FLAGS" "${CMAKE_CXX_FLAGS}")
 summary_info("CMAKE_C_COMPILER" "${CMAKE_C_COMPILER}")
 summary_info("CMAKE_C_FLAGS" "${CMAKE_C_FLAGS}")
 string(APPEND _summary "\n")
+summary_info("FleCSI_VERSION" "${FleCSI_VERSION}")
 summary_info("FLECSI_RUNTIME_MODEL" "${FLECSI_RUNTIME_MODEL}")
 summary_option("ENABLE_FLOG" ${ENABLE_FLOG}
   " (FLOG_STRIP_LEVEL ${FLOG_STRIP_LEVEL})")
