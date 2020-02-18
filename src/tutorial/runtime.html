@@ -1,0 +1,473 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Runtime &mdash; FleCSI HEAD.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/tutorial/runtime.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="User Guide" href="../user-guide.html" />
+    <link rel="prev" title="Tutorial" href="../tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: HEAD.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Build &amp; Install</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#design-philosophy">Design Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tutorial.html#tutorial-examples">Tutorial Examples</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Runtime</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-1-minimal">Example 1: Minimal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example-2-program-options">Example 2: Program Options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example-3-flog-flecsi-logging-utility">Example 3: FLOG (FleCSI Logging Utility)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Contributors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+        
+      <li>Runtime</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/tutorial/runtime.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="runtime">
+<h1>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h1>
+<p>Using FleCSI requires proper initialization and configuration of the
+FleCSI runtime. These examples illustrate some of the basic steps and
+options that are available.</p>
+<div class="section" id="example-1-minimal">
+<h2>Example 1: Minimal<a class="headerlink" href="#example-1-minimal" title="Permalink to this headline">¶</a></h2>
+<p>The core FleCSI runtime has three control points: <em>initialize</em>, <em>start</em>, and
+<em>finalize</em>. These must be invoked by the user’s application code in that
+order.</p>
+<div class="sidebar">
+<p class="sidebar-title">Top-level Action</p>
+<p>The top-level action is a C++ function created and set by the user to
+tell FleCSI what it should do when the start control point is invoked.</p>
+</div>
+<ul class="simple">
+<li><p><strong>initialize</strong> <br />
+This control point spins up the FleCSI runtime, and (optionally) any
+other runtimes on which FleCSI depends.</p></li>
+<li><p><strong>start</strong> <br />
+This control point begins the actual runtime execution that forms the
+bulk of any simulation that is performed using FleCSI. Before invoking
+<em>start</em>, the user must set a top-level action that FleCSI will
+execute.</p></li>
+<li><p><strong>finalize</strong> <br />
+This control point shuts down the FleCSI runtime, and any other
+runtimes that FleCSI itself initialized.</p></li>
+</ul>
+<p>This example demonstrates a minimal use of FleCSI that just executes an
+action to print out <em>Hello World</em>. Code for this example can be found in
+<em>tutorial/1-runtime/1-minimal.cc</em></p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@</span>
+<span class="cm">   /@@/////  /@@          @@////@@ @@////// /@@</span>
+<span class="cm">   /@@       /@@  @@@@@  @@    // /@@       /@@</span>
+<span class="cm">   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@</span>
+<span class="cm">   /@@////   /@@/@@@@@@@/@@       ////////@@/@@</span>
+<span class="cm">   /@@       /@@/@@//// //@@    @@       /@@/@@</span>
+<span class="cm">   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@</span>
+<span class="cm">   //       ///  //////   //////  ////////  //</span>
+<span class="cm">   Copyright (c) 2016, Triad National Security, LLC</span>
+<span class="cm">   All rights reserved.</span>
+<span class="cm">                                                                              */</span>
+<span class="cp">#include</span> <span class="cpf">&lt;flecsi/execution.hh&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;flecsi/utils/flog.hh&gt;</span><span class="cp"></span>
+<span class="cm">/*</span>
+<span class="cm">  The top-level action can be any C/C++ function that takes (int, char**) and</span>
+<span class="cm">  returns an int.</span>
+<span class="cm">  In this simple example, we only print a message to indicate that the</span>
+<span class="cm">  top-level action was actually executed by FleCSI. However, in a real</span>
+<span class="cm">  application, the top-level action would execute FleCSI tasks and other</span>
+<span class="cm">  functions to implement the simulation.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span> <span class="nf">top_level_action</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Hello World&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
+  <span class="k">return</span> <span class="mi">0</span>
+<span class="p">}</span> <span class="c1">// top_level_action</span>
+<span class="cm">/*</span>
+<span class="cm">  This statement shows how to register a function as the top-level action that</span>
+<span class="cm">  will be executed by FleCSI when start is invoked.</span>
+<span class="cm"> */</span>
+<span class="kr">inline</span> <span class="kt">bool</span> <span class="n">top_level_action_registered</span> <span class="o">=</span>
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">register_top_level_action</span><span class="p">(</span><span class="n">top_level_action</span><span class="p">)</span>
+<span class="cm">/*</span>
+<span class="cm">  The main function must invoke initialize, start, and finalize on the FleCSI</span>
+<span class="cm">  runtime. Otherwise, the implementation of main is left to the user.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">)</span>
+  <span class="cm">/*</span>
+<span class="cm">    The status returned by FleCSI&#39;s initialize method should be inspected to</span>
+<span class="cm">    see if the end-user specified --help on the command line. FleCSI has</span>
+<span class="cm">    built-in command-line support using Boost Program Options. This is</span>
+<span class="cm">    documented in the next example.</span>
+<span class="cm">   */</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">()</span>
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">status</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The top-level action can be any C/C++ function that takes (int,
+char**) and returns an int.  In this simple example, we only print a
+message to indicate that the top-level action was actually executed
+by FleCSI. However, in a real application, the top-level action
+would execute FleCSI tasks and other functions to implement the
+simulation.</p></li>
+<li><p>The main function must invoke initialize, start, and finalize on the
+FleCSI runtime. Otherwise, the implementation of main is left to the
+user.</p></li>
+<li><p>The status returned by FleCSI’s initialize method should be
+inspected to see if the end-user specified –help on the command
+line. FleCSI has built-in command-line support using Boost Program
+Options. This is documented in the next example.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="example-2-program-options">
+<h2>Example 2: Program Options<a class="headerlink" href="#example-2-program-options" title="Permalink to this headline">¶</a></h2>
+<p>FleCSI supports a program options capability based on <a class="reference external" href="https://www.boost.org/doc/libs/1_63_0/doc/html/program_options.html">Boost Program
+Options</a> to simplify the creation and management of user-defined
+command-line options. The basic syntax for adding and accessing program
+options is similar to the Boost interface (You can find documentation
+using the above link.)  However, FleCSI makes it easier for applications
+to add options by removing restrictions on where they may be defined.</p>
+<p>This example extends the previous example to add some command-line
+options.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@</span>
+<span class="cm">   /@@/////  /@@          @@////@@ @@////// /@@</span>
+<span class="cm">   /@@       /@@  @@@@@  @@    // /@@       /@@</span>
+<span class="cm">   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@</span>
+<span class="cm">   /@@////   /@@/@@@@@@@/@@       ////////@@/@@</span>
+<span class="cm">   /@@       /@@/@@//// //@@    @@       /@@/@@</span>
+<span class="cm">   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@</span>
+<span class="cm">   //       ///  //////   //////  ////////  //</span>
+<span class="cm">   Copyright (c) 2016, Triad National Security, LLC</span>
+<span class="cm">   All rights reserved.</span>
+<span class="cm">                                                                              */</span>
+<span class="cp">#include</span> <span class="cpf">&lt;flecsi/execution.hh&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;flecsi/utils/flog.hh&gt;</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">top_level_action</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Hello World&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
+  <span class="k">return</span> <span class="mi">0</span>
+<span class="p">}</span> <span class="c1">// top_level_action</span>
+<span class="kr">inline</span> <span class="kt">bool</span> <span class="n">top_level_action_registered</span> <span class="o">=</span>
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">context_t</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">register_top_level_action</span><span class="p">(</span>
+  <span class="n">top_level_action</span><span class="p">)</span>
+<span class="cm">/*</span>
+<span class="cm">  Add an optional command-line option with a default value of &#39;1&#39;. The option</span>
+<span class="cm">  will have a long form --level, and a short form -l. The option will be added</span>
+<span class="cm">  under the &quot;Example Options&quot; section.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span> <span class="n">optimization_level</span>
+<span class="k">auto</span> <span class="n">registered_opt</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">add_program_option</span><span class="p">(</span><span class="s">&quot;Example Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;level,l&quot;</span><span class="p">,</span>
+  <span class="n">boost</span><span class="o">::</span><span class="n">program_options</span><span class="o">::</span><span class="n">value</span><span class="p">(</span><span class="o">&amp;</span><span class="n">optimization_level</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">default_value</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+  <span class="s">&quot;Specify the optimization level.&quot;</span><span class="p">)</span>
+<span class="cm">/*</span>
+<span class="cm">  Add a required option.</span>
+<span class="cm"> */</span>
+<span class="k">auto</span> <span class="n">registered_req</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">add_program_option</span><span class="p">(</span><span class="s">&quot;Example Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;required,r&quot;</span><span class="p">,</span>
+  <span class="n">boost</span><span class="o">::</span><span class="n">program_options</span><span class="o">::</span><span class="n">value</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">required</span><span class="p">(),</span>
+  <span class="s">&quot;Specify a required options.&quot;</span><span class="p">)</span>
+<span class="cm">/*</span>
+<span class="cm">  User-defined program options are available after FleCSI initialize has been</span>
+<span class="cm">  invoked.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">)</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+  <span class="cm">/*</span>
+<span class="cm">    The FleCSI initialize method handles command-line parsing and error</span>
+<span class="cm">    checking. It also provides a help option that will print a usage message.</span>
+<span class="cm">    This statement gets a map of the user-specified command-line options and</span>
+<span class="cm">    their values (where defined).</span>
+<span class="cm">   */</span>
+  <span class="k">auto</span> <span class="n">vm</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">program_options_variables_map</span><span class="p">()</span>
+  <span class="cm">/*</span>
+<span class="cm">    Print the optimization level that was passed as a reference to Boost.</span>
+<span class="cm">   */</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Optimization level: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">optimization_level</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
+  <span class="cm">/*</span>
+<span class="cm">    Print the required value.</span>
+<span class="cm">   */</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Required value: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">vm</span><span class="p">[</span><span class="s">&quot;required&quot;</span><span class="p">].</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">()</span>
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">status</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-3-flog-flecsi-logging-utility">
+<h2>Example 3: FLOG (FleCSI Logging Utility)<a class="headerlink" href="#example-3-flog-flecsi-logging-utility" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@</span>
+<span class="cm">   /@@/////  /@@          @@////@@ @@////// /@@</span>
+<span class="cm">   /@@       /@@  @@@@@  @@    // /@@       /@@</span>
+<span class="cm">   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@</span>
+<span class="cm">   /@@////   /@@/@@@@@@@/@@       ////////@@/@@</span>
+<span class="cm">   /@@       /@@/@@//// //@@    @@       /@@/@@</span>
+<span class="cm">   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@</span>
+<span class="cm">   //       ///  //////   //////  ////////  //</span>
+<span class="cm">   Copyright (c) 2016, Triad National Security, LLC</span>
+<span class="cm">   All rights reserved.</span>
+<span class="cm">                                                                              */</span>
+<span class="cp">#include</span> <span class="cpf">&lt;flecsi/execution.hh&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;flecsi/utils/flog.hh&gt;</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">top_level_action</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">flog</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Hello World&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
+  <span class="k">return</span> <span class="mi">0</span>
+<span class="p">}</span> <span class="c1">// top_level_action</span>
+<span class="kr">inline</span> <span class="kt">bool</span> <span class="n">top_level_action_registered</span> <span class="o">=</span>
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">register_top_level_action</span><span class="p">(</span><span class="n">top_level_action</span><span class="p">)</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">)</span>
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">flog</span><span class="o">::</span><span class="n">flog_t</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">config_stream</span><span class="p">().</span><span class="n">add_buffer</span><span class="p">(</span>
+    <span class="s">&quot;flog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">)</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">()</span>
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">status</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../user-guide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../tutorial.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Contents caption */
+    .wy-menu-vertical>p.caption {
+      color: #ffffff;
+    }
+
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+
+    /* Sidebar */
+    .wy-nav-side {
+      background: #216897;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

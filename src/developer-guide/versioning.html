@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Branch Naming Conventions &mdash; FleCSI devel-2.3.gd15eda8a7 documentation</title>
+  <title>Versioning &mdash; FleCSI HEAD.0.0 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: devel-2.3.gd15eda8a7
+                Version: HEAD.0.0
               </div>
             
           
@@ -93,23 +93,15 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../build.html">Building FleCSI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">FleCSI Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">FleCSI User Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../developer-guide.html">FleCSI Developer Guide</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Build &amp; Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer-guide.html">Developer Guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="style-guide.html">Style Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="patterns.html">FleCSI Design Patterns</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Branch Naming Conventions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#feature-branches">Feature Branches</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#creating">Creating</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#merging">Merging</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#release-branches">Release Branches</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Creating</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#finishing">Finishing</a></li>
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Versioning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#branche-types">Branche Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="execution.html">Task Invocation</a></li>
@@ -120,8 +112,8 @@
 <li class="toctree-l2"><a class="reference internal" href="topology.html#topology-initialization-workflow">Topology Initialization Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen">FleCSI API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../team.html">FleCSI Contributors</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Contributors</a></li>
 </ul>
 
             
@@ -167,9 +159,9 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../developer-guide.html">FleCSI Developer Guide</a> &raquo;</li>
+          <li><a href="../developer-guide.html">Developer Guide</a> &raquo;</li>
         
-      <li>Branch Naming Conventions</li>
+      <li>Versioning</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -188,179 +180,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="branch-naming-conventions">
-<h1>Branch Naming Conventions<a class="headerlink" href="#branch-naming-conventions" title="Permalink to this headline">¶</a></h1>
-<p>The <em>master</em> branch is the primary development branch for the
-proejct. Commits to master require that continuous integration tests
-pass before they may be merged.</p>
-<p>Please use the following naming conventions when creating branches:</p>
-<ul>
-<li><p><strong>release</strong>/<em>major.minor</em> <br />
-The <em>release</em> prefix is reserved for supported release
-branches. Actual releases and pre-releases will be identified using
-tags.</p>
-<p>Tagging conventions for the release branch:</p>
+  <div class="section" id="versioning">
+<h1>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h1>
+<p>Blah blah blah</p>
+<div class="section" id="branche-types">
+<h2>Branche Types<a class="headerlink" href="#branche-types" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Patch numbers for a release will be specified in the tag, such
-that a given release will have the form <em>major.minor.patch</em>.</p></li>
-<li><p>Alpha, Beta, or Release Candidates <br />
-Any pre-release version should include the name of the pre-release,
-e.g., alpha, beta or rc, and the version of the pre-release at the
-end of the normal release version. Here are some examples:</p>
-<ul>
-<li><p>Release candidate 2 of release 1.0.0 would be <em>1.0.0-rc.2</em>.</p></li>
-<li><p>Alpha release 1 of release 1.0.0 would be <em>1.0.0-alpha.1</em>.</p></li>
+<li><p><strong>incompatible</strong> <br />
+The <em>devel</em> branch is where work on the next major release takes
+place, potentially with interface and feature changes that are
+<em>incompatible</em> with previous versions.</p></li>
+<li><p><strong>feature</strong> <br />
+Feature branches (named for their <em>major</em> version number, e.g., 1, 2,
+3) are for feature development on the current major version.</p></li>
+<li><p><strong>release</strong> <br />
+Release branches (named for their <em>major.minor</em> version number, e.g.,
+1.1, 1.2) are stable versions of the code base. These can only be
+modified with bug fixes. At appropriate points, tags (named for their
+<em>major.minor.patch</em> version number, e.g., 1.1.2) are used to identify
+patched versions.</p></li>
 </ul>
-</li>
-<li><p>Must branch from: <strong>master</strong></p></li>
-</ul>
-</li>
-<li><p><strong>stable</strong>/<em>branch_name</em> <br />
-A <em>stable</em> branch is a development or feature branch that is
-guaranteed to build and pass the FleCSI continuous integration test
-suite, but one which incorporates new features or capabilities that
-are not available in a release branch. This label should not be used
-for a branch that is intended to become a release candidate (Use
-<em>release</em> instead.)</p></li>
-<li><p><strong>feature/username</strong>/<em>branch_name</em> or <strong>feature</strong>/<em>branch_name</em> <br />
-A <em>feature</em> branch is where new development is done. However, master
-should be merged periodically into a feature branch. If the branch is
-to primarily be developed by an individual, it should include the
-<em>username</em> as part of the branch.</p>
-<ul class="simple">
-<li><p>Must branch from: <strong>master</strong></p></li>
-<li><p>Must merge to: <strong>master</strong></p></li>
-</ul>
-</li>
-<li><p><strong>fix</strong>/<em>reference</em> <br />
-Bug-fix branches should use the <em>fix</em> prefix, and should include
-a reference number or name, e.g., issue number or the related release
-tag.</p>
-<ul class="simple">
-<li><p>Must branch from: <strong>release branch</strong></p></li>
-<li><p>Must merge to: <strong>master *and* release branch</strong></p></li>
-</ul>
-</li>
-</ul>
-<p># Managing Branches
-Please use the following sections as a guide to creating and managing
-branches.</p>
-<div class="section" id="feature-branches">
-<h2>Feature Branches<a class="headerlink" href="#feature-branches" title="Permalink to this headline">¶</a></h2>
-<p>All new development is done on a feature branch.</p>
-<div class="section" id="creating">
-<h3>Creating<a class="headerlink" href="#creating" title="Permalink to this headline">¶</a></h3>
-<p>To create a new feature branch:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> Make sure that you are up-to-date on the master branch
-<span class="gp">$</span> git checkout master
-<span class="gp">$</span> git pull
-
-<span class="gp">#</span> If the project uses submodules you should also make sure
-<span class="gp">#</span> that they are up-to-date
-<span class="gp">$</span> git submodule update --recursive
-
-<span class="gp">#</span> Create a new feature branch
-<span class="gp">$</span> git checkout -b feature/name
-</pre></div>
-</div>
-<p>Once you make a change to your feature branch, you can push it to the
-remote–<strong>after considering classification and export control
-implications</strong>–using the following:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git push --set-upstream origin feature/name</span>
-</pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>At the time of writing, FleCSI has the following branches:</p>
+<p><strong>devel</strong> (incompatible) <br />
+<strong>1</strong> (feature) <br />
+<strong>1.4</strong> (release)</p>
 </div>
 </div>
-<div class="section" id="merging">
-<h3>Merging<a class="headerlink" href="#merging" title="Permalink to this headline">¶</a></h3>
-<p>When you are done developing a feature, you should merge your feature
-branch with master using the <em>no fast-forward (–no-ff)</em> flag to git:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> Make sure that you are up-to-date on the master branch
-<span class="gp">$</span> git checkout master
-<span class="gp">$</span> git pull
-
-<span class="gp">#</span> Merge your branch into master
-<span class="gp">$</span> git merge --no-ff feature/name
-</pre></div>
-</div>
-<p>The <em>–no-ff</em> flag preserves information about the existence of the
-feature branch after it is removed.</p>
-<p>After you have merged your changes into <strong>master</strong>, you should submit a
-pull request. This can be done on the [github
-website](<a class="reference external" href="https://github.com/laristra">https://github.com/laristra</a>).</p>
-<p>Once the pull request has been accepted, you can safetly remove the
-feature branch:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> Remove the <span class="nb">local</span> branch
-<span class="gp">$</span> git branch -d feature/name
-
-<span class="gp">#</span> Remove the remote branch
-<span class="gp">$</span> git push origin --delete feature/name
-</pre></div>
-</div>
-<p>After the feature branch is removed, it will no longer appear in the
-commit messages for the project. However, because we used <em>–no-ff</em>, the
-structure of the branch will be retained, e.g., try <em>git log –graph</em>.
-The name of the branch will also appear in the message at the merge
-point, provided that you used the default message provided by git.</p>
-</div>
-</div>
-<div class="section" id="release-branches">
-<h2>Release Branches<a class="headerlink" href="#release-branches" title="Permalink to this headline">¶</a></h2>
-<p>A release branch is used to prepare and maintain supported releases.</p>
-<div class="section" id="id1">
-<h3>Creating<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>Creating a release branch is similar to creating a feature branch,
-except that the naming convention for release branches is more
-restrictive, i.e., the branch name must have the form
-<em>release/major.minor</em>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> Make sure that you are up-to-date on the master branch
-<span class="gp">$</span> git checkout master
-<span class="gp">$</span> git pull
-
-<span class="gp">#</span> If the project uses submodules you should also make sure
-<span class="gp">#</span> that they are up-to-date
-<span class="gp">$</span> git submodule update --recursive
-
-<span class="gp">#</span> Create a new release branch
-<span class="gp">$</span> git checkout -b release/major.minor
-</pre></div>
-</div>
-</div>
-<div class="section" id="finishing">
-<h3>Finishing<a class="headerlink" href="#finishing" title="Permalink to this headline">¶</a></h3>
-<p><strong>Properly completing work on a release branch in preparation for a
-supported release requires a combination of command-line and server-side
-operations. These instructions assume that the server is GitHub. These
-directions also assume that you have completed a *CHANGELOG* of the
-changes for the new release.</strong></p>
-<p>1. When you are ready to create an actual release on a release branch, you
-need to create an annotated tag with the release version:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git tag -a -m <span class="s2">&quot;Release major.minor.patch&quot;</span> major.minor.patch
-</pre></div>
-</div>
-<p>The <em>major.minor</em> part of the version must be consistent with the branch
-name. The patch level should be sequential, and should use the next
-integer value from the last tag on the branch, e.g.:</p>
-<ul class="simple">
-<li><p>1.0: Initial release tag</p></li>
-<li><p>1.0.1: First patch tag</p></li>
-<li><p>1.0.2: Second patch tag</p></li>
-</ul>
-<p><em>Tags should be consistent with the branch name, but they are unrelated
-to the number of commits on the branch.</em></p>
-<p>2. Once you have created the tag, you should go to the GitHub project site,
-and click on the <em>releases</em> link. This will take you to the release page
-for the project.</p>
-<p>3. Next, you should click on the <em>Draft a new release</em> button. This will
-bring up a page with several edit fields.</p>
-<p>4. In the <em>Tag version</em> edit field, enter the tag that you created in the
-previous steps.</p>
-<p>5. Create a release title of the form <em>Release major.minor.patch</em> (<em>patch</em>
-should only be used when appropriate.)</p>
-<p>6. Cut and paste the information from your <em>CHANGELOG</em> file into the
-<em>Describe this release</em> field, and make any other changes or additions
-that are appropriate.</p>
-<p>7. Once you have completed filling out the information, press the <em>Publish
-release</em> button.</p>
+<div class="section" id="workflow">
+<h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<p>FleCSI development uses a <em>devel -&gt; feature -&gt; release</em> forking workflow
+that can be visualized as in <a class="reference internal" href="#branch"><span class="std std-numref">Fig. 2</span></a>. Bugfixes and features can
+be back-merged into <em>feature</em> or <em>devel</em>, as appropriate.</p>
+<div class="figure align-default" id="id1">
+<span id="branch"></span><img alt="../../_images/branch.png" src="../../_images/branch.png" />
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Workflow diagram illustrating basic workflow using the three branch
+types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FleCSI Tutorial &mdash; FleCSI devel-2.3.gd15eda8a7 documentation</title>
+  <title>Tutorial &mdash; FleCSI HEAD.0.0 documentation</title>
   
 
   
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Building the Examples" href="tutorial/flecsit.html" />
+    <link rel="next" title="Runtime" href="tutorial/runtime.html" />
     <link rel="prev" title="CMake Configuration Options" href="build/options.html" /> 
 </head>
 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: devel-2.3.gd15eda8a7
+                Version: HEAD.0.0
               </div>
             
           
@@ -93,31 +93,21 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="build.html">Building FleCSI</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">FleCSI Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#flecsi-design-philosophy">FleCSI Design Philosophy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#admonishment">Admonishment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="build.html">Build &amp; Install</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#design-philosophy">Design Philosophy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-docker-container">Using the Docker Container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tutorial-examples">Tutorial Examples</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/flecsit.html">Building the Examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/specialization.html">Specialization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/driver.html">Example 1: Driver</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/tasks.html">Example 2: Tasks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/index-spaces.html">Example 3: Index Spaces</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/fields.html">Example 4: Fields</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/dense.html">Example 5: Dense Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/sparse.html">Example 6: Sparse Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/ragged.html">Example 7: Ragged Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/mpi-interoperability.html">Example 8: MPI Interoperability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html">Runtime</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="user-guide.html">FleCSI User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide.html">FleCSI Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="http://flecsi.org/doxygen">FleCSI API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="team.html">FleCSI Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Contributors</a></li>
 </ul>
 
             
@@ -163,7 +153,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>FleCSI Tutorial</li>
+      <li>Tutorial</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -182,15 +172,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="flecsi-tutorial">
-<h1>FleCSI Tutorial<a class="headerlink" href="#flecsi-tutorial" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial attempts to give a basic overview of the design philosophy
 and structure of the FleCSI programming system. Each subdirectory
-contains an example code that can be compiled with the <em>flecsit</em>
-compiler script. More details on how to do this are given below in the
-<em>Getting Started</em> section.</p>
-<div class="section" id="flecsi-design-philosophy">
-<h2>FleCSI Design Philosophy<a class="headerlink" href="#flecsi-design-philosophy" title="Permalink to this headline">¶</a></h2>
+contains example codes that can be compiled with the CMake. More details
+on how to do this are given below in the <em>Getting Started</em> section.</p>
+<div class="section" id="design-philosophy">
+<h2>Design Philosophy<a class="headerlink" href="#design-philosophy" title="Permalink to this headline">¶</a></h2>
 <p>The structure of applications built on top of the FleCSI programming
 system assumes three basic types of users. Each of the user types has
 their own set of responsibilities that are designed to separate
@@ -198,14 +187,14 @@ concerns, and to make sure that development tasks are intuitive and
 achievable by the associated user type.</p>
 <p>The user types are:</p>
 <ul class="simple">
-<li><p><strong>FleCSI Core Developer</strong> <br />
+<li><p><strong>Core Developer</strong> <br />
 These are users who design, implement, and maintain the core FleCSI
 library. Generally, these users are expert C++ developers who have a
 well-developed understanding of the the low-level design of the FleCSI
 software architecture. These users are generally computer scientists
 with expertise in generic programming techniques, data structure
 design, and optimization.</p></li>
-<li><p><strong>FleCSI Specialization Developer</strong> <br />
+<li><p><strong>Specialization Developer</strong> <br />
 These are users who adapt the core FleCSI data structures and runtime
 interfaces to create domain-specific interfaces for application
 developers.  These users are required to understand the components of
@@ -215,7 +204,7 @@ specialization developers are assumed to understand the requirements
 of the application area for which they are designing an interface.
 These users are generally computational scientists with expertise in
 one or more numerical methods areas.</p></li>
-<li><p><strong>FleCSI Application Developer</strong> <br />
+<li><p><strong>Application Developer</strong> <br />
 These users are methods developers or physicists who use a particular
 FleCSI specialization layer to develop and maintain application codes.
 These are the FleCSI end-users, who have expertise in designing and
@@ -228,25 +217,27 @@ will use one or more specializations (These will usually also be
 libraries that are linked to by the application.); and, The application
 developers will use the core and specialization interfaces to write
 their applications.</p>
-</div>
-<div class="section" id="admonishment">
-<h2>Admonishment<a class="headerlink" href="#admonishment" title="Permalink to this headline">¶</a></h2>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
 <p>This tutorial is primarily designed as an introduction for application
 developers, i.e., we do not go into the details of designing or
-implementing the specialization layer, and the discussion of core FleCSI
-features is limited to the high-level execution and data interfaces.</p>
+implementing the specialization layer, and the discussion of core
+FleCSI features is limited to the high-level execution and data
+interfaces.</p>
 <p>Because a specialization layer is necessary to use FleCSI, we have
-provided a simple mesh interface as part of the tutorial. Users who are
-interested in the basic structure of a mesh_topology specialization are
-encouraged to examine the source code in the <em>specialization</em>
-subdirectory of this tutorial (The complete source code is in the
-<em>flecsi/tutorial/specialization</em> subdirectory of the main project.)</p>
+provided a simple mesh interface as part of the tutorial. Users who
+are interested in the basic structure of a mesh_topology
+specialization are encouraged to examine the source code in the
+<em>specialization</em> subdirectory of this tutorial (The complete source
+code is in the <em>flecsi/tutorial/specialization</em> subdirectory of the
+main project.)</p>
+</div>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>This tutorial assumes that you have successfully downloaded and built
-FleCSI, and that you have installed it somewhere on your system.
-Instructions for building FleCSI are available here: <a class="reference internal" href="build.html#build"><span class="std std-ref">Building FleCSI</span></a></p>
+<p>This tutorial assumes that you have successfully installed FleCSI
+somewhere on your system. Instructions for different install methods are
+available here: <a class="reference internal" href="build.html#build"><span class="std std-ref">Build &amp; Install</span></a></p>
 </div>
 <div class="section" id="using-the-docker-container">
 <h2>Using the Docker Container<a class="headerlink" href="#using-the-docker-container" title="Permalink to this headline">¶</a></h2>
@@ -280,25 +271,12 @@ backend. To pull the legion backend image do:</p>
 more advanced FleCSI concepts.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/flecsit.html">Building the Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/specialization.html">Specialization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/topologies.html">FleCSI Topologies</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/topologies/unstructured.html">Topology: Unstructured Mesh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/topologies/structured.html">Topology: Structured Mesh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/topologies/octree.html">Topology: Octree</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/topologies/set.html">Topology: Set</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/runtime.html">Runtime</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/runtime.html#example-1-minimal">Example 1: Minimal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/runtime.html#example-2-program-options">Example 2: Program Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/runtime.html#example-3-flog-flecsi-logging-utility">Example 3: FLOG (FleCSI Logging Utility)</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/driver.html">Example 1: Driver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/tasks.html">Example 2: Tasks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/index-spaces.html">Example 3: Index Spaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/fields.html">Example 4: Fields</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/dense.html">Example 5: Dense Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/sparse.html">Example 6: Sparse Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/ragged.html">Example 7: Ragged Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/mpi-interoperability.html">Example 8: MPI Interoperability</a></li>
 </ul>
 </div>
 </div>
@@ -312,7 +290,7 @@ more advanced FleCSI concepts.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tutorial/flecsit.html" class="btn btn-neutral float-right" title="Building the Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tutorial/runtime.html" class="btn btn-neutral float-right" title="Runtime" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="build/options.html" class="btn btn-neutral float-left" title="CMake Configuration Options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

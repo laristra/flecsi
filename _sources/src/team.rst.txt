@@ -6,8 +6,8 @@
 
    <hr style="clear:both;">
 
-FleCSI Contributors
-===================
+Contributors
+============
 
 Ben Bergen
 **********

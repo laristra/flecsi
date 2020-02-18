@@ -2,8 +2,8 @@
 
    <br />
 
-FleCSI User Guide
-=================
+User Guide
+==========
 
 .. toctree::
   :caption: User Guide:
