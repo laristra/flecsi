@@ -48,17 +48,17 @@ struct field_reference_t {
   using topology_t = topology_slot<Topo>;
 
   field_reference_t(const field_info_t & info, const topology_t & topology)
-    : info_(&info), topology_(&topology) {}
+    : fid_(info.fid), topology_(&topology) {}
 
-  const field_info_t & info() const {
-    return *info_;
+  field_id_t fid() const {
+    return fid_;
   }
   const topology_t & topology() const {
     return *topology_;
   } // topology_identifier
 
 private:
-  const field_info_t * info_;
+  field_id_t fid_;
   const topology_t * topology_;
 
 }; // struct field_reference

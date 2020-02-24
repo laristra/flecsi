@@ -557,7 +557,7 @@ struct legion_policy_t {
   //----------------------------------------------------------------------------//
   void checkpoint_index_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
-    const size_t fid = fh.info().fid;
+    const size_t fid = fh.fid();
     auto & index_runtime_data = fh.topology().get();
 
     {
@@ -611,7 +611,7 @@ struct legion_policy_t {
   //----------------------------------------------------------------------------//
   void recover_index_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
-    const size_t fid = fh.info().fid;
+    const size_t fid = fh.fid();
     auto & index_runtime_data = fh.topology().get();
 
     {
