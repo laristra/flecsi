@@ -162,34 +162,35 @@ public:
   //-----------------------------------------------------------------//
   //! Get the to id's vector.
   //-----------------------------------------------------------------//
+  auto & get_entities() {
+    return index_space_.id_storage();
+  }
   const auto & get_entities() const {
     return index_space_.id_storage();
   }
-  //-----------------------------------------------------------------//
-  //! Get the entities of the specified from index.
-  //-----------------------------------------------------------------//
-  id_t * get_entities(size_t index) {
-    assert(index < offsets_.size());
-    return index_space_.id_array() + offsets_[index].start();
-  }
 
-  //-----------------------------------------------------------------//
-  //! Get the entities of the specified from index and return the count.
-  //-----------------------------------------------------------------//
-  id_t * get_entities(size_t index, size_t & count) {
+private:
+  template<class C>
+  auto get(C & c, std::size_t index) const {
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
-    count = o.count();
-    return index_space_.id_array() + o.start();
+    return utils::span(c.data() + o.start(), o.count());
   }
 
+public:
   //-----------------------------------------------------------------//
-  //! Get the entities of the specified from index and return the count.
+  //! Get the range of entities of the specified from index.
   //-----------------------------------------------------------------//
-  auto get_entity_vec(size_t index) const {
-    assert(index < offsets_.size());
-    offset_t o = offsets_[index];
-    return utils::span(index_space_.id_array() + o.start(), o.count());
+  auto get_entities(std::size_t i) {
+    return get(get_entities(), i);
+  }
+  auto get_entities(std::size_t i) const {
+    return get(get_entities(), i);
+  }
+
+  /// Get entities as a vector.
+  auto get_entities_vec(std::size_t i) const {
+    return to_vector(get_entities(i));
   }
 
   //-----------------------------------------------------------------//

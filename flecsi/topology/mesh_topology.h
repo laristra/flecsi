@@ -1502,18 +1502,17 @@ private:
     // do the final sort of the connectivity arrays
     for(auto from_id : entity_ids<FROM_DIM, FROM_DOM>()) {
       // get the connectivity array
-      size_t count;
-      auto conn = out_conn.get_entities(from_id.entity(), count);
+      const auto conn = out_conn.get_entities(from_id.entity());
       // pack it into a list of id and global id pairs
-      std::vector<std::pair<size_t, id_t>> gids(count);
-      std::transform(conn, conn + count, gids.begin(), [&](auto id) {
+      std::vector<std::pair<std::size_t, id_t>> gids(conn.size());
+      std::transform(conn.begin(), conn.end(), gids.begin(), [&](auto id) {
         return std::make_pair(to_cis_to_gis.at(id.entity()), id);
       });
       // sort via global id
       std::sort(gids.begin(), gids.end(),
         [](auto a, auto b) { return a.first < b.first; });
       // upack the results
-      std::transform(gids.begin(), gids.end(), conn,
+      std::transform(gids.begin(), gids.end(), conn.begin(),
         [](auto id_pair) { return id_pair.second; });
     }
   } // transpose
@@ -1573,11 +1572,8 @@ private:
       id_vector_t & ents = conns[from_id.entity()];
       ents.reserve(max_size);
 
-      size_t count;
-      id_t * ep = c.get_entities(from_id.entity(), count);
-
       // Create a copy of to vertices so they can be sorted
-      id_vector_t from_verts(ep, ep + count);
+      auto from_verts = c.get_entities_vec(from_id.entity());
       // sort so we have a unique key for from vertices
       std::sort(from_verts.begin(), from_verts.end());
 
@@ -1606,11 +1602,8 @@ private:
             } // if
           }
           else {
-            size_t count;
-            id_t * ep = c2.get_entities(to_id.entity(), count);
-
             // Create a copy of to vertices so they can be sorted
-            id_vector_t to_verts(ep, ep + count);
+            auto to_verts = c2.get_entities_vec(to_id.entity());
             // Sort to verts so we can do an inclusion check
             std::sort(to_verts.begin(), to_verts.end());
 
