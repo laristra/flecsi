@@ -121,21 +121,21 @@ struct find_set_index_space_u<0, TUPLE, ENTITY> {
   }
 };
 
-template<size_t INDEX, class TUPLE, class FLECSI_MAP_TYPE>
+template<size_t INDEX, class TUPLE, class MapType>
 struct map_set_index_spaces_u {
-  static constexpr size_t map(FLECSI_MAP_TYPE & m) {
+  static constexpr size_t map(MapType & m) {
     using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
     using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
 
     m[INDEX_SPACE::value] = INDEX - 1;
 
-    return map_set_index_spaces_u<INDEX - 1, TUPLE, FLECSI_MAP_TYPE>::map(m);
+    return map_set_index_spaces_u<INDEX - 1, TUPLE, MapType>::map(m);
   }
 };
 
-template<class TUPLE, class FLECSI_MAP_TYPE>
-struct map_set_index_spaces_u<0, TUPLE, FLECSI_MAP_TYPE> {
-  static constexpr size_t map(FLECSI_MAP_TYPE & m) {
+template<class TUPLE, class MapType>
+struct map_set_index_spaces_u<0, TUPLE, MapType> {
+  static constexpr size_t map(MapType & m) {
     return 0;
   }
 };
