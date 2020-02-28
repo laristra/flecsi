@@ -452,9 +452,8 @@ struct topology_registration<flecsi::topology::structured<POLICY_TYPE>> {
 
   using TOPOLOGY_TYPE = flecsi::topology::structured<POLICY_TYPE>;
 
-  static bool register_fields() {
+  static void register_fields() {
     flog(info) << "topology_registration::register_fields()" << std::endl;
-    return true;
   } // register_fields
 
 }; // class topology_registration
@@ -468,9 +467,8 @@ struct topology_registration<flecsi::topology::ntree<POLICY_TYPE>> {
 
   using TOPOLOGY_TYPE = flecsi::topology::ntree<POLICY_TYPE>;
 
-  static bool register_fields() {
+  static void register_fields() {
     flog(info) << "topology_registration::register_fields()" << std::endl;
-    return true;
   } // register_fields
 
 }; // class topology_registration
@@ -484,9 +482,8 @@ struct topology_registration<topology::canonical<POLICY_TYPE>> {
 
   using TOPOLOGY_TYPE = topology::canonical<POLICY_TYPE>;
 
-  static bool register_fields() {
+  static void register_fields() {
     flog(info) << "topology_registration::register_fields()" << std::endl;
-    return true;
   } // register_fields
 
 }; // class topology_registration
@@ -505,9 +502,7 @@ struct topology_registration<topology::global> {
 
   using TOPOLOGY_TYPE = topology::global;
 
-  static bool register_fields() {
-    return true;
-  } // register_fields
+  static void register_fields() {} // register_fields
 
 }; // class topology_registration
 
@@ -524,9 +519,7 @@ struct topology_registration<topology::index> {
 
   using TOPOLOGY_TYPE = topology::index;
 
-  static bool register_fields() {
-    return true;
-  } // register_fields
+  static void register_fields() {} // register_fields
 
 }; // class topology_registration
 
