@@ -48,6 +48,19 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
+
+  set(execution_HEADERS
+    ${execution_HEADERS}
+    charm/bind_accessors.hh
+    charm/task_wrapper.hh
+    charm/unbind_accessors.hh
+    charm/policy.hh
+    charm/future.hh
+    charm/task_prologue.hh
+    charm/reduction_wrapper.hh
+  )
+
 endif()
 
 #------------------------------------------------------------------------------#

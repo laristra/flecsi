@@ -36,6 +36,10 @@
 
 #include "hpx/context.hh"
 
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_charm
+
+#include "charm/context.hh"
+
 #endif // FLECSI_RUNTIME_MODEL
 
 namespace flecsi::run {

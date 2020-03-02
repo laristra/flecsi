@@ -65,6 +65,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     ${data_SOURCES}
   )
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
+
+  set(data_HEADERS
+    charm/policy.hh
+    charm/types.hh
+    ${data_HEADERS}
+  )
+
+  set(data_SOURCES
+    ${data_SOURCES}
+  )
+
 endif()
 
 #------------------------------------------------------------------------------#

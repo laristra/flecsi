@@ -47,6 +47,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     ${io_SOURCES}
   )
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
+
+  set(io_HEADERS
+    charm/policy.hh
+    ${io_HEADERS}
+  )
+
 endif()
 
 #------------------------------------------------------------------------------#
@@ -76,6 +83,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 add_unit(io
   SOURCES
     test/leg/io.cc
+  THREADS 4
+)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
+
+ftest_add_unit(io
+  SOURCES
+    test/charm/io.cc
   THREADS 4
 )
 endif()

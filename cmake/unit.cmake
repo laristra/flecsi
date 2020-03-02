@@ -123,6 +123,21 @@ function(add_unit name)
     set(unit_policy_exec_preflags ${MPIEXEC_PREFLAGS})
     set(unit_policy_exec_postflags ${MPIEXEC_POSTFLAGS})
 
+  elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm"
+    AND MPI_${MPI_LANGUAGE}_FOUND
+    AND Legion_FOUND)
+
+    set(unit_policy_flags ${Legion_CXX_FLAGS}
+      ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS})
+    set(unit_policy_includes ${Legion_INCLUDE_DIRS}
+      ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH})
+    set(unit_policy_libraries ${Legion_LIBRARIES} ${Legion_LIB_FLAGS}
+      ${MPI_${MPI_LANGUAGE}_LIBRARIES})
+    set(unit_policy_exec ${MPIEXEC})
+    set(unit_policy_exec_threads ${MPIEXEC_NUMPROC_FLAG})
+    set(unit_policy_exec_preflags ${MPIEXEC_PREFLAGS})
+    set(unit_policy_exec_postflags ${MPIEXEC_POSTFLAGS})
+
   else()
 
     message(WARNING "invalid runtime")

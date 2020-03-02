@@ -41,4 +41,8 @@ using field_reference_t = data::field_reference_t<topo::index>;
 
 #include <flecsi/io/hpx/policy.hh>
 
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_charm
+
+#include <flecsi/io/charm/policy.hh>
+
 #endif // FLECSI_RUNTIME_MODEL
