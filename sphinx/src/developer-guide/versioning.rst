@@ -5,8 +5,6 @@
 Versioning
 ==========
 
-Blah blah blah
-
 Branche Types
 *************
 
@@ -40,6 +38,12 @@ Workflow
 FleCSI development uses a *devel -> feature -> release* forking workflow
 that can be visualized as in :numref:`branch`. Bugfixes and features can
 be back-merged into *feature* or *devel*, as appropriate.
+
+.. tip::
+
+  Local development branches should use the nameing convention
+  *devel-description*. In particular, FleCSI's version generation uses
+  the *devel-* naming to recognize development branches.
 
 .. _branch:
 .. figure:: branch.png
