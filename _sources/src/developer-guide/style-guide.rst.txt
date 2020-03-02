@@ -54,6 +54,8 @@ Additional Rules
 
 * Class and enumeration names do not get a suffix ``_t``.
 
+* Header names are "absolute" (*i.e.*, begin with ``flecsi/``).
+
 * Function documentation uses the imperative mood.
 
 Directory Structure 

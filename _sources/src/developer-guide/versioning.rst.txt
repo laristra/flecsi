@@ -5,8 +5,6 @@
 Versioning
 ==========
 
-Blah blah blah
-
 Branche Types
 *************
 
