@@ -12,25 +12,57 @@ if [ -e $cwd/.git ] ; then
     exit
   fi
 
-  branch=`git rev-parse --abbrev-ref HEAD`
+  detached=`git status --short --branch`
 
-  if [[ $branch =~ "devel" ]]; then
-    echo `git describe`
-  else
-    dots=`echo $branch | grep -o "\." | wc -l`
+  if [[ $detached =~ "no branch" ]]; then
+    version=`cat $cwd/.version`
+    echo "$version (detached head)"
+    exit 0
+  fi
 
-    case $dots in
+  describe=`git describe`
 
-      0|1)
-        echo "$branch.0"
-      ;;
+  IFS='-'
+  read -ra DESCRIBE <<< "$describe"
 
-      2)
-        echo $branch
-      ;;
+  if [ ${#DESCRIBE[*]} != 3 ]; then
+    echo "ERROR: invalid value returned by git describe"
+    exit 1
+  fi
 
-    esac
+  sha=${DESCRIBE[2]}
+
+  # Devel branch
+  if [[ ${describe:0:1} == "d" ]]; then
+    major=`echo ${DESCRIBE[0]} | sed 's,d,,'`
+    commits=${DESCRIBE[1]}
+    echo "devel $major.0 ($commits commits ahead at $sha)"
+
+  # Feature branch
+  elif [[ ${describe:0:1} == "f" ]]; then
+    major=`echo ${DESCRIBE[0]} | sed 's,f,,'`
+    commits=${DESCRIBE[1]}
+    if (( $commits > 0 )); then
+      echo "$major.0 ($commits commits ahead at $sha)"
+    else
+      echo "$major.$minor.$patch"
+    fi
+
+  # Release branch
+  elif [[ ${describe:0:1} == "v" ]]; then
+    release=${DESCRIBE[0]}
+    commits=${DESCRIBE[1]}
+    IFS='.'
+    read -ra RELEASE <<< "$release"
+    major=`echo ${RELEASE[0]} | sed 's,v,,'`
+    minor=${RELEASE[1]}
+    patch=${RELEASE[2]}
+    if (( $commits > 0 )); then
+      echo "$major.$minor.$patch ($commits commits ahead of tag at $sha)"
+    else
+      echo "$major.$minor.$patch"
+    fi
   fi
 else
-  cat $cwd/.version
+    cat .version
 fi
