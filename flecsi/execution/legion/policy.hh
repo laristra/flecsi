@@ -21,17 +21,17 @@
 #error Do not include this file directly!
 #endif
 
-#include "../launch.hh"
+#include "flecsi/execution/launch.hh"
+#include "flecsi/execution/legion/future.hh"
+#include "flecsi/execution/legion/reduction_wrapper.hh"
+#include "flecsi/execution/legion/task_prologue.hh"
+#include "flecsi/execution/legion/task_wrapper.hh"
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/runtime/legion/tasks.hh"
 #include "flecsi/utils/demangle.hh"
 #include "flecsi/utils/function_traits.hh"
-#include "task_prologue.hh"
-#include "task_wrapper.hh"
-#include <flecsi/execution/legion/future.hh>
-#include <flecsi/execution/legion/reduction_wrapper.hh>
-#include <flecsi/utils/flog.hh>
-#include <flecsi/utils/flog/utils.hh>
+#include "flecsi/utils/flog.hh"
+#include "flecsi/utils/flog/utils.hh"
 
 #include <functional>
 #include <memory>
@@ -200,15 +200,21 @@ reduce(ARGS &&... args) {
 
     TaskLauncher launcher(task, TaskArgument(buf.data(), buf.size()));
 
+    //adding region requirements to the launcher
     for(auto & req : pro.region_requirements()) {
       launcher.add_region_requirement(req);
     } // for
+
+    //adding futures to the launcher
+    launcher.futures=std::move(pro).futures();
+
+    flog_assert(pro.future_maps().size() == 0, "you can't maps future from index task to a single task");
 
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {
       auto future = legion_runtime->execute_task(legion_context, launcher);
 
-      return legion_future<RETURN, launch_type_t::single>(future);
+      return legion_future<RETURN, launch_type_t::single>{{future}};
     }
     else {
       static_assert(
@@ -240,9 +246,14 @@ reduce(ARGS &&... args) {
     Legion::IndexLauncher launcher(
       task, launch_domain, TaskArgument(buf.data(), buf.size()), arg_map);
 
+    //adding region requirement to the launcher
     for(auto & req : pro.region_requirements()) {
       launcher.add_region_requirement(req);
     } // for
+
+    //adding futures to the launcher
+    launcher.futures=std::move(pro).futures();
+    launcher.point_futures.assign(pro.future_maps().begin(),pro.future_maps().end());
 
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {
@@ -257,18 +268,14 @@ reduce(ARGS &&... args) {
         future = legion_runtime->execute_index_space(
           legion_context, launcher, reduction_op<REDUCTION>);
 
-        // FIXME
-        // return legion_future<RETURN, launch_type_t::single>(future);
-        return 0;
+        return legion_future<RETURN, launch_type_t::single>{{future}};
       }
       else {
         // Enqueue the task.
         Legion::FutureMap future_map =
           legion_runtime->execute_index_space(legion_context, launcher);
 
-        // FIXME
-        // return legion_future<RETURN, launch_type_t::index>(future_map);
-        return 0;
+        return legion_future<RETURN, launch_type_t::index>{{future_map}};
       } // else
     }
     else {
@@ -295,9 +302,7 @@ reduce(ARGS &&... args) {
                    " reduction task");
       }
       else {
-        // FIXME
-        // return legion_future<RETURN, launch_type_t::index>(future);
-        return 0;
+        return legion_future<RETURN, launch_type_t::index>{{future}};
       }
     }
   } // if constexpr

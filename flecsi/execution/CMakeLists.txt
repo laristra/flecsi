@@ -96,3 +96,9 @@ ftest_add_unit(gpu_task
   SOURCES
     test/gpu_task.cc
 )
+
+ftest_add_unit(future
+  SOURCES
+    test/future.cc
+  THREADS 2
+)
