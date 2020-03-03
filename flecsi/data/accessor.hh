@@ -46,7 +46,7 @@ struct accessor<storage_label_t::dense, topology::global, DATA_TYPE, PRIVILEGES>
   using topology_t = topology::global;
 
   accessor(field_reference<DATA_TYPE, topology_t> const & ref)
-    : accessor(ref.info().fid) {}
+    : accessor(ref.fid()) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
 
   operator DATA_TYPE &() {
@@ -82,7 +82,7 @@ struct accessor<storage_label_t::dense, topology::index, DATA_TYPE, PRIVILEGES>
   using topology_t = topology::index;
 
   accessor(field_reference<DATA_TYPE, topology_t> const & ref)
-    : accessor(ref.info().fid) {}
+    : accessor(ref.fid()) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
 
   operator DATA_TYPE &() {
