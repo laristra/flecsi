@@ -165,7 +165,7 @@ struct task_wrapper {
 
   using Traits = utils::function_traits<decltype(F)>;
   using RETURN = typename Traits::return_type;
-  using ARG_TUPLE = typename Traits::arguments_type;
+  using param_tuple = typename Traits::arguments_type;
 
   static constexpr task_processor_type_t LegionProcessor = P;
 
@@ -185,20 +185,20 @@ struct task_wrapper {
     // Unpack task arguments
     // TODO: Can we deserialize directly into the user's parameters (i.e., do
     // without finalize_handles)?
-    auto task_args = detail::tuple_get<ARG_TUPLE>(*task);
+    auto task_args = detail::tuple_get<param_tuple>(*task);
 
     bind_accessors_t bind_accessors(runtime, context, regions, task->futures);
     bind_accessors.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
-      apply(F, std::forward<ARG_TUPLE>(task_args));
+      apply(F, std::forward<param_tuple>(task_args));
 
       // FIXME: Refactor
       // finalize_handles_t finalize_handles;
       // finalize_handles.walk(task_args);
     }
     else {
-      RETURN result = apply(F, std::forward<ARG_TUPLE>(task_args));
+      RETURN result = apply(F, std::forward<param_tuple>(task_args));
 
       // FIXME: Refactor
       // finalize_handles_t finalize_handles;
@@ -214,7 +214,7 @@ template<auto & F>
 struct task_wrapper<F, task_processor_type_t::mpi> {
   using Traits = utils::function_traits<decltype(F)>;
   using RETURN = typename Traits::return_type;
-  using ARG_TUPLE = typename Traits::arguments_type;
+  using param_tuple = typename Traits::arguments_type;
 
   static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
@@ -229,7 +229,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     //    }
 
     // Unpack task arguments.
-    ARG_TUPLE * p;
+    param_tuple * p;
     flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, task->args, sizeof p);
     auto & mpi_task_args = *p;

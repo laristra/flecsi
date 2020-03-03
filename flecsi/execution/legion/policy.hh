@@ -94,7 +94,7 @@ reduce(ARGS &&... args) {
 
   using traits_t = utils::function_traits<decltype(F)>;
   using RETURN = typename traits_t::return_type;
-  using ARG_TUPLE = typename traits_t::arguments_type;
+  using param_tuple = typename traits_t::arguments_type;
 
   // This will guard the entire method
   flog_tag_guard(execution);
@@ -162,9 +162,9 @@ reduce(ARGS &&... args) {
   ++flecsi_context.tasks_executed();
 
   legion::task_prologue_t pro(domain_size);
-  pro.walk<ARG_TUPLE>(args...);
+  pro.walk<param_tuple>(args...);
 
-  std::optional<ARG_TUPLE> mpi_args;
+  std::optional<param_tuple> mpi_args;
   std::vector<std::byte> buf;
   if constexpr(processor_type == task_processor_type_t::mpi) {
     // MPI tasks must be invoked collectively from one task on each rank.
@@ -177,7 +177,7 @@ reduce(ARGS &&... args) {
   }
   else {
     buf = detail::serial_arguments(
-      static_cast<ARG_TUPLE *>(nullptr), std::forward<ARGS>(args)...);
+      static_cast<param_tuple *>(nullptr), std::forward<ARGS>(args)...);
   }
 
   //------------------------------------------------------------------------//

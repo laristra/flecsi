@@ -66,7 +66,7 @@ private:
 
 template<typename TOPOLOGY_TYPE>
 const bool topology_slot<TOPOLOGY_TYPE>::static_registered_ =
-  topology_registration<TOPOLOGY_TYPE>::register_fields();
+  (topology_registration<TOPOLOGY_TYPE>::register_fields(), true);
 
 } // namespace data
 } // namespace flecsi
