@@ -56,7 +56,7 @@ struct context_t : context {
     Documnetation for this interface is in the top-level context type.
    */
 
-  int start();
+  int start(std::function<int(int, char **)>);
 
   /*!
     Documnetation for this interface is in the top-level context type.

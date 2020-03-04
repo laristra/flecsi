@@ -12,6 +12,7 @@
    All rights reserved.
                                                                               */
 #include <flecsi/execution.hh>
+#include <flecsi/utils/ftest.hh>
 
 int
 main(int argc, char ** argv) {
@@ -22,7 +23,7 @@ main(int argc, char ** argv) {
     return status == flecsi::runtime::status::help ? 0 : status;
   } // if
 
-  status = flecsi::start();
+  status = flecsi::start(flecsi::control::control_t::execute);
 
   flecsi::finalize();
 

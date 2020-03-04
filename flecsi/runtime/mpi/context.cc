@@ -69,7 +69,7 @@ context_t::finalize() {
 //----------------------------------------------------------------------------//
 
 int
-context_t::start() {
+context_t::start(std::function<int(int, char **)> action) {
 
   /*
     Register reduction operations.
@@ -91,7 +91,7 @@ context_t::start() {
     largv.push_back(opt->data());
   } // for
 
-  return top_level_action()(largv.size(), largv.data());
+  return action(largv.size(), largv.data());
 }
 
 } // namespace flecsi::runtime

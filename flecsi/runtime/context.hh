@@ -195,7 +195,9 @@ struct context {
       boost::program_options::notify(variables_map_);
     }
     catch(boost::program_options::error & e) {
-      std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED << e.what() << "!!!" << FLOG_COLOR_PLAIN << std::endl << std::endl;
+      std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED << e.what()
+                << "!!!" << FLOG_COLOR_PLAIN << std::endl
+                << std::endl;
       std::cerr << master << std::endl;
       return status::command_line_error;
     } // try
@@ -263,11 +265,13 @@ struct context {
   /*!
     Start the FleCSI runtime.
 
+    @param action The top-level action FleCSI should execute.
+
     @return An integer with \em 0 being success, and any other value
             being failure.
    */
 
-  int start();
+  int start(std::function<int(int, char **)> action);
 
   /*!
     Return the current process id.
@@ -317,24 +321,6 @@ struct context {
 
   std::size_t colors() const;
 #endif
-
-  /*!
-    Set the top-level action.
-   */
-
-  bool register_top_level_action(std::function<int(int, char **)> tla) {
-    top_level_action_ = tla;
-    return true;
-  } // register_top_level_action
-
-  /*!
-    Return the top-level action.
-   */
-
-  std::function<int(int, char **)> & top_level_action() {
-    flog_assert(top_level_action_, "you must set the top-level action");
-    return top_level_action_;
-  } // top_level_action
 
   /*!
     Return the exit status of the FleCSI runtime.
@@ -537,7 +523,6 @@ protected:
   size_t threads_ = std::numeric_limits<size_t>::max();
 
   int exit_status_ = 0;
-  std::function<int(int, char **)> top_level_action_ = {};
 
   /*--------------------------------------------------------------------------*
     Reduction data members.
