@@ -112,13 +112,3 @@ flecsi_register_control_options(control_t);
 
 #define ftest_add_finalize_dependency(to, from)                                \
   ftest_add_dependency(finalize, to, from)
-
-#include "flecsi/runtime/context.hh"
-
-namespace flecsi::utils::flog {
-
-inline bool top_level_action_registered =
-  flecsi::runtime::context_t::instance().register_top_level_action(
-    flecsi::control::control_t::execute);
-
-} // namespace flecsi::utils::flog

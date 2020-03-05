@@ -31,10 +31,6 @@
 
 namespace flecsi {
 
-inline bool register_top_level_action(std::function<int(int, char **)> tla) {
-  return runtime::context_t::instance().register_top_level_action(tla);
-}
-
 /*!
   Perform FleCSI runtime initialization. If \em dependent is true, this call
   will also initialize any runtime on which FleCSI depends.
@@ -64,8 +60,8 @@ initialize(int argc, char ** argv, bool dependent = true) {
  */
 
 inline int
-start() {
-  return runtime::context_t::instance().start();
+start(std::function<int(int, char **)> action) {
+  return runtime::context_t::instance().start(std::move(action));
 }
 
 /*!

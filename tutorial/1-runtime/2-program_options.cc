@@ -15,14 +15,11 @@
 #include <flecsi/execution.hh>
 #include <flecsi/utils/flog.hh>
 
-int top_level_action(int, char **) {
+int
+top_level_action(int, char **) {
   std::cout << "Hello World" << std::endl;
   return 0;
 } // top_level_action
-
-inline bool top_level_action_registered =
-  flecsi::runtime::context_t::instance().register_top_level_action(
-  top_level_action);
 
 /*
   Add an optional command-line option with a default value of '1'. The option
@@ -50,7 +47,8 @@ auto registered_req = flecsi::add_program_option("Example Options",
   invoked.
  */
 
-int main(int argc, char ** argv) {
+int
+main(int argc, char ** argv) {
 
   auto status = flecsi::initialize(argc, argv);
 
@@ -79,7 +77,7 @@ int main(int argc, char ** argv) {
 
   std::cout << "Required value: " << vm["required"].as<int>() << std::endl;
 
-  status = flecsi::start();
+  status = flecsi::start(top_level_action);
 
   flecsi::finalize();
 

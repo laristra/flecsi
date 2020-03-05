@@ -67,7 +67,7 @@ send_to_one() {
       MPI_COMM_WORLD);
 
     flog_t::instance().packets().clear();
-  
+
     if(flog_t::instance().process() == 0) {
 
       for(size_t p{0}; p < flog_t::instance().processes(); ++p) {

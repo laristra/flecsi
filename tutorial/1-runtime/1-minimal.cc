@@ -25,25 +25,19 @@
   functions to implement the simulation.
  */
 
-int top_level_action(int, char **) {
+int
+top_level_action(int, char **) {
   std::cout << "Hello World" << std::endl;
   return 0;
 } // top_level_action
-
-/*
-  This statement shows how to register a function as the top-level action that
-  will be executed by FleCSI when start is invoked.
- */
-
-inline bool top_level_action_registered =
-  flecsi::register_top_level_action(top_level_action);
 
 /*
   The main function must invoke initialize, start, and finalize on the FleCSI
   runtime. Otherwise, the implementation of main is left to the user.
  */
 
-int main(int argc, char ** argv) {
+int
+main(int argc, char ** argv) {
 
   auto status = flecsi::initialize(argc, argv);
 
@@ -58,7 +52,12 @@ int main(int argc, char ** argv) {
     return status == flecsi::runtime::status::help ? 0 : status;
   } // if
 
-  status = flecsi::start();
+  /*
+    The top-level action is passed to the start function to tell FleCSI what
+    it should execute.
+   */
+
+  status = flecsi::start(top_level_action);
 
   flecsi::finalize();
 
