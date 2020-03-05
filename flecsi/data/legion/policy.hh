@@ -56,26 +56,10 @@ struct topology_id {
 
 inline topology_data<topology::index>::topology_data(
   const type::coloring & coloring)
-  : topology_base(Legion::Domain::from_rect<1>(
-      LegionRuntime::Arrays::Rect<1>(0, coloring.size() - 1))),
-    colors(coloring.size()) {
+  : simple(coloring.size()), colors(coloring.size()) {
 
   auto legion_runtime = Legion::Runtime::get_runtime();
   auto legion_context = Legion::Runtime::get_context();
-  auto & flecsi_context = runtime::context_t::instance();
-
-  auto & field_info_store =
-    flecsi_context.get_field_info_store<topology::index>(
-      storage_label_t::dense);
-
-  Legion::FieldAllocator allocator =
-    legion_runtime->create_field_allocator(legion_context, field_space);
-
-  for(auto const & fi : field_info_store) {
-    allocator.allocate_field(fi->type_size, fi->fid);
-  } // for
-
-  allocate();
 
   Legion::IndexPartition index_partition =
     legion_runtime->create_equal_partition(

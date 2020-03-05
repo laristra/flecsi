@@ -75,19 +75,32 @@ using unique_logical_region = unique_handle<Legion::LogicalRegion,
   &Legion::Runtime::destroy_logical_region>;
 // TODO: do we need to destroy_logical_partition?
 
-struct topology_base {
-  topology_base(Legion::Domain d)
-    : index_space(run().create_index_space(ctx(), d)) {}
-  size_t index_space_id = unique_isid_t::instance().next(); // TODO: needed?
-  unique_index_space index_space;
-  unique_field_space field_space = run().create_field_space(ctx());
-  unique_logical_region logical_region;
+struct region {
+  region(std::size_t n, const runtime::context::field_info_store_t & fs)
+    : index_space(run().create_index_space(ctx(), Legion::Rect<1>(0, n - 1))),
+      field_space([&fs] { // TIP: IIFE (q.v.) allows statements here
+        auto & r = run();
+        const auto c = ctx();
+        unique_field_space ret = r.create_field_space(c);
+        Legion::FieldAllocator allocator = r.create_field_allocator(c, ret);
+        for(auto const & fi : fs)
+          allocator.allocate_field(fi->type_size, fi->fid);
+        return ret;
+      }()),
+      logical_region(
+        run().create_logical_region(ctx(), index_space, field_space)) {}
 
-protected:
-  void allocate() {
-    logical_region =
-      run().create_logical_region(ctx(), index_space, field_space);
-  }
+  unique_index_space index_space;
+  unique_field_space field_space;
+  unique_logical_region logical_region;
+};
+
+template<class Topo>
+struct simple : region {
+  using type = Topo;
+  simple(std::size_t n = 1)
+    : region(n,
+        runtime::context_t::instance().get_field_info_store<Topo>(dense)) {}
 };
 } // namespace legion
 
@@ -96,25 +109,8 @@ protected:
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::global> : legion::topology_base {
-  using type = topology::global;
-  topology_data(const type::coloring &)
-    : topology_base(Legion::Domain::from_rect<1>(
-        LegionRuntime::Arrays::Rect<1>(LegionRuntime::Arrays::Point<1>(0),
-          LegionRuntime::Arrays::Point<1>(1)))) {
-    Legion::FieldAllocator allocator =
-      legion::run().create_field_allocator(legion::ctx(), field_space);
-
-    auto & field_info_store =
-      runtime::context_t::instance().get_field_info_store<topology::global>(
-        storage_label_t::dense);
-
-    for(auto const & fi : field_info_store) {
-      allocator.allocate_field(fi->type_size, fi->fid);
-    } // for
-
-    allocate();
-  }
+struct topology_data<topology::global> : legion::simple<topology::global> {
+  topology_data(const type::coloring &) {}
 };
 
 /*----------------------------------------------------------------------------*
@@ -122,8 +118,7 @@ struct topology_data<topology::global> : legion::topology_base {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::index> : legion::topology_base {
-  using type = topology::index;
+struct topology_data<topology::index> : legion::simple<topology::index> {
   topology_data(const type::coloring &);
   size_t colors;
   Legion::LogicalPartition color_partition;
