@@ -202,10 +202,10 @@ struct task_prologue_t {
     Non-FleCSI Data Types
    *--------------------------------------------------------------------------*/
 
-  template<class P, typename DATA_TYPE>
+  template<typename DATA_TYPE>
   static typename std::enable_if_t<
     !std::is_base_of_v<data::reference_base, DATA_TYPE>>
-  visit(P *, DATA_TYPE &) {
+  visit(DATA_TYPE &) {
     {
       flog_tag_guard(task_prologue);
       flog_devel(info) << "Skipping argument with type "
@@ -214,6 +214,12 @@ struct task_prologue_t {
   } // visit
 
 private:
+  // Argument types for which we don't also need the type of the parameter:
+  template<class P, typename DATA_TYPE>
+  void visit(P *, DATA_TYPE & x) {
+    visit(x);
+  } // visit
+
   template<class... PP, class... AA>
   void walk(std::tuple<PP...> * /* to deduce PP */, const AA &... aa) {
     (visit(static_cast<std::decay_t<PP> *>(nullptr), aa), ...);
