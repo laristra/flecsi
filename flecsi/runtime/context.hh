@@ -19,6 +19,8 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/storage_classes.hh"
+#include "flecsi/topology/core.hh"
 #include <flecsi/data/field_info.hh>
 #include <flecsi/execution/task_attributes.hh>
 #include <flecsi/runtime/types.hh>
@@ -69,7 +71,8 @@ struct context {
    */
 
   using field_info_store_t = std::vector<const data::field_info_t *>;
-  using field_info_map_t = std::unordered_map<size_t, field_info_store_t>;
+  using field_info_map_t =
+    std::unordered_map<size_t, std::vector<field_info_store_t>>;
 
   /*!
     This type allows storage of subspace information.
@@ -364,58 +367,46 @@ struct context {
   /*!
     Register field information.
 
-    @param topology_type_identifier Topology type identifier.
+    \tparam Topo topology type
+    \tparam Index topology-relative index space
     @param storage_class            Storage class identifier.
     @param field_info               Field information.
    */
-
-  void add_field_info(size_t topology_type_identifier,
-    size_t storage_class,
+  template<class Topo, std::size_t Index = 0>
+  void add_field_info(data::storage_label_t storage_class,
     const data::field_info_t & field_info) {
-    flog_devel(info) << "Registering field info (context)" << std::endl
-                     << "\ttopology type identifier: "
-                     << topology_type_identifier << std::endl
-                     << "\tstorage class: " << storage_class << std::endl;
-    topology_field_info_map_[topology_type_identifier][storage_class].push_back(
-      &field_info);
+    constexpr std::size_t NIndex = topology::index_spaces<Topo>;
+    static_assert(Index < NIndex, "No such index space");
+    topology_field_info_map_[topology::id<Topo>()]
+      .try_emplace(storage_class, NIndex)
+      .first->second[Index]
+      .push_back(&field_info);
   } // add_field_information
-
-  /*!
-    Return the stored field info for the given topology type and storage class.
-
-    @param topology_type_identifier Topology type identifier.
-    @param storage_class            Storage class identifier.
-   */
-
-  field_info_store_t const &
-  get_field_info_store(size_t topology_type_identifier, size_t storage_class) {
-    return topology_field_info_map_[topology_type_identifier][storage_class];
-  } // get_field_info_store
 
   /*!
     Return the stored field info for the given topology type and storage class.
     Const version.
 
-    @param topology_type_identifier Topology type identifier.
+    \tparam Topo topology type
+    \tparam Index topology-relative index space
     @param storage_class            Storage class identifier.
    */
-
+  template<class Topo, std::size_t Index = 0>
   field_info_store_t const & get_field_info_store(
-    size_t topology_type_identifier,
-    size_t storage_class) const {
+    data::storage_label_t storage_class) const {
+    static_assert(Index < topology::index_spaces<Topo>, "No such index space");
 
-    flog_devel(info) << "Type identifier: " << topology_type_identifier
-                     << std::endl;
+    static const field_info_store_t empty;
 
-    auto const & tita = topology_field_info_map_.find(topology_type_identifier);
-    flog_assert(tita != topology_field_info_map_.end(),
-      "topology lookup failed for " << topology_type_identifier);
+    auto const & tita = topology_field_info_map_.find(topology::id<Topo>());
+    if(tita == topology_field_info_map_.end())
+      return empty;
 
     auto const & sita = tita->second.find(storage_class);
-    flog_assert(sita != tita->second.end(),
-      "storage class lookup failed for " << storage_class);
+    if(sita == tita->second.end())
+      return empty;
 
-    return sita->second;
+    return sita->second[Index];
   } // get_field_info_store
 
   /*!

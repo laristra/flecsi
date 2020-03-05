@@ -64,8 +64,9 @@ inline topology_data<topology::index>::topology_data(
   auto legion_context = Legion::Runtime::get_context();
   auto & flecsi_context = runtime::context_t::instance();
 
-  auto & field_info_store = flecsi_context.get_field_info_store(
-    topology::id<topology::index>(), storage_label_t::dense);
+  auto & field_info_store =
+    flecsi_context.get_field_info_store<topology::index>(
+      storage_label_t::dense);
 
   Legion::FieldAllocator allocator =
     legion_runtime->create_field_allocator(legion_context, field_space);
@@ -111,24 +112,11 @@ inline topology_data<topology::unstructured_base>::topology_data(
   auto legion_context = Legion::Runtime::get_context();
   auto & flecsi_context = runtime::context_t::instance();
 
-  auto & dense_field_info_store = flecsi_context.get_field_info_store(
-    topology::id<type>(), storage_label_t::dense);
+  auto & dense_field_info_store = flecsi_context.get_field_info_store<type,...>(storage_label_t::dense);
 
-    for(size_t is{0}; is<coloring.index_spaces; ++is) {
+  auto & ragged_field_info_store = flecsi_context.get_field_info_store<...>(storage_label_t::ragged);
 
-      for(auto const & fi : field_info_store) {
-        if(fi->index_space == is)
-          allocator.allocate_field(fi->type_size, fi->fid);
-      } // for
-
-
-    } // for
-
-    auto & ragged_field_info_store = flecsi_context.get_field_info_store(
-      /* type */, storage_label_t::ragged);
-
-    auto & sparse_field_info_store = flecsi_context.get_field_info_store(
-      /* type */, storage_label_t::sparse);
+  auto & sparse_field_info_store = flecsi_context.get_field_info_store<...>(storage_label_t::sparse);
 
 #else
   (void)coloring;

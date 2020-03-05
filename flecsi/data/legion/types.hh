@@ -105,16 +105,9 @@ struct topology_data<topology::global> : legion::topology_base {
     Legion::FieldAllocator allocator =
       legion::run().create_field_allocator(legion::ctx(), field_space);
 
-    /*
-      Note: This call to get_field_info_store uses the non-const version
-      so that this call works if no fields have been registered. In other parts
-      of the code that occur after initialization, the const version of this
-      call should be used.
-     */
-
     auto & field_info_store =
-      runtime::context_t::instance().get_field_info_store(
-        topology::id<topology::global>(), storage_label_t::dense);
+      runtime::context_t::instance().get_field_info_store<topology::global>(
+        storage_label_t::dense);
 
     for(auto const & fi : field_info_store) {
       allocator.allocate_field(fi->type_size, fi->fid);
