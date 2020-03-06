@@ -1,0 +1,135 @@
+#! /usr/bin/env bash
+#------------------------------------------------------------------------------#
+# Get the path to the project from which this script was called
+#------------------------------------------------------------------------------#
+
+cwd="$(dirname "$(cd "$(dirname "$0")"; pwd)")"
+
+#------------------------------------------------------------------------------#
+# Check required environment variables
+#------------------------------------------------------------------------------#
+
+if [ -z "${CMAKE_PREFIX_PATH}" ] ; then
+  echo "You must set CMAKE_PREFIX_PATH in your environment"
+  exit 1
+fi
+
+#------------------------------------------------------------------------------#
+# Check command-line arguments
+#------------------------------------------------------------------------------#
+
+cmake_mode=cmake
+runtime=mpi
+cmake_args=""
+
+SCRIPT_BUILD_TYPE=debug
+SCRIPT_CXX_COMPILER=clang++
+SCRIPT_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+SCRIPT_C_COMPILER=clang
+SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
+SCRIPT_ENABLE_FLOG="ON"
+SCRIPT_FLOG_ENABLE_DEVELOPER_MODE="ON"
+SCRIPT_ENABLE_UNIT_TESTS="ON"
+SCRIPT_ENABLE_SPHINX="ON"
+SCRIPT_ENABLE_DOXYGEN="ON"
+
+while [[ $# -gt 0 ]]
+do
+
+	case $1 in
+		--help|-h)
+			command=`echo $0 | sed 's,.*\/,,g'`
+			echo "Usage: $command [options] <compiler> <runtime>"
+			echo "  -h, --help     Show this message and exit."
+			echo "  -c, --ccmake   Enable curses mode."
+			echo "  -u, --user     Enable user mode."
+			echo ""
+			echo "Compilers: clang, gnu, intel."
+			echo "(default compiler is clang)."
+			echo ""
+			echo "Runtimes: legion, mpi."
+			echo "(default runtime is mpi)."
+			echo ""
+			echo "User mode: release, disable tests"
+			exit
+		;;
+		--ccmake|-c)
+			cmake_mode=ccmake
+		;;
+    --user|-u)
+      SCRIPT_BUILD_TYPE=release
+      SCRIPT_ENABLE_FLOG="OFF"
+      SCRIPT_FLOG_ENABLE_DEVELOPER_MODE="OFF"
+      SCRIPT_ENABLE_UNIT_TESTS="OFF"
+      SCRIPT_ENABLE_SPHINX="OFF"
+      SCRIPT_ENABLE_DOXYGEN="OFF"
+		;;
+    legion|hpx)
+      runtime=$1
+    ;;
+    clang)
+      SCRIPT_CXX_COMPILER=clang++
+      SCRIPT_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+      SCRIPT_C_COMPILER=clang
+      SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
+    ;;
+    gnu)
+      SCRIPT_CXX_COMPILER=g++
+      SCRIPT_CXX_FLAGS="-fmax-errors=5 -fdiagnostics-color=always\
+        -Wall -W -Werror"
+      SCRIPT_C_COMPILER=gcc
+      SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
+    ;;
+    intel)
+      SCRIPT_CXX_COMPILER=icpc
+      SCRIPT_CXX_FLAGS="-diag-error-limit=5 -Wall -W -Werror"
+      SCRIPT_C_COMPILER=icc
+      SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
+    ;;
+    *)
+      cmake_args="$cmake_args $1"
+    ;;
+	esac
+
+	shift # next argument
+done
+
+#------------------------------------------------------------------------------#
+# Call CMake command
+#------------------------------------------------------------------------------#
+
+echo "Executing:"
+echo "$cmake_mode" \
+  "-DCMAKE_BUILD_TYPE=$SCRIPT_BUILD_TYPE" \
+  "-DCMAKE_CXX_COMPILER=$SCRIPT_CXX_COMPILER" \
+  "-DCMAKE_CXX_FLAGS=\"$SCRIPT_CXX_FLAGS\"" \
+  "-DCMAKE_C_COMPILER=$SCRIPT_C_COMPILER" \
+  "-DCMAKE_C_FLAGS=\"$SCRIPT_C_FLAGS\"" \
+  "-DFLECSI_RUNTIME_MODEL=$runtime" \
+  "-DENABLE_FLOG=$SCRIPT_ENABLE_FLOG" \
+  "-DFLOG_ENABLE_DEVELOPER_MODE=$SCRIPT_FLOG_ENABLE_DEVELOPER_MODE" \
+  "-DENABLE_UNIT_TESTS=$SCRIPT_ENABLE_UNIT_TESTS" \
+  "-DENABLE_SPHINX=$SCRIPT_ENABLE_SPHINX" \
+  "-DENABLE_DOXYGEN=$SCRIPT_ENABLE_DOXYGEN" \
+  "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cwd"
+echo ""
+
+$cmake_mode \
+  -DCMAKE_BUILD_TYPE=$SCRIPT_BUILD_TYPE \
+  -DCMAKE_CXX_COMPILER=$SCRIPT_CXX_COMPILER \
+  -DCMAKE_CXX_FLAGS="$SCRIPT_CXX_FLAGS" \
+  -DCMAKE_C_COMPILER=$SCRIPT_C_COMPILER \
+  -DCMAKE_C_FLAGS="$SCRIPT_C_FLAGS" \
+  -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
+  -DENABLE_FLOG=$SCRIPT_ENABLE_FLOG \
+  -DFLOG_ENABLE_DEVELOPER_MODE=$SCRIPT_FLOG_ENABLE_DEVELOPER_MODE \
+  -DENABLE_UNIT_TESTS=$SCRIPT_ENABLE_UNIT_TESTS \
+  -DENABLE_SPHINX=$SCRIPT_ENABLE_SPHINX \
+  -DENABLE_DOXYGEN=$SCRIPT_ENABLE_DOXYGEN \
+  -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
+  $cmake_args \
+  $cwd
+
+#------------------------------------------------------------------------------#
+# vim: syntax=sh
+#------------------------------------------------------------------------------#

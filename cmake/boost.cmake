@@ -12,22 +12,16 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-option(ENABLE_BOOST "Enable Boost" OFF)
+set(Boost_NO_BOOST_CMAKE ON)
 
-if(ENABLE_BOOST)
+find_package(Boost REQUIRED 
+  program_options
+  atomic
+  filesystem
+  regex
+  system)
 
-  set(Boost_NO_BOOST_CMAKE ON)
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
-  find_package(Boost REQUIRED 
-    program_options
-    atomic
-    filesystem
-    regex
-    system)
-
-  include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
-
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})
-
-endif()
+list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Boost_LIBRARIES})

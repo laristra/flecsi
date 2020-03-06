@@ -41,10 +41,12 @@ Introduction
 .. toctree::
   :caption: Contents:
 
+  src/overview
   src/build
   src/tutorial
   src/user-guide
   src/developer-guide
+  src/core-guide
   API Reference <http://laristra.github.io/flecsi/doxygen>
   src/team
 
@@ -71,3 +73,5 @@ Introduction
          :align: right
          :scale: 75%
          :target: https://www.exascaleproject.org
+
+.. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

@@ -48,8 +48,8 @@ options, but is not necessary for a particular build:
   *CI: mpich 3.2.1, openmpi 3.1.3*
 
 * **Legion** |br|
-  We are currently using the most up-to-date version of the master
-  branch. |br|
+  We are currently using the most up-to-date version of the control
+  replication branch. |br|
   *CI: control_replication branch*
 
 * **parMETIS/METIS** |br|

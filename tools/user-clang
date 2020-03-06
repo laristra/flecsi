@@ -1,0 +1,87 @@
+#! /usr/bin/env bash
+#------------------------------------------------------------------------------#
+# Get the path to the project from which this script was called
+#------------------------------------------------------------------------------#
+
+cwd="$(dirname "$(cd "$(dirname "$0")"; pwd)")"
+
+#------------------------------------------------------------------------------#
+# Check required environment variables
+#------------------------------------------------------------------------------#
+
+if [ -z "${CMAKE_PREFIX_PATH}" ] ; then
+  echo "You must set CMAKE_PREFIX_PATH in your environment"
+  exit 1
+fi
+
+#------------------------------------------------------------------------------#
+# Check command-line arguments
+#------------------------------------------------------------------------------#
+
+cmake_mode=cmake
+runtime=mpi
+cmake_args=""
+
+while [[ $# -gt 0 ]]
+do
+
+	case $1 in
+		--help|-h)
+			command=`echo $0 | sed 's,.*\/,,g'`
+			echo "Usage: $command [options] runtime"
+			echo "  -h, --help     Show this message and exit."
+			echo "  -c, --ccmake   Enable curses mode."
+			echo ""
+			echo "Runtimes: legion, mpi."
+			echo "(default runtime is mpi)."
+			exit
+		;;
+		--ccmake|-c)
+			cmake_mode=ccmake
+		;;
+    legion|hpx)
+      runtime=$1
+    ;;
+    *)
+      cmake_args="$cmake_args $1"
+    ;;
+	esac
+
+	shift # next argument
+done
+
+#------------------------------------------------------------------------------#
+# Call CMake command
+#------------------------------------------------------------------------------#
+
+SCRIPT_BUILD_TYPE=release
+SCRIPT_CXX_COMPILER=clang++
+SCRIPT_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+SCRIPT_C_COMPILER=clang
+SCRIPT_C_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+
+echo "Executing:"
+echo "$cmake_mode" \
+  "-DCMAKE_BUILD_TYPE=$SCRIPT_BUILD_TYPE" \
+  "-DCMAKE_CXX_COMPILER=$SCRIPT_CXX_COMPILER" \
+  "-DCMAKE_CXX_FLAGS=\"$SCRIPT_CXX_FLAGS\"" \
+  "-DCMAKE_C_COMPILER=$SCRIPT_C_COMPILER" \
+  "-DCMAKE_C_FLAGS=\"$SCRIPT_C_FLAGS\"" \
+  "-DFLECSI_RUNTIME_MODEL=$runtime" \
+  "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} $cmake_args $cwd"
+echo ""
+
+$cmake_mode \
+  -DCMAKE_BUILD_TYPE=$SCRIPT_BUILD_TYPE \
+  -DCMAKE_CXX_COMPILER=$SCRIPT_CXX_COMPILER \
+  -DCMAKE_CXX_FLAGS="$SCRIPT_CXX_FLAGS" \
+  -DCMAKE_C_COMPILER=$SCRIPT_C_COMPILER \
+  -DCMAKE_C_FLAGS="$SCRIPT_C_FLAGS" \
+  -DFLECSI_RUNTIME_MODEL=$runtime $extra_define \
+  -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
+  $cmake_args \
+  $cwd
+
+#------------------------------------------------------------------------------#
+# vim: syntax=sh
+#------------------------------------------------------------------------------#
