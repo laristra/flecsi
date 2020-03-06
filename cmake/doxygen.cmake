@@ -113,7 +113,7 @@ if(ENABLE_DOXYGEN)
         set(DOXYGEN_WARN NO)
     endif()
 
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen.conf.in
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/doxygen.conf.in
         ${_directory}/.doxygen/doxygen.conf)
 
     #--------------------------------------------------------------------------#
@@ -122,7 +122,7 @@ if(ENABLE_DOXYGEN)
 
     add_custom_target(${CINCH_CONFIG_INFOTAG}doxygen
         ${DOXYGEN} ${_directory}/.doxygen/doxygen.conf
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen.conf.in)
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config/doxygen.conf.in)
 
     #--------------------------------------------------------------------------#
     # Add install target

@@ -36,16 +36,21 @@ if [ -e $cwd/.git ] ; then
   if [[ ${describe:0:1} == "d" ]]; then
     major=`echo ${DESCRIBE[0]} | sed 's,d,,'`
     commits=${DESCRIBE[1]}
-    echo "devel $major.0 ($commits commits ahead at $sha)"
+    echo "devel $major ($commits commits ahead at $sha)"
 
   # Feature branch
   elif [[ ${describe:0:1} == "f" ]]; then
-    major=`echo ${DESCRIBE[0]} | sed 's,f,,'`
+    #major=`echo ${DESCRIBE[0]} | sed 's,f,,'`
+    version=`echo ${DESCRIBE[0]} | sed 's,f,,'`
+    IFS='.'
+    read -ra VERSION <<< "$version"
+    major=${VERSION[0]}
+    minor=${VERSION[1]}
     commits=${DESCRIBE[1]}
     if (( $commits > 0 )); then
-      echo "$major.0 ($commits commits ahead at $sha)"
+      echo "feature $major.$minor ($commits commits ahead at $sha)"
     else
-      echo "$major.$minor.$patch"
+      echo "feature $major.$minor"
     fi
 
   # Release branch
@@ -58,9 +63,10 @@ if [ -e $cwd/.git ] ; then
     minor=${RELEASE[1]}
     patch=${RELEASE[2]}
     if (( $commits > 0 )); then
-      echo "$major.$minor.$patch ($commits commits ahead of tag at $sha)"
+      echo "release $major.$minor.$patch" \
+        "($commits commits ahead of tag at $sha)"
     else
-      echo "$major.$minor.$patch"
+      echo "release $major.$minor.$patch"
     fi
   fi
 else

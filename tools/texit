@@ -1,5 +1,0 @@
-#! /usr/bin/env bash
-
-for file in `ls *.tex` ; do
-	pdflatex $file
-done

@@ -8,11 +8,8 @@ Developer Guide
 .. .. doxygenstruct:: flecsi::control::control
 
 .. toctree::
-  :caption: User Guide:
+  :caption: Developer Guide:
 
-  developer-guide/style-guide
-  developer-guide/patterns
-  developer-guide/versioning
   developer-guide/execution
   developer-guide/data
   developer-guide/topology

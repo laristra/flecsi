@@ -462,11 +462,6 @@ export(PACKAGE FleCSI)
 # Tutorial.
 #------------------------------------------------------------------------------#
 
-include(tutorial)
-
-update_sphinx_tutorial_sources(${CMAKE_SOURCE_DIR}/tutorial
-  ${CMAKE_SOURCE_DIR}/sphinx/src/tutorial/sources)
-
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   option(ENABLE_FLECSI_TUTORIAL
     "Enable library support for the FleCSI tutorial" OFF)
@@ -495,7 +490,7 @@ endif()
 # Tools.
 #------------------------------------------------------------------------------#
 
-add_subdirectory("tools")
+#add_subdirectory("tools")
 
 #------------------------------------------------------------------------------#
 # CMake config file: This should be the last thing to happen.
@@ -612,6 +607,8 @@ summary_info("CMAKE_C_COMPILER" "${CMAKE_C_COMPILER}" TRUE)
 summary_info("CMAKE_C_FLAGS" "${CMAKE_C_FLAGS}" TRUE)
 string(APPEND _summary "\n")
 summary_info("FleCSI_VERSION" "${FleCSI_VERSION}" TRUE)
+summary_info("FleCSI_DOCUMENTATION_VERSION"
+  "${FleCSI_DOCUMENTATION_VERSION}" FALSE)
 if(${PROJECT_NAME}_COMMITS)
   summary_info("Repository state" "${${PROJECT_NAME}_COMMITS}" FALSE)
 endif()

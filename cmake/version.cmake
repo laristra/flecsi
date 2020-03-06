@@ -18,12 +18,23 @@ string(REGEX REPLACE "\n$" "" version "${version_output}")
 
 string(REPLACE " " ";" fields ${version_output})
 
-list(GET fields 1 ${PROJECT_NAME}_VERSION)
+list(GET fields 0 branch)
+list(GET fields 1 version)
 list(SUBLIST fields 2 -1 rest)
+
 set(${PROJECT_NAME}_COMMITS)
 if(rest)
   string(REPLACE ";" "\ " commits "${rest}")
   string(REGEX REPLACE "([()])" "" commits "${commits}")
   string(STRIP commits "${commits}")
   set(${PROJECT_NAME}_COMMITS ${commits})
+endif()
+
+set(${PROJECT_NAME}_VERSION ${version})
+
+if(branch STREQUAL "devel")
+  math(EXPR next "${version}+1")
+  set(${PROJECT_NAME}_DOCUMENTATION_VERSION "${next}.-1 (devel)")
+else()
+  set(${PROJECT_NAME}_DOCUMENTATION_VERSION "${version}")
 endif()
