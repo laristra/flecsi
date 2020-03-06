@@ -26,6 +26,10 @@ main(int argc, char ** argv) {
 
   auto status = flecsi::initialize(argc, argv);
 
+  /*
+    Add the standard log descriptor to FLOG's buffers.
+   */
+
   flecsi::utils::flog::flog_t::instance().config_stream().add_buffer(
     "flog", std::clog, true);
 

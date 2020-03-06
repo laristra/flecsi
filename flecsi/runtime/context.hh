@@ -26,8 +26,10 @@
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/flog.hh>
 
+#include <boost/optional.hpp>
 #include <boost/program_options.hpp>
 
+#include <any>
 #include <cassert>
 #include <cstddef>
 #include <functional>
@@ -95,60 +97,49 @@ struct context {
   context(context &&) = delete;
   context & operator=(context &&) = delete;
 
-  /*!
+  /*
     Meyer's singleton instance.
    */
 
   static inline context_t & instance();
 
+  bool initialized() {
+    return initialized_;
+  }
+
   /*--------------------------------------------------------------------------*
     Program options interface.
    *--------------------------------------------------------------------------*/
+
+  boost::program_options::positional_options_description &
+  positional_description() {
+    return positional_desc_;
+  }
+
+  std::map<std::string, std::string> & positional_help() {
+    return positional_help_;
+  }
+
+  boost::program_options::options_description & hidden_options() {
+    return hidden_options_;
+  }
+
+  std::map<std::string,
+    std::pair<bool, std::function<bool(boost::any const &)>>> &
+  option_checks() {
+    return option_checks_;
+  }
 
   std::vector<char *> & argv() {
     return argv_;
   }
 
-  std::string & flog_tags() {
-    return flog_tags_;
-  }
-
-  int & flog_verbose() {
-    return flog_verbose_;
-  }
-
-  int64_t & flog_output_process() {
-    return flog_output_process_;
-  }
-
-  /*
-    The boolean return is necessary for assignment so that this code block is
-    executed at namespace scope.
-   */
-
-  template<typename... ARGS>
-  bool add_program_option(std::string const & label, ARGS &&... args) {
-    auto ita = descriptions_map_.find(label);
-
-    if(ita == descriptions_map_.end()) {
-      boost::program_options::options_description desc(label.c_str());
-      descriptions_map_.emplace(label, desc);
-    } // if
-
-    descriptions_map_[label].add_options()(std::forward<ARGS>(args)...);
-    return true;
-  }
-
-  boost::program_options::variables_map const &
-  program_options_variables_map() {
-    flog_assert(program_options_initialized_,
-      "unitialized program options -> "
-      "invoke flecsi::initialize_program_options");
-    return variables_map_;
+  auto & descriptions_map() {
+    return descriptions_map_;
   }
 
   std::vector<std::string> const & unrecognized_options() {
-    flog_assert(program_options_initialized_,
+    flog_assert(initialized_,
       "unitialized program options -> "
       "invoke flecsi::initialize_program_options");
     return unrecognized_options_;
@@ -168,61 +159,171 @@ struct context {
     } // for
 
     std::string program(argv[0]);
-    program = "Basic Options (" + program.substr(program.rfind('/') + 1) + ")";
+    program = program.substr(program.rfind('/') + 1);
 
-    boost::program_options::options_description master(program);
+    boost::program_options::options_description master("Basic Options");
     master.add_options()("help,h", "Print this message and exit.");
 
-    // Add all of the descriptions to the main description
+    // Add all of the user-defined descriptions to the main description
     for(auto & od : descriptions_map_) {
       master.add(od.second);
     } // for
 
+#if defined(FLECSI_ENABLE_FLOG)
+    // Add FleCSI options
+    boost::program_options::options_description flecsi_desc("FleCSI Options");
+    flecsi_desc.add_options() // clang-format off
+      (
+        "flog-tags",
+        boost::program_options::value(&flog_tags_)
+          ->default_value("all"),
+        "Enable the specified output tags, e.g., --flog-tags=tag1,tag2."
+      )
+      (
+        "flog-verbose",
+        boost::program_options::value(&flog_verbose_)
+          ->implicit_value(1)
+          ->default_value(0),
+        "Enable verbose output. Passing '-1' will strip any additional"
+        " decorations added by flog and will only output the user's message."
+      )
+      (
+        "flog-process",
+        boost::program_options::value(&flog_output_process_)->default_value(-1),
+        "Restrict output to the specified process id."
+      ); // clang-format on
+#endif
+
+    // Make an options description to hold all options. This is useful
+    // to exlude hidden options from help.
+    boost::program_options::options_description all("All Options");
+    all.add(master);
+    all.add(flecsi_desc);
+    all.add(hidden_options_);
+
     boost::program_options::parsed_options parsed =
       boost::program_options::command_line_parser(argc, argv)
-        .options(master)
+        .options(all)
+        .positional(positional_desc_)
         .allow_unregistered()
         .run();
 
-    try {
-      boost::program_options::store(parsed, variables_map_);
+    auto print_usage = [this](std::string program,
+                         auto const & master,
+                         auto const & flecsi) {
+      if(process_ == 0) {
+        std::cout << "Usage: " << program << " ";
 
-      if(variables_map_.count("help")) {
-        if(process_ == 0) {
-          std::cout << master << std::endl;
+        size_t positional_count = positional_desc_.max_total_count();
+        size_t max_label_chars = std::numeric_limits<size_t>::min();
+
+        for(size_t i{0}; i < positional_count; ++i) {
+          std::cout << "<" << positional_desc_.name_for_position(i) << "> ";
+
+          const size_t size = positional_desc_.name_for_position(i).size();
+          max_label_chars = size > max_label_chars ? size : max_label_chars;
+        } // for
+        max_label_chars += 2;
+
+        std::cout << std::endl << std::endl;
+
+        std::cout << master << std::endl;
+
+        if(positional_count) {
+          std::cout << "Positional Options:" << std::endl;
+
+          for(size_t i{0}; i < positional_desc_.max_total_count(); ++i) {
+            auto const & name = positional_desc_.name_for_position(i);
+            auto help = positional_help_.at(name);
+            std::cout << "  " << name << " ";
+            std::cout << std::string(max_label_chars - name.size() - 2, ' ');
+
+            if(help.size() > 78 - max_label_chars) {
+              std::string first = help.substr(
+                0, help.substr(0, 78 - max_label_chars).find_last_of(' '));
+              std::cout << first << std::endl;
+              help =
+                help.substr(first.size() + 1, help.size() - first.size() + 1);
+
+              while(help.size() > 78 - max_label_chars) {
+                std::string part = help.substr(
+                  0, help.substr(0, 78 - max_label_chars).find_last_of(' '));
+                std::cout << std::string(max_label_chars + 1, ' ') << part
+                          << std::endl;
+                help = help.substr(part.size() + 1, help.size() - part.size());
+              } // while
+
+              std::cout << std::string(max_label_chars + 1, ' ') << help
+                        << std::endl;
+            }
+            else {
+              std::cout << help << std::endl;
+            } // if
+
+          } // for
+
+          std::cout << std::endl;
+
+          std::cout << flecsi << std::endl;
         } // if
+#if defined(FLECSI_ENABLE_FLOG)
+        std::cout << "Available FLOG Tags (FleCSI Logging Utility):"
+                  << std::endl;
 
+        for(auto t : flog_tag_map()) {
+          std::cout << "  " << t.first << std::endl;
+        } // for
+#endif
+      } // if
+    }; // print_usage
+
+    try {
+      boost::program_options::variables_map vm;
+      boost::program_options::store(parsed, vm);
+
+      if(vm.count("help")) {
+        print_usage(program, master, flecsi_desc);
         return status::help;
       } // if
 
-      boost::program_options::notify(variables_map_);
+      boost::program_options::notify(vm);
+
+      // Call option check methods
+      for(auto const & [name, boost_any] : vm) {
+        auto const & ita = option_checks_.find(name);
+        if(ita != option_checks_.end()) {
+          auto const & [positional, check] = ita->second;
+
+          if(!check(boost_any.value())) {
+            std::string dash = positional ? "" : "--";
+            std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED
+                      << "invalid argument for '" << dash << name
+                      << "' option!!!" << FLOG_COLOR_PLAIN << std::endl;
+            print_usage(program, master, flecsi_desc);
+            return status::help;
+          } // if
+        } // if
+      } // for
     }
     catch(boost::program_options::error & e) {
-      std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED << e.what()
+      std::string error(e.what());
+
+      auto pos = error.find("--");
+      if(pos != std::string::npos) {
+        error.replace(pos, 2, "");
+      } // if
+
+      std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED << error
                 << "!!!" << FLOG_COLOR_PLAIN << std::endl
                 << std::endl;
-      std::cerr << master << std::endl;
+      print_usage(program, master, flecsi_desc);
       return status::command_line_error;
     } // try
 
     unrecognized_options_ = boost::program_options::collect_unrecognized(
       parsed.options, boost::program_options::include_positional);
 
-    program_options_initialized_ = true;
-
 #if defined(FLECSI_ENABLE_FLOG)
-    if(flog_tags_ == "0") {
-      if(process_ == 0) {
-        std::cout << "Available tags (FLOG):" << std::endl;
-
-        for(auto t : flog_tag_map()) {
-          std::cout << " " << t.first << std::endl;
-        } // for
-      } // if
-
-      return status::help;
-    } // if
-
     if(flog_initialize(flog_tags_, flog_verbose_, flog_output_process_)) {
       return status::error;
     } // if
@@ -234,6 +335,8 @@ struct context {
       Kokkos::initialize(argc, argv);
     } // if
 #endif
+
+    initialized_ = true;
 
     return status::success;
   } // initialize_generic
@@ -498,16 +601,28 @@ protected:
   int64_t flog_output_process_;
 
   bool initialize_dependent_ = true;
-  bool program_options_initialized_ = false;
+
+  // Option Descriptions
   std::map<std::string, boost::program_options::options_description>
     descriptions_map_;
-  boost::program_options::variables_map variables_map_;
+
+  // Positional options
+  boost::program_options::positional_options_description positional_desc_;
+  boost::program_options::options_description hidden_options_;
+  std::map<std::string, std::string> positional_help_;
+
+  // Validation functions
+  std::map<std::string,
+    std::pair<bool, std::function<bool(boost::any const &)>>>
+    option_checks_;
+
   std::vector<std::string> unrecognized_options_;
 
   /*--------------------------------------------------------------------------*
     Basic runtime data members.
    *--------------------------------------------------------------------------*/
 
+  bool initialized_ = false;
   size_t process_ = std::numeric_limits<size_t>::max();
   size_t processes_ = std::numeric_limits<size_t>::max();
   size_t threads_per_process_ = std::numeric_limits<size_t>::max();

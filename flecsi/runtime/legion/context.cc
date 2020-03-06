@@ -24,7 +24,6 @@
 #include <flecsi/runtime/legion/context.hh>
 #include <flecsi/runtime/legion/mapper.hh>
 #include <flecsi/runtime/legion/tasks.hh>
-#include <flecsi/runtime/program_options.hh>
 #include <flecsi/runtime/types.hh>
 
 namespace flecsi::runtime {

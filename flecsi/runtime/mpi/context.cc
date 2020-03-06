@@ -16,7 +16,6 @@
 #endif
 
 #include <flecsi/runtime/mpi/context.hh>
-#include <flecsi/runtime/program_options.hh>
 
 using namespace boost::program_options;
 
