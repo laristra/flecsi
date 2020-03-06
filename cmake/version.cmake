@@ -16,11 +16,23 @@ execute_process(COMMAND ${CMAKE_SOURCE_DIR}/VERSION
   OUTPUT_VARIABLE version_output)
 string(REGEX REPLACE "\n$" "" version "${version_output}")
 
+# debug
+# message(STATUS "VERSION: ${version}")
+
 string(REPLACE " " ";" fields ${version_output})
+list(LENGTH fields size)
 
 list(GET fields 0 branch)
 list(GET fields 1 version)
-list(SUBLIST fields 2 -1 rest)
+
+if(size GREATER 2)
+  list(SUBLIST fields 2 -1 rest)
+endif()
+
+# debug
+#message(STATUS "branch: ${branch}")
+#message(STATUS "version: ${version}")
+#message(STATUS "fields: ${fields}")
 
 set(${PROJECT_NAME}_COMMITS)
 if(rest)
