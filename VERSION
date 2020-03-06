@@ -15,60 +15,60 @@ if [ -e $cwd/.git ] ; then
   detached=`git status --short --branch`
 
   if [[ $detached =~ "no branch" ]]; then
-    version=`cat $cwd/.version`
-    echo "$version (detached head)"
+    echo "none undefined"
     exit 0
   fi
 
   describe=`git describe`
-
-  IFS='-'
-  read -ra DESCRIBE <<< "$describe"
-
-  if [ ${#DESCRIBE[*]} != 3 ]; then
-    echo "ERROR: invalid value returned by git describe"
-    exit 1
-  fi
-
-  sha=${DESCRIBE[2]}
-
-  # Devel branch
-  if [[ ${describe:0:1} == "d" ]]; then
-    major=`echo ${DESCRIBE[0]} | sed 's,d,,'`
-    commits=${DESCRIBE[1]}
-    echo "devel $major ($commits commits ahead at $sha)"
-
-  # Feature branch
-  elif [[ ${describe:0:1} == "f" ]]; then
-    #major=`echo ${DESCRIBE[0]} | sed 's,f,,'`
-    version=`echo ${DESCRIBE[0]} | sed 's,f,,'`
-    IFS='.'
-    read -ra VERSION <<< "$version"
-    major=${VERSION[0]}
-    minor=${VERSION[1]}
-    commits=${DESCRIBE[1]}
-    if (( $commits > 0 )); then
-      echo "feature $major.$minor ($commits commits ahead at $sha)"
-    else
-      echo "feature $major.$minor"
-    fi
-
-  # Release branch
-  elif [[ ${describe:0:1} == "v" ]]; then
-    release=${DESCRIBE[0]}
-    commits=${DESCRIBE[1]}
-    IFS='.'
-    read -ra RELEASE <<< "$release"
-    major=`echo ${RELEASE[0]} | sed 's,v,,'`
-    minor=${RELEASE[1]}
-    patch=${RELEASE[2]}
-    if (( $commits > 0 )); then
-      echo "release $major.$minor.$patch" \
-        "($commits commits ahead of tag at $sha)"
-    else
-      echo "release $major.$minor.$patch"
-    fi
-  fi
 else
-    cat .version
+  cat $cwd/.version
+  exit 0
+fi
+
+IFS='-'
+read -ra DESCRIBE <<< "$describe"
+
+if [ ${#DESCRIBE[*]} != 3 ]; then
+  echo "ERROR: invalid value returned by git describe"
+  exit 1
+fi
+
+sha=${DESCRIBE[2]}
+
+# Devel branch
+if [[ ${describe:0:1} == "d" ]]; then
+  major=`echo ${DESCRIBE[0]} | sed 's,d,,'`
+  commits=${DESCRIBE[1]}
+  echo "devel $major ($commits commits ahead at $sha)"
+
+# Feature branch
+elif [[ ${describe:0:1} == "f" ]]; then
+  #major=`echo ${DESCRIBE[0]} | sed 's,f,,'`
+  version=`echo ${DESCRIBE[0]} | sed 's,f,,'`
+  IFS='.'
+  read -ra VERSION <<< "$version"
+  major=${VERSION[0]}
+  minor=${VERSION[1]}
+  commits=${DESCRIBE[1]}
+  if (( $commits > 0 )); then
+    echo "feature $major.$minor ($commits commits ahead at $sha)"
+  else
+    echo "feature $major.$minor"
+  fi
+
+# Release branch
+elif [[ ${describe:0:1} == "v" ]]; then
+  release=${DESCRIBE[0]}
+  commits=${DESCRIBE[1]}
+  IFS='.'
+  read -ra RELEASE <<< "$release"
+  major=`echo ${RELEASE[0]} | sed 's,v,,'`
+  minor=${RELEASE[1]}
+  patch=${RELEASE[2]}
+  if (( $commits > 0 )); then
+    echo "release $major.$minor.$patch" \
+      "($commits commits ahead of tag at $sha)"
+  else
+    echo "release $major.$minor.$patch"
+  fi
 fi
