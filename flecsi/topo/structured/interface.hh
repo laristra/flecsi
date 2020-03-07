@@ -19,7 +19,6 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/reference.hh"
 #include "flecsi/topo/structured/types.hh"
 
 namespace flecsi {

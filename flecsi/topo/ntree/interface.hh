@@ -18,7 +18,6 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #endif
-#include "flecsi/data/reference.hh"
 #include "flecsi/topo/ntree/coloring.hh"
 #include "flecsi/topo/ntree/geometry.hh"
 #include "flecsi/topo/ntree/storage.hh"

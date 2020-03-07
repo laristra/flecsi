@@ -25,7 +25,6 @@
 #include "flecsi/data/privilege.hh"
 #include "flecsi/exec/leg/future.hh"
 #include "flecsi/run/backend.hh"
-#include "flecsi/topo/core.hh"
 #include "flecsi/util/demangle.hh"
 #include "flecsi/util/tuple_walker.hh"
 

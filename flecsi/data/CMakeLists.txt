@@ -20,6 +20,7 @@
 set(data_HEADERS
   accessor.hh
   backend.hh
+  coloring.hh
   reference.hh
   field.hh
   field_info.hh
