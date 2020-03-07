@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Style Guide &mdash; FleCSI 2.-1 (devel) documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/core-guide/style-guide.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Versioning" href="versioning.html" />
+    <link rel="prev" title="Core Guide" href="../core-guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 2.-1 (devel)
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Build &amp; Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../core-guide.html">Core Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Style Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-rules">Additional Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="versioning.html">Versioning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Contributors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../core-guide.html">Core Guide</a> &raquo;</li>
+        
+      <li>Style Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/core-guide/style-guide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="style-guide">
+<h1>Style Guide<a class="headerlink" href="#style-guide" title="Permalink to this headline">¶</a></h1>
+<p>Unless otherwise specified, follow the <a class="reference external" href="https://www.boost.org/development/requirements.html#Design_and_Programming">Boost “Design and Programming”
+guidelines</a> and <a class="reference external" href="https://www.boost.org/development/header.html">header guidelines</a>.  They do not address purely stylistic
+matters of indentation, spacing, and brace placement; those are addressed for
+FleCSI by <code class="docutils literal notranslate"><span class="pre">clang-format</span></code>.</p>
+<div class="section" id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Starting from the 2019 version:</p>
+<ul class="simple">
+<li><p>Optimization does matter for FleCSI, but only where the overhead it
+introduces is expected to be a significant fraction of the application’s
+runtime.</p></li>
+<li><p>Obviously FleCSI uses certain additional libraries (like Legion).  Do not
+add further dependencies without discussion.  As a single component, there
+is no need to limit use of one part of FleCSI by another.</p></li>
+<li><p>The ABI concerns, especially for Windows, are irrelevant.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">noexcept</span></code> has replaced exception-specifications and should be used as
+appropriate, especially for move operations.</p></li>
+<li><p>FleCSI uses its own unit-testing framework, not Boost’s.</p></li>
+<li><p>The preferable line-length limit is 78 characters, so that even a diff of
+such a file avoids the line continuations used in some displays.</p></li>
+<li><p>Individual documentation files do not get their own copyright/license.</p></li>
+<li><p>The source-file header is of course different.</p></li>
+<li><p>FleCSI uses <code class="docutils literal notranslate"><span class="pre">flog_assert</span></code>, not <code class="docutils literal notranslate"><span class="pre">BOOST_ASSERT</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code> do not require special treatment.</p></li>
+<li><p>Header and source files are suffixed with <code class="docutils literal notranslate"><span class="pre">.hh</span></code> and <code class="docutils literal notranslate"><span class="pre">.cc</span></code>.</p></li>
+<li><p>There are no “primary directories”.</p></li>
+<li><p>Code documentation is generated by Doxygen, prose by Sphinx.</p></li>
+</ul>
+</div>
+<div class="section" id="additional-rules">
+<h2>Additional Rules<a class="headerlink" href="#additional-rules" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Changes purely for stylistic reasons should be rare and must appear in a
+separate commit (preferably a separate merge request).</p></li>
+<li><p>Class and enumeration names do not get a suffix <code class="docutils literal notranslate"><span class="pre">_t</span></code>.</p></li>
+<li><p>Header names are “absolute” (<em>i.e.</em>, begin with <code class="docutils literal notranslate"><span class="pre">flecsi/</span></code>).</p></li>
+<li><p>Function documentation uses the imperative mood.</p></li>
+</ul>
+</div>
+<div class="section" id="directory-structure">
+<h2>Directory Structure<a class="headerlink" href="#directory-structure" title="Permalink to this headline">¶</a></h2>
+<p>The source code for the core FleCSI infrastructure is located in the
+<em>top-level/flecsi</em> directory. For the most part, the subdirectories of
+this directory correspond to the different namespaces in the core
+infrastructure. Each of these subdirectories must contain a valid
+CMakeLists.txt file. However, none of their children should have a
+CMakeLists.txt file, i.e., the build system will not recurse beyond the
+first level of subdirectories. Developers should use relative paths
+within a CMakeLists.txt file to identify source in subdirectories.</p>
+<p>Unit test files should be placed in the <em>test</em> subdirectory of each
+namespace subdirectory. By convention, developers should not create
+subdirectories within the test subdirectory.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="versioning.html" class="btn btn-neutral float-right" title="Versioning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../core-guide.html" class="btn btn-neutral float-left" title="Core Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Contents caption */
+    .wy-menu-vertical>p.caption {
+      color: #ffffff;
+    }
+
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+
+    /* Sidebar */
+    .wy-nav-side {
+      background: #216897;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

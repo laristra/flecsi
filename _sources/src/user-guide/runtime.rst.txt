@@ -9,7 +9,7 @@ With the following CMake options enabled:
 
 .. code-block:: console
 
-  $ cmake .. -DENABLE_FLOG=ON -DENABLE_BOOST=ON -DENABLE_GRAPHVIZ=ON
+  $ cmake .. -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
 
 an executable compiled with FleCSI will have several command-line options available. For example, running the *color* unit test from its location in *test/execution* with the *-h* flag, will produce the following output:
 

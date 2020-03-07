@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Versioning &mdash; FleCSI 2.-1 (devel) documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/core-guide/versioning.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contributors" href="../team.html" />
+    <link rel="prev" title="Style Guide" href="style-guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 2.-1 (devel)
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Build &amp; Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../core-guide.html">Core Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="style-guide.html">Style Guide</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Versioning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#branch-types">Branch Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tags">Tags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Contributors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../core-guide.html">Core Guide</a> &raquo;</li>
+        
+      <li>Versioning</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/core-guide/versioning.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="versioning">
+<h1>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h1>
+<p>FleCSI’s versioning system uses three branch types (descibed below) that
+define the purpose and provenance of the code at a particular commit,
+with tags that label points of interest in the development cycle, e.g,.
+releases or stable features.</p>
+<div class="section" id="branch-types">
+<h2>Branch Types<a class="headerlink" href="#branch-types" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>incompatible</strong> <br />
+The <em>devel</em> branch is where work on the next major release takes
+place, potentially with interface and feature changes that are
+<em>incompatible</em> with previous versions.</p></li>
+<li><p><strong>feature</strong> <br />
+Feature branches (named for their <em>major</em> version number, e.g., 1, 2,
+3) are for feature development on the current major version.</p></li>
+<li><p><strong>release</strong> <br />
+Release branches (named for their <em>major.minor</em> version number, e.g.,
+1.1, 1.2) are stable versions of the code base. These can only be
+modified with bug fixes. At appropriate points, tags (named for their
+<em>major.minor.patch</em> version number, e.g., 1.1.2) are used to identify
+patched versions.</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>At the time of writing, FleCSI has the following branches:</p>
+<p><strong>devel</strong> (incompatible) <br />
+<strong>1</strong> (feature) <br />
+<strong>1.4</strong> (release)</p>
+</div>
+</div>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<p>The form of a tag is determined by the underlying branch type and commit
+it is intended to reference:</p>
+<ul class="simple">
+<li><p><strong>devel branch</strong> <br />
+In general, a commit on the devel branch should only be tagged if it
+is the first commit <em>after</em> a new feature branch has been created, and
+should be named with <em>d</em> and the major version of the feature branch,
+e.g., when feature branch <em>2</em> is created, a new devel tag <em>d2</em> should
+be created on the next devel commit.</p></li>
+<li><p><strong>feature branch</strong> <br />
+Feature tags should be created on the next commit after a new release
+branch is created, with <em>f</em> and the major.minor version of the release
+branch, e.g., when release branch <em>1.5</em> is created, a new feature tag
+<em>f1.5</em> should be created on the next feature commit.</p></li>
+<li><p><strong>release branch</strong> <br />
+Release tags should be created for each new release, with <em>v</em> and the
+release version, e.g., <em>v1.4.1</em>.</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Tags mark a <em>whence</em> or <em>origin</em> for development rather than a
+<em>whither</em> or <em>completion</em>. The first letter of the tag is important,
+i.e., <em>d</em>, <em>f</em>, or <em>v</em>, as it is used by FleCSI to determine the
+branch type of the tag during CMake configuration.</p>
+</div>
+</div>
+<div class="section" id="workflow">
+<h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<p>FleCSI development uses a <em>devel -&gt; feature -&gt; release</em> forking workflow
+that can be visualized as in <a class="reference internal" href="#branch"><span class="std std-numref">Fig. 2</span></a>. Bugfixes and features can
+be back-merged into <em>feature</em> or <em>devel</em>, as appropriate.</p>
+<div class="figure align-default" id="id1">
+<span id="branch"></span><img alt="../../_images/branch.png" src="../../_images/branch.png" />
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Workflow diagram illustrating basic workflow using the three branch
+types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../team.html" class="btn btn-neutral float-right" title="Contributors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="style-guide.html" class="btn btn-neutral float-left" title="Style Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Contents caption */
+    .wy-menu-vertical>p.caption {
+      color: #ffffff;
+    }
+
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+
+    /* Sidebar */
+    .wy-nav-side {
+      background: #216897;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

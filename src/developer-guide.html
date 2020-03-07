@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer Guide &mdash; FleCSI 2.0 documentation</title>
+  <title>Developer Guide &mdash; FleCSI 2.-1 (devel) documentation</title>
   
 
   
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Style Guide" href="developer-guide/style-guide.html" />
+    <link rel="next" title="Task Invocation" href="developer-guide/execution.html" />
     <link rel="prev" title="Logging Utility" href="user-guide/flog.html" /> 
 </head>
 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.0
+                Version: 2.-1 (devel)
               </div>
             
           
@@ -93,13 +93,11 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="build.html">Build &amp; Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/style-guide.html">Style Guide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/patterns.html">FleCSI Design Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/versioning.html">Versioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="developer-guide/execution.html">Task Invocation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="developer-guide/execution.html#task-execution">Task Execution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="developer-guide/data.html">Data Model</a></li>
@@ -108,6 +106,7 @@
 <li class="toctree-l2"><a class="reference internal" href="developer-guide/topology.html#topology-initialization-workflow">Topology Initialization Workflow</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="core-guide.html">Core Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html">Contributors</a></li>
 </ul>
@@ -177,27 +176,8 @@
   <div class="section" id="developer-guide">
 <h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">User Guide:</span></p>
+<p class="caption"><span class="caption-text">Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/style-guide.html">Style Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/style-guide.html#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/style-guide.html#additional-rules">Additional Rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/style-guide.html#directory-structure">Directory Structure</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/patterns.html">FleCSI Design Patterns</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/patterns/meyers_singleton.html">Meyer’s Singleton</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/patterns/factory.html">Object Factory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/patterns/type_erasure.html">Type Erasure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/patterns/policies.html">Policy-Based Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/patterns/CRTP.html">Curiously Recurring Template Pattern (CRTP)</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/versioning.html">Versioning</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/versioning.html#branche-types">Branche Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/versioning.html#workflow">Workflow</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide/execution.html">Task Invocation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide/execution.html#task-execution">Task Execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide/data.html">Data Model</a></li>
@@ -216,7 +196,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="developer-guide/style-guide.html" class="btn btn-neutral float-right" title="Style Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="developer-guide/execution.html" class="btn btn-neutral float-right" title="Task Invocation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="user-guide/flog.html" class="btn btn-neutral float-left" title="Logging Utility" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -1,0 +1,6 @@
+<map id="flecsi::execution::future_base_t" name="flecsi::execution::future_base_t">
+<area shape="rect" id="node2" href="$structflecsi_1_1execution_1_1legion__future_3_01RETURN_00_01launch__type__t_1_1index_01_4.html" title="flecsi::execution::\llegion_future\&lt; RETURN,\l launch_type_t::index \&gt;" alt="" coords="179,5,348,61"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1execution_1_1legion__future_3_01RETURN_00_01launch__type__t_1_1single_01_4.html" title="flecsi::execution::\llegion_future\&lt; RETURN,\l launch_type_t::single \&gt;" alt="" coords="179,85,348,141"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1execution_1_1legion__future_3_01void_00_01launch__type__t_1_1index_01_4.html" title="flecsi::execution::\llegion_future\&lt; void,\l launch_type_t::index \&gt;" alt="" coords="184,165,343,221"/>
+<area shape="rect" id="node5" href="$structflecsi_1_1execution_1_1legion__future_3_01void_00_01launch__type__t_1_1single_01_4.html" title="flecsi::execution::\llegion_future\&lt; void,\l launch_type_t::single \&gt;" alt="" coords="183,245,344,301"/>
+</map>

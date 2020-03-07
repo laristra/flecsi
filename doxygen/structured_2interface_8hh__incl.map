@@ -1,0 +1,17 @@
+<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/topology/structured/interface.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/topology/structured/interface.hh">
+<area shape="rect" id="node2" href="$reference_8hh.html" title="flecsi/data/reference.hh" alt="" coords="652,117,810,143"/>
+<area shape="rect" id="node45" href="$topology_2structured_2types_8hh.html" title="flecsi/topology/structured\l/types.hh" alt="" coords="459,109,627,151"/>
+<area shape="rect" id="node3" href="$runtime_2types_8hh.html" title="flecsi/runtime/types.hh" alt="" coords="466,355,620,382"/>
+<area shape="rect" id="node19" href="$serialize_8hh_source.html" title="flecsi/utils/serialize.hh" alt="" coords="908,199,1058,225"/>
+<area shape="rect" id="node7" href="$common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="293,437,446,464"/>
+<area shape="rect" id="node12" href="$id_8hh.html" title="flecsi/utils/id.hh" alt="" coords="218,512,332,539"/>
+<area shape="rect" id="node16" href="$offset_8hh.html" title="flecsi/utils/offset.hh" alt="" coords="407,512,543,539"/>
+<area shape="rect" id="node27" href="$flog_8hh.html" title="flog.hh" alt="" coords="998,273,1059,300"/>
+<area shape="rect" id="node44" href="$type__traits_8hh.html" title="type_traits.hh" alt="" coords="1618,273,1719,300"/>
+<area shape="rect" id="node28" href="$utils_2flog_2utils_8hh.html" title="flecsi/utils/flog/utils.hh" alt="" coords="1644,587,1796,613"/>
+<area shape="rect" id="node30" href="$message_8hh.html" title="flecsi/utils/flog/message.hh" alt="" coords="1239,355,1420,382"/>
+<area shape="rect" id="node42" href="$tag__scope_8hh.html" title="flecsi/utils/flog/tag\l_scope.hh" alt="" coords="1066,348,1194,389"/>
+<area shape="rect" id="node31" href="$state_8hh.html" title="flecsi/utils/flog/state.hh" alt="" coords="1202,437,1359,464"/>
+<area shape="rect" id="node40" href="$utils_2flog_2types_8hh.html" title="flecsi/utils/flog/types.hh" alt="" coords="1332,512,1492,539"/>
+<area shape="rect" id="node32" href="$packet_8hh.html" title="flecsi/utils/flog/packet.hh" alt="" coords="1000,587,1166,613"/>
+</map>

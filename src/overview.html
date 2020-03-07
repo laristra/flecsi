@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Overview &mdash; FleCSI 2.-1 (devel) documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/overview.html"/>
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Build &amp; Install" href="build.html" />
+    <link rel="prev" title="Introduction" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 2.-1 (devel)
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#namespaces">Namespaces</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="build.html">Build &amp; Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core-guide.html">Core Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Contributors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Overview</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/src/overview.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="overview">
+<span id="id1"></span><h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>The structure of applications built on top of the FleCSI programming
+system assumes three basic types of users. Each of the user types has
+their own set of responsibilities that are designed to separate
+concerns, and to make sure that development tasks are intuitive and
+achievable by the associated user type.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>A single individual may play the role of more than one user type.</p>
+</div>
+<p>The user types are:</p>
+<ul class="simple">
+<li><p><strong>Core Developer</strong> <br />
+These are users who design, implement, and maintain the core FleCSI
+library. Generally, these users are expert C++ developers who have a
+well-developed understanding of the the low-level design of the FleCSI
+software architecture. These users are generally computer scientists
+with expertise in generic programming techniques, data structure
+design, and optimization.</p></li>
+<li><p><strong>Specialization Developer</strong> <br />
+These are users who adapt the core FleCSI data structures and runtime
+interfaces to create domain-specific interfaces for application
+developers.  These users are required to understand the components of
+the FleCSI interface that can be statically specialized, and must have
+a solid understanding of the runtime interface. Additionally,
+specialization developers are assumed to understand the requirements
+of the application area for which they are designing an interface.
+These users are generally computational scientists with expertise in
+one or more numerical methods areas.</p></li>
+<li><p><strong>Application Developer</strong> <br />
+These users are methods developers or physicists who use a particular
+FleCSI specialization layer to develop and maintain application codes.
+These are the FleCSI end-users, who have expertise in designing and
+implementing numerical methods to solve complicated, multiphysics
+simulation problems.</p></li>
+</ul>
+<p>The source code implementing a FleCSI project will reflect this user
+structure: The project will link to the core FleCSI library; The project
+will use one or more specializations (These will usually also be
+libraries that are linked to by the application.); and, The application
+developers will use the core and specialization interfaces to write
+their applications.</p>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>FleCSI documentation is primarily directed at <em>Application</em> and
+<em>Specialization</em> developers, and is structured so that these users can
+easily skip topics that are out-of-scope for their focus area.
+Documentation is split between <em>prose</em> (the documentation you are
+reading now), and <em>API</em> documentation that is generated by Doxygen. It
+is also divided into <em>User Guide</em>, and <em>Developer Guide</em> sections.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Where appropriate we will annotate the documentation to identify the
+intended user audience.</p>
+</div>
+<p>All users should should read the <em>User Guide</em> documentation and work
+through the tutorials, as these describe the runtime, control,
+execution, and data models that define the FLeCSI programming model.
+Users who are interested in developing FleCSI specializations should
+also read the <em>Developer Guide</em>. Finally, FleCSI core developers should
+read the <em>Core Guide</em>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <em>Core Guide</em> is really only appropriate for developers who are
+creating/maintaining the FleCSI internal repository, or who are
+directly contributing code to the core library.</p>
+</div>
+</div>
+<div class="section" id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h2>
+<p>FlecSI uses C++ namespaces to identify interfaces that are intended for
+different user types:</p>
+<ul class="simple">
+<li><p><strong>flecsi</strong> <br />
+The types and functions defined in the <em>flecsi</em> namespace are intended
+for all user types, but are primarily targeted to application
+developers.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Application developers should <strong>never</strong> use types or methods that are
+not defined in the top-level <em>flecsi</em> namespace.</p>
+</div>
+<ul class="simple">
+<li><p><strong>flecsi::X</strong> <br />
+The types and functions defined in <em>flecsi::X</em> namespaces, where <em>X</em>
+is nested within <em>flecsi</em>, e.g., <em>flecsi::topology</em>, should only be
+used by specialzation and core developers.</p></li>
+<li><p><strong>flecsi::X::Y</strong> <br />
+The types and functions defined in <em>flecsi::X::Y</em> namespaces are
+intended for internal FleCSI development only! <strong>Use of any of these
+types or functions outside of the core library is undefined!!!</strong>.</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="build.html" class="btn btn-neutral float-right" title="Build &amp; Install" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Contents caption */
+    .wy-menu-vertical>p.caption {
+      color: #ffffff;
+    }
+
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+
+    /* Sidebar */
+    .wy-nav-side {
+      background: #216897;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

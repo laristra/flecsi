@@ -14,6 +14,10 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
+<link href="tab_a.png" rel="stylesheet" type="text/css"/>
+<link href="tab_b.png" rel="stylesheet" type="text/css"/>
+<link href="tab_s.png" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -24,7 +28,7 @@
   <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: 2.0</span>
+		<span id="projectnumber">Version: 2.-1 (devel)</span>
    </div>
   </td>
  </tr>
@@ -61,11 +65,178 @@ $(function() {
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Legion Runtime Backend<div class="ingroups"><a class="el" href="group__runtime.html">Runtime Interface</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="dynheader">
+Collaboration diagram for Legion Runtime Backend:</div>
+<div class="dyncontent">
+<center><table><tr><td><img src="group__legion-runtime.png" border="0" alt="" usemap="#group____legion-runtime"/>
+<map name="group____legion-runtime" id="group____legion-runtime">
+<area shape="rect" id="node2" href="group__runtime.html" title="Runtime Interface" alt="" coords="5,5,132,32"/>
+</map>
+</td></tr></table></center>
+</div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gad43a20bfd0b2650ff4a35d7eb7e237af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__legion-runtime.html#gad43a20bfd0b2650ff4a35d7eb7e237af">flecsi::runtime::mapper_registration</a> (Legion::Machine machine, Legion::HighLevelRuntime *rt, const std::set&lt; Legion::Processor &gt; &amp;local_procs)</td></tr>
+<tr class="separator:gad43a20bfd0b2650ff4a35d7eb7e237af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5c4d6df6bc77f159df88dcd21d9fe4fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__legion-runtime.html#ga5c4d6df6bc77f159df88dcd21d9fe4fd">flecsi::runtime::handoff_to_mpi_task</a> (const Legion::Task *, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;, Legion::Context, Legion::Runtime *)</td></tr>
+<tr class="separator:ga5c4d6df6bc77f159df88dcd21d9fe4fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0e96ee5956bf045c640054d2b716ac5f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__legion-runtime.html#ga0e96ee5956bf045c640054d2b716ac5f">flecsi::runtime::wait_on_mpi_task</a> (const Legion::Task *, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;, Legion::Context, Legion::Runtime *)</td></tr>
+<tr class="separator:ga0e96ee5956bf045c640054d2b716ac5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga12efd0896860a7d71c531b6646e3269c"><td class="memItemLeft" align="right" valign="top"><a id="ga12efd0896860a7d71c531b6646e3269c"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::runtime::flog_reduction_task</b> (const Legion::Task *, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;, Legion::Context, Legion::Runtime *)</td></tr>
+<tr class="separator:ga12efd0896860a7d71c531b6646e3269c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This module contains the Legion backend implementation of the FleCSI runtime model. </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ga5c4d6df6bc77f159df88dcd21d9fe4fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5c4d6df6bc77f159df88dcd21d9fe4fd">&#9670;&nbsp;</a></span>handoff_to_mpi_task()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::runtime::handoff_to_mpi_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Interprocess communication to pass control to MPI runtime. </p>
+
+</div>
+</div>
+<a id="gad43a20bfd0b2650ff4a35d7eb7e237af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad43a20bfd0b2650ff4a35d7eb7e237af">&#9670;&nbsp;</a></span>mapper_registration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::runtime::mapper_registration </td>
+          <td>(</td>
+          <td class="paramtype">Legion::Machine&#160;</td>
+          <td class="paramname"><em>machine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::HighLevelRuntime *&#160;</td>
+          <td class="paramname"><em>rt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::set&lt; Legion::Processor &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_procs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>mapper_registration is used to replace DefaultMapper with <a class="el" href="classflecsi_1_1runtime_1_1mpi__mapper__t.html">mpi_mapper_t</a> in FLeCSI </p>
+
+</div>
+</div>
+<a id="ga0e96ee5956bf045c640054d2b716ac5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0e96ee5956bf045c640054d2b716ac5f">&#9670;&nbsp;</a></span>wait_on_mpi_task()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::runtime::wait_on_mpi_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Interprocess communication to wait for control to pass back to the Legion runtime. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

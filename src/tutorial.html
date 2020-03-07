@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorial &mdash; FleCSI 2.0 documentation</title>
+  <title>Tutorial &mdash; FleCSI 2.-1 (devel) documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.0
+                Version: 2.-1 (devel)
               </div>
             
           
@@ -93,9 +93,9 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="build.html">Build &amp; Install</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#design-philosophy">Design Philosophy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-docker-container">Using the Docker Container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tutorial-examples">Tutorial Examples</a><ul>
@@ -106,6 +106,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core-guide.html">Core Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html">Contributors</a></li>
 </ul>
@@ -174,49 +175,10 @@
             
   <div class="section" id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial attempts to give a basic overview of the design philosophy
-and structure of the FleCSI programming system. Each subdirectory
-contains example codes that can be compiled with the CMake. More details
-on how to do this are given below in the <em>Getting Started</em> section.</p>
-<div class="section" id="design-philosophy">
-<h2>Design Philosophy<a class="headerlink" href="#design-philosophy" title="Permalink to this headline">¶</a></h2>
-<p>The structure of applications built on top of the FleCSI programming
-system assumes three basic types of users. Each of the user types has
-their own set of responsibilities that are designed to separate
-concerns, and to make sure that development tasks are intuitive and
-achievable by the associated user type.</p>
-<p>The user types are:</p>
-<ul class="simple">
-<li><p><strong>Core Developer</strong> <br />
-These are users who design, implement, and maintain the core FleCSI
-library. Generally, these users are expert C++ developers who have a
-well-developed understanding of the the low-level design of the FleCSI
-software architecture. These users are generally computer scientists
-with expertise in generic programming techniques, data structure
-design, and optimization.</p></li>
-<li><p><strong>Specialization Developer</strong> <br />
-These are users who adapt the core FleCSI data structures and runtime
-interfaces to create domain-specific interfaces for application
-developers.  These users are required to understand the components of
-the FleCSI interface that can be statically specialized, and must have
-a solid understanding of the runtime interface. Additionally,
-specialization developers are assumed to understand the requirements
-of the application area for which they are designing an interface.
-These users are generally computational scientists with expertise in
-one or more numerical methods areas.</p></li>
-<li><p><strong>Application Developer</strong> <br />
-These users are methods developers or physicists who use a particular
-FleCSI specialization layer to develop and maintain application codes.
-These are the FleCSI end-users, who have expertise in designing and
-implementing numerical methods to solve complicated, multiphysics
-simulation problems.</p></li>
-</ul>
-<p>The source code implementing a FleCSI project will reflect this user
-structure: The project will link to the core FleCSI library; The project
-will use one or more specializations (These will usually also be
-libraries that are linked to by the application.); and, The application
-developers will use the core and specialization interfaces to write
-their applications.</p>
+<p>This tutorial attempts to give a basic introduction to the design
+philosophy and structure of the FleCSI programming system. Each
+subdirectory contains example codes that can be compiled with CMake.
+Details on how to build the tutorials are given below.</p>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <p>This tutorial is primarily designed as an introduction for application
@@ -231,7 +193,6 @@ specialization are encouraged to examine the source code in the
 <em>specialization</em> subdirectory of this tutorial (The complete source
 code is in the <em>flecsi/tutorial/specialization</em> subdirectory of the
 main project.)</p>
-</div>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>

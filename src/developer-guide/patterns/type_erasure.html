@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Type Erasure &mdash; FleCSI 2.0 documentation</title>
+  <title>Type Erasure &mdash; FleCSI 2.-1 (devel) documentation</title>
   
 
   
@@ -38,9 +38,7 @@
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Policy-Based Design" href="policies.html" />
-    <link rel="prev" title="Object Factory" href="factory.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -67,7 +65,7 @@
             
             
               <div class="version">
-                Version: 2.0
+                Version: 2.-1 (devel)
               </div>
             
           
@@ -92,29 +90,13 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../build.html">Build &amp; Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../user-guide.html">User Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../developer-guide.html">Developer Guide</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../style-guide.html">Style Guide</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../patterns.html">FleCSI Design Patterns</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="meyers_singleton.html">Meyer’s Singleton</a></li>
-<li class="toctree-l3"><a class="reference internal" href="factory.html">Object Factory</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Type Erasure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="policies.html">Policy-Based Design</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CRTP.html">Curiously Recurring Template Pattern (CRTP)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../versioning.html">Versioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../execution.html">Task Invocation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../execution.html#task-execution">Task Execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../data.html">Data Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../topology.html">Topology Design Idioms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../topology.html#adding-new-topologies">Adding New Topologies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../topology.html#topology-initialization-workflow">Topology Initialization Workflow</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../core-guide.html">Core Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../team.html">Contributors</a></li>
 </ul>
@@ -161,10 +143,6 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../../../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../../developer-guide.html">Developer Guide</a> &raquo;</li>
-        
-          <li><a href="../patterns.html">FleCSI Design Patterns</a> &raquo;</li>
         
       <li>Type Erasure</li>
     
@@ -364,15 +342,6 @@ in <em>flecsi/execution/legion/task_wrapper.h</em>. In particular,
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="policies.html" class="btn btn-neutral float-right" title="Policy-Based Design" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="factory.html" class="btn btn-neutral float-left" title="Object Factory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

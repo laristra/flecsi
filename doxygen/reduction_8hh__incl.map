@@ -1,0 +1,19 @@
+<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/execution/reduction.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/execution/reduction.hh">
+<area shape="rect" id="node2" href="$runtime_2backend_8hh.html" title="../runtime/backend.hh" alt="" coords="319,109,467,136"/>
+<area shape="rect" id="node4" href="$legion_2context_8hh.html" title="legion/context.hh" alt="" coords="333,184,454,211"/>
+<area shape="rect" id="node5" href="$context_8hh.html" title="../context.hh" alt="" coords="1103,259,1198,285"/>
+<area shape="rect" id="node7" href="$runtime_2types_8hh.html" title="flecsi/runtime/types.hh" alt="" coords="475,415,629,442"/>
+<area shape="rect" id="node10" href="$common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="489,505,642,531"/>
+<area shape="rect" id="node6" href="$field__info_8hh.html" title="flecsi/data/field_info.hh" alt="" coords="1014,333,1170,360"/>
+<area shape="rect" id="node22" href="$task__attributes_8hh.html" title="flecsi/execution/task\l_attributes.hh" alt="" coords="1158,497,1301,539"/>
+<area shape="rect" id="node25" href="$flog_8hh.html" title="flecsi/utils/flog.hh" alt="" coords="1546,333,1670,360"/>
+<area shape="rect" id="node15" href="$id_8hh.html" title="flecsi/utils/id.hh" alt="" coords="755,587,869,613"/>
+<area shape="rect" id="node19" href="$offset_8hh.html" title="flecsi/utils/offset.hh" alt="" coords="595,587,731,613"/>
+<area shape="rect" id="node23" href="$debruijn_8hh.html" title="flecsi/utils/debruijn.hh" alt="" coords="971,587,1119,613"/>
+<area shape="rect" id="node26" href="$utils_2flog_2utils_8hh.html" title="flecsi/utils/flog/utils.hh" alt="" coords="1973,661,2125,688"/>
+<area shape="rect" id="node28" href="$message_8hh.html" title="flecsi/utils/flog/message.hh" alt="" coords="1797,415,1979,442"/>
+<area shape="rect" id="node42" href="$tag__scope_8hh.html" title="flecsi/utils/flog/tag\l_scope.hh" alt="" coords="1645,408,1773,449"/>
+<area shape="rect" id="node29" href="$state_8hh.html" title="flecsi/utils/flog/state.hh" alt="" coords="1665,505,1823,531"/>
+<area shape="rect" id="node40" href="$utils_2flog_2types_8hh.html" title="flecsi/utils/flog/types.hh" alt="" coords="1781,587,1941,613"/>
+<area shape="rect" id="node30" href="$packet_8hh.html" title="flecsi/utils/flog/packet.hh" alt="" coords="1731,661,1898,688"/>
+</map>

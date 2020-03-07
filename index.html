@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction &mdash; FleCSI 2.0 documentation</title>
+  <title>Introduction &mdash; FleCSI 2.-1 (devel) documentation</title>
   
 
   
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Build &amp; Install" href="src/build.html" /> 
+    <link rel="next" title="Overview" href="src/overview.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                Version: 2.0
+                Version: 2.-1 (devel)
               </div>
             
           
@@ -92,10 +92,12 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="src/overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/build.html">Build &amp; Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/user-guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src/core-guide.html">Core Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src/team.html">Contributors</a></li>
 </ul>
@@ -199,6 +201,11 @@ particular layouts or data structure representations.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="src/overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/overview.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/overview.html#namespaces">Namespaces</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="src/build.html">Build &amp; Install</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src/build.html#requirements-prerequisites">Requirements &amp; Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/build.html#getting-the-code">Getting The Code</a></li>
@@ -214,7 +221,6 @@ particular layouts or data structure representations.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src/tutorial.html">Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#design-philosophy">Design Philosophy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#tutorial-examples">Tutorial Examples</a><ul>
@@ -245,31 +251,27 @@ particular layouts or data structure representations.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src/developer-guide.html">Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/style-guide.html">Style Guide</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#exceptions">Exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#additional-rules">Additional Rules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/style-guide.html#directory-structure">Directory Structure</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/patterns.html">FleCSI Design Patterns</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/meyers_singleton.html">Meyer’s Singleton</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/factory.html">Object Factory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/type_erasure.html">Type Erasure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/policies.html">Policy-Based Design</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/patterns/CRTP.html">Curiously Recurring Template Pattern (CRTP)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="src/developer-guide/versioning.html">Versioning</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/versioning.html#branche-types">Branche Types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide/versioning.html#workflow">Workflow</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide/execution.html">Task Invocation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide/execution.html#task-execution">Task Execution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide/data.html">Data Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide/topology.html">Topology Design Idioms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide/topology.html#adding-new-topologies">Adding New Topologies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide/topology.html#topology-initialization-workflow">Topology Initialization Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src/core-guide.html">Core Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src/core-guide/style-guide.html">Style Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/core-guide/style-guide.html#exceptions">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/core-guide/style-guide.html#additional-rules">Additional Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/core-guide/style-guide.html#directory-structure">Directory Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="src/core-guide/versioning.html">Versioning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/core-guide/versioning.html#branch-types">Branch Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/core-guide/versioning.html#tags">Tags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/core-guide/versioning.html#workflow">Workflow</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
@@ -308,7 +310,7 @@ particular layouts or data structure representations.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="src/build.html" class="btn btn-neutral float-right" title="Build &amp; Install" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="src/overview.html" class="btn btn-neutral float-right" title="Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

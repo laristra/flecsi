@@ -1,0 +1,2 @@
+<map id="flecsi::utils::is_iterative_container&lt; T, voided&lt; decltype(std::declval&lt; T &gt;().begin()), decltype(std::declval&lt; T &gt;().end())&gt; &gt;" name="flecsi::utils::is_iterative_container&lt; T, voided&lt; decltype(std::declval&lt; T &gt;().begin()), decltype(std::declval&lt; T &gt;().end())&gt; &gt;">
+</map>

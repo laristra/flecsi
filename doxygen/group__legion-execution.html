@@ -14,6 +14,10 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
+<link href="tab_a.png" rel="stylesheet" type="text/css"/>
+<link href="tab_b.png" rel="stylesheet" type="text/css"/>
+<link href="tab_s.png" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -24,7 +28,7 @@
   <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: 2.0</span>
+		<span id="projectnumber">Version: 2.-1 (devel)</span>
    </div>
   </td>
  </tr>
@@ -61,11 +65,77 @@ $(function() {
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Legion Execution Backend<div class="ingroups"><a class="el" href="group__execution.html">Execution Interface</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="dynheader">
+Collaboration diagram for Legion Execution Backend:</div>
+<div class="dyncontent">
+<center><table><tr><td><img src="group__legion-execution.png" border="0" alt="" usemap="#group____legion-execution"/>
+<map name="group____legion-execution" id="group____legion-execution">
+<area shape="rect" id="node2" href="group__execution.html" title="Execution Interface" alt="" coords="5,5,140,32"/>
+</map>
+</td></tr></table></center>
+</div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__future.html">flecsi::execution::legion_future&lt; RETURN, launch &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__future_3_01RETURN_00_01launch__type__t_1_1single_01_4.html">flecsi::execution::legion_future&lt; RETURN, launch_type_t::single &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__future_3_01void_00_01launch__type__t_1_1single_01_4.html">flecsi::execution::legion_future&lt; void, launch_type_t::single &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion__future_3_01RETURN_00_01launch__type__t_1_1index_01_4.html">flecsi::execution::legion_future&lt; RETURN, launch_type_t::index &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1task__wrapper.html">flecsi::execution::legion::task_wrapper&lt; F, P &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpi__future.html">flecsi::execution::mpi_future&lt; R, launch &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classarray__ref_3_01T_01_4.html">array_ref&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gad117d37918dde8974776ede31e7c7f32"><td class="memTemplParams" colspan="2">template&lt;typename RETURN , task&lt; RETURN &gt; * TASK, std::size_t A&gt; </td></tr>
+<tr class="memitem:gad117d37918dde8974776ede31e7c7f32"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__legion-execution.html#gad117d37918dde8974776ede31e7c7f32">flecsi::execution::legion::detail::register_task</a> ()</td></tr>
+<tr class="separator:gad117d37918dde8974776ede31e7c7f32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This module contains the Legion backend implementation of the FleCSI execution model. </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="gad117d37918dde8974776ede31e7c7f32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad117d37918dde8974776ede31e7c7f32">&#9670;&nbsp;</a></span>register_task()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename RETURN , task&lt; RETURN &gt; * TASK, std::size_t A&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion::detail::register_task </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Register a task with Legion.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">RETURN</td><td>The return type of the task. </td></tr>
+    <tr><td class="paramname">TASK</td><td>The legion task. </td></tr>
+    <tr><td class="paramname">A</td><td>task attributes </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

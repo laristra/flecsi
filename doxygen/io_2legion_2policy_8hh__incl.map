@@ -1,0 +1,30 @@
+<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/io/legion/policy.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/io/legion/policy.hh">
+<area shape="rect" id="node3" href="$field_8hh.html" title="flecsi/data/field.hh" alt="" coords="2109,109,2237,136"/>
+<area shape="rect" id="node4" href="$privilege_8hh.html" title="flecsi/data/privilege.hh" alt="" coords="2699,341,2851,367"/>
+<area shape="rect" id="node10" href="$storage__classes_8hh.html" title="flecsi/data/storage\l_classes.hh" alt="" coords="2211,423,2341,464"/>
+<area shape="rect" id="node11" href="$topology_8hh.html" title="flecsi/data/topology.hh" alt="" coords="1187,184,1341,211"/>
+<area shape="rect" id="node14" href="$runtime_2backend_8hh.html" title="flecsi/runtime/backend.hh" alt="" coords="339,430,509,457"/>
+<area shape="rect" id="node17" href="$runtime_2types_8hh.html" title="flecsi/runtime/types.hh" alt="" coords="1364,661,1519,688"/>
+<area shape="rect" id="node40" href="$core_8hh_source.html" title="flecsi/topology/core.hh" alt="" coords="1710,512,1863,539"/>
+<area shape="rect" id="node5" href="$bitutils_8hh.html" title="flecsi/utils/bitutils.hh" alt="" coords="2925,430,3067,457"/>
+<area shape="rect" id="node8" href="$typeify_8hh.html" title="flecsi/utils/typeify.hh" alt="" coords="2758,430,2901,457"/>
+<area shape="rect" id="node12" href="$data_2backend_8hh.html" title="flecsi/data/backend.hh" alt="" coords="1073,259,1226,285"/>
+<area shape="rect" id="node28" href="$flog_8hh.html" title="flecsi/utils/flog.hh" alt="" coords="513,661,637,688"/>
+<area shape="rect" id="node42" href="$topology__registration_8hh.html" title="flecsi/data/topology\l_registration.hh" alt="" coords="1531,333,1666,375"/>
+<area shape="rect" id="node13" href="$data_2legion_2policy_8hh.html" title="flecsi/data/legion\l/policy.hh" alt="" coords="1107,333,1227,375"/>
+<area shape="rect" id="node15" href="$legion_2context_8hh.html" title="legion/context.hh" alt="" coords="801,512,922,539"/>
+<area shape="rect" id="node16" href="$context_8hh.html" title="../context.hh" alt="" coords="1030,587,1125,613"/>
+<area shape="rect" id="node20" href="$common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="1293,743,1446,770"/>
+<area shape="rect" id="node25" href="$id_8hh.html" title="flecsi/utils/id.hh" alt="" coords="1255,825,1369,852"/>
+<area shape="rect" id="node27" href="$offset_8hh.html" title="flecsi/utils/offset.hh" alt="" coords="1639,825,1775,852"/>
+<area shape="rect" id="node29" href="$utils_2flog_2utils_8hh.html" title="flecsi/utils/flog/utils.hh" alt="" coords="729,825,881,852"/>
+<area shape="rect" id="node31" href="$message_8hh.html" title="flecsi/utils/flog/message.hh" alt="" coords="659,743,840,770"/>
+<area shape="rect" id="node32" href="$tag__scope_8hh.html" title="flecsi/utils/flog/tag\l_scope.hh" alt="" coords="245,736,373,777"/>
+<area shape="rect" id="node41" href="$type__traits_8hh.html" title="flecsi/utils/type_traits.hh" alt="" coords="1454,587,1618,613"/>
+<area shape="rect" id="node43" href="$global_8hh.html" title="flecsi/topology/internal\l/global.hh" alt="" coords="1605,423,1757,464"/>
+<area shape="rect" id="node44" href="$index_8hh.html" title="flecsi/topology/internal\l/index.hh" alt="" coords="1832,423,1984,464"/>
+<area shape="rect" id="node45" href="$const__string_8hh.html" title="flecsi/utils/const\l_string.hh" alt="" coords="2064,736,2181,777"/>
+<area shape="rect" id="node46" href="$hash_8hh.html" title="flecsi/utils/hash.hh" alt="" coords="2313,825,2444,852"/>
+<area shape="rect" id="node47" href="$demangle_8hh.html" title="flecsi/utils/demangle.hh" alt="" coords="1522,743,1681,770"/>
+<area shape="rect" id="node48" href="$tuple__walker_8hh.html" title="flecsi/utils/tuple\l_walker.hh" alt="" coords="2518,423,2631,464"/>
+</map>
