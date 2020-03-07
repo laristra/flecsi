@@ -26,7 +26,6 @@ set(data_HEADERS
   layout.hh
   privilege.hh
   topology_accessor.hh
-  topology_registration.hh
   topology_slot.hh
   topology.hh
 )
