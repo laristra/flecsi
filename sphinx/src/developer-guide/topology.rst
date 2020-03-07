@@ -150,10 +150,9 @@ Adding New Topologies
    represent the meta data associated with an instance of the new
    topology type.
 
-3. **Topology Instance**: Define runtime-specific topology instance types in
-   *data/runtime/topologies.h*, where *runtime* is implemented for each
-   supported backend runtime type, e.g., Legion, MPI, and HPX
-   (currently).
+3. **Topology Instance**: Define a topology instance type in
+   *data/topology.hh* in terms of the generic *region* and *partition*
+   interfaces.
 
    The new type must define a *set_coloring* method that takes the
    *coloring* type defined in assocaited *types.h* file:

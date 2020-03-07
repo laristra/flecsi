@@ -20,7 +20,7 @@
   data model.
  */
 
-#include "flecsi/data/backend.hh"
+#include "flecsi/data/topology.hh"
 #include "flecsi/data/topology_slot.hh"
 #include <flecsi/data/accessor.hh>
 #include <flecsi/data/coloring.hh>

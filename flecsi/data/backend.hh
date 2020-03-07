@@ -17,11 +17,6 @@
 
 #include <flecsi-config.h>
 
-namespace flecsi::data {
-template<typename>
-struct topology_data;
-} // namespace flecsi::data
-
 /*----------------------------------------------------------------------------*
   This section works with the build system to select the correct runtime
   implemenation for the data model.

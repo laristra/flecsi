@@ -23,6 +23,7 @@
 
 #include <cstddef>
 #include <limits>
+#include <vector>
 
 namespace flecsi {
 namespace data {
@@ -36,6 +37,8 @@ struct field_info_t {
   field_id_t fid = FIELD_ID_MAX;
   size_t type_size = std::numeric_limits<size_t>::max();
 }; // struct field_info_t
+
+using fields = std::vector<const field_info_t *>;
 
 } // namespace data
 } // namespace flecsi

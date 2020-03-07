@@ -28,6 +28,7 @@ set(data_HEADERS
   topology_accessor.hh
   topology_registration.hh
   topology_slot.hh
+  topology.hh
 )
 
 set(data_SOURCES

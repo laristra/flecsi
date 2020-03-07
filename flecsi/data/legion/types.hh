@@ -24,7 +24,6 @@
 #endif
 
 #include <flecsi/runtime/backend.hh>
-#include <flecsi/topology/base.hh>
 
 #include <legion.h>
 
@@ -83,7 +82,7 @@ index1(std::size_t n) {
 }
 
 struct region {
-  region(std::size_t n, const runtime::context::field_info_store_t & fs)
+  region(std::size_t n, const fields & fs)
     : index_space(index1(n)),
       field_space([&fs] { // TIP: IIFE (q.v.) allows statements here
         auto & r = run();
@@ -100,14 +99,6 @@ struct region {
   unique_index_space index_space;
   unique_field_space field_space;
   unique_logical_region logical_region;
-};
-
-template<class Topo>
-struct simple : region {
-  using type = Topo;
-  simple(std::size_t n = 1)
-    : region(n,
-        runtime::context_t::instance().get_field_info_store<Topo>(dense)) {}
 };
 
 struct partition {
@@ -142,88 +133,9 @@ struct partition {
 };
 } // namespace legion
 
-/*----------------------------------------------------------------------------*
-  Global Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_data<topology::global> : legion::simple<topology::global> {
-  topology_data(const type::coloring &) {}
-};
-
-/*----------------------------------------------------------------------------*
-  Index Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_data<topology::index> : legion::simple<topology::index>,
-                                        legion::partition {
-  topology_data(const type::coloring & coloring)
-    : simple(coloring.size()), partition(
-                                 *this,
-                                 coloring.size(),
-                                 [](std::size_t i) {
-                                   return std::pair{i, i + 1};
-                                 }) {}
-};
-
-template<>
-struct topology_data<topology::canonical_base> {
-  using type = topology::canonical_base;
-  topology_data(const type::coloring &) {}
-};
-
-template<>
-struct topology_data<topology::ntree_base> {
-  using type = topology::ntree_base;
-  topology_data(const type::coloring &) {}
-};
-
-/*----------------------------------------------------------------------------*
-  Unstructured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_data<topology::unstructured_base> {
-  using type = topology::unstructured_base;
-  topology_data(const type::coloring &);
-
-#if 0
-  std::vector<base_data_t> entities;
-  std::vector<base_data_t> adjacencies;
-  std::vector<partition> exclusive;
-  std::vector<partition> shared;
-  std::vector<partition> ghost;
-  std::vector<partition> ghost_owners;
-#endif
-};
-
-#if 0
-struct unstructured_dense_runtime_data_t {
-}; // struct unstructured_dense_runtime_data_t
-
-struct unstructured_ragged_runtime_data_t {
-}; // struct unstructured_ragged_runtime_data_t
-
-struct unstructured_sparse_runtime_data_t {
-}; // struct unstructured_sparse_runtime_data_t
-
-struct unstructured_subspace_runtime_data_t {
-}; // struct unstructured_subspace_runtime_data_t
-
-struct structured_mesh_runtime_data_t {
-}; // struct structured_mesh_runtime_data_t
-#endif
-
-/*----------------------------------------------------------------------------*
-  Structured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_data<topology::structured_base> {
-  using type = topology::structured_base;
-  topology_data(const type::coloring &);
-};
+namespace detail {
+using legion::region, legion::partition; // for backend-agnostic interface
+}
 
 } // namespace data
 } // namespace flecsi

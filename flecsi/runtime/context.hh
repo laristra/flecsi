@@ -70,7 +70,7 @@ struct context {
     size_t key is the storage class.
    */
 
-  using field_info_store_t = std::vector<const data::field_info_t *>;
+  using field_info_store_t = data::fields;
   using field_info_map_t =
     std::unordered_map<size_t, std::vector<field_info_store_t>>;
 
