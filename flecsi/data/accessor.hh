@@ -138,7 +138,7 @@ struct accessor<storage_label_t::dense,
   using topology_t = topology::unstructured<POLICY_TYPE>;
 
   accessor(field_reference<DATA_TYPE, topology_t> const & ref)
-    : accessor(ref.info().fid) {}
+    : accessor(ref.fid()) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
 
   /*!
