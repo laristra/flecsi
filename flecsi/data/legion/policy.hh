@@ -51,25 +51,6 @@ struct topology_id {
 };
 
 /*----------------------------------------------------------------------------*
-  Index Topology.
- *----------------------------------------------------------------------------*/
-
-inline topology_data<topology::index>::topology_data(
-  const type::coloring & coloring)
-  : simple(coloring.size()), colors(coloring.size()) {
-
-  auto legion_runtime = Legion::Runtime::get_runtime();
-  auto legion_context = Legion::Runtime::get_context();
-
-  Legion::IndexPartition index_partition =
-    legion_runtime->create_equal_partition(
-      legion_context, index_space, index_space);
-
-  color_partition = legion_runtime->get_logical_partition(
-    legion_context, logical_region, index_partition);
-}
-
-/*----------------------------------------------------------------------------*
   Unstructured Mesh Topology.
  *----------------------------------------------------------------------------*/
 

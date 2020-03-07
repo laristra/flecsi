@@ -69,15 +69,22 @@ private:
 
 using unique_index_space =
   unique_handle<Legion::IndexSpace, &Legion::Runtime::destroy_index_space>;
+// Legion seems to be buggy with destroying partitions:
+using unique_index_partition = Legion::IndexPartition;
 using unique_field_space =
   unique_handle<Legion::FieldSpace, &Legion::Runtime::destroy_field_space>;
 using unique_logical_region = unique_handle<Legion::LogicalRegion,
   &Legion::Runtime::destroy_logical_region>;
-// TODO: do we need to destroy_logical_partition?
+using unique_logical_partition = Legion::LogicalPartition;
+
+inline unique_index_space
+index1(std::size_t n) {
+  return run().create_index_space(ctx(), Legion::Rect<1>(0, n - 1));
+}
 
 struct region {
   region(std::size_t n, const runtime::context::field_info_store_t & fs)
-    : index_space(run().create_index_space(ctx(), Legion::Rect<1>(0, n - 1))),
+    : index_space(index1(n)),
       field_space([&fs] { // TIP: IIFE (q.v.) allows statements here
         auto & r = run();
         const auto c = ctx();
@@ -102,6 +109,37 @@ struct simple : region {
     : region(n,
         runtime::context_t::instance().get_field_info_store<Topo>(dense)) {}
 };
+
+struct partition {
+  // TODO: support create_partition_by_image_range case
+  template<class F>
+  partition(const region & reg, std::size_t n, F f)
+    : color_space(index1(n)),
+      index_partition(run().create_partition_by_domain(
+        ctx(),
+        reg.index_space,
+        [&] {
+          std::map<Legion::DomainPoint, Legion::Domain> ret;
+          for(std::size_t i = 0; i < n; ++i) {
+            // NB: reg.index_space is assumed to be one-dimensional.
+            const auto [b, e] = f(i);
+            ret.try_emplace(i, Legion::Rect<1>(b, e - 1));
+          }
+          return ret;
+        }(),
+        color_space)),
+      logical_partition(run().get_logical_partition(ctx(),
+        reg.logical_region,
+        index_partition)) {}
+
+  std::size_t colors() const {
+    return run().get_index_space_domain(color_space).get_volume();
+  }
+
+  unique_index_space color_space;
+  unique_index_partition index_partition;
+  unique_logical_partition logical_partition;
+};
 } // namespace legion
 
 /*----------------------------------------------------------------------------*
@@ -118,10 +156,15 @@ struct topology_data<topology::global> : legion::simple<topology::global> {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::index> : legion::simple<topology::index> {
-  topology_data(const type::coloring &);
-  size_t colors;
-  Legion::LogicalPartition color_partition;
+struct topology_data<topology::index> : legion::simple<topology::index>,
+                                        legion::partition {
+  topology_data(const type::coloring & coloring)
+    : simple(coloring.size()), partition(
+                                 *this,
+                                 coloring.size(),
+                                 [](std::size_t i) {
+                                   return std::pair{i, i + 1};
+                                 }) {}
 };
 
 template<>
@@ -148,10 +191,10 @@ struct topology_data<topology::unstructured_base> {
 #if 0
   std::vector<base_data_t> entities;
   std::vector<base_data_t> adjacencies;
-  std::vector<Legion::LogicalPartition> exclusive;
-  std::vector<Legion::LogicalPartition> shared;
-  std::vector<Legion::LogicalPartition> ghost;
-  std::vector<Legion::LogicalPartition> ghost_owners;
+  std::vector<partition> exclusive;
+  std::vector<partition> shared;
+  std::vector<partition> ghost;
+  std::vector<partition> ghost_owners;
 #endif
 };
 

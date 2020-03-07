@@ -143,15 +143,15 @@ struct task_prologue_t {
     const data::field_reference<DATA_TYPE, topology::index> & ref) {
     auto & instance_data = ref.topology().get();
 
-    flog_assert(instance_data.colors == domain_,
+    flog_assert(instance_data.colors() == domain_,
       "attempting to pass index topology reference with size "
-        << instance_data.colors << " into task with launch domain of size "
+        << instance_data.colors() << " into task with launch domain of size "
         << domain_);
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
       "index topology accessor type only takes one privilege");
 
-    Legion::RegionRequirement rr(instance_data.color_partition,
+    Legion::RegionRequirement rr(instance_data.logical_partition,
       0,
       privilege_mode(get_privilege<0, PRIVILEGES>()),
       EXCLUSIVE,
