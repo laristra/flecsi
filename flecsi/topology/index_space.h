@@ -799,6 +799,10 @@ public:
     return *this;
   }
 
+#if !defined(_MSC_VER)
+  // MSVC fails to compile the cast() functions is the variadic template
+  // parameters are defaulted
+
   //-----------------------------------------------------------------//
   //! Cast an index space by re-specifying template parameters such
   //! as OWNED or SORTED.
@@ -836,10 +840,47 @@ public:
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
     auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
-      ID_STORAGE_TYPE2, STORAGE_TYPE2> *>(this);
+      ID_STORAGE_TYPE2, STORAGE_TYPE2> const *>(this);
     assert(res != nullptr && "invalid cast");
     return *res;
   }
+#else
+  //-----------------------------------------------------------------//
+  //! Cast an index space by re-specifying template parameters such
+  //! as OWNED or SORTED.
+  //-----------------------------------------------------------------//
+  template<class S,
+    bool STORAGE2 = STORAGE,
+    bool OWNED2 = OWNED,
+    bool SORTED2 = SORTED,
+    class F2 = F>
+  auto & cast() {
+    static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
+
+    auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
+      ID_STORAGE_TYPE, STORAGE_TYPE> *>(this);
+    assert(res != nullptr && "invalid cast");
+    return *res;
+  }
+
+  //-----------------------------------------------------------------//
+  //! Cast an index space by re-specifying template parameters such
+  //! as OWNED or SORTED.
+  //-----------------------------------------------------------------//
+  template<class S,
+    bool STORAGE2 = STORAGE,
+    bool OWNED2 = OWNED,
+    bool SORTED2 = SORTED,
+    class F2 = F>
+  auto & cast() const {
+    static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
+
+    auto res = reinterpret_cast<index_space_u<S, STORAGE2, OWNED2, SORTED2, F2,
+      ID_STORAGE_TYPE, STORAGE_TYPE> const *>(this);
+    assert(res != nullptr && "invalid cast");
+    return *res;
+  }
+#endif
 
   //-----------------------------------------------------------------//
   //! Return begin iterator
@@ -1395,7 +1436,7 @@ public:
     id_storage_t ret;
 
     if(r.sorted_) {
-      ret.resize(std::min(v_->size(), r.v_->size()));
+      ret.resize((std::min)(v_->size(), r.v_->size()));
 
       auto itr = std::set_intersection(
         v_->begin(), v_->end(), r.v_->begin(), r.v_->end(), ret.begin());
@@ -1406,7 +1447,7 @@ public:
       id_storage_t v2(*r.v_);
       std::sort(v2.begin(), v2.end());
 
-      ret.resize(std::min(v_->size(), v2.size()));
+      ret.resize((std::min)(v_->size(), v2.size()));
 
       auto itr = std::set_intersection(
         v_->begin(), v_->end(), v2.begin(), v2.end(), ret.begin());

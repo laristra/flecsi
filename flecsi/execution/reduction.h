@@ -48,7 +48,7 @@ struct min {
       } oldval, newval;
       do {
         oldval.as_int = *target;
-        newval.as_T = std::min(oldval.as_T, rhs);
+        newval.as_T = (std::min)(oldval.as_T, rhs);
       } while(
         !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 
@@ -60,7 +60,7 @@ struct min {
   static void fold(RHS & rhs1, RHS rhs2) {
 
     if constexpr(EXCLUSIVE) {
-      rhs1 = std::min(rhs1, rhs2);
+      rhs1 = (std::min)(rhs1, rhs2);
     }
     else {
       int64_t * target = (int64_t *)&rhs1;
@@ -71,7 +71,7 @@ struct min {
       } oldval, newval;
       do {
         oldval.as_int = *target;
-        newval.as_T = std::min(oldval.as_T, rhs2);
+        newval.as_T = (std::min)(oldval.as_T, rhs2);
       } while(
         !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
     } // if constexpr
