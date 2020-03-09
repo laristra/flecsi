@@ -1,4 +1,4 @@
-# Copyright 2013-2019 Lawrence Livermore National Security, LLC and other
+# Copyright 2013-2020 Lawrence Livermore National Security, LLC and other
 # Spack Project Developers. See the top-level COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -20,11 +20,14 @@ class Flecsi(CMakePackage):
     homepage = 'http://flecsi.org/'
     git      = 'https://github.com/laristra/flecsi.git'
 
-    version('master', branch='master', submodules=False, preferred=True)
+    version('devel', branch='devel', submodules=False, preferred=False)
+    version('1', branch='1', submodules=False, preferred=True)
+    version('1.4', branch='1.4', submodules=False, preferred=False)
 
-    variant('build_type', default='Release', values=('Debug', 'Release'),
+    variant('build_type', default='Release',
+            values=('Debug', 'Release', 'RelWithDebInfo', 'MinSizeRel'),
             description='The build type to build', multi=False)
-    variant('backend', default='mpi', values=('serial', 'mpi', 'legion', 'hpx'),
+    variant('backend', default='mpi', values=('serial', 'mpi', 'legion', 'hpx', 'charmpp'),
             description='Backend to use for distributed memory', multi=False)
     variant('debug_backend', default=False,
             description='Build Backend with Debug Mode')
@@ -59,12 +62,12 @@ class Flecsi(CMakePackage):
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
     depends_on('mpi', when='backend=hpx')
-    depends_on('legion@ctrl-rep-3 +shared +mpi build_type=Debug +hdf5', when='backend=legion +debug_backend +hdf5')
-    depends_on('legion@ctrl-rep-3 +shared +mpi build_type=Debug', when='backend=legion +debug_backend ~hdf5')
-    depends_on('legion@ctrl-rep-3 +shared +mpi build_type=Release +hdf5', when='backend=legion ~debug_backend +hdf5')
-    depends_on('legion@ctrl-rep-3 +shared +mpi build_type=Release', when='backend=legion ~debug_backend ~hdf5')
-    depends_on('hpx@1.3.0 cxxstd=14 build_type=Debug', when='backend=hpx +debug_backend')
-    depends_on('hpx@1.3.0 cxxstd=14 build_type=Release', when='backend=hpx ~debug_backend')
+    depends_on('legion@ctrl-rep-3+shared+mpi+hdf5 build_type=Debug', when='backend=legion +debug_backend +hdf5')
+    depends_on('legion@ctrl-rep-3+shared+mpi build_type=Debug', when='backend=legion +debug_backend ~hdf5')
+    depends_on('legion@ctrl-rep-3+shared+mpi+hdf5 build_type=Release', when='backend=legion ~debug_backend +hdf5')
+    depends_on('legion@ctrl-rep-3+shared+mpi build_type=Release', when='backend=legion ~debug_backend ~hdf5')
+    depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Debug', when='backend=hpx +debug_backend')
+    depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Release', when='backend=hpx ~debug_backend')
     depends_on('boost@1.70.0: cxxstd=14 +program_options')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
@@ -75,8 +78,7 @@ class Flecsi(CMakePackage):
     depends_on('llvm', when='+flecstan')
 
     conflicts('+tutorial', when='backend=hpx')
-#    conflicts('+hdf5', when='backend=hpx')
-#    conflicts('+hdf5', when='backend=mpi')
+    # conflicts('+hdf5', when='backend=hpx')
 
     def cmake_args(self):
         spec = self.spec
@@ -87,6 +89,7 @@ class Flecsi(CMakePackage):
                    '-DENABLE_COLORING=ON',
                    '-DENABLE_DEVEL_TARGETS=ON'
                    ]
+
         if '+cinch' in spec:
             options.append('-DCINCH_SOURCE_DIR=' + spec['cinch'].prefix)
 
@@ -118,7 +121,7 @@ class Flecsi(CMakePackage):
         else:
             options.append('-DBUILD_SHARED_LIBS=OFF')
 
-        if '+hdf5' in spec and spec.variants['backend'].value == 'legion':
+        if '+hdf5' in spec and spec.variants['backend'].value != 'hpx':
             options.append('-DENABLE_HDF5=ON')
         else:
             options.append('-DENABLE_HDF5=OFF')
@@ -126,13 +129,13 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_CALIPER=ON')
         else:
             options.append('-DENABLE_CALIPER=OFF')
-
         if '+tutorial' in spec:
             options.append('-DENABLE_FLECSIT=ON')
             options.append('-DENABLE_FLECSI_TUTORIAL=ON')
         else:
             options.append('-DENABLE_FLECSIT=OFF')
             options.append('-DENABLE_FLECSI_TUTORIAL=OFF')
+
         if '+flecstan' in spec:
             options.append('-DENABLE_FLECSTAN=ON')
         else:
@@ -152,4 +155,3 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_COVERAGE_BUILD=OFF')
 
         return options
-
