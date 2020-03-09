@@ -196,7 +196,6 @@ cinch_add_unit(gpu_task
   ARGUMENTS
     -ll:gpu 1
   THREADS 2
-  NOCI
 )
 endif()
 
@@ -382,7 +381,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     #     -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
     #     -DFLECSI_8_8_MESH
     #   POLICY ${UNIT_POLICY}
-    #   NOCI
     # )
 
     cinch_add_unit(handle_list
@@ -655,7 +653,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_8_8_MESH
         POLICY ${UNIT_POLICY}
       THREADS 4
-        NOCI
         FOLDER
           "Tests/Execution"
       )
@@ -705,7 +702,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
           -DFLECSI_8_8_MESH
         POLICY ${UNIT_POLICY}
       THREADS 4
-        NOCI
         FOLDER
           "Tests/Execution"
       )
@@ -745,7 +741,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       #     -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       #   POLICY ${UNIT_POLICY}
       #   THREADS 2
-      #   NOCI
       # )
 
     cinch_add_unit(test_mpi_wo_permissions
@@ -768,7 +763,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
       THREADS 1
-      NOCI
     )
 
     endif() # mpi
@@ -859,7 +853,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
-        NOCI
       )
 
     endif() # (ENABLE_PARMETIS)
