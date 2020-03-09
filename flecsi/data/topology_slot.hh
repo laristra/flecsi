@@ -19,16 +19,21 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/data/backend.hh>
 #include <flecsi/data/topology_registration.hh>
-#include <flecsi/runtime/types.hh>
 #include <flecsi/topology/core.hh>
-#include <flecsi/utils/flog.hh>
 
 #include <optional>
 
 namespace flecsi {
 namespace data {
+
+// Clients #include these (backend-specific) definitions elsewhere:
+
+// CRTP base for registering topology slots with the context if needed.
+template<class>
+struct topology_id;
+template<typename>
+struct topology_data;
 
 template<typename TOPOLOGY_TYPE>
 struct topology_slot : topology_id<topology_slot<TOPOLOGY_TYPE>> {

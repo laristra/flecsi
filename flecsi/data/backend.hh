@@ -18,9 +18,6 @@
 #include <flecsi-config.h>
 
 namespace flecsi::data {
-// CRTP base for registering topology slots with the context if needed.
-template<class>
-struct topology_id;
 template<typename>
 struct topology_data;
 } // namespace flecsi::data
