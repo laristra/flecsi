@@ -197,10 +197,11 @@ before_script:
       spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION};
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION};
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
       spack repo rm ${FLECSI_SPACK_SCOPE};
       ) 200>${DEPS_LOCK}
+    - $([ "$(grep -c "Errno " spack_tmp.out)" = "0" ] && exit 0 || exit 1)
 
 ###############
 # Build Stage #
