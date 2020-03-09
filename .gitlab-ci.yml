@@ -134,7 +134,7 @@ before_script:
   only:
     - merge_requests
     - "1.4"
-    - refactor
+    - devel
 
 .cache_template: &cache_def
   cache:
