@@ -20,6 +20,7 @@
 
 #cmakedefine FLECSI_ENABLE_MPI
 #cmakedefine FLECSI_ENABLE_LEGION
+#cmakedefine FLECSI_ENABLE_CHARM
 
 //----------------------------------------------------------------------------//
 // Enable Legion thread-local storage interface
