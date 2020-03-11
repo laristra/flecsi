@@ -470,8 +470,9 @@ struct legion_policy_t {
 
     std::map<Legion::FieldID, std::string> field_string_map;
 
-    for(const auto p : runtime::context_t::instance().get_field_info_store(
-          topology::id<topology::index>(), data::dense)) {
+    for(const auto p :
+      runtime::context_t::instance().get_field_info_store<topology::index>(
+        data::dense)) {
       field_string_map[p->fid] = std::to_string(p->fid);
     }
 
@@ -493,11 +494,11 @@ struct legion_policy_t {
       runtime->create_index_space_union(ctx, process_topology_file_ip, point, subspaces);
     }
 #else
-    Legion::IndexPartition process_topology_file_ip =
+    data::legion::unique_index_partition process_topology_file_ip =
       runtime->create_equal_partition(
         ctx, index_runtime_data.index_space, process_topology_file_is);
 #endif
-    Legion::LogicalPartition process_topology_file_lp =
+    data::legion::unique_logical_partition process_topology_file_lp =
       runtime->get_logical_partition(
         ctx, index_runtime_data.logical_region, process_topology_file_ip);
     hdf5_file.add_logical_region(index_runtime_data.logical_region,
@@ -506,8 +507,8 @@ struct legion_policy_t {
       field_string_map);
 
     file_map[&index_runtime_data] = {std::move(process_topology_file_is),
-      process_topology_file_ip,
-      process_topology_file_lp};
+      std::move(process_topology_file_ip),
+      std::move(process_topology_file_lp)};
   } // add_process_topology
 
   //----------------------------------------------------------------------------//
@@ -525,9 +526,9 @@ struct legion_policy_t {
   // Implementation of legion_io_policy_t::checkpoint_process_topology.
   //----------------------------------------------------------------------------//
   void checkpoint_process_topology(legion_hdf5_t & hdf5_file) {
-    auto & flecsi_context = runtime::context_t::instance();
-    auto const & fid_vector = flecsi_context.get_field_info_store(
-      topology::id<topology::index>(), data::dense);
+    auto const & fid_vector =
+      runtime::context_t::instance().get_field_info_store<topology::index>(
+        data::dense);
 
     auto & index_runtime_data = process_topology.get();
     {
@@ -581,9 +582,9 @@ struct legion_policy_t {
   // Implementation of legion_io_policy_t::recover_process_topology.
   //----------------------------------------------------------------------------//
   void recover_process_topology(legion_hdf5_t & hdf5_file) {
-    auto & flecsi_context = runtime::context_t::instance();
-    auto const & fid_vector = flecsi_context.get_field_info_store(
-      topology::id<topology::index>(), data::dense);
+    auto const & fid_vector =
+      runtime::context_t::instance().get_field_info_store<topology::index>(
+        data::dense);
 
     auto & index_runtime_data = process_topology.get();
 
@@ -752,8 +753,8 @@ struct legion_policy_t {
 private:
   struct topology_data {
     data::legion::unique_index_space index_space;
-    Legion::IndexPartition index_partition;
-    Legion::LogicalPartition logical_partition;
+    data::legion::unique_index_partition index_partition;
+    data::legion::unique_logical_partition logical_partition;
   };
   std::map<const data::topology_data<topology::index> *, topology_data>
     file_map;

@@ -24,7 +24,6 @@
 #endif
 
 #include <flecsi/runtime/backend.hh>
-#include <flecsi/topology/base.hh>
 
 #include <legion.h>
 
@@ -69,130 +68,74 @@ private:
 
 using unique_index_space =
   unique_handle<Legion::IndexSpace, &Legion::Runtime::destroy_index_space>;
+// Legion seems to be buggy with destroying partitions:
+using unique_index_partition = Legion::IndexPartition;
 using unique_field_space =
   unique_handle<Legion::FieldSpace, &Legion::Runtime::destroy_field_space>;
 using unique_logical_region = unique_handle<Legion::LogicalRegion,
   &Legion::Runtime::destroy_logical_region>;
-// TODO: do we need to destroy_logical_partition?
+using unique_logical_partition = Legion::LogicalPartition;
 
-struct topology_base {
-  topology_base(Legion::Domain d)
-    : index_space(run().create_index_space(ctx(), d)) {}
-  size_t index_space_id = unique_isid_t::instance().next(); // TODO: needed?
+inline unique_index_space
+index1(std::size_t n) {
+  return run().create_index_space(ctx(), Legion::Rect<1>(0, n - 1));
+}
+
+struct region {
+  region(std::size_t n, const fields & fs)
+    : index_space(index1(n)),
+      field_space([&fs] { // TIP: IIFE (q.v.) allows statements here
+        auto & r = run();
+        const auto c = ctx();
+        unique_field_space ret = r.create_field_space(c);
+        Legion::FieldAllocator allocator = r.create_field_allocator(c, ret);
+        for(auto const & fi : fs)
+          allocator.allocate_field(fi->type_size, fi->fid);
+        return ret;
+      }()),
+      logical_region(
+        run().create_logical_region(ctx(), index_space, field_space)) {}
+
   unique_index_space index_space;
-  unique_field_space field_space = run().create_field_space(ctx());
+  unique_field_space field_space;
   unique_logical_region logical_region;
+};
 
-protected:
-  void allocate() {
-    logical_region =
-      run().create_logical_region(ctx(), index_space, field_space);
+struct partition {
+  // TODO: support create_partition_by_image_range case
+  template<class F>
+  partition(const region & reg, std::size_t n, F f)
+    : color_space(index1(n)),
+      index_partition(run().create_partition_by_domain(
+        ctx(),
+        reg.index_space,
+        [&] {
+          std::map<Legion::DomainPoint, Legion::Domain> ret;
+          for(std::size_t i = 0; i < n; ++i) {
+            // NB: reg.index_space is assumed to be one-dimensional.
+            const auto [b, e] = f(i);
+            ret.try_emplace(i, Legion::Rect<1>(b, e - 1));
+          }
+          return ret;
+        }(),
+        color_space)),
+      logical_partition(run().get_logical_partition(ctx(),
+        reg.logical_region,
+        index_partition)) {}
+
+  std::size_t colors() const {
+    return run().get_index_space_domain(color_space).get_volume();
   }
+
+  unique_index_space color_space;
+  unique_index_partition index_partition;
+  unique_logical_partition logical_partition;
 };
 } // namespace legion
 
-/*----------------------------------------------------------------------------*
-  Global Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_data<topology::global> : legion::topology_base {
-  using type = topology::global;
-  topology_data(const type::coloring &)
-    : topology_base(Legion::Domain::from_rect<1>(
-        LegionRuntime::Arrays::Rect<1>(LegionRuntime::Arrays::Point<1>(0),
-          LegionRuntime::Arrays::Point<1>(1)))) {
-    Legion::FieldAllocator allocator =
-      legion::run().create_field_allocator(legion::ctx(), field_space);
-
-    /*
-      Note: This call to get_field_info_store uses the non-const version
-      so that this call works if no fields have been registered. In other parts
-      of the code that occur after initialization, the const version of this
-      call should be used.
-     */
-
-    auto & field_info_store =
-      runtime::context_t::instance().get_field_info_store(
-        topology::id<topology::global>(), storage_label_t::dense);
-
-    for(auto const & fi : field_info_store) {
-      allocator.allocate_field(fi->type_size, fi->fid);
-    } // for
-
-    allocate();
-  }
-};
-
-/*----------------------------------------------------------------------------*
-  Index Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_data<topology::index> : legion::topology_base {
-  using type = topology::index;
-  topology_data(const type::coloring &);
-  size_t colors;
-  Legion::LogicalPartition color_partition;
-};
-
-template<>
-struct topology_data<topology::canonical_base> {
-  using type = topology::canonical_base;
-  topology_data(const type::coloring &) {}
-};
-
-template<>
-struct topology_data<topology::ntree_base> {
-  using type = topology::ntree_base;
-  topology_data(const type::coloring &) {}
-};
-
-/*----------------------------------------------------------------------------*
-  Unstructured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_data<topology::unstructured_base> {
-  using type = topology::unstructured_base;
-  topology_data(const type::coloring &);
-
-#if 0
-  std::vector<base_data_t> entities;
-  std::vector<base_data_t> adjacencies;
-  std::vector<Legion::LogicalPartition> exclusive;
-  std::vector<Legion::LogicalPartition> shared;
-  std::vector<Legion::LogicalPartition> ghost;
-  std::vector<Legion::LogicalPartition> ghost_owners;
-#endif
-};
-
-#if 0
-struct unstructured_dense_runtime_data_t {
-}; // struct unstructured_dense_runtime_data_t
-
-struct unstructured_ragged_runtime_data_t {
-}; // struct unstructured_ragged_runtime_data_t
-
-struct unstructured_sparse_runtime_data_t {
-}; // struct unstructured_sparse_runtime_data_t
-
-struct unstructured_subspace_runtime_data_t {
-}; // struct unstructured_subspace_runtime_data_t
-
-struct structured_mesh_runtime_data_t {
-}; // struct structured_mesh_runtime_data_t
-#endif
-
-/*----------------------------------------------------------------------------*
-  Structured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-template<>
-struct topology_data<topology::structured_base> {
-  using type = topology::structured_base;
-  topology_data(const type::coloring &);
-};
+namespace detail {
+using legion::region, legion::partition; // for backend-agnostic interface
+}
 
 } // namespace data
 } // namespace flecsi

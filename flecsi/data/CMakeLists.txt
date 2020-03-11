@@ -27,6 +27,7 @@ set(data_HEADERS
   storage_classes.hh
   topology_accessor.hh
   topology_registration.hh
+  topology_slot.hh
   topology.hh
 )
 

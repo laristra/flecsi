@@ -8,7 +8,7 @@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
 
-   Copyright (c) 2016, Triad National Security, LLC
+   Copyright (c) 2020, Triad National Security, LLC
    All rights reserved.
                                                                               */
 #pragma once
@@ -19,54 +19,105 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/data/backend.hh>
-#include <flecsi/data/topology_registration.hh>
-#include <flecsi/runtime/types.hh>
-#include <flecsi/topology/core.hh>
-#include <flecsi/utils/flog.hh>
+#include "flecsi/data/backend.hh"
+#include "flecsi/topology/base.hh"
 
-#include <optional>
+namespace flecsi::data {
 
-namespace flecsi {
-namespace data {
+namespace detail {
+#ifdef DOXYGEN // implemented per-backend
+struct region {
+  region(std::size_t, const fields &);
+};
 
-template<typename TOPOLOGY_TYPE>
-struct topology_slot : topology_id<topology_slot<TOPOLOGY_TYPE>> {
+struct partition {
+  template<class F> // F: int -> [start, end)
+  partition(const region &, std::size_t, F);
+  std::size_t colors() const;
+};
+#endif
 
-  using core_t = topology::core_t<TOPOLOGY_TYPE>;
-  static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
-    "topologies may not add data members");
-  using data_t = topology_data<topology::category_t<core_t>>;
+template<class Topo, std::size_t Index = 0>
+region
+make_region(std::size_t n, storage_label_t sclass = dense) {
+  return {n,
+    runtime::context_t::instance().get_field_info_store<Topo, Index>(sclass)};
+}
 
-  using coloring = typename TOPOLOGY_TYPE::coloring;
+template<class Topo>
+struct simple : region {
+  using type = Topo;
+  simple(std::size_t n = 1) : region(make_region<type>(n)) {}
+};
+} // namespace detail
 
-  data_t & allocate(const coloring & coloring_reference) {
-    return data.emplace(coloring_reference);
-  } // allocate
+template<typename>
+struct topology_data;
 
-  void deallocate() {
-    data.reset();
-  } // deallocate
+/*----------------------------------------------------------------------------*
+  Global Topology.
+ *----------------------------------------------------------------------------*/
 
-  data_t & get() {
-    return *data;
-  }
-  const data_t & get() const {
-    return *data;
-  }
+template<>
+struct topology_data<topology::global> : detail::simple<topology::global> {
+  topology_data(const type::coloring &) {}
+};
 
-private:
-  static const bool static_registered_;
-  // Force instantiation, working around GCC 9.1/9.2 bug #92062 with an
-  // explicitly dependent condition:
-  static_assert(((void)&static_registered_, sizeof(TOPOLOGY_TYPE)));
+/*----------------------------------------------------------------------------*
+  Index Topology.
+ *----------------------------------------------------------------------------*/
 
-  std::optional<data_t> data;
-}; // struct topology_slot
+template<>
+struct topology_data<topology::index> : detail::simple<topology::index>,
+                                        detail::partition {
+  topology_data(const type::coloring & coloring)
+    : simple(coloring.size()), partition(
+                                 *this,
+                                 coloring.size(),
+                                 [](std::size_t i) {
+                                   return std::pair{i, i + 1};
+                                 }) {}
+};
 
-template<typename TOPOLOGY_TYPE>
-const bool topology_slot<TOPOLOGY_TYPE>::static_registered_ =
-  (topology_registration<TOPOLOGY_TYPE>::register_fields(), true);
+template<>
+struct topology_data<topology::canonical_base> {
+  using type = topology::canonical_base;
+  topology_data(const type::coloring &) {}
+};
 
-} // namespace data
-} // namespace flecsi
+template<>
+struct topology_data<topology::ntree_base> {
+  using type = topology::ntree_base;
+  topology_data(const type::coloring &) {}
+};
+
+/*----------------------------------------------------------------------------*
+  Unstructured Mesh Topology.
+ *----------------------------------------------------------------------------*/
+
+template<>
+struct topology_data<topology::unstructured_base> {
+  using type = topology::unstructured_base;
+  topology_data(const type::coloring &);
+
+#if 0
+  std::vector<base_data_t> entities;
+  std::vector<base_data_t> adjacencies;
+  std::vector<partition> exclusive;
+  std::vector<partition> shared;
+  std::vector<partition> ghost;
+  std::vector<partition> ghost_owners;
+#endif
+};
+
+/*----------------------------------------------------------------------------*
+  Structured Mesh Topology.
+ *----------------------------------------------------------------------------*/
+
+template<>
+struct topology_data<topology::structured_base> {
+  using type = topology::structured_base;
+  topology_data(const type::coloring &);
+};
+
+} // namespace flecsi::data

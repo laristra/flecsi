@@ -19,6 +19,8 @@
 #error Do not include this file directly!
 #endif
 
+#include <cstddef> // size_t
+
 #include <flecsi/utils/type_traits.hh>
 
 namespace flecsi {
@@ -125,6 +127,12 @@ std::size_t
 id() {
   return detail::id<std::remove_cv_t<T>>();
 }
+
+template<class, class = void>
+inline constexpr std::size_t index_spaces = 1;
+template<class T>
+inline constexpr std::size_t index_spaces<T, decltype(void(T::index_spaces))> =
+  T::index_spaces;   // TIP: expression SFINAE uses T::index_spaces if defined
 
 } // namespace topology
 } // namespace flecsi

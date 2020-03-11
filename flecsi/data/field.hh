@@ -15,12 +15,11 @@
 
 /*! @file */
 
+#include "flecsi/data/topology_slot.hh"
 #include <flecsi/data/privilege.hh>
 #include <flecsi/data/storage_classes.hh>
-#include <flecsi/data/topology.hh>
 #include <flecsi/runtime/backend.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/topology/core.hh>
 
 namespace flecsi {
 namespace data {
@@ -101,11 +100,9 @@ struct field_member : field_info_t {
     privilege_pack<PRIVILEGES...>::value>;
 
   field_member()
-    : field_info_t{unique_fid_t::instance().next(),
-        INDEX_SPACE,
-        sizeof(DATA_TYPE)} {
-    runtime::context_t::instance().add_field_info(
-      topology::id<TOPOLOGY_TYPE>(), STORAGE_CLASS, *this);
+    : field_info_t{unique_fid_t::instance().next(), sizeof(DATA_TYPE)} {
+    runtime::context_t::instance().add_field_info<TOPOLOGY_TYPE, INDEX_SPACE>(
+      STORAGE_CLASS, *this);
   }
 
   /*!
