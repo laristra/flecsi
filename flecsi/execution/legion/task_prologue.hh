@@ -116,10 +116,8 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::singular,
-               topology::global,
-               DATA_TYPE,
-               PRIVILEGES> * /* parameter */,
+  void visit(
+    data::accessor<data::singular, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, topology::global> & ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
@@ -146,10 +144,8 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::singular,
-               topology::index,
-               DATA_TYPE,
-               PRIVILEGES> * /* parameter */,
+  void visit(
+    data::accessor<data::singular, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, topology::index> & ref) {
     auto & instance_data = ref.topology().get();
 

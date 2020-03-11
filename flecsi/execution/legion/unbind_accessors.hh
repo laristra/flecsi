@@ -48,13 +48,8 @@ namespace legion {
 struct unbind_accessors_t
   : public flecsi::utils::tuple_walker<unbind_accessors_t> {
 
-  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
-    The following methods are specializations on layout and topology
-    type, potentially for every permutation thereof.
-   *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
-  template<class Topo, typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::singular, Topo, DATA_TYPE, PRIVILEGES> &) {
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> &) {
   } // visit
 
   /*--------------------------------------------------------------------------*

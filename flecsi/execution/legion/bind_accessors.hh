@@ -65,14 +65,8 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
     : legion_runtime_(legion_runtime), legion_context_(legion_context),
       regions_(regions), futures_(futures) {}
 
-  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
-    The following methods are specializations on layout and topology
-    type, potentially for every permutation thereof.
-   *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
-  template<class Topo, typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(
-    data::accessor<data::singular, Topo, DATA_TYPE, PRIVILEGES> & accessor) {
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
     auto & reg = regions_[region++];
 
     //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),

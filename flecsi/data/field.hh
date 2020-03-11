@@ -26,10 +26,9 @@ namespace data {
 
 /// A data accessor.
 /// \tparam L data layout
-/// \tparam TOPOLOGY_TYPE core topology type
 /// \tparam T data type
 /// \tparam Priv access privileges
-template<layout L, typename TOPOLOGY_TYPE, typename T, std::size_t Priv>
+template<layout L, typename T, std::size_t Priv>
 struct accessor;
 
 /*!
@@ -91,8 +90,7 @@ struct field_member : field_info_t {
   using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 
   template<size_t... PRIVILEGES>
-  using accessor =
-    accessor<L, TOPOLOGY_TYPE, DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
+  using accessor = accessor<L, DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
 
   field_member()
     : field_info_t{unique_fid_t::instance().next(), sizeof(DATA_TYPE)} {

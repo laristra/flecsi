@@ -24,23 +24,22 @@
 #endif
 
 #include <flecsi/data/field.hh>
-#include <flecsi/topology/structured/interface.hh>
-#include <flecsi/topology/unstructured/interface.hh>
+#include"flecsi/data/reference.hh"
 
 namespace flecsi {
 namespace data {
 
-template<class Topo, typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<singular, Topo, DATA_TYPE, PRIVILEGES> : reference_base {
+template<typename DATA_TYPE, size_t PRIVILEGES>
+struct accessor<singular, DATA_TYPE, PRIVILEGES> : reference_base {
 
   friend void bind(accessor & a, DATA_TYPE * data) {
     a.data_ = data;
   }
 
   using value_type = DATA_TYPE;
-  using topology_t = Topo;
 
-  accessor(field_reference<DATA_TYPE, topology_t> const & ref)
+  template<class Topo>
+  accessor(field_reference<DATA_TYPE, Topo> const & ref)
     : accessor(ref.fid()) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
 
@@ -66,33 +65,12 @@ private:
 
 }; // struct accessor
 
-/*----------------------------------------------------------------------------*
-  NTree Topology.
- *----------------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------------*
-  Set Topology.
- *----------------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------------*
-  Structured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------------*
-  Unstructured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-// TODO: Do we need POLICY_TYPE, or should we avoid redundant instantiation by
-// keying on unstructured_base (or some equivalent enum)?
-template<typename POLICY_TYPE, typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<dense,
-  topology::unstructured<POLICY_TYPE>,
-  DATA_TYPE,
-  PRIVILEGES> : reference_base {
+template<typename DATA_TYPE, size_t PRIVILEGES>
+struct accessor<dense, DATA_TYPE, PRIVILEGES> : reference_base {
   using value_type = DATA_TYPE;
-  using topology_t = topology::unstructured<POLICY_TYPE>;
 
-  accessor(field_reference<DATA_TYPE, topology_t> const & ref)
+  template<class Topo>
+  accessor(field_reference<DATA_TYPE, Topo> const & ref)
     : accessor(ref.fid()) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
 
