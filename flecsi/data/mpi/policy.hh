@@ -13,9 +13,9 @@
                                                                               */
 #pragma once
 
-#include<cstddef>
+#include <cstddef>
 
-#include"flecsi/data/field_info.hh"
+#include "flecsi/data/field_info.hh"
 
 namespace flecsi {
 namespace data {
