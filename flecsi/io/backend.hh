@@ -17,6 +17,13 @@
 
 #include <flecsi-config.h>
 
+#include "flecsi/data/field.hh"
+#include "flecsi/topology/core.hh"
+
+namespace flecsi::io {
+using field_reference_t = data::field_reference_t<topology::index>;
+}
+
 /*----------------------------------------------------------------------------*
   This section works with the build system to select the correct runtime
   implemenation for the io model.
@@ -26,36 +33,12 @@
 
 #include <flecsi/io/legion/policy.hh>
 
-namespace flecsi {
-namespace io {
-
-using FLECSI_RUNTIME_IO_POLICY = legion_policy_t;
-
-} // namespace io
-} // namespace flecsi
-
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
 #include <flecsi/io/mpi/policy.hh>
 
-namespace flecsi {
-namespace io {
-
-using FLECSI_RUNTIME_IO_POLICY = mpi_policy_t;
-
-} // namespace io
-} // namespace flecsi
-
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
 
 #include <flecsi/io/hpx/policy.hh>
-
-namespace flecsi {
-namespace io {
-
-using FLECSI_RUNTIME_IO_POLICY = hpx_policy_t;
-
-} // namespace io
-} // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL

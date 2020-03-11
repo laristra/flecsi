@@ -122,11 +122,10 @@ io_sanity(int, char **) {
 
   int my_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-  io::io_interface_t cp_io;
-  io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
-  cp_io.add_regions(checkpoint_file, cp_test_data_vector);
+  io::hdf5_t checkpoint_file = io::init_hdf5_file(file_name, num_files);
+  io::add_regions(checkpoint_file, cp_test_data_vector);
   if(my_rank == 0) {
-    cp_io.generate_hdf5_files(checkpoint_file);
+    io::generate_hdf5_files(checkpoint_file);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
@@ -169,7 +168,7 @@ io_sanity(int, char **) {
     runtime->unmap_region(ctx, input_region);
   }
 
-  cp_io.checkpoint_data(checkpoint_file, file_is, cp_test_data_vector, true);
+  io::checkpoint_data(checkpoint_file, file_is, cp_test_data_vector, true);
 
   io::hdf5_region_t re_test_data_1(
     output_lr_1, file_recover_lp_output_1, "output_lr_1");
@@ -185,7 +184,7 @@ io_sanity(int, char **) {
   re_test_data_vector.push_back(re_test_data_1);
   // re_test_data_vector.push_back(re_test_data_2);
 
-  cp_io.recover_data(checkpoint_file, file_is, re_test_data_vector, false);
+  io::recover_data(checkpoint_file, file_is, re_test_data_vector, false);
 
   {
     ct = 0;
