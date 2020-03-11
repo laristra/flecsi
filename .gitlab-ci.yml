@@ -50,6 +50,7 @@ before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
+  - export HOME=${CI_PROJECT_DIR}
   - mkdir -p ${CI_PROJECT_DIR}/build
   - module load python/${FLECSI_PYTHON_VERSION}
   - module load clang/7.0.0 # for formatting purpose
@@ -133,7 +134,7 @@ before_script:
   only:
     - merge_requests
     - "1.4"
-    - refactor
+    - devel
 
 .cache_template: &cache_def
   cache:
@@ -149,7 +150,7 @@ before_script:
     paths:
       - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsi/build
     when: always
-    expire_in: 6 months
+    expire_in: 2 weeks
   dependencies: []
 
 .shell_template: &shell_def
@@ -168,13 +169,13 @@ before_script:
   echo 'Updating spackages...'
   cd ${CI_PROJECT_DIR}
   git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git
-  for f in $(find ./spack-repo/packages/ -type f); do diff -urN ${CI_PROJECT_DIR}/ristra_spackages/$f $f; done | tee $f.patch
-  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do patch -i $f ${CI_PROJECT_DIR}/ristra_spackages/$f; done
+  for f in $(find ./spack-repo/packages/ -type f); do diff -urN ${CI_PROJECT_DIR}/ristra_spackages/$f $f | tee $f.patch || /bin/true; done
+  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do patch -i $f ${CI_PROJECT_DIR}/ristra_spackages/${f%.*}; done
   for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do rm $f; done
   cd ${CI_PROJECT_DIR}/ristra_spackages
   git add spack-repo/packages/*
-  git commit -m "Gitlab CI Automatic Spackage Update - Libristra"
-  git push
+  git commit -m "Gitlab CI Automatic Spackage Update - FleCSI" || /bin/true
+  git push -u origin master
 
 #############
 # Env Stage #
@@ -200,12 +201,14 @@ before_script:
       spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION};
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION};
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION};
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION};
+      spack clean --all;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
       spack repo rm ${FLECSI_SPACK_SCOPE};
       ) 200>${DEPS_LOCK}
+    - $([ "$(grep -c "Errno " spack_tmp.out)" = "0" ] && exit 0 || exit 1)
 
 ###############
 # Build Stage #

@@ -1,4 +1,4 @@
-# Copyright 2013-2019 Lawrence Livermore National Security, LLC and other
+# Copyright 2013-2020 Lawrence Livermore National Security, LLC and other
 # Spack Project Developers. See the top-level COPYRIGHT file for details.
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
@@ -49,7 +49,8 @@ class Legion(CMakePackage):
             description='Build on top of ibv conduit for InfiniBand support')
     variant('shared', default=True, description='Build shared libraries')
     variant('hdf5', default=True, description='Enable HDF5 support')
-    variant('build_type', default='Release', values=('Debug', 'Release'),
+    variant('build_type', default='Release',
+            values=('Debug', 'Release', 'RelWithDebInfo', 'MinSizeRel'),
             description='The build type to build', multi=False)
 
     depends_on("cmake@3.1:", type='build')
@@ -72,9 +73,11 @@ class Legion(CMakePackage):
             '-DBUILD_SHARED_LIBS=%s' % ('+shared' in self.spec)]
 
         if self.spec.variants['build_type'].value == 'Debug':
-            cmake_cxx_flags.append('-DDEBUG_REALM')
-            cmake_cxx_flags.append('-DDEBUG_LEGION')
-            cmake_cxx_flags.append('-ggdb')
+            cmake_cxx_flags.extend([
+                '-DDEBUG_REALM',
+                '-DDEBUG_LEGION',
+                '-ggdb',
+            ])
 
         options.append('-DCMAKE_CXX_FLAGS=%s' % (" ".join(cmake_cxx_flags)))
 
@@ -87,4 +90,3 @@ class Legion(CMakePackage):
             options.append('-DLegion_USE_HDF5=OFF')
 
         return options
-
