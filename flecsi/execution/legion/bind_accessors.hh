@@ -66,7 +66,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
       regions_(regions), futures_(futures) {}
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::accessor<data::dense, DATA_TYPE, PRIVILEGES> & accessor) {
     auto & reg = regions_[region++];
 
     //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
@@ -75,12 +75,18 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
       Legion::coord_t,
       Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
       ac(reg, accessor.identifier(), sizeof(DATA_TYPE));
+    const auto dom = legion_runtime_->get_index_space_domain(
+      legion_context_, reg.get_logical_region().get_index_space());
+    const auto r = dom.get_rect<1>();
 
     bind(accessor,
-      ac.ptr(Legion::Domain::DomainPointIterator(
-        legion_runtime_->get_index_space_domain(
-          legion_context_, reg.get_logical_region().get_index_space()))
-               .p));
+      r.hi[0] - r.lo[0] + 1,
+      ac.ptr(Legion::Domain::DomainPointIterator(dom).p));
+  }
+
+  template<typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
+    visit(accessor.get_base());
   }
 
   /*--------------------------------------------------------------------------*

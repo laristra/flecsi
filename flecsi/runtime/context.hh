@@ -69,14 +69,7 @@ struct context {
     Public types.
    *--------------------------------------------------------------------------*/
 
-  /*!
-    This type allows the storage of field information per layout. The
-    size_t key is the layout.
-   */
-
   using field_info_store_t = data::fields;
-  using field_info_map_t =
-    std::unordered_map<size_t, std::vector<field_info_store_t>>;
 
   /*!
     This type allows storage of subspace information.
@@ -480,16 +473,13 @@ struct context {
 
     \tparam Topo topology type
     \tparam Index topology-relative index space
-    \param layout layout identifier
     @param field_info               Field information.
    */
   template<class Topo, std::size_t Index = 0>
-  void add_field_info(data::layout layout,
-    const data::field_info_t & field_info) {
+  void add_field_info(const data::field_info_t & field_info) {
     constexpr std::size_t NIndex = topology::index_spaces<Topo>;
     static_assert(Index < NIndex, "No such index space");
-    topology_field_info_map_[topology::id<Topo>()]
-      .try_emplace(layout, NIndex)
+    topology_field_info_map_.try_emplace(topology::id<Topo>(), NIndex)
       .first->second[Index]
       .push_back(&field_info);
   } // add_field_information
@@ -500,10 +490,9 @@ struct context {
 
     \tparam Topo topology type
     \tparam Index topology-relative index space
-    \param layout layout identifier
    */
   template<class Topo, std::size_t Index = 0>
-  field_info_store_t const & get_field_info_store(data::layout layout) const {
+  field_info_store_t const & get_field_info_store() const {
     static_assert(Index < topology::index_spaces<Topo>, "No such index space");
 
     static const field_info_store_t empty;
@@ -512,11 +501,7 @@ struct context {
     if(tita == topology_field_info_map_.end())
       return empty;
 
-    auto const & sita = tita->second.find(layout);
-    if(sita == tita->second.end())
-      return empty;
-
-    return sita->second[Index];
+    return tita->second[Index];
   } // get_field_info_store
 
   /*!
@@ -661,10 +646,11 @@ protected:
 
   /*
     This type allows storage of runtime field information per topology type.
-    The size_t key is the topology type hash.
+    The size_t key is the topology ID; the vector index is the index space.
    */
 
-  std::unordered_map<size_t, field_info_map_t> topology_field_info_map_;
+  std::unordered_map<size_t, std::vector<field_info_store_t>>
+    topology_field_info_map_;
 
   /*
     This type allows storage of runtime index subspace information.

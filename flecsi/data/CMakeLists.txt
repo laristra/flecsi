@@ -96,22 +96,26 @@ ftest_add_unit(canonical
   THREADS 2
 )
 
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 ftest_add_unit(global
   SOURCES
     test/global.cc
   THREADS 2
 )
+endif()
 
 ftest_add_unit(identifiers
   SOURCES
     test/identifiers.cc
 )
 
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 ftest_add_unit(index
   SOURCES
     test/index.cc
   THREADS 2
 )
+endif()
 
 ftest_add_unit(privilege
   SOURCES

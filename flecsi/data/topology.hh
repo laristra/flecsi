@@ -43,15 +43,15 @@ struct partition {
 
 template<class Topo, std::size_t Index = 0>
 region
-make_region(std::size_t n, layout sclass = dense) {
-  return {n,
-    runtime::context_t::instance().get_field_info_store<Topo, Index>(sclass)};
+make_region(std::size_t n) {
+  return {
+    n, runtime::context_t::instance().get_field_info_store<Topo, Index>()};
 }
 
 template<class Topo>
 struct simple : region {
   using type = Topo;
-  simple(std::size_t n = 1) : region(make_region<type>(n, singular)) {}
+  simple(std::size_t n = 1) : region(make_region<type>(n)) {}
 };
 } // namespace detail
 

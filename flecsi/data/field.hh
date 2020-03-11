@@ -31,6 +31,23 @@ namespace data {
 template<layout L, typename T, std::size_t Priv>
 struct accessor;
 
+template<class, layout, class, std::size_t>
+struct field_register;
+
+template<class T, class Topo, std::size_t Space>
+struct field_register<T, dense, Topo, Space> : field_info_t {
+  field_register() : field_info_t{unique_fid_t::instance().next(), sizeof(T)} {
+    runtime::context_t::instance().add_field_info<Topo, Space>(*this);
+  }
+  // Copying/moving is inadvisable because the context knows the address.
+  field_register(const field_register &) = delete;
+  field_register & operator=(const field_register &) = delete;
+};
+
+template<class T, class Topo, std::size_t Space>
+struct field_register<T, singular, Topo, Space>
+  : field_register<T, dense, Topo, Space> {};
+
 /*!
   The field_reference_t type is used to reference fields. It adds a \em
   topology field to the \c reference_base to track the
@@ -85,21 +102,11 @@ template<typename DATA_TYPE,
   layout L,
   typename TOPOLOGY_TYPE,
   size_t INDEX_SPACE>
-struct field_member : field_info_t {
-
+struct field_member : field_register<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> {
   using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 
   template<size_t... PRIVILEGES>
   using accessor = accessor<L, DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
-
-  field_member()
-    : field_info_t{unique_fid_t::instance().next(), sizeof(DATA_TYPE)} {
-    runtime::context_t::instance().add_field_info<TOPOLOGY_TYPE, INDEX_SPACE>(
-      L, *this);
-  }
-  // Copying/moving is inadvisable because the context knows the address.
-  field_member(const field_member &) = delete;
-  field_member & operator=(const field_member &) = delete;
 
   /*!
     Return a reference to the field instance associated with the given topology

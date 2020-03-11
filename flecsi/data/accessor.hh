@@ -30,39 +30,42 @@ namespace flecsi {
 namespace data {
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<singular, DATA_TYPE, PRIVILEGES> : reference_base {
-
-  friend void bind(accessor & a, DATA_TYPE * data) {
-    a.data_ = data;
-  }
-
+struct accessor<singular, DATA_TYPE, PRIVILEGES> {
   using value_type = DATA_TYPE;
+  using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;
 
+  // This constructor is needed to avoid two user-defined conversions.
   template<class Topo>
-  accessor(field_reference<DATA_TYPE, Topo> const & ref)
-    : accessor(ref.fid()) {}
-  explicit accessor(std::size_t f) : reference_base(f) {}
+  accessor(field_reference<DATA_TYPE, Topo> const & ref) : base(ref) {}
+  accessor(const base_type & b) : base(b) {}
 
-  operator DATA_TYPE &() {
-    return *data_;
-  } // value
-
-  operator DATA_TYPE const &() const {
-    return *data_;
-  } // value
-
-  DATA_TYPE * data() {
-    return data_;
+  DATA_TYPE & get() const {
+    return base(0);
   } // data
+  operator DATA_TYPE &() const {
+    return get();
+  } // value
 
+  const accessor & operator=(const DATA_TYPE & value) const {
+    return const_cast<accessor &>(*this) = value;
+  } // operator=
   accessor & operator=(const DATA_TYPE & value) {
-    *data_ = value;
+    get() = value;
     return *this;
   } // operator=
 
-private:
-  DATA_TYPE * data_;
+  base_type & get_base() {
+    return base;
+  }
+  const base_type & get_base() const {
+    return base;
+  }
+  friend base_type * get_null_base(accessor *) { // for task_prologue_t
+    return nullptr;
+  }
 
+private:
+  base_type base;
 }; // struct accessor
 
 template<typename DATA_TYPE, size_t PRIVILEGES>

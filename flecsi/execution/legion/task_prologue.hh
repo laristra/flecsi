@@ -111,13 +111,19 @@ struct task_prologue_t {
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
+  template<class T, std::size_t Priv, class Topo>
+  void visit(data::accessor<data::singular, T, Priv> * null_p,
+    const data::field_reference<T, Topo> & ref) {
+    visit(get_null_base(null_p), ref);
+  }
+
   /*--------------------------------------------------------------------------*
     Global Topology
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-    data::accessor<data::singular, DATA_TYPE, PRIVILEGES> * /* parameter */,
+    data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, topology::global> & ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
@@ -145,7 +151,7 @@ struct task_prologue_t {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
-    data::accessor<data::singular, DATA_TYPE, PRIVILEGES> * /* parameter */,
+    data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, topology::index> & ref) {
     auto & instance_data = ref.topology().get();
 
