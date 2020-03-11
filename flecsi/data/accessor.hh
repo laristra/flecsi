@@ -30,20 +30,15 @@
 namespace flecsi {
 namespace data {
 
-/*----------------------------------------------------------------------------*
-  Global Topology.
- *----------------------------------------------------------------------------*/
-
-template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<dense, topology::global, DATA_TYPE, PRIVILEGES>
-  : reference_base {
+template<class Topo, typename DATA_TYPE, size_t PRIVILEGES>
+struct accessor<singular, Topo, DATA_TYPE, PRIVILEGES> : reference_base {
 
   friend void bind(accessor & a, DATA_TYPE * data) {
     a.data_ = data;
   }
 
   using value_type = DATA_TYPE;
-  using topology_t = topology::global;
+  using topology_t = Topo;
 
   accessor(field_reference<DATA_TYPE, topology_t> const & ref)
     : accessor(ref.fid()) {}
@@ -67,46 +62,6 @@ struct accessor<dense, topology::global, DATA_TYPE, PRIVILEGES>
   } // operator=
 
 private:
-  DATA_TYPE * data_;
-
-}; // struct accessor
-
-/*----------------------------------------------------------------------------*
-  Index Topology.
- *----------------------------------------------------------------------------*/
-
-template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<dense, topology::index, DATA_TYPE, PRIVILEGES>
-  : reference_base {
-  using value_type = DATA_TYPE;
-  using topology_t = topology::index;
-
-  accessor(field_reference<DATA_TYPE, topology_t> const & ref)
-    : accessor(ref.fid()) {}
-  explicit accessor(std::size_t f) : reference_base(f) {}
-
-  operator DATA_TYPE &() {
-    return *data_;
-  } // value
-
-  operator DATA_TYPE const &() const {
-    return *data_;
-  } // value
-
-  DATA_TYPE * data() {
-    return data_;
-  } // data
-
-  accessor & operator=(const DATA_TYPE & value) {
-    *data_ = value;
-    return *this;
-  } // operator=
-
-private:
-  friend void bind(accessor & a, DATA_TYPE * data) {
-    a.data_ = data;
-  }
-
   DATA_TYPE * data_;
 
 }; // struct accessor

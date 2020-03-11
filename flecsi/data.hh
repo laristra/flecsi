@@ -39,7 +39,7 @@ inline data::topology_slot<topology::global> global_topology;
 
 template<typename DATA_TYPE>
 using global_field_member =
-  data::field_member<DATA_TYPE, data::dense, topology::global, 0>;
+  data::field_member<DATA_TYPE, data::singular, topology::global, 0>;
 
 /*
   Per-process coloring.
@@ -59,7 +59,7 @@ inline data::topology_slot<topology::index> process_topology;
 
 template<typename DATA_TYPE>
 using index_field_member =
-  data::field_member<DATA_TYPE, data::dense, topology::index, 0>;
+  data::field_member<DATA_TYPE, data::singular, topology::index, 0>;
 
 namespace detail {
 /// An RAII type to manage the global coloring and topologies.

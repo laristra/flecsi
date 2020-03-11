@@ -70,10 +70,9 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
-  template<class A>
-  void dense(A & accessor) {
-    using DATA_TYPE = typename A::value_type;
-
+  template<class Topo, typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(
+    data::accessor<data::singular, Topo, DATA_TYPE, PRIVILEGES> & accessor) {
     auto & reg = regions_[region++];
 
     //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
@@ -88,28 +87,6 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
         legion_runtime_->get_index_space_domain(
           legion_context_, reg.get_logical_region().get_index_space()))
                .p));
-  }
-
-  /*--------------------------------------------------------------------------*
-    Global Topology
-   *--------------------------------------------------------------------------*/
-
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(
-    data::accessor<data::dense, topology::global, DATA_TYPE, PRIVILEGES> &
-      accessor) {
-    dense(accessor);
-  }
-
-  /*--------------------------------------------------------------------------*
-    Index Topology
-   *--------------------------------------------------------------------------*/
-
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(
-    data::accessor<data::dense, topology::index, DATA_TYPE, PRIVILEGES> &
-      accessor) {
-    dense(accessor);
   }
 
   /*--------------------------------------------------------------------------*

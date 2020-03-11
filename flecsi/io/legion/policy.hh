@@ -573,7 +573,7 @@ struct io_interface_t {
 
     for(const auto p :
       runtime::context_t::instance().get_field_info_store<topology::index>(
-        data::dense)) {
+        data::singular)) {
       field_string_map[p->fid] = std::to_string(p->fid);
     }
 
@@ -615,7 +615,7 @@ struct io_interface_t {
   void checkpoint_process_topology(legion_hdf5_t & hdf5_file) {
     auto const & fid_vector =
       runtime::context_t::instance().get_field_info_store<topology::index>(
-        data::dense);
+        data::singular);
 
     auto & index_runtime_data = process_topology.get();
     {
@@ -665,7 +665,7 @@ struct io_interface_t {
   void recover_process_topology(legion_hdf5_t & hdf5_file) {
     auto const & fid_vector =
       runtime::context_t::instance().get_field_info_store<topology::index>(
-        data::dense);
+        data::singular);
 
     auto & index_runtime_data = process_topology.get();
 

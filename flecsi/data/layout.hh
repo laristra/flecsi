@@ -34,7 +34,14 @@ namespace data {
   is implementation-dependent.
  */
 
-enum layout : size_t { dense, sparse, ragged, array, subspace };
+enum layout : size_t {
+  dense,
+  singular, ///< Access to the single element of an array.
+  sparse,
+  ragged,
+  array,
+  subspace
+};
 
 } // namespace data
 } // namespace flecsi

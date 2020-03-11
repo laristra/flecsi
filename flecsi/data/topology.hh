@@ -51,7 +51,7 @@ make_region(std::size_t n, layout sclass = dense) {
 template<class Topo>
 struct simple : region {
   using type = Topo;
-  simple(std::size_t n = 1) : region(make_region<type>(n)) {}
+  simple(std::size_t n = 1) : region(make_region<type>(n, singular)) {}
 };
 } // namespace detail
 

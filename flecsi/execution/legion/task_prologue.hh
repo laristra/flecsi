@@ -116,7 +116,7 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::dense,
+  void visit(data::accessor<data::singular,
                topology::global,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
@@ -146,7 +146,7 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::dense,
+  void visit(data::accessor<data::singular,
                topology::index,
                DATA_TYPE,
                PRIVILEGES> * /* parameter */,
