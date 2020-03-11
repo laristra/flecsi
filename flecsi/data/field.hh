@@ -104,6 +104,9 @@ struct field_member : field_info_t {
     runtime::context_t::instance().add_field_info<TOPOLOGY_TYPE, INDEX_SPACE>(
       STORAGE_CLASS, *this);
   }
+  // Copying/moving is inadvisable because the context knows the address.
+  field_member(const field_member &) = delete;
+  field_member & operator=(const field_member &) = delete;
 
   /*!
     Return a reference to the field instance associated with the given topology
