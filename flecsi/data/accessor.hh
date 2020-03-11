@@ -163,8 +163,9 @@ private:
     a.data_ = data;
   }
 
-  size_t size_;
-  DATA_TYPE * data_;
+  // These must be initialized to copy into a user's accessor parameter.
+  size_t size_ = 0;
+  DATA_TYPE * data_ = nullptr;
 
 }; // struct accessor
 
