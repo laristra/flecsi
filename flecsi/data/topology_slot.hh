@@ -26,18 +26,14 @@
 namespace flecsi {
 namespace data {
 
-// Clients #include these (backend-specific) definitions elsewhere:
-
-// CRTP base for registering topology slots with the context if needed.
-template<class>
-struct topology_id;
+// Clients #include the (backend-specific) definitions elsewhere:
 template<typename>
 struct topology_data;
 
 struct convert_tag {}; // must be recognized as a task argument
 
 template<typename TOPOLOGY_TYPE>
-struct topology_slot : convert_tag, topology_id<topology_slot<TOPOLOGY_TYPE>> {
+struct topology_slot : convert_tag {
   using data_t = topology_data<topo::category_t<typename TOPOLOGY_TYPE::core>>;
 
   using coloring = typename TOPOLOGY_TYPE::coloring;

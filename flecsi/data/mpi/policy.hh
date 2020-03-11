@@ -21,9 +21,6 @@
 namespace flecsi {
 namespace data {
 
-template<class>
-struct topology_id {};
-
 namespace detail {
 struct region {
   region(std::size_t, const fields &) {}

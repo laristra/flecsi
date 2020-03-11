@@ -38,7 +38,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
     leg/policy.hh
-    leg/types.hh
     ${data_HEADERS}
   )
 

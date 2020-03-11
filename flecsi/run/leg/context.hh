@@ -163,34 +163,6 @@ struct context_t : context {
       ->index_domain.get_volume();
   } // colors
 
-  /// Store a reference to the argument under a small unused positive integer.
-  /// Its type is forgotten.
-  template<class T>
-  std::size_t record(T & t) {
-    const auto tp = const_cast<void *>(static_cast<const void *>(&t));
-    if(auto & f = enumerated.front()) { // we have a free slot
-      auto & slot = *static_cast<void **>(f);
-      f = slot;
-      slot = tp;
-      return &slot - &f;
-    }
-    // NB: reallocation invalidates all zero of the free list pointers
-    enumerated.push_back(tp);
-    return enumerated.size() - 1;
-  }
-  /// Discard a recorded reference.  Its index may be reused.
-  void forget(std::size_t i) {
-    void *&f = enumerated.front(), *&p = enumerated[i];
-    p = f;
-    f = &p;
-  }
-  /// Obtain a reference from its index.
-  /// \tparam T the object's forgotten type
-  template<class T>
-  T & recall(std::size_t i) {
-    return *static_cast<T *>(enumerated[i]);
-  }
-
   //--------------------------------------------------------------------------//
   //  MPI interoperability.
   //--------------------------------------------------------------------------//
@@ -320,8 +292,6 @@ private:
     Runtime data.
    *--------------------------------------------------------------------------*/
 
-  // The first element is the head of the free list.
-  std::vector<void *> enumerated = {nullptr};
   const std::function<int()> * top_level_action_ = nullptr;
 
   /*--------------------------------------------------------------------------*
