@@ -116,8 +116,8 @@ struct task_prologue_t {
     class Topo,
     topology::index_space_t<Topo> Space>
   void visit(data::accessor<data::singular, T, Priv> * null_p,
-    const data::field_reference<T, Topo, Space> & ref) {
-    visit(get_null_base(null_p), ref);
+    const data::field_reference<T, data::singular, Topo, Space> & ref) {
+    visit(get_null_base(null_p), ref.template cast<data::dense>());
   }
 
   /*--------------------------------------------------------------------------*
@@ -127,8 +127,10 @@ struct task_prologue_t {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::
-      field_reference<DATA_TYPE, topology::global, topology::elements> & ref) {
+    const data::field_reference<DATA_TYPE,
+      data::dense,
+      topology::global,
+      topology::elements> & ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
@@ -156,8 +158,10 @@ struct task_prologue_t {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::
-      field_reference<DATA_TYPE, topology::index, topology::elements> & ref) {
+    const data::field_reference<DATA_TYPE,
+      data::dense,
+      topology::index,
+      topology::elements> & ref) {
     auto & instance_data = ref.topology().get();
 
     flog_assert(instance_data.colors() == domain_,

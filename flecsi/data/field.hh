@@ -77,11 +77,20 @@ private:
 
 /// A \c field_reference is a \c field_reference_t with more type information.
 /// \tparam T data type (merely for type safety)
+/// \tparam L data layout (similarly)
 /// \tparam Space topology-relative index space
-template<class T, class Topo, topology::index_space_t<Topo> Space>
+template<class T, layout L, class Topo, topology::index_space_t<Topo> Space>
 struct field_reference : field_reference_t<Topo> {
+  using Base = typename field_reference::field_reference_t; // TIP: dependent
   using value_type = T;
-  using field_reference_t<Topo>::field_reference_t;
+
+  using Base::Base;
+  explicit field_reference(const Base & b) : Base(b) {}
+
+  template<layout L2, class T2 = T> // TODO: allow only safe casts
+  auto cast() const {
+    return field_reference<T2, L2, Topo, Space>(*this);
+  }
 };
 
 /*!
@@ -117,7 +126,7 @@ struct field_member : field_register<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> {
     @param topology_reference A reference to a valid topology instance.
    */
 
-  field_reference<DATA_TYPE, TOPOLOGY_TYPE, INDEX_SPACE> operator()(
+  field_reference<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> operator()(
     topology_reference_t const & topology_reference) const {
 
     return {*this, topology_reference};
