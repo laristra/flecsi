@@ -95,13 +95,14 @@ struct field_reference : field_reference_t<Topo> {
                         the logical serialization of that type.
   @tparam L data layout
   @tparam TOPOLOGY_TYPE A specialization of a core FleCSI topology type.
-  @tparam INDEX_SPACE   The id of the index space on which to define the field.
+  @tparam INDEX_SPACE   The index space on which to define the field.
  */
 
 template<typename DATA_TYPE,
   layout L,
   typename TOPOLOGY_TYPE,
-  size_t INDEX_SPACE>
+  topology::index_space_t<TOPOLOGY_TYPE> INDEX_SPACE =
+    topology::default_space<TOPOLOGY_TYPE>>
 struct field_member : field_register<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> {
   using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 

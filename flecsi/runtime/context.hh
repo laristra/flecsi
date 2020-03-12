@@ -475,7 +475,7 @@ struct context {
     \tparam Index topology-relative index space
     @param field_info               Field information.
    */
-  template<class Topo, std::size_t Index = 0>
+  template<class Topo, std::size_t Index>
   void add_field_info(const data::field_info_t & field_info) {
     constexpr std::size_t NIndex = topology::index_spaces<Topo>;
     static_assert(Index < NIndex, "No such index space");
@@ -491,7 +491,7 @@ struct context {
     \tparam Topo topology type
     \tparam Index topology-relative index space
    */
-  template<class Topo, std::size_t Index = 0>
+  template<class Topo, std::size_t Index = topology::default_space<Topo>>
   field_info_store_t const & get_field_info_store() const {
     static_assert(Index < topology::index_spaces<Topo>, "No such index space");
 

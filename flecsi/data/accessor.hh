@@ -23,6 +23,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/reference.hh"
 #include <flecsi/data/field.hh>
 #include"flecsi/data/reference.hh"
 

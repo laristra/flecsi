@@ -41,7 +41,8 @@ struct partition {
 };
 #endif
 
-template<class Topo, std::size_t Index = 0>
+template<class Topo,
+  topology::index_space_t<Topo> Index = topology::default_space<Topo>>
 region
 make_region(std::size_t n) {
   return {
