@@ -204,9 +204,9 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE>
-  static typename std::enable_if_t<
-    !std::is_base_of_v<data::reference_base, DATA_TYPE>>
-  visit(DATA_TYPE &) {
+  static void visit(DATA_TYPE &) {
+    static_assert(!std::is_base_of_v<data::convert_tag, DATA_TYPE>,
+      "Unknown task argument type");
     {
       flog::devel_guard guard(task_prologue_tag);
       flog_devel(info) << "Skipping argument with type "

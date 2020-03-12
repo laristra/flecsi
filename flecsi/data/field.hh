@@ -54,7 +54,7 @@ struct field_register<T, singular, Topo, Space>
   associated topology instance.
  */
 template<class Topo>
-struct field_reference_t {
+struct field_reference_t : convert_tag {
   // The use of the slot allows creating field references statically, before
   // the topology_data has been allocated.
   using topology_t = topology_slot<Topo>;
