@@ -354,7 +354,7 @@ endforeach()
 #
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  if(NOT MPI_${MPI_LANGUAGE}_FOUND)
+  if(NOT MPI_FOUND)
     message (FATAL_ERROR "MPI is required for the legion runtime model")
   endif()
 
@@ -365,7 +365,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${Legion_LIBRARIES}
-    ${MPI_LIBRARIES})
+    MPI::MPI_CXX MPI::MPI_C)
 
   include_directories(${Legion_INCLUDE_DIRS})
   list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${Legion_INCLUDE_DIRS})
@@ -375,13 +375,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-  if(NOT MPI_${MPI_LANGUAGE}_FOUND)
+  if(NOT MPI_FOUND)
     message (FATAL_ERROR "MPI is required for the mpi runtime model")
   endif()
 
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpi)
 
-  set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
+  set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS}  MPI::MPI_CXX MPI::MPI_C)
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
@@ -389,11 +389,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     message (FATAL_ERROR "HPX is required for the HPX runtime model")
   endif()
 
-  if(NOT MPI_${MPI_LANGUAGE}_FOUND)
+  if(NOT MPI_FOUND)
     message (FATAL_ERROR "MPI is required for the hpx runtime model")
   endif()
 
-   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
+   set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} MPI::MPI_CXX MPI::MPI_C)
 
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/hpx)
 
