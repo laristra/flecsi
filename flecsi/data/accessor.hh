@@ -36,8 +36,8 @@ struct accessor<singular, DATA_TYPE, PRIVILEGES> {
   using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;
 
   // This constructor is needed to avoid two user-defined conversions.
-  template<class Topo>
-  accessor(field_reference<DATA_TYPE, Topo> const & ref) : base(ref) {}
+  template<class Topo, topology::index_space_t<Topo> Space>
+  accessor(field_reference<DATA_TYPE, Topo, Space> const & ref) : base(ref) {}
   accessor(const base_type & b) : base(b) {}
 
   DATA_TYPE & get() const {
@@ -73,8 +73,8 @@ template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<dense, DATA_TYPE, PRIVILEGES> : reference_base {
   using value_type = DATA_TYPE;
 
-  template<class Topo>
-  accessor(field_reference<DATA_TYPE, Topo> const & ref)
+  template<class Topo, topology::index_space_t<Topo> Space>
+  accessor(field_reference<DATA_TYPE, Topo, Space> const & ref)
     : accessor(ref.fid()) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
 

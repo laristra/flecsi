@@ -75,9 +75,10 @@ private:
 
 }; // struct field_reference
 
-/// A \c field_reference is a \c field_reference_t tagged with a data type.
+/// A \c field_reference is a \c field_reference_t with more type information.
 /// \tparam T data type (merely for type safety)
-template<class T, class Topo>
+/// \tparam Space topology-relative index space
+template<class T, class Topo, topology::index_space_t<Topo> Space>
 struct field_reference : field_reference_t<Topo> {
   using value_type = T;
   using field_reference_t<Topo>::field_reference_t;
@@ -116,7 +117,7 @@ struct field_member : field_register<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> {
     @param topology_reference A reference to a valid topology instance.
    */
 
-  field_reference<DATA_TYPE, TOPOLOGY_TYPE> operator()(
+  field_reference<DATA_TYPE, TOPOLOGY_TYPE, INDEX_SPACE> operator()(
     topology_reference_t const & topology_reference) const {
 
     return {*this, topology_reference};
