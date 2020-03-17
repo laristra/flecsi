@@ -22,7 +22,6 @@
 #endif
 
 #include "../backend.hh"
-#include "tasks.hh"
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!

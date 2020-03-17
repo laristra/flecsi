@@ -27,7 +27,6 @@
 #include "flecsi/execution/legion/task_prologue.hh"
 #include "flecsi/execution/legion/task_wrapper.hh"
 #include "flecsi/runtime/backend.hh"
-#include "flecsi/runtime/legion/tasks.hh"
 #include "flecsi/utils/demangle.hh"
 #include "flecsi/utils/function_traits.hh"
 #include "task_prologue.hh"
@@ -124,9 +123,12 @@ reduce(ARGS &&... args) {
       LegionRuntime::Arrays::Point<1>(processes - 1));
     Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
+    constexpr auto red = [] {
+      return flog::flog_t::instance().packets().size();
+    };
     Legion::ArgumentMap arg_map;
     Legion::IndexLauncher reduction_launcher(
-      legion::task_id<runtime::flog_reduction_task>,
+      legion::task_id<legion::verb<*red>>,
       launch_domain,
       Legion::TaskArgument(NULL, 0),
       arg_map);
@@ -136,8 +138,11 @@ reduce(ARGS &&... args) {
       reduction_op<reduction::max<std::size_t>>);
 
     if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
+      constexpr auto send = [] {
+        runtime::context_t::instance().set_mpi_task(flog::send_to_one);
+      };
       Legion::IndexLauncher flog_mpi_launcher(
-        legion::task_id<runtime::flog_mpi_task>,
+        legion::task_id<legion::verb<*send>>,
         launch_domain,
         Legion::TaskArgument(NULL, 0),
         arg_map);

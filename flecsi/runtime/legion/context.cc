@@ -23,7 +23,6 @@
 #include <flecsi/execution/legion/task_wrapper.hh>
 #include <flecsi/runtime/legion/context.hh>
 #include <flecsi/runtime/legion/mapper.hh>
-#include <flecsi/runtime/legion/tasks.hh>
 #include <flecsi/runtime/types.hh>
 
 namespace flecsi::runtime {
@@ -267,7 +266,8 @@ context_t::start(const std::function<int(int, char **)> & action) {
 void
 context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher handoff_to_mpi_launcher(task_id<handoff_to_mpi_task>,
+  Legion::IndexLauncher handoff_to_mpi_launcher(
+    task_id<execution::legion::verb<mpi_handoff>>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0),
     arg_map);
@@ -285,7 +285,8 @@ context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
 Legion::FutureMap
 context_t::wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher wait_on_mpi_launcher(task_id<wait_on_mpi_task>,
+  Legion::IndexLauncher wait_on_mpi_launcher(
+    task_id<execution::legion::verb<mpi_wait>>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(NULL, 0),
     arg_map);

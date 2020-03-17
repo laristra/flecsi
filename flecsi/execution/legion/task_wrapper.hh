@@ -176,6 +176,16 @@ detail::register_task() {
   } // if
 } // registration_callback
 
+// A trivial wrapper for nullary functions.
+template<auto & F>
+auto
+verb(const Legion::Task *,
+  const std::vector<Legion::PhysicalRegion> &,
+  Legion::Context,
+  Legion::Runtime *) {
+  return F();
+}
+
 /*!
  The task_wrapper type provides execution
  functions for user and MPI tasks.

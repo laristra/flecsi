@@ -27,7 +27,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     ${runtime_HEADERS}
     legion/context.hh
     legion/mapper.hh
-    legion/tasks.hh
   )
 
   set(runtime_SOURCES

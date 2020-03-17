@@ -67,7 +67,7 @@ struct context_t : context {
     to avoid inadvertent corruption of initialization logic.
    */
 
-  friend legion::task<> top_level_task, handoff_to_mpi_task, wait_on_mpi_task;
+  friend legion::task<> top_level_task;
 
   /*!
      The registration_function_t type defines a function type for
@@ -312,31 +312,22 @@ private:
     MPI_Barrier(MPI_COMM_WORLD);
   } // wait_on_legion
 
+  // When GCC fixes bug #83258, these can be lambdas in the public functions:
   /*!
     Handoff to MPI from Legion.
    */
 
-  void handoff_to_mpi() {
-    {
-      flog::devel_guard guard(context_tag);
-      flog_devel(info) << "In handoff_to_mpi" << std::endl;
-    }
-
-    handshake_.legion_handoff_to_mpi();
-  } // handoff_to_mpi
+  static void mpi_handoff() {
+    instance().handshake_.legion_handoff_to_mpi();
+  }
 
   /*!
     Wait for MPI runtime to complete task execution.
    */
 
-  void wait_on_mpi() {
-    {
-      flog::devel_guard guard(context_tag);
-      flog_devel(info) << "In wait_on_mpi" << std::endl;
-    }
-
-    handshake_.legion_wait_on_mpi();
-  } // wait_on_legion
+  static void mpi_wait() {
+    instance().handshake_.legion_wait_on_mpi();
+  }
 
   /*!
     Invoke the current MPI task, if any, and clear it.
