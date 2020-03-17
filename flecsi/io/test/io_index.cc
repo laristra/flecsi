@@ -69,22 +69,22 @@ index_driver(int, char **) {
   int my_rank = flecsi_context.process();
   int num_files = 4;
   io::io_interface_t cp_io;
-  io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
+  io::hdf5_t checkpoint_file = io::init_hdf5_file(file_name, num_files);
 
   cp_io.add_process_topology(checkpoint_file);
 #if 1
   if(my_rank == 0) {
-    cp_io.generate_hdf5_files(checkpoint_file);
+    io::generate_hdf5_files(checkpoint_file);
   }
 #else
   int num_ranks = flecsi_context.processes();
   assert(num_ranks % num_files == 0);
   int num_ranks_per_file = num_ranks / num_files;
   if(my_rank % num_ranks_per_file == 0) {
-    cp_io.create_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file);
-    cp_io.create_datasets_for_regions(
+    io::create_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file);
+    io::create_datasets_for_regions(
       checkpoint_file, my_rank / num_ranks_per_file);
-    cp_io.close_hdf5_file(checkpoint_file);
+    io::close_hdf5_file(checkpoint_file);
   }
 #endif
   MPI_Barrier(MPI_COMM_WORLD);
@@ -107,9 +107,9 @@ index_driver(int, char **) {
   assert(num_ranks % num_files == 0);
   int num_ranks_per_file = num_ranks / num_files;
   if(my_rank % num_ranks_per_file == 0) {
-    cp_io.open_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file);
+    io::open_hdf5_file(checkpoint_file, my_rank / num_ranks_per_file);
     std::string str2("test string 2");
-    cp_io.write_string_to_hdf5_file(checkpoint_file,
+    io::write_string_to_hdf5_file(checkpoint_file,
       my_rank / num_ranks_per_file,
       "control",
       "ds2",
@@ -117,10 +117,10 @@ index_driver(int, char **) {
       str2.size());
 
     std::string str3;
-    cp_io.read_string_from_hdf5_file(
+    io::read_string_from_hdf5_file(
       checkpoint_file, my_rank / num_ranks_per_file, "control", "ds2", str3);
     // printf("str 3 %s\n", str3.c_str());
-    cp_io.close_hdf5_file(checkpoint_file);
+    io::close_hdf5_file(checkpoint_file);
   }
 #endif
 

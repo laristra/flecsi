@@ -69,7 +69,7 @@ context_t::finalize() {
 //----------------------------------------------------------------------------//
 
 int
-context_t::start(std::function<int(int, char **)> action) {
+context_t::start(const std::function<int(int, char **)> & action) {
 
   /*
     Register reduction operations.

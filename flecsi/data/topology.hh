@@ -71,12 +71,10 @@ template<>
 struct topology_data<topology::index> : detail::simple<topology::index>,
                                         detail::partition {
   topology_data(const type::coloring & coloring)
-    : simple(coloring.size()), partition(
-                                 *this,
-                                 coloring.size(),
-                                 [](std::size_t i) {
-                                   return std::pair{i, i + 1};
-                                 }) {}
+    : simple(coloring.size()),
+      partition(*this, coloring.size(), [](std::size_t i) {
+        return std::pair{i, i + 1};
+      }) {}
 };
 
 template<>

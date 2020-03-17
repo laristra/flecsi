@@ -33,56 +33,55 @@ index_topology(int, char **) {
 
   int my_rank = process();
   int num_files = processes();
-  io::io_interface_t cp_io;
-  io::hdf5_t checkpoint_file = cp_io.init_hdf5_file(file_name, num_files);
+  io::hdf5_t checkpoint_file = io::init_hdf5_file(file_name, num_files);
 
   // create hdf5 file and checkpoint
-  cp_io.create_hdf5_file(checkpoint_file, my_rank);
+  io::create_hdf5_file(checkpoint_file, my_rank);
 
   std::string str1("control_ds1");
-  cp_io.write_string_to_hdf5_file(
+  io::write_string_to_hdf5_file(
     checkpoint_file, my_rank, "control", "ds1", str1, str1.size());
 
-  cp_io.close_hdf5_file(checkpoint_file);
+  io::close_hdf5_file(checkpoint_file);
 
   // re-open and continute checkpoint
-  cp_io.open_hdf5_file(checkpoint_file, my_rank);
+  io::open_hdf5_file(checkpoint_file, my_rank);
 
   std::string str2("control_ds2");
-  cp_io.write_string_to_hdf5_file(
+  io::write_string_to_hdf5_file(
     checkpoint_file, my_rank, "control", "ds2", str2, str2.size());
 
   std::string str3("topology_ds1");
-  cp_io.write_string_to_hdf5_file(
+  io::write_string_to_hdf5_file(
     checkpoint_file, my_rank, "topology", "ds1", str3, str3.size());
 
-  cp_io.close_hdf5_file(checkpoint_file);
+  io::close_hdf5_file(checkpoint_file);
 
   // recover
-  cp_io.open_hdf5_file(checkpoint_file, my_rank);
+  io::open_hdf5_file(checkpoint_file, my_rank);
 
   std::string str1_recover;
-  cp_io.read_string_from_hdf5_file(
+  io::read_string_from_hdf5_file(
     checkpoint_file, my_rank, "control", "ds1", str1_recover);
 
   flog(info) << "str1 reover " << str1_recover << std::endl;
   ASSERT_EQ(str1_recover, "control_ds1");
 
   std::string str2_recover;
-  cp_io.read_string_from_hdf5_file(
+  io::read_string_from_hdf5_file(
     checkpoint_file, my_rank, "control", "ds2", str2_recover);
 
   flog(info) << "str2 reover " << str2_recover << std::endl;
   ASSERT_EQ(str2_recover, "control_ds2");
 
   std::string str3_recover;
-  cp_io.read_string_from_hdf5_file(
+  io::read_string_from_hdf5_file(
     checkpoint_file, my_rank, "topology", "ds1", str3_recover);
 
   flog(info) << "str3 reover " << str3_recover << std::endl;
   ASSERT_EQ(str3_recover, "topology_ds1");
 
-  cp_io.close_hdf5_file(checkpoint_file);
+  io::close_hdf5_file(checkpoint_file);
 
   return 0;
 } // index

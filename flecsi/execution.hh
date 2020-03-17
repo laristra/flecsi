@@ -60,8 +60,8 @@ initialize(int argc, char ** argv, bool dependent = true) {
  */
 
 inline int
-start(std::function<int(int, char **)> action) {
-  return runtime::context_t::instance().start(std::move(action));
+start(const std::function<int(int, char **)> & action) {
+  return runtime::context_t::instance().start(action);
 }
 
 /*!

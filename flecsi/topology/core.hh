@@ -132,7 +132,7 @@ template<class, class = void>
 inline constexpr std::size_t index_spaces = 1;
 template<class T>
 inline constexpr std::size_t index_spaces<T, decltype(void(T::index_spaces))> =
-  T::index_spaces;   // TIP: expression SFINAE uses T::index_spaces if defined
+  T::index_spaces; // TIP: expression SFINAE uses T::index_spaces if defined
 
 } // namespace topology
 } // namespace flecsi
