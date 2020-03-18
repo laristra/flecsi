@@ -16,6 +16,7 @@
 #include <cstddef>
 
 #include "flecsi/data/field_info.hh"
+#include "flecsi/topo/core.hh" // single_space
 
 namespace flecsi {
 namespace data {
@@ -37,6 +38,10 @@ struct partition {
     completeness = {}) {}
   std::size_t colors() const {
     return 0;
+  }
+  template<topo::single_space>
+  const partition & get_partition() const {
+    return *this;
   }
 };
 } // namespace detail

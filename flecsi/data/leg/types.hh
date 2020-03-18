@@ -24,6 +24,7 @@
 #endif
 
 #include "flecsi/run/backend.hh"
+#include "flecsi/topo/core.hh" // single_space
 
 #include <legion.h>
 
@@ -136,6 +137,11 @@ struct partition {
   unique_index_space color_space;
   unique_index_partition index_partition;
   unique_logical_partition logical_partition;
+
+  template<topo::single_space>
+  const partition & get_partition() const {
+    return *this;
+  }
 };
 } // namespace leg
 

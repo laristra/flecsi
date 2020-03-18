@@ -149,31 +149,30 @@ struct task_prologue_t {
     region_reqs_.push_back(rr);
   } // visit
 
-  /*--------------------------------------------------------------------------*
-    Index Topology
-   *--------------------------------------------------------------------------*/
-
-  template<typename DATA_TYPE, size_t PRIVILEGES>
+  template<typename DATA_TYPE,
+    size_t PRIVILEGES,
+    class Topo,
+    topo::index_space_t<Topo> Space,
+    class = std::enable_if_t<topo::privilege_count<Topo, Space> == 1>>
   void visit(
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::
-      field_reference<DATA_TYPE, data::dense, topo::index, topo::elements> &
-        ref) {
-    auto & instance_data = ref.topology().get();
+    const data::field_reference<DATA_TYPE, data::dense, Topo, Space> & ref) {
+    auto & instance_data = ref.topology().get().template get_partition<Space>();
 
     flog_assert(instance_data.colors() == domain_,
-      "attempting to pass index topology reference with size "
-        << instance_data.colors() << " into task with launch domain of size "
-        << domain_);
+      "attempting to pass field with "
+        << instance_data.colors()
+        << " partitions into task with launch domain of size " << domain_);
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
-      "index topology accessor type only takes one privilege");
+      "accessors for this topology type take only one privilege");
 
     Legion::RegionRequirement rr(instance_data.logical_partition,
       0,
       privilege_mode(get_privilege<0, PRIVILEGES>()),
       EXCLUSIVE,
-      instance_data.logical_region);
+      Legion::Runtime::get_runtime()->get_parent_logical_region(
+        instance_data.logical_partition));
 
     rr.add_field(ref.fid());
     region_reqs_.push_back(rr);

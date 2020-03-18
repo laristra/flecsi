@@ -161,6 +161,12 @@ template<class T>
 using index_space_t = typename detail::index_space<T>::type;
 template<class T>
 inline constexpr auto default_space = detail::default_space<T>::value;
+template<class T, index_space_t<T> S, class = const std::size_t>
+inline constexpr std::size_t privilege_count = 1;
+template<class T, index_space_t<T> S>
+inline constexpr std::size_t
+  privilege_count<T, S, decltype(T::template privilege_count<S>)> =
+    T::template privilege_count<S>;
 
 } // namespace topo
 } // namespace flecsi

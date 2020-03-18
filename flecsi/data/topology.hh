@@ -38,6 +38,10 @@ struct partition {
     disjointness = {},
     completeness = {});
   std::size_t colors() const;
+  template<topo::single_space>
+  const partition & get_partition() const {
+    return *this;
+  }
 };
 #endif
 
