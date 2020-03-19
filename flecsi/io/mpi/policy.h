@@ -129,7 +129,7 @@ struct mpi_policy_t {
 
   bool create_hdf5_dataset(const hid_t hdf5_file_id,
     const std::string & dataset_name,
-    int buffer_size,
+    hsize_t buffer_size,
     MPI_Comm mpi_hdf5_comm) {
     int rank;
     MPI_Comm_rank(mpi_hdf5_comm, &rank);
@@ -178,10 +178,10 @@ struct mpi_policy_t {
   bool write_data_to_hdf5(const hid_t & hdf5_file_id,
     const std::string & dataset_name,
     const void * buffer,
-    int nsize,
-    int displ,
+    hsize_t nsize,
+    hsize_t displ,
     MPI_Comm mpi_hdf5_comm,
-    const int * offset_buf = nullptr) {
+    const hsize_t * offset_buf = nullptr) {
     int rank;
     MPI_Comm_rank(mpi_hdf5_comm, &rank);
 
@@ -219,10 +219,10 @@ struct mpi_policy_t {
       herr_t status;
       hsize_t dims[1] = {static_cast<hsize_t>(new_world_size + 1)};
       hid_t attribute_space_id = H5Screate_simple(1, dims, NULL);
-      hid_t attribute_id = H5Acreate(dataset_id, "offsets", H5T_NATIVE_B32,
+      hid_t attribute_id = H5Acreate(dataset_id, "offsets", H5T_NATIVE_HSIZE,
         attribute_space_id, H5P_DEFAULT, H5P_DEFAULT);
 
-      status = H5Awrite(attribute_id, H5T_NATIVE_B32, offset_buf);
+      status = H5Awrite(attribute_id, H5T_NATIVE_HSIZE, offset_buf);
       assert(status == 0);
       status = H5Aclose(attribute_id);
       assert(status == 0);
@@ -242,8 +242,8 @@ struct mpi_policy_t {
   bool read_data_from_hdf5(const hid_t & hdf5_file_id,
     const std::string & dataset_name,
     void * buffer,
-    int nsize,
-    int displ,
+    hsize_t nsize,
+    hsize_t displ,
     MPI_Comm mpi_hdf5_comm) {
     int rank;
     MPI_Comm_rank(mpi_hdf5_comm, &rank);
@@ -306,13 +306,13 @@ struct mpi_policy_t {
   void checkpoint_field(const hid_t hdf5_file_id,
     const std::string & field_name,
     const void * buffer,
-    const int size) {
+    const hsize_t size) {
     // TODO:  do these calcs only once per index space
-    int nsize = std::ceil(((double)size) / sizeof(std::uint32_t));
-    int sum_nsize;
-    MPI_Allreduce(&nsize, &sum_nsize, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
-    int displ;
-    MPI_Exscan(&nsize, &displ, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
+    hsize_t nsize = std::ceil(((double)size) / sizeof(std::uint32_t));
+    hsize_t sum_nsize;
+    MPI_Allreduce(&nsize, &sum_nsize, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
+    hsize_t displ;
+    MPI_Exscan(&nsize, &displ, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
     if(new_rank == 0)
       displ = 0;
 
@@ -330,27 +330,27 @@ struct mpi_policy_t {
   void checkpoint_field_ragged(const hid_t hdf5_file_id,
     const std::string & field_name,
     const std::vector<uint8_t> & rows,
-    const int nrows,
-    const size_t fid) {
+    const hsize_t nrows,
+    const field_id_t fid) {
     auto & context = execution::context_t::instance();
     auto serdez = context.get_serdez(fid);
-    int nsize = 0;
-    int row_vector_size = sizeof(data::row_vector_u<uint8_t>);
+    hsize_t nsize = 0;
+    hsize_t row_vector_size = sizeof(data::row_vector_u<uint8_t>);
     for(int i = 0; i < nrows; ++i) {
       nsize += serdez->serialized_size(&rows[i * row_vector_size]);
     }
     // TODO:  handle case where this doesn't divide evenly
     nsize /= sizeof(std::uint32_t);
 
-    int sum_nsize;
-    MPI_Allreduce(&nsize, &sum_nsize, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
-    int displ;
-    MPI_Exscan(&nsize, &displ, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
+    hsize_t sum_nsize;
+    MPI_Allreduce(&nsize, &sum_nsize, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
+    hsize_t displ;
+    MPI_Exscan(&nsize, &displ, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
     if(new_rank == 0)
       displ = 0;
-    std::vector<int> offset_buf(new_world_size + 1);
+    std::vector<hsize_t> offset_buf(new_world_size + 1);
     MPI_Allgather(
-      &displ, 1, MPI_INT, offset_buf.data(), 1, MPI_INT, mpi_hdf5_comm);
+      &displ, 1, MPI_INT64_T, offset_buf.data(), 1, MPI_INT64_T, mpi_hdf5_comm);
     offset_buf[new_world_size] = sum_nsize;
 
     bool return_val = false;
@@ -375,10 +375,10 @@ struct mpi_policy_t {
   void recover_field(const hid_t hdf5_file_id,
     const std::string & field_name,
     void * buffer,
-    const int size) {
-    int nsize = std::ceil(((double)size) / sizeof(std::uint32_t));
-    int displ;
-    MPI_Exscan(&nsize, &displ, 1, MPI_INT, MPI_SUM, mpi_hdf5_comm);
+    const hsize_t size) {
+    hsize_t nsize = std::ceil(((double)size) / sizeof(std::uint32_t));
+    hsize_t displ;
+    MPI_Exscan(&nsize, &displ, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
     if(new_rank == 0)
       displ = 0;
 
@@ -392,19 +392,19 @@ struct mpi_policy_t {
   void recover_field_ragged(const hid_t hdf5_file_id,
     const std::string & field_name,
     const std::vector<uint8_t> & rows,
-    const int nrows,
-    const size_t fid) {
+    const hsize_t nrows,
+    const field_id_t fid) {
     hid_t attribute_id = H5Aopen_by_name(
       hdf5_file_id, field_name.c_str(), "offsets", H5P_DEFAULT, H5P_DEFAULT);
-    std::vector<int> offset_buf(new_world_size + 1);
+    std::vector<hsize_t> offset_buf(new_world_size + 1);
     herr_t status;
-    status = H5Aread(attribute_id, H5T_NATIVE_B32, offset_buf.data());
+    status = H5Aread(attribute_id, H5T_NATIVE_HSIZE, offset_buf.data());
     assert(status == 0);
     status = H5Aclose(attribute_id);
     assert(status == 0);
 
-    int nsize = offset_buf[new_rank + 1] - offset_buf[new_rank];
-    int displ = offset_buf[new_rank];
+    hsize_t nsize = offset_buf[new_rank + 1] - offset_buf[new_rank];
+    hsize_t displ = offset_buf[new_rank];
     std::vector<std::uint32_t> buffer(nsize);
 
     bool return_val = false;
@@ -455,21 +455,21 @@ struct mpi_policy_t {
     for(const auto & info : field_info) {
       switch(info.storage_class) {
         case data::dense: {
-          size_t fid = info.fid;
+          field_id_t fid = info.fid;
           std::string field_name = "fid_" + std::to_string(fid);
           auto & data = field_data.at(fid);
           // TODO:  handle case where this doesn't divide evenly
-          int size = data.size();
+          hsize_t size = data.size();
           const void * buffer = data.data();
           checkpoint_field(hdf5_file_id, field_name, buffer, size);
         } break;
 
         case data::ragged:
         case data::sparse: {
-          size_t fid = info.fid;
+          field_id_t fid = info.fid;
           std::string field_name = "fid_" + std::to_string(fid);
           auto & data = sparse_field_data.at(fid);
-          int nrows = data.num_total;
+          hsize_t nrows = data.num_total;
           const auto & rows = data.rows;
           checkpoint_field_ragged(hdf5_file_id, field_name, rows, nrows, fid);
         } break;
@@ -505,7 +505,7 @@ struct mpi_policy_t {
     for(const auto & info : field_info) {
       switch(info.storage_class) {
         case data::dense: {
-          size_t fid = info.fid;
+          field_id_t fid = info.fid;
           size_t is = info.index_space;
           std::string field_name = "fid_" + std::to_string(fid);
           auto it = field_data.find(fid);
@@ -520,14 +520,14 @@ struct mpi_policy_t {
           }
           assert(it != field_data.end() && "messed up");
           auto & data = field_data.at(fid);
-          size_t size = data.size();
+          hsize_t size = data.size();
           void * buffer = data.data();
           recover_field(hdf5_file_id, field_name, buffer, size);
         } break;
 
         case data::ragged:
         case data::sparse: {
-          size_t fid = info.fid;
+          field_id_t fid = info.fid;
           size_t is = info.index_space;
           std::string field_name = "fid_" + std::to_string(fid);
           auto it = sparse_field_data.find(fid);
@@ -543,7 +543,7 @@ struct mpi_policy_t {
           }
           assert(it != sparse_field_data.end() && "messed up");
           auto & data = sparse_field_data.at(fid);
-          int nrows = data.num_total;
+          hsize_t nrows = data.num_total;
           const auto & rows = data.rows;
           recover_field_ragged(hdf5_file_id, field_name, rows, nrows, fid);
         } break;
