@@ -27,19 +27,9 @@ namespace data {
 class FLECSI_EXPORT data_client_t
 {
 public:
-  /// Copy constructor (disabled)
-  data_client_t(const data_client_t &) = delete;
-
-  /// Assignment operator (disabled)
-  data_client_t & operator=(const data_client_t &) = delete;
-
-  /// Allow move construction
-  data_client_t(data_client_t && dc) {}
-
-  /// Allow move assignment
-  data_client_t & operator=(data_client_t && dc) {
-    return *this;
-  }
+  // We're empty, so just default what would be deprecated to omit:
+  data_client_t(const data_client_t &) = default;
+  data_client_t & operator=(const data_client_t &) = default;
 
   //--------------------------------------------------------------------------//
   //! Return a unique runtime identifier for namespace access to the
