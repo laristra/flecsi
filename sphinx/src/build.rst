@@ -119,8 +119,8 @@ For a complete list of versions and variants, type:
 More documentation and information on Spack is available `here
 <https://spack.readthedocs.io/en/latest>`_.
 
-Developers
-**********
+FleCSI Developers
+*****************
 
 If you are a developer, and would like to install only the dependencies of
 FleCSI (assuming that you will build FleCSI from source), you can use

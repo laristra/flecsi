@@ -15,7 +15,6 @@
 set(runtime_HEADERS
   backend.hh
   context.hh
-  program_options.hh
   types.hh
 )
 
@@ -66,4 +65,13 @@ set(runtime_HEADERS
 set(runtime_SOURCES
   ${runtime_SOURCES}
   PARENT_SCOPE
+)
+
+#------------------------------------------------------------------------------#
+# Unit tests.
+#------------------------------------------------------------------------------#
+
+ftest_add_unit(program-options
+  SOURCES
+    test/program-options.cc
 )
