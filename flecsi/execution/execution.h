@@ -27,6 +27,7 @@
 #include <flecsi/utils/const_string.h>
 #include <flecsi/utils/function_traits.h>
 #include <flecsi/utils/macros.h>
+#include <flecsi/utils/tuple_function.h>
 
 clog_register_tag(execution);
 

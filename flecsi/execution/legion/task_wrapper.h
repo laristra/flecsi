@@ -32,7 +32,6 @@
 #include <flecsi/execution/legion/finalize_handles.h>
 #include <flecsi/execution/legion/init_handles.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/tuple_function.h>
 #include <flecsi/utils/tuple_type_converter.h>
 
 #if defined(ENABLE_CALIPER)
