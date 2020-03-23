@@ -236,38 +236,33 @@ public:
   }
 
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  id_t * get_entities(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
+  auto get_entities(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
     size_t to_dim) {
     return get<FROM_DIM>(to_dim).get_entities(from_ent->id(from_domain_));
   }
-
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  id_t * get_entities(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
-    size_t to_dim,
-    size_t & count) {
-    return get<FROM_DIM>(to_dim).get_entities(
-      from_ent->id(from_domain_), count);
+  auto get_entities(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
+    std::size_t to_dim) const {
+    return get<FROM_DIM>(to_dim).get_entities(from_ent->id(from_domain_));
   }
 
-  id_t * get_entities(id_t from_id, size_t to_dim) {
+  auto get_entities(id_t from_id, std::size_t to_dim) {
+    return get(from_id.dimension(), to_dim).get_entities(from_id.entity());
+  }
+  auto get_entities(id_t from_id, std::size_t to_dim) const {
     return get(from_id.dimension(), to_dim).get_entities(from_id.entity());
   }
 
-  id_t * get_entities(id_t from_id, size_t to_dim, size_t & count) {
-    return get(from_id.dimension(), to_dim)
-      .get_entities(from_id.entity(), count);
-  }
-
   template<size_t FROM_DIM, size_t NUM_DOMAINS>
-  auto get_entity_vec(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
+  auto get_entities_vec(mesh_entity_u<FROM_DIM, NUM_DOMAINS> * from_ent,
     size_t to_dim) const {
     auto & conn = get<FROM_DIM>(to_dim);
-    return conn.get_entity_vec(from_ent->id(from_domain_));
+    return conn.get_entities_vec(from_ent->id(from_domain_));
   }
 
-  auto get_entity_vec(id_t from_id, size_t to_dim) const {
+  auto get_entities_vec(id_t from_id, std::size_t to_dim) const {
     auto & conn = get(from_id.dimension(), to_dim);
-    return conn.get_entity_vec(from_id.entity());
+    return conn.get_entities_vec(from_id.entity());
   }
 
   std::ostream & dump(std::ostream & stream) {
@@ -398,11 +393,6 @@ public:
   T * make(S &&... args) {
     return ms_->template make<T, DOM>(std::forward<S>(args)...);
   } // make
-
-  virtual void append_to_index_space_(size_t domain,
-    size_t dimension,
-    std::vector<entity_base_ *> & ents,
-    std::vector<id_t> & ids) = 0;
 
 protected:
   STORAGE_TYPE * ms_ = nullptr;

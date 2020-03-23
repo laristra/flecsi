@@ -75,7 +75,7 @@ struct cell_t : public flecsi::topology::mesh_entity_u<2, 1> {
     size_t dim,
     flecsi::topology::domain_connectivity_u<2> & c,
     id_t * e) {
-    id_t * v = c.get_entities(cell_id, 0);
+    const auto v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
     e[1] = v[2];
