@@ -178,10 +178,7 @@ struct finalize_handles_t
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
   handle(data_client_handle_u<T, PERMISSIONS> h) {
-    auto & context_ = context_t::instance();
-
-    auto storage = h.storage();
-    storage->finalize_storage();
+    h.storage.finalize_storage();
   } // handle
 
   /*!
@@ -210,8 +207,6 @@ struct finalize_handles_t
         si.size = h.get_index_subspace_size_(iss.index_subspace);
       } // for
     } // if
-
-    h.delete_storage();
   } // handle
 
   /*!
