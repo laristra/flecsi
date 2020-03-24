@@ -17,7 +17,7 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution/task_attributes.hh>
 
-flog_register_tag(task_attributes);
+flog::devel_tag task_attributes_tag("task_attributes");
 
 using namespace flecsi;
 

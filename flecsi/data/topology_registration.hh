@@ -32,19 +32,20 @@
 #include <flecsi/topology/internal/global.hh>
 #include <flecsi/topology/internal/index.hh>
 //#include <flecsi/topology/mesh_topology.hh>
+#include <flecsi/flog.hh>
 #include <flecsi/utils/common.hh>
 #include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/demangle.hh>
-#include <flecsi/utils/flog.hh>
 #include <flecsi/utils/hash.hh>
 #include <flecsi/utils/tuple_walker.hh>
 
 #include <string>
 #include <tuple>
 
-flog_register_tag(registration);
-
 namespace flecsi {
+
+inline flog::devel_tag registration_tag("registration");
+
 namespace data {
 
 /*!
@@ -104,7 +105,7 @@ struct topology_registration<
         >();
 
       {
-      flog_tag_guard(registration);
+      flog::devel_guard guard(registration_tag);
       flog(info) << "registering field for type id: " <<
         flecsi::utils::demangle(
           typeid(CLIENT_TYPE).name()

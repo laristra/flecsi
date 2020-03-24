@@ -23,8 +23,8 @@
 #include "flecsi/topology/core.hh"
 #include <flecsi/data/field_info.hh>
 #include <flecsi/execution/task_attributes.hh>
+#include <flecsi/flog.hh>
 #include <flecsi/runtime/types.hh>
-#include <flecsi/utils/flog.hh>
 
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
@@ -41,9 +41,11 @@
 #include <utility>
 #include <vector>
 
-flog_register_tag(context);
+namespace flecsi {
 
-namespace flecsi::runtime {
+inline flog::devel_tag context_tag("context");
+
+namespace runtime {
 
 struct context_t; // supplied by backend
 
@@ -169,9 +171,9 @@ struct context {
       master.add(od.second);
     } // for
 
+    boost::program_options::options_description flecsi_desc("FleCSI Options");
 #if defined(FLECSI_ENABLE_FLOG)
     // Add FleCSI options
-    boost::program_options::options_description flecsi_desc("FleCSI Options");
     flecsi_desc.add_options() // clang-format off
       (
         "flog-tags",
@@ -223,11 +225,10 @@ struct context {
           const size_t size = positional_desc_.name_for_position(i).size();
           max_label_chars = size > max_label_chars ? size : max_label_chars;
         } // for
+
         max_label_chars += 2;
 
         std::cout << std::endl << std::endl;
-
-        std::cout << master << std::endl;
 
         if(positional_count) {
           std::cout << "Positional Options:" << std::endl;
@@ -263,14 +264,20 @@ struct context {
           } // for
 
           std::cout << std::endl;
-
-          std::cout << flecsi << std::endl;
         } // if
-#if defined(FLECSI_ENABLE_FLOG)
-        std::cout << "Available FLOG Tags (FleCSI Logging Utility):"
-                  << std::endl;
 
-        for(auto t : flog_tag_map()) {
+        std::cout << master << std::endl;
+        std::cout << flecsi << std::endl;
+
+#if defined(FLECSI_ENABLE_FLOG)
+        auto const & tm = flog::flog_t::instance().tag_map();
+
+        if(tm.size()) {
+          std::cout << "Available FLOG Tags (FleCSI Logging Utility):"
+                    << std::endl;
+        } // if
+
+        for(auto t : tm) {
           std::cout << "  " << t.first << std::endl;
         } // for
 #endif
@@ -324,7 +331,8 @@ struct context {
       parsed.options, boost::program_options::include_positional);
 
 #if defined(FLECSI_ENABLE_FLOG)
-    if(flog_initialize(flog_tags_, flog_verbose_, flog_output_process_)) {
+    if(flog::flog_t::instance().initialize(
+         flog_tags_, flog_verbose_, flog_output_process_)) {
       return status::error;
     } // if
 #endif
@@ -343,7 +351,7 @@ struct context {
 
   inline void finalize_generic() {
 #if defined(FLECSI_ENABLE_FLOG)
-    flog_finalize();
+    flog::flog_t::instance().finalize();
 #endif
 
     if(initialize_dependent_) {
@@ -674,4 +682,5 @@ protected:
 
 }; // struct context
 
-} // namespace flecsi::runtime
+} // namespace runtime
+} // namespace flecsi

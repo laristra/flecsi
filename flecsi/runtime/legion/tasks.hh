@@ -63,14 +63,14 @@ wait_on_mpi_task(const Legion::Task *,
  @ingroup legion-runtime
 */
 
-#include <flecsi/utils/flog/state.hh>
+#include <flecsi/flog/state.hh>
 
 inline size_t
 flog_reduction_task(const Legion::Task *,
   const std::vector<Legion::PhysicalRegion> &,
   Legion::Context,
   Legion::Runtime *) {
-  return utils::flog::flog_t::instance().packets().size();
+  return flog::flog_t::instance().packets().size();
 } // flog_reduction_task
 
 inline void
@@ -79,7 +79,7 @@ flog_mpi_task(const Legion::Task *,
   Legion::Context,
   Legion::Runtime *) {
 
-  std::function<void()> bound_mpi_task = utils::flog::send_to_one;
+  std::function<void()> bound_mpi_task = flog::send_to_one;
 
   context_t::instance().set_mpi_task(bound_mpi_task);
 } // flog_mpi_task

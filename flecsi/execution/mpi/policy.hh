@@ -22,7 +22,7 @@
 #include "flecsi/utils/function_traits.hh"
 #include "future.hh"
 #include <flecsi/execution/mpi/reduction_wrapper.hh>
-#include <flecsi/utils/flog.hh>
+#include <flecsi/flog.hh>
 
 #include <type_traits>
 #include <utility> // forward

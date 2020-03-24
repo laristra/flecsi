@@ -15,8 +15,8 @@
 
 /*! @file */
 
+#include <flecsi/flog.hh>
 #include <flecsi/utils/common.hh>
-#include <flecsi/utils/flog.hh>
 #include <flecsi/utils/static_verify.hh>
 
 #include <vector>

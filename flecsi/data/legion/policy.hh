@@ -16,8 +16,8 @@
 /*! @file */
 
 #include <flecsi/data/legion/types.hh>
+#include <flecsi/flog.hh>
 #include <flecsi/runtime/backend.hh>
-#include <flecsi/utils/flog.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -25,7 +25,7 @@
 
 #include <legion.h>
 
-flog_register_tag(topologies);
+inline flog::devel_tag topologies_tag("topologies");
 
 namespace flecsi {
 namespace data {

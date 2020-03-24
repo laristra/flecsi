@@ -29,9 +29,14 @@
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/runtime/legion/tasks.hh"
 #include "flecsi/utils/demangle.hh"
-#include "flecsi/utils/flog.hh"
-#include "flecsi/utils/flog/utils.hh"
+#include "flecsi/flog/utils.hh"
 #include "flecsi/utils/function_traits.hh"
+#include "task_prologue.hh"
+#include "task_wrapper.hh"
+#include <flecsi/execution/legion/future.hh>
+#include <flecsi/execution/legion/reduction_wrapper.hh>
+#include <flecsi/flog.hh>
+#include <flecsi/flog/utils.hh>
 
 #include <functional>
 #include <memory>
@@ -43,9 +48,9 @@
 
 #include <legion.h>
 
-flog_register_tag(execution);
-
 namespace flecsi {
+
+inline flog::devel_tag execution_tag("execution");
 
 namespace execution {
 namespace detail {
@@ -97,7 +102,7 @@ reduce(ARGS &&... args) {
   using param_tuple = typename traits_t::arguments_type;
 
   // This will guard the entire method
-  flog_tag_guard(execution);
+  flog::devel_guard guard(execution_tag);
 
   // Get the FleCSI runtime context
   auto & flecsi_context = runtime::context_t::instance();
@@ -194,7 +199,7 @@ reduce(ARGS &&... args) {
       "reductions are not supported for single tasks");
 
     {
-      flog_tag_guard(execution);
+      flog::devel_guard guard(execution_tag);
       flog_devel(info) << "Executing single task" << std::endl;
     }
 
@@ -234,7 +239,7 @@ reduce(ARGS &&... args) {
   else {
 
     {
-      flog_tag_guard(execution);
+      flog::devel_guard guard(execution_tag);
       flog_devel(info) << "Executing index task" << std::endl;
     }
 

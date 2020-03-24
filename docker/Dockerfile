@@ -45,8 +45,6 @@ RUN cmake -DMPIEXEC_PREFLAGS=$([ "$DISTRO" = "fedora" ] || [ "$DISTRO" = "ubuntu
 	  -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && \
                      echo OFF || echo ON) \
           -DENABLE_FLOG=ON \
-          -DENABLE_DOXYGEN=ON \
-          -DENABLE_SPHINX=ON \
           -DENABLE_DOCUMENTATION=ON \
 	  -DENABLE_FLECSTAN=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..

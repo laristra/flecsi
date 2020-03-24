@@ -12,8 +12,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <flecsi/flog.hh>
 #include <flecsi/topology/unstructured/definition.hh>
-#include <flecsi/utils/flog.hh>
 
 namespace flecsi {
 namespace topology {

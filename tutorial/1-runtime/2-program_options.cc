@@ -13,7 +13,6 @@
                                                                               */
 
 #include <flecsi/execution.hh>
-#include <flecsi/utils/flog.hh>
 
 /*
   Add an integer-valued command-line option with a default value of '1'. The

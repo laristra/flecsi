@@ -70,12 +70,6 @@ set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
 mark_as_advanced(FLECSI_COUNTER_TYPE)
 
 #------------------------------------------------------------------------------#
-# FleCSIT utility.
-#------------------------------------------------------------------------------#
-
-option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" ON)
-
-#------------------------------------------------------------------------------#
 # These variables are used to collect library and include dependencies
 # for the FleCSIConfig file below.
 #------------------------------------------------------------------------------#
@@ -158,19 +152,7 @@ include(openmp)
 include(hdf5)
 
 #------------------------------------------------------------------------------#
-# Doxygen.
-#------------------------------------------------------------------------------#
-
-include(doxygen)
-
-#------------------------------------------------------------------------------#
-# Sphinx.
-#------------------------------------------------------------------------------#
-
-include(sphinx)
-
-#------------------------------------------------------------------------------#
-# Documentation Deployment.
+# Documentation.
 #------------------------------------------------------------------------------#
 
 include(documentation)
@@ -459,18 +441,6 @@ export(
 export(PACKAGE FleCSI)
 
 #------------------------------------------------------------------------------#
-# Tutorial.
-#------------------------------------------------------------------------------#
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
-  option(ENABLE_FLECSI_TUTORIAL
-    "Enable library support for the FleCSI tutorial" OFF)
-else()
-  option(ENABLE_FLECSI_TUTORIAL
-    "Enable library support for the FleCSI tutorial" ON)
-endif()
-
-#------------------------------------------------------------------------------#
 # Link necessary libraries.
 #------------------------------------------------------------------------------#
 
@@ -616,15 +586,15 @@ summary_info("FLECSI_RUNTIME_MODEL" "${FLECSI_RUNTIME_MODEL}" TRUE)
 summary_option("ENABLE_FLOG" ${ENABLE_FLOG}
   " (FLOG_STRIP_LEVEL ${FLOG_STRIP_LEVEL})")
 summary_option("ENABLE_UNIT_TESTS" ${ENABLE_UNIT_TESTS} "")
-summary_option("ENABLE_FLECSI_TUTORIAL" ${ENABLE_FLECSI_TUTORIAL} "")
-summary_option("ENABLE_FLECSIT" ${ENABLE_FLECSIT} "")
 string(APPEND _summary "\n")
 summary_option("ENABLE_KOKKOS" ${ENABLE_KOKKOS}
   " (${FLECSI_NODE_PLATFORM} platform)")
-summary_option("ENABLE_DOXYGEN" ${ENABLE_DOXYGEN} "")
+if(ENABLE_DOCUMENTATION)
+  summary_option("ENABLE_SPHINX" ${ENABLE_SPHINX} " (ENABLE_DOCUMENTATION)")
+  summary_option("ENABLE_DOXYGEN" ${ENABLE_DOXYGEN} " (ENABLE_DOCUMENTATION)")
+endif()
 summary_option("ENABLE_GRAPHVIZ" ${ENABLE_GRAPHVIZ} "")
 summary_option("ENABLE_OPENMP" ${ENABLE_OPENMP} "")
-summary_option("ENABLE_SPHINX" ${ENABLE_SPHINX} "")
 summary_option("ENABLE_HDF5" ${ENABLE_HDF5} "")
 
 message(STATUS ${_summary})

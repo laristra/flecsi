@@ -33,9 +33,10 @@
 
 #include <legion.h>
 
-flog_register_tag(unbind_accessors);
-
 namespace flecsi {
+
+inline flog::devel_tag unbind_accessors_tag("unbind_accessors");
+
 namespace execution {
 namespace legion {
 
@@ -79,7 +80,7 @@ struct unbind_accessors_t
     !std::is_base_of_v<data::reference_base, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
-      flog_tag_guard(unbind_accessors);
+      flog::devel_guard guard(unbind_accessors_tag);
       flog_devel(info) << "Skipping argument with type "
                        << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }

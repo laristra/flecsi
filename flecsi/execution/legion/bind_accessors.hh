@@ -35,9 +35,10 @@
 
 #include <legion.h>
 
-flog_register_tag(bind_accessors);
-
 namespace flecsi {
+
+inline flog::devel_tag bind_accessors_tag("bind_accessors");
+
 namespace execution {
 namespace legion {
 
@@ -130,7 +131,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
     !std::is_base_of_v<data::reference_base, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
-      flog_tag_guard(bind_accessors);
+      flog::devel_guard guard(bind_accessors_tag);
       flog_devel(info) << "Skipping argument with type "
                        << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }

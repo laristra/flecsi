@@ -17,7 +17,7 @@
 
 #include <flecsi-config.h>
 
-#include <flecsi/utils/flog.hh>
+#include <flecsi/flog.hh>
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 #include <flecsi/utils/graphviz.hh>

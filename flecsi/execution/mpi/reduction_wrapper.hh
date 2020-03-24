@@ -21,14 +21,15 @@
 
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/utils/demangle.hh"
-#include <flecsi/utils/flog.hh>
+#include <flecsi/flog.hh>
 #include <flecsi/utils/mpi_type_traits.hh>
 
 #include <type_traits>
 
-flog_register_tag(reduction_wrapper);
-
 namespace flecsi {
+
+inline flog::devel_tag reduction_wrapper_tag("reduction_wrapper");
+
 namespace execution {
 
 namespace detail {
@@ -56,7 +57,7 @@ detail::register_reduction() {
     "type mismatch: LHS != RHS");
 
   {
-    flog_tag_guard(reduction_wrapper);
+    flog::devel_guard guard(reduction_wrapper_tag);
     flog(info) << "Executing reduction wrapper callback for "
                << utils::type<TYPE>() << std::endl;
   } // scope

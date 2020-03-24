@@ -1,5 +1,3 @@
-# FleCSI Tutorial Dockerfile
-
 #------------------------------------------------------------------------------#
 # Start with plain Fedora
 #------------------------------------------------------------------------------#
@@ -10,7 +8,29 @@ FROM fedora:latest
 # Install Fedora packages
 #------------------------------------------------------------------------------#
 
-RUN dnf install -y make cmake automake autoconf libtool git which vim-enhanced gcc-c++ gcc-gfortran flex patch doxygen graphviz pandoc python2 openmpi-devel redhat-rpm-config hdf5-openmpi-devel exodusii-devel cereal-devel lapack-devel scotch-devel metis-devel environment-modules python-pip clang llvm compiler-rt ccache texlive-epstopdf-bin ghostscript-core texlive-latex-bin-bin texlive-collection-fontsrecommended texlive-fancyhdr findutils texlive-booktabs gdb wget curl lcov boost-devel hwloc-devel
+RUN dnf install -y \
+  passwd \
+  make \
+  git \
+  xz \
+  lbzip2 \
+  which \
+  gcc \
+  gcc-c++ \
+  gcc-gfortran \
+  clang \
+  flex \
+  patch \
+  wget \
+  curl \
+  vim-enhanced \
+  emacs-color-theme
+
+#------------------------------------------------------------------------------#
+# Set a root password
+#------------------------------------------------------------------------------#
+
+RUN echo 'flecsi' | passwd --stdin root
 
 #------------------------------------------------------------------------------#
 # Add the flecsi user
@@ -19,65 +39,78 @@ RUN dnf install -y make cmake automake autoconf libtool git which vim-enhanced g
 RUN groupadd -r flecsi
 RUN useradd -r -m -g flecsi flecsi
 
-#------------------------------------------------------------------------------#
-# Set up build environment
-#------------------------------------------------------------------------------#
+USER flecsi
+WORKDIR /home/flecsi
 
-#ENV PATH=/usr/lib64/ccache:/usr/lib64/openmpi/bin/${PATH:+:}${PATH}
-#ENV LD_LIBRARY_PATH=/usr/lib64/openmpi/lib/${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH}
-#ENV PYTHONPATH=/usr/local/lib/python2.7/site-packages${PYTHONPATH:+:}${PYTHONPATH}
-#ENV OPENMPI=true
-
-#------------------------------------------------------------------------------#
-# Install flecsi
-#------------------------------------------------------------------------------#
-
-USER root
-WORKDIR /home/root
-RUN git clone https://github.com/spack/spack.git
 RUN \
-  source spack/share/spack/setup-env.sh && \
-  spack install flecsi
+  echo "syntax on" > .vimrc && \
+  echo "set background=dark" >> .vimrc && \
+  echo "highlight Comment cterm=italic" >> .vimrc
 
 #------------------------------------------------------------------------------#
-# Build flecsi
+# Install flecsi and setup spack environment
 #------------------------------------------------------------------------------#
 
-#USER root
-#WORKDIR /home/root
-#RUN rm -rf flecsi-third-party
-#RUN git clone --recursive https://github.com/laristra/flecsi.git
-#RUN \
-#   cd flecsi && \
-#   mkdir -p build && \
-#   cd build && \
-#   cmake \
-#      -DBUILD_SHARED_LIBS=ON \
-#      -DCMAKE_BUILD_TYPE=Release \
-#      -DCMAKE_INSTALL_PREFIX=/opt/flecsi \
-#      -DFLECSI_RUNTIME_MODEL=legion \
-#      -DENABLE_COLORING=ON \
-#      -DENABLE_FLECSIT=ON \
-#      -DCMAKE_PREFIX_PATH=/opt/flecsi-tpl \
-#      .. && \
-#   make -j2 && \
-#   make install;
+USER flecsi
+WORKDIR /home/flecsi
 
-#RUN cp /opt/flecsi/bin/flecsi-tutorial /usr/share/modulefiles/
-#RUN mkdir -p /home/flecsi/tutorial
-#RUN cp -r flecsi/flecsi/tutorial/??-* /home/flecsi/tutorial/
+#ARG REPO
+#ARG BRANCH
+
+ARG REPO=https://github.com/tuxfan/flecsi.git
+ARG BRANCH=flog-tutorial
+
+#ARG REPO=https://github.com/laristra/flecsi.git
+#ARG BRANCH=devel
+
+RUN git clone --single-branch --branch ${BRANCH} ${REPO} .flecsi
+
+RUN git clone --single-branch \
+  --branch develop https://github.com/spack/spack.git .spack
+
+RUN \
+  source .spack/share/spack/setup-env.sh && \
+  spack repo add /home/flecsi/.flecsi/spack-repo
+
+# Call fetch to make sure that we don't fail during build
+RUN \
+  source .spack/share/spack/setup-env.sh && \
+  spack fetch --dependencies flecsi@devel backend=legion +flog ^mpich
+
+RUN \
+  source .spack/share/spack/setup-env.sh && \
+  spack install flecsi@devel backend=legion +flog ^mpich
+
+RUN \
+  source .spack/share/spack/setup-env.sh && \
+  spack env create flecsi && \
+  spack env activate flecsi && \
+  spack install flecsi@devel backend=legion +flog ^mpich && \
+  spack install cmake
+
+RUN \
+  echo ". .spack/share/spack/setup-env.sh" >> .bashrc && \
+  echo "spack env activate flecsi" >> .bashrc
 
 #------------------------------------------------------------------------------#
-# Environment setup
+# Copy the tutorial code to home and build
 #------------------------------------------------------------------------------#
 
-#USER root
-#WORKDIR /home/flecsi
-#COPY configfiles/ .
+RUN cp -r .flecsi/tutorial/* . && rm -rf docker
 
-#WORKDIR /home
-#RUN chown -R flecsi.flecsi flecsi
+RUN \
+  source .spack/share/spack/setup-env.sh && \
+  spack env activate flecsi && \
+  mkdir build && \
+  cd build && \
+  cmake .. && make
 
-#WORKDIR /home/flecsi
+#------------------------------------------------------------------------------#
+# Set the execution shell
+#------------------------------------------------------------------------------#
 
-# vim: set ts=3 expandtab syntax=dockerfile :
+CMD /bin/bash
+
+#------------------------------------------------------------------------------#
+# vim: syntax=dockerfile
+#------------------------------------------------------------------------------#
