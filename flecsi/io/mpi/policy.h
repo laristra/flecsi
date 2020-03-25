@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <type_traits>
 
 #include <hdf5.h>
 #include <mpi.h>
@@ -30,6 +31,9 @@
 
 namespace flecsi {
 namespace io {
+
+constexpr auto hsize_mpi_type = MPI_INT64_T;
+static_assert(sizeof(hsize_t) == sizeof(std::int64_t));
 
 struct mpi_policy_t {
 
@@ -310,9 +314,10 @@ struct mpi_policy_t {
     // TODO:  do these calcs only once per index space
     hsize_t nsize = std::ceil(((double)size) / sizeof(std::uint32_t));
     hsize_t sum_nsize;
-    MPI_Allreduce(&nsize, &sum_nsize, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
+    MPI_Allreduce(
+      &nsize, &sum_nsize, 1, hsize_mpi_type, MPI_SUM, mpi_hdf5_comm);
     hsize_t displ;
-    MPI_Exscan(&nsize, &displ, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
+    MPI_Exscan(&nsize, &displ, 1, hsize_mpi_type, MPI_SUM, mpi_hdf5_comm);
     if(new_rank == 0)
       displ = 0;
 
@@ -343,14 +348,15 @@ struct mpi_policy_t {
     nsize /= sizeof(std::uint32_t);
 
     hsize_t sum_nsize;
-    MPI_Allreduce(&nsize, &sum_nsize, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
+    MPI_Allreduce(
+      &nsize, &sum_nsize, 1, hsize_mpi_type, MPI_SUM, mpi_hdf5_comm);
     hsize_t displ;
-    MPI_Exscan(&nsize, &displ, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
+    MPI_Exscan(&nsize, &displ, 1, hsize_mpi_type, MPI_SUM, mpi_hdf5_comm);
     if(new_rank == 0)
       displ = 0;
     std::vector<hsize_t> offset_buf(new_world_size + 1);
-    MPI_Allgather(
-      &displ, 1, MPI_INT64_T, offset_buf.data(), 1, MPI_INT64_T, mpi_hdf5_comm);
+    MPI_Allgather(&displ, 1, hsize_mpi_type, offset_buf.data(), 1,
+      hsize_mpi_type, mpi_hdf5_comm);
     offset_buf[new_world_size] = sum_nsize;
 
     bool return_val = false;
@@ -378,7 +384,7 @@ struct mpi_policy_t {
     const hsize_t size) {
     hsize_t nsize = std::ceil(((double)size) / sizeof(std::uint32_t));
     hsize_t displ;
-    MPI_Exscan(&nsize, &displ, 1, MPI_INT64_T, MPI_SUM, mpi_hdf5_comm);
+    MPI_Exscan(&nsize, &displ, 1, hsize_mpi_type, MPI_SUM, mpi_hdf5_comm);
     if(new_rank == 0)
       displ = 0;
 
