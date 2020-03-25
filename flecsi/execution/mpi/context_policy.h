@@ -33,7 +33,6 @@
 
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
-#include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/row_vector.h>
 #include <flecsi/data/common/serdez.h>

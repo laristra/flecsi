@@ -34,11 +34,11 @@
 #include "mpi.h"
 
 #include <flecsi/coloring/dcrs_utils.h>
-#include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/execution/context.h>
 
+#include "flecsi/utils/mpi_type_traits.h"
 #include <flecsi/utils/tuple_walker.h>
 #include <flecsi/utils/type_traits.h>
 
@@ -126,8 +126,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
     auto & context = context_t::instance();
     const int my_color = context.color();
-    MPI_Bcast(&a.data(), 1, flecsi::coloring::mpi_typetraits_u<T>::type(), 0,
-      MPI_COMM_WORLD);
+    MPI_Bcast(&a.data(), 1, utils::mpi_type<T>(), 0, MPI_COMM_WORLD);
   } // handle
 
   template<typename T,
@@ -207,6 +206,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     std::vector<MPI_Request> requests(send_count + h.num_ghost_);
     std::vector<MPI_Status> statuses(send_count + h.num_ghost_);
 
+    const MPI_Datatype count_mpi_type = utils::mpi_type<std::uint32_t>();
     std::vector<uint32_t> send_count_buf;
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
@@ -218,8 +218,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     i = 0;
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
-        MPI_Isend(&send_count_buf[i], 1,
-          flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), peer, shared.id,
+        MPI_Isend(&send_count_buf[i], 1, count_mpi_type, peer, shared.id,
           MPI_COMM_WORLD, &requests[i]);
         i++;
       }
@@ -229,9 +228,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     i = 0;
     for(auto & ghost : index_coloring.ghost) {
       MPI_Status status;
-      MPI_Irecv(&recv_count_buf[i], 1,
-        flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), ghost.rank,
-        ghost.id, MPI_COMM_WORLD, &requests[i + send_count]);
+      MPI_Irecv(&recv_count_buf[i], 1, count_mpi_type, ghost.rank, ghost.id,
+        MPI_COMM_WORLD, &requests[i + send_count]);
       i++;
     }
 

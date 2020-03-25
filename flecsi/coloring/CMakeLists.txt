@@ -68,7 +68,6 @@ if(ENABLE_MPI)
     ${coloring_HEADERS}
     dcrs_utils.h
     mpi_communicator.h
-    mpi_utils.h
   )
 endif()
 
