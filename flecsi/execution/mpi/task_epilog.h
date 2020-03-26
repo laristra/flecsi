@@ -320,7 +320,6 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
       // allocate send and receive buffers
       using byte_t = unsigned char;
-      auto mpi_byte_t = flecsi::coloring::mpi_typetraits_u<byte_t>::type();
 
       // setup send buffers
       std::vector<size_t> sendcounts(comm_size, 0);
