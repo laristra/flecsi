@@ -167,9 +167,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     }
 
     // Get entry_values
-    MPI_Datatype shared_ghost_type;
-    MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
-    MPI_Type_commit(&shared_ghost_type);
+    const MPI_Datatype shared_ghost_type = utils::mpi_type<value_t>();
 
     MPI_Win win;
     MPI_Win_create(shared_data,
