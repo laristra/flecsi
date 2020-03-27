@@ -316,6 +316,11 @@ public:
     } // for
   }
 
+  hilbert_curve & operator=(const hilbert_curve & bid) {
+    value_ = bid.value_;
+    return *this;
+  }
+
 private:
   void rotation2d(const int_t & n,
     std::array<int_t, dimension> & coords,
@@ -495,6 +500,12 @@ public:
       p[j] = min_ + scale_ * static_cast<double>(coords[j]) / m;
     } // for
   } //  coordinates
+
+  morton_curve & operator=(const morton_curve & bid) {
+    value_ = bid.value_;
+    return *this;
+  }
+
 }; // class morton
 
 template<size_t DIM, typename T, class DERIVED>
