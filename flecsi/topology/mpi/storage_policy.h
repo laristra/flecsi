@@ -42,29 +42,16 @@ struct mpi_topology_storage_policy_u {
   static constexpr size_t num_partitions = 5;
   using id_t = utils::id_t;
 
-  using index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
-                                      true,
-                                      true,
-                                      true,
-                                      void,
-                                      topology_storage_u>,
-    NUM_DIMS + 1>;
+  using storage_t =
+    index_space_u<mesh_entity_base_, topology_storage_u, entity_storage_t>;
 
-  using index_subspaces_t = std::array<index_space_u<mesh_entity_base_ *,
-                                         false,
-                                         true,
-                                         false,
-                                         void,
-                                         topology_storage_u>,
-    NUM_INDEX_SUBSPACES>;
+  using index_spaces_t = std::array<storage_t, NUM_DIMS + 1>;
 
-  using partition_index_spaces_t = std::array<index_space_u<mesh_entity_base_ *,
-                                                false,
-                                                false,
-                                                true,
-                                                void,
-                                                topology_storage_u>,
-    NUM_DIMS + 1>;
+  using index_subspaces_t = std::array<storage_t, NUM_INDEX_SUBSPACES>;
+
+  using partition_index_spaces_t =
+    std::array<index_space_u<mesh_entity_base_, utils::span, entity_storage_t>,
+      NUM_DIMS + 1>;
 
   // array of array of domain_connectivity_u
   std::array<std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMS>, NUM_DOMS>
@@ -96,16 +83,16 @@ struct mpi_topology_storage_policy_u {
     bool read) {
     auto & is = index_spaces[domain][dim];
 
-    auto s = is.storage();
+    const auto s = &is.data;
     s->set_buffer(entities, num_entities, read);
 
-    auto & id_storage = is.id_storage();
-    id_storage.set_buffer(ids, num_entities, true);
+    auto & id_storage = is.ids;
+    id_storage = full_array(ids, num_entities, read);
 
     for(auto & domain_connectivities : topology) {
       auto & domain_connectivity_u = domain_connectivities[domain];
       for(size_t d = 0; d <= NUM_DIMS; ++d) {
-        domain_connectivity_u.get(d, dim).set_entity_storage(s);
+        domain_connectivity_u.get(d, dim).set_entity_storage(*s);
       } // for
     } // for
 
@@ -113,34 +100,28 @@ struct mpi_topology_storage_policy_u {
       return;
     }
 
-    is.set_end(num_entities);
-
     size_t shared_end = num_exclusive + num_shared;
     size_t ghost_end = shared_end + num_ghost;
 
     for(size_t partition = 0; partition < num_partitions; ++partition) {
       auto & isp = partition_index_spaces[partition][domain][dim];
-      isp.set_storage(s);
-      isp.set_id_storage(&id_storage);
+      isp.data = *s;
 
       switch(partition_t(partition)) {
         case exclusive:
-          isp.set_begin(0);
-          isp.set_end(num_exclusive);
+          isp.ids = {ids, num_exclusive};
           break;
         case shared:
-          isp.set_begin(num_exclusive);
-          isp.set_end(shared_end);
+          isp.ids = {ids + num_exclusive, ids + shared_end};
           break;
         case ghost:
-          isp.set_begin(shared_end);
-          isp.set_end(ghost_end);
+          isp.ids = {ids + shared_end, ids + ghost_end};
           break;
         case owned:
-          isp.set_begin(0);
-          isp.set_end(shared_end);
+          isp.ids = {ids, shared_end};
           break;
         default:
+          isp.ids = {ids, ghost_end};
           break;
       }
     }
@@ -163,16 +144,14 @@ struct mpi_topology_storage_policy_u {
     auto & is = index_spaces[domain][dim];
     auto & iss = index_subspaces[index_subspace];
 
-    iss.set_storage(is.storage());
+    iss.data = is.data;
 
-    auto & id_storage = iss.id_storage();
-    id_storage.set_buffer(ids, si.capacity, si.size);
+    auto & id_storage = iss.ids;
+    id_storage = {{ids, si.capacity}, si.size};
 
     if(!read) {
       return;
     }
-
-    iss.set_end(si.size);
   } // init_index_subspaces
 
   void init_connectivity(size_t from_domain,
@@ -189,59 +168,45 @@ struct mpi_topology_storage_policy_u {
     // into the connectivity
     auto & conn = topology[from_domain][to_domain].get(from_dim, to_dim);
 
-    auto & id_storage = conn.get_index_space().id_storage();
-    id_storage.set_buffer(indices, num_indices, read);
+    auto & id_storage = conn.get_index_space().ids;
+    id_storage = full_array(indices, num_indices, read);
 
-    conn.offsets().storage().set_buffer(offsets, num_offsets, read);
-
-    if(read) {
-      conn.get_index_space().set_end(num_indices);
-    }
+    conn.offsets().storage() = full_array(offsets, num_offsets, read);
   } // init_connectivities
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
-    using dtype = domain_entity_u<DOM, T>;
-
-    auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
-    size_t entity = is.size();
-
-    auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
-    auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
-
-    id_t global_id = id_t::make<T::dimension, DOM>(entity, color);
-    ent->set_global_id(global_id);
-
-    auto & id_storage = is.id_storage();
-
-    id_storage[entity] = global_id;
-
-    is.pushed();
-
-    return ent;
+    auto & is = index_spaces[DOM][T::dimension];
+    const std::size_t i = is.ids.size();
+    const id_t global = id_t::make<T::dimension, DOM>(i, color);
+    is.ids.push_back(global);
+    return make2<T, DOM>(i, global, std::forward<ARG_TYPES>(args)...);
   } // make
 
   template<class T, size_t DOM, class... ARG_TYPES>
   T * make(const id_t & id, ARG_TYPES &&... args) {
-    using dtype = domain_entity_u<DOM, T>;
-
-    auto & is = index_spaces[DOM][T::dimension].template cast<dtype>();
+    auto & is = index_spaces[DOM][T::dimension];
 
     size_t entity = id.entity();
-
-    auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
-    auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
-
-    ent->set_global_id(id);
-
-    auto & id_storage = is.id_storage();
-
-    id_storage[entity] = id;
-
-    is.pushed();
-
-    return ent;
+    is.ids[entity] = id;
+    return make2<T, DOM>(entity, id, std::forward<ARG_TYPES>(args)...);
   } // make
+
+private:
+  template<class T>
+  static utils::vector_ref<T>
+  full_array(T * p, std::size_t n, bool full = true) {
+    return {{p, n}, full ? n : 0};
+  }
+
+  template<class T, size_t DOM, class... ARG_TYPES>
+  T * make2(std::size_t index, const id_t & global, ARG_TYPES &&... args) {
+    const auto ret = new(
+      static_cast<T *>(index_spaces[DOM][T::dimension].data.buffer()) + index)
+      T(std::forward<ARG_TYPES>(args)...);
+    ret->set_global_id(global);
+    return ret;
+  }
 }; // class mpi_topology_storage_policy_u
 
 } // namespace topology

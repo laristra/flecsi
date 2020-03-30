@@ -21,7 +21,6 @@
 
 #include <flecsi/data/accessor.h>
 #include <flecsi/data/sparse_data_handle.h>
-#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -29,9 +28,6 @@ template<class T>
 struct ragged_access { // shared between accessor/mutator
   using handle_t = ragged_data_handle_u<T>;
   using value_type = T;
-
-  using index_space_t =
-    topology::index_space_u<topology::simple_entry_u<size_t>, true>;
 
   //-------------------------------------------------------------------------//
   //! Return max number of entries used over all indices.
@@ -61,31 +57,15 @@ struct ragged_access { // shared between accessor/mutator
   //-------------------------------------------------------------------------//
   //! Return all entries used over all indices.
   //-------------------------------------------------------------------------//
-  index_space_t entries() const {
-    size_t id = 0;
-    index_space_t is;
-
-    const size_t max_size = size();
-    for(size_t entry = 0; entry < max_size; ++entry) {
-      is.push_back({id++, entry});
-    }
-
-    return is;
+  auto entries() const {
+    return iota(size());
   }
 
   //-------------------------------------------------------------------------//
   //! Return all entries used over the specified index.
   //-------------------------------------------------------------------------//
-  index_space_t entries(size_t index) const {
-    size_t id = 0;
-    index_space_t is;
-
-    const size_t my_size = size(index);
-    for(size_t entry = 0; entry < my_size; ++entry) {
-      is.push_back({id++, entry});
-    }
-
-    return is;
+  auto entries(size_t index) const {
+    return iota(size(index));
   }
 
   //-------------------------------------------------------------------------//
@@ -99,6 +79,14 @@ struct ragged_access { // shared between accessor/mutator
 
 private:
   using vector_t = typename handle_t::vector_t;
+
+  static auto iota(std::size_t n) {
+    std::vector<std::size_t> ret;
+    ret.reserve(n);
+    for(std::size_t i = 0; i < n; ++i)
+      ret.push_back(i);
+    return ret;
+  }
 };
 
 //----------------------------------------------------------------------------//

@@ -121,7 +121,7 @@ struct crs_t {
     auto operator*() {
       auto i = data_.offsets[pos_];
       auto n = data_.offsets[pos_ + 1] - i;
-      return utils::make_array_ref(&data_.indices[i], n);
+      return utils::span(&data_.indices[i], n);
     }
     auto & operator++() {
       pos_++;
@@ -148,7 +148,7 @@ struct crs_t {
     auto operator*() {
       auto i = data_.offsets[pos_];
       auto n = data_.offsets[pos_ + 1] - i;
-      return utils::make_array_ref(&data_.indices[i], n);
+      return utils::span(&data_.indices[i], n);
     }
     auto & operator++() {
       pos_++;
@@ -214,8 +214,11 @@ struct crs_t {
     append(init.begin(), init.end());
   }
 
-  template<typename U, typename...Args, template<typename, typename...> class Vector>
-  void push_back(const Vector<U,Args...> & init) {
+  template<typename U,
+    typename... Args,
+    template<typename, typename...>
+    class Vector>
+  void push_back(const Vector<U, Args...> & init) {
     append(init.begin(), init.end());
   }
 
