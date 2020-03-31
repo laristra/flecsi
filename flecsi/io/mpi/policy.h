@@ -19,7 +19,6 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
-#include <type_traits>
 
 #include <hdf5.h>
 #include <mpi.h>
@@ -28,12 +27,12 @@
 #include "flecsi/data/common/serdez.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/execution/context.h"
+#include "flecsi/utils/mpi_type_traits.h"
 
 namespace flecsi {
 namespace io {
 
-constexpr auto hsize_mpi_type = MPI_INT64_T;
-static_assert(sizeof(hsize_t) == sizeof(std::int64_t));
+const auto hsize_mpi_type = utils::mpi_typetraits_u<hsize_t>::type();
 
 struct mpi_policy_t {
 
