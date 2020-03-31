@@ -135,7 +135,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
       fieldDataIter = registered_field_data.find(ent.id_fid);
       if(fieldDataIter == registered_field_data.end()) {
-        size_t size = ent.size * num_entities;
+        size_t size = sizeof(utils::id_t) * num_entities;
 
         execution::context_t::instance().register_field_data(ent.id_fid, size);
       }
