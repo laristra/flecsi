@@ -131,7 +131,6 @@ private:
   template<bool Make>
   static MPI_Datatype make() {
     static_assert(Make, "type not predefined");
-    static_assert(std::is_trivially_copyable_v<TYPE>);
     // TODO: destroy at MPI_Finalize
     static const MPI_Datatype ret = [] {
       MPI_Datatype data_type;
