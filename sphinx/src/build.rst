@@ -186,7 +186,7 @@ tests.**
 
 .. code-block:: console
 
-  $ cmake .. -DENABLE_FLOG
+  $ cmake .. -DENABLE_FLOG=ON
 
 After building FleCSI, you can run the unit tests like:
 
