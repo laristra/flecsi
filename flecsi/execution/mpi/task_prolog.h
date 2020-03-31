@@ -19,7 +19,6 @@ All rights reserved.
 #include <vector>
 
 #include "mpi.h"
-#include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/common/data_reference.h>
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
@@ -30,6 +29,7 @@ All rights reserved.
 #include <flecsi/data/sparse_mutator.h>
 #include <flecsi/execution/context.h>
 
+#include "flecsi/utils/mpi_type_traits.h"
 #include <flecsi/utils/tuple_walker.h>
 #include <flecsi/utils/type_traits.h>
 
