@@ -115,11 +115,6 @@ public:
     return id_.entity();
   } // id
 
-  FLECSI_INLINE_TARGET
-  uint16_t info() const {
-    return global_id() >> 48;
-  } // info
-
   //-----------------------------------------------------------------//
   //! Set the id of this entity.
   //-----------------------------------------------------------------//
@@ -136,9 +131,6 @@ public:
   } // get_dim_
 
 protected:
-  void set_info(uint16_t info) {
-    id_ = (uint64_t(info) << 48) | global_id();
-  } // set_info
 
 private:
   id_t id_;
