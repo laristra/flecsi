@@ -150,10 +150,12 @@ MPI_Datatype
 mpi_type() {
   return mpi_typetraits<T>::type();
 }
-// Use references to this to restrict to predefined types before MPI_Init:
+// Use this to restrict to predefined types before MPI_Init:
 template<class T>
-extern const MPI_Datatype // 'extern' works around GCC bug #90493
-  mpi_static_type = mpi_typetraits<T>::template type<false>();
+MPI_Datatype
+mpi_static_type() {
+  return mpi_typetraits<T>::template type<false>();
+}
 
 namespace mpi {
 
