@@ -138,5 +138,124 @@ to_vector(span<T> s) {
   return std::vector<typename span<T>::value_type>(s.begin(), s.end());
 }
 
+/// A very simple emulation of std::ranges::iota_view from C++20.
+template<class I>
+struct iota_view {
+  struct iterator {
+    using value_type = I;
+    using reference = I;
+    using pointer = void;
+    using difference_type = I;
+    using iterator_category = std::input_iterator_tag;
+
+    constexpr iterator(I i = I()) : i(i) {}
+
+    constexpr I operator*() const {
+      return i;
+    }
+    constexpr I operator[](difference_type n) {
+      return i + n;
+    }
+
+    constexpr iterator & operator++() {
+      ++i;
+      return *this;
+    }
+    constexpr iterator operator++(int) {
+      const iterator ret = *this;
+      ++*this;
+      return ret;
+    }
+    constexpr iterator & operator--() {
+      --i;
+      return *this;
+    }
+    constexpr iterator operator--(int) {
+      const iterator ret = *this;
+      --*this;
+      return ret;
+    }
+    constexpr iterator & operator+=(difference_type n) {
+      i += n;
+      return *this;
+    }
+    friend constexpr iterator operator+(difference_type n, iterator i) {
+      i += n;
+      return i;
+    }
+    constexpr iterator operator+(difference_type n) const {
+      return n + *this;
+    }
+    constexpr iterator & operator-=(difference_type n) {
+      i -= n;
+      return *this;
+    }
+    constexpr iterator operator-(difference_type n) const {
+      iterator ret = *this;
+      ret -= n;
+      return ret;
+    }
+    constexpr difference_type operator-(const iterator & r) const {
+      return i - r.i;
+    }
+
+    constexpr bool operator==(const iterator & r) const noexcept {
+      return i == r.i;
+    }
+    constexpr bool operator!=(const iterator & r) const noexcept {
+      return !(*this == r);
+    }
+    constexpr bool operator<(const iterator & r) const noexcept {
+      return i < r.i;
+    }
+    constexpr bool operator>(const iterator & r) const noexcept {
+      return r < *this;
+    }
+    constexpr bool operator<=(const iterator & r) const noexcept {
+      return !(*this > r);
+    }
+    constexpr bool operator>=(const iterator & r) const noexcept {
+      return !(*this < r);
+    }
+
+  private:
+    I i;
+  };
+
+  iota_view() = default;
+  constexpr iota_view(I b, I e) : b(b), e(e) {}
+
+  constexpr iterator begin() const noexcept {
+    return b;
+  }
+  constexpr iterator end() const noexcept {
+    return e;
+  }
+
+  constexpr bool empty() const {
+    return b == e;
+  }
+  constexpr explicit operator bool() const {
+    return !empty();
+  }
+
+  constexpr auto size() const {
+    return e - b;
+  }
+
+  constexpr decltype(auto) front() const {
+    return *begin();
+  }
+  constexpr decltype(auto) back() const {
+    return *--end();
+  }
+  constexpr decltype(auto) operator[](I i) const {
+    return begin()[i];
+  }
+
+private:
+  iterator b, e;
+};
+
 } // namespace util
 } // namespace flecsi
