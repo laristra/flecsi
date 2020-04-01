@@ -214,7 +214,7 @@ reduce(ARGS &&... args) {
                  processor_type == task_processor_type_t::loc) {
       auto future = legion_runtime->execute_task(legion_context, launcher);
 
-      return legion_future<RETURN, launch_type_t::single>{{future}};
+      return legion_future<RETURN, launch_type_t::single>{future};
     }
     else {
       static_assert(
@@ -268,14 +268,14 @@ reduce(ARGS &&... args) {
         future = legion_runtime->execute_index_space(
           legion_context, launcher, reduction_op<REDUCTION>);
 
-        return legion_future<RETURN, launch_type_t::single>{{future}};
+        return legion_future<RETURN, launch_type_t::single>{future};
       }
       else {
         // Enqueue the task.
         Legion::FutureMap future_map =
           legion_runtime->execute_index_space(legion_context, launcher);
 
-        return legion_future<RETURN, launch_type_t::index>{{future_map}};
+        return legion_future<RETURN, launch_type_t::index>{future_map};
       } // else
     }
     else {
@@ -302,7 +302,7 @@ reduce(ARGS &&... args) {
                    " reduction task");
       }
       else {
-        return legion_future<RETURN, launch_type_t::index>{{future}};
+        return legion_future<RETURN, launch_type_t::index>{future};
       }
     }
   } // if constexpr

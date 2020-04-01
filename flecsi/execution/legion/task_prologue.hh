@@ -69,11 +69,11 @@ struct task_prologue_t {
     return region_reqs_;
   } // region_requirements
 
-  std::vector<Legion::Future> && futures() &&{
-    return std::move(this->futures_);
+  std::vector<Legion::Future> && futures() && {
+    return std::move(futures_);
   } // futures
-  
-  std::vector<Legion::FutureMap> const & future_maps() { 
+
+  std::vector<Legion::FutureMap> const & future_maps() const {
     return future_maps_;
   } // future_maps
 
