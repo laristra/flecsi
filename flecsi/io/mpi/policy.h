@@ -32,7 +32,7 @@
 namespace flecsi {
 namespace io {
 
-const auto hsize_mpi_type = utils::mpi_typetraits_u<hsize_t>::type();
+const auto hsize_mpi_type = utils::mpi_static_type<hsize_t>();
 
 struct mpi_policy_t {
 
