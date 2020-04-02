@@ -21,9 +21,9 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/execution/legion/future.hh"
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/privilege.hh"
+#include "flecsi/execution/legion/future.hh"
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/topology/core.hh"
 #include <flecsi/utils/demangle.hh>
@@ -60,7 +60,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
   bind_accessors_t(Legion::Runtime * legion_runtime,
     Legion::Context & legion_context,
     std::vector<Legion::PhysicalRegion> const & regions,
-    std::vector<Legion::Future> const &futures)
+    std::vector<Legion::Future> const & futures)
     : legion_runtime_(legion_runtime), legion_context_(legion_context),
       regions_(regions), futures_(futures) {}
 
@@ -115,9 +115,10 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
    Futures
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
-  void visit( execution::flecsi_future<DATA_TYPE, launch_type_t::single> & future) {
-    future.legion_future_=futures_[future_id];
-    future_id++;  
+  void visit(
+    execution::flecsi_future<DATA_TYPE, launch_type_t::single> & future) {
+    future.legion_future_ = futures_[future_id];
+    future_id++;
   }
 
   /*--------------------------------------------------------------------------*

@@ -37,7 +37,6 @@
 namespace flecsi {
 namespace execution {
 
-
 /*!
   Base legion future  type.
 
@@ -48,7 +47,6 @@ namespace execution {
 */
 template<typename RETURN, launch_type_t launch>
 struct legion_future {};
-
 
 /*! Partial specialization for the Legion:Future
 
@@ -114,8 +112,7 @@ struct legion_future<RETURN, launch_type_t::index> {
 
 //-----------------------------------------------------------------------
 
-
-template<typename RETURN, launch_type_t launch=launch_type_t::single>
+template<typename RETURN, launch_type_t launch = launch_type_t::single>
 using flecsi_future = legion_future<RETURN, launch>;
 
 } // namespace execution

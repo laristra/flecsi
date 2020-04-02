@@ -29,9 +29,9 @@
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/runtime/legion/tasks.hh"
 #include "flecsi/utils/demangle.hh"
-#include "flecsi/utils/function_traits.hh"
 #include "flecsi/utils/flog.hh"
 #include "flecsi/utils/flog/utils.hh"
+#include "flecsi/utils/function_traits.hh"
 
 #include <functional>
 #include <memory>
@@ -200,15 +200,16 @@ reduce(ARGS &&... args) {
 
     TaskLauncher launcher(task, TaskArgument(buf.data(), buf.size()));
 
-    //adding region requirements to the launcher
+    // adding region requirements to the launcher
     for(auto & req : pro.region_requirements()) {
       launcher.add_region_requirement(req);
     } // for
 
-    //adding futures to the launcher
-    launcher.futures=std::move(pro).futures();
+    // adding futures to the launcher
+    launcher.futures = std::move(pro).futures();
 
-    flog_assert(pro.future_maps().size() == 0, "you can't maps future from index task to a single task");
+    flog_assert(pro.future_maps().size() == 0,
+      "you can't maps future from index task to a single task");
 
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {
@@ -246,14 +247,15 @@ reduce(ARGS &&... args) {
     Legion::IndexLauncher launcher(
       task, launch_domain, TaskArgument(buf.data(), buf.size()), arg_map);
 
-    //adding region requirement to the launcher
+    // adding region requirement to the launcher
     for(auto & req : pro.region_requirements()) {
       launcher.add_region_requirement(req);
     } // for
 
-    //adding futures to the launcher
-    launcher.futures=std::move(pro).futures();
-    launcher.point_futures.assign(pro.future_maps().begin(),pro.future_maps().end());
+    // adding futures to the launcher
+    launcher.futures = std::move(pro).futures();
+    launcher.point_futures.assign(
+      pro.future_maps().begin(), pro.future_maps().end());
 
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {

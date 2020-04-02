@@ -21,10 +21,10 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/execution/legion/future.hh"
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/privilege.hh"
 #include "flecsi/data/topology_accessor.hh"
+#include "flecsi/execution/legion/future.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/set/interface.hh>
@@ -211,20 +211,18 @@ struct task_prologue_t {
     Futures
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
-  void visit(
-   execution::flecsi_future<DATA_TYPE, launch_type_t::single>  *,
-   const execution::legion_future<DATA_TYPE,
-			flecsi::execution::launch_type_t::single> & future) {
+  void visit(execution::flecsi_future<DATA_TYPE, launch_type_t::single> *,
+    const execution::legion_future<DATA_TYPE,
+      flecsi::execution::launch_type_t::single> & future) {
     futures_.push_back(future.legion_future_);
   }
 
   template<typename DATA_TYPE>
-  void visit(
-   execution::flecsi_future<DATA_TYPE, launch_type_t::single>  *,
-   const execution::legion_future<DATA_TYPE,
-			flecsi::execution::launch_type_t::index> & future) {
+  void visit(execution::flecsi_future<DATA_TYPE, launch_type_t::single> *,
+    const execution::legion_future<DATA_TYPE,
+      flecsi::execution::launch_type_t::index> & future) {
     future_maps_.push_back(future.legion_future_);
-   }
+  }
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
