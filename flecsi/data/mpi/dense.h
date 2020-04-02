@@ -185,7 +185,8 @@ struct storage_class_u<dense> {
     hb.ghost_data = hb.ghost_buf = hb.shared_data + hb.shared_size;
     hb.combined_size += color_info.ghost;
 
-    hb.ghost_is_readable = &(ism[field_info.index_space].ghost_is_readable[field_info.fid]);
+    hb.ghost_is_readable =
+      &(ism[field_info.index_space].ghost_is_readable[field_info.fid]);
 
     return h;
   }

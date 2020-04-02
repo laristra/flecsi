@@ -15,15 +15,15 @@
 
 /*! @file */
 
-#include <flecsi/topology/common/array_buffer.h>
 #include <flecsi/topology/index_space.h>
+#include <flecsi/utils/array_ref.h>
 #include <flecsi/utils/offset.h>
 
 namespace flecsi {
 namespace topology {
 
 template<typename T>
-using topology_storage_u = array_buffer_u<T>;
+using topology_storage_u = utils::vector_ref<T>;
 
 class offset_storage_
 {
@@ -72,41 +72,37 @@ private:
 };
 
 template<typename T>
-class identity_storage_u
-{
-public:
+struct identity_storage_u : view_tag {
   class iterator
   {
-    /*
-    // The content of this class appears to be unnecessary; FleCSI builds
-    // without it. However, the class name itself is used here and there.
-    //
-    // I'll comment out the content, for now, in case it does prove to be
-    // needed somewhere. -MFS, 2019-04-19.
-    //
-    public:
-      iterator(simple_id i) : i_(i) {}
+  public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = simple_id;
+    using pointer = void;
+    using reference = value_type;
+    using iterator_category = std::input_iterator_tag;
 
-      bool operator==(const iterator & itr) const {
-        return i_ == itr.i_;
-      }
+    iterator(simple_id i) : i_(i) {}
 
-      bool operator!=(const iterator & itr) const {
-        return i_ != itr.i_;
-      }
+    bool operator==(const iterator & itr) const {
+      return i_ == itr.i_;
+    }
 
-      simple_id operator*() {
-        return i_;
-      }
+    bool operator!=(const iterator & itr) const {
+      return i_ != itr.i_;
+    }
 
-      iterator & operator++() {
-        ++i_;
-        return *this;
-      }
+    simple_id operator*() const {
+      return i_;
+    }
 
-    private:
-      size_t i_;
-    */
+    iterator & operator++() {
+      ++i_;
+      return *this;
+    }
+
+  private:
+    size_t i_;
   };
 
   simple_id operator[](size_t i) const {
@@ -115,14 +111,6 @@ public:
 
   simple_id back() const {
     return size_ - 1;
-  }
-
-  void push_back(simple_id i) {
-    assert(false && "invalid operation");
-  }
-
-  void pushed() {
-    assert(false && "invalid operation");
   }
 
   void clear() {
@@ -137,35 +125,17 @@ public:
     size_ = n;
   }
 
-  size_t capacity() const {
+  std::size_t size() const {
     return size_;
   }
-
-  template<typename... Args>
-  void assign(Args &&... args) {
-    assert(false && "invalid operation");
-  }
-
-  template<typename... Args>
-  void insert(Args &&... args) {}
-
-  void reserve(size_t n) {
-    assert(false && "invalid operation");
-  }
-
-  /*
-  // See comment regarding class iterator, above. The enclosing container's
-  // begin() and end() also appear to be unused. This may be old code that
-  // should just be removed. For now, I'll comment it out. -MFS, 2019-04-19.
 
   iterator begin() const {
     return iterator(0);
   }
 
   iterator end() const {
-    return iterator(size_ - 1);
+    return iterator(size_);
   }
-  */
 
 private:
   size_t size_;
