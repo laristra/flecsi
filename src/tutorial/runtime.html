@@ -209,6 +209,72 @@ runtimes that FleCSI itself initialized.</p></li>
 <p>This example demonstrates a minimal use of FleCSI that just executes an
 action to print out <em>Hello World</em>. Code for this example can be found in
 <em>tutorial/1-runtime/1-minimal.cc</em></p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@</span>
+<span class="cm">   /@@/////  /@@          @@////@@ @@////// /@@</span>
+<span class="cm">   /@@       /@@  @@@@@  @@    // /@@       /@@</span>
+<span class="cm">   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@</span>
+<span class="cm">   /@@////   /@@/@@@@@@@/@@       ////////@@/@@</span>
+<span class="cm">   /@@       /@@/@@//// //@@    @@       /@@/@@</span>
+<span class="cm">   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@</span>
+<span class="cm">   //       ///  //////   //////  ////////  //</span>
+
+<span class="cm">   Copyright (c) 2016, Triad National Security, LLC</span>
+<span class="cm">   All rights reserved.</span>
+<span class="cm">                                                                              */</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;flecsi/execution.hh&gt;</span><span class="cp"></span>
+
+<span class="cm">/*</span>
+<span class="cm">  The top-level action can be any C/C++ function that takes (int, char**) and</span>
+<span class="cm">  returns an int.</span>
+
+<span class="cm">  In this simple example, we only print a message to indicate that the</span>
+<span class="cm">  top-level action was actually executed by FleCSI. However, in a real</span>
+<span class="cm">  application, the top-level action would execute FleCSI tasks and other</span>
+<span class="cm">  functions to implement the simulation.</span>
+<span class="cm"> */</span>
+
+<span class="kt">int</span>
+<span class="nf">top_level_action</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Hello World&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// top_level_action</span>
+
+<span class="cm">/*</span>
+<span class="cm">  The main function must invoke initialize, start, and finalize on the FleCSI</span>
+<span class="cm">  runtime. Otherwise, the implementation of main is left to the user.</span>
+<span class="cm"> */</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    The status returned by FleCSI&#39;s initialize method should be inspected to</span>
+<span class="cm">    see if the end-user specified --help on the command line. FleCSI has</span>
+<span class="cm">    built-in command-line support using Boost Program Options. This is</span>
+<span class="cm">    documented in the next example.</span>
+<span class="cm">   */</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    The top-level action is passed to the start function to tell FleCSI what</span>
+<span class="cm">    it should execute.</span>
+<span class="cm">   */</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">top_level_action</span><span class="p">);</span>
+
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="n">status</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
@@ -311,6 +377,22 @@ We use the latter for this example simply for conciseness.</p>
 </div>
 <p>Let’s consider the first <em>Car Options</em> option: <em>–level</em>. To declare
 this option, we use the following declaration:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Add an integer-valued command-line option with a default value of &#39;1&#39;. The</span>
+<span class="cm">  option will have a long form --level, and a short form -l. The option will be</span>
+<span class="cm">  added under the &quot;Car Options&quot; section.</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">trim</span><span class="p">(</span><span class="s">&quot;Car Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;level,l&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Specify the trim level [1-10].&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_default</span><span class="p">,</span> <span class="mi">1</span><span class="p">}},</span>
+  <span class="p">[](</span><span class="n">flecsi</span><span class="o">::</span><span class="n">any</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">option_value</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">11</span><span class="p">;</span>
+  <span class="p">});</span>
+</pre></div>
+</div>
 <p>First, notice that the flecsi::program_option type is templated on the
 underlying option type <em>int</em>. In general, this can be any valid C++
 type.</p>
@@ -343,10 +425,41 @@ the user.</p></li>
 </ul>
 <p>The next option <em>–transmission</em> is similar, but uses a std::string
 value type:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Add a string-valued command-line option with a default value of &quot;manual&quot;. The</span>
+<span class="cm">  option will have a long form --transmission, and a short form -t. The option</span>
+<span class="cm">  will be added under the &quot;Car Options&quot; section.</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">transmission</span><span class="p">(</span><span class="s">&quot;Car Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;transmission,t&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Specify the transmission type [</span><span class="se">\&quot;</span><span class="s">automatic</span><span class="se">\&quot;</span><span class="s">, </span><span class="se">\&quot;</span><span class="s">manual</span><span class="se">\&quot;</span><span class="s">].&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_default</span><span class="p">,</span> <span class="s">&quot;manual&quot;</span><span class="p">}},</span>
+  <span class="p">[](</span><span class="n">flecsi</span><span class="o">::</span><span class="n">any</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">value</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">option_value</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">==</span> <span class="s">&quot;manual&quot;</span> <span class="o">||</span> <span class="n">value</span> <span class="o">==</span> <span class="s">&quot;automatic&quot;</span><span class="p">;</span>
+  <span class="p">});</span>
+</pre></div>
+</div>
 <p>The only real difference is that (because the underlying type is
 std::string) the default value is also a string.</p>
 <p>The last option in the “Car Options” section demonstrates the use of
 flecsi::option_implicit:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Add an option that defines an implicit value. If the program is invoked with</span>
+<span class="cm">  --child-seat, the value will be true. If it is invoked without --child-seat,</span>
+<span class="cm">  the value will be false. This style of option should not be used with</span>
+<span class="cm">  positional arguments because Boost appears to have a bug when such options</span>
+<span class="cm">  are invoked directly before a positional option (gets confused about</span>
+<span class="cm">  separation). We break that convention here for the sake of completeness.</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">child_seat</span><span class="p">(</span><span class="s">&quot;Car Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;child-seat,c&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Request a child seat.&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_default</span><span class="p">,</span> <span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_implicit</span><span class="p">,</span> <span class="nb">true</span><span class="p">}});</span>
+</pre></div>
+</div>
 <p>Providing an implicit value, defines the behavior for the case that the
 user invokes the program with the given flag, but does not assign a
 value, e.g., <em>–child-seat</em> vs. <em>–child-seat=1</em>. The value is <em>implied</em>
@@ -363,6 +476,23 @@ type of option is safe to use with positional options.</p>
 </div>
 <p>In the <em>Ride Options</em> section, the <em>–purpose</em> option takes an integer
 value <em>0</em> or <em>1</em>. This option is declared with the following code:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Add a an option to a different section, i.e., &quot;Ride Options&quot;. The enumeration</span>
+<span class="cm">  type is not enforced by the FleCSI runtime, and is mostly for convenience.</span>
+<span class="cm"> */</span>
+
+<span class="k">enum</span> <span class="nl">purpose_option</span> <span class="p">:</span> <span class="kt">size_t</span> <span class="p">{</span> <span class="n">personal</span><span class="p">,</span> <span class="n">business</span> <span class="p">};</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span> <span class="n">purpose</span><span class="p">(</span><span class="s">&quot;Ride Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;purpose,p&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Specify the purpose of the trip (personal=0, business=1).&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_default</span><span class="p">,</span> <span class="n">purpose_option</span><span class="o">::</span><span class="n">business</span><span class="p">}},</span>
+  <span class="p">[](</span><span class="n">flecsi</span><span class="o">::</span><span class="n">any</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">value</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">option_value</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">==</span> <span class="n">personal</span> <span class="o">||</span> <span class="n">value</span> <span class="o">==</span> <span class="n">business</span><span class="p">;</span>
+  <span class="p">});</span>
+</pre></div>
+</div>
 <p>This option demonstrates how an enumeration can be used to define
 possible values. Although FleCSI does not enforce correctness, the
 enumeration can be used to check that the option is within a particular
@@ -372,8 +502,34 @@ and zero values (meaning that it takes no values). The <em>–lightspeed</em>
 option acts as a switch, taking the implicit value if the flag is
 passed.  This will be useful to demonstrate how we can check whether or
 not an option was passed in the next section:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Add an option with no default. This will allow us to demonstrate testing an</span>
+<span class="cm">  option with has_value().</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">lightspeed</span><span class="p">(</span><span class="s">&quot;Ride Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;lightspeed&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Travel at the speed of light.&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_implicit</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_zero</span><span class="p">}});</span>
+</pre></div>
+</div>
 <p>The final option in this example is a positional option, i.e., it is an
 argument to the program itself:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Add a positional option. This uses a different constructor from the previous</span>
+<span class="cm">  option declarations. Positional options are a replacement for required</span>
+<span class="cm">  options (in the normal boost::program_options interface).</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">passenger_list</span><span class="p">(</span><span class="s">&quot;passenger-list&quot;</span><span class="p">,</span>
+  <span class="s">&quot;The list of passengers for this trip [.txt].&quot;</span><span class="p">,</span>
+  <span class="mi">1</span><span class="p">,</span>
+  <span class="p">[](</span><span class="n">flecsi</span><span class="o">::</span><span class="n">any</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">value</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">option_value</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;.txt&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">;</span>
+  <span class="p">});</span>
+</pre></div>
+</div>
 <p>Postional options are required, i.e., the program will error and print
 the usage message if the option is not present.</p>
 </div>
@@ -386,13 +542,251 @@ or it does not. If the option has a value, the specific value depends on
 whether or not the user explicitly passed the option on the command
 line, and its default and implicit values.</p>
 <p>Options that have a default value defined do not need to be tested:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    Add cost for trim level. This option does not have to be checked with</span>
+<span class="cm">    has_value() because it is defaulted. It is also unnecessary to check the</span>
+<span class="cm">    value because it was declared with a validator function.</span>
+<span class="cm">   */</span>
+
+  <span class="n">price</span> <span class="o">+=</span> <span class="n">trim</span><span class="p">.</span><span class="n">value</span><span class="p">()</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">;</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Add cost for automatic transmission.</span>
+<span class="cm">   */</span>
+
+  <span class="n">price</span> <span class="o">+=</span> <span class="n">transmission</span><span class="p">.</span><span class="n">value</span><span class="p">()</span> <span class="o">==</span> <span class="s">&quot;automatic&quot;</span> <span class="o">?</span> <span class="mf">200.0</span> <span class="o">:</span> <span class="mf">0.0</span><span class="p">;</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Add cost for child seat.</span>
+<span class="cm">   */</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">child_seat</span><span class="p">.</span><span class="n">value</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">price</span> <span class="o">+=</span> <span class="mf">50.0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Deduction for business.</span>
+<span class="cm">   */</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">purpose</span><span class="p">.</span><span class="n">value</span><span class="p">()</span> <span class="o">==</span> <span class="n">business</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">price</span> <span class="o">*=</span> <span class="mf">0.8</span><span class="p">;</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
 <p>Here, we simply need to access the value of the option using the
 <em>value()</em> method.</p>
 <p>For options with no default value, we can check whether or not the
 option has a value using the <em>has_value()</em> method:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    Add cost for lightspeed. Since this option does not have a default, we need</span>
+<span class="cm">    to check whether or not the flag was passed.</span>
+<span class="cm">   */</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">lightspeed</span><span class="p">.</span><span class="n">has_value</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">price</span> <span class="o">+=</span> <span class="mf">1000000.0</span><span class="p">;</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
 <p>Our one positional option works like the defaulted options (because it
 is required), and can be accessed using the <em>value()</em> method:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    Do something with the positional argument.</span>
+<span class="cm">   */</span>
+
+  <span class="k">auto</span> <span class="n">read_file</span> <span class="o">=</span> <span class="p">[](</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Read passengers...</span>
+    <span class="k">return</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="kt">size_t</span> <span class="n">passengers</span> <span class="o">=</span> <span class="n">read_file</span><span class="p">(</span><span class="n">passenger_list</span><span class="p">.</span><span class="n">value</span><span class="p">());</span>
+
+  <span class="n">price</span> <span class="o">*=</span> <span class="n">passengers</span> <span class="o">*</span> <span class="mf">1.10</span> <span class="o">*</span> <span class="n">price</span><span class="p">;</span>
+</pre></div>
+</div>
 <p>Here is the full source for this tutorial example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@</span>
+<span class="cm">   /@@/////  /@@          @@////@@ @@////// /@@</span>
+<span class="cm">   /@@       /@@  @@@@@  @@    // /@@       /@@</span>
+<span class="cm">   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@</span>
+<span class="cm">   /@@////   /@@/@@@@@@@/@@       ////////@@/@@</span>
+<span class="cm">   /@@       /@@/@@//// //@@    @@       /@@/@@</span>
+<span class="cm">   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@</span>
+<span class="cm">   //       ///  //////   //////  ////////  //</span>
+
+<span class="cm">   Copyright (c) 2016, Triad National Security, LLC</span>
+<span class="cm">   All rights reserved.</span>
+<span class="cm">                                                                              */</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;flecsi/execution.hh&gt;</span><span class="cp"></span>
+
+<span class="cm">/*</span>
+<span class="cm">  Add an integer-valued command-line option with a default value of &#39;1&#39;. The</span>
+<span class="cm">  option will have a long form --level, and a short form -l. The option will be</span>
+<span class="cm">  added under the &quot;Car Options&quot; section.</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">trim</span><span class="p">(</span><span class="s">&quot;Car Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;level,l&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Specify the trim level [1-10].&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_default</span><span class="p">,</span> <span class="mi">1</span><span class="p">}},</span>
+  <span class="p">[](</span><span class="n">flecsi</span><span class="o">::</span><span class="n">any</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">option_value</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">11</span><span class="p">;</span>
+  <span class="p">});</span>
+
+<span class="cm">/*</span>
+<span class="cm">  Add a string-valued command-line option with a default value of &quot;manual&quot;. The</span>
+<span class="cm">  option will have a long form --transmission, and a short form -t. The option</span>
+<span class="cm">  will be added under the &quot;Car Options&quot; section.</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">transmission</span><span class="p">(</span><span class="s">&quot;Car Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;transmission,t&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Specify the transmission type [</span><span class="se">\&quot;</span><span class="s">automatic</span><span class="se">\&quot;</span><span class="s">, </span><span class="se">\&quot;</span><span class="s">manual</span><span class="se">\&quot;</span><span class="s">].&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_default</span><span class="p">,</span> <span class="s">&quot;manual&quot;</span><span class="p">}},</span>
+  <span class="p">[](</span><span class="n">flecsi</span><span class="o">::</span><span class="n">any</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">value</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">option_value</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">==</span> <span class="s">&quot;manual&quot;</span> <span class="o">||</span> <span class="n">value</span> <span class="o">==</span> <span class="s">&quot;automatic&quot;</span><span class="p">;</span>
+  <span class="p">});</span>
+
+<span class="cm">/*</span>
+<span class="cm">  Add an option that defines an implicit value. If the program is invoked with</span>
+<span class="cm">  --child-seat, the value will be true. If it is invoked without --child-seat,</span>
+<span class="cm">  the value will be false. This style of option should not be used with</span>
+<span class="cm">  positional arguments because Boost appears to have a bug when such options</span>
+<span class="cm">  are invoked directly before a positional option (gets confused about</span>
+<span class="cm">  separation). We break that convention here for the sake of completeness.</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">child_seat</span><span class="p">(</span><span class="s">&quot;Car Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;child-seat,c&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Request a child seat.&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_default</span><span class="p">,</span> <span class="nb">false</span><span class="p">},</span> <span class="p">{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_implicit</span><span class="p">,</span> <span class="nb">true</span><span class="p">}});</span>
+
+<span class="cm">/*</span>
+<span class="cm">  Add a an option to a different section, i.e., &quot;Ride Options&quot;. The enumeration</span>
+<span class="cm">  type is not enforced by the FleCSI runtime, and is mostly for convenience.</span>
+<span class="cm"> */</span>
+
+<span class="k">enum</span> <span class="nl">purpose_option</span> <span class="p">:</span> <span class="kt">size_t</span> <span class="p">{</span> <span class="n">personal</span><span class="p">,</span> <span class="n">business</span> <span class="p">};</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span> <span class="n">purpose</span><span class="p">(</span><span class="s">&quot;Ride Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;purpose,p&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Specify the purpose of the trip (personal=0, business=1).&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_default</span><span class="p">,</span> <span class="n">purpose_option</span><span class="o">::</span><span class="n">business</span><span class="p">}},</span>
+  <span class="p">[](</span><span class="n">flecsi</span><span class="o">::</span><span class="n">any</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">value</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">option_value</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">==</span> <span class="n">personal</span> <span class="o">||</span> <span class="n">value</span> <span class="o">==</span> <span class="n">business</span><span class="p">;</span>
+  <span class="p">});</span>
+
+<span class="cm">/*</span>
+<span class="cm">  Add an option with no default. This will allow us to demonstrate testing an</span>
+<span class="cm">  option with has_value().</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">lightspeed</span><span class="p">(</span><span class="s">&quot;Ride Options&quot;</span><span class="p">,</span>
+  <span class="s">&quot;lightspeed&quot;</span><span class="p">,</span>
+  <span class="s">&quot;Travel at the speed of light.&quot;</span><span class="p">,</span>
+  <span class="p">{{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_implicit</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span> <span class="p">{</span><span class="n">flecsi</span><span class="o">::</span><span class="n">option_zero</span><span class="p">}});</span>
+
+<span class="cm">/*</span>
+<span class="cm">  Add a positional option. This uses a different constructor from the previous</span>
+<span class="cm">  option declarations. Positional options are a replacement for required</span>
+<span class="cm">  options (in the normal boost::program_options interface).</span>
+<span class="cm"> */</span>
+
+<span class="n">flecsi</span><span class="o">::</span><span class="n">program_option</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">passenger_list</span><span class="p">(</span><span class="s">&quot;passenger-list&quot;</span><span class="p">,</span>
+  <span class="s">&quot;The list of passengers for this trip [.txt].&quot;</span><span class="p">,</span>
+  <span class="mi">1</span><span class="p">,</span>
+  <span class="p">[](</span><span class="n">flecsi</span><span class="o">::</span><span class="n">any</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">value</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">option_value</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;.txt&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">;</span>
+  <span class="p">});</span>
+
+<span class="cm">/*</span>
+<span class="cm">  User-defined program options are available after FleCSI initialize has been</span>
+<span class="cm">  invoked.</span>
+<span class="cm"> */</span>
+
+<span class="kt">int</span>
+<span class="nf">top_level_action</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">double</span> <span class="n">price</span><span class="p">{</span><span class="mf">0.0</span><span class="p">};</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Add cost for trim level. This option does not have to be checked with</span>
+<span class="cm">    has_value() because it is defaulted. It is also unnecessary to check the</span>
+<span class="cm">    value because it was declared with a validator function.</span>
+<span class="cm">   */</span>
+
+  <span class="n">price</span> <span class="o">+=</span> <span class="n">trim</span><span class="p">.</span><span class="n">value</span><span class="p">()</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">;</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Add cost for automatic transmission.</span>
+<span class="cm">   */</span>
+
+  <span class="n">price</span> <span class="o">+=</span> <span class="n">transmission</span><span class="p">.</span><span class="n">value</span><span class="p">()</span> <span class="o">==</span> <span class="s">&quot;automatic&quot;</span> <span class="o">?</span> <span class="mf">200.0</span> <span class="o">:</span> <span class="mf">0.0</span><span class="p">;</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Add cost for child seat.</span>
+<span class="cm">   */</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">child_seat</span><span class="p">.</span><span class="n">value</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">price</span> <span class="o">+=</span> <span class="mf">50.0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Deduction for business.</span>
+<span class="cm">   */</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">purpose</span><span class="p">.</span><span class="n">value</span><span class="p">()</span> <span class="o">==</span> <span class="n">business</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">price</span> <span class="o">*=</span> <span class="mf">0.8</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Add cost for lightspeed. Since this option does not have a default, we need</span>
+<span class="cm">    to check whether or not the flag was passed.</span>
+<span class="cm">   */</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">lightspeed</span><span class="p">.</span><span class="n">has_value</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">price</span> <span class="o">+=</span> <span class="mf">1000000.0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Do something with the positional argument.</span>
+<span class="cm">   */</span>
+
+  <span class="k">auto</span> <span class="n">read_file</span> <span class="o">=</span> <span class="p">[](</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Read passengers...</span>
+    <span class="k">return</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="kt">size_t</span> <span class="n">passengers</span> <span class="o">=</span> <span class="n">read_file</span><span class="p">(</span><span class="n">passenger_list</span><span class="p">.</span><span class="n">value</span><span class="p">());</span>
+
+  <span class="n">price</span> <span class="o">*=</span> <span class="n">passengers</span> <span class="o">*</span> <span class="mf">1.10</span> <span class="o">*</span> <span class="n">price</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Price: $&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">price</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// top_level_action</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">top_level_action</span><span class="p">);</span>
+
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="n">status</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="example-3-flog-flecsi-logging-utility">
@@ -428,7 +822,56 @@ order to see or capture output, your application must add at least one
 output stream. This should be done after flecsi::initialize has been
 invoked, and before flecsi::start. Consider the main function for this
 example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    If FLECSI_ENABLE_FLOG is enabled, FLOG will automatically be initialized</span>
+<span class="cm">    when flecsi::initialize() is invoked.</span>
+<span class="cm">   */</span>
+
+  <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    In order to see or capture any output from FLOG, the user must add at least</span>
+<span class="cm">    one output stream. The function flog::add_output_stream provides an</span>
+<span class="cm">    interface for adding output streams to FLOG. The FleCSI runtime must have</span>
+<span class="cm">    been initialized before this function can be invoked.</span>
+<span class="cm">   */</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Add the standard log descriptor to FLOG&#39;s buffers.</span>
+<span class="cm">   */</span>
+
+  <span class="n">flog</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;clog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Add an output file to FLOG&#39;s buffers.</span>
+<span class="cm">   */</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">ofstream</span> <span class="n">log_file</span><span class="p">(</span><span class="s">&quot;output.txt&quot;</span><span class="p">);</span>
+  <span class="n">flog</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;log file&quot;</span><span class="p">,</span> <span class="n">log_file</span><span class="p">);</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">top_level_action</span><span class="p">);</span>
+
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="n">status</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
 <p>The first output stream added is <a class="reference external" href="https://en.cppreference.com/w/cpp/io/clog">std::clog</a>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    Add the standard log descriptor to FLOG&#39;s buffers.</span>
+<span class="cm">   */</span>
+
+  <span class="n">flog</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;clog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+</pre></div>
+</div>
 <p>The arguments to add_output_stream are:</p>
 <ul class="simple">
 <li><p><em>label (“clog”)</em>: <br />
@@ -442,6 +885,14 @@ should be colorized. It is useful to turn off colorization for
 non-interactive output. The default is <em>false</em>.</p></li>
 </ul>
 <p>To add an output stream to a file, we can do the following:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    Add an output file to FLOG&#39;s buffers.</span>
+<span class="cm">   */</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">ofstream</span> <span class="n">log_file</span><span class="p">(</span><span class="s">&quot;output.txt&quot;</span><span class="p">);</span>
+  <span class="n">flog</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;log file&quot;</span><span class="p">,</span> <span class="n">log_file</span><span class="p">);</span>
+</pre></div>
+</div>
 <p>That’s it! For this example, FLOG is now configured to write output to
 std::clog, and to <em>output.txt</em>. Next, we will see how to actually write
 output to these stream buffers.</p>
@@ -460,6 +911,17 @@ output, and can be controlled using <em>strip levels</em> (discussed in the next
 section).</p>
 <p>The following code from this example shows some trivial usage of each of
 the basic output objects:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    This output will always be generated because it is not scoped within a tag</span>
+<span class="cm">    guard.</span>
+<span class="cm">   */</span>
+
+  <span class="n">flog</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Trace level output&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="n">flog</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Info level output&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="n">flog</span><span class="p">(</span><span class="n">warn</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Warn level output&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="n">flog</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Error level output&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="controlling-output-strip-levels">
 <h3>Controlling Output - Strip Levels<a class="headerlink" href="#controlling-output-strip-levels" title="Permalink to this headline">¶</a></h3>
@@ -496,6 +958,14 @@ leave it in the code. Then, specific groups of messages can be enabled
 or disabled to only output useful information for the current
 development focus.</p>
 <p>To create a new tag, we use the flog::tag type:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Create some tags to control output.</span>
+<span class="cm"> */</span>
+
+<span class="n">flog</span><span class="o">::</span><span class="n">tag</span> <span class="n">tag1</span><span class="p">(</span><span class="s">&quot;tag1&quot;</span><span class="p">);</span>
+<span class="n">flog</span><span class="o">::</span><span class="n">tag</span> <span class="n">tag2</span><span class="p">(</span><span class="s">&quot;tag2&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
 <p>Tags take a single std::string argument that is used in the help message
 to identify available tags.</p>
 <div class="admonition important">
@@ -506,7 +976,35 @@ to identify available tags.</p>
 more <em>scoped</em> regions. The following code defines a guarded section of
 output that will only be generated if <em>tag1</em> or <em>all</em> is specified to
 the <em>–flog-tags</em> option:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    This output will only be generated if &#39;tag1&#39; or &#39;all&#39; is specified</span>
+<span class="cm">    to &#39;--flog-tags&#39;.</span>
+<span class="cm">   */</span>
+
+  <span class="p">{</span>
+    <span class="n">flog</span><span class="o">::</span><span class="n">guard</span> <span class="n">guard</span><span class="p">(</span><span class="n">tag1</span><span class="p">);</span>
+    <span class="n">flog</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Trace level output (in tag1 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">flog</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Info level output (in tag1 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">flog</span><span class="p">(</span><span class="n">warn</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Warn level output (in tag1 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">flog</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Error level output (in tag1 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// scope</span>
+</pre></div>
+</div>
 <p>Here is another code example that defines a guarded section for <em>tag2</em>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    This output will only be generated if &#39;tag2&#39; or &#39;all&#39; is specified</span>
+<span class="cm">    to &#39;--flog-tags&#39;.</span>
+<span class="cm">   */</span>
+
+  <span class="p">{</span>
+    <span class="n">flog</span><span class="o">::</span><span class="n">guard</span> <span class="n">guard</span><span class="p">(</span><span class="n">tag2</span><span class="p">);</span>
+    <span class="n">flog</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Trace level output (in tag2 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">flog</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Info level output (in tag2 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">flog</span><span class="p">(</span><span class="n">warn</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Warn level output (in tag2 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">flog</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Error level output (in tag2 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// scope</span>
+</pre></div>
+</div>
 <p>You should experiment with invoking this example:</p>
 <p>Invoking this example with the <em>–help</em> flag will show the available
 tags:</p>
