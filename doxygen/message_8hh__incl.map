@@ -1,6 +1,6 @@
-<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/utils/flog/message.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/utils/flog/message.hh">
-<area shape="rect" id="node3" href="$state_8hh.html" title="flecsi/utils/flog/state.hh" alt="" coords="329,109,486,136"/>
-<area shape="rect" id="node16" href="$utils_2flog_2types_8hh.html" title="flecsi/utils/flog/types.hh" alt="" coords="185,184,345,211"/>
-<area shape="rect" id="node17" href="$utils_2flog_2utils_8hh.html" title="flecsi/utils/flog/utils.hh" alt="" coords="73,259,225,285"/>
-<area shape="rect" id="node4" href="$packet_8hh.html" title="flecsi/utils/flog/packet.hh" alt="" coords="576,259,743,285"/>
+<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/flog/message.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/flog/message.hh">
+<area shape="rect" id="node3" href="$state_8hh.html" title="flecsi/flog/state.hh" alt="" coords="327,109,456,136"/>
+<area shape="rect" id="node16" href="$flog_2types_8hh.html" title="flecsi/flog/types.hh" alt="" coords="196,184,328,211"/>
+<area shape="rect" id="node17" href="$flog_2utils_8hh_source.html" title="flecsi/flog/utils.hh" alt="" coords="95,259,219,285"/>
+<area shape="rect" id="node4" href="$packet_8hh_source.html" title="flecsi/flog/packet.hh" alt="" coords="578,259,717,285"/>
 </map>

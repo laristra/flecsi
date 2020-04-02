@@ -32,7 +32,7 @@
   <td id="projectlogo"><a href="http://www.flecsi.org"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></a></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: 2.-1 (devel)</span>
+		<span id="projectnumber">Version: invalid</span>
    </div>
   </td>
  </tr>
@@ -70,24 +70,23 @@ $(function() {
 
 <div class="header">
   <div class="summary">
-<a href="#define-members">Macros</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">FleCSI Logging Interface (flog)</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflog_1_1tag.html">flog::tag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflog_1_1guard.html">flog::guard</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:gac6ce0f99f4543c77141039657a407796"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#gac6ce0f99f4543c77141039657a407796">flog_register_tag</a>(name)</td></tr>
-<tr class="separator:gac6ce0f99f4543c77141039657a407796"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3602483502aef4d133aad3edef531141"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#ga3602483502aef4d133aad3edef531141">flog_tag_guard</a>(name)</td></tr>
-<tr class="separator:ga3602483502aef4d133aad3edef531141"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae72c4295e38f6dd4765ebd6297c16af9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#gae72c4295e38f6dd4765ebd6297c16af9">flog_tag_map</a>()</td></tr>
-<tr class="separator:gae72c4295e38f6dd4765ebd6297c16af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga64d7a4ea85438d432980c0e054a876e1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#ga64d7a4ea85438d432980c0e054a876e1">flog_initialize</a>(active,  verbose,  process)</td></tr>
-<tr class="separator:ga64d7a4ea85438d432980c0e054a876e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaaac7a9b2591c99d02c750bbcda432700"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#gaaac7a9b2591c99d02c750bbcda432700">flog_finalize</a>()</td></tr>
-<tr class="separator:gaaac7a9b2591c99d02c750bbcda432700"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae999d9c2b014d2f1d5112e3ebe85a80b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#gae999d9c2b014d2f1d5112e3ebe85a80b">flog</a>(severity)</td></tr>
 <tr class="separator:gae999d9c2b014d2f1d5112e3ebe85a80b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga276ec6f2978ec824c9c918283531a11c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#ga276ec6f2978ec824c9c918283531a11c">flog_trace</a>(message)</td></tr>
@@ -104,6 +103,11 @@ Macros</h2></td></tr>
 <tr class="separator:gaf07e634c4f4ff8df4b69903f2b8cbf21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga36f85e0c06125c963b8d5f558a823fc3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#ga36f85e0c06125c963b8d5f558a823fc3">flog_assert</a>(test,  message)</td></tr>
 <tr class="separator:ga36f85e0c06125c963b8d5f558a823fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga723d71605e0040b1042eb0595b16b730"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#ga723d71605e0040b1042eb0595b16b730">flog::add_output_stream</a> (std::string const &amp;label, std::ostream &amp;stream, bool colorize=false)</td></tr>
+<tr class="separator:ga723d71605e0040b1042eb0595b16b730"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>The FleCSI logging utility (flog) provides a C++ interface for capturing output during program execution. </p>
@@ -141,7 +145,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  true &amp;&amp;                                                                      \</div><div class="line">    flecsi::utils::flog::severity##_log_message_t(__FILE__, __LINE__, <span class="keyword">false</span>)   \</div><div class="line">      .stream()</div></div><!-- fragment --><p>This handles all of the different logging modes for the insertion style logging interface.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  true &amp;&amp; flog::severity##_log_message_t(__FILE__, __LINE__, <span class="keyword">false</span>).stream()</div></div><!-- fragment --><p>This handles all of the different logging modes for the insertion style logging interface.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">severity</td><td>The severity level of the log entry.</td></tr>
@@ -204,7 +208,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::utils::flog::error_log_message_t(__FILE__, __LINE__).stream()        \</div><div class="line">    &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for error level severity log entries.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flog::error_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for error level severity log entries.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -229,7 +233,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  {                                                                            \</div><div class="line">    std::stringstream _sstream;                                                \</div><div class="line">    _sstream &lt;&lt; FLOG_OUTPUT_LTRED(<span class="stringliteral">&quot;FATAL ERROR &quot;</span>)                              \</div><div class="line">             &lt;&lt; FLOG_OUTPUT_YELLOW(flecsi::utils::flog::rstrip&lt;&#39;/&#39;&gt;(__FILE__)  \</div><div class="line">                                   &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; __LINE__ &lt;&lt; <span class="stringliteral">&quot; &quot;</span>)                  \</div><div class="line">             &lt;&lt; FLOG_OUTPUT_LTRED(message) &lt;&lt; std::endl;                       \</div><div class="line">    __flog_internal_wait_on_flusher();                                         \</div><div class="line">    std::cerr &lt;&lt; _sstream.str() &lt;&lt; std::endl;                                  \</div><div class="line">    flecsi::utils::flog::dumpstack();                                          \</div><div class="line">    std::abort();                                                              \</div><div class="line">  } <span class="comment">/* scope */</span></div></div><!-- fragment --><p>Throw a runtime exception with the provided message.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  {                                                                            \</div><div class="line">    std::stringstream _sstream;                                                \</div><div class="line">    _sstream &lt;&lt; FLOG_OUTPUT_LTRED(<span class="stringliteral">&quot;FATAL ERROR &quot;</span>)                              \</div><div class="line">             &lt;&lt; FLOG_OUTPUT_YELLOW(                                            \</div><div class="line">                  flog::rstrip&lt;&#39;/&#39;&gt;(__FILE__) &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; __LINE__ &lt;&lt; <span class="stringliteral">&quot; &quot;</span>)       \</div><div class="line">             &lt;&lt; FLOG_OUTPUT_LTRED(message) &lt;&lt; std::endl;                       \</div><div class="line">    __flog_internal_wait_on_flusher();                                         \</div><div class="line">    std::cerr &lt;&lt; _sstream.str() &lt;&lt; std::endl;                                  \</div><div class="line">    flog::dumpstack();                                                         \</div><div class="line">    std::abort();                                                              \</div><div class="line">  } <span class="comment">/* scope */</span></div></div><!-- fragment --><p>Throw a runtime exception with the provided message.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -238,25 +242,6 @@ Macros</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Fatal level severity log entires are not disabled by tags or by the ENABLE_FLOG or FLOG_STRIP_LEVEL build options, i.e., they are always active.</dd></dl>
 <p><b>Usage</b> </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> value{20};</div><div class="line"></div><div class="line"><span class="comment">// Print the value and exit</span></div><div class="line"><a class="code" href="group__flog.html#gaf07e634c4f4ff8df4b69903f2b8cbf21">flog_fatal</a>(<span class="stringliteral">&quot;Value: &quot;</span> &lt;&lt; value);</div></div><!-- fragment --> 
-</div>
-</div>
-<a id="gaaac7a9b2591c99d02c750bbcda432700"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaaac7a9b2591c99d02c750bbcda432700">&#9670;&nbsp;</a></span>flog_finalize</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flog_finalize</td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   <a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">\</a></div><div class="line"><a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">                                                                               \</a></div><div class="line"><a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">  flecsi::utils::flog::flog_t::instance</a>().finalize()</div><div class="ttc" id="classflecsi_1_1utils_1_1flog_1_1flog__t_html_a1bdbb965d3df91fa3183ab3584274a2f"><div class="ttname"><a href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">flecsi::utils::flog::flog_t::instance</a></div><div class="ttdeci">static flog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> state.hh:74</div></div>
-</div><!-- fragment --><p>This call finalizes the flog runtime. </p>
-
 </div>
 </div>
 <a id="gabcc268787af88e7459c51914d28fbb19"></a>
@@ -274,7 +259,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::utils::flog::info_log_message_t(__FILE__, __LINE__).stream()         \</div><div class="line">    &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for info level severity log entries.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flog::info_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for info level severity log entries.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -282,112 +267,6 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 <p><b>Usage</b> </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> value{20};</div><div class="line"></div><div class="line"><span class="comment">// Print the value at info severity level</span></div><div class="line"><a class="code" href="group__flog.html#gabcc268787af88e7459c51914d28fbb19">flog_info</a>(<span class="stringliteral">&quot;Value: &quot;</span> &lt;&lt; value);</div></div><!-- fragment --> 
-</div>
-</div>
-<a id="ga64d7a4ea85438d432980c0e054a876e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga64d7a4ea85438d432980c0e054a876e1">&#9670;&nbsp;</a></span>flog_initialize</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flog_initialize</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">active, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">verbose, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">process&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   <a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">\</a></div><div class="line"><a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">                                                                               \</a></div><div class="line"><a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">  flecsi::utils::flog::flog_t::instance</a>().initialize(active, verbose, <a class="code" href="namespaceflecsi.html#a99017bc49670c8954a5ea8dba07e6fcf">process</a>)</div><div class="ttc" id="classflecsi_1_1utils_1_1flog_1_1flog__t_html_a1bdbb965d3df91fa3183ab3584274a2f"><div class="ttname"><a href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">flecsi::utils::flog::flog_t::instance</a></div><div class="ttdeci">static flog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> state.hh:74</div></div>
-<div class="ttc" id="namespaceflecsi_html_a99017bc49670c8954a5ea8dba07e6fcf"><div class="ttname"><a href="namespaceflecsi.html#a99017bc49670c8954a5ea8dba07e6fcf">flecsi::process</a></div><div class="ttdeci">size_t process()</div><div class="ttdef"><b>Definition:</b> execution.hh:116</div></div>
-</div><!-- fragment --><p>This call initializes the flog runtime with the list of tags specified in <em>active</em>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">active</td><td>A const char * or std::string containing the list of active tags. Tags should be comma delimited. </td></tr>
-    <tr><td class="paramname">A</td><td>boolean value indicating whether or not to enable verbose output. </td></tr>
-    <tr><td class="paramname">process</td><td>The process id to which output should be restricted. For no restrictions, pass std::numeric_limits&lt;size_t&gt;::max().</td></tr>
-  </table>
-  </dd>
-</dl>
-<p><b>Usage</b> </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> ** argv) {</div><div class="line"></div><div class="line">   <span class="comment">// Fill a string object with the active tags.</span></div><div class="line">   std::string tags{<span class="stringliteral">&quot;init,advance,analysis&quot;</span>};</div><div class="line">   <span class="keywordtype">bool</span> verbose{<span class="keyword">true</span>};</div><div class="line">   <span class="keywordtype">size_t</span> <a class="code" href="namespaceflecsi.html#a99017bc49670c8954a5ea8dba07e6fcf">process</a> = std::numeric_limits&lt;size_t&gt;::max();</div><div class="line"></div><div class="line">   <span class="comment">// Initialize the flog runtime with active tags, &#39;init&#39;, &#39;advance&#39;,</span></div><div class="line">   <span class="comment">// and &#39;analysis&#39;.</span></div><div class="line">   <a class="code" href="group__flog.html#ga64d7a4ea85438d432980c0e054a876e1">flog_initialize</a>(tags, verbose, process);</div><div class="line"></div><div class="line">   <span class="keywordflow">return</span> 0;</div><div class="line">} <span class="comment">// main</span></div></div><!-- fragment --> 
-</div>
-</div>
-<a id="gac6ce0f99f4543c77141039657a407796"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac6ce0f99f4543c77141039657a407796">&#9670;&nbsp;</a></span>flog_register_tag</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flog_register_tag</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">name</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  static <span class="keywordtype">size_t</span> name##_flog_tag_id =                                           <a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">\</a></div><div class="line"><a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">    flecsi::utils::flog::flog_t::instance</a>().<a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#aee270052dd871e28f8fe5ecc89617d2f">register_tag</a>(                      \</div><div class="line">      _flog_stringify(name))</div><div class="ttc" id="classflecsi_1_1utils_1_1flog_1_1flog__t_html_a1bdbb965d3df91fa3183ab3584274a2f"><div class="ttname"><a href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">flecsi::utils::flog::flog_t::instance</a></div><div class="ttdeci">static flog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> state.hh:74</div></div>
-<div class="ttc" id="classflecsi_1_1utils_1_1flog_1_1flog__t_html_aee270052dd871e28f8fe5ecc89617d2f"><div class="ttname"><a href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#aee270052dd871e28f8fe5ecc89617d2f">flecsi::utils::flog::flog_t::register_tag</a></div><div class="ttdeci">size_t register_tag(const char *tag)</div><div class="ttdef"><b>Definition:</b> state.hh:246</div></div>
-</div><!-- fragment --><p>Register a tag group with the runtime (flog_t). We need the static size_t so that tag scopes can be created quickly during execution. </p>
-
-</div>
-</div>
-<a id="ga3602483502aef4d133aad3edef531141"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3602483502aef4d133aad3edef531141">&#9670;&nbsp;</a></span>flog_tag_guard</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flog_tag_guard</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">name</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::utils::flog::tag_scope_t name##_flog_tag_scope__(                    \</div><div class="line">    <a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">flecsi::utils::flog::flog_t::instance</a>().lookup_tag(_flog_stringify(name)))</div><div class="ttc" id="classflecsi_1_1utils_1_1flog_1_1flog__t_html_a1bdbb965d3df91fa3183ab3584274a2f"><div class="ttname"><a href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">flecsi::utils::flog::flog_t::instance</a></div><div class="ttdeci">static flog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> state.hh:74</div></div>
-</div><!-- fragment --><p>Create a new tag scope. </p>
-
-</div>
-</div>
-<a id="gae72c4295e38f6dd4765ebd6297c16af9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae72c4295e38f6dd4765ebd6297c16af9">&#9670;&nbsp;</a></span>flog_tag_map</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flog_tag_map</td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   <a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">\</a></div><div class="line"><a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">                                                                               \</a></div><div class="line"><a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">  flecsi::utils::flog::flog_t::instance</a>().<a class="code" href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a90bbf2cb5998a2a4b47efeb18ef164b2">tag_map</a>()</div><div class="ttc" id="classflecsi_1_1utils_1_1flog_1_1flog__t_html_a1bdbb965d3df91fa3183ab3584274a2f"><div class="ttname"><a href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a1bdbb965d3df91fa3183ab3584274a2f">flecsi::utils::flog::flog_t::instance</a></div><div class="ttdeci">static flog_t &amp; instance()</div><div class="ttdef"><b>Definition:</b> state.hh:74</div></div>
-<div class="ttc" id="classflecsi_1_1utils_1_1flog_1_1flog__t_html_a90bbf2cb5998a2a4b47efeb18ef164b2"><div class="ttname"><a href="classflecsi_1_1utils_1_1flog_1_1flog__t.html#a90bbf2cb5998a2a4b47efeb18ef164b2">flecsi::utils::flog::flog_t::tag_map</a></div><div class="ttdeci">const std::unordered_map&lt; std::string, size_t &gt; &amp; tag_map()</div><div class="ttdef"><b>Definition:</b> state.hh:195</div></div>
-</div><!-- fragment --><p>Return a std::map of registered tags. </p>
-
 </div>
 </div>
 <a id="ga276ec6f2978ec824c9c918283531a11c"></a>
@@ -405,7 +284,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::utils::flog::trace_log_message_t(__FILE__, __LINE__).stream()        \</div><div class="line">    &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for trace level severity log entries.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flog::trace_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for trace level severity log entries.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -430,7 +309,7 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::utils::flog::warn_log_message_t(__FILE__, __LINE__).stream()         \</div><div class="line">    &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for warn level severity log entries.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flog::warn_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for warn level severity log entries.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -438,6 +317,58 @@ Macros</h2></td></tr>
   </dd>
 </dl>
 <p><b>Usage</b> </p><div class="fragment"><div class="line"><span class="keywordtype">int</span> value{20};</div><div class="line"></div><div class="line"><span class="comment">// Print the value at warn severity level</span></div><div class="line"><a class="code" href="group__flog.html#ga593709fca71a1b7120e94b62c56c3214">flog_warn</a>(<span class="stringliteral">&quot;Value: &quot;</span> &lt;&lt; value);</div></div><!-- fragment --> 
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ga723d71605e0040b1042eb0595b16b730"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga723d71605e0040b1042eb0595b16b730">&#9670;&nbsp;</a></span>add_output_stream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flog::add_output_stream </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>colorize</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Add an output stream to FLOG.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">label</td><td>An identifier for the stream. This can be used to access or update an output stream after it has been added. </td></tr>
+    <tr><td class="paramname">stream</td><td>The output stream to add. </td></tr>
+    <tr><td class="paramname">colorize</td><td>Indicates whether the output to this stream should be colorized. It is useful to turn colorization off for non-interactive output (default). </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 </div><!-- contents -->

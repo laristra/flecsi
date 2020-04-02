@@ -8,5 +8,5 @@ var searchData=
   ['base_5fspecialization',['base_specialization',['../structflecsi_1_1utils_1_1detail_1_1base__specialization.html',1,'flecsi::utils::detail::base_specialization&lt; B, D &gt;'],['../structflecsi_1_1utils_1_1base__specialization.html',1,'flecsi::utils::base_specialization&lt; B, D &gt;']]],
   ['bind_5faccessors_5ft',['bind_accessors_t',['../structflecsi_1_1execution_1_1legion_1_1bind__accessors__t.html',1,'flecsi::execution::legion']]],
   ['bit_5fbuffer',['bit_buffer',['../classflecsi_1_1utils_1_1bit__buffer.html',1,'flecsi::utils']]],
-  ['buffer_5fdata_5ft',['buffer_data_t',['../structflecsi_1_1utils_1_1flog_1_1tee__buffer__t_1_1buffer__data__t.html',1,'flecsi::utils::flog::tee_buffer_t']]]
+  ['buffer_5fdata_5ft',['buffer_data_t',['../structflog_1_1tee__buffer__t_1_1buffer__data__t.html',1,'flog::tee_buffer_t']]]
 ];

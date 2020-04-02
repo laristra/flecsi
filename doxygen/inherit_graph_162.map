@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1topology_1_1unserialize__domains___3_01STORAGE__TYPE_00_01MESH__TYPE_00_01NUM__D46548a8c3ac10c13b57ad76fbe9269d0.html" title="flecsi::topology::unserialize\l_domains_\&lt; STORAGE_TYPE,\l MESH_TYPE, NUM_DOMAINS, NUM\l_DIMS, NUM_DOMAINS \&gt;" alt="" coords="5,5,260,76"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1topology_1_1structured__base.html" title="flecsi::topology::structured_base" alt="" coords="5,13,216,39"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1topology_1_1structured.html" title="flecsi::topology::structured\l\&lt; Policy \&gt;" alt="" coords="264,5,440,47"/>
 </map>

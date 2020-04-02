@@ -1,4 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1graph_1_1colorer.html" title="flecsi::utils::graph\l::colorer" alt="" coords="5,5,131,47"/>
-<area shape="rect" id="node2" href="$structflecsi_1_1utils_1_1graph_1_1parmetis__colorer.html" title="flecsi::utils::graph\l::parmetis_colorer" alt="" coords="179,5,305,47"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1utils_1_1is__container.html" title="Check if a particular type T is a container. " alt="" coords="136,5,299,47"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1utils_1_1is__iterative__container.html" title="A Helper to identify if this is a container. " alt="" coords="139,71,295,112"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1utils_1_1is__minimal__container.html" title="A Helper to identify if this is a container. " alt="" coords="140,136,295,177"/>
 </map>

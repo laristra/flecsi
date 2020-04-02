@@ -1,14 +1,14 @@
 var searchData=
 [
-  ['tag_5fscope_5ft',['tag_scope_t',['../structflecsi_1_1utils_1_1flog_1_1tag__scope__t.html',1,'flecsi::utils::flog']]],
+  ['tag',['tag',['../structflog_1_1tag.html',1,'flog']]],
+  ['tag_5fscope_5ft',['tag_scope_t',['../structflog_1_1tag__scope__t.html',1,'flog']]],
   ['task_5fprologue_5ft',['task_prologue_t',['../structflecsi_1_1execution_1_1legion_1_1task__prologue__t.html',1,'flecsi::execution::legion']]],
   ['task_5fwrapper',['task_wrapper',['../structflecsi_1_1execution_1_1legion_1_1task__wrapper.html',1,'flecsi::execution::legion']]],
   ['task_5fwrapper_3c_20f_2c_20task_5fprocessor_5ftype_5ft_3a_3ampi_20_3e',['task_wrapper&lt; F, task_processor_type_t::mpi &gt;',['../structflecsi_1_1execution_1_1legion_1_1task__wrapper_3_01F_00_01task__processor__type__t_1_1mpi_01_4.html',1,'flecsi::execution::legion']]],
-  ['tee_5fbuffer_5ft',['tee_buffer_t',['../classflecsi_1_1utils_1_1flog_1_1tee__buffer__t.html',1,'flecsi::utils::flog']]],
-  ['tee_5fstream_5ft',['tee_stream_t',['../structflecsi_1_1utils_1_1flog_1_1tee__stream__t.html',1,'flecsi::utils::flog']]],
+  ['tee_5fbuffer_5ft',['tee_buffer_t',['../classflog_1_1tee__buffer__t.html',1,'flog']]],
+  ['tee_5fstream_5ft',['tee_stream_t',['../structflog_1_1tee__stream__t.html',1,'flog']]],
   ['test_5foutput_5ft',['test_output_t',['../classflecsi_1_1utils_1_1ftest_1_1test__output__t.html',1,'flecsi::utils::ftest']]],
   ['topology_5faccessor',['topology_accessor',['../structflecsi_1_1data_1_1topology__accessor.html',1,'flecsi::data']]],
-  ['topology_5fbase',['topology_base',['../structflecsi_1_1data_1_1legion_1_1topology__base.html',1,'flecsi::data::legion']]],
   ['topology_5fdata',['topology_data',['../structflecsi_1_1data_1_1topology__data.html',1,'flecsi::data']]],
   ['topology_5fdata_3c_20topology_3a_3acanonical_5fbase_20_3e',['topology_data&lt; topology::canonical_base &gt;',['../structflecsi_1_1data_1_1topology__data_3_01topology_1_1canonical__base_01_4.html',1,'flecsi::data']]],
   ['topology_5fdata_3c_20topology_3a_3aglobal_20_3e',['topology_data&lt; topology::global &gt;',['../structflecsi_1_1data_1_1topology__data_3_01topology_1_1global_01_4.html',1,'flecsi::data']]],

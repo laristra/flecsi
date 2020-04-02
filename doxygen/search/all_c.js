@@ -21,7 +21,7 @@ var searchData=
   ['ntree_5fstorage',['ntree_storage',['../structflecsi_1_1topology_1_1ntree__storage.html',1,'flecsi::topology']]],
   ['ntree_5fstorage_3c_20policy_20_3e',['ntree_storage&lt; Policy &gt;',['../structflecsi_1_1topology_1_1ntree__storage.html',1,'flecsi::topology']]],
   ['null',['null',['../classflecsi_1_1filling__curve.html#a3cddd9fd53283410ca412cab49f5f1c4',1,'flecsi::filling_curve']]],
-  ['null_5fstream',['null_stream',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#a3d5ac8c4db944fb5197dc721c1319cd8',1,'flecsi::utils::flog::flog_t']]],
+  ['null_5fstream',['null_stream',['../classflog_1_1flog__t.html#aa59c6786d544c3c4df3e41d6f65a773c',1,'flog::flog_t']]],
   ['num_5fentities',['num_entities',['../classflecsi_1_1topology_1_1unstructured__impl_1_1definition.html#a153520c033134a0add30d4b30366fb08',1,'flecsi::topology::unstructured_impl::definition::num_entities()'],['../classflecsi_1_1topology_1_1unstructured__impl_1_1simple__definition.html#a4f139f16f87476a1b463c2c106d65237',1,'flecsi::topology::unstructured_impl::simple_definition::num_entities()']]],
   ['num_5findex_5fsubspaces',['num_index_subspaces',['../structflecsi_1_1topology_1_1num__index__subspaces.html',1,'flecsi::topology']]]
 ];

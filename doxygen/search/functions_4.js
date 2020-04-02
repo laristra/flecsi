@@ -1,7 +1,7 @@
 var searchData=
 [
   ['empty',['empty',['../classflecsi_1_1topology_1_1connectivity__t.html#af417513844e7cfdff29ce4f7be2f42ac',1,'flecsi::topology::connectivity_t::empty()'],['../classflecsi_1_1topology_1_1index__space.html#adac411af3a82f93784a2e4426475ffc4',1,'flecsi::topology::index_space::empty()']]],
-  ['enable_5fbuffer',['enable_buffer',['../classflecsi_1_1utils_1_1flog_1_1tee__buffer__t.html#a2148a860c75ab78b02f0fbacd12aa26b',1,'flecsi::utils::flog::tee_buffer_t::enable_buffer()'],['../structflecsi_1_1utils_1_1flog_1_1tee__stream__t.html#a2e0640c2c8ad4cb515454879df778504',1,'flecsi::utils::flog::tee_stream_t::enable_buffer()']]],
+  ['enable_5fbuffer',['enable_buffer',['../classflog_1_1tee__buffer__t.html#a614beed33c7fa727a777e4409706cb7c',1,'flog::tee_buffer_t::enable_buffer()'],['../structflog_1_1tee__stream__t.html#a51c2da9f1ed6e7c37e20c9455a58692e',1,'flog::tee_stream_t::enable_buffer()']]],
   ['end',['end',['../classflecsi_1_1topology_1_1index__space_1_1id__range__.html#af7d6e3bd828d23a01f2e5ac555fea6bc',1,'flecsi::topology::index_space::id_range_::end()'],['../classflecsi_1_1topology_1_1index__space.html#a4beaaeaa8a3347737345d920f1775023',1,'flecsi::topology::index_space::end()'],['../classflecsi_1_1topology_1_1index__space.html#a172583045b8ead08df06c9e905add68b',1,'flecsi::topology::index_space::end() const'],['../classflecsi_1_1utils_1_1offset.html#ab77537be270d22ada8db0bcfb740fb8f',1,'flecsi::utils::offset::end()']]],
   ['end_5ffrom',['end_from',['../classflecsi_1_1topology_1_1connectivity__t.html#a05fc194564cfa5a558d19a5bea4b9acb',1,'flecsi::topology::connectivity_t']]],
   ['end_5foffset',['end_offset',['../classflecsi_1_1topology_1_1index__space.html#a5551e20b5da5be98941ae6155e487287',1,'flecsi::topology::index_space']]],

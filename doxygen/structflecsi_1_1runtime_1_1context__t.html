@@ -32,7 +32,7 @@
   <td id="projectlogo"><a href="http://www.flecsi.org"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></a></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: 2.-1 (devel)</span>
+		<span id="projectnumber">Version: invalid</span>
    </div>
   </td>
  </tr>
@@ -105,11 +105,11 @@ Public Types</h2></td></tr>
 <tr class="memitem:a44f079a5e6255b448b1a8fef3f6e69e7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context__t.html#a44f079a5e6255b448b1a8fef3f6e69e7">registration_function_t</a> = void(*)()</td></tr>
 <tr class="separator:a44f079a5e6255b448b1a8fef3f6e69e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_structflecsi_1_1runtime_1_1context"><td colspan="2" onclick="javascript:toggleInherit('pub_types_structflecsi_1_1runtime_1_1context')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="structflecsi_1_1runtime_1_1context.html">flecsi::runtime::context</a></td></tr>
-<tr class="memitem:adad3d452a7b1396a01be16dfe4c13981 inherit pub_types_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#adad3d452a7b1396a01be16dfe4c13981">field_info_store_t</a> = std::vector&lt; const <a class="el" href="structflecsi_1_1data_1_1field__info__t.html">data::field_info_t</a> * &gt;</td></tr>
-<tr class="separator:adad3d452a7b1396a01be16dfe4c13981 inherit pub_types_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a635b746f8278f02e56dbbc03e49f1bb9 inherit pub_types_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a635b746f8278f02e56dbbc03e49f1bb9"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>field_info_map_t</b> = std::unordered_map&lt; size_t, <a class="el" href="structflecsi_1_1runtime_1_1context.html#adad3d452a7b1396a01be16dfe4c13981">field_info_store_t</a> &gt;</td></tr>
-<tr class="separator:a635b746f8278f02e56dbbc03e49f1bb9 inherit pub_types_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a874a52dc04f562af58cc2630cb20a7f7 inherit pub_types_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#a874a52dc04f562af58cc2630cb20a7f7">field_info_store_t</a> = data::fields</td></tr>
+<tr class="separator:a874a52dc04f562af58cc2630cb20a7f7 inherit pub_types_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a124488df0d77494ba2b8470dfe2c854b inherit pub_types_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a124488df0d77494ba2b8470dfe2c854b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>field_info_map_t</b> = std::unordered_map&lt; size_t, std::vector&lt; <a class="el" href="structflecsi_1_1runtime_1_1context.html#a874a52dc04f562af58cc2630cb20a7f7">field_info_store_t</a> &gt; &gt;</td></tr>
+<tr class="separator:a124488df0d77494ba2b8470dfe2c854b inherit pub_types_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -119,9 +119,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (int ar
 <tr class="memitem:a2ea73956913bb88669ca186052e693c5"><td class="memItemLeft" align="right" valign="top"><a id="a2ea73956913bb88669ca186052e693c5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>finalize</b> ()</td></tr>
 <tr class="separator:a2ea73956913bb88669ca186052e693c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade84f225fc595279c45d5577f9119f9c"><td class="memItemLeft" align="right" valign="top"><a id="ade84f225fc595279c45d5577f9119f9c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (std::function&lt; int(int, char **)&gt;)</td></tr>
-<tr class="separator:ade84f225fc595279c45d5577f9119f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaff9085514bb5084a884a188d0a4c077"><td class="memItemLeft" align="right" valign="top"><a id="aaff9085514bb5084a884a188d0a4c077"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (const std::function&lt; int(int, char **)&gt; &amp;)</td></tr>
+<tr class="separator:aaff9085514bb5084a884a188d0a4c077"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22e1a5c4d5335ab545ca2bdb56ec3fbe"><td class="memItemLeft" align="right" valign="top"><a id="a22e1a5c4d5335ab545ca2bdb56ec3fbe"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
 <tr class="separator:a22e1a5c4d5335ab545ca2bdb56ec3fbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,8 +165,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="separator:af8d932e1b28b1bc7245968afb3330f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ea73956913bb88669ca186052e693c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context__t.html#a2ea73956913bb88669ca186052e693c5">finalize</a> ()</td></tr>
 <tr class="separator:a2ea73956913bb88669ca186052e693c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade84f225fc595279c45d5577f9119f9c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context__t.html#ade84f225fc595279c45d5577f9119f9c">start</a> (std::function&lt; int(int, char **)&gt;)</td></tr>
-<tr class="separator:ade84f225fc595279c45d5577f9119f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaff9085514bb5084a884a188d0a4c077"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context__t.html#aaff9085514bb5084a884a188d0a4c077">start</a> (const std::function&lt; int(int, char **)&gt; &amp;)</td></tr>
+<tr class="separator:aaff9085514bb5084a884a188d0a4c077"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f8f615bc962ce0ff1d408f3bf8ef5b4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context__t.html#a8f8f615bc962ce0ff1d408f3bf8ef5b4">process</a> () const</td></tr>
 <tr class="separator:a8f8f615bc962ce0ff1d408f3bf8ef5b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8dee1eee7fdbeae701cb8210a03f4e69"><td class="memItemLeft" align="right" valign="top"><a id="a8dee1eee7fdbeae701cb8210a03f4e69"></a>
@@ -197,25 +197,27 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>colors</b> () const
 <tr class="memitem:ab06d77cdf94abbe6f97f98ccb35b3d5b inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="ab06d77cdf94abbe6f97f98ccb35b3d5b"></a>
 <a class="el" href="structflecsi_1_1runtime_1_1context.html">context</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structflecsi_1_1runtime_1_1context.html">context</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:ab06d77cdf94abbe6f97f98ccb35b3d5b inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c26c28936df5dfeef1062ac503c7c06 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a6c26c28936df5dfeef1062ac503c7c06"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>initialized</b> ()</td></tr>
+<tr class="separator:a6c26c28936df5dfeef1062ac503c7c06 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ffcd22923661da3381e96a6468893b1 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a4ffcd22923661da3381e96a6468893b1"></a>
+boost::program_options::positional_options_description &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>positional_description</b> ()</td></tr>
+<tr class="separator:a4ffcd22923661da3381e96a6468893b1 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4241f9a251cda99461cfa5d48c23de6c inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a4241f9a251cda99461cfa5d48c23de6c"></a>
+std::map&lt; std::string, std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>positional_help</b> ()</td></tr>
+<tr class="separator:a4241f9a251cda99461cfa5d48c23de6c inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51bb73cac9e5dd4bdfc145e583260be3 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a51bb73cac9e5dd4bdfc145e583260be3"></a>
+boost::program_options::options_description &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>hidden_options</b> ()</td></tr>
+<tr class="separator:a51bb73cac9e5dd4bdfc145e583260be3 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bf90f40eb0aaaf831371109d28a5fc6 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a7bf90f40eb0aaaf831371109d28a5fc6"></a>
+std::map&lt; std::string, std::pair&lt; bool, std::function&lt; bool(boost::any const &amp;)&gt; &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>option_checks</b> ()</td></tr>
+<tr class="separator:a7bf90f40eb0aaaf831371109d28a5fc6 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00b27de5459f375cdaa681f03f9b2c13 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a00b27de5459f375cdaa681f03f9b2c13"></a>
 std::vector&lt; char * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>argv</b> ()</td></tr>
 <tr class="separator:a00b27de5459f375cdaa681f03f9b2c13 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc9027c0b242640d9e8a4ab7e3036844 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="abc9027c0b242640d9e8a4ab7e3036844"></a>
-std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>flog_tags</b> ()</td></tr>
-<tr class="separator:abc9027c0b242640d9e8a4ab7e3036844 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae65c943a1f6560416106f4f295bb3ee3 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="ae65c943a1f6560416106f4f295bb3ee3"></a>
-int &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>flog_verbose</b> ()</td></tr>
-<tr class="separator:ae65c943a1f6560416106f4f295bb3ee3 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa40d50faca2475225fb7e2f93b5ff01 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="aaa40d50faca2475225fb7e2f93b5ff01"></a>
-int64_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>flog_output_process</b> ()</td></tr>
-<tr class="separator:aaa40d50faca2475225fb7e2f93b5ff01 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90ef964cc1c668a4190c643734e78d43 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memTemplParams" colspan="2"><a id="a90ef964cc1c668a4190c643734e78d43"></a>
-template&lt;typename... ARGS&gt; </td></tr>
-<tr class="memitem:a90ef964cc1c668a4190c643734e78d43 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>add_program_option</b> (std::string const &amp;label, ARGS &amp;&amp;... args)</td></tr>
-<tr class="separator:a90ef964cc1c668a4190c643734e78d43 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3585d6e5e518b7da00e58e8d1c23a65b inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a3585d6e5e518b7da00e58e8d1c23a65b"></a>
-boost::program_options::variables_map const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>program_options_variables_map</b> ()</td></tr>
-<tr class="separator:a3585d6e5e518b7da00e58e8d1c23a65b inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a057fc254cfe0f8321293b2a111bb6279 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a057fc254cfe0f8321293b2a111bb6279"></a>
+auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>descriptions_map</b> ()</td></tr>
+<tr class="separator:a057fc254cfe0f8321293b2a111bb6279 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4635ce344f69b9c907b6690340f3fca4 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a4635ce344f69b9c907b6690340f3fca4"></a>
 std::vector&lt; std::string &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>unrecognized_options</b> ()</td></tr>
 <tr class="separator:a4635ce344f69b9c907b6690340f3fca4 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -230,8 +232,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (int ar
 <tr class="separator:aaf4bca7b2c94c1752c0c2e297592df26 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af29a2006f7b7f5156ffc9a295b61b9a6 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#af29a2006f7b7f5156ffc9a295b61b9a6">finalize</a> ()</td></tr>
 <tr class="separator:af29a2006f7b7f5156ffc9a295b61b9a6 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71b3dde0fdb539922c84a2347c96b7ac inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#a71b3dde0fdb539922c84a2347c96b7ac">start</a> (std::function&lt; int(int, char **)&gt; action)</td></tr>
-<tr class="separator:a71b3dde0fdb539922c84a2347c96b7ac inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a935ffb1e3da6150326b8fbba9cc99480 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#a935ffb1e3da6150326b8fbba9cc99480">start</a> (const std::function&lt; int(int, char **)&gt; action &amp;)</td></tr>
+<tr class="separator:a935ffb1e3da6150326b8fbba9cc99480 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22c799a0c125e81fa02ac4c8b6ecfa78 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#a22c799a0c125e81fa02ac4c8b6ecfa78">process</a> () const</td></tr>
 <tr class="separator:a22c799a0c125e81fa02ac4c8b6ecfa78 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2fe81708d975e81821db120c3c34ae3 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#ac2fe81708d975e81821db120c3c34ae3">processes</a> () const</td></tr>
@@ -251,12 +253,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>register_reduction_op
 <tr class="separator:ac24e23ef977ee2a9b65d3d021cb5ffad inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a14d69364f7dc87d497d2ba4914cc2a inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#a2a14d69364f7dc87d497d2ba4914cc2a">topology_fields_registered</a> (size_t type_key, size_t instance_key)</td></tr>
 <tr class="separator:a2a14d69364f7dc87d497d2ba4914cc2a inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7b45cf24b761472bc71b458a301d2a3 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#ab7b45cf24b761472bc71b458a301d2a3">add_field_info</a> (size_t topology_type_identifier, size_t storage_class, const <a class="el" href="structflecsi_1_1data_1_1field__info__t.html">data::field_info_t</a> &amp;field_info)</td></tr>
-<tr class="separator:ab7b45cf24b761472bc71b458a301d2a3 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae21aa31a70707018cf9d6c2e8287104a inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1runtime_1_1context.html#adad3d452a7b1396a01be16dfe4c13981">field_info_store_t</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#ae21aa31a70707018cf9d6c2e8287104a">get_field_info_store</a> (size_t topology_type_identifier, size_t storage_class)</td></tr>
-<tr class="separator:ae21aa31a70707018cf9d6c2e8287104a inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc3fcbefdf432c6fcf85e8f797908278 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1runtime_1_1context.html#adad3d452a7b1396a01be16dfe4c13981">field_info_store_t</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#adc3fcbefdf432c6fcf85e8f797908278">get_field_info_store</a> (size_t topology_type_identifier, size_t storage_class) const</td></tr>
-<tr class="separator:adc3fcbefdf432c6fcf85e8f797908278 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaff5f5315956eadaf2cc79a34f2de8e inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memTemplParams" colspan="2">template&lt;class Topo , std::size_t Index = 0&gt; </td></tr>
+<tr class="memitem:aaaff5f5315956eadaf2cc79a34f2de8e inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#aaaff5f5315956eadaf2cc79a34f2de8e">add_field_info</a> (<a class="el" href="storage__classes_8hh.html#ac662c6859d456a6c33810e5226abbdeb">data::storage_label_t</a> storage_class, const <a class="el" href="structflecsi_1_1data_1_1field__info__t.html">data::field_info_t</a> &amp;field_info)</td></tr>
+<tr class="separator:aaaff5f5315956eadaf2cc79a34f2de8e inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e55ee99f51a25a90ac3e790639b1d32 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memTemplParams" colspan="2">template&lt;class Topo , std::size_t Index = 0&gt; </td></tr>
+<tr class="memitem:a9e55ee99f51a25a90ac3e790639b1d32 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1runtime_1_1context.html#a874a52dc04f562af58cc2630cb20a7f7">field_info_store_t</a> const  &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#a9e55ee99f51a25a90ac3e790639b1d32">get_field_info_store</a> (<a class="el" href="storage__classes_8hh.html#ac662c6859d456a6c33810e5226abbdeb">data::storage_label_t</a> storage_class) const</td></tr>
+<tr class="separator:a9e55ee99f51a25a90ac3e790639b1d32 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5bd6c6519635028ba4edd371eb64029 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#ad5bd6c6519635028ba4edd371eb64029">add_index_subspace</a> (size_t index_subspace, size_t capacity)</td></tr>
 <tr class="separator:ad5bd6c6519635028ba4edd371eb64029 inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54af3962f7e1f9dae4cbe80c785285ca inherit pub_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#a54af3962f7e1f9dae4cbe80c785285ca">add_index_subspace</a> (const <a class="el" href="structflecsi_1_1runtime_1_1context_1_1index__subspace__info__t.html">index_subspace_info_t</a> &amp;info)</td></tr>
@@ -283,7 +285,8 @@ static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>colors</b> (
 static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>task_depth</b> ()</td></tr>
 <tr class="separator:a1ccef16a2b69272e4c0ccf2f41dea245"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_methods_structflecsi_1_1runtime_1_1context"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_structflecsi_1_1runtime_1_1context')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="structflecsi_1_1runtime_1_1context.html">flecsi::runtime::context</a></td></tr>
-<tr class="memitem:ab14842414172e6702bdf7571c2d77d3a inherit pub_static_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1runtime_1_1context__t.html">context_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#ab14842414172e6702bdf7571c2d77d3a">instance</a> ()</td></tr>
+<tr class="memitem:ab14842414172e6702bdf7571c2d77d3a inherit pub_static_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="ab14842414172e6702bdf7571c2d77d3a"></a>
+static <a class="el" href="structflecsi_1_1runtime_1_1context__t.html">context_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>instance</b> ()</td></tr>
 <tr class="separator:ab14842414172e6702bdf7571c2d77d3a inherit pub_static_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad4e8248cd92376d82f354b150514066 inherit pub_static_methods_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top">static std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1runtime_1_1context.html#aad4e8248cd92376d82f354b150514066">task_depth</a> ()</td></tr>
 <tr class="separator:aad4e8248cd92376d82f354b150514066 inherit pub_static_methods_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -322,18 +325,27 @@ int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>flog_output_proces
 <tr class="memitem:acf44335ced08b634b5a66cf0dffa8e5d inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="acf44335ced08b634b5a66cf0dffa8e5d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>initialize_dependent_</b> = true</td></tr>
 <tr class="separator:acf44335ced08b634b5a66cf0dffa8e5d inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a990f72a7bd47031be0d02ff985580ab6 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a990f72a7bd47031be0d02ff985580ab6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>program_options_initialized_</b> = false</td></tr>
-<tr class="separator:a990f72a7bd47031be0d02ff985580ab6 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a512984b737ae112fe5e27c4d79289e8f inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a512984b737ae112fe5e27c4d79289e8f"></a>
 std::map&lt; std::string, boost::program_options::options_description &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>descriptions_map_</b></td></tr>
 <tr class="separator:a512984b737ae112fe5e27c4d79289e8f inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70bfe4f96c768f42dbcb2ae3a8aaa613 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a70bfe4f96c768f42dbcb2ae3a8aaa613"></a>
-boost::program_options::variables_map&#160;</td><td class="memItemRight" valign="bottom"><b>variables_map_</b></td></tr>
-<tr class="separator:a70bfe4f96c768f42dbcb2ae3a8aaa613 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c24cdd45225918ef0319c16721e39fa inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a0c24cdd45225918ef0319c16721e39fa"></a>
+boost::program_options::positional_options_description&#160;</td><td class="memItemRight" valign="bottom"><b>positional_desc_</b></td></tr>
+<tr class="separator:a0c24cdd45225918ef0319c16721e39fa inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae74f819eec58ed6dc45eecda130656e7 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="ae74f819eec58ed6dc45eecda130656e7"></a>
+boost::program_options::options_description&#160;</td><td class="memItemRight" valign="bottom"><b>hidden_options_</b></td></tr>
+<tr class="separator:ae74f819eec58ed6dc45eecda130656e7 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77f8d934480ae27eb9ba466350e410d7 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a77f8d934480ae27eb9ba466350e410d7"></a>
+std::map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>positional_help_</b></td></tr>
+<tr class="separator:a77f8d934480ae27eb9ba466350e410d7 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d5fcc353e7f15562d5ee560728bbdbc inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a0d5fcc353e7f15562d5ee560728bbdbc"></a>
+std::map&lt; std::string, std::pair&lt; bool, std::function&lt; bool(boost::any const &amp;)&gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>option_checks_</b></td></tr>
+<tr class="separator:a0d5fcc353e7f15562d5ee560728bbdbc inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b39ccff25e33c0ea8b7c0df6f5aa85c inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a8b39ccff25e33c0ea8b7c0df6f5aa85c"></a>
 std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>unrecognized_options_</b></td></tr>
 <tr class="separator:a8b39ccff25e33c0ea8b7c0df6f5aa85c inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90cd76dfaa0b37ddef83760fb8a583bb inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a90cd76dfaa0b37ddef83760fb8a583bb"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>initialized_</b> = false</td></tr>
+<tr class="separator:a90cd76dfaa0b37ddef83760fb8a583bb inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a79d28263682028ecc774cc202f1a30 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memItemLeft" align="right" valign="top"><a id="a2a79d28263682028ecc774cc202f1a30"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>process_</b> = std::numeric_limits&lt;size_t&gt;::max()</td></tr>
 <tr class="separator:a2a79d28263682028ecc774cc202f1a30 inherit pro_attribs_structflecsi_1_1runtime_1_1context"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -724,8 +736,8 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="ade84f225fc595279c45d5577f9119f9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade84f225fc595279c45d5577f9119f9c">&#9670;&nbsp;</a></span>start()</h2>
+<a id="aaff9085514bb5084a884a188d0a4c077"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaff9085514bb5084a884a188d0a4c077">&#9670;&nbsp;</a></span>start()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -733,7 +745,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="memname">int flecsi::runtime::context_t::start </td>
           <td>(</td>
-          <td class="paramtype">std::function&lt; int(int, char **)&gt;&#160;</td>
+          <td class="paramtype">const std::function&lt; int(int, char **)&gt; &amp;&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>

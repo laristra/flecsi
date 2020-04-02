@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1serial_3_01T_00_01voided_3_01decltype_07_6T_1_1legion__buffer__size_08_d5b55792deb9b150c212a6c1bf10aaaf.html" title="flecsi::utils::serial\l\&lt; T, voided\&lt; decltype\l(&amp;T::legion_buffer_size)\l, std::enable_if_t\&lt;!memcpyable\l_v\&lt; T \&gt; \&gt; \&gt; \&gt;" alt="" coords="5,5,211,91"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1serial__convert.html" title="flecsi::utils::serial\l_convert\&lt; T \&gt;" alt="" coords="5,45,129,87"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1utils_1_1serial__convert__traits.html" title="flecsi::utils::serial\l_convert_traits\&lt; T, class \&gt;" alt="" coords="181,5,359,47"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1utils_1_1serial__convert__traits_3_01T_00_01decltype_07void_07serial__convert_3_01T_01_4_1_1size_08_08_4.html" title="flecsi::utils::serial\l_convert_traits\&lt; T, decltype\l(void(serial_convert\&lt; T \&gt;\l::size))\&gt;" alt="" coords="177,71,363,141"/>
 </map>

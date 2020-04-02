@@ -32,7 +32,7 @@
   <td id="projectlogo"><a href="http://www.flecsi.org"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></a></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: 2.-1 (devel)</span>
+		<span id="projectnumber">Version: invalid</span>
    </div>
   </td>
  </tr>
@@ -94,6 +94,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1privilege__pack.html">privilege_pack</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1program__option.html">program_option</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -105,6 +107,9 @@ template&lt;typename DATA_TYPE &gt; </td></tr>
 template&lt;typename DATA_TYPE &gt; </td></tr>
 <tr class="memitem:a1348dd2a0fcc0910c2181a37474ccab2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>index_field_member</b> = <a class="el" href="structflecsi_1_1data_1_1field__member.html">data::field_member</a>&lt; DATA_TYPE, data::storage_label_t::dense, <a class="el" href="structflecsi_1_1topology_1_1index.html">topology::index</a>, 0 &gt;</td></tr>
 <tr class="separator:a1348dd2a0fcc0910c2181a37474ccab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a6f30337f6b0c9e0fbee7e350131fca"><td class="memItemLeft" align="right" valign="top"><a id="a8a6f30337f6b0c9e0fbee7e350131fca"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>any</b> = boost::any</td></tr>
+<tr class="separator:a8a6f30337f6b0c9e0fbee7e350131fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7ef98f77da168e20dd9552c4d453068"><td class="memItemLeft" align="right" valign="top"><a id="aa7ef98f77da168e20dd9552c4d453068"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>field_id_t</b> = Legion::FieldID</td></tr>
 <tr class="separator:aa7ef98f77da168e20dd9552c4d453068"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,6 +142,12 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:a00bc549369cb75778d45791ec74254b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a451dde39466a73fa103f1c125c4e96c6"><td class="memItemLeft" align="right" valign="top"><a id="a451dde39466a73fa103f1c125c4e96c6"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>option_attribute</b> : size_t { <b>option_default</b>, 
+<b>option_implicit</b>, 
+<b>option_zero</b>, 
+<b>option_multi</b>
+ }</td></tr>
+<tr class="separator:a451dde39466a73fa103f1c125c4e96c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e64f4911e41d69f6f26ffffe3cf10b5"><td class="memItemLeft" align="right" valign="top"><a id="a7e64f4911e41d69f6f26ffffe3cf10b5"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>partition_t</b> : size_t { <b>exclusive</b> = 0b001, 
 <b>shared</b> = 0b010, 
 <b>ghost</b> = 0b100, 
@@ -158,17 +169,18 @@ constexpr <a class="el" href="structflecsi_1_1execution_1_1launch__domain.html">
 <tr class="memitem:a1657093a0dbb622dc8a4df35dd4fce46"><td class="memTemplParams" colspan="2">template&lt;auto &amp; F, const execution::launch_domain &amp; LAUNCH_DOMAIN, class REDUCTION , size_t ATTRIBUTES, typename... ARGS&gt; </td></tr>
 <tr class="memitem:a1657093a0dbb622dc8a4df35dd4fce46"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a1657093a0dbb622dc8a4df35dd4fce46">reduce</a> (ARGS &amp;&amp;... args)</td></tr>
 <tr class="separator:a1657093a0dbb622dc8a4df35dd4fce46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0d2a1f3fb189c6d3c146ff9f6229ab5"><td class="memItemLeft" align="right" valign="top"><a id="ad0d2a1f3fb189c6d3c146ff9f6229ab5"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>reduction_wrapper_tag</b> (&quot;reduction_wrapper&quot;)</td></tr>
+<tr class="separator:ad0d2a1f3fb189c6d3c146ff9f6229ab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7bce80856f18e3a0a0968291217247f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#ab7bce80856f18e3a0a0968291217247f">initialize</a> (int argc, char **argv, bool dependent=true)</td></tr>
 <tr class="separator:ab7bce80856f18e3a0a0968291217247f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a774b22652da13378dd74eadb67f6df8a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a774b22652da13378dd74eadb67f6df8a">start</a> (std::function&lt; int(int, char **)&gt; action)</td></tr>
-<tr class="separator:a774b22652da13378dd74eadb67f6df8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d7057d3703636695fe493193d80a0f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a8d7057d3703636695fe493193d80a0f6">start</a> (const std::function&lt; int(int, char **)&gt; &amp;action)</td></tr>
+<tr class="separator:a8d7057d3703636695fe493193d80a0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27eb8f8a88c3c2076b1f37791fc5998b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a27eb8f8a88c3c2076b1f37791fc5998b">finalize</a> ()</td></tr>
 <tr class="separator:a27eb8f8a88c3c2076b1f37791fc5998b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f5b127998df6008eed8edd0673f580d"><td class="memTemplParams" colspan="2">template&lt;typename... ARGS&gt; </td></tr>
-<tr class="memitem:a2f5b127998df6008eed8edd0673f580d"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a2f5b127998df6008eed8edd0673f580d">add_program_option</a> (std::string const &amp;label, ARGS &amp;&amp;... args)</td></tr>
-<tr class="separator:a2f5b127998df6008eed8edd0673f580d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a503c97f44db5dc6e47e1564d41a46246"><td class="memItemLeft" align="right" valign="top">boost::program_options::variables_map const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a503c97f44db5dc6e47e1564d41a46246">program_options_variables_map</a> ()</td></tr>
-<tr class="separator:a503c97f44db5dc6e47e1564d41a46246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f8b61e6071b2dc6e7f5ad1b937614ac"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
+<tr class="memitem:a2f8b61e6071b2dc6e7f5ad1b937614ac"><td class="memTemplItemLeft" align="right" valign="top">ValueType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a2f8b61e6071b2dc6e7f5ad1b937614ac">option_value</a> (any const &amp;v)</td></tr>
+<tr class="separator:a2f8b61e6071b2dc6e7f5ad1b937614ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99017bc49670c8954a5ea8dba07e6fcf"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a99017bc49670c8954a5ea8dba07e6fcf">process</a> ()</td></tr>
 <tr class="separator:a99017bc49670c8954a5ea8dba07e6fcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8cb5aaa73180d3518a0570d050b21cd"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#ae8cb5aaa73180d3518a0570d050b21cd">processes</a> ()</td></tr>
@@ -192,6 +204,9 @@ template&lt;size_t D, typename T , class DER &gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
+<tr class="memitem:aff4740e70f3be8b5e2d19e9091d007e6"><td class="memItemLeft" align="right" valign="top"><a id="aff4740e70f3be8b5e2d19e9091d007e6"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>registration_tag</b> (&quot;registration&quot;)</td></tr>
+<tr class="separator:aff4740e70f3be8b5e2d19e9091d007e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae04d8d9a2da715648d64eaefedd5e3d3"><td class="memItemLeft" align="right" valign="top"><a id="ae04d8d9a2da715648d64eaefedd5e3d3"></a>
 <a class="el" href="structflecsi_1_1data_1_1topology__slot.html">data::topology_slot</a>&lt; <a class="el" href="structflecsi_1_1topology_1_1global.html">topology::global</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>global_topology</b></td></tr>
 <tr class="separator:ae04d8d9a2da715648d64eaefedd5e3d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,12 +219,45 @@ Variables</h2></td></tr>
 <tr class="memitem:a1af898840d4140edfbb8495dc77a77c0"><td class="memItemLeft" align="right" valign="top"><a id="a1af898840d4140edfbb8495dc77a77c0"></a>
 constexpr <a class="el" href="structflecsi_1_1execution_1_1launch__domain.html">execution::launch_domain</a>&#160;</td><td class="memItemRight" valign="bottom"><b>index</b></td></tr>
 <tr class="separator:a1af898840d4140edfbb8495dc77a77c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63540e8e8a950d5ecaeb8129e21b56fe"><td class="memItemLeft" align="right" valign="top"><a id="a63540e8e8a950d5ecaeb8129e21b56fe"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>bind_accessors_tag</b> (&quot;bind_accessors&quot;)</td></tr>
+<tr class="separator:a63540e8e8a950d5ecaeb8129e21b56fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26c900f50d2154010160874f1354392b"><td class="memItemLeft" align="right" valign="top"><a id="a26c900f50d2154010160874f1354392b"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>execution_tag</b> (&quot;execution&quot;)</td></tr>
+<tr class="separator:a26c900f50d2154010160874f1354392b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a35b3dc75b5070304fb7548a02c4758"><td class="memItemLeft" align="right" valign="top"><a id="a4a35b3dc75b5070304fb7548a02c4758"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>reduction_wrapper_tag</b> (&quot;reduction_wrapper&quot;)</td></tr>
+<tr class="separator:a4a35b3dc75b5070304fb7548a02c4758"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c4706e564f55035abf9aa454a1e5586"><td class="memItemLeft" align="right" valign="top"><a id="a0c4706e564f55035abf9aa454a1e5586"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>task_prologue_tag</b> (&quot;task_prologue&quot;)</td></tr>
+<tr class="separator:a0c4706e564f55035abf9aa454a1e5586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9e3359cfb1270d5170423cc0c6eeb82"><td class="memItemLeft" align="right" valign="top"><a id="aa9e3359cfb1270d5170423cc0c6eeb82"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>task_wrapper_tag</b> (&quot;task_wrapper&quot;)</td></tr>
+<tr class="separator:aa9e3359cfb1270d5170423cc0c6eeb82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae21e41ec1c70024f25e0e6c2b96e956a"><td class="memItemLeft" align="right" valign="top"><a id="ae21e41ec1c70024f25e0e6c2b96e956a"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>unbind_accessors_tag</b> (&quot;unbind_accessors&quot;)</td></tr>
+<tr class="separator:ae21e41ec1c70024f25e0e6c2b96e956a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac953e4c3c767735011d369397420a1ca"><td class="memItemLeft" align="right" valign="top"><a id="ac953e4c3c767735011d369397420a1ca"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>io_tag</b> (&quot;io&quot;)</td></tr>
+<tr class="separator:ac953e4c3c767735011d369397420a1ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d2e2fd02bd4677d0bd1c867e463879"><td class="memItemLeft" align="right" valign="top"><a id="a12d2e2fd02bd4677d0bd1c867e463879"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>context_tag</b> (&quot;context&quot;)</td></tr>
+<tr class="separator:a12d2e2fd02bd4677d0bd1c867e463879"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09c434525ffeb40200c44ca168d9636c"><td class="memItemLeft" align="right" valign="top"><a id="a09c434525ffeb40200c44ca168d9636c"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>legion_mapper_tag</b> (&quot;legion_mapper&quot;)</td></tr>
+<tr class="separator:a09c434525ffeb40200c44ca168d9636c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7feb4089963147f3d3601e460c7db139"><td class="memItemLeft" align="right" valign="top"><a id="a7feb4089963147f3d3601e460c7db139"></a>
 const field_id_t&#160;</td><td class="memItemRight" valign="bottom"><b>FIELD_ID_MAX</b> = LEGION_MAX_APPLICATION_FIELD_ID</td></tr>
 <tr class="separator:a7feb4089963147f3d3601e460c7db139"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad77da3bf299270126afede75ea066842"><td class="memItemLeft" align="right" valign="top"><a id="ad77da3bf299270126afede75ea066842"></a>
 const task_id_t&#160;</td><td class="memItemRight" valign="bottom"><b>TASK_ID_MAX</b> = LEGION_MAX_APPLICATION_TASK_ID</td></tr>
 <tr class="separator:ad77da3bf299270126afede75ea066842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c19246dd18258e75bb8d8ffbd1843ba"><td class="memItemLeft" align="right" valign="top"><a id="a2c19246dd18258e75bb8d8ffbd1843ba"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>dcrs_utils_tag</b> (&quot;dcrs_utils&quot;)</td></tr>
+<tr class="separator:a2c19246dd18258e75bb8d8ffbd1843ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd858aeb2568bce700ac19cfd74268c3"><td class="memItemLeft" align="right" valign="top"><a id="abd858aeb2568bce700ac19cfd74268c3"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ftest_tag</b> (&quot;ftest&quot;)</td></tr>
+<tr class="separator:abd858aeb2568bce700ac19cfd74268c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>file </p>
@@ -255,52 +303,6 @@ const task_id_t&#160;</td><td class="memItemRight" valign="bottom"><b>TASK_ID_MA
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a2f5b127998df6008eed8edd0673f580d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f5b127998df6008eed8edd0673f580d">&#9670;&nbsp;</a></span>add_program_option()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... ARGS&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool flecsi::add_program_option </td>
-          <td>(</td>
-          <td class="paramtype">std::string const &amp;&#160;</td>
-          <td class="paramname"><em>label</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
-          <td class="paramname"><em>args</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Add a program option to the <em>options_description</em> identified by <em>label</em>. If the options_description does not exist, it is created.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">label</td><td>A std::string containing the options_description label.</td></tr>
-  </table>
-  </dd>
-</dl>
-<div class="fragment"><div class="line"><span class="keyword">auto</span> my_unique_variable_name = <a class="code" href="namespaceflecsi.html#a2f5b127998df6008eed8edd0673f580d">add_program_option</a>(<span class="stringliteral">&quot;Description Label&quot;</span>,</div><div class="line">  arg0, arg1, ...);</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>A boolean value that can be used at namespace scope for assignment. </dd></dl>
-
-</div>
-</div>
 <a id="a95a672fb301d18e3d6218c49776ce3f4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a95a672fb301d18e3d6218c49776ce3f4">&#9670;&nbsp;</a></span>color()</h2>
 
@@ -489,6 +491,33 @@ template&lt;size_t INDEX, size_t PACK&gt; </div>
 
 </div>
 </div>
+<a id="a2f8b61e6071b2dc6e7f5ad1b937614ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f8b61e6071b2dc6e7f5ad1b937614ac">&#9670;&nbsp;</a></span>option_value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ValueType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">ValueType flecsi::option_value </td>
+          <td>(</td>
+          <td class="paramtype">any const &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convert an option value into its underlying type.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ValueType</td><td>The option underlying value type. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="abf3d7ebdbd8cf0dd19c685cf7dfcc570"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abf3d7ebdbd8cf0dd19c685cf7dfcc570">&#9670;&nbsp;</a></span>privilege_count()</h2>
 
@@ -567,33 +596,6 @@ template&lt;size_t PACK&gt; </div>
 
 </div>
 </div>
-<a id="a503c97f44db5dc6e47e1564d41a46246"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a503c97f44db5dc6e47e1564d41a46246">&#9670;&nbsp;</a></span>program_options_variables_map()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">boost::program_options::variables_map const&amp; flecsi::program_options_variables_map </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Return the boost program options variable map.</p>
-<dl class="section note"><dt>Note</dt><dd>The <em>initialize</em> method must be called before this method can be invokded. </dd></dl>
-
-</div>
-</div>
 <a id="a1657093a0dbb622dc8a4df35dd4fce46"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1657093a0dbb622dc8a4df35dd4fce46">&#9670;&nbsp;</a></span>reduce()</h2>
 
@@ -625,8 +627,8 @@ template&lt;auto &amp; F, const execution::launch_domain &amp; LAUNCH_DOMAIN, cl
 
 </div>
 </div>
-<a id="a774b22652da13378dd74eadb67f6df8a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a774b22652da13378dd74eadb67f6df8a">&#9670;&nbsp;</a></span>start()</h2>
+<a id="a8d7057d3703636695fe493193d80a0f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d7057d3703636695fe493193d80a0f6">&#9670;&nbsp;</a></span>start()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -637,7 +639,7 @@ template&lt;auto &amp; F, const execution::launch_domain &amp; LAUNCH_DOMAIN, cl
         <tr>
           <td class="memname">int flecsi::start </td>
           <td>(</td>
-          <td class="paramtype">std::function&lt; int(int, char **)&gt;&#160;</td>
+          <td class="paramtype">const std::function&lt; int(int, char **)&gt; &amp;&#160;</td>
           <td class="paramname"><em>action</em></td><td>)</td>
           <td></td>
         </tr>

@@ -119,8 +119,8 @@ For a complete list of versions and variants, type:
 More documentation and information on Spack is available `here
 <https://spack.readthedocs.io/en/latest>`_.
 
-Developers
-**********
+FleCSI Developers
+*****************
 
 If you are a developer, and would like to install only the dependencies of
 FleCSI (assuming that you will build FleCSI from source), you can use
@@ -194,8 +194,8 @@ After building FleCSI, you can run the unit tests like:
 
   $ make test
 
-Building the Documentation
-**************************
+Building the Documentation (Developers)
+***************************************
 
 FleCSI uses Doxygen for its API reference, and Sphinx for user and
 developer documentation.
@@ -214,14 +214,14 @@ like:
   $ pip3 install recommonmark
   $ pip3 install sphinx_rtd_theme
 
-To enable Doxygen and Sphinx, these options need to be enabled in CMake:
+To enable documentation, do this:
 
 .. code-block:: console
 
-  $ cmake -DENABLE_DOXYGEN=ON -DENABLE_SPHINX=ON ..
+  $ cmake -DENABLE_DOCUMENTATION=ON ..
 
-Once you have properly configured FleCSI, you can build the
-documentation like:
+By default, this will enable Doxygen and Sphinx. Once you have properly
+configured FleCSI, you can build the documentation like:
 
 .. code-block:: console
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Build &amp; Install &mdash; FleCSI 2.-1 (devel) documentation</title>
+  <title>Build &amp; Install &mdash; FleCSI invalid documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.-1 (devel)
+                Version: invalid
               </div>
             
           
@@ -98,10 +98,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#requirements-prerequisites">Requirements &amp; Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#getting-the-code">Getting The Code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#spack">Spack</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#developers">Developers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flecsi-developers">FleCSI Developers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-build">Configuration &amp; Build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-the-unit-tests">Building the Unit Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#building-the-documentation">Building the Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-the-documentation-developers">Building the Documentation (Developers)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced">Advanced</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="build/options.html">CMake Configuration Options</a></li>
 </ul>
@@ -111,7 +111,6 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core-guide.html">Core Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html">Contributors</a></li>
 </ul>
@@ -270,8 +269,8 @@ to install and configure:</p>
 </div>
 <p>More documentation and information on Spack is available <a class="reference external" href="https://spack.readthedocs.io/en/latest">here</a>.</p>
 </div>
-<div class="section" id="developers">
-<h2>Developers<a class="headerlink" href="#developers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="flecsi-developers">
+<h2>FleCSI Developers<a class="headerlink" href="#flecsi-developers" title="Permalink to this headline">¶</a></h2>
 <p>If you are a developer, and would like to install only the dependencies of
 FleCSI (assuming that you will build FleCSI from source), you can use
 spack’s <em>–only</em> option:</p>
@@ -326,8 +325,8 @@ tests.</strong></p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="building-the-documentation">
-<h2>Building the Documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="building-the-documentation-developers">
+<h2>Building the Documentation (Developers)<a class="headerlink" href="#building-the-documentation-developers" title="Permalink to this headline">¶</a></h2>
 <p>FleCSI uses Doxygen for its API reference, and Sphinx for user and
 developer documentation.</p>
 <p>Doxygen can be installed with most Linux package managers.  To install
@@ -342,12 +341,12 @@ like:</p>
 <span class="gp">$</span> pip3 install sphinx_rtd_theme
 </pre></div>
 </div>
-<p>To enable Doxygen and Sphinx, these options need to be enabled in CMake:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> cmake -DENABLE_DOXYGEN<span class="o">=</span>ON -DENABLE_SPHINX<span class="o">=</span>ON ..
+<p>To enable documentation, do this:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> cmake -DENABLE_DOCUMENTATION<span class="o">=</span>ON ..
 </pre></div>
 </div>
-<p>Once you have properly configured FleCSI, you can build the
-documentation like:</p>
+<p>By default, this will enable Doxygen and Sphinx. Once you have properly
+configured FleCSI, you can build the documentation like:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> make doxygen
 <span class="gp">$</span> make sphinx
 </pre></div>

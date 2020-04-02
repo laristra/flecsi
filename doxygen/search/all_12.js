@@ -19,5 +19,5 @@ var searchData=
   ['update_5fcom',['update_COM',['../structflecsi_1_1topology_1_1ntree.html#a484c7d3cd801e14f5878082111a4c16b',1,'flecsi::topology::ntree']]],
   ['utility_5ftypes_2ehh',['utility_types.hh',['../utility__types_8hh.html',1,'']]],
   ['utilities_20interface',['Utilities Interface',['../group__utils.html',1,'']]],
-  ['utils_2ehh',['utils.hh',['../topology_2unstructured_2utils_8hh.html',1,'(Global Namespace)'],['../utils_2flog_2utils_8hh.html',1,'(Global Namespace)']]]
+  ['utils_2ehh',['utils.hh',['../topology_2unstructured_2utils_8hh.html',1,'']]]
 ];

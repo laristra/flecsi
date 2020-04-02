@@ -32,7 +32,7 @@
   <td id="projectlogo"><a href="http://www.flecsi.org"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></a></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: 2.-1 (devel)</span>
+		<span id="projectnumber">Version: invalid</span>
    </div>
   </td>
  </tr>
@@ -77,7 +77,8 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">policy.hh File Reference</div>  </div>
 </div><!--header-->
@@ -92,8 +93,8 @@ $(function() {
 <code>#include &quot;<a class="el" href="task__wrapper_8hh_source.html">task_wrapper.hh</a>&quot;</code><br />
 <code>#include &lt;<a class="el" href="legion_2future_8hh_source.html">flecsi/execution/legion/future.hh</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="legion_2reduction__wrapper_8hh_source.html">flecsi/execution/legion/reduction_wrapper.hh</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="flog_8hh_source.html">flecsi/utils/flog.hh</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="utils_2flog_2utils_8hh_source.html">flecsi/utils/flog/utils.hh</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="flog_8hh_source.html">flecsi/flog.hh</a>&gt;</code><br />
+<code>#include &lt;flecsi/flog/utils.hh&gt;</code><br />
 <code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
@@ -103,37 +104,37 @@ Include dependency graph for policy.hh:</div>
 <div class="dyncontent">
 <div class="center"><img src="execution_2legion_2policy_8hh__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2policy_8hh" alt=""/></div>
 <map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2policy_8hh" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2policy_8hh">
-<area shape="rect" id="node3" href="launch_8hh.html" title="../launch.hh" alt="" coords="1429,467,1520,493"/>
-<area shape="rect" id="node5" href="runtime_2backend_8hh.html" title="flecsi/runtime/backend.hh" alt="" coords="2517,295,2688,322"/>
-<area shape="rect" id="node15" href="flog_8hh.html" title="flecsi/utils/flog.hh" alt="" coords="2355,549,2479,575"/>
-<area shape="rect" id="node16" href="utils_2flog_2utils_8hh.html" title="flecsi/utils/flog/utils.hh" alt="" coords="2160,809,2312,836"/>
-<area shape="rect" id="node31" href="tasks_8hh.html" title="flecsi/runtime/legion\l/tasks.hh" alt="" coords="2929,199,3068,240"/>
-<area shape="rect" id="node32" href="demangle_8hh.html" title="flecsi/utils/demangle.hh" alt="" coords="913,295,1071,322"/>
-<area shape="rect" id="node33" href="function__traits_8hh.html" title="flecsi/utils/function\l_traits.hh" alt="" coords="499,377,629,419"/>
-<area shape="rect" id="node35" href="task__prologue_8hh.html" title="task_prologue.hh" alt="" coords="789,206,910,233"/>
-<area shape="rect" id="node43" href="task__wrapper_8hh.html" title="task_wrapper.hh" alt="" coords="1826,117,1945,143"/>
-<area shape="rect" id="node47" href="legion_2future_8hh.html" title="flecsi/execution/legion\l/future.hh" alt="" coords="171,377,322,419"/>
-<area shape="rect" id="node49" href="legion_2reduction__wrapper_8hh.html" title="flecsi/execution/legion\l/reduction_wrapper.hh" alt="" coords="2437,109,2587,151"/>
-<area shape="rect" id="node6" href="legion_2context_8hh.html" title="legion/context.hh" alt="" coords="2571,385,2693,411"/>
-<area shape="rect" id="node7" href="context_8hh.html" title="../context.hh" alt="" coords="2177,467,2271,493"/>
-<area shape="rect" id="node9" href="runtime_2types_8hh.html" title="flecsi/runtime/types.hh" alt="" coords="2504,549,2659,575"/>
-<area shape="rect" id="node11" href="common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="2094,638,2247,665"/>
-<area shape="rect" id="node8" href="task__attributes_8hh.html" title="flecsi/execution/task\l_attributes.hh" alt="" coords="1985,541,2127,583"/>
-<area shape="rect" id="node18" href="message_8hh.html" title="flecsi/utils/flog/message.hh" alt="" coords="2373,638,2555,665"/>
-<area shape="rect" id="node25" href="tag__scope_8hh.html" title="flecsi/utils/flog/tag\l_scope.hh" alt="" coords="2629,631,2757,672"/>
-<area shape="rect" id="node19" href="state_8hh.html" title="flecsi/utils/flog/state.hh" alt="" coords="2499,727,2656,754"/>
-<area shape="rect" id="node20" href="packet_8hh.html" title="flecsi/utils/flog/packet.hh" alt="" coords="2438,809,2605,836"/>
-<area shape="rect" id="node36" href="accessor_8hh.html" title="flecsi/data/accessor.hh" alt="" coords="1096,295,1253,322"/>
-<area shape="rect" id="node37" href="structured_2interface_8hh.html" title="flecsi/topology/structured\l/interface.hh" alt="" coords="856,377,1024,419"/>
-<area shape="rect" id="node38" href="privilege_8hh.html" title="flecsi/data/privilege.hh" alt="" coords="1307,385,1459,411"/>
-<area shape="rect" id="node39" href="topology__accessor_8hh.html" title="flecsi/data/topology\l_accessor.hh" alt="" coords="601,288,735,329"/>
-<area shape="rect" id="node40" href="ntree_2interface_8hh.html" title="flecsi/topology/ntree\l/interface.hh" alt="" coords="296,720,435,761"/>
-<area shape="rect" id="node41" href="set_2interface_8hh.html" title="flecsi/topology/set\l/interface.hh" alt="" coords="397,288,525,329"/>
-<area shape="rect" id="node42" href="tuple__walker_8hh.html" title="flecsi/utils/tuple\l_walker.hh" alt="" coords="1379,288,1493,329"/>
-<area shape="rect" id="node44" href="bind__accessors_8hh.html" title="bind_accessors.hh" alt="" coords="1545,206,1676,233"/>
-<area shape="rect" id="node45" href="serialize_8hh_source.html" title="flecsi/utils/serialize.hh" alt="" coords="1697,467,1847,493"/>
-<area shape="rect" id="node46" href="unbind__accessors_8hh.html" title="unbind_accessors.hh" alt="" coords="1355,206,1501,233"/>
-<area shape="rect" id="node50" href="reduction_8hh.html" title="../reduction.hh" alt="" coords="2550,206,2655,233"/>
+<area shape="rect" id="node3" href="launch_8hh.html" title="../launch.hh" alt="" coords="2269,467,2360,493"/>
+<area shape="rect" id="node5" href="runtime_2backend_8hh.html" title="flecsi/runtime/backend.hh" alt="" coords="195,295,365,322"/>
+<area shape="rect" id="node9" href="flog_8hh.html" title="flecsi/flog.hh" alt="" coords="2552,549,2648,575"/>
+<area shape="rect" id="node10" href="flog_2utils_8hh_source.html" title="flecsi/flog/utils.hh" alt="" coords="2717,795,2841,821"/>
+<area shape="rect" id="node31" href="tasks_8hh.html" title="flecsi/runtime/legion\l/tasks.hh" alt="" coords="2269,199,2408,240"/>
+<area shape="rect" id="node32" href="demangle_8hh.html" title="flecsi/utils/demangle.hh" alt="" coords="1630,295,1789,322"/>
+<area shape="rect" id="node33" href="function__traits_8hh.html" title="flecsi/utils/function\l_traits.hh" alt="" coords="2179,377,2309,419"/>
+<area shape="rect" id="node35" href="task__prologue_8hh.html" title="task_prologue.hh" alt="" coords="781,206,902,233"/>
+<area shape="rect" id="node43" href="task__wrapper_8hh.html" title="task_wrapper.hh" alt="" coords="1919,117,2038,143"/>
+<area shape="rect" id="node47" href="legion_2future_8hh.html" title="flecsi/execution/legion\l/future.hh" alt="" coords="2435,377,2586,419"/>
+<area shape="rect" id="node49" href="legion_2reduction__wrapper_8hh.html" title="flecsi/execution/legion\l/reduction_wrapper.hh" alt="" coords="675,109,826,151"/>
+<area shape="rect" id="node6" href="legion_2context_8hh.html" title="legion/context.hh" alt="" coords="894,385,1015,411"/>
+<area shape="rect" id="node7" href="context_8hh.html" title="flecsi/runtime/context.hh" alt="" coords="1347,467,1512,493"/>
+<area shape="rect" id="node22" href="runtime_2types_8hh.html" title="flecsi/runtime/types.hh" alt="" coords="813,549,968,575"/>
+<area shape="rect" id="node24" href="common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="1650,631,1803,657"/>
+<area shape="rect" id="node8" href="task__attributes_8hh.html" title="flecsi/execution/task\l_attributes.hh" alt="" coords="1246,541,1389,583"/>
+<area shape="rect" id="node12" href="message_8hh.html" title="flecsi/flog/message.hh" alt="" coords="2637,631,2790,657"/>
+<area shape="rect" id="node20" href="tag__scope_8hh.html" title="flecsi/flog/tag_scope.hh" alt="" coords="2233,631,2393,657"/>
+<area shape="rect" id="node13" href="state_8hh.html" title="flecsi/flog/state.hh" alt="" coords="2563,713,2693,739"/>
+<area shape="rect" id="node14" href="packet_8hh_source.html" title="flecsi/flog/packet.hh" alt="" coords="2401,795,2540,821"/>
+<area shape="rect" id="node36" href="accessor_8hh.html" title="flecsi/data/accessor.hh" alt="" coords="955,295,1112,322"/>
+<area shape="rect" id="node37" href="structured_2interface_8hh.html" title="flecsi/topology/structured\l/interface.hh" alt="" coords="549,377,717,419"/>
+<area shape="rect" id="node38" href="privilege_8hh.html" title="flecsi/data/privilege.hh" alt="" coords="1637,385,1789,411"/>
+<area shape="rect" id="node39" href="topology__accessor_8hh.html" title="flecsi/data/topology\l_accessor.hh" alt="" coords="491,288,626,329"/>
+<area shape="rect" id="node40" href="ntree_2interface_8hh.html" title="flecsi/topology/ntree\l/interface.hh" alt="" coords="1284,705,1423,747"/>
+<area shape="rect" id="node41" href="set_2interface_8hh.html" title="flecsi/topology/set\l/interface.hh" alt="" coords="651,288,779,329"/>
+<area shape="rect" id="node42" href="tuple__walker_8hh.html" title="flecsi/utils/tuple\l_walker.hh" alt="" coords="1238,288,1351,329"/>
+<area shape="rect" id="node44" href="bind__accessors_8hh.html" title="bind_accessors.hh" alt="" coords="1199,206,1329,233"/>
+<area shape="rect" id="node45" href="serialize_8hh_source.html" title="flecsi/utils/serialize.hh" alt="" coords="1790,467,1941,493"/>
+<area shape="rect" id="node46" href="unbind__accessors_8hh.html" title="unbind_accessors.hh" alt="" coords="1393,206,1538,233"/>
+<area shape="rect" id="node50" href="reduction_8hh.html" title="../reduction.hh" alt="" coords="195,206,301,233"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -141,12 +142,11 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="execution_2legion_2policy_8hh__dep__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2policy_8hhdep" alt=""/></div>
 <map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2policy_8hhdep" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2policy_8hhdep">
-<area shape="rect" id="node2" href="execution_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/backend.hh" alt="" coords="154,109,307,165"/>
-<area shape="rect" id="node3" href="execution_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution.hh" alt="" coords="163,213,299,269"/>
+<area shape="rect" id="node2" href="execution_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/backend.hh" alt="" coords="102,109,255,165"/>
+<area shape="rect" id="node3" href="execution_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution.hh" alt="" coords="111,213,247,269"/>
 <area shape="rect" id="node4" href="control_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/control.hh" alt="" coords="5,317,141,373"/>
 <area shape="rect" id="node5" href="ftest_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/utils/ftest.hh" alt="" coords="31,421,167,477"/>
 <area shape="rect" id="node6" href="data_2coloring_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/coloring.hh" alt="" coords="216,317,352,373"/>
-<area shape="rect" id="node8" href="program__options_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/runtime/program_options.hh" alt="" coords="376,317,563,373"/>
 <area shape="rect" id="node7" href="data_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data.hh" alt="" coords="216,421,352,477"/>
 </map>
 </div>
@@ -174,9 +174,6 @@ template&lt;class T &gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a03c9e030226bea9a58f51973611992e1"><td class="memItemLeft" align="right" valign="top"><a id="a03c9e030226bea9a58f51973611992e1"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>flog_register_tag</b> (execution)</td></tr>
-<tr class="separator:a03c9e030226bea9a58f51973611992e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e1e2ba76077e42fb7716b905fe9c9ba"><td class="memTemplParams" colspan="2"><a id="a2e1e2ba76077e42fb7716b905fe9c9ba"></a>
 template&lt;class... PP, class... AA&gt; </td></tr>
 <tr class="memitem:a2e1e2ba76077e42fb7716b905fe9c9ba"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::execution::detail::serial_arguments</b> (std::tuple&lt; PP... &gt; *, AA &amp;&amp;... aa)</td></tr>
@@ -184,6 +181,12 @@ template&lt;class... PP, class... AA&gt; </td></tr>
 <tr class="memitem:a1657093a0dbb622dc8a4df35dd4fce46"><td class="memTemplParams" colspan="2">template&lt;auto &amp; F, const execution::launch_domain &amp; LAUNCH_DOMAIN, class REDUCTION , size_t ATTRIBUTES, typename... ARGS&gt; </td></tr>
 <tr class="memitem:a1657093a0dbb622dc8a4df35dd4fce46"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a1657093a0dbb622dc8a4df35dd4fce46">flecsi::reduce</a> (ARGS &amp;&amp;... args)</td></tr>
 <tr class="separator:a1657093a0dbb622dc8a4df35dd4fce46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a26c900f50d2154010160874f1354392b"><td class="memItemLeft" align="right" valign="top"><a id="a26c900f50d2154010160874f1354392b"></a>
+<a class="el" href="structflog_1_1devel__tag.html">flog::devel_tag</a>&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution_tag</b> (&quot;execution&quot;)</td></tr>
+<tr class="separator:a26c900f50d2154010160874f1354392b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

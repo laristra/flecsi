@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>CMake Configuration Options &mdash; FleCSI 2.-1 (devel) documentation</title>
+  <title>CMake Configuration Options &mdash; FleCSI invalid documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.-1 (devel)
+                Version: invalid
               </div>
             
           
@@ -98,10 +98,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../build.html#requirements-prerequisites">Requirements &amp; Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../build.html#getting-the-code">Getting The Code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../build.html#spack">Spack</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../build.html#developers">Developers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build.html#flecsi-developers">FleCSI Developers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../build.html#configuration-build">Configuration &amp; Build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../build.html#building-the-unit-tests">Building the Unit Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../build.html#building-the-documentation">Building the Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build.html#building-the-documentation-developers">Building the Documentation (Developers)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../build.html#advanced">Advanced</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">CMake Configuration Options</a></li>
 </ul>
@@ -111,7 +111,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../core-guide.html">Core Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../team.html">Contributors</a></li>
 </ul>
@@ -299,13 +298,6 @@ This options allows the user to turn them back on.</p></li>
 If enabled, CMake will verify that a suitable Exodus library is
 available on the system, and will enable Exodus functionality in the
 FleCSI I/O interface.</p></li>
-<li><p><strong>ENABLE_FLECSIT [default: OFF]</strong> <br />
-FleCSIT is a command-line utility that simplifies experimental
-development using FleCSI. This can be thought of as a <em>sandbox</em> mode,
-where the user can write code that utilizes a particular FleCSI
-specialization and the FleCSI data and runtime models without the
-overhead of a full production code project. This option simply enables
-creation of the FleCSIT executable.</p></li>
 <li><p><strong>ENABLE_JENKINS_OUTPUT [default: OFF]</strong> <br />
 If this options is on, extra meta data will be output during unit test
 invocation that may be used by the Jenkins CI system.</p></li>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorial &mdash; FleCSI 2.-1 (devel) documentation</title>
+  <title>Tutorial &mdash; FleCSI invalid documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.-1 (devel)
+                Version: invalid
               </div>
             
           
@@ -97,7 +97,11 @@
 <li class="toctree-l1"><a class="reference internal" href="build.html">Build &amp; Install</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#using-the-docker-container">Using the Docker Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-docker-container">Using the Docker Container</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installing-docker">Installing Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pulling-the-image">Pulling the Image</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#tutorial-examples">Tutorial Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html">Runtime</a></li>
 </ul>
@@ -106,7 +110,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developer-guide.html">Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core-guide.html">Core Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html">Contributors</a></li>
 </ul>
@@ -203,27 +206,38 @@ available here: <a class="reference internal" href="build.html#build"><span clas
 <div class="section" id="using-the-docker-container">
 <h2>Using the Docker Container<a class="headerlink" href="#using-the-docker-container" title="Permalink to this headline">¶</a></h2>
 <p>The tutorial is also available as a Docker container. This simplifies
-getting and installing FleCSI and its dependencies. To use the Docker
-container, you should have the Docker daemon installed on your system.
-Docker is available for several different platforms from the
-<a class="reference external" href="https://www.docker.com">Docker Website</a>.</p>
+getting and installing FleCSI and its dependencies.</p>
+<div class="section" id="installing-docker">
+<h3>Installing Docker<a class="headerlink" href="#installing-docker" title="Permalink to this headline">¶</a></h3>
+<p>The Docker daemon is available for a variety of platforms from the
+<a class="reference external" href="https://www.docker.com">docker</a> website.</p>
+<p>For linux, the community engine is available for several distributions:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/fedora">Fedora</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/ubuntu">Ubuntu</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/centos">CentOS</a></p></li>
+</ul>
+</div>
+<div class="section" id="pulling-the-image">
+<h3>Pulling the Image<a class="headerlink" href="#pulling-the-image" title="Permalink to this headline">¶</a></h3>
 <p>To pull the tutorial image, do:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker pull laristra/flecsi-tutorial:latest
 </pre></div>
 </div>
 <p>This will download the image to your machine. Once the pull is complete,
 you can run the image like:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker run -it -h tutorialhost -u flecsi laristra/flecsi-tutorial:latest /bin/bash
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker run -it --shm-size<span class="o">=</span>512m -h tutorialhost -u flecsi laristra/flecsi-tutorial:latest
 </pre></div>
 </div>
 <p>This will place you into a bash prompt, from which you can build and run
-the tutorial examples. The tutorials are in the <em>tutorial</em>
-directory in the Docker container.</p>
+the tutorial examples. The tutorials are in the <em>top-level</em> directory in
+the Docker container.</p>
 <p><strong>Note:</strong> You can also pull a Docker image for a specific runtime, e.g.,
-mpi or legion. The default image <em>latest</em> is built against the MPI
-backend. To pull the legion backend image do:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker pull laristra/flecsi-tutorial:legion
+mpi or legion. The default image <em>latest</em> is built against the Legion
+backend. To pull the MPI backend image do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker pull laristra/flecsi-tutorial:mpi
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="tutorial-examples">
@@ -234,8 +248,19 @@ more advanced FleCSI concepts.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/runtime.html">Runtime</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorial/runtime.html#example-1-minimal">Example 1: Minimal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/runtime.html#example-2-program-options">Example 2: Program Options</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/runtime.html#example-3-flog-flecsi-logging-utility">Example 3: FLOG (FleCSI Logging Utility)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/runtime.html#example-2-program-options">Example 2: Program Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html#example-program">Example Program</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html#declaring-options">Declaring Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html#checking-using-options">Checking &amp; Using Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/runtime.html#example-3-flog-flecsi-logging-utility">Example 3: FLOG (FleCSI Logging Utility)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html#buffer-configuration">Buffer Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html#writing-to-buffers">Writing to Buffers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html#controlling-output-strip-levels">Controlling Output - Strip Levels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/runtime.html#controlling-output-tag-groups">Controlling Output - Tag Groups</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

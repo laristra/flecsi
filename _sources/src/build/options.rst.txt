@@ -142,14 +142,6 @@ built.
   available on the system, and will enable Exodus functionality in the
   FleCSI I/O interface.
 
-* **ENABLE_FLECSIT [default: OFF]** |br|
-  FleCSIT is a command-line utility that simplifies experimental
-  development using FleCSI. This can be thought of as a *sandbox* mode,
-  where the user can write code that utilizes a particular FleCSI
-  specialization and the FleCSI data and runtime models without the
-  overhead of a full production code project. This option simply enables
-  creation of the FleCSIT executable.
-
 * **ENABLE_JENKINS_OUTPUT [default: OFF]** |br|
   If this options is on, extra meta data will be output during unit test
   invocation that may be used by the Jenkins CI system.

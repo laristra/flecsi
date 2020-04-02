@@ -20,7 +20,7 @@ var searchData=
   ['find_5findex_5fspace_5ffrom_5fid_3c_200_2c_20tuple_2c_20id_20_3e',['find_index_space_from_id&lt; 0, TUPLE, ID &gt;',['../structflecsi_1_1topology_1_1find__index__space__from__id_3_010_00_01TUPLE_00_01ID_01_4.html',1,'flecsi::topology']]],
   ['find_5findex_5fsubspace_5ffrom_5fid',['find_index_subspace_from_id',['../structflecsi_1_1topology_1_1find__index__subspace__from__id.html',1,'flecsi::topology']]],
   ['find_5findex_5fsubspace_5ffrom_5fid_3c_200_2c_20tuple_2c_20id_20_3e',['find_index_subspace_from_id&lt; 0, TUPLE, ID &gt;',['../structflecsi_1_1topology_1_1find__index__subspace__from__id_3_010_00_01TUPLE_00_01ID_01_4.html',1,'flecsi::topology']]],
-  ['flog_5ft',['flog_t',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html',1,'flecsi::utils::flog']]],
+  ['flog_5ft',['flog_t',['../classflog_1_1flog__t.html',1,'flog']]],
   ['forall',['forall',['../structflecsi_1_1execution_1_1forall.html',1,'flecsi::execution']]],
   ['ftest_5fcontrol_5fpolicy_5ft',['ftest_control_policy_t',['../structflecsi_1_1control_1_1ftest__control__policy__t.html',1,'flecsi::control']]],
   ['function_5ftraits',['function_traits',['../structflecsi_1_1utils_1_1function__traits.html',1,'flecsi::utils']]],

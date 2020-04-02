@@ -11,6 +11,8 @@ var searchData=
   ['default_5fnode_5ft',['default_node_t',['../structflecsi_1_1control_1_1default__node__t.html',1,'flecsi::control']]],
   ['definition',['definition',['../classflecsi_1_1topology_1_1unstructured__impl_1_1definition.html',1,'flecsi::topology::unstructured_impl']]],
   ['definition_3c_202_20_3e',['definition&lt; 2 &gt;',['../classflecsi_1_1topology_1_1unstructured__impl_1_1definition.html',1,'flecsi::topology::unstructured_impl']]],
+  ['devel_5fguard',['devel_guard',['../structflog_1_1devel__guard.html',1,'flog']]],
+  ['devel_5ftag',['devel_tag',['../structflog_1_1devel__tag.html',1,'flog']]],
   ['dimensioned_5farray',['dimensioned_array',['../classflecsi_1_1utils_1_1dimensioned__array.html',1,'flecsi::utils']]],
   ['dimensioned_5farray_3c_20double_2c_20dimension_20_3e',['dimensioned_array&lt; double, dimension &gt;',['../classflecsi_1_1utils_1_1dimensioned__array.html',1,'flecsi::utils']]],
   ['domain_5fconnectivity',['domain_connectivity',['../classflecsi_1_1topology_1_1domain__connectivity.html',1,'flecsi::topology']]],

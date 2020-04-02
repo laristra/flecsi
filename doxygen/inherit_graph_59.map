@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1io_1_1legion__hdf5__region__t.html" title="flecsi::io::legion\l_hdf5_region_t" alt="" coords="5,5,119,47"/>
+<area shape="rect" id="node1" href="$classflecsi_1_1filling__curve.html" title="flecsi::filling_curve\l\&lt; DIM, T, hilbert_curve\l\&lt; DIM, T \&gt; \&gt;" alt="" coords="5,5,163,61"/>
+<area shape="rect" id="node2" href="$classflecsi_1_1hilbert__curve.html" title="flecsi::hilbert_curve\l\&lt; DIM, T \&gt;" alt="" coords="211,13,345,54"/>
 </map>

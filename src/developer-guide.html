@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer Guide &mdash; FleCSI 2.-1 (devel) documentation</title>
+  <title>Developer Guide &mdash; FleCSI invalid documentation</title>
   
 
   
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Task Invocation" href="developer-guide/execution.html" />
+    <link rel="next" title="Contributors" href="team.html" />
     <link rel="prev" title="Logging Utility" href="user-guide/flog.html" /> 
 </head>
 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.-1 (devel)
+                Version: invalid
               </div>
             
           
@@ -98,15 +98,26 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/execution.html">Task Invocation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/execution.html#task-execution">Task Execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/data.html">Data Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/topology.html">Topology Design Idioms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/topology.html#adding-new-topologies">Adding New Topologies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer-guide/topology.html#topology-initialization-workflow">Topology Initialization Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#style-guide">Style Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-rules">Additional Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="core-guide.html">Core Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#versioning">Versioning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#branch-types">Branch Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tags">Tags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tutorial-docker-image">Tutorial Docker Image</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installing-docker">Installing Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-and-testing-locally">Building and Testing Locally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pushing-to-hub-docker-com">Pushing to hub.docker.com</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html">Contributors</a></li>
 </ul>
@@ -175,16 +186,201 @@
             
   <div class="section" id="developer-guide">
 <h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Developer Guide:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/execution.html">Task Invocation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/execution.html#task-execution">Task Execution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/data.html">Data Model</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/topology.html">Topology Design Idioms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/topology.html#adding-new-topologies">Adding New Topologies</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developer-guide/topology.html#topology-initialization-workflow">Topology Initialization Workflow</a></li>
+<p>This documentation is intended for developers of the core FleCSI
+library.</p>
+<div class="section" id="style-guide">
+<h2>Style Guide<a class="headerlink" href="#style-guide" title="Permalink to this headline">¶</a></h2>
+<p>Unless otherwise specified, follow the <a class="reference external" href="https://www.boost.org/development/requirements.html#Design_and_Programming">Boost “Design and Programming”
+guidelines</a> and <a class="reference external" href="https://www.boost.org/development/header.html">header guidelines</a>.  They do not address purely stylistic
+matters of indentation, spacing, and brace placement; those are addressed for
+FleCSI by <code class="docutils literal notranslate"><span class="pre">clang-format</span></code>.</p>
+<div class="section" id="exceptions">
+<h3>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
+<p>Starting from the 2019 version:</p>
+<ul class="simple">
+<li><p>Optimization does matter for FleCSI, but only where the overhead it
+introduces is expected to be a significant fraction of the application’s
+runtime.</p></li>
+<li><p>Obviously FleCSI uses certain additional libraries (like Legion).  Do not
+add further dependencies without discussion.  As a single component, there
+is no need to limit use of one part of FleCSI by another.</p></li>
+<li><p>The ABI concerns, especially for Windows, are irrelevant.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">noexcept</span></code> has replaced exception-specifications and should be used as
+appropriate, especially for move operations.</p></li>
+<li><p>FleCSI uses its own unit-testing framework, not Boost’s.</p></li>
+<li><p>The preferable line-length limit is 78 characters, so that even a diff of
+such a file avoids the line continuations used in some displays.</p></li>
+<li><p>Individual documentation files do not get their own copyright/license.</p></li>
+<li><p>The source-file header is of course different.</p></li>
+<li><p>FleCSI uses <code class="docutils literal notranslate"><span class="pre">flog_assert</span></code>, not <code class="docutils literal notranslate"><span class="pre">BOOST_ASSERT</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code> do not require special treatment.</p></li>
+<li><p>Header and source files are suffixed with <code class="docutils literal notranslate"><span class="pre">.hh</span></code> and <code class="docutils literal notranslate"><span class="pre">.cc</span></code>.</p></li>
+<li><p>There are no “primary directories”.</p></li>
+<li><p>Code documentation is generated by Doxygen, prose by Sphinx.</p></li>
 </ul>
+</div>
+<div class="section" id="additional-rules">
+<h3>Additional Rules<a class="headerlink" href="#additional-rules" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Changes purely for stylistic reasons should be rare and must appear in a
+separate commit (preferably a separate merge request).</p></li>
+<li><p>Class and enumeration names do not get a suffix <code class="docutils literal notranslate"><span class="pre">_t</span></code>.</p></li>
+<li><p>Header names are “absolute” (<em>i.e.</em>, begin with <code class="docutils literal notranslate"><span class="pre">flecsi/</span></code>).</p></li>
+<li><p>Function documentation uses the imperative mood.</p></li>
+</ul>
+</div>
+<div class="section" id="directory-structure">
+<h3>Directory Structure<a class="headerlink" href="#directory-structure" title="Permalink to this headline">¶</a></h3>
+<p>The source code for the core FleCSI infrastructure is located in the
+<em>top-level/flecsi</em> directory. For the most part, the subdirectories of
+this directory correspond to the different namespaces in the core
+infrastructure. Each of these subdirectories must contain a valid
+CMakeLists.txt file. However, none of their children should have a
+CMakeLists.txt file, i.e., the build system will not recurse beyond the
+first level of subdirectories. Developers should use relative paths
+within a CMakeLists.txt file to identify source in subdirectories.</p>
+<p>Unit test files should be placed in the <em>test</em> subdirectory of each
+namespace subdirectory. By convention, developers should not create
+subdirectories within the test subdirectory.</p>
+</div>
+</div>
+<div class="section" id="versioning">
+<h2>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
+<p>FleCSI’s versioning system uses three branch types (descibed below) that
+define the purpose and provenance of the code at a particular commit,
+with tags that label points of interest in the development cycle, e.g,.
+releases or stable features.</p>
+<div class="section" id="branch-types">
+<h3>Branch Types<a class="headerlink" href="#branch-types" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>incompatible</strong> <br />
+The <em>devel</em> branch is where work on the next major release takes
+place, potentially with interface and feature changes that are
+<em>incompatible</em> with previous versions.</p></li>
+<li><p><strong>feature</strong> <br />
+Feature branches (named for their <em>major</em> version number, e.g., 1, 2,
+3) are for feature development on the current major version.</p></li>
+<li><p><strong>release</strong> <br />
+Release branches (named for their <em>major.minor</em> version number, e.g.,
+1.1, 1.2) are stable versions of the code base. These can only be
+modified with bug fixes. At appropriate points, tags (named for their
+<em>major.minor.patch</em> version number, e.g., 1.1.2) are used to identify
+patched versions.</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>At the time of writing, FleCSI has the following branches:</p>
+<p><strong>devel</strong> (incompatible) <br />
+<strong>1</strong> (feature) <br />
+<strong>1.4</strong> (release)</p>
+</div>
+</div>
+<div class="section" id="tags">
+<h3>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h3>
+<p>The form of a tag is determined by the underlying branch type and commit
+it is intended to reference:</p>
+<ul class="simple">
+<li><p><strong>devel branch</strong> <br />
+In general, a commit on the devel branch should only be tagged if it
+is the first commit <em>after</em> a new feature branch has been created, and
+should be named with <em>d</em> and the major version of the feature branch,
+e.g., when feature branch <em>2</em> is created, a new devel tag <em>d2</em> should
+be created on the next devel commit.</p></li>
+<li><p><strong>feature branch</strong> <br />
+Feature tags should be created on the next commit after a new release
+branch is created, with <em>f</em> and the major.minor version of the release
+branch, e.g., when release branch <em>1.5</em> is created, a new feature tag
+<em>f1.5</em> should be created on the next feature commit.</p></li>
+<li><p><strong>release branch</strong> <br />
+Release tags should be created for each new release, with <em>v</em> and the
+release version, e.g., <em>v1.4.1</em>.</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Tags mark a <em>whence</em> or <em>origin</em> for development rather than a
+<em>whither</em> or <em>completion</em>. The first letter of the tag is important,
+i.e., <em>d</em>, <em>f</em>, or <em>v</em>, as it is used by FleCSI to determine the
+branch type of the tag during CMake configuration.</p>
+</div>
+</div>
+<div class="section" id="workflow">
+<h3>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h3>
+<p>FleCSI development uses a <em>devel -&gt; feature -&gt; release</em> forking workflow
+that can be visualized as in <a class="reference internal" href="#branch"><span class="std std-numref">Fig. 2</span></a>. Bugfixes and features can
+be back-merged into <em>feature</em> or <em>devel</em>, as appropriate.</p>
+<div class="figure align-default" id="id7">
+<span id="branch"></span><img alt="src/../../_static/images/branch.png" src="src/../../_static/images/branch.png" />
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Workflow diagram illustrating basic workflow using the three branch
+types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="tutorial-docker-image">
+<h2>Tutorial Docker Image<a class="headerlink" href="#tutorial-docker-image" title="Permalink to this headline">¶</a></h2>
+<p>This section details the steps to modify and update the docker image for
+the FleCSI tutorials.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>These instructions are only relevant if you want to modify or
+rename the automatically generated tutorial images. The docker files in
+this directory are automatically built on Docker Hub, whenever they get
+modified on GitHub.  These instructions are primarily intended for
+developers who are modifying the image scripts and need to test them.</p>
+</div>
+<div class="section" id="installing-docker">
+<h3>Installing Docker<a class="headerlink" href="#installing-docker" title="Permalink to this headline">¶</a></h3>
+<p>The Docker daemon is available for a variety of platforms from the
+<a class="reference external" href="https://www.docker.com">docker</a> website.</p>
+<p>For linux, the community engine is available for several distributions:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/fedora">Fedora</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/ubuntu">Ubuntu</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/centos">CentOS</a></p></li>
+</ul>
+</div>
+<div class="section" id="building-and-testing-locally">
+<h3>Building and Testing Locally<a class="headerlink" href="#building-and-testing-locally" title="Permalink to this headline">¶</a></h3>
+<p>The tutorial docker files are located in <em>flecsi/tutorial/docker</em>. These
+instructions assume that you are in that directory.</p>
+<p>To build a new docker image, you can execute the following:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker build -t laristra/flecsi-tutorial:TAG -f RUNTIME .
+</pre></div>
+</div>
+<p>where <em>TAG</em> and <em>RUNTIME</em> are replaced with a tag and a specific runtime
+backend, e.g., legion or mpi. The <em>TAG</em> argument may be any name that
+you would like to give the image. The default is <em>latest</em>.</p>
+<p>Docker will try to cache build steps and information that it doesn’t
+think has changed. Sometimes it is useful to force docker to rebuild
+everything from scratch. To do this, you can pass the <em>–no-cache</em> flag:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker build --no-cache -t laristra/flecsi-tutorial:TAG -f RUNTIME .
+</pre></div>
+</div>
+<p>This is particularly useful if a repository has changed.</p>
+<p>Once you have successfully built the imager, you can test it using the
+<em>run</em> command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>docker run -it --shm-size<span class="o">=</span>512m -u flecsi laristra/flecsi-tutorial:TAG /bin/bash
+</pre></div>
+</div>
+<p>This will open an interactive shell (/bin/bash) on the running image.</p>
+</div>
+<div class="section" id="pushing-to-hub-docker-com">
+<h3>Pushing to hub.docker.com<a class="headerlink" href="#pushing-to-hub-docker-com" title="Permalink to this headline">¶</a></h3>
+<p>If you want to push images to the docker hub repository, you will need
+to log in:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker login
+</pre></div>
+</div>
+<p>This will prompt you for a username and password. You will need to be a
+member of the <em>laristra</em> organization to successfully push images to the
+docker hub. Once you are logged in, you can push an image to Docker Hub
+with:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker push laristra/flecsi-tutorial:TAG
+</pre></div>
+</div>
+<p>where TAG is the tag that you specified during the build.</p>
+<p>In general, pushing the image manually is unnecessary because it will
+automatically be rebuilt when the docker file is updated on GitHub.</p>
+</div>
 </div>
 </div>
 
@@ -196,7 +392,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="developer-guide/execution.html" class="btn btn-neutral float-right" title="Task Invocation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="team.html" class="btn btn-neutral float-right" title="Contributors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="user-guide/flog.html" class="btn btn-neutral float-left" title="Logging Utility" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

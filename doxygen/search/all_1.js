@@ -21,8 +21,8 @@ var searchData=
   ['bit_5frange',['bit_range',['../hash_8hh.html#a30d3da89b0b4e954331d554839f55778',1,'flecsi::utils::hash']]],
   ['bitutils_2ehh',['bitutils.hh',['../bitutils_8hh.html',1,'']]],
   ['box_5fmac',['box_MAC',['../structflecsi_1_1topology_1_1ntree__geometry_3_01T_00_011_01_4.html#a02ce8c6c9ddfb761a9c2404284e09cf5',1,'flecsi::topology::ntree_geometry&lt; T, 1 &gt;::box_MAC()'],['../structflecsi_1_1topology_1_1ntree__geometry_3_01T_00_012_01_4.html#ad6444f883041a3af58b7498ccb95ae10',1,'flecsi::topology::ntree_geometry&lt; T, 2 &gt;::box_MAC()'],['../structflecsi_1_1topology_1_1ntree__geometry_3_01T_00_013_01_4.html#aa66ff2783b46b33ed949b93f505b6a7e',1,'flecsi::topology::ntree_geometry&lt; T, 3 &gt;::box_MAC()']]],
-  ['buffer_5fdata_5ft',['buffer_data_t',['../structflecsi_1_1utils_1_1flog_1_1tee__buffer__t_1_1buffer__data__t.html',1,'flecsi::utils::flog::tee_buffer_t']]],
-  ['buffer_5fstream',['buffer_stream',['../classflecsi_1_1utils_1_1flog_1_1flog__t.html#aae3a7c086ae0f2d9d35bda2238415d28',1,'flecsi::utils::flog::flog_t']]],
+  ['buffer_5fdata_5ft',['buffer_data_t',['../structflog_1_1tee__buffer__t_1_1buffer__data__t.html',1,'flog::tee_buffer_t']]],
+  ['buffer_5fstream',['buffer_stream',['../classflog_1_1flog__t.html#a5c69f1054d2389b2ee1d03a3e0f2e2ca',1,'flog::flog_t']]],
   ['build_5ftree',['build_tree',['../structflecsi_1_1topology_1_1ntree.html#a0fda17854b4c95504147ed1bd59fbd19',1,'flecsi::topology::ntree']]],
   ['byte_5ft',['byte_t',['../classflecsi_1_1topology_1_1unstructured__impl_1_1parallel__definition.html#ad63fed9ffa548f50f0dd9129ea202e4b',1,'flecsi::topology::unstructured_impl::parallel_definition']]]
 ];

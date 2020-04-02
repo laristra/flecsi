@@ -32,7 +32,7 @@
   <td id="projectlogo"><a href="http://www.flecsi.org"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></a></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: 2.-1 (devel)</span>
+		<span id="projectnumber">Version: invalid</span>
    </div>
   </td>
  </tr>
@@ -74,9 +74,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structflecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::data::topology_data&lt; topology::index &gt; Struct Template Reference</div>  </div>
@@ -87,7 +85,9 @@ Inheritance diagram for flecsi::data::topology_data&lt; topology::index &gt;:</d
 <div class="dyncontent">
 <div class="center"><img src="structflecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4__inherit__graph.png" border="0" usemap="#flecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="flecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4_inherit__map" id="flecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4_inherit__map">
-<area shape="rect" id="node2" href="structflecsi_1_1data_1_1legion_1_1topology__base.html" title="flecsi::data::legion\l::topology_base" alt="" coords="25,5,153,47"/>
+<area shape="rect" id="node2" href="structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; topology::index \&gt;" alt="" coords="5,95,185,136"/>
+<area shape="rect" id="node3" href="structflecsi_1_1data_1_1legion_1_1region.html" title="flecsi::data::legion\l::region" alt="" coords="31,5,159,47"/>
+<area shape="rect" id="node4" href="structflecsi_1_1data_1_1legion_1_1partition.html" title="flecsi::data::legion\l::partition" alt="" coords="210,95,338,136"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -95,61 +95,66 @@ Collaboration diagram for flecsi::data::topology_data&lt; topology::index &gt;:<
 <div class="dyncontent">
 <div class="center"><img src="structflecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4__coll__graph.png" border="0" usemap="#flecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4_coll__map" alt="Collaboration graph"/></div>
 <map name="flecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4_coll__map" id="flecsi_1_1data_1_1topology__data_3_01topology_1_1index_01_4_coll__map">
-<area shape="rect" id="node2" href="structflecsi_1_1data_1_1legion_1_1topology__base.html" title="flecsi::data::legion\l::topology_base" alt="" coords="352,115,480,156"/>
-<area shape="rect" id="node3" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::IndexSpace, &amp;Legion::\lRuntime::destroy_index_space \&gt;" alt="" coords="5,5,220,76"/>
-<area shape="rect" id="node4" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::FieldSpace, &amp;Legion::\lRuntime::destroy_field_space \&gt;" alt="" coords="9,100,216,171"/>
-<area shape="rect" id="node5" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::LogicalRegion, &amp;Legion\l::Runtime::destroy_logical\l_region \&gt;" alt="" coords="25,195,200,281"/>
+<area shape="rect" id="node2" href="structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; topology::index \&gt;" alt="" coords="656,88,836,129"/>
+<area shape="rect" id="node3" href="structflecsi_1_1data_1_1legion_1_1region.html" title="flecsi::data::legion\l::region" alt="" coords="352,112,480,153"/>
+<area shape="rect" id="node4" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::IndexSpace, &amp;Legion::\lRuntime::destroy_index_space \&gt;" alt="" coords="5,5,220,76"/>
+<area shape="rect" id="node7" href="structflecsi_1_1data_1_1legion_1_1partition.html" title="flecsi::data::legion\l::partition" alt="" coords="504,23,632,64"/>
+<area shape="rect" id="node5" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::FieldSpace, &amp;Legion::\lRuntime::destroy_field_space \&gt;" alt="" coords="9,100,216,171"/>
+<area shape="rect" id="node6" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::LogicalRegion, &amp;Legion\l::Runtime::destroy_logical\l_region \&gt;" alt="" coords="25,195,200,281"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a91e9d2ac20e59b8fbcdd7e60df2c47a1"><td class="memItemLeft" align="right" valign="top"><a id="a91e9d2ac20e59b8fbcdd7e60df2c47a1"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> = <a class="el" href="structflecsi_1_1topology_1_1index.html">topology::index</a></td></tr>
-<tr class="separator:a91e9d2ac20e59b8fbcdd7e60df2c47a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3825e9d0eff23a245741a82dc8a45901"><td class="memItemLeft" align="right" valign="top"><a id="a3825e9d0eff23a245741a82dc8a45901"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>topology_data</b> (const <a class="el" href="structflecsi_1_1topology_1_1index_1_1coloring.html">type::coloring</a> &amp;)</td></tr>
-<tr class="separator:a3825e9d0eff23a245741a82dc8a45901"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_structflecsi_1_1data_1_1legion_1_1topology__base"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1data_1_1legion_1_1topology__base')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1data_1_1legion_1_1topology__base.html">flecsi::data::legion::topology_base</a></td></tr>
-<tr class="memitem:a20c1c9275cfa2c4f9f1ce5c42b71d1ef inherit pub_methods_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memItemLeft" align="right" valign="top"><a id="a20c1c9275cfa2c4f9f1ce5c42b71d1ef"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>topology_base</b> (Legion::Domain d)</td></tr>
-<tr class="separator:a20c1c9275cfa2c4f9f1ce5c42b71d1ef inherit pub_methods_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a2986ba1146a94218a2fbfbb23e36efc3"><td class="memItemLeft" align="right" valign="top"><a id="a2986ba1146a94218a2fbfbb23e36efc3"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>colors</b></td></tr>
-<tr class="separator:a2986ba1146a94218a2fbfbb23e36efc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aede80eca7b5a03452e06da79a16e004d"><td class="memItemLeft" align="right" valign="top"><a id="aede80eca7b5a03452e06da79a16e004d"></a>
-Legion::LogicalPartition&#160;</td><td class="memItemRight" valign="bottom"><b>color_partition</b></td></tr>
-<tr class="separator:aede80eca7b5a03452e06da79a16e004d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structflecsi_1_1data_1_1legion_1_1topology__base.html">flecsi::data::legion::topology_base</a></td></tr>
-<tr class="memitem:a89100141f939a873fd0d7f7d3b9bd86f inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memItemLeft" align="right" valign="top"><a id="a89100141f939a873fd0d7f7d3b9bd86f"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space_id</b> = unique_isid_t::instance().next()</td></tr>
-<tr class="separator:a89100141f939a873fd0d7f7d3b9bd86f inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a698169de4dbb4e02620256a891cbedb5 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memItemLeft" align="right" valign="top"><a id="a698169de4dbb4e02620256a891cbedb5"></a>
-<a class="el" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html">unique_index_space</a>&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b></td></tr>
-<tr class="separator:a698169de4dbb4e02620256a891cbedb5 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96f105f379d5e0ab2b0bbfaff045912b inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memItemLeft" align="right" valign="top"><a id="a96f105f379d5e0ab2b0bbfaff045912b"></a>
-<a class="el" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html">unique_field_space</a>&#160;</td><td class="memItemRight" valign="bottom"><b>field_space</b> = run().create_field_space(ctx())</td></tr>
-<tr class="separator:a96f105f379d5e0ab2b0bbfaff045912b inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a259303233279522f9b6a1eb83e3096d4 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memItemLeft" align="right" valign="top"><a id="a259303233279522f9b6a1eb83e3096d4"></a>
-<a class="el" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html">unique_logical_region</a>&#160;</td><td class="memItemRight" valign="bottom"><b>logical_region</b></td></tr>
-<tr class="separator:a259303233279522f9b6a1eb83e3096d4 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b8723ac440e4eebe3da767df8881ff6"><td class="memItemLeft" align="right" valign="top"><a id="a1b8723ac440e4eebe3da767df8881ff6"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>topology_data</b> (const <a class="el" href="structflecsi_1_1topology_1_1index_1_1coloring.html">type::coloring</a> &amp;coloring)</td></tr>
+<tr class="separator:a1b8723ac440e4eebe3da767df8881ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_structflecsi_1_1data_1_1detail_1_1simple"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1data_1_1detail_1_1simple')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1data_1_1detail_1_1simple.html">flecsi::data::detail::simple&lt; topology::index &gt;</a></td></tr>
+<tr class="memitem:a5e1c46bd1a743dcbcfd83bbe00e737d3 inherit pub_methods_structflecsi_1_1data_1_1detail_1_1simple"><td class="memItemLeft" align="right" valign="top"><a id="a5e1c46bd1a743dcbcfd83bbe00e737d3"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>simple</b> (std::size_t n=1)</td></tr>
+<tr class="separator:a5e1c46bd1a743dcbcfd83bbe00e737d3 inherit pub_methods_structflecsi_1_1data_1_1detail_1_1simple"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_structflecsi_1_1data_1_1legion_1_1region"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1data_1_1legion_1_1region')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1data_1_1legion_1_1region.html">flecsi::data::legion::region</a></td></tr>
+<tr class="memitem:a9dcc5926692d7db7cc164031e4d8f4af inherit pub_methods_structflecsi_1_1data_1_1legion_1_1region"><td class="memItemLeft" align="right" valign="top"><a id="a9dcc5926692d7db7cc164031e4d8f4af"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>region</b> (std::size_t n, const fields &amp;fs)</td></tr>
+<tr class="separator:a9dcc5926692d7db7cc164031e4d8f4af inherit pub_methods_structflecsi_1_1data_1_1legion_1_1region"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_structflecsi_1_1data_1_1legion_1_1partition"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structflecsi_1_1data_1_1legion_1_1partition')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structflecsi_1_1data_1_1legion_1_1partition.html">flecsi::data::legion::partition</a></td></tr>
+<tr class="memitem:aac584b12bac1bdd19d88707f368108ec inherit pub_methods_structflecsi_1_1data_1_1legion_1_1partition"><td class="memTemplParams" colspan="2"><a id="aac584b12bac1bdd19d88707f368108ec"></a>
+template&lt;class F &gt; </td></tr>
+<tr class="memitem:aac584b12bac1bdd19d88707f368108ec inherit pub_methods_structflecsi_1_1data_1_1legion_1_1partition"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>partition</b> (const <a class="el" href="structflecsi_1_1data_1_1legion_1_1region.html">region</a> &amp;reg, std::size_t n, F f)</td></tr>
+<tr class="separator:aac584b12bac1bdd19d88707f368108ec inherit pub_methods_structflecsi_1_1data_1_1legion_1_1partition"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa56a5459d42dc4f07535c0738e4f8b83 inherit pub_methods_structflecsi_1_1data_1_1legion_1_1partition"><td class="memItemLeft" align="right" valign="top"><a id="aa56a5459d42dc4f07535c0738e4f8b83"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>colors</b> () const</td></tr>
+<tr class="separator:aa56a5459d42dc4f07535c0738e4f8b83 inherit pub_methods_structflecsi_1_1data_1_1legion_1_1partition"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_methods_structflecsi_1_1data_1_1legion_1_1topology__base"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_structflecsi_1_1data_1_1legion_1_1topology__base')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="structflecsi_1_1data_1_1legion_1_1topology__base.html">flecsi::data::legion::topology_base</a></td></tr>
-<tr class="memitem:a8cd3a0870f4a2b00102d17127b41b877 inherit pro_methods_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memItemLeft" align="right" valign="top"><a id="a8cd3a0870f4a2b00102d17127b41b877"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>allocate</b> ()</td></tr>
-<tr class="separator:a8cd3a0870f4a2b00102d17127b41b877 inherit pro_methods_structflecsi_1_1data_1_1legion_1_1topology__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_types_structflecsi_1_1data_1_1detail_1_1simple"><td colspan="2" onclick="javascript:toggleInherit('pub_types_structflecsi_1_1data_1_1detail_1_1simple')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="structflecsi_1_1data_1_1detail_1_1simple.html">flecsi::data::detail::simple&lt; topology::index &gt;</a></td></tr>
+<tr class="memitem:a919eda47db01e1838c4ac6abbf1152ff inherit pub_types_structflecsi_1_1data_1_1detail_1_1simple"><td class="memItemLeft" align="right" valign="top"><a id="a919eda47db01e1838c4ac6abbf1152ff"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> = <a class="el" href="structflecsi_1_1topology_1_1index.html">topology::index</a></td></tr>
+<tr class="separator:a919eda47db01e1838c4ac6abbf1152ff inherit pub_types_structflecsi_1_1data_1_1detail_1_1simple"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_structflecsi_1_1data_1_1legion_1_1region"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structflecsi_1_1data_1_1legion_1_1region')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structflecsi_1_1data_1_1legion_1_1region.html">flecsi::data::legion::region</a></td></tr>
+<tr class="memitem:ad1121567fb73f454edfe662f198fdc06 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1region"><td class="memItemLeft" align="right" valign="top"><a id="ad1121567fb73f454edfe662f198fdc06"></a>
+<a class="el" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html">unique_index_space</a>&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b></td></tr>
+<tr class="separator:ad1121567fb73f454edfe662f198fdc06 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1region"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27fa6330f5a06f41c1a56d920dd1abb8 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1region"><td class="memItemLeft" align="right" valign="top"><a id="a27fa6330f5a06f41c1a56d920dd1abb8"></a>
+<a class="el" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html">unique_field_space</a>&#160;</td><td class="memItemRight" valign="bottom"><b>field_space</b></td></tr>
+<tr class="separator:a27fa6330f5a06f41c1a56d920dd1abb8 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1region"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c9b04d86160d5927e658c2be2932ea inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1region"><td class="memItemLeft" align="right" valign="top"><a id="a71c9b04d86160d5927e658c2be2932ea"></a>
+<a class="el" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html">unique_logical_region</a>&#160;</td><td class="memItemRight" valign="bottom"><b>logical_region</b></td></tr>
+<tr class="separator:a71c9b04d86160d5927e658c2be2932ea inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1region"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_structflecsi_1_1data_1_1legion_1_1partition"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structflecsi_1_1data_1_1legion_1_1partition')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="structflecsi_1_1data_1_1legion_1_1partition.html">flecsi::data::legion::partition</a></td></tr>
+<tr class="memitem:adb5562602d06969007a185c38cdae3b6 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1partition"><td class="memItemLeft" align="right" valign="top"><a id="adb5562602d06969007a185c38cdae3b6"></a>
+<a class="el" href="structflecsi_1_1data_1_1legion_1_1unique__handle.html">unique_index_space</a>&#160;</td><td class="memItemRight" valign="bottom"><b>color_space</b></td></tr>
+<tr class="separator:adb5562602d06969007a185c38cdae3b6 inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1partition"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57af0fcce83be68249478641337ff38c inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1partition"><td class="memItemLeft" align="right" valign="top"><a id="a57af0fcce83be68249478641337ff38c"></a>
+unique_index_partition&#160;</td><td class="memItemRight" valign="bottom"><b>index_partition</b></td></tr>
+<tr class="separator:a57af0fcce83be68249478641337ff38c inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1partition"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d317658692a7bc7a6bbadde73200b5e inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1partition"><td class="memItemLeft" align="right" valign="top"><a id="a9d317658692a7bc7a6bbadde73200b5e"></a>
+unique_logical_partition&#160;</td><td class="memItemRight" valign="bottom"><b>logical_partition</b></td></tr>
+<tr class="separator:a9d317658692a7bc7a6bbadde73200b5e inherit pub_attribs_structflecsi_1_1data_1_1legion_1_1partition"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following files:<ul>
-<li>/home/bergen/devel/tuxfan/flecsi/flecsi/data/legion/<a class="el" href="data_2legion_2types_8hh_source.html">types.hh</a></li>
-<li>/home/bergen/devel/tuxfan/flecsi/flecsi/data/legion/<a class="el" href="data_2legion_2policy_8hh_source.html">policy.hh</a></li>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/bergen/devel/tuxfan/flecsi/flecsi/data/<a class="el" href="topology_8hh_source.html">topology.hh</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
