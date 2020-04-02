@@ -58,9 +58,8 @@ struct utils::serial_convert<data::accessor<L, Topo, T, Priv>> {
 };
 
 template<class T>
-struct utils::serial_convert<
-  execution::flecsi_future<T, execution::launch_type_t::single>> {
-  using type = execution::flecsi_future<T, execution::launch_type_t::single>;
+struct utils::serial_convert<execution::flecsi_future<T>> {
+  using type = execution::flecsi_future<T>;
   struct Rep {};
   static Rep put(const type &) {
     return {};

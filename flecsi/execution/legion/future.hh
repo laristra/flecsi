@@ -114,5 +114,10 @@ struct legion_future<Return, launch_type_t::index> {
 template<typename Return, launch_type_t Launch = launch_type_t::single>
 using flecsi_future = legion_future<Return, Launch>;
 
+template<class>
+constexpr bool is_index_future = false;
+template<class R>
+constexpr bool is_index_future<legion_future<R, launch_type_t::index>> = true;
+
 } // namespace execution
 } // namespace flecsi
