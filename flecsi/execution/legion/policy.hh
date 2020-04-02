@@ -208,7 +208,7 @@ reduce(ARGS &&... args) {
     // adding futures to the launcher
     launcher.futures = std::move(pro).futures();
 
-    flog_assert(pro.future_maps().size() == 0,
+    flog_assert(pro.future_maps().empty(),
       "you can't maps future from index task to a single task");
 
     if constexpr(processor_type == task_processor_type_t::toc ||
