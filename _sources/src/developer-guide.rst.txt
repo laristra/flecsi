@@ -237,4 +237,121 @@ where TAG is the tag that you specified during the build.
 In general, pushing the image manually is unnecessary because it will
 automatically be rebuilt when the docker file is updated on GitHub.
 
+Spack Cheat Sheet
+*****************
+
+To remove all cached sources:
+
+.. code-block:: console
+
+  $ spack clean -d
+
+To remove cached sources for a particular spec:
+
+.. code-block:: console
+
+  $ spack clean -d spec
+
+To uninstall all spack packages:
+
+.. code-block:: console
+
+  $ spack uninstall -fay
+
+Git Cheat Sheet
+***************
+
+To lookup the hash referenced by a tag:
+
+.. code-block:: console
+
+  $ git rev-list -n 1 $TAG
+
+To get the message for an annotated tag:
+
+.. code-block:: console
+
+  $ git tag -nX (X specifies lines of annotation)
+
+To sync tags:
+
+.. code-block:: console
+
+  $ git fetch --prune --prune-tags
+
+Building for Darwin
+*******************
+
+This is a recipe for building the current development version of FleCSI
+on the LANL Darwin cluster.
+
+Checkout spack and flecsi:
+
+.. code-block:: console
+
+  $ git clone --single-branch --branch flog-tutorial git@github.com:tuxfan/flecsi.git
+  $ git clone git@github.com:spack/spack.git
+
+Source the spack environment script:
+
+.. code-block:: console
+
+  $ source spack/share/spack/setup-env.sh
+
+Add the flecsi spack repo:
+
+.. code-block:: console
+
+  $ spack add repo flecsi/spack-repo
+
+Load gcc module and update spack compilers:
+
+.. code-block:: console
+
+  $ module load gcc/9.3.0
+  $ spack compilers
+
+Install the flecsi dependencies:
+
+.. code-block:: console
+
+  $ spack install --only dependencies flecsi@devel backend=legion +hdf5 ^mpich
+
+Create a spack environment and install the flecsi dependencies. This is
+not redundant, spack will not rebuild anything, but it needs to install
+the dependencies in the environment:
+
+.. code-block:: console
+
+  $ spack env create legion
+  $ spack env activate legion
+  $ spack install --only dependencies flecsi@devel backend=legion +hdf5 ^mpich
+  $ spack install cmake
+  
+Load clang and doxygen, install sphinx, and update your path:
+
+.. code-block:: console
+
+  $ module load clang/8.0.1
+  $ module load doxygen
+  $ pip3 install --user Sphinx
+  $ pip3 install --user recommonmark
+  $ pip3 install --user sphinx_rtd_theme
+  $ export PATH=$HOME/.local/bin:$PATH
+
+Configure and build flecsi:
+
+.. code-block:: console
+
+  $ cd flecsi && mkdir -p build/legion && cd build/legion
+  $ ../../tools/configure clang/legion
+  $ make -j 16
+
+Advanced
+********
+
+.. toctree::
+
+  build/options
+
 .. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :
