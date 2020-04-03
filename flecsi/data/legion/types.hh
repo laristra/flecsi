@@ -104,7 +104,11 @@ struct region {
 struct partition {
   // TODO: support create_partition_by_image_range case
   template<class F>
-  partition(const region & reg, std::size_t n, F f)
+  partition(const region & reg,
+    std::size_t n,
+    F f,
+    detail::disjointness dis = {},
+    detail::completeness cpt = {})
     : color_space(index1(n)),
       index_partition(run().create_partition_by_domain(
         ctx(),
@@ -118,7 +122,9 @@ struct partition {
           }
           return ret;
         }(),
-        color_space)),
+        color_space,
+        true,
+        Legion::PartitionKind((dis + 2) % 3 + (cpt + 3) % 3 * 3))),
       logical_partition(run().get_logical_partition(ctx(),
         reg.logical_region,
         index_partition)) {}

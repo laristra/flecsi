@@ -32,7 +32,11 @@ struct region {
 
 struct partition {
   template<class F> // F: int -> [start, end)
-  partition(const region &, std::size_t, F);
+  partition(const region &,
+    std::size_t,
+    F,
+    disjointness = {},
+    completeness = {});
   std::size_t colors() const;
 };
 #endif
@@ -71,10 +75,14 @@ template<>
 struct topology_data<topology::index> : detail::simple<topology::index>,
                                         detail::partition {
   topology_data(const type::coloring & coloring)
-    : simple(coloring.size()),
-      partition(*this, coloring.size(), [](std::size_t i) {
-        return std::pair{i, i + 1};
-      }) {}
+    : simple(coloring.size()), partition(
+                                 *this,
+                                 coloring.size(),
+                                 [](std::size_t i) {
+                                   return std::pair{i, i + 1};
+                                 },
+                                 detail::disjoint,
+                                 detail::complete) {}
 };
 
 template<>
