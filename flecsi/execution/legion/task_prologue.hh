@@ -24,6 +24,7 @@
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/privilege.hh"
 #include "flecsi/data/topology_accessor.hh"
+#include "flecsi/execution/legion/future.hh"
 #include "flecsi/runtime/backend.hh"
 #include <flecsi/topology/ntree/interface.hh>
 #include <flecsi/topology/set/interface.hh>
@@ -64,9 +65,17 @@ struct task_prologue_t {
 
   task_prologue_t(const size_t & domain) : domain_(domain) {}
 
-  std::vector<Legion::RegionRequirement> const & region_requirements() {
+  std::vector<Legion::RegionRequirement> const & region_requirements() const {
     return region_reqs_;
   } // region_requirements
+
+  std::vector<Legion::Future> && futures() && {
+    return std::move(futures_);
+  } // futures
+
+  std::vector<Legion::FutureMap> const & future_maps() const {
+    return future_maps_;
+  } // future_maps
 
   /*!
     Convert the template privileges to proper Legion privileges.
@@ -199,6 +208,23 @@ struct task_prologue_t {
   } // visit
 
   /*--------------------------------------------------------------------------*
+    Futures
+   *--------------------------------------------------------------------------*/
+  template<typename DATA_TYPE>
+  void visit(execution::flecsi_future<DATA_TYPE, launch_type_t::single> *,
+    const execution::legion_future<DATA_TYPE,
+      flecsi::execution::launch_type_t::single> & future) {
+    futures_.push_back(future.legion_future_);
+  }
+
+  template<typename DATA_TYPE>
+  void visit(execution::flecsi_future<DATA_TYPE, launch_type_t::single> *,
+    const execution::legion_future<DATA_TYPE,
+      flecsi::execution::launch_type_t::index> & future) {
+    future_maps_.push_back(future.legion_future_);
+  }
+
+  /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
    *--------------------------------------------------------------------------*/
 
@@ -228,7 +254,8 @@ private:
   size_t domain_;
 
   std::vector<Legion::RegionRequirement> region_reqs_;
-
+  std::vector<Legion::Future> futures_;
+  std::vector<Legion::FutureMap> future_maps_;
 }; // task_prologue_t
 
 } // namespace legion

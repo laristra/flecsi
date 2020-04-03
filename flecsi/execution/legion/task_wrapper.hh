@@ -21,14 +21,15 @@
 #error Do not include this file directly!
 #endif
 
-#include "../task_attributes.hh"
-#include "bind_accessors.hh"
+#include "flecsi/execution/legion/bind_accessors.hh"
+#include "flecsi/execution/legion/future.hh"
+#include "flecsi/execution/legion/unbind_accessors.hh"
+#include "flecsi/execution/task_attributes.hh"
 #include "flecsi/runtime/backend.hh"
+#include "flecsi/utils/common.hh"
+#include "flecsi/utils/flog.hh"
 #include "flecsi/utils/function_traits.hh"
 #include "flecsi/utils/serialize.hh"
-#include "unbind_accessors.hh"
-#include <flecsi/utils/common.hh>
-#include <flecsi/utils/flog.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -53,6 +54,18 @@ struct utils::serial_convert<data::accessor<L, Topo, T, Priv>> {
   }
   static type get(const Rep & r) {
     return type(r);
+  }
+};
+
+template<class T>
+struct utils::serial_convert<execution::flecsi_future<T>> {
+  using type = execution::flecsi_future<T>;
+  struct Rep {};
+  static Rep put(const type &) {
+    return {};
+  }
+  static type get(const Rep &) {
+    return {};
   }
 };
 
