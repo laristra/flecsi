@@ -30,7 +30,11 @@ struct region {
 
 struct partition {
   template<class F>
-  partition(const region &, std::size_t, F) {}
+  partition(const region &,
+    std::size_t,
+    F,
+    disjointness = {},
+    completeness = {}) {}
   std::size_t colors() const {
     return 0;
   }
