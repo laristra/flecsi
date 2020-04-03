@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 /*! @file */
-#include <flecsi/coloring/mpi_utils.h>
+#include "flecsi/utils/mpi_type_traits.h"
 
 namespace flecsi {
 namespace execution {
@@ -24,7 +24,7 @@ remap_shared_entities() {
   const auto & my_color = context_.color();
   const auto & num_colors = context_.colors();
 
-  const auto mpi_size_t = coloring::mpi_typetraits_u<size_t>::type();
+  const auto mpi_size_t = utils::mpi_type<std::size_t>();
 
   for(auto & coloring_info_pair : context_.coloring_info_map()) {
     auto index_space = coloring_info_pair.first;

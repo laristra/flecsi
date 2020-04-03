@@ -1609,7 +1609,7 @@ match_ids(
     auto & rank_data = rank_edges[r];
     for(size_t i = recvdispls[r]; i < recvdispls[r + 1];) {
       auto n = recvbuf[i];
-      auto vs = utils::make_array_ref(&recvbuf[i + 1], n);
+      const auto vs = utils::span(&recvbuf[i + 1], n);
       auto it = add_to_map(vs, entities, entities.size());
       rank_data.emplace_back(it);
       i += n + 1;
@@ -1701,7 +1701,7 @@ match_ids(
     for(size_t i = recvdispls[r]; i < recvdispls[r + 1];) {
       auto global_id = recvbuf[i];
       auto n = recvbuf[i + 1];
-      auto vs = utils::make_array_ref(&recvbuf[i + 2], n);
+      const auto vs = utils::span(&recvbuf[i + 2], n);
       i += n + 2;
       add_to_map(vs, entities, global_id);
     }

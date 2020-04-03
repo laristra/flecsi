@@ -33,7 +33,6 @@
 
 #include <flecsi/coloring/coloring_types.h>
 #include <flecsi/coloring/index_coloring.h>
-#include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/row_vector.h>
 #include <flecsi/data/common/serdez.h>
@@ -245,8 +244,8 @@ struct mpi_context_policy_t {
     std::vector<std::vector<std::array<size_t, 2>>> ghost_indices;
     std::vector<size_t> shared_field_sizes;
     std::vector<size_t> ghost_field_sizes;
-    unsigned char *shared_data_buffer;
-    unsigned char *ghost_data_buffer;
+    unsigned char * shared_data_buffer;
+    unsigned char * ghost_data_buffer;
 #endif
   };
 
@@ -329,19 +328,22 @@ struct mpi_context_policy_t {
     metadata.ghost_field_sizes.resize(mpiSize);
     metadata.shared_field_sizes.resize(mpiSize);
 
-    // indices are stored as vectors of pairs, each pair consisting of: starting index, how many consecutive indices
+    // indices are stored as vectors of pairs, each pair consisting of: starting
+    // index, how many consecutive indices
 
     size_t ghost_cnt = 0;
 
     for(auto const & ghost : index_coloring.ghost) {
 
       if(metadata.ghost_indices[ghost.rank].size() == 0 ||
-         ghost_cnt*sizeof(T) != (metadata.ghost_indices[ghost.rank].back()[0]+metadata.ghost_indices[ghost.rank].back()[1]))
-        metadata.ghost_indices[ghost.rank].push_back({ghost_cnt*sizeof(T), sizeof(T)});
+         ghost_cnt * sizeof(T) !=
+           (metadata.ghost_indices[ghost.rank].back()[0] +
+             metadata.ghost_indices[ghost.rank].back()[1]))
+        metadata.ghost_indices[ghost.rank].push_back(
+          {ghost_cnt * sizeof(T), sizeof(T)});
       else
         metadata.ghost_indices[ghost.rank].back()[1] += sizeof(T);
       ++ghost_cnt;
-
     }
 
     for(auto const & shared : index_coloring.shared) {
@@ -349,16 +351,16 @@ struct mpi_context_policy_t {
       for(auto const & s : shared.shared) {
 
         if(metadata.shared_indices[s].size() == 0 ||
-           shared.offset*sizeof(T) != (metadata.shared_indices[s].back()[0]+metadata.shared_indices[s].back()[1]))
+           shared.offset * sizeof(T) != (metadata.shared_indices[s].back()[0] +
+                                          metadata.shared_indices[s].back()[1]))
 
-          metadata.shared_indices[s].push_back({shared.offset*sizeof(T), sizeof(T)});
+          metadata.shared_indices[s].push_back(
+            {shared.offset * sizeof(T), sizeof(T)});
 
         else
 
           metadata.shared_indices[s].back()[1] += sizeof(T);
-
       }
-
     }
 
     for(int rank = 0; rank < mpiSize; ++rank) {
@@ -616,10 +618,6 @@ struct mpi_context_policy_t {
     return sparse_field_metadata;
   };
 
-  std::map<size_t, MPI_Datatype> & reduction_types() {
-    return reduction_types_;
-  } // reduction_types
-
   std::map<size_t, MPI_Op> & reduction_operations() {
     return reduction_ops_;
   } // reduction_types
@@ -653,7 +651,6 @@ struct mpi_context_policy_t {
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;
 
-  std::map<size_t, MPI_Datatype> reduction_types_;
   std::map<size_t, MPI_Op> reduction_ops_;
 
 }; // class mpi_context_policy_t

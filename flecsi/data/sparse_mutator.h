@@ -21,7 +21,6 @@
 
 #include <flecsi/data/mutator.h>
 #include <flecsi/data/sparse_accessor.h>
-#include <flecsi/topology/index_space.h>
 
 namespace flecsi {
 
@@ -57,8 +56,6 @@ private:
   using typename base::entry_value_t;
 
 public:
-  using typename base::index_space_t;
-
   mutator_u(const typename base::ragged_t::handle_t & h) : base{h} {}
 
   T & operator()(size_t index, size_t entry) {
