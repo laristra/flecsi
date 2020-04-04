@@ -192,16 +192,13 @@ struct task_prologue_t {
     Futures
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
-  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> *,
-    const exec::legion_future<DATA_TYPE, exec::launch_type_t::single> &
-      future) {
-    futures_.push_back(future.legion_future_);
+  void visit(const future<DATA_TYPE> & f) {
+    futures_.push_back(f.legion_future_);
   }
 
   template<typename DATA_TYPE>
-  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> *,
-    const exec::legion_future<DATA_TYPE, exec::launch_type_t::index> & future) {
-    future_maps_.push_back(future.legion_future_);
+  void visit(const future<DATA_TYPE, exec::launch_type_t::index> & f) {
+    future_maps_.push_back(f.legion_future_);
   }
 
   /*--------------------------------------------------------------------------*

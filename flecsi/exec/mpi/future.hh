@@ -15,74 +15,32 @@
 
 /*! @file */
 
-#include <functional>
-#include <memory>
-
 #include "flecsi/exec/launch.hh"
 
 namespace flecsi {
-namespace exec {
 
-//----------------------------------------------------------------------------//
-// Future concept.
-//----------------------------------------------------------------------------//
-
-/*!
- Abstract interface type for MPI futures.
-
- @ingroup legion-execution
- */
-template<typename R, launch_type_t launch = launch_type_t::single>
-struct mpi_future {
-  using result_t = R;
-
-  /*!
-    wait() method
-   */
-  void wait() {}
-
-  /*!
-    get() method
-   */
-  const result_t & get(size_t /*index*/ = 0) const {
+template<typename R>
+struct future<R> {
+  void wait() const {}
+  R get(bool = false) const {
     return result_;
   }
 
-  // private:
+  R result_;
+};
 
-  /*!
-    set method
-   */
-  void set(const result_t & result) {
-    result_ = result;
-  }
+template<>
+struct future<void> {
+  void wait() const {}
+  void get(bool = false) const {}
+};
 
-  operator R &() {
-    return result_;
-  }
+template<typename R>
+struct future<R, exec::launch_type_t::index> {
+  void wait(bool = false) const {}
+  R get(std::size_t index = 0, bool = false) const;
 
-  operator const R &() const {
-    return result_;
-  }
+  explicit operator future<R>() const;
+};
 
-  result_t result_;
-
-}; // struct mpi_future
-
-/*!
- FIXME documentation
- */
-template<launch_type_t launch>
-struct mpi_future<void, launch> {
-  /*!
-   FIXME documentation
-   */
-  void wait() {}
-
-}; // struct mpi_future
-
-template<typename RETURN, launch_type_t launch>
-using flecsi_future = mpi_future<RETURN, launch>;
-
-} // namespace exec
 } // namespace flecsi

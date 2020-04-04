@@ -214,9 +214,8 @@ reduce(ARGS &&... args) {
 
     if constexpr(processor_type == task_processor_type_t::toc ||
                  processor_type == task_processor_type_t::loc) {
-      auto future = legion_runtime->execute_task(legion_context, launcher);
-
-      return legion_future<RETURN, launch_type_t::single>{future};
+      return future<RETURN>{
+        legion_runtime->execute_task(legion_context, launcher)};
     }
     else {
       static_assert(
@@ -266,19 +265,15 @@ reduce(ARGS &&... args) {
         flog_devel(info) << "executing reduction logic for "
                          << util::type<REDUCTION>() << std::endl;
 
-        Legion::Future future;
-
-        future = legion_runtime->execute_index_space(
-          legion_context, launcher, reduction_op<REDUCTION>);
-
-        return legion_future<RETURN, launch_type_t::single>{future};
+        return future<RETURN>{legion_runtime->execute_index_space(
+          legion_context, launcher, reduction_op<REDUCTION>)};
       }
       else {
         // Enqueue the task.
         Legion::FutureMap future_map =
           legion_runtime->execute_index_space(legion_context, launcher);
 
-        return legion_future<RETURN, launch_type_t::index>{future_map};
+        return future<RETURN, launch_type_t::index>{future_map};
       } // else
     }
     else {
@@ -287,10 +282,10 @@ reduce(ARGS &&... args) {
       launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
 
       // Launch the MPI task
-      auto future =
-        legion_runtime->execute_index_space(legion_context, launcher);
+      const auto ret = future<RETURN, launch_type_t::index>{
+        legion_runtime->execute_index_space(legion_context, launcher)};
       // Force synchronization
-      future.wait_all_results(true);
+      ret.wait(true);
 
       // Handoff to the MPI runtime.
       flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
@@ -304,9 +299,7 @@ reduce(ARGS &&... args) {
         flog_fatal("there is no implementation for the mpi"
                    " reduction task");
       }
-      else {
-        return legion_future<RETURN, launch_type_t::index>{future};
-      }
+      return ret;
     }
   } // if constexpr
 
