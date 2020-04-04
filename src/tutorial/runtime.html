@@ -97,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../build.html">Build &amp; Install</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../tutorial.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#building-the-examples">Building the Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorial.html#tutorial-examples">Tutorial Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Runtime</a><ul>
@@ -192,7 +193,7 @@ order.</p>
 <div class="sidebar">
 <p class="sidebar-title">Top-level Action</p>
 <p>The top-level action is a C++ function created by the user to tell
-FleCSI what it should do when the start control point is invoked.</p>
+FleCSI what it should do when the <em>start</em> control point is invoked.</p>
 </div>
 <ul class="simple">
 <li><p><strong>initialize</strong> <br />
@@ -208,7 +209,7 @@ runtimes that FleCSI itself initialized.</p></li>
 </ul>
 <p>This example demonstrates a minimal use of FleCSI that just executes an
 action to print out <em>Hello World</em>. Code for this example can be found in
-<em>tutorial/1-runtime/1-minimal.cc</em></p>
+<em>tutorial/1-runtime/1-minimal.cc</em>.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm">    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@</span>
 <span class="cm">   /@@/////  /@@          @@////@@ @@////// /@@</span>
@@ -301,18 +302,22 @@ Options</a> to simplify the creation and management of user-defined
 command-line options. The basic syntax for adding and accessing program
 options is semantically similar to the Boost interface (You can find
 documentation using the above link.) However, there are some notable
-differences: FleCSI internally manages the boost::program_options::value
-variables for you, using boost::optional; Positional options are the
-mechanism that should be used for <em>required</em> options; Default, implicit,
-zero, and multi value attributes are specified in the
-flecsi::program_option constructor as an std::initializer_list. This
-section of the tutorial provides examples of how to use FleCSI’s program
-option capability.</p>
+differences:</p>
+<ul class="simple">
+<li><p>FleCSI internally manages the boost::program_options::value variables
+for you, using boost::optional.</p></li>
+<li><p>Positional options are the mechanism that should be used for
+<em>required</em> options.</p></li>
+<li><p>Default, implicit, zero, and multi value attributes are specified in
+the flecsi::program_option constructor as an std::initializer_list.</p></li>
+</ul>
+<p>This section of the tutorial provides examples of how to use FleCSI’s
+program option capability.</p>
 <div class="section" id="example-program">
 <h3>Example Program<a class="headerlink" href="#example-program" title="Permalink to this headline">¶</a></h3>
 <p>In this example, imagine that you have a program that takes information
 about a taxi service (The options are silly and synthetic. However they
-demonstrate some basic usage of flecsi::program_option type.) The
+demonstrate the basic usage of the flecsi::program_option type.) The
 command-line options and arguments for the program allow specification
 of the following: trim level, transmission, child seat, purpose
 (personal or business), light speed, and a passenger list. The first two
@@ -321,6 +326,9 @@ under the <em>Ride Options</em> section. The passenger list is a positional
 argument to the program. The help output for the entire program looks
 like this:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Usage: program_options &lt;passenger-list&gt;</span>
+
+<span class="go">Positional Options:</span>
+<span class="go">  passenger-list The list of passengers for this trip [.txt].</span>
 
 <span class="go">Basic Options:</span>
 <span class="go">  -h [ --help ]                         Print this message and exit.</span>
@@ -335,9 +343,6 @@ like this:</p>
 <span class="go">  -p [ --purpose ] arg (= 1)            Specify the purpose of the trip</span>
 <span class="go">                                        (personal=0, business=1).</span>
 <span class="go">  --lightspeed                          Travel at the speed of light.</span>
-
-<span class="go">Positional Options:</span>
-<span class="go">  passenger-list The list of passengers for this trip</span>
 
 <span class="go">FleCSI Options:</span>
 <span class="go">  --flog-tags arg (=all)         Enable the specified output tags, e.g.,</span>
@@ -360,10 +365,11 @@ like this:</p>
 <span class="go">  task_prologue</span>
 </pre></div>
 </div>
-<p>This shows the program usage, the basic options, e.g., <em>–help</em>, the
+<p>This shows the program usage, the basic options, e.g., <code class="docutils literal notranslate"><span class="pre">--help</span></code>, the
 command-line and positional options for the example, and some auxiliary
 options for controlling the FleCSI logging utility <em>FLOG</em> (described in the
-next section of this tutorial).</p>
+next section of this tutorial). The FLOG options will only appear if
+<em>ENABLE_FLOG=ON</em> was set in your FleCSI build.</p>
 </div>
 <div class="section" id="declaring-options">
 <h3>Declaring Options<a class="headerlink" href="#declaring-options" title="Permalink to this headline">¶</a></h3>
@@ -372,10 +378,10 @@ next section of this tutorial).</p>
 <p>FleCSI program options must be declared at namespace scope, i.e.,
 outside of any function, class, or enum class. This is not a problem! It
 is often convenient to declare them in a header file (in which case,
-they must be declared <em>inline</em>), or directly before the <em>main</em> function.
-We use the latter for this example simply for conciseness.</p>
+they must alos be declared <em>inline</em>), or directly before the <em>main</em>
+function.  We use the latter for this example simply for conciseness.</p>
 </div>
-<p>Let’s consider the first <em>Car Options</em> option: <em>–level</em>. To declare
+<p>Let’s consider the first <em>Car Options</em> option: <code class="docutils literal notranslate"><span class="pre">--level</span></code>. To declare
 this option, we use the following declaration:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm">  Add an integer-valued command-line option with a default value of &#39;1&#39;. The</span>
@@ -423,7 +429,7 @@ specified, the option takes multiple values.</p></li>
 An optional, user-defined predicate to validate the value passed by
 the user.</p></li>
 </ul>
-<p>The next option <em>–transmission</em> is similar, but uses a std::string
+<p>The next option <code class="docutils literal notranslate"><span class="pre">--transmission</span></code> is similar, but uses a std::string
 value type:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm">  Add a string-valued command-line option with a default value of &quot;manual&quot;. The</span>
@@ -443,8 +449,8 @@ value type:</p>
 </div>
 <p>The only real difference is that (because the underlying type is
 std::string) the default value is also a string.</p>
-<p>The last option in the “Car Options” section demonstrates the use of
-flecsi::option_implicit:</p>
+<p>The last option in the “Car Options” section <code class="docutils literal notranslate"><span class="pre">--child-seat</span></code>
+demonstrates the use of flecsi::option_implicit:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm">  Add an option that defines an implicit value. If the program is invoked with</span>
 <span class="cm">  --child-seat, the value will be true. If it is invoked without --child-seat,</span>
@@ -462,8 +468,8 @@ flecsi::option_implicit:</p>
 </div>
 <p>Providing an implicit value, defines the behavior for the case that the
 user invokes the program with the given flag, but does not assign a
-value, e.g., <em>–child-seat</em> vs. <em>–child-seat=1</em>. The value is <em>implied</em>
-by the flag itself.</p>
+value, e.g., <code class="docutils literal notranslate"><span class="pre">--child-seat</span></code> vs. <code class="docutils literal notranslate"><span class="pre">--child-seat=1</span></code>. The value is
+<em>implied</em> by the flag itself.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>This style of option should not be used with positional arguments
@@ -471,11 +477,12 @@ because Boost appears to have a bug when such options are invoked
 directly before a positional option (gets confused about separation).
 We break that convention here for the sake of completeness. If you
 need an option that simply acts as a switch, i.e., it is either <em>on</em>
-or <em>off</em>, consider usint the –lightspeed style option below, as this
-type of option is safe to use with positional options.</p>
+or <em>off</em>, consider usint the <code class="docutils literal notranslate"><span class="pre">--lightspeed</span></code> style option below, as
+this type of option is safe to use with positional options.</p>
 </div>
-<p>In the <em>Ride Options</em> section, the <em>–purpose</em> option takes an integer
-value <em>0</em> or <em>1</em>. This option is declared with the following code:</p>
+<p>The first option in the <em>Ride Options</em> section <code class="docutils literal notranslate"><span class="pre">--purpose</span></code> takes an
+integer value <em>0</em> or <em>1</em>. This option is declared with the following
+code:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm">  Add a an option to a different section, i.e., &quot;Ride Options&quot;. The enumeration</span>
 <span class="cm">  type is not enforced by the FleCSI runtime, and is mostly for convenience.</span>
@@ -495,13 +502,12 @@ value <em>0</em> or <em>1</em>. This option is declared with the following code:
 </div>
 <p>This option demonstrates how an enumeration can be used to define
 possible values. Although FleCSI does not enforce correctness, the
-enumeration can be used to check that the option is within a particular
-range.</p>
-<p>The next option in the <em>Ride Options</em> section defines an implicit value
-and zero values (meaning that it takes no values). The <em>–lightspeed</em>
-option acts as a switch, taking the implicit value if the flag is
-passed.  This will be useful to demonstrate how we can check whether or
-not an option was passed in the next section:</p>
+enumeration can be used to check that the user-provided value is valid.</p>
+<p>The next option in the <em>Ride Options</em> section <code class="docutils literal notranslate"><span class="pre">--lightspeed</span></code> defines
+an implicit value and zero values (meaning that it takes no values). The
+<code class="docutils literal notranslate"><span class="pre">--lightspeed</span></code> option acts as a switch, taking the implicit value if
+the flag is passed.  This will be useful to demonstrate how we can check
+whether or not an option was passed in the next section:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm">  Add an option with no default. This will allow us to demonstrate testing an</span>
 <span class="cm">  option with has_value().</span>
@@ -531,7 +537,7 @@ argument to the program itself:</p>
 </pre></div>
 </div>
 <p>Postional options are required, i.e., the program will error and print
-the usage message if the option is not present.</p>
+the usage message if a value is not passed.</p>
 </div>
 <div class="section" id="checking-using-options">
 <h3>Checking &amp; Using Options<a class="headerlink" href="#checking-using-options" title="Permalink to this headline">¶</a></h3>
@@ -975,7 +981,7 @@ to identify available tags.</p>
 <p>Once you have declared a tag, it can be used to limit output to one or
 more <em>scoped</em> regions. The following code defines a guarded section of
 output that will only be generated if <em>tag1</em> or <em>all</em> is specified to
-the <em>–flog-tags</em> option:</p>
+the <code class="docutils literal notranslate"><span class="pre">--flog-tags</span></code> option:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
 <span class="cm">    This output will only be generated if &#39;tag1&#39; or &#39;all&#39; is specified</span>
 <span class="cm">    to &#39;--flog-tags&#39;.</span>
@@ -1006,7 +1012,7 @@ the <em>–flog-tags</em> option:</p>
 </pre></div>
 </div>
 <p>You should experiment with invoking this example:</p>
-<p>Invoking this example with the <em>–help</em> flag will show the available
+<p>Invoking this example with the <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag will show the available
 tags:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./flog --help
 </pre></div>
@@ -1030,7 +1036,7 @@ tags:</p>
 <span class="go">  tag1</span>
 </pre></div>
 </div>
-<p>Invoking this example with <em>–flog-tags=tag1</em> will generate output for
+<p>Invoking this example with <code class="docutils literal notranslate"><span class="pre">--flog-tags=tag1</span></code> will generate output for
 unguarded sections, and for output guarded with the <em>tag1</em> tag:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./flog --flog-tags<span class="o">=</span>tag1
 <span class="go">[trace all p0] Trace level output</span>

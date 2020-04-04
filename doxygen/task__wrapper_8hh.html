@@ -83,14 +83,16 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;flecsi-config.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="task__attributes_8hh_source.html">../task_attributes.hh</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="bind__accessors_8hh_source.html">bind_accessors.hh</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="bind__accessors_8hh_source.html">flecsi/execution/legion/bind_accessors.hh</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="legion_2future_8hh_source.html">flecsi/execution/legion/future.hh</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="unbind__accessors_8hh_source.html">flecsi/execution/legion/unbind_accessors.hh</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="task__attributes_8hh_source.html">flecsi/execution/task_attributes.hh</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="runtime_2backend_8hh_source.html">flecsi/runtime/backend.hh</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="common_8hh_source.html">flecsi/utils/common.hh</a>&quot;</code><br />
+<code>#include &quot;flecsi/utils/flog.hh&quot;</code><br />
 <code>#include &quot;<a class="el" href="function__traits_8hh_source.html">flecsi/utils/function_traits.hh</a>&quot;</code><br />
 <code>#include &quot;flecsi/utils/serialize.hh&quot;</code><br />
-<code>#include &quot;<a class="el" href="unbind__accessors_8hh_source.html">unbind_accessors.hh</a>&quot;</code><br />
 <code>#include &lt;<a class="el" href="flog_8hh_source.html">flecsi/flog.hh</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="common_8hh_source.html">flecsi/utils/common.hh</a>&gt;</code><br />
 <code>#include &lt;legion.h&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
@@ -99,34 +101,32 @@ Include dependency graph for task_wrapper.hh:</div>
 <div class="dyncontent">
 <div class="center"><img src="task__wrapper_8hh__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2task__wrapper_8hh" alt=""/></div>
 <map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2task__wrapper_8hh" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2execution_2legion_2task__wrapper_8hh">
-<area shape="rect" id="node3" href="task__attributes_8hh.html" title="../task_attributes.hh" alt="" coords="1565,616,1704,643"/>
-<area shape="rect" id="node8" href="bind__accessors_8hh.html" title="bind_accessors.hh" alt="" coords="1880,124,2011,151"/>
-<area shape="rect" id="node16" href="runtime_2backend_8hh.html" title="flecsi/runtime/backend.hh" alt="" coords="1035,377,1205,404"/>
-<area shape="rect" id="node22" href="flog_8hh.html" title="flecsi/flog.hh" alt="" coords="548,616,644,643"/>
-<area shape="rect" id="node34" href="common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="1830,691,1983,717"/>
-<area shape="rect" id="node47" href="function__traits_8hh.html" title="flecsi/utils/function\l_traits.hh" alt="" coords="2211,527,2341,568"/>
-<area shape="rect" id="node48" href="serialize_8hh_source.html" title="flecsi/utils/serialize.hh" alt="" coords="862,534,1013,561"/>
-<area shape="rect" id="node50" href="unbind__accessors_8hh.html" title="unbind_accessors.hh" alt="" coords="2314,124,2459,151"/>
-<area shape="rect" id="node4" href="debruijn_8hh.html" title="flecsi/utils/debruijn.hh" alt="" coords="1597,765,1745,792"/>
-<area shape="rect" id="node9" href="accessor_8hh.html" title="flecsi/data/accessor.hh" alt="" coords="1867,206,2024,233"/>
-<area shape="rect" id="node11" href="privilege_8hh.html" title="flecsi/data/privilege.hh" alt="" coords="2384,452,2536,479"/>
-<area shape="rect" id="node19" href="core_8hh_source.html" title="../topology/core.hh" alt="" coords="1259,616,1389,643"/>
-<area shape="rect" id="node45" href="demangle_8hh.html" title="flecsi/utils/demangle.hh" alt="" coords="2779,377,2938,404"/>
-<area shape="rect" id="node46" href="tuple__walker_8hh.html" title="flecsi/utils/tuple\l_walker.hh" alt="" coords="2330,199,2443,240"/>
-<area shape="rect" id="node10" href="field_8hh.html" title="flecsi/data/field.hh" alt="" coords="1609,295,1737,322"/>
-<area shape="rect" id="node43" href="structured_2interface_8hh.html" title="flecsi/topology/structured\l/interface.hh" alt="" coords="1761,288,1929,329"/>
-<area shape="rect" id="node44" href="unstructured_2interface_8hh.html" title="flecsi/topology/unstructured\l/interface.hh" alt="" coords="1954,288,2137,329"/>
-<area shape="rect" id="node31" href="runtime_2types_8hh.html" title="flecsi/runtime/types.hh" alt="" coords="1728,616,1883,643"/>
-<area shape="rect" id="node12" href="bitutils_8hh.html" title="flecsi/utils/bitutils.hh" alt="" coords="2635,534,2776,561"/>
-<area shape="rect" id="node15" href="typeify_8hh.html" title="flecsi/utils/typeify.hh" alt="" coords="2366,534,2509,561"/>
-<area shape="rect" id="node17" href="legion_2context_8hh.html" title="legion/context.hh" alt="" coords="1403,452,1525,479"/>
-<area shape="rect" id="node18" href="context_8hh.html" title="flecsi/runtime/context.hh" alt="" coords="1381,534,1547,561"/>
-<area shape="rect" id="node20" href="type__traits_8hh.html" title="flecsi/utils/type_traits.hh" alt="" coords="1174,691,1338,717"/>
-<area shape="rect" id="node23" href="flog_2utils_8hh_source.html" title="flecsi/flog/utils.hh" alt="" coords="915,765,1039,792"/>
-<area shape="rect" id="node25" href="message_8hh.html" title="flecsi/flog/message.hh" alt="" coords="793,691,946,717"/>
-<area shape="rect" id="node27" href="tag__scope_8hh.html" title="flecsi/flog/tag_scope.hh" alt="" coords="245,691,405,717"/>
-<area shape="rect" id="node37" href="id_8hh.html" title="flecsi/utils/id.hh" alt="" coords="1847,765,1961,792"/>
-<area shape="rect" id="node38" href="offset_8hh.html" title="flecsi/utils/offset.hh" alt="" coords="2036,765,2172,792"/>
+<area shape="rect" id="node3" href="bind__accessors_8hh.html" title="flecsi/execution/legion\l/bind_accessors.hh" alt="" coords="1605,124,1755,165"/>
+<area shape="rect" id="node10" href="runtime_2backend_8hh.html" title="flecsi/runtime/backend.hh" alt="" coords="1468,392,1639,419"/>
+<area shape="rect" id="node16" href="task__attributes_8hh.html" title="flecsi/execution/task\l_attributes.hh" alt="" coords="2659,631,2802,672"/>
+<area shape="rect" id="node20" href="flog_8hh.html" title="flecsi/flog.hh" alt="" coords="536,638,632,665"/>
+<area shape="rect" id="node34" href="common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="2422,549,2575,575"/>
+<area shape="rect" id="node41" href="legion_2future_8hh.html" title="flecsi/execution/legion\l/future.hh" alt="" coords="962,303,1113,344"/>
+<area shape="rect" id="node46" href="unbind__accessors_8hh.html" title="flecsi/execution/legion\l/unbind_accessors.hh" alt="" coords="1801,124,1951,165"/>
+<area shape="rect" id="node48" href="function__traits_8hh.html" title="flecsi/utils/function\l_traits.hh" alt="" coords="2115,541,2245,583"/>
+<area shape="rect" id="node49" href="serialize_8hh_source.html" title="flecsi/utils/serialize.hh" alt="" coords="1149,549,1299,575"/>
+<area shape="rect" id="node4" href="accessor_8hh.html" title="flecsi/data/accessor.hh" alt="" coords="1817,221,1975,247"/>
+<area shape="rect" id="node6" href="privilege_8hh.html" title="flecsi/data/privilege.hh" alt="" coords="2011,467,2163,493"/>
+<area shape="rect" id="node13" href="core_8hh_source.html" title="../topology/core.hh" alt="" coords="1632,638,1763,665"/>
+<area shape="rect" id="node44" href="demangle_8hh.html" title="flecsi/utils/demangle.hh" alt="" coords="2685,467,2843,493"/>
+<area shape="rect" id="node45" href="tuple__walker_8hh.html" title="flecsi/utils/tuple\l_walker.hh" alt="" coords="2122,213,2235,255"/>
+<area shape="rect" id="node5" href="field_8hh.html" title="flecsi/data/field.hh" alt="" coords="2007,310,2135,337"/>
+<area shape="rect" id="node40" href="structured_2interface_8hh.html" title="flecsi/topology/structured\l/interface.hh" alt="" coords="1815,303,1983,344"/>
+<area shape="rect" id="node11" href="legion_2context_8hh.html" title="legion/context.hh" alt="" coords="1470,467,1591,493"/>
+<area shape="rect" id="node12" href="context_8hh.html" title="flecsi/runtime/context.hh" alt="" coords="1473,549,1639,575"/>
+<area shape="rect" id="node14" href="type__traits_8hh.html" title="flecsi/utils/type_traits.hh" alt="" coords="1239,720,1403,747"/>
+<area shape="rect" id="node17" href="debruijn_8hh.html" title="flecsi/utils/debruijn.hh" alt="" coords="2575,720,2723,747"/>
+<area shape="rect" id="node21" href="flog_2utils_8hh_source.html" title="flecsi/flog/utils.hh" alt="" coords="457,795,581,821"/>
+<area shape="rect" id="node23" href="message_8hh.html" title="flecsi/flog/message.hh" alt="" coords="507,720,661,747"/>
+<area shape="rect" id="node25" href="tag__scope_8hh.html" title="flecsi/flog/tag_scope.hh" alt="" coords="93,795,253,821"/>
+<area shape="rect" id="node37" href="id_8hh.html" title="flecsi/utils/id.hh" alt="" coords="2331,720,2445,747"/>
+<area shape="rect" id="node38" href="offset_8hh.html" title="flecsi/utils/offset.hh" alt="" coords="2499,638,2635,665"/>
+<area shape="rect" id="node42" href="launch_8hh.html" title="flecsi/execution/launch.hh" alt="" coords="1096,392,1269,419"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -149,6 +149,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1serial__convert_3_01data_1_1accessor_3_01L_00_01Topo_00_01T_00_01Priv_01_4_01_4.html">flecsi::utils::serial_convert&lt; data::accessor&lt; L, Topo, T, Priv &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1serial__convert_3_01execution_1_1flecsi__future_3_01T_01_4_01_4.html">flecsi::utils::serial_convert&lt; execution::flecsi_future&lt; T &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1serial__convert_3_01execution_1_1flecsi__future_3_01T_01_4_01_4_1_1Rep.html">flecsi::utils::serial_convert&lt; execution::flecsi_future&lt; T &gt; &gt;::Rep</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1legion_1_1detail_1_1decay.html">flecsi::execution::legion::detail::decay&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,7 +201,7 @@ template&lt;auto &amp; F, size_t A = loc | leaf&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= runtime::context_t::instance().register_task(</div><div class="line">  utils::symbol&lt;F&gt;(),</div><div class="line">  <a class="code" href="group__legion-execution.html#gad117d37918dde8974776ede31e7c7f32">detail::register_task</a>&lt;</div><div class="line">    <span class="keyword">typename</span> utils::function_traits&lt;decltype(F)&gt;::return_type,</div><div class="line">    F,</div><div class="line">    A&gt;)</div><div class="ttc" id="group__legion-execution_html_gad117d37918dde8974776ede31e7c7f32"><div class="ttname"><a href="group__legion-execution.html#gad117d37918dde8974776ede31e7c7f32">flecsi::execution::legion::detail::register_task</a></div><div class="ttdeci">void register_task()</div><div class="ttdef"><b>Definition:</b> task_wrapper.hh:118</div></div>
+<b>Initial value:</b><div class="fragment"><div class="line">= runtime::context_t::instance().register_task(</div><div class="line">  utils::symbol&lt;F&gt;(),</div><div class="line">  <a class="code" href="group__legion-execution.html#gad117d37918dde8974776ede31e7c7f32">detail::register_task</a>&lt;</div><div class="line">    <span class="keyword">typename</span> utils::function_traits&lt;decltype(F)&gt;::return_type,</div><div class="line">    F,</div><div class="line">    A&gt;)</div><div class="ttc" id="group__legion-execution_html_gad117d37918dde8974776ede31e7c7f32"><div class="ttname"><a href="group__legion-execution.html#gad117d37918dde8974776ede31e7c7f32">flecsi::execution::legion::detail::register_task</a></div><div class="ttdeci">void register_task()</div><div class="ttdef"><b>Definition:</b> task_wrapper.hh:134</div></div>
 </div><!-- fragment --><p>Arbitrary index for each task.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">

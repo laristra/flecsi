@@ -1,3 +1,11 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1topology_1_1unstructured__impl_1_1coloring__info.html" title="flecsi::topology::unstructured\l_impl::coloring_info" alt="" coords="5,5,196,47"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1data_1_1reference__base.html" title="flecsi::data::reference_base" alt="" coords="27,247,209,274"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1accessor_3_01storage__label__t_1_1dense_00_01topology_1_1global_00_01DATA__TYPE_00_01PRIVILEGES_01_4.html" title="flecsi::data::accessor\l\&lt; storage_label_t::dense,\l topology::global, DATA\l_TYPE, PRIVILEGES \&gt;" alt="" coords="307,5,477,76"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1accessor_3_01storage__label__t_1_1dense_00_01topology_1_1index_00_01DATA__TYPE_00_01PRIVILEGES_01_4.html" title="flecsi::data::accessor\l\&lt; storage_label_t::dense,\l topology::index, DATA_TYPE,\l PRIVILEGES \&gt;" alt="" coords="290,100,494,171"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1accessor_3_01storage__label__t_1_1dense_00_01topology_1_1unstructured_3_50e03e472099957fa887e00eda946159.html" title="flecsi::data::accessor\l\&lt; storage_label_t::dense,\l topology::unstructured\l\&lt; POLICY_TYPE \&gt;, DATA_TYPE,\l PRIVILEGES \&gt;" alt="" coords="279,195,505,281"/>
+<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1topology__accessor.html" title="flecsi::data::topology\l_accessor\&lt; TOPOLOGY_TYPE,\l PRIVILEGES \&gt;" alt="" coords="285,305,499,361"/>
+<area shape="rect" id="node6" href="$structflecsi_1_1topology_1_1set.html" title="flecsi::topology::set\l\&lt; POLICY_TYPE \&gt;" alt="" coords="323,385,461,427"/>
+<area shape="rect" id="node7" href="$structflecsi_1_1topology_1_1unstructured.html" title="flecsi::topology::unstructured\l\&lt; POLICY_TYPE \&gt;" alt="" coords="297,451,487,492"/>
+<area shape="rect" id="node8" href="$structflecsi_1_1topology_1_1set__base__t.html" title="flecsi::topology::set\l_base_t" alt="" coords="50,385,186,427"/>
+<area shape="rect" id="node10" href="$structflecsi_1_1topology_1_1unstructured__base.html" title="flecsi::topology::unstructured_base" alt="" coords="5,458,231,485"/>
 </map>

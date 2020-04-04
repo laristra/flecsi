@@ -39,6 +39,5 @@ var searchData=
   ['function_5ftraits_3c_20t_20_26_26_20_3e',['function_traits&lt; T &amp;&amp; &gt;',['../structflecsi_1_1utils_1_1function__traits_3_01T_01_6_6_01_4.html',1,'flecsi::utils']]],
   ['function_5ftraits_3c_20volatile_20t_20_26_20_3e',['function_traits&lt; volatile T &amp; &gt;',['../structflecsi_1_1utils_1_1function__traits_3_01volatile_01T_01_6_01_4.html',1,'flecsi::utils']]],
   ['function_5ftraits_3c_20volatile_20t_20_26_26_20_3e',['function_traits&lt; volatile T &amp;&amp; &gt;',['../structflecsi_1_1utils_1_1function__traits_3_01volatile_01T_01_6_6_01_4.html',1,'flecsi::utils']]],
-  ['functor',['functor',['../structflecsi_1_1execution_1_1forall_1_1functor.html',1,'flecsi::execution::forall']]],
-  ['future_5fbase_5ft',['future_base_t',['../structflecsi_1_1execution_1_1future__base__t.html',1,'flecsi::execution']]]
+  ['functor',['functor',['../structflecsi_1_1execution_1_1forall_1_1functor.html',1,'flecsi::execution::forall']]]
 ];

@@ -19,7 +19,7 @@ order.
 .. sidebar:: Top-level Action
 
   The top-level action is a C++ function created by the user to tell
-  FleCSI what it should do when the start control point is invoked.
+  FleCSI what it should do when the *start* control point is invoked.
 
 * **initialize** |br|
   This control point spins up the FleCSI runtime, and (optionally) any
@@ -36,7 +36,7 @@ order.
 
 This example demonstrates a minimal use of FleCSI that just executes an
 action to print out *Hello World*. Code for this example can be found in
-*tutorial/1-runtime/1-minimal.cc*
+*tutorial/1-runtime/1-minimal.cc*.
 
 .. literalinclude:: ../../../../tutorial/1-runtime/1-minimal.cc
   :language: cpp
@@ -67,13 +67,19 @@ Options`__ to simplify the creation and management of user-defined
 command-line options. The basic syntax for adding and accessing program
 options is semantically similar to the Boost interface (You can find
 documentation using the above link.) However, there are some notable
-differences: FleCSI internally manages the boost::program_options::value
-variables for you, using boost::optional; Positional options are the
-mechanism that should be used for *required* options; Default, implicit,
-zero, and multi value attributes are specified in the
-flecsi::program_option constructor as an std::initializer_list. This
-section of the tutorial provides examples of how to use FleCSI's program
-option capability.
+differences:
+
+* FleCSI internally manages the boost::program_options::value variables
+  for you, using boost::optional.
+
+* Positional options are the mechanism that should be used for
+  *required* options.
+
+* Default, implicit, zero, and multi value attributes are specified in
+  the flecsi::program_option constructor as an std::initializer_list.
+
+This section of the tutorial provides examples of how to use FleCSI's
+program option capability.
 
 __ https://www.boost.org/doc/libs/1_63_0/doc/html/program_options.html
 
@@ -82,7 +88,7 @@ Example Program
 
 In this example, imagine that you have a program that takes information
 about a taxi service (The options are silly and synthetic. However they
-demonstrate some basic usage of flecsi::program_option type.) The
+demonstrate the basic usage of the flecsi::program_option type.) The
 command-line options and arguments for the program allow specification
 of the following: trim level, transmission, child seat, purpose
 (personal or business), light speed, and a passenger list. The first two
@@ -94,6 +100,9 @@ like this:
 .. code-block:: console
 
   Usage: program_options <passenger-list>
+
+  Positional Options:
+    passenger-list The list of passengers for this trip [.txt].
 
   Basic Options:
     -h [ --help ]                         Print this message and exit.
@@ -108,9 +117,6 @@ like this:
     -p [ --purpose ] arg (= 1)            Specify the purpose of the trip
                                           (personal=0, business=1).
     --lightspeed                          Travel at the speed of light.
-
-  Positional Options:
-    passenger-list The list of passengers for this trip
 
   FleCSI Options:
     --flog-tags arg (=all)         Enable the specified output tags, e.g.,
@@ -132,10 +138,11 @@ like this:
     bind_accessors
     task_prologue
 
-This shows the program usage, the basic options, e.g., *--help*, the
+This shows the program usage, the basic options, e.g., ``--help``, the
 command-line and positional options for the example, and some auxiliary
 options for controlling the FleCSI logging utility *FLOG* (described in the
-next section of this tutorial).
+next section of this tutorial). The FLOG options will only appear if
+*ENABLE_FLOG=ON* was set in your FleCSI build.
 
 Declaring Options
 +++++++++++++++++
@@ -145,10 +152,10 @@ Declaring Options
   FleCSI program options must be declared at namespace scope, i.e.,
   outside of any function, class, or enum class. This is not a problem! It
   is often convenient to declare them in a header file (in which case,
-  they must be declared *inline*), or directly before the *main* function.
-  We use the latter for this example simply for conciseness.
+  they must alos be declared *inline*), or directly before the *main*
+  function.  We use the latter for this example simply for conciseness.
 
-Let's consider the first *Car Options* option: *--level*. To declare
+Let's consider the first *Car Options* option: ``--level``. To declare
 this option, we use the following declaration:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
@@ -190,7 +197,7 @@ parameters:
   An optional, user-defined predicate to validate the value passed by
   the user.
 
-The next option *--transmission* is similar, but uses a std::string
+The next option ``--transmission`` is similar, but uses a std::string
 value type:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
@@ -200,8 +207,8 @@ value type:
 The only real difference is that (because the underlying type is
 std::string) the default value is also a string.
 
-The last option in the "Car Options" section demonstrates the use of
-flecsi::option_implicit:
+The last option in the "Car Options" section ``--child-seat``
+demonstrates the use of flecsi::option_implicit:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
@@ -209,8 +216,8 @@ flecsi::option_implicit:
 
 Providing an implicit value, defines the behavior for the case that the
 user invokes the program with the given flag, but does not assign a
-value, e.g., *--child-seat* vs. *--child-seat=1*. The value is *implied*
-by the flag itself.
+value, e.g., ``--child-seat`` vs. ``--child-seat=1``. The value is
+*implied* by the flag itself.
 
 .. caution::
 
@@ -219,11 +226,12 @@ by the flag itself.
   directly before a positional option (gets confused about separation).
   We break that convention here for the sake of completeness. If you
   need an option that simply acts as a switch, i.e., it is either *on*
-  or *off*, consider usint the --lightspeed style option below, as this
-  type of option is safe to use with positional options.
+  or *off*, consider usint the ``--lightspeed`` style option below, as
+  this type of option is safe to use with positional options.
 
-In the *Ride Options* section, the *--purpose* option takes an integer
-value *0* or *1*. This option is declared with the following code:
+The first option in the *Ride Options* section ``--purpose`` takes an
+integer value *0* or *1*. This option is declared with the following
+code:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
@@ -231,14 +239,13 @@ value *0* or *1*. This option is declared with the following code:
 
 This option demonstrates how an enumeration can be used to define
 possible values. Although FleCSI does not enforce correctness, the
-enumeration can be used to check that the option is within a particular
-range.
+enumeration can be used to check that the user-provided value is valid.
 
-The next option in the *Ride Options* section defines an implicit value
-and zero values (meaning that it takes no values). The *--lightspeed*
-option acts as a switch, taking the implicit value if the flag is
-passed.  This will be useful to demonstrate how we can check whether or
-not an option was passed in the next section:
+The next option in the *Ride Options* section ``--lightspeed`` defines
+an implicit value and zero values (meaning that it takes no values). The
+``--lightspeed`` option acts as a switch, taking the implicit value if
+the flag is passed.  This will be useful to demonstrate how we can check
+whether or not an option was passed in the next section:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
@@ -252,7 +259,7 @@ argument to the program itself:
   :lines: 87-99
 
 Postional options are required, i.e., the program will error and print
-the usage message if the option is not present.
+the usage message if a value is not passed.
 
 Checking & Using Options
 ++++++++++++++++++++++++
@@ -443,7 +450,7 @@ to identify available tags.
 Once you have declared a tag, it can be used to limit output to one or
 more *scoped* regions. The following code defines a guarded section of
 output that will only be generated if *tag1* or *all* is specified to
-the *--flog-tags* option:
+the ``--flog-tags`` option:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
@@ -457,7 +464,7 @@ Here is another code example that defines a guarded section for *tag2*:
 
 You should experiment with invoking this example:
 
-Invoking this example with the *--help* flag will show the available
+Invoking this example with the ``--help`` flag will show the available
 tags:
 
 .. code-block:: console
@@ -485,7 +492,7 @@ which should look something like this:
     tag2
     tag1
 
-Invoking this example with *--flog-tags=tag1* will generate output for
+Invoking this example with ``--flog-tags=tag1`` will generate output for
 unguarded sections, and for output guarded with the *tag1* tag:
 
 .. code-block:: console

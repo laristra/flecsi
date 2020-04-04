@@ -69,7 +69,6 @@ var searchData=
   ['function_5ftraits_3c_20volatile_20t_20_26_26_20_3e',['function_traits&lt; volatile T &amp;&amp; &gt;',['../structflecsi_1_1utils_1_1function__traits_3_01volatile_01T_01_6_6_01_4.html',1,'flecsi::utils']]],
   ['functor',['functor',['../structflecsi_1_1execution_1_1forall_1_1functor.html',1,'flecsi::execution::forall']]],
   ['future_2ehh',['future.hh',['../legion_2future_8hh.html',1,'(Global Namespace)'],['../mpi_2future_8hh.html',1,'(Global Namespace)']]],
-  ['future_5fbase_5ft',['future_base_t',['../structflecsi_1_1execution_1_1future__base__t.html',1,'flecsi::execution']]],
   ['flecsi_20doxygen_20mainpage',['FleCSI Doxygen Mainpage',['../index.html',1,'']]],
   ['flecsi_20tutorial_20examples',['FleCSI Tutorial Examples',['../group__tutorial.html',1,'']]]
 ];

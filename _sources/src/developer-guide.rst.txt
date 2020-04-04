@@ -258,6 +258,12 @@ To uninstall all spack packages:
 
   $ spack uninstall -fay
 
+To keep temporary staging files in /tmp/*$USER*:
+
+.. code-block:: console
+
+  $ spack install --keep-stage ...
+
 Git Cheat Sheet
 ***************
 

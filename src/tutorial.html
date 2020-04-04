@@ -97,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="build.html">Build &amp; Install</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-the-examples">Building the Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-docker-container">Using the Docker Container</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#installing-docker">Installing Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pulling-the-image">Pulling the Image</a></li>
@@ -184,24 +185,40 @@ subdirectory contains example codes that can be compiled with CMake.
 Details on how to build the tutorials are given below.</p>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
-<p>This tutorial is primarily designed as an introduction for application
+<p>The tutorial is primarily designed as an introduction for application
 developers, i.e., we do not go into the details of designing or
 implementing the specialization layer, and the discussion of core
 FleCSI features is limited to the high-level execution and data
 interfaces.</p>
 <p>Because a specialization layer is necessary to use FleCSI, we have
 provided a simple mesh interface as part of the tutorial. Users who
-are interested in the basic structure of a mesh_topology
+are interested in the basic structure of a mesh topology
 specialization are encouraged to examine the source code in the
 <em>specialization</em> subdirectory of this tutorial (The complete source
-code is in the <em>flecsi/tutorial/specialization</em> subdirectory of the
-main project.)</p>
+code is in the <em>tutorial/specialization</em> subdirectory of the main
+project.)</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>This tutorial assumes that you have successfully installed FleCSI
+<p>The tutorial assumes that you have successfully installed FleCSI
 somewhere on your system. Instructions for different install methods are
-available here: <a class="reference internal" href="build.html#build"><span class="std std-ref">Build &amp; Install</span></a></p>
+available here: <a class="reference internal" href="build.html#build"><span class="std std-ref">Build &amp; Install</span></a>.</p>
+<p>Once you have built and installed FleCSI, add the path to your
+installation to your <em>CMAKE_PREFIX_PATH</em>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">export</span> <span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/flecsi/install/dir:<span class="nv">$CMAKE_PREFIX_PATH</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-the-examples">
+<h2>Building the Examples<a class="headerlink" href="#building-the-examples" title="Permalink to this headline">¶</a></h2>
+<p>The tutorial uses a standard CMake build system. To configure and build
+the examples, execute the following steps from the <em>tutorial</em>
+subdirectory of the FleCSI source:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
+<span class="gp">$</span> cmake ..
+<span class="gp">$</span> make
+</pre></div>
+</div>
 </div>
 <div class="section" id="using-the-docker-container">
 <h2>Using the Docker Container<a class="headerlink" href="#using-the-docker-container" title="Permalink to this headline">¶</a></h2>

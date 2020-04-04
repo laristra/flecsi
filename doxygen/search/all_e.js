@@ -7,7 +7,7 @@ var searchData=
   ['parent',['parent',['../classflecsi_1_1filling__curve.html#acdc9f9163db869eb14bec92c0f37e126',1,'flecsi::filling_curve']]],
   ['parmetis_5fcolorer',['parmetis_colorer',['../structflecsi_1_1utils_1_1graph_1_1parmetis__colorer.html',1,'flecsi::utils::graph']]],
   ['parmetis_5fcolorer_2ehh',['parmetis_colorer.hh',['../parmetis__colorer_8hh.html',1,'']]],
-  ['partition',['partition',['../structflecsi_1_1data_1_1legion_1_1partition.html',1,'flecsi::data::legion::partition'],['../structflecsi_1_1data_1_1detail_1_1partition.html',1,'flecsi::data::detail::partition']]],
+  ['partition',['partition',['../structflecsi_1_1data_1_1detail_1_1partition.html',1,'flecsi::data::detail::partition'],['../structflecsi_1_1data_1_1legion_1_1partition.html',1,'flecsi::data::legion::partition']]],
   ['partition_2ehh',['partition.hh',['../partition_8hh.html',1,'']]],
   ['partition_5fprivilege_5ft',['partition_privilege_t',['../namespaceflecsi.html#abdc40397e828dacc40f25869b1911773',1,'flecsi']]],
   ['point',['point',['../point_8hh.html#a4c5a2cfa1cb322202a5482b006af416e',1,'flecsi::utils']]],
