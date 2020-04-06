@@ -96,7 +96,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     if (*(h.ghost_is_readable)) return;
 
+    auto & context = context_t::instance();
     auto index_coloring = context.coloring(h.index_space);
+    auto & field_metadata = context.registered_sparse_field_metadata().at(h.fid);
 
     field_metadata.shared_data_buffer.resize(h.num_shared_ * h.max_entries_per_index * sizeof(T));
     field_metadata.ghost_data_buffer.resize(h.num_ghost_ * h.max_entries_per_index * sizeof(T));
@@ -558,18 +560,19 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       sparse_exchange_queue.pop();
     }
 
-    std::map<int, std::vector<uint8_t>> all_send_buf(num_colors);
-    std::map<int, std::vector<uint8_t>> all_recv_buf(num_colors);
-    std::map<int, MPI_Request> all_send_req(num_colors);
-    std::map<int, MPI_Request> all_recv_req(num_colors);
+    std::map<int, std::vector<uint8_t>> all_send_buf;
+    std::map<int, std::vector<uint8_t>> all_recv_buf;
+    std::vector<MPI_Request> all_send_req(shared_sizes.size());
+    std::vector<MPI_Request> all_recv_req(ghost_sizes.size());
 
     // post recieves
     for (const auto & el : ghost_sizes) {
       int rank = el.first;
       int bufsize = el.second;
       all_recv_buf.emplace(rank, bufsize);
-      int err = MPI_Irecv(all_recv_buf[rank], bufsize, MPI_BYTE,
-                          rank, rank, MPI_COMM_WORLD, &all_recv_requests[rank]);
+      all_recv_req.push_back(MPI_REQUEST_NULL);
+      int err = MPI_Irecv(all_recv_buf[rank].data(), bufsize, MPI_BYTE,
+                          rank, rank, MPI_COMM_WORLD, &all_recv_req.back());
       if (err != MPI_SUCCESS) {
         clog(error) << "MPI_Irecv failed on rank " << rank << " with error code: " << err << std::endl;
       }
@@ -580,6 +583,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       int rank = el.first;
       int bufsize = el.second;
       all_send_buf.emplace(rank, bufsize);
+      all_send_req.push_back(MPI_REQUEST_NULL);
 
       size_t buf_offset = 0;
       for (auto & fi : modified_fields) {
@@ -593,8 +597,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         }
       }
 
-      int err = MPI_Isend(all_send_buf[rank], bufsize, MPI_BYTE,
-                          rank, my_color, MPI_COMM_WORLD, &all_send_requests[rank]);
+      int err = MPI_Isend(all_send_buf[rank].data(), bufsize, MPI_BYTE,
+                          rank, my_color, MPI_COMM_WORLD, &all_send_req.back());
       if (err != MPI_SUCCESS) {
         clog(error) << "MPI_Isend of rank " << my_color << " with error code: " << err << std::endl;
       }
