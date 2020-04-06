@@ -34,10 +34,11 @@
 #include <map>
 
 namespace flecsi {
+
+inline flog::devel_tag dcrs_utils_tag("dcrs_utils");
+
 namespace topology {
 namespace unstructured_impl {
-
-flog_register_tag(dcrs_utils);
 
 /*!
  Create a naive coloring suitable for calling a distributed-memory
@@ -54,7 +55,7 @@ naive_coloring(definition<MESH_DIMENSION> & md) {
   std::set<size_t> indices;
 
   {
-    flog_tag_guard(dcrs_utils);
+    flog::devel_guard guard(dcrs_utils_tag);
 
     int size;
     int rank;

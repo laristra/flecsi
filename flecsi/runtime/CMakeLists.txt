@@ -75,3 +75,9 @@ ftest_add_unit(program-options
   SOURCES
     test/program-options.cc
 )
+
+ftest_add_unit(runtime_sanity
+  SOURCES
+    test/sanity.cc
+  THREADS 4
+)

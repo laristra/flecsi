@@ -17,8 +17,6 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution.hh>
 
-flog_register_tag(future);
-
 using namespace flecsi;
 
 namespace future_test {

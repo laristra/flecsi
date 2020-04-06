@@ -40,7 +40,7 @@ cmake_dependent_option(FLOG_ENABLE_DEVELOPER_MODE
   "Enable internal FleCSI developer messages" OFF "ENABLE_FLOG" OFF)
 mark_as_advanced(FLOG_ENABLE_DEVELOPER_MODE)
 
-set(FLOG_TAG_BITS "64" CACHE STRING
+set(FLOG_TAG_BITS "1024" CACHE STRING
   "Select the number of bits to use for tag groups")
 mark_as_advanced(FLOG_TAG_BITS)
 

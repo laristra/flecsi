@@ -23,8 +23,8 @@
 #include <utility> // declval
 #include <vector>
 
-#include "flog.hh"
 #include "type_traits.hh"
+#include <flecsi/flog.hh>
 
 namespace flecsi {
 namespace utils {

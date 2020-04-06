@@ -21,9 +21,9 @@
 #error Do not include this file directly!
 #endif
 
-#include "../context.hh"
-//#include "flecsi/execution/launch.hh"
-//#include "flecsi/execution/processor.hh"
+#include <flecsi/runtime/context.hh>
+//#include <flecsi/execution/launch.hh>
+//#include <flecsi/execution/processor.hh>
 #include <flecsi/runtime/types.hh>
 #include <flecsi/utils/common.hh>
 
@@ -209,7 +209,7 @@ struct context_t : context {
 
   void set_mpi_task(std::function<void()> mpi_task) {
     {
-      flog_tag_guard(context);
+      flog::devel_guard guard(context_tag);
       flog_devel(info) << "In set_mpi_task" << std::endl;
     }
 
@@ -290,9 +290,10 @@ private:
 
   void handoff_to_legion() {
     {
-      flog_tag_guard(context);
+      flog::devel_guard guard(context_tag);
       flog_devel(info) << "In handoff_to_legion" << std::endl;
     }
+
     MPI_Barrier(MPI_COMM_WORLD);
     handshake_.mpi_handoff_to_legion();
   } // handoff_to_legion
@@ -303,7 +304,7 @@ private:
 
   void wait_on_legion() {
     {
-      flog_tag_guard(context);
+      flog::devel_guard guard(context_tag);
       flog_devel(info) << "In wait_on_legion" << std::endl;
     }
 
@@ -317,7 +318,7 @@ private:
 
   void handoff_to_mpi() {
     {
-      flog_tag_guard(context);
+      flog::devel_guard guard(context_tag);
       flog_devel(info) << "In handoff_to_mpi" << std::endl;
     }
 
@@ -330,7 +331,7 @@ private:
 
   void wait_on_mpi() {
     {
-      flog_tag_guard(context);
+      flog::devel_guard guard(context_tag);
       flog_devel(info) << "In wait_on_mpi" << std::endl;
     }
 

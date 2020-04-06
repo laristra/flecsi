@@ -19,15 +19,15 @@
 
 #include <flecsi/control/point_walker.hh>
 #include <flecsi/execution.hh>
+#include <flecsi/flog.hh>
 #include <flecsi/utils/dag.hh>
 #include <flecsi/utils/demangle.hh>
-#include <flecsi/utils/flog.hh>
 
 #include <functional>
 #include <map>
 #include <vector>
 
-flog_register_tag(control);
+inline flog::devel_tag control_tag("control");
 
 namespace flecsi {
 namespace control {
@@ -92,12 +92,12 @@ struct control : public CONTROL_POLICY {
   static int execute(int argc, char ** argv) {
 
     {
-      flog_tag_guard(control);
+      flog::devel_guard guard(control_tag);
       flog_devel(info) << "Invoking control model" << std::endl
                        << "\tpolicy type: "
                        << utils::demangle(typeid(CONTROL_POLICY).name())
                        << std::endl;
-    }
+    } // scope
 
     instance().sort_control_points();
     point_walker_t pw(argc, argv);
@@ -208,8 +208,7 @@ private:
     if(vm.count("control-model")) {                                            \
       flecsi::utils::graphviz_t gv;                                            \
       control_type::instance().write(gv);                                      \
-      auto file =                                                              \
-        flecsi::utils::flog::rstrip<'/'>(argv[0]) + "-control-model.dot";      \
+      auto file = flog::rstrip<'/'>(argv[0]) + "-control-model.dot";           \
       std::cout << "Writing control model to " << file << std::endl;           \
       std::cout << "Execute:" << std::endl;                                    \
       std::cout << "\t$ dot -Tpdf " << file << " > model.pdf" << std::endl;    \

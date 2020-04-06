@@ -22,13 +22,14 @@
 #include "../reduction.hh"
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/utils/demangle.hh"
-#include <flecsi/utils/flog.hh>
+#include <flecsi/flog.hh>
 
 #include <legion.h>
 
-flog_register_tag(reduction_wrapper);
-
 namespace flecsi {
+
+inline flog::devel_tag reduction_wrapper_tag("reduction_wrapper");
+
 namespace execution {
 
 namespace detail {
@@ -53,7 +54,7 @@ template<class TYPE>
 void
 detail::register_reduction() {
   {
-    flog_tag_guard(reduction_wrapper);
+    flog::devel_guard guard(reduction_wrapper_tag);
     flog_devel(info) << "registering reduction operation "
                      << utils::type<TYPE>() << std::endl;
   }

@@ -30,13 +30,6 @@ set(utils_HEADERS
   dimensioned_array.hh
   export_definitions.hh
   factory.hh
-  flog.hh
-  flog/message.hh
-  flog/packet.hh
-  flog/state.hh
-  flog/tag_scope.hh
-  flog/types.hh
-  flog/utils.hh
   ftest.hh
   ftest/node.hh
   ftest/output.hh
@@ -77,8 +70,6 @@ set(utils_HEADERS
 set(utils_SOURCES
   debruijn.cc
   demangle.cc
-  flog/packet.cc
-  flog/utils.cc
 )
 
 #------------------------------------------------------------------------------#

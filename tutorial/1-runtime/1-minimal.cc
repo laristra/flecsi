@@ -13,7 +13,6 @@
                                                                               */
 
 #include <flecsi/execution.hh>
-#include <flecsi/utils/flog.hh>
 
 /*
   The top-level action can be any C/C++ function that takes (int, char**) and

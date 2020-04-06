@@ -24,7 +24,7 @@
 #if 0
 using namespace flecsi::execution;
 
-flog_register_tag(gpu_task);
+flog::devel_tag gpu_task_tag("gpu_task");
 
 namespace gpu_task {
 

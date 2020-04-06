@@ -164,9 +164,9 @@ context_t::start(const std::function<int(int, char **)> & action) {
    */
 
   {
-    flog_tag_guard(context);
+    flog::devel_guard("context");
     flog_devel(info) << "Invoking task registration callbacks" << std::endl;
-  }
+  } // scope
 
   for(auto && p : task_registry_)
     p();
@@ -231,7 +231,7 @@ context_t::start(const std::function<int(int, char **)> & action) {
    */
 
   {
-    flog_tag_guard(context);
+    flog::devel_guard("context");
 
     std::stringstream stream;
 
@@ -254,9 +254,6 @@ context_t::start(const std::function<int(int, char **)> & action) {
     handoff_to_legion();
     wait_on_legion();
   } while(invoke_mpi_task());
-
-  // Make sure that the flusher thread executes at least one cycle.
-  __flog_internal_wait_on_flusher();
 
   Legion::Runtime::wait_for_shutdown();
 

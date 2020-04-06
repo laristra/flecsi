@@ -39,9 +39,10 @@
 
 #include <legion.h>
 
-flog_register_tag(task_prologue);
-
 namespace flecsi {
+
+inline flog::devel_tag task_prologue_tag("task_prologue");
+
 namespace execution {
 namespace legion {
 
@@ -233,7 +234,7 @@ struct task_prologue_t {
     !std::is_base_of_v<data::reference_base, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
-      flog_tag_guard(task_prologue);
+      flog::devel_guard guard(task_prologue_tag);
       flog_devel(info) << "Skipping argument with type "
                        << flecsi::utils::type<DATA_TYPE>() << std::endl;
     }

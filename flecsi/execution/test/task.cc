@@ -17,7 +17,7 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution.hh>
 
-flog_register_tag(task);
+flog::devel_tag task_tag("task");
 
 using namespace flecsi;
 
@@ -26,14 +26,14 @@ namespace hydro {
 template<typename TYPE>
 void
 simple(TYPE arg) {
-  flog_tag_guard(task);
+  flog::devel_guard guard(task_tag);
   flog(info) << "arg(" << arg << ")\n";
 } // simple
 
 template<class T>
 void
 seq(const T & s) {
-  flog_tag_guard(task);
+  flog::devel_guard guard(task_tag);
   [&s](auto && log) {
     bool first = true;
     for(auto & x : s) {

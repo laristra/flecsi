@@ -26,9 +26,10 @@
 #include <hdf5.h>
 #include <legion.h>
 
-inline flog_register_tag(io);
-
 namespace flecsi {
+
+inline flog::devel_tag io_tag("io");
+
 namespace io {
 
 inline void checkpoint_with_attach_task(const Legion::Task * task,
@@ -68,7 +69,7 @@ struct legion_hdf5_region_t {
         runtime->get_index_space_domain(ctx, lr.get_index_space());
       dim_size[0] = domain.get_volume();
       {
-        flog_tag_guard(io);
+        flog::devel_guard guard(io_tag);
         flog_devel(info) << "ID logical region size " << dim_size[0]
                          << std::endl;
       }
@@ -78,7 +79,7 @@ struct legion_hdf5_region_t {
         runtime->get_index_space_domain(ctx, lr.get_index_space());
       dim_size[0] = domain.get_volume();
       {
-        flog_tag_guard(io);
+        flog::devel_guard guard(io_tag);
         flog_devel(info) << "ID logical region size " << dim_size[0]
                          << std::endl;
       }
@@ -110,7 +111,7 @@ struct legion_hdf5_t {
     hdf5_region_vector.clear();
     hdf5_group_map.clear();
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Init HDF5 file " << file_name << " num_files "
                        << num_files << std::endl;
     }
@@ -135,7 +136,7 @@ struct legion_hdf5_t {
       return false;
     }
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Create HDF5 file " << fname << " file_id "
                        << hdf5_file_id << std::endl;
     }
@@ -154,7 +155,7 @@ struct legion_hdf5_t {
       return false;
     }
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Open HDF5 file " << fname << " file_id "
                        << hdf5_file_id << std::endl;
     }
@@ -169,7 +170,7 @@ struct legion_hdf5_t {
     H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
     H5Fclose(hdf5_file_id);
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Close HDF5 file_id " << hdf5_file_id << std::endl;
     }
     hdf5_file_id = -1;
@@ -311,7 +312,7 @@ struct legion_hdf5_t {
     Legion::Context ctx = Legion::Runtime::get_context();
 
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Create HDF5 datasets file_id " << hdf5_file_id
                        << " regions size " << hdf5_region_vector.size()
                        << std::endl;
@@ -499,7 +500,7 @@ checkpoint_data(legion_hdf5_t & hdf5_file,
   }
 
   {
-    flog_tag_guard(io);
+    flog::devel_guard guard(io_tag);
     flog_devel(info) << "Start checkpoint file " << file_name
                      << " regions size " << hdf5_region_vector.size()
                      << std::endl;
@@ -555,7 +556,7 @@ recover_data(legion_hdf5_t & hdf5_file,
   }
 
   {
-    flog_tag_guard(io);
+    flog::devel_guard guard(io_tag);
     flog_devel(info) << "Start recover file " << file_name << " regions size "
                      << hdf5_region_vector.size() << std::endl;
   }
@@ -618,7 +619,7 @@ struct io_interface_t {
 
     auto & index_runtime_data = process_topology.get();
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint default index topology, fields size "
                        << fid_vector.size() << std::endl;
     }
@@ -645,7 +646,7 @@ struct io_interface_t {
     auto & index_runtime_data = fh.topology().get();
 
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint index topology, field " << fid
                        << std::endl;
     }
@@ -669,7 +670,7 @@ struct io_interface_t {
     auto & index_runtime_data = process_topology.get();
 
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Recover default index topology, fields size "
                        << fid_vector.size() << std::endl;
     }
@@ -693,7 +694,7 @@ struct io_interface_t {
     auto & index_runtime_data = fh.topology().get();
 
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Recover index topology, field " << fid << std::endl;
     }
 
@@ -761,7 +762,7 @@ checkpoint_with_attach_task(const Legion::Task * task,
     }
 
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint data to HDF5 file attach " << file_name
                        << " region_id " << rid
                        << " (dataset(fid) size= " << field_map.size() << ")"
@@ -853,7 +854,7 @@ checkpoint_without_attach_task(const Legion::Task * task,
     }
 
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint data to HDF5 file no attach " << file_name
                        << " region_id " << rid
                        << " (dataset(fid) size= " << field_set.size() << ")"
@@ -908,7 +909,7 @@ recover_with_attach_task(const Legion::Task * task,
     }
 
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Recorver data to HDF5 file attach " << file_name
                        << " region_id " << rid
                        << " (dataset(fid) size= " << field_map.size() << ")"
@@ -999,7 +1000,7 @@ recover_without_attach_task(const Legion::Task * task,
     }
 
     {
-      flog_tag_guard(io);
+      flog::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint data to HDF5 file no attach " << file_name
                        << " region_id " << rid
                        << " (dataset(fid) size= " << field_set.size() << ")"

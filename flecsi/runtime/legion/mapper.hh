@@ -32,9 +32,11 @@
 #include <legion/legion_mapping.h>
 #include <mappers/default_mapper.h>
 
-flog_register_tag(legion_mapper);
+namespace flecsi {
 
-namespace flecsi::runtime {
+inline flog::devel_tag legion_mapper_tag("legion_mapper");
+
+namespace runtime {
 
 /*
  The mpi_mapper_t - is a custom mapper that handles mpi-legion
@@ -95,13 +97,13 @@ public:
     } // end for
 
     {
-      flog_tag_guard(legion_mapper);
+      flog::devel_guard guard(legion_mapper_tag);
       flog_devel(info) << "Mapper constructor" << std::endl
                        << "\tlocal: " << local << std::endl
                        << "\tcpus: " << local_cpus.size() << std::endl
                        << "\tgpus: " << local_gpus.size() << std::endl
                        << "\tsysmem: " << local_sysmem << std::endl;
-    }
+    } // scope
   } // end mpi_mapper_t
 
   /*!
@@ -312,4 +314,5 @@ mapper_registration(Legion::Machine machine,
   }
 } // mapper registration
 
-} // namespace flecsi::runtime
+} // namespace runtime
+} // namespace flecsi

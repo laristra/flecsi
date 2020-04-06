@@ -17,13 +17,14 @@
 #include <sstream>
 #include <string>
 
+#include <flecsi/flog.hh>
 #include <flecsi/utils/demangle.hh>
-#include <flecsi/utils/flog.hh>
 #include <flecsi/utils/ftest/output.hh>
 
-flog_register_tag(ftest);
-
 namespace flecsi {
+
+inline flog::devel_tag ftest_tag("ftest");
+
 namespace utils {
 namespace ftest {
 
@@ -35,7 +36,7 @@ struct state_t {
   } // initialize
 
   ~state_t() {
-    flog_tag_guard(ftest);
+    flog::devel_guard guard(ftest_tag);
 
     if(error_stream_.str().size()) {
       std::stringstream stream;
@@ -196,7 +197,7 @@ string_case_compare(const char * lhs, const char * rhs) {
 } // namespace flecsi
 
 #define FTEST()                                                                \
-  flecsi::utils::flog::flog_t::instance().config_stream().add_buffer(          \
+  flog::flog_t::instance().config_stream().add_buffer(                         \
     "flog", std::clog, true);                                                  \
   flecsi::utils::ftest::state_t __ftest_state_instance(__FUNCTION__)
 

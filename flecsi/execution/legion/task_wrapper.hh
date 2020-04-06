@@ -27,9 +27,11 @@
 #include "flecsi/execution/task_attributes.hh"
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/utils/common.hh"
-#include "flecsi/utils/flog.hh"
 #include "flecsi/utils/function_traits.hh"
 #include "flecsi/utils/serialize.hh"
+#include "unbind_accessors.hh"
+#include <flecsi/flog.hh>
+#include <flecsi/utils/common.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -40,9 +42,9 @@
 #include <string>
 #include <utility>
 
-flog_register_tag(task_wrapper);
-
 namespace flecsi {
+
+inline flog::devel_tag task_wrapper_tag("task_wrapper");
 
 // Send and receive only the reference_base portion:
 template<data::storage_label_t L, class Topo, class T, std::size_t Priv>
@@ -135,7 +137,7 @@ detail::register_task() {
 
   const std::string name = utils::symbol<*TASK>();
   {
-    flog_tag_guard(task_wrapper);
+    flog::devel_guard guard(task_wrapper_tag);
     flog_devel(info) << "registering pure Legion task " << name << std::endl;
   }
 
@@ -191,7 +193,7 @@ struct task_wrapper {
     Legion::Context context,
     Legion::Runtime * runtime) {
     {
-      flog_tag_guard(task_wrapper);
+      flog::devel_guard guard(task_wrapper_tag);
       flog_devel(info) << "In execute_user_task" << std::endl;
     }
 
@@ -237,7 +239,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     Legion::Runtime *) {
     // FIXME: Refactor
     //    {
-    //      flog_tag_guard(task_wrapper);
+    //      flog::devel_guard guard(task_wrapper_tag);
     //      flog_devel(info) << "In execute_mpi_task" << std::endl;
     //    }
 
