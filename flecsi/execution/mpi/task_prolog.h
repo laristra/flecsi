@@ -28,6 +28,7 @@ All rights reserved.
 #include <flecsi/data/ragged_mutator.h>
 #include <flecsi/data/sparse_accessor.h>
 #include <flecsi/data/sparse_mutator.h>
+#include <flecsi/data/common/row_vector.h>
 #include <flecsi/execution/context.h>
 
 #include <flecsi/utils/tuple_walker.h>
@@ -81,6 +82,86 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     field_metadata.ghost_data_buffer = ghost_data;
     exchange_queue.emplace(h.index_space, h.fid);
   }
+
+
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(ragged_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    auto & h = a.handle;
+
+    if (*(h.ghost_is_readable)) return;
+
+    auto index_coloring = context.coloring(h.index_space);
+
+    field_metadata.shared_data_buffer.resize(h.num_shared_ * h.max_entries_per_index * sizeof(T));
+    field_metadata.ghost_data_buffer.resize(h.num_ghost_ * h.max_entries_per_index * sizeof(T));
+
+    auto * shared_data = reinterpret_cast<T*>(field_metadata.shared_data_buffer.data());
+
+    // load data into shared data buffer
+    for (int i = 0; i < h.num_shared_; ++i) {
+      int r = i + h.num_exclusive_;
+      const auto & row = h.rows[r];
+      size_t count = row.size();
+      std::memcpy(&shared_data[i * h.max_entries_per_index], row.begin(), count * sizeof(T));
+    }
+
+    // send shared row counts to populate ghost row count list (TODO: aggregate this communication)
+    int send_count = 0;
+    for(auto & shared : index_coloring.shared) {
+      send_count += shared.shared.size();
+    }
+    std::vector<MPI_Request> requests(send_count + h.num_ghost_);
+    std::vector<MPI_Status> statuses(send_count + h.num_ghost_);
+
+    std::vector<uint32_t> shared_row_counts;
+    for(auto & shared : index_coloring.shared) {
+      for(auto peer : shared.shared) {
+        shared_row_counts.push_back(
+          h.rows[h.num_exclusive_ + shared.offset].size());
+      }
+    }
+
+    int i = 0;
+    for(auto & shared : index_coloring.shared) {
+      for(auto peer : shared.shared) {
+        MPI_Isend(&shared_row_counts[i], 1,
+          flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), peer, shared.id,
+          MPI_COMM_WORLD, &requests[i]);
+        i++;
+      }
+    }
+
+    auto & ghost_row_sizes = field_metadata.ghost_row_sizes;
+    i = 0;
+    for(auto & ghost : index_coloring.ghost) {
+      MPI_Irecv(&ghost_row_sizes[i], 1,
+        flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), ghost.rank,
+        ghost.id, MPI_COMM_WORLD, &requests[i + send_count]);
+      i++;
+    }
+
+    MPI_Waitall(send_count + h.num_ghost_, requests.data(), statuses.data());
+
+
+    sparse_exchange_queue.emplace(h.index_space, h.fid);
+  }
+
+  template<typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(sparse_accessor<T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS> & a) {
+    handle(a.ragged);
+  } // handle
 #endif
 
   template<typename T, size_t PERMISSIONS>
@@ -441,7 +522,132 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   }
 
+
+  void launch_sparse_copies() {
+    auto & context = context_t::instance();
+    const int my_color = context.color();
+    const int num_colors = context.colors();
+
+    auto & ispace_dmap = context.index_space_data_map();
+
+    std::map<int, int> shared_sizes;
+    std::map<int, int> ghost_sizes;
+    std::vector<std::pair<size_t, field_id_t>> modified_fields;
+
+    // compute aggregated communication sizes
+    while (not sparse_exchange_queue.empty()) {
+      auto & fi = sparse_exchange_queue.front();
+      auto & field_metadata = context.registered_sparse_field_metadata().at(fi.second);
+      modified_fields.emplace_back(fi.first, fi.second);
+
+      for (const auto & el : field_metadata.ghost_field_sizes) {
+        auto gsize = ghost_sizes.find(el.first);
+        if (gsize != ghost_sizes.end())
+          gsize->second += el.second;
+        else
+          ghost_sizes[el.first] = 0;
+      }
+      for (const auto & el : field_metadata.shared_field_sizes) {
+        auto ssize = shared_sizes.find(el.first);
+        if (ssize != shared_sizes.end())
+          ssize->second += el.second;
+        else
+          shared_sizes[el.first] = 0;
+      }
+
+      sparse_exchange_queue.pop();
+    }
+
+    std::map<int, std::vector<uint8_t>> all_send_buf(num_colors);
+    std::map<int, std::vector<uint8_t>> all_recv_buf(num_colors);
+    std::map<int, MPI_Request> all_send_req(num_colors);
+    std::map<int, MPI_Request> all_recv_req(num_colors);
+
+    // post recieves
+    for (const auto & el : ghost_sizes) {
+      int rank = el.first;
+      int bufsize = el.second;
+      all_recv_buf.emplace(rank, bufsize);
+      int err = MPI_Irecv(all_recv_buf[rank], bufsize, MPI_BYTE,
+                          rank, rank, MPI_COMM_WORLD, &all_recv_requests[rank]);
+      if (err != MPI_SUCCESS) {
+        clog(error) << "MPI_Irecv failed on rank " << rank << " with error code: " << err << std::endl;
+      }
+    }
+
+    // pack and send data
+    for (const auto & el : shared_sizes) {
+      int rank = el.first;
+      int bufsize = el.second;
+      all_send_buf.emplace(rank, bufsize);
+
+      size_t buf_offset = 0;
+      for (auto & fi : modified_fields) {
+        auto & field_metadata = context.registered_sparse_field_metadata().at(fi.second);
+        auto mepi = context.registered_sparse_field_data().at(fi.second).max_entries_per_index;
+        for (const auto & ind : field_metadata.shared_indices[rank]) {
+          std::memcpy(&all_send_buf[rank][buf_offset],
+                      &field_metadata.shared_data_buffer[ind[0]*mepi],
+                      ind[1]*mepi);
+          buf_offset += ind[1]*mepi;
+        }
+      }
+
+      int err = MPI_Isend(all_send_buf[rank], bufsize, MPI_BYTE,
+                          rank, my_color, MPI_COMM_WORLD, &all_send_requests[rank]);
+      if (err != MPI_SUCCESS) {
+        clog(error) << "MPI_Isend of rank " << my_color << " with error code: " << err << std::endl;
+      }
+    }
+
+    // wait for halo data
+    {
+      int err = MPI_Waitall(all_recv_req.size(), all_recv_req.data(), MPI_STATUSES_IGNORE);
+      if (err != MPI_SUCCESS) {
+        clog(fatal) << "MPI_Waitall " << " on recv requests failed with error code: " << err << std::endl;
+      }
+    }
+
+    // unpack data
+    for (const auto & el : ghost_sizes) {
+      int rank = el.first;
+      int bufsize = el.second;
+
+      size_t buf_offset = 0;
+      for (auto & fi : modified_fields) {
+        auto & field_metadata = context.registered_sparse_field_metadata().at(fi.second);
+        auto mepi = context.registered_sparse_field_data().at(fi.second).max_entries_per_index;
+        for (const auto & ind : field_metadata.ghost_indices[rank]) {
+          std::memcpy(&field_metadata.ghost_data_buffer[ind[0]*mepi],
+                      &all_recv_buf[rank][buf_offset],
+                      ind[1]*mepi);
+          buf_offset += ind[1]*mepi;
+        }
+      }
+    }
+
+    // wait for sends
+    MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
+
+    // unpack ghost data
+    for (auto & fi : modified_fields) {
+      auto & field_metadata = context.registered_sparse_field_metadata().at(fi.second);
+      auto & field_data = context.registered_sparse_field_data().at(fi.second);
+      auto mepi = field_data.max_entries_per_index;
+      auto *rows = reinterpret_cast<data::row_vector_u<uint8_t>*>(field_data.rows.data());
+      for (int i = 0; i < field_data.num_ghost; i++) {
+        int r = field_data.num_exclusive + field_data.num_shared + i;
+        auto & row = rows[r * field_data.type_size];
+        int count = field_metadata.ghost_row_sizes[i];
+        row.resize(count * field_data.type_size);
+        std::memcpy(row.begin(), &field_metadata.ghost_data_buffer[i * mepi],
+                    count * field_data.type_size);
+      }
+    }
+  }
+
   std::queue<std::pair<size_t, field_id_t>> exchange_queue;
+  std::queue<std::pair<size_t, field_id_t>> sparse_exchange_queue;
 #endif
 
 }; // struct task_prolog_t

@@ -268,6 +268,16 @@ struct mpi_context_policy_t {
     std::map<int, MPI_Datatype> target_types;
 
     MPI_Win win;
+
+#if defined(FLECSI_USE_AGGCOMM)
+    std::map<int, std::vector<std::array<size_t, 2>>> shared_indices;
+    std::map<int, std::vector<std::array<size_t, 2>>> ghost_indices;
+    std::map<int, size_t> shared_field_sizes;
+    std::map<int, size_t> ghost_field_sizes;
+    std::vector<uint8_t> shared_data_buffer;
+    std::vector<uint8_t> ghost_data_buffer;
+    std::vector<uint32_t> ghost_row_counts;
+#endif
   };
 
   /*!
@@ -387,6 +397,52 @@ struct mpi_context_policy_t {
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
 
+#if defined(FLECSI_USE_AGGCOMM)
+    // compute ghost and shared indicies
+    size_t ghost_count;
+    for (auto const & ghost : index_coloring.ghost) {
+      if ((metadata.ghost_indices.find(ghost.rank) == metadata.ghost_indices.end()) or
+          (ghost_count*sizeof(T) !=
+           (metadata.ghost_indices[ghost.rank].back()[0]+metadata.ghost_indices[ghost.rank].back()[1]))) {
+        metadata.ghost_indices[ghost.rank].push_back({ghost_count*sizeof(T), sizeof(T)});
+      } else {
+        metadata.ghost_indices[ghost.rank].back()[1] += sizeof(T);
+      }
+      ++ghost_count;
+    }
+    for (auto const & shared : index_coloring.shared) {
+      for (auto const & s : shared.shared) {
+        if ((metadata.shared_indices.find(s) == metadata.shared_indices.end()) or
+            (shared.offset*sizeof(T) !=
+             (metadata.shared_indices[s].back()[0] + metadata.shared_indices[s].back()[1]))) {
+          metadata.shared_indices[s].push_back({shared.offset*sizeof(T), sizeof(T)});
+        } else {
+          metadata.shared_indices[s].back()[1] += sizeof(T);
+        }
+      }
+    }
+
+    // compute ghost and shared sizes
+    auto mepi = sparse_field_data[fid].max_entries_per_index;
+    for (auto const & el : metadata.ghost_indices) {
+      auto & ghost_size = metadata.ghost_field_sizes[el.first];
+      ghost_size = 0;
+      metadata.ghost_field_sizes[el.first] = 0;
+      for (auto const & ind : el.second) {
+        ghost_size += ind[1]*mepi;
+      }
+    }
+    for (auto const & el : metadata.shared_indices) {
+      auto & shared_size = metadata.shared_field_sizes[el.first];
+      shared_size = 0;
+      for (auto const & ind : el.second) {
+        shared_size += ind[1]*mepi;
+      }
+    }
+
+    // allocate ghost_row_sizes
+    metadata.ghost_row_sizes.resize(index_coloring.ghost.size());
+#endif
     sparse_field_metadata.insert({fid, metadata});
   }
 

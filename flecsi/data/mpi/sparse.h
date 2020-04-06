@@ -122,6 +122,9 @@ struct storage_class_u<ragged> {
     using vector_t = typename ragged_data_handle_u<DATA_TYPE>::vector_t;
     hb.rows = reinterpret_cast<vector_t *>(&fd.rows[0]);
 
+    auto & ism = context.index_space_data_map();
+    hb.ghost_is_readable = &(ism[field_info.index_space].ghost_is_readable[field_info.fid]);
+
     return h;
   }
 

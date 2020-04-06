@@ -164,6 +164,7 @@ struct mpi_execution_policy_t {
     task_prolog.walk(task_args);
 #if defined(FLECSI_USE_AGGCOMM)
     task_prolog.launch_copies();
+    task_prolog.launch_sparse_copies();
 #endif
 
 #if defined(ENABLE_CALIPER)
