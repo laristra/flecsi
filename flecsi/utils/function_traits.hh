@@ -61,19 +61,13 @@ struct function_traits<std::function<R(As...)>>
 template<typename T>
 struct function_traits<T &> : public function_traits<T> {};
 template<typename T>
-struct function_traits<const T &> : public function_traits<T> {};
-template<typename T>
-struct function_traits<volatile T &> : public function_traits<T> {};
-template<typename T>
-struct function_traits<const volatile T &> : public function_traits<T> {};
-template<typename T>
 struct function_traits<T &&> : public function_traits<T> {};
 template<typename T>
-struct function_traits<const T &&> : public function_traits<T> {};
+struct function_traits<const T> : function_traits<T> {};
 template<typename T>
-struct function_traits<volatile T &&> : public function_traits<T> {};
+struct function_traits<volatile T> : function_traits<T> {};
 template<typename T>
-struct function_traits<const volatile T &&> : public function_traits<T> {};
+struct function_traits<const volatile T> : function_traits<T> {};
 
 } // namespace utils
 } // namespace flecsi
