@@ -296,7 +296,6 @@ struct mpi_context_policy_t {
       compact_origin_lengs, compact_origin_disps, compact_target_lengs,
       compact_target_disps);
 
-    metadata.data_type;
     MPI_Type_contiguous(sizeof(T), MPI_BYTE, &metadata.data_type);
     MPI_Type_commit(&metadata.data_type);
 
