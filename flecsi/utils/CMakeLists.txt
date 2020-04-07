@@ -21,7 +21,6 @@ set(utils_HEADERS
   array_ref.hh
   bit_buffer.hh
   bitutils.hh
-  checksum.hh
   common.hh
   const_string.hh
   crs.hh
