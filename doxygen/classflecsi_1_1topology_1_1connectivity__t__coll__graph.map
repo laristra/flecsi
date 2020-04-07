@@ -1,4 +1,4 @@
 <map id="flecsi::topology::connectivity_t" name="flecsi::topology::connectivity_t">
-<area shape="rect" id="node2" href="$classflecsi_1_1topology_1_1index__space.html" title="flecsi::topology::index\l_space\&lt; flecsi::topology\l::entity_base_ *, false,\l true, false, void, flecsi\l::topology::array_buffer \&gt;" alt="" coords="5,5,173,91"/>
-<area shape="rect" id="node3" href="$classflecsi_1_1topology_1_1offset__storage__t.html" title="flecsi::topology::offset\l_storage_t" alt="" coords="14,115,165,157"/>
+<area shape="rect" id="node2" href="$classflecsi_1_1topology_1_1index__space.html" title="flecsi::topology::index\l_space\&lt; flecsi::topology\l::entity_base_ *, false,\l true, false, void, flecsi\l::topology::array_buffer \&gt;" alt="" coords="6,5,194,91"/>
+<area shape="rect" id="node3" href="$classflecsi_1_1topology_1_1offset__storage__t.html" title="flecsi::topology::offset\l_storage_t" alt="" coords="17,115,183,157"/>
 </map>

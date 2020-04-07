@@ -6,5 +6,5 @@ var searchData=
   ['global',['global',['../structflecsi_1_1topology_1_1global.html',1,'flecsi::topology']]],
   ['global_5fguard',['global_guard',['../structflecsi_1_1detail_1_1data__guard_1_1global__guard.html',1,'flecsi::detail::data_guard']]],
   ['graphviz_5ft',['graphviz_t',['../classflecsi_1_1utils_1_1graphviz__t.html',1,'flecsi::utils']]],
-  ['guard',['guard',['../structflog_1_1guard.html',1,'flog']]]
+  ['guard',['guard',['../structflecsi_1_1flog_1_1guard.html',1,'flecsi::flog']]]
 ];

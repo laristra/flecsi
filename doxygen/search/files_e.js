@@ -5,6 +5,9 @@ var searchData=
   ['partition_2ehh',['partition.hh',['../partition_8hh.html',1,'']]],
   ['point_2ehh',['point.hh',['../point_8hh.html',1,'']]],
   ['point_5fwalker_2ehh',['point_walker.hh',['../point__walker_8hh.html',1,'']]],
-  ['policy_2ehh',['policy.hh',['../data_2legion_2policy_8hh.html',1,'(Global Namespace)'],['../execution_2legion_2policy_8hh.html',1,'(Global Namespace)'],['../execution_2mpi_2policy_8hh.html',1,'(Global Namespace)'],['../io_2legion_2policy_8hh.html',1,'(Global Namespace)']]],
+  ['policy_2ehh',['policy.hh',['../execution_2mpi_2policy_8hh.html',1,'']]],
+  ['policy_2ehh',['policy.hh',['../io_2legion_2policy_8hh.html',1,'']]],
+  ['policy_2ehh',['policy.hh',['../data_2legion_2policy_8hh.html',1,'']]],
+  ['policy_2ehh',['policy.hh',['../execution_2legion_2policy_8hh.html',1,'']]],
   ['privilege_2ehh',['privilege.hh',['../privilege_8hh.html',1,'']]]
 ];

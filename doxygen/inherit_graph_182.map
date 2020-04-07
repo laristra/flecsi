@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1base__convert__tuple__type___3_01T_00_01TO_00_01false_01_4.html" title="flecsi::utils::base\l_convert_tuple_type\l_\&lt; T, TO, false \&gt;" alt="" coords="5,5,144,61"/>
+<area shape="rect" id="node1" href="$classflecsi_1_1topology_1_1unstructured__impl_1_1definition.html" title="flecsi::topology::unstructured\l_impl::definition\&lt; DIMENSION,\l REAL_TYPE \&gt;" alt="" coords="5,5,227,61"/>
+<area shape="rect" id="node2" href="$classflecsi_1_1topology_1_1unstructured__impl_1_1parallel__definition.html" title="flecsi::topology::unstructured\l_impl::parallel_definition\l\&lt; DIMENSION, REAL_TYPE \&gt;" alt="" coords="275,5,485,61"/>
 </map>

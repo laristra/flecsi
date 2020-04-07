@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['storage_5ft',['storage_t',['../classflecsi_1_1topology_1_1index__space.html#ac52de7fbf857c5e8fd198a59976f7ab1',1,'flecsi::topology::index_space']]]
+  ['type',['type',['../structflecsi_1_1topology_1_1find__entity__.html#a1d886f19a98ce446dc8a0dbd6b5b1269',1,'flecsi::topology::find_entity_']]]
 ];

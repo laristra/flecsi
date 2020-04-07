@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1ftest_1_1expect__handler__t.html" title="flecsi::utils::ftest\l::expect_handler_t" alt="" coords="5,5,135,47"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1detail_1_1nonvoid.html" title="flecsi::utils::detail\l::nonvoid\&lt; detail::base\l_specialization\&lt; B, D \&gt;\l::type \&gt;" alt="" coords="5,5,181,75"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1utils_1_1base__specialization.html" title="flecsi::utils::base\l_specialization\&lt; B, D \&gt;" alt="" coords="229,19,405,61"/>
 </map>

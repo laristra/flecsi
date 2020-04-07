@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classflecsi_1_1topology_1_1offset__storage__t.html" title="flecsi::topology::offset\l_storage_t" alt="" coords="5,5,156,47"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1topology_1_1ntree__base.html" title="flecsi::topology::ntree_base" alt="" coords="5,12,205,39"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1topology_1_1ntree.html" title="flecsi::topology::ntree\l\&lt; POLICY_TYPE \&gt;" alt="" coords="253,5,416,46"/>
 </map>

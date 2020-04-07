@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['point',['point',['../point_8hh.html#a4c5a2cfa1cb322202a5482b006af416e',1,'flecsi::utils']]],
-  ['point_5f',['point_',['../point__walker_8hh.html#a97879bacdfa6b09f3d11226675cd9485',1,'flecsi::control']]],
-  ['pointer',['pointer',['../classflecsi_1_1utils_1_1array__ref.html#a3f1d32653d18ac149cf013b467ba367b',1,'flecsi::utils::array_ref']]]
+  ['real_5ft',['real_t',['../classflecsi_1_1topology_1_1unstructured__impl_1_1parallel__definition.html#a73da830af0c50551d11c53ae690c1780',1,'flecsi::topology::unstructured_impl::parallel_definition']]],
+  ['reduce_5ffunction',['reduce_function',['../classflecsi_1_1topology_1_1index__space.html#ac0b5515e389b3474d60525cb94138d26',1,'flecsi::topology::index_space']]],
+  ['ref_5ft',['ref_t',['../classflecsi_1_1topology_1_1index__space.html#a2ee52cffefdcdfe4482b3fcda28ff0c9',1,'flecsi::topology::index_space']]],
+  ['registration_5ffunction_5ft',['registration_function_t',['../structflecsi_1_1runtime_1_1context__t.html#acf9eeec62b01e9fd009a076a50dc46b5',1,'flecsi::runtime::context_t']]]
 ];

@@ -25,10 +25,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -428,8 +428,8 @@ automatically be rebuilt when the docker file is updated on GitHub.</p>
 <p>This is a recipe for building the current development version of FleCSI
 on the LANL Darwin cluster.</p>
 <p>Checkout spack and flecsi:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone --single-branch --branch flog-tutorial git@github.com:tuxfan/flecsi.git
-<span class="gp">$</span> git clone git@github.com:spack/spack.git
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone --branch devel git@gitlab.lanl.gov:laristra/flecsi.git
+<span class="gp">$</span> git clone --single-branch --branch develop git@github.com:spack/spack.git
 </pre></div>
 </div>
 <p>Source the spack environment script:</p>

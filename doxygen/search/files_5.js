@@ -7,5 +7,6 @@ var searchData=
   ['flog_2ehh',['flog.hh',['../flog_8hh.html',1,'']]],
   ['ftest_2ehh',['ftest.hh',['../ftest_8hh.html',1,'']]],
   ['function_5ftraits_2ehh',['function_traits.hh',['../function__traits_8hh.html',1,'']]],
-  ['future_2ehh',['future.hh',['../legion_2future_8hh.html',1,'(Global Namespace)'],['../mpi_2future_8hh.html',1,'(Global Namespace)']]]
+  ['future_2ehh',['future.hh',['../legion_2future_8hh.html',1,'']]],
+  ['future_2ehh',['future.hh',['../mpi_2future_8hh.html',1,'']]]
 ];

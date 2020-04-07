@@ -1,5 +1,5 @@
 <map id="flecsi::data::topology_data&lt; topology::index &gt;" name="flecsi::data::topology_data&lt; topology::index &gt;">
-<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; topology::index \&gt;" alt="" coords="5,95,185,136"/>
-<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1legion_1_1region.html" title="flecsi::data::legion\l::region" alt="" coords="31,5,159,47"/>
-<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1legion_1_1partition.html" title="flecsi::data::legion\l::partition" alt="" coords="210,95,338,136"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; topology::index \&gt;" alt="" coords="5,97,208,138"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1detail_1_1region.html" title="flecsi::data::detail\l::region" alt="" coords="37,6,176,47"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1detail_1_1partition.html" title="flecsi::data::detail\l::partition" alt="" coords="233,97,372,138"/>
 </map>

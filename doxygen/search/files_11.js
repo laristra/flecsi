@@ -17,5 +17,12 @@ var searchData=
   ['tuple_5fwrapper_2ehh',['tuple_wrapper.hh',['../tuple__wrapper_8hh.html',1,'']]],
   ['type_5ftraits_2ehh',['type_traits.hh',['../type__traits_8hh.html',1,'']]],
   ['typeify_2ehh',['typeify.hh',['../typeify_8hh.html',1,'']]],
-  ['types_2ehh',['types.hh',['../data_2legion_2types_8hh.html',1,'(Global Namespace)'],['../flog_2types_8hh.html',1,'(Global Namespace)'],['../runtime_2types_8hh.html',1,'(Global Namespace)'],['../topology_2canonical_2types_8hh.html',1,'(Global Namespace)'],['../topology_2ntree_2types_8hh.html',1,'(Global Namespace)'],['../topology_2set_2types_8hh.html',1,'(Global Namespace)'],['../topology_2structured_2types_8hh.html',1,'(Global Namespace)'],['../topology_2unstructured_2types_8hh.html',1,'(Global Namespace)']]]
+  ['types_2ehh',['types.hh',['../topology_2canonical_2types_8hh.html',1,'']]],
+  ['types_2ehh',['types.hh',['../topology_2set_2types_8hh.html',1,'']]],
+  ['types_2ehh',['types.hh',['../flog_2types_8hh.html',1,'']]],
+  ['types_2ehh',['types.hh',['../topology_2ntree_2types_8hh.html',1,'']]],
+  ['types_2ehh',['types.hh',['../runtime_2types_8hh.html',1,'']]],
+  ['types_2ehh',['types.hh',['../data_2legion_2types_8hh.html',1,'']]],
+  ['types_2ehh',['types.hh',['../topology_2unstructured_2types_8hh.html',1,'']]],
+  ['types_2ehh',['types.hh',['../topology_2structured_2types_8hh.html',1,'']]]
 ];

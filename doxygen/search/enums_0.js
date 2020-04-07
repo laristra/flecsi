@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['axis',['axis',['../dimensioned__array_8hh.html#a95371a68573ff7ee30033e12cea640fb',1,'flecsi::utils']]]
+  ['partition_5fprivilege_5ft',['partition_privilege_t',['../namespaceflecsi.html#abdc40397e828dacc40f25869b1911773',1,'flecsi']]]
 ];

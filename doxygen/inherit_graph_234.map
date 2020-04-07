@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1mpi__typetraits_3_01short_01_4.html" title="flecsi::utils::mpi\l_typetraits\&lt; short \&gt;" alt="" coords="5,5,141,47"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1utils_1_1is__container.html" title="Check if a particular type T is a container. " alt="" coords="144,5,323,46"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1utils_1_1is__iterative__container.html" title="A Helper to identify if this is a container. " alt="" coords="147,70,320,111"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1utils_1_1is__minimal__container.html" title="A Helper to identify if this is a container. " alt="" coords="147,135,319,177"/>
 </map>

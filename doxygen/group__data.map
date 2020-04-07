@@ -1,4 +1,4 @@
 <map id="Data Interface" name="Data Interface">
-<area shape="rect" id="node1" href="$group__serial-data.html" title="Serial Data Backend" alt="" coords="161,5,303,32"/>
-<area shape="rect" id="node3" href="$group__legion-data.html" title="Legion Data Backend" alt="" coords="159,56,305,83"/>
+<area shape="rect" id="node1" href="$group__serial-data.html" title="Serial Data Backend" alt="" coords="171,56,325,83"/>
+<area shape="rect" id="node3" href="$group__legion-data.html" title="Legion Data Backend" alt="" coords="168,5,328,32"/>
 </map>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['are_5fintegral_5fv',['are_integral_v',['../simple__id_8hh.html#a57b3055f41910f3cfe00688605d1e1dd',1,'flecsi::utils::detail']]]
+  ['count_5fmask',['count_mask',['../classflecsi_1_1utils_1_1offset.html#af6a1a6e811f5459441c5a8870db2e5b9',1,'flecsi::utils::offset']]]
 ];

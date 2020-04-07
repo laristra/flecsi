@@ -1,3 +1,8 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1topology_1_1find__index__subspace__from__id.html" title="flecsi::topology::find\l_index_subspace_from_id\l\&lt; INDEX, TUPLE, ID \&gt;" alt="" coords="5,5,179,61"/>
+<area shape="rect" id="node1" href="$classflecsi_1_1topology_1_1entity__base__.html" title="flecsi::topology::entity\l_base_" alt="" coords="6,103,173,145"/>
+<area shape="rect" id="node2" href="$classflecsi_1_1topology_1_1entity__base.html" title="entity_base defines a base class that stores the raw info that a topology needs, i.e: id and rank data " alt="" coords="222,103,413,145"/>
+<area shape="rect" id="node3" href="$classflecsi_1_1topology_1_1mesh__entity.html" title="mesh_entity parameterizes a mesh entity base with its dimension and number of domains ..." alt="" coords="462,5,693,46"/>
+<area shape="rect" id="node4" href="$classflecsi_1_1topology_1_1ntree__entity.html" title="flecsi::topology::ntree\l_entity\&lt; DIM, KEY \&gt;" alt="" coords="496,70,659,111"/>
+<area shape="rect" id="node5" href="$classflecsi_1_1topology_1_1ntree__entity__holder.html" title="flecsi::topology::ntree\l_entity_holder\&lt; DIM, KEY \&gt;" alt="" coords="476,135,679,177"/>
+<area shape="rect" id="node6" href="$classflecsi_1_1topology_1_1ntree__node.html" title="flecsi::topology::ntree\l_node\&lt; DIM, TREE_ENTITY\l_TYPE, KEY \&gt;" alt="" coords="480,201,675,257"/>
 </map>

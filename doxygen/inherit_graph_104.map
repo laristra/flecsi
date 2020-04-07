@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1topology_1_1detail_1_1core_3_01T_00_01utils_1_1voided_3_01utils_1_1base__special436c7be14fed615675ff27225785bdba.html" title="flecsi::topology::detail\l::core\&lt; T, utils::voided\l\&lt; utils::base_specialization\l_t\&lt; set, T \&gt; \&gt; \&gt;" alt="" coords="5,5,185,76"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1topology_1_1detail_1_1category.html" title="flecsi::topology::detail\l::category\&lt; canonical_base \&gt;" alt="" coords="6,5,223,46"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1topology_1_1detail_1_1category_3_01canonical_3_01P_01_4_01_4.html" title="flecsi::topology::detail\l::category\&lt; canonical\&lt; P \&gt; \&gt;" alt="" coords="273,5,490,46"/>
 </map>
