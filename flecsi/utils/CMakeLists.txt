@@ -28,7 +28,6 @@ set(utils_HEADERS
   demangle.hh
   dimensioned_array.hh
   export_definitions.hh
-  factory.hh
   ftest.hh
   ftest/node.hh
   ftest/output.hh
@@ -151,24 +150,6 @@ endif()
 ftest_add_unit(demangle
   SOURCES
     test/demangle.cc
-)
-
-#------------------------------------------------------------------------------#
-# factory
-#------------------------------------------------------------------------------#
-
-set(factory_blessed_input test/factory.blessed.gnug)
-
-if(MSVC)
-  set(factory_blessed_input test/factory.blessed.msvc)
-endif()
-
-ftest_add_unit(factory
-  SOURCES
-    test/factory.cc
-  INPUTS
-    test/factory.blessed
-    ${factory_blessed_input}
 )
 
 #------------------------------------------------------------------------------#
