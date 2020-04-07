@@ -36,6 +36,7 @@
 #include <flecsi/data/common/data_types.h>
 #include <flecsi/data/common/row_vector.h>
 #include <flecsi/data/common/serdez.h>
+#include <flecsi/data/sparse_data_handle.h>
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/mpi/future.h>
@@ -272,6 +273,8 @@ struct mpi_context_policy_t {
     std::map<int, MPI_Datatype> target_types;
 
     MPI_Win win = MPI_WIN_NULL;
+
+    std::function<void(void)> deleter;
   };
 
   /*!
@@ -396,6 +399,16 @@ struct mpi_context_policy_t {
     register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
+
+    auto it = sparse_field_data.find(fid);
+    auto rows = &it->second.rows[0];
+    auto num_total = &it->second.num_total;
+    metadata.deleter = [=]() { 
+      using vector_t = typename ragged_data_handle_u<T>::vector_t;
+      auto vec = reinterpret_cast<vector_t *>(rows);
+      for (size_t i=0; i<*num_total; ++i)
+        vec[i].clear();
+    };
 
     sparse_field_metadata.insert({fid, metadata});
   }
@@ -648,6 +661,7 @@ struct mpi_context_policy_t {
       MPI_Group_free( &md.second.shared_users_grp );
       MPI_Group_free( &md.second.comm_grp );
       if (md.second.win != MPI_WIN_NULL) MPI_Win_free( &md.second.win );
+      md.second.deleter();
     }
   }
 
