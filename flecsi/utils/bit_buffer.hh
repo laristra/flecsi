@@ -110,7 +110,7 @@ public:
     if(i1 == i2) {
       size_t r = (s + bit_start) % word_bits;
 
-      T * v = reinterpret_cast<T *>(buffer_ + i1);
+      T * const v = buffer_ + i1;
       *v &= ~(((1 << (bit_end - bit_start + 1)) - 1) << r);
       *v |= (value << r);
     }
@@ -118,11 +118,11 @@ public:
       size_t r1 = (s + bit_start) % word_bits;
       size_t r2 = word_bits - r1 - 1;
 
-      T * v1 = reinterpret_cast<T *>(buffer_ + i1);
+      T * const v1 = buffer_ + i1;
       *v1 &= ~(((1 << word_bits - r1) - 1) << r1);
       *v1 |= (value << r1);
 
-      T * v2 = reinterpret_cast<T *>(buffer_ + i2);
+      T * const v2 = buffer_ + i2;
       *v2 &= ~((1 << r2) - 1);
       *v2 |= (value >> (word_bits - r1));
     }
@@ -133,7 +133,7 @@ public:
     size_t i = s / word_bits;
     size_t r = s % word_bits;
 
-    T * v = reinterpret_cast<T *>(buffer_ + i);
+    T * const v = buffer_ + i;
     *v &= ~(((1 << (bit + 1)) - 1) << r);
     *v |= (value << r);
   }
@@ -146,15 +146,15 @@ public:
     if(i1 == i2) {
       size_t r = (s + bit_start) % word_bits;
 
-      T * v = reinterpret_cast<T *>(buffer_ + i1);
+      T * const v = buffer_ + i1;
       return (*v >> r) & ((1 << (bit_end - bit_start + 1)) - 1);
     }
     else {
       size_t r1 = (s + bit_start) % word_bits;
       size_t r2 = bit_end - bit_start - (word_bits - r1) + 1;
 
-      T * v1 = reinterpret_cast<T *>(buffer_ + i1);
-      T * v2 = reinterpret_cast<T *>(buffer_ + i2);
+      T * const v1 = buffer_ + i1;
+      T * const v2 = buffer_ + i2;
 
       return ((*v1 >> r1) & ((1 << word_bits - r1) - 1)) |
              ((*v2 & ((1 << r2) - 1)) << (word_bits - r1));
@@ -166,7 +166,7 @@ public:
     size_t i = s / word_bits;
     size_t r = s % word_bits;
 
-    T * v = reinterpret_cast<T *>(buffer_ + i);
+    T * const v = buffer_ + i;
     return (*v >> r) & ((1 << (bit + 1)) - 1);
   }
 
