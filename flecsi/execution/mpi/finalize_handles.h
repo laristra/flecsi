@@ -71,7 +71,10 @@ struct finalize_handles_t
     } // for i
 
     // Get entry_values
-    const MPI_Datatype shared_ghost_type = utils::mpi_type<value_t>();
+    MPI_Datatype shared_ghost_type;
+    MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
+    MPI_Type_commit(&shared_ghost_type);
+
 
     MPI_Win win;
     MPI_Win_create(shared_data,
@@ -95,6 +98,7 @@ struct finalize_handles_t
     MPI_Win_wait(win);
 
     MPI_Win_free(&win);
+    MPI_Type_free(&shared_ghost_type);
 
     // for (int i = 0; i < h.num_ghost() * h.max_entries_per_index; i++)
     //  clog_rank(warn, 0) << "ghost after: " << ghost_data[i].value <<
