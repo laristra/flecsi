@@ -21,6 +21,7 @@
 
 #include <flecsi/flog/state.hh>
 
+namespace flecsi {
 namespace flog {
 
 /*!
@@ -58,5 +59,6 @@ private:
 }; // tag_scope_t
 
 } // namespace flog
+} // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

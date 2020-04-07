@@ -27,9 +27,10 @@
 #include <map>
 #include <vector>
 
+namespace flecsi {
+
 inline flog::devel_tag control_tag("control");
 
-namespace flecsi {
 namespace control {
 
 /*!

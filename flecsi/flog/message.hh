@@ -23,6 +23,7 @@
 
 #include <iostream>
 
+namespace flecsi {
 namespace flog {
 
 /*!
@@ -315,3 +316,4 @@ severity_message_t(error, {
 #undef severity_message_t
 
 } // namespace flog
+} // namespace flecsi

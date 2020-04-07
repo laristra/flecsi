@@ -25,6 +25,7 @@
 #include <cassert>
 #include <unordered_map>
 
+namespace flecsi {
 namespace flog {
 
 /*!
@@ -306,5 +307,6 @@ private:
 }; // struct tee_stream_t
 
 } // namespace flog
+} // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

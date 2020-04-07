@@ -20,6 +20,7 @@
 
 #if defined(FLECSI_ENABLE_FLOG)
 
+namespace flecsi {
 namespace flog {
 
 #if defined(FLOG_ENABLE_MPI)
@@ -46,5 +47,6 @@ flush_packets() {
 #endif // FLOG_ENABLE_MPI
 
 } // namespace flog
+} // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG
