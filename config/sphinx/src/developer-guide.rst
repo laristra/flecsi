@@ -456,7 +456,7 @@ Checkout spack and flecsi:
 .. code-block:: console
 
   $ git clone --branch devel git@gitlab.lanl.gov:laristra/flecsi.git
-  $ git clone --single-branch --branch develop git@github.com:spack/spack.git
+  $ git clone --single-branch --branch develop https://github.com/spack/spack.git
 
 Source the spack environment script:
 
