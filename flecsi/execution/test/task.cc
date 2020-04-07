@@ -17,9 +17,9 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution.hh>
 
-flog::devel_tag task_tag("task");
-
 using namespace flecsi;
+
+flog::devel_tag task_tag("task");
 
 namespace hydro {
 

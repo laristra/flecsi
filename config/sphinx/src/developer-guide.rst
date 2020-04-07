@@ -295,7 +295,7 @@ Checkout spack and flecsi:
 
 .. code-block:: console
 
-  $ git clone --single-branch --branch flog-tutorial git@github.com:tuxfan/flecsi.git
+  $ git clone git@gitlab.lanl.gov:laristra/flecsi.git
   $ git clone git@github.com:spack/spack.git
 
 Source the spack environment script:

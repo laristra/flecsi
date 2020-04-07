@@ -17,6 +17,8 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution.hh>
 
+using namespace flecsi;
+
 flog::devel_tag color_tag("color");
 
 /*
@@ -29,7 +31,7 @@ color_raw(int, char **) {
 
   FTEST();
 
-  auto & c = flecsi::runtime::context_t::instance();
+  auto & c = runtime::context_t::instance();
   flog(info) << "task depth: " << c.task_depth() << std::endl;
   ASSERT_EQ(c.task_depth(), 0u);
 

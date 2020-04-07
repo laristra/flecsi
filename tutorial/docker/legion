@@ -54,14 +54,8 @@ RUN \
 USER flecsi
 WORKDIR /home/flecsi
 
-#ARG REPO
-#ARG BRANCH
-
-ARG REPO=https://github.com/tuxfan/flecsi.git
-ARG BRANCH=flog-tutorial
-
-#ARG REPO=https://github.com/laristra/flecsi.git
-#ARG BRANCH=devel
+ARG REPO=https://gitlab.lanl.gov/laristra/flecsi.git
+ARG BRANCH=devel
 
 RUN git clone --single-branch --branch ${BRANCH} ${REPO} .flecsi
 

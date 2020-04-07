@@ -25,9 +25,10 @@
 
 #include <legion.h>
 
+namespace flecsi {
+
 inline flog::devel_tag topologies_tag("topologies");
 
-namespace flecsi {
 namespace data {
 
 template<class C>

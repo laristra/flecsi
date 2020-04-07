@@ -17,6 +17,8 @@
 
 #include <fstream>
 
+using namespace flecsi;
+
 /*
   Create some tags to control output.
  */

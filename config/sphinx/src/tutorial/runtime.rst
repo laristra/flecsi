@@ -338,7 +338,7 @@ example:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 69-108
+  :lines: 71-110
 
 The first output stream added is `std::clog`__.
 
@@ -346,7 +346,7 @@ __ https://en.cppreference.com/w/cpp/io/clog
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 86-90
+  :lines: 88-92
 
 The arguments to add_output_stream are:
 
@@ -366,7 +366,7 @@ To add an output stream to a file, we can do the following:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 92-97
+  :lines: 94-99
 
 That's it! For this example, FLOG is now configured to write output to
 std::clog, and to *output.txt*. Next, we will see how to actually write
@@ -393,7 +393,7 @@ the basic output objects:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 30-38
+  :lines: 32-40
 
 Controlling Output - Strip Levels
 +++++++++++++++++++++++++++++++++
@@ -438,7 +438,7 @@ To create a new tag, we use the flog::tag type:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 20-25
+  :lines: 22-27
 
 Tags take a single std::string argument that is used in the help message
 to identify available tags.
@@ -454,13 +454,13 @@ the ``--flog-tags`` option:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 40-51
+  :lines: 42-53
 
 Here is another code example that defines a guarded section for *tag2*:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 53-64
+  :lines: 55-66
 
 You should experiment with invoking this example:
 

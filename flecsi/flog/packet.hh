@@ -50,6 +50,7 @@
 #define FLOG_PACKET_FLUSH_INTERVAL 100000
 #endif
 
+namespace flecsi {
 namespace flog {
 
 /*!
@@ -114,5 +115,6 @@ private:
 }; // packet_t
 
 } // namespace flog
+} // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

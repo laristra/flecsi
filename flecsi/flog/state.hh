@@ -29,6 +29,7 @@
 #include <string>
 #include <unordered_map>
 
+namespace flecsi {
 namespace flog {
 
 // Forward
@@ -431,5 +432,6 @@ private:
 }; // class flog_t
 
 } // namespace flog
+} // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

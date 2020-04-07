@@ -16,7 +16,7 @@
 
 int
 init_a(int, char **) {
-  flog::devel_guard guard(flecsi::ftest_tag);
+  flecsi::flog::devel_guard guard(flecsi::ftest_tag);
   flog(info) << "init a" << std::endl;
 
   flog(trace) << "trace (strip level " << FLOG_STRIP_LEVEL << ")" << std::endl;
@@ -30,7 +30,7 @@ ftest_register_initialize(init_a);
 
 int
 init_b(int, char **) {
-  flog::devel_guard guard(flecsi::ftest_tag);
+  flecsi::flog::devel_guard guard(flecsi::ftest_tag);
   flog(info) << "init b" << std::endl;
   return 0;
 }
@@ -47,7 +47,7 @@ test1(int, char **) {
   EXPECT_EQ(0, 0);
   flog(info) << "result " << FTEST_RESULT() << std::endl;
 
-  flog::devel_guard guard(flecsi::ftest_tag);
+  flecsi::flog::devel_guard guard(flecsi::ftest_tag);
   flog(info) << "THIS IS SOME LOG INFO FOR A TEST" << std::endl;
   return FTEST_RESULT();
 }
@@ -69,7 +69,7 @@ ftest_register_driver(test2);
 
 int
 finalize(int, char **) {
-  flog::devel_guard guard(flecsi::ftest_tag);
+  flecsi::flog::devel_guard guard(flecsi::ftest_tag);
   flog(info) << "finalize" << std::endl;
   return 0;
 }

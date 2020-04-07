@@ -31,6 +31,7 @@
 
 #if defined(FLECSI_ENABLE_FLOG)
 
+namespace flecsi {
 namespace flog {
 
 struct guard;
@@ -47,7 +48,7 @@ struct tag {
   friend guard;
 
   tag(const char * label) : label_(label) {
-    flog::flog_t::instance().register_tag(label);
+    flecsi::flog::flog_t::instance().register_tag(label);
   }
 
 private:
@@ -65,10 +66,10 @@ private:
 
 struct guard {
   guard(tag const & t)
-    : scope_(flog::flog_t::instance().lookup_tag(t.label_.c_str())) {}
+    : scope_(flecsi::flog::flog_t::instance().lookup_tag(t.label_.c_str())) {}
 
 private:
-  flog::tag_scope_t scope_;
+  flecsi::flog::tag_scope_t scope_;
 }; // struct guard
 
 #if defined(FLOG_ENABLE_DEVELOPER_MODE)
@@ -96,10 +97,11 @@ inline void
 add_output_stream(std::string const & label,
   std::ostream & stream,
   bool colorize = false) {
-  flog::flog_t::instance().config_stream().add_buffer(label, stream, colorize);
+  flecsi::flog::flog_t::instance().config_stream().add_buffer(label, stream, colorize);
 } // add_output_stream
 
 } // namespace flog
+} // namespace flecsi
 
 /*!
   @def flog(severity)
@@ -130,14 +132,14 @@ add_output_stream(std::string const & label,
 #define flog(severity)                                                         \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  true && flog::severity##_log_message_t(__FILE__, __LINE__, false).stream()
+  true && flecsi::flog::severity##_log_message_t(__FILE__, __LINE__, false).stream()
 
 #if defined(FLOG_ENABLE_DEVELOPER_MODE)
 
 #define flog_devel(severity)                                                   \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  true && flog::severity##_log_message_t(__FILE__, __LINE__, true).stream()
+  true && flecsi::flog::severity##_log_message_t(__FILE__, __LINE__, true).stream()
 
 #else
 
@@ -170,7 +172,7 @@ add_output_stream(std::string const & label,
 #define flog_trace(message)                                                    \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flog::trace_log_message_t(__FILE__, __LINE__).stream() << message
+  flecsi::flog::trace_log_message_t(__FILE__, __LINE__).stream() << message
 
 /*!
   @def flog_info(message)
@@ -193,7 +195,7 @@ add_output_stream(std::string const & label,
 #define flog_info(message)                                                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flog::info_log_message_t(__FILE__, __LINE__).stream() << message
+  flecsi::flog::info_log_message_t(__FILE__, __LINE__).stream() << message
 
 /*!
   @def flog_warn(message)
@@ -216,7 +218,7 @@ add_output_stream(std::string const & label,
 #define flog_warn(message)                                                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flog::warn_log_message_t(__FILE__, __LINE__).stream() << message
+  flecsi::flog::warn_log_message_t(__FILE__, __LINE__).stream() << message
 
 /*!
   @def flog_error(message)
@@ -239,12 +241,13 @@ add_output_stream(std::string const & label,
 #define flog_error(message)                                                    \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  flog::error_log_message_t(__FILE__, __LINE__).stream() << message
+  flecsi::flog::error_log_message_t(__FILE__, __LINE__).stream() << message
 
 #define __flog_internal_wait_on_flusher() usleep(FLOG_PACKET_FLUSH_INTERVAL)
 
 #else // FLECSI_ENABLE_FLOG
 
+namespace flecsi {
 namespace flog {
 
 struct tag { tag(const char *) {} };
@@ -255,6 +258,7 @@ struct devel_guard { devel_guard(devel_tag const &) {} };
 inline void add_output_stream(std::string const & label, std::ostream & stream, bool colorize = false) {}
 
 } // namespace flog
+} // namespace flecsi
 
 #define flog_initialize(active)
 #define flog_finalize()
@@ -292,6 +296,7 @@ inline void add_output_stream(std::string const & label, std::ostream & stream, 
 
 #include <boost/stacktrace.hpp>
 
+namespace flecsi {
 namespace flog {
 
 inline void
@@ -311,6 +316,7 @@ dumpstack() {
 } // dumpstack
 
 } // namespace flog
+} // namespace flecsi
 
 /*!
   @def flog_fatal(message)
@@ -341,11 +347,11 @@ dumpstack() {
     std::stringstream _sstream;                                                \
     _sstream << FLOG_OUTPUT_LTRED("FATAL ERROR ")                              \
              << FLOG_OUTPUT_YELLOW(                                            \
-                  flog::rstrip<'/'>(__FILE__) << ":" << __LINE__ << " ")       \
+                  flecsi::flog::rstrip<'/'>(__FILE__) << ":" << __LINE__ << " ")       \
              << FLOG_OUTPUT_LTRED(message) << std::endl;                       \
     __flog_internal_wait_on_flusher();                                         \
     std::cerr << _sstream.str() << std::endl;                                  \
-    flog::dumpstack();                                                         \
+    flecsi::flog::dumpstack();                                                         \
     std::abort();                                                              \
   } /* scope */
 
