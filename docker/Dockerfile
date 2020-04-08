@@ -37,7 +37,9 @@ RUN chown -R flecsi:flecsi $HOME/flecsi $HOME/.ccache
 USER flecsi
 
 WORKDIR $HOME
-RUN spack module tcl loads --dependencies flecsi%gcc backend=$RUNTIME ^$MPI_PACKAGE | tee deps.sh && \
+RUN spack repo add --scope site $HOME/flecsi/spack-repo && \
+    spack install --show-log-on-error flecsi%gcc +cinch backend=$RUNTIME +hdf5 +caliper ^$MPI_PACKAGE && \
+    spack module tcl loads --dependencies flecsi%gcc backend=$RUNTIME ^$MPI_PACKAGE | tee deps.sh && \
     echo ". $HOME/spack/share/spack/setup-env.sh && . $HOME/deps.sh" >> ~/.bashrc
 
 WORKDIR $HOME/flecsi
