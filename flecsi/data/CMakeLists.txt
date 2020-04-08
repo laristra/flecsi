@@ -23,8 +23,8 @@ set(data_HEADERS
   reference.hh
   field.hh
   field_info.hh
+  layout.hh
   privilege.hh
-  storage_classes.hh
   topology_accessor.hh
   topology_registration.hh
   topology_slot.hh

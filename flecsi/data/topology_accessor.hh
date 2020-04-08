@@ -26,7 +26,7 @@ namespace data {
 
 /*!
   Topology accessor type. Topology accessors are defined by the interface of
-  the underlying, user-defined type, i.e., unlike storage class accessors,
+  the underlying, user-defined type, i.e., unlike field accessors,
   topologies can be customized by the specialization to add types and inerfaces
   that are not part of the core FleCSI topology type. By inheriting from the
   customized topology type, we pick up these additions.

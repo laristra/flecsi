@@ -43,7 +43,7 @@ struct partition {
 
 template<class Topo, std::size_t Index = 0>
 region
-make_region(std::size_t n, storage_label_t sclass = dense) {
+make_region(std::size_t n, layout sclass = dense) {
   return {n,
     runtime::context_t::instance().get_field_info_store<Topo, Index>(sclass)};
 }

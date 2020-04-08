@@ -16,8 +16,8 @@
 /*! @file */
 
 #include "flecsi/data/topology_slot.hh"
+#include <flecsi/data/layout.hh>
 #include <flecsi/data/privilege.hh>
-#include <flecsi/data/storage_classes.hh>
 #include <flecsi/runtime/backend.hh>
 #include <flecsi/runtime/types.hh>
 
@@ -25,14 +25,11 @@ namespace flecsi {
 namespace data {
 
 /// A data accessor.
-/// \tparam STORAGE_CLASS data layout
+/// \tparam L data layout
 /// \tparam TOPOLOGY_TYPE core topology type
 /// \tparam T data type
 /// \tparam Priv access privileges
-template<storage_label_t STORAGE_CLASS,
-  typename TOPOLOGY_TYPE,
-  typename T,
-  std::size_t Priv>
+template<layout L, typename TOPOLOGY_TYPE, typename T, std::size_t Priv>
 struct accessor;
 
 /*!
@@ -80,13 +77,13 @@ struct field_reference : field_reference_t<Topo> {
                         user-defined type that does not have external
                         references, i.e., sizeof for a compact type is equal to
                         the logical serialization of that type.
-  @tparam STORAGE_CLASS The label of the storage class for the field member.
+  @tparam L data layout
   @tparam TOPOLOGY_TYPE A specialization of a core FleCSI topology type.
   @tparam INDEX_SPACE   The id of the index space on which to define the field.
  */
 
 template<typename DATA_TYPE,
-  storage_label_t STORAGE_CLASS,
+  layout L,
   typename TOPOLOGY_TYPE,
   size_t INDEX_SPACE>
 struct field_member : field_info_t {
@@ -94,15 +91,13 @@ struct field_member : field_info_t {
   using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 
   template<size_t... PRIVILEGES>
-  using accessor = accessor<STORAGE_CLASS,
-    TOPOLOGY_TYPE,
-    DATA_TYPE,
-    privilege_pack<PRIVILEGES...>::value>;
+  using accessor =
+    accessor<L, TOPOLOGY_TYPE, DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
 
   field_member()
     : field_info_t{unique_fid_t::instance().next(), sizeof(DATA_TYPE)} {
     runtime::context_t::instance().add_field_info<TOPOLOGY_TYPE, INDEX_SPACE>(
-      STORAGE_CLASS, *this);
+      L, *this);
   }
   // Copying/moving is inadvisable because the context knows the address.
   field_member(const field_member &) = delete;

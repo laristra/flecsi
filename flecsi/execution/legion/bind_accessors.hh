@@ -66,7 +66,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
       regions_(regions), futures_(futures) {}
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
-    The following methods are specializations on storage class and topology
+    The following methods are specializations on layout and topology
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 

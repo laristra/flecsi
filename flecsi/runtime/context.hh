@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/storage_classes.hh"
+#include "flecsi/data/layout.hh"
 #include "flecsi/topology/core.hh"
 #include <flecsi/data/field_info.hh>
 #include <flecsi/execution/task_attributes.hh>
@@ -70,8 +70,8 @@ struct context {
    *--------------------------------------------------------------------------*/
 
   /*!
-    This type allows the storage of field information per storage class. The
-    size_t key is the storage class.
+    This type allows the storage of field information per layout. The
+    size_t key is the layout.
    */
 
   using field_info_store_t = data::fields;
@@ -480,31 +480,30 @@ struct context {
 
     \tparam Topo topology type
     \tparam Index topology-relative index space
-    @param storage_class            Storage class identifier.
+    \param layout layout identifier
     @param field_info               Field information.
    */
   template<class Topo, std::size_t Index = 0>
-  void add_field_info(data::storage_label_t storage_class,
+  void add_field_info(data::layout layout,
     const data::field_info_t & field_info) {
     constexpr std::size_t NIndex = topology::index_spaces<Topo>;
     static_assert(Index < NIndex, "No such index space");
     topology_field_info_map_[topology::id<Topo>()]
-      .try_emplace(storage_class, NIndex)
+      .try_emplace(layout, NIndex)
       .first->second[Index]
       .push_back(&field_info);
   } // add_field_information
 
   /*!
-    Return the stored field info for the given topology type and storage class.
+    Return the stored field info for the given topology type and layout.
     Const version.
 
     \tparam Topo topology type
     \tparam Index topology-relative index space
-    @param storage_class            Storage class identifier.
+    \param layout layout identifier
    */
   template<class Topo, std::size_t Index = 0>
-  field_info_store_t const & get_field_info_store(
-    data::storage_label_t storage_class) const {
+  field_info_store_t const & get_field_info_store(data::layout layout) const {
     static_assert(Index < topology::index_spaces<Topo>, "No such index space");
 
     static const field_info_store_t empty;
@@ -513,7 +512,7 @@ struct context {
     if(tita == topology_field_info_map_.end())
       return empty;
 
-    auto const & sita = tita->second.find(storage_class);
+    auto const & sita = tita->second.find(layout);
     if(sita == tita->second.end())
       return empty;
 
