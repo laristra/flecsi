@@ -45,9 +45,8 @@ inline Legion::ReductionOpID reduction_id;
 
 // NB: 0 is reserved by Legion.
 template<class R>
-inline const Legion::ReductionOpID
-  reduction_op = (runtime::context::instance().register_reduction_operation(
-                    detail::register_reduction<R>),
+inline const Legion::ReductionOpID reduction_op =
+  (runtime::context::instance().register_init(detail::register_reduction<R>),
     ++detail::reduction_id);
 
 template<class TYPE>

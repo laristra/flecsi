@@ -159,18 +159,6 @@ context_t::start(const std::function<int(int, char **)> & action) {
   } // scope
 
   /*
-    Register tasks.
-   */
-
-  {
-    flog::devel_guard("context");
-    flog_devel(info) << "Invoking task registration callbacks" << std::endl;
-  } // scope
-
-  for(auto && p : task_registry_)
-    p();
-
-  /*
     Arg 0: MPI has initial control (true).
     Arg 1: Number of MPI participants (1).
     Arg 2: Number of Legion participants (1).
@@ -190,13 +178,7 @@ context_t::start(const std::function<int(int, char **)> & action) {
 
   Legion::Runtime::configure_MPI_interoperability(context::process_);
 
-  /*
-    Register reduction operations.
-   */
-
-  for(auto ro : reduction_registry_) {
-    ro();
-  } // for
+  context::start();
 
   /*
     Handle command-line arguments.

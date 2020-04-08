@@ -69,13 +69,6 @@ struct context_t : context {
 
   friend legion::task<> top_level_task;
 
-  /*!
-     The registration_function_t type defines a function type for
-     registration callbacks.
-   */
-
-  using registration_function_t = void (*)();
-
   //--------------------------------------------------------------------------//
   //  Runtime.
   //--------------------------------------------------------------------------//
@@ -262,27 +255,6 @@ struct context_t : context {
 
   void connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  //--------------------------------------------------------------------------//
-  // Task interface.
-  //--------------------------------------------------------------------------//
-
-  /*!
-    Register a task with the runtime.
-
-    @param name       The task name string.
-    @param callback   The registration call back function.
-    \return task ID
-   */
-  std::size_t register_task(std::string_view name,
-    const registration_function_t & callback) {
-    flog_devel(info) << "Registering task callback: " << name << std::endl;
-
-    flog_assert(
-      task_registry_.size() < FLECSI_GENERATED_ID_MAX, "too many tasks");
-    task_registry_.push_back(callback);
-    return task_registry_.size(); // 0 is the top-level task
-  } // register_task
-
 private:
   /*!
      Handoff to legion runtime from MPI.
@@ -359,12 +331,6 @@ private:
   std::function<void()> mpi_task_;
   Legion::MPILegionHandshake handshake_;
   LegionRuntime::Arrays::Rect<1> all_processes_;
-
-  /*--------------------------------------------------------------------------*
-    Task data members.
-   *--------------------------------------------------------------------------*/
-
-  std::vector<registration_function_t> task_registry_;
 };
 
 } // namespace flecsi::runtime

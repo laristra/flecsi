@@ -86,6 +86,7 @@ namespace legion {
 using runtime::legion::task;
 
 namespace detail {
+inline task_id_t last_task; // 0 is the top-level task
 /*!
   Register a task with Legion.
 
@@ -131,12 +132,12 @@ tuple_get(const Legion::Task & t) {
 
 template<auto & F, size_t A = loc | leaf>
 // 'extern' works around GCC bug #90493
-extern const task_id_t task_id = runtime::context_t::instance().register_task(
-  utils::symbol<F>(),
-  detail::register_task<
-    typename utils::function_traits<decltype(F)>::return_type,
-    F,
-    A>);
+extern const task_id_t
+  task_id = (runtime::context_t::instance().register_init(detail::register_task<
+               typename utils::function_traits<decltype(F)>::return_type,
+               F,
+               A>),
+    ++detail::last_task);
 
 template<typename RETURN, task<RETURN> * TASK, std::size_t A>
 void

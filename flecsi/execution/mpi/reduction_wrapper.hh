@@ -39,10 +39,9 @@ void register_reduction();
 
 // NB: The real initialization is in the callback.
 template<class R>
-inline MPI_Op
-  reduction_op = (runtime::context::instance().register_reduction_operation(
-                    detail::register_reduction<R>),
-    MPI_Op());
+inline MPI_Op reduction_op = (runtime::context::instance().register_init(
+                                detail::register_reduction<R>),
+  MPI_Op());
 
 /*!
   Register the user-defined reduction operator with the runtime.

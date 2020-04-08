@@ -437,13 +437,9 @@ struct context {
     return exit_status_;
   }
 
-  /*--------------------------------------------------------------------------*
-    Reduction interface.
-   *--------------------------------------------------------------------------*/
-
-  void register_reduction_operation(void callback()) {
-    reduction_registry_.push_back(callback);
-  } // register_reduction_operation
+  void register_init(void callback()) {
+    init_registry.push_back(callback);
+  }
 
   /*--------------------------------------------------------------------------*
     Topology interface.
@@ -569,6 +565,12 @@ currently only for unstructured mesh topologies.
 
 protected:
   context() = default;
+  // Invoke initialization callbacks.
+  // Call from hiding function in derived classses.
+  void start() {
+    for(auto ro : init_registry)
+      ro();
+  }
 
 #ifdef DOXYGEN
   /*
@@ -623,12 +625,6 @@ protected:
   int exit_status_ = 0;
 
   /*--------------------------------------------------------------------------*
-    Reduction data members.
-   *--------------------------------------------------------------------------*/
-
-  std::vector<void (*)()> reduction_registry_;
-
-  /*--------------------------------------------------------------------------*
     Function data members.
    *--------------------------------------------------------------------------*/
 
@@ -665,6 +661,8 @@ protected:
 
   size_t tasks_executed_ = 0;
 
+private:
+  std::vector<void (*)()> init_registry;
 }; // struct context
 
 } // namespace runtime

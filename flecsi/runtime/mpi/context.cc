@@ -69,14 +69,7 @@ context_t::finalize() {
 
 int
 context_t::start(const std::function<int(int, char **)> & action) {
-
-  /*
-    Register reduction operations.
-   */
-
-  for(auto ro : reduction_registry_) {
-    ro();
-  } // for
+  context::start();
 
   context::threads_per_process_ = 1;
   context::threads_ = context::processes_;
