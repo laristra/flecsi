@@ -25,6 +25,8 @@
 
 /*----------------------------------------------------------------------------*
   Reduction Interface
+
+  Legion's reduction interface is used regardless of backend.
  *----------------------------------------------------------------------------*/
 
 namespace flecsi {
