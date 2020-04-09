@@ -40,18 +40,9 @@ class thing
 
 // TEST
 TEST(tuple_type_converter, all) {
-  // convert_tuple_type_
-  print_type<typename flecsi::utils::convert_tuple_type_<char>::type>();
-  print_type<typename flecsi::utils::convert_tuple_type_<const char>::type>();
-  CINCH_CAPTURE() << std::endl;
-
-  // convert_tuple_type
-  print_type<typename flecsi::utils::convert_tuple_type<std::tuple<>>::type>();
-  print_type<
-    typename flecsi::utils::convert_tuple_type<std::tuple<char>>::type>();
-  print_type<typename flecsi::utils::convert_tuple_type<
-    std::tuple<int, double>>::type>();
-  CINCH_CAPTURE() << std::endl;
+  using namespace flecsi::utils;
+  static_assert(std::is_same_v<convert_tuple_t<std::tuple<>,std::remove_reference_t>,std::tuple<>>);
+  static_assert(std::is_same_v<convert_tuple_t<std::tuple<int,int&>,std::remove_reference_t>,std::tuple<int,int>>);
 
   // base_convert_tuple_type_
   print_type<

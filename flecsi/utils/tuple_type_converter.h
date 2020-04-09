@@ -20,18 +20,16 @@
 namespace flecsi {
 namespace utils {
 
-template<typename T>
-struct convert_tuple_type_ {
-  using type = T;
+  template<class,template<class> class>
+struct convert_tuple;
+
+  template<typename... Args,template<class> class F>
+struct convert_tuple<std::tuple<Args...>,F> {
+  using type = std::tuple<F<Args>...>;
 };
 
-template<typename... Args>
-struct convert_tuple_type;
-
-template<typename... Args>
-struct convert_tuple_type<std::tuple<Args...>> {
-  using type = std::tuple<typename convert_tuple_type_<Args>::type...>;
-};
+  template<class T,template<class> class F>
+  using convert_tuple_t=typename convert_tuple<T,F>::type;
 
 template<typename T, typename TO, bool E>
 struct base_convert_tuple_type_ {
