@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <tuple>
+#include<type_traits>
 
 namespace flecsi {
 namespace utils {
@@ -30,6 +31,11 @@ struct convert_tuple<std::tuple<Args...>,F> {
 
   template<class T,template<class> class F>
   using convert_tuple_t=typename convert_tuple<T,F>::type;
+
+  template<class T>
+  constexpr auto forward_tuple(T &&t) noexcept {
+    return std::apply([](auto &&...aa) {return std::forward_as_tuple(std::forward<decltype(aa)>(aa)...);},std::forward<T&&>(t));
+  }
 
 template<typename T, typename TO, bool E>
 struct base_convert_tuple_type_ {
