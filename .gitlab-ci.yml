@@ -45,7 +45,7 @@ variables:
   FLECSI_PYTHON_VERSION: "3.5.1"
   FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/build/flecsi-deps-${RUNTIME}-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
   FLECSI_SPACK_SCOPE: "lanl_ristra_flecsi"
-  FLECSI_SPACK_BASE_SPEC: "flecsi@1.4%gcc@${FLECSI_GCC_VERSION} +hdf5 backend=${RUNTIME}"
+  FLECSI_SPACK_BASE_SPEC: "flecsi@1.4%gcc@${FLECSI_GCC_VERSION} backend=${RUNTIME}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
   - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
@@ -67,7 +67,7 @@ before_script:
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
     echo ${FLECSI_SPACK_FULL_SPEC};
-    spack module tcl loads --dependencies "${FLECSI_SPACK_FULL_SPEC}" | tee ${FLECSI_ENV_SOURCE_FILE} || /bin/true;
+    spack module tcl loads --dependencies ${FLECSI_SPACK_FULL_SPEC} | tee ${FLECSI_ENV_SOURCE_FILE} || /bin/true;
     spack repo rm ${FLECSI_SPACK_SCOPE};
     ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true

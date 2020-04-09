@@ -43,7 +43,7 @@ class Flecsi(CMakePackage):
             description='Enable documentation')
     variant('coverage', default=False,
             description='Enable coverage build')
-    variant('hdf5', default=False,
+    variant('hdf5', default=True,
             description='Enable HDF5 Support')
     variant('caliper', default=False,
             description='Enable Caliper Support')
