@@ -39,7 +39,9 @@ USER flecsi
 WORKDIR $HOME
 RUN spack repo add --scope site $HOME/flecsi/spack-repo && \
     spack install --show-log-on-error flecsi%gcc +cinch backend=$RUNTIME +hdf5 +caliper ^$MPI_PACKAGE && \
-    spack module tcl loads --dependencies flecsi%gcc backend=$RUNTIME ^$MPI_PACKAGE | tee deps.sh && \
+    spack module tcl loads cmake | tee deps.sh && \
+    spack module tcl loads parmetis ^$MPI_PACKAGE | tee -a deps.sh && \
+    spack module tcl loads --dependencies flecsi%gcc backend=$RUNTIME ^$MPI_PACKAGE | tee -a deps.sh && \
     echo ". $HOME/spack/share/spack/setup-env.sh && . $HOME/deps.sh" >> ~/.bashrc
 
 WORKDIR $HOME/flecsi
