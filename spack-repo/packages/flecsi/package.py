@@ -45,7 +45,7 @@ class Flecsi(CMakePackage):
             description='Enable coverage build')
     variant('hdf5', default=True,
             description='Enable HDF5 Support')
-    variant('caliper', default=False,
+    variant('caliper', default=True,
             description='Enable Caliper Support')
     variant('graphviz', default=False,
             description='Enable GraphViz Support')
