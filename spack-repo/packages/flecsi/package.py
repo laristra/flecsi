@@ -43,7 +43,7 @@ class Flecsi(CMakePackage):
             description='Enable documentation')
     variant('coverage', default=False,
             description='Enable coverage build')
-    variant('hdf5', default=False,
+    variant('hdf5', default=True,
             description='Enable HDF5 Support')
     variant('caliper', default=False,
             description='Enable Caliper Support')
@@ -53,10 +53,10 @@ class Flecsi(CMakePackage):
             description='Build FleCSI Tutorials')
     variant('flecstan', default=False,
             description='Build FleCSI Static Analyzer')
-    variant('cinch', default=False,
+    variant('cinch', default=True,
             description='Enable External Cinch')
 
-    depends_on('cmake@3.12:',  type='build')
+    depends_on('cmake@3.12:')
     # Requires cinch > 1.0 due to cinchlog installation issue
     depends_on('cinch@1.01:', type='build', when='+cinch')
     depends_on('mpi', when='backend=mpi')
