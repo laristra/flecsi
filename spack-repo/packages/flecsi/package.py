@@ -53,7 +53,7 @@ class Flecsi(CMakePackage):
             description='Build FleCSI Tutorials')
     variant('flecstan', default=False,
             description='Build FleCSI Static Analyzer')
-    variant('cinch', default=False,
+    variant('cinch', default=True,
             description='Enable External Cinch')
 
     depends_on('cmake@3.12:')
