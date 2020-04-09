@@ -212,6 +212,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         Legion::IndexCopyLauncher ghost_copy_launcher(color_domain);
         ghost_copy_launcher.add_copy_requirements(rr_owners, rr_ghost);
         ghost_copy_launcher.add_src_indirect_field(ghost_owner_pos_fid, rr_pos);
+        assert(!ghost_copy_launcher.src_indirect_is_range[0]);
         runtime->issue_copy_operation(context, ghost_copy_launcher);
       }
     } // for group
