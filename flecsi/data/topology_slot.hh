@@ -50,7 +50,7 @@ struct topology_slot : topology_id<topology_slot<TOPOLOGY_TYPE>> {
   } // allocate
 
   void deallocate() {
-    //data.reset();
+    // data.reset();
   } // deallocate
 
   data_t & get() {
