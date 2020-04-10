@@ -97,7 +97,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
 
     // h is partially initialized in client.h
@@ -225,7 +225,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
 
     auto & ism = context_.set_index_space_map();

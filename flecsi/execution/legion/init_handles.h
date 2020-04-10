@@ -238,7 +238,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
   } // handle
 
   template<size_t I, typename T, size_t PERMISSIONS>
-  void client_handler(data_client_handle_u<T, PERMISSIONS> & h,
+  void client_handler(data_client_handle_u<T, PERMISSIONS> h,
     const std::map<int, topology::mesh_entity_base_ *> & ent_map,
     const std::map<int, utils::id_t *> & id_map) {
 
@@ -275,7 +275,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
 
     auto storage = h.set_storage(new typename T::storage_t);
@@ -421,7 +421,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
 
     auto storage = h.set_storage(new typename T::storage_t);

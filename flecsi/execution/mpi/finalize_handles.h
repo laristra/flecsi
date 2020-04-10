@@ -177,7 +177,7 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
 
     auto storage = h.storage();
@@ -194,7 +194,7 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     if(PERMISSIONS == wo || PERMISSIONS == rw) {
       auto & context_ = context_t::instance();
       auto & ssm = context_.index_subspace_info();
