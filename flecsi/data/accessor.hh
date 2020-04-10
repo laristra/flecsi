@@ -23,122 +23,59 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/reference.hh"
 #include <flecsi/data/field.hh>
-#include <flecsi/topology/structured/interface.hh>
-#include <flecsi/topology/unstructured/interface.hh>
+#include"flecsi/data/reference.hh"
 
 namespace flecsi {
 namespace data {
 
-/*----------------------------------------------------------------------------*
-  Global Topology.
- *----------------------------------------------------------------------------*/
-
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<storage_label_t::dense, topology::global, DATA_TYPE, PRIVILEGES>
-  : reference_base {
-
-  friend void bind(accessor & a, DATA_TYPE * data) {
-    a.data_ = data;
-  }
-
+struct accessor<singular, DATA_TYPE, PRIVILEGES> {
   using value_type = DATA_TYPE;
-  using topology_t = topology::global;
+  using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;
 
-  accessor(field_reference<DATA_TYPE, topology_t> const & ref)
-    : accessor(ref.fid()) {}
-  explicit accessor(std::size_t f) : reference_base(f) {}
+  template<class Topo, topology::index_space_t<Topo> Space>
+  accessor(field_reference<DATA_TYPE, singular, Topo, Space> const & ref)
+    : base(ref.template cast<dense>()) {}
+  accessor(const base_type & b) : base(b) {}
 
-  operator DATA_TYPE &() {
-    return *data_;
-  } // value
-
-  operator DATA_TYPE const &() const {
-    return *data_;
-  } // value
-
-  DATA_TYPE * data() {
-    return data_;
+  DATA_TYPE & get() const {
+    return base(0);
   } // data
+  operator DATA_TYPE &() const {
+    return get();
+  } // value
 
+  const accessor & operator=(const DATA_TYPE & value) const {
+    return const_cast<accessor &>(*this) = value;
+  } // operator=
   accessor & operator=(const DATA_TYPE & value) {
-    *data_ = value;
+    get() = value;
     return *this;
   } // operator=
 
-private:
-  DATA_TYPE * data_;
-
-}; // struct accessor
-
-/*----------------------------------------------------------------------------*
-  Index Topology.
- *----------------------------------------------------------------------------*/
-
-template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<storage_label_t::dense, topology::index, DATA_TYPE, PRIVILEGES>
-  : reference_base {
-  using value_type = DATA_TYPE;
-  using topology_t = topology::index;
-
-  accessor(field_reference<DATA_TYPE, topology_t> const & ref)
-    : accessor(ref.fid()) {}
-  explicit accessor(std::size_t f) : reference_base(f) {}
-
-  operator DATA_TYPE &() {
-    return *data_;
-  } // value
-
-  operator DATA_TYPE const &() const {
-    return *data_;
-  } // value
-
-  DATA_TYPE * data() {
-    return data_;
-  } // data
-
-  accessor & operator=(const DATA_TYPE & value) {
-    *data_ = value;
-    return *this;
-  } // operator=
-
-private:
-  friend void bind(accessor & a, DATA_TYPE * data) {
-    a.data_ = data;
+  base_type & get_base() {
+    return base;
+  }
+  const base_type & get_base() const {
+    return base;
+  }
+  friend base_type * get_null_base(accessor *) { // for task_prologue_t
+    return nullptr;
   }
 
-  DATA_TYPE * data_;
-
+private:
+  base_type base;
 }; // struct accessor
 
-/*----------------------------------------------------------------------------*
-  NTree Topology.
- *----------------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------------*
-  Set Topology.
- *----------------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------------*
-  Structured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------------*
-  Unstructured Mesh Topology.
- *----------------------------------------------------------------------------*/
-
-// TODO: Do we need POLICY_TYPE, or should we avoid redundant instantiation by
-// keying on unstructured_base (or some equivalent enum)?
-template<typename POLICY_TYPE, typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<storage_label_t::dense,
-  topology::unstructured<POLICY_TYPE>,
-  DATA_TYPE,
-  PRIVILEGES> : reference_base {
+template<typename DATA_TYPE, size_t PRIVILEGES>
+struct accessor<dense, DATA_TYPE, PRIVILEGES> : reference_base {
   using value_type = DATA_TYPE;
-  using topology_t = topology::unstructured<POLICY_TYPE>;
 
-  accessor(field_reference<DATA_TYPE, topology_t> const & ref)
-    : accessor(ref.info().fid) {}
+  template<class Topo, topology::index_space_t<Topo> Space>
+  accessor(field_reference<DATA_TYPE, dense, Topo, Space> const & ref)
+    : accessor(ref.fid()) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
 
   /*!
@@ -163,8 +100,9 @@ private:
     a.data_ = data;
   }
 
-  size_t size_;
-  DATA_TYPE * data_;
+  // These must be initialized to copy into a user's accessor parameter.
+  size_t size_ = 0;
+  DATA_TYPE * data_ = nullptr;
 
 }; // struct accessor
 

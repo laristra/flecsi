@@ -16,8 +16,8 @@
 /*! @file */
 
 #include "flecsi/data/topology_slot.hh"
+#include <flecsi/data/layout.hh>
 #include <flecsi/data/privilege.hh>
-#include <flecsi/data/storage_classes.hh>
 #include <flecsi/runtime/backend.hh>
 #include <flecsi/runtime/types.hh>
 
@@ -25,15 +25,28 @@ namespace flecsi {
 namespace data {
 
 /// A data accessor.
-/// \tparam STORAGE_CLASS data layout
-/// \tparam TOPOLOGY_TYPE core topology type
+/// \tparam L data layout
 /// \tparam T data type
 /// \tparam Priv access privileges
-template<storage_label_t STORAGE_CLASS,
-  typename TOPOLOGY_TYPE,
-  typename T,
-  std::size_t Priv>
+template<layout L, typename T, std::size_t Priv>
 struct accessor;
+
+template<class, layout, class, std::size_t>
+struct field_register;
+
+template<class T, class Topo, std::size_t Space>
+struct field_register<T, dense, Topo, Space> : field_info_t {
+  field_register() : field_info_t{unique_fid_t::instance().next(), sizeof(T)} {
+    runtime::context_t::instance().add_field_info<Topo, Space>(*this);
+  }
+  // Copying/moving is inadvisable because the context knows the address.
+  field_register(const field_register &) = delete;
+  field_register & operator=(const field_register &) = delete;
+};
+
+template<class T, class Topo, std::size_t Space>
+struct field_register<T, singular, Topo, Space>
+  : field_register<T, dense, Topo, Space> {};
 
 /*!
   The field_reference_t type is used to reference fields. It adds a \em
@@ -41,7 +54,7 @@ struct accessor;
   associated topology instance.
  */
 template<class Topo>
-struct field_reference_t {
+struct field_reference_t : convert_tag {
   // The use of the slot allows creating field references statically, before
   // the topology_data has been allocated.
   using topology_t = topology_slot<Topo>;
@@ -62,12 +75,22 @@ private:
 
 }; // struct field_reference
 
-/// A \c field_reference is a \c field_reference_t tagged with a data type.
+/// A \c field_reference is a \c field_reference_t with more type information.
 /// \tparam T data type (merely for type safety)
-template<class T, class Topo>
+/// \tparam L data layout (similarly)
+/// \tparam Space topology-relative index space
+template<class T, layout L, class Topo, topology::index_space_t<Topo> Space>
 struct field_reference : field_reference_t<Topo> {
+  using Base = typename field_reference::field_reference_t; // TIP: dependent
   using value_type = T;
-  using field_reference_t<Topo>::field_reference_t;
+
+  using Base::Base;
+  explicit field_reference(const Base & b) : Base(b) {}
+
+  template<layout L2, class T2 = T> // TODO: allow only safe casts
+  auto cast() const {
+    return field_reference<T2, L2, Topo, Space>(*this);
+  }
 };
 
 /*!
@@ -80,33 +103,21 @@ struct field_reference : field_reference_t<Topo> {
                         user-defined type that does not have external
                         references, i.e., sizeof for a compact type is equal to
                         the logical serialization of that type.
-  @tparam STORAGE_CLASS The label of the storage class for the field member.
+  @tparam L data layout
   @tparam TOPOLOGY_TYPE A specialization of a core FleCSI topology type.
-  @tparam INDEX_SPACE   The id of the index space on which to define the field.
+  @tparam INDEX_SPACE   The index space on which to define the field.
  */
 
 template<typename DATA_TYPE,
-  storage_label_t STORAGE_CLASS,
+  layout L,
   typename TOPOLOGY_TYPE,
-  size_t INDEX_SPACE>
-struct field_member : field_info_t {
-
+  topology::index_space_t<TOPOLOGY_TYPE> INDEX_SPACE =
+    topology::default_space<TOPOLOGY_TYPE>>
+struct field_member : field_register<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> {
   using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 
   template<size_t... PRIVILEGES>
-  using accessor = accessor<STORAGE_CLASS,
-    TOPOLOGY_TYPE,
-    DATA_TYPE,
-    privilege_pack<PRIVILEGES...>::value>;
-
-  field_member()
-    : field_info_t{unique_fid_t::instance().next(), sizeof(DATA_TYPE)} {
-    runtime::context_t::instance().add_field_info<TOPOLOGY_TYPE, INDEX_SPACE>(
-      STORAGE_CLASS, *this);
-  }
-  // Copying/moving is inadvisable because the context knows the address.
-  field_member(const field_member &) = delete;
-  field_member & operator=(const field_member &) = delete;
+  using accessor = accessor<L, DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
 
   /*!
     Return a reference to the field instance associated with the given topology
@@ -115,7 +126,7 @@ struct field_member : field_info_t {
     @param topology_reference A reference to a valid topology instance.
    */
 
-  field_reference<DATA_TYPE, TOPOLOGY_TYPE> operator()(
+  field_reference<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> operator()(
     topology_reference_t const & topology_reference) const {
 
     return {*this, topology_reference};

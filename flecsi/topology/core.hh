@@ -51,6 +51,8 @@ struct unstructured_base;
 template<typename>
 struct unstructured;
 
+enum single_space { elements };
+
 namespace detail {
 
 template<class, class = void>
@@ -115,6 +117,27 @@ id() {
   static auto ret = next_id++;
   return ret;
 }
+
+template<class, class = void>
+struct index_space {
+  using type = single_space;
+  static constexpr single_space default_space = elements;
+};
+template<class T> // TIP: SFINAE uses T::index_space if defined
+struct index_space<T, utils::voided<typename T::index_space>> {
+  using type = typename T::index_space;
+};
+
+// With this as a variable template, GCC 8.1 incorrectly produces a hard error
+// rather than discounting the partial specialization when appropriate.
+template<class T, class = void>
+struct default_space { // NB: not SFINAE-friendly
+  static constexpr single_space value = detail::index_space<T>::default_space;
+};
+template<class T>
+struct default_space<T, decltype(void(T::default_space))> {
+  static constexpr auto value = T::default_space;
+};
 } // namespace detail
 
 template<class T>
@@ -133,6 +156,11 @@ inline constexpr std::size_t index_spaces = 1;
 template<class T>
 inline constexpr std::size_t index_spaces<T, decltype(void(T::index_spaces))> =
   T::index_spaces; // TIP: expression SFINAE uses T::index_spaces if defined
+
+template<class T>
+using index_space_t = typename detail::index_space<T>::type;
+template<class T>
+inline constexpr auto default_space = detail::default_space<T>::value;
 
 } // namespace topology
 } // namespace flecsi

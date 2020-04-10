@@ -16,7 +16,7 @@
 /*!
   @file
 
-  This file defines storage classes.
+  This file defines data layouts.
  */
 
 #if !defined(__FLECSI_PRIVATE__)
@@ -29,19 +29,19 @@ namespace flecsi {
 namespace data {
 
 /*!
-  The storage_label_t type enumerates the available FleCSI storage classes.
-  A FleCSI storage class provides a specific interface for different
+  A FleCSI \c layout provides a specific interface for different
   logical data layouts, e.g., dense vs. sparse. The actual data layout
   is implementation-dependent.
  */
 
-enum storage_label_t : size_t {
+enum layout : size_t {
   dense,
+  singular, ///< Access to the single element of an array.
   sparse,
   ragged,
   array,
   subspace
-}; // enum storage_label_t
+};
 
 } // namespace data
 } // namespace flecsi

@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/storage_classes.hh"
+#include "flecsi/data/layout.hh"
 #include "flecsi/topology/core.hh"
 #include <flecsi/data/field_info.hh>
 #include <flecsi/execution/task_attributes.hh>
@@ -69,14 +69,7 @@ struct context {
     Public types.
    *--------------------------------------------------------------------------*/
 
-  /*!
-    This type allows the storage of field information per storage class. The
-    size_t key is the storage class.
-   */
-
   using field_info_store_t = data::fields;
-  using field_info_map_t =
-    std::unordered_map<size_t, std::vector<field_info_store_t>>;
 
   /*!
     This type allows storage of subspace information.
@@ -480,31 +473,26 @@ struct context {
 
     \tparam Topo topology type
     \tparam Index topology-relative index space
-    @param storage_class            Storage class identifier.
     @param field_info               Field information.
    */
-  template<class Topo, std::size_t Index = 0>
-  void add_field_info(data::storage_label_t storage_class,
-    const data::field_info_t & field_info) {
+  template<class Topo, std::size_t Index>
+  void add_field_info(const data::field_info_t & field_info) {
     constexpr std::size_t NIndex = topology::index_spaces<Topo>;
     static_assert(Index < NIndex, "No such index space");
-    topology_field_info_map_[topology::id<Topo>()]
-      .try_emplace(storage_class, NIndex)
+    topology_field_info_map_.try_emplace(topology::id<Topo>(), NIndex)
       .first->second[Index]
       .push_back(&field_info);
   } // add_field_information
 
   /*!
-    Return the stored field info for the given topology type and storage class.
+    Return the stored field info for the given topology type and layout.
     Const version.
 
     \tparam Topo topology type
     \tparam Index topology-relative index space
-    @param storage_class            Storage class identifier.
    */
-  template<class Topo, std::size_t Index = 0>
-  field_info_store_t const & get_field_info_store(
-    data::storage_label_t storage_class) const {
+  template<class Topo, std::size_t Index = topology::default_space<Topo>>
+  field_info_store_t const & get_field_info_store() const {
     static_assert(Index < topology::index_spaces<Topo>, "No such index space");
 
     static const field_info_store_t empty;
@@ -513,11 +501,7 @@ struct context {
     if(tita == topology_field_info_map_.end())
       return empty;
 
-    auto const & sita = tita->second.find(storage_class);
-    if(sita == tita->second.end())
-      return empty;
-
-    return sita->second[Index];
+    return tita->second[Index];
   } // get_field_info_store
 
   /*!
@@ -662,10 +646,11 @@ protected:
 
   /*
     This type allows storage of runtime field information per topology type.
-    The size_t key is the topology type hash.
+    The size_t key is the topology ID; the vector index is the index space.
    */
 
-  std::unordered_map<size_t, field_info_map_t> topology_field_info_map_;
+  std::unordered_map<size_t, std::vector<field_info_store_t>>
+    topology_field_info_map_;
 
   /*
     This type allows storage of runtime index subspace information.

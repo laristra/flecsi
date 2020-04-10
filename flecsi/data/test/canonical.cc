@@ -28,7 +28,7 @@ struct policy {
   template<size_t VALUE>
   using typeify = flecsi::utils::typeify<size_t, VALUE>;
 
-  enum index_spaces_t { vertices, cells }; // enum index_spaces_t
+  enum index_space { vertices, cells };
   static constexpr std::size_t index_spaces = 2;
 
   using entity_types = std::tuple<typeify<vertices>, typeify<cells>>;

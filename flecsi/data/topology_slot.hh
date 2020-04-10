@@ -35,8 +35,10 @@ struct topology_id;
 template<typename>
 struct topology_data;
 
+struct convert_tag {}; // must be recognized as a task argument
+
 template<typename TOPOLOGY_TYPE>
-struct topology_slot : topology_id<topology_slot<TOPOLOGY_TYPE>> {
+struct topology_slot : convert_tag, topology_id<topology_slot<TOPOLOGY_TYPE>> {
 
   using core_t = topology::core_t<TOPOLOGY_TYPE>;
   static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
@@ -50,7 +52,7 @@ struct topology_slot : topology_id<topology_slot<TOPOLOGY_TYPE>> {
   } // allocate
 
   void deallocate() {
-    //data.reset();
+    // data.reset();
   } // deallocate
 
   data_t & get() {

@@ -41,11 +41,12 @@ struct partition {
 };
 #endif
 
-template<class Topo, std::size_t Index = 0>
+template<class Topo,
+  topology::index_space_t<Topo> Index = topology::default_space<Topo>>
 region
-make_region(std::size_t n, storage_label_t sclass = dense) {
-  return {n,
-    runtime::context_t::instance().get_field_info_store<Topo, Index>(sclass)};
+make_region(std::size_t n) {
+  return {
+    n, runtime::context_t::instance().get_field_info_store<Topo, Index>()};
 }
 
 template<class Topo>

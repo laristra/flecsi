@@ -107,20 +107,30 @@ struct task_prologue_t {
   }
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
-    The following methods are specializations on storage class and client
+    The following methods are specializations on layout and client
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+  template<class T,
+    std::size_t Priv,
+    class Topo,
+    topology::index_space_t<Topo> Space>
+  void visit(data::accessor<data::singular, T, Priv> * null_p,
+    const data::field_reference<T, data::singular, Topo, Space> & ref) {
+    visit(get_null_base(null_p), ref.template cast<data::dense>());
+  }
 
   /*--------------------------------------------------------------------------*
     Global Topology
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::dense,
-               topology::global,
-               DATA_TYPE,
-               PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, topology::global> & ref) {
+  void visit(
+    data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<DATA_TYPE,
+      data::dense,
+      topology::global,
+      topology::elements> & ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
@@ -146,11 +156,12 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::dense,
-               topology::index,
-               DATA_TYPE,
-               PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, topology::index> & ref) {
+  void visit(
+    data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<DATA_TYPE,
+      data::dense,
+      topology::index,
+      topology::elements> & ref) {
     auto & instance_data = ref.topology().get();
 
     flog_assert(instance_data.colors() == domain_,
@@ -169,43 +180,6 @@ struct task_prologue_t {
 
     rr.add_field(ref.fid());
     region_reqs_.push_back(rr);
-  } // visit
-
-  /*--------------------------------------------------------------------------*
-    NTree Topology
-   *--------------------------------------------------------------------------*/
-
-  template<typename POLICY_TYPE, size_t PRIVILEGES>
-  using ntree_accessor =
-    data::topology_accessor<topology::ntree<POLICY_TYPE>, PRIVILEGES>;
-
-  template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(ntree_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::ntree<POLICY_TYPE>> &) {} // visit
-
-  /*--------------------------------------------------------------------------*
-    Set Topology
-   *--------------------------------------------------------------------------*/
-
-  template<typename POLICY_TYPE, size_t PRIVILEGES>
-  using set_accessor =
-    data::topology_accessor<topology::set<POLICY_TYPE>, PRIVILEGES>;
-
-  template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(set_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::set<POLICY_TYPE>> &) {} // visit
-
-  /*--------------------------------------------------------------------------*
-    Structured Mesh Topology
-   *--------------------------------------------------------------------------*/
-
-  template<typename POLICY_TYPE, size_t PRIVILEGES>
-  using structured_accessor =
-    data::topology_accessor<topology::structured<POLICY_TYPE>, PRIVILEGES>;
-
-  template<class T, typename POLICY_TYPE, size_t PRIVILEGES>
-  void visit(structured_accessor<POLICY_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<T, topology::structured<POLICY_TYPE>> &) {
   } // visit
 
   /*--------------------------------------------------------------------------*
@@ -230,9 +204,9 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE>
-  static typename std::enable_if_t<
-    !std::is_base_of_v<data::reference_base, DATA_TYPE>>
-  visit(DATA_TYPE &) {
+  static void visit(DATA_TYPE &) {
+    static_assert(!std::is_base_of_v<data::convert_tag, DATA_TYPE>,
+      "Unknown task argument type");
     {
       flog::devel_guard guard(task_prologue_tag);
       flog_devel(info) << "Skipping argument with type "

@@ -197,7 +197,7 @@ string_case_compare(const char * lhs, const char * rhs) {
 } // namespace flecsi
 
 #define FTEST()                                                                \
-  flecsi::flog::flog_t::instance().config_stream().add_buffer(                         \
+  flecsi::flog::flog_t::instance().config_stream().add_buffer(                 \
     "flog", std::clog, true);                                                  \
   flecsi::utils::ftest::state_t __ftest_state_instance(__FUNCTION__)
 

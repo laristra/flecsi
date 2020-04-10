@@ -47,15 +47,26 @@ namespace flecsi {
 inline flog::devel_tag task_wrapper_tag("task_wrapper");
 
 // Send and receive only the reference_base portion:
-template<data::storage_label_t L, class Topo, class T, std::size_t Priv>
-struct utils::serial_convert<data::accessor<L, Topo, T, Priv>> {
-  using type = data::accessor<L, Topo, T, Priv>;
+template<class T, std::size_t Priv>
+struct utils::serial_convert<data::accessor<data::dense, T, Priv>> {
+  using type = data::accessor<data::dense, T, Priv>;
   using Rep = std::size_t;
   static Rep put(const type & r) {
     return r.identifier();
   }
   static type get(const Rep & r) {
     return type(r);
+  }
+};
+template<class T, std::size_t Priv>
+struct utils::serial_convert<data::accessor<data::singular, T, Priv>> {
+  using type = data::accessor<data::singular, T, Priv>;
+  using Base = typename type::base_type;
+  static const Base & put(const type & a) {
+    return a.get_base();
+  }
+  static type get(Base b) {
+    return b;
   }
 };
 
