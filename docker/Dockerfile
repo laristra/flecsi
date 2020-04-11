@@ -1,8 +1,13 @@
-FROM laristra/flecsi-third-party:fedora
+FROM laristra/spack-buildenv:fedora30
+
+SHELL ["/bin/bash", "-c"]
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    HOME=/home/flecsi \
+    BASH_ENV=~/.bashrc
 
 ARG DISTRO
-ARG MINIMAL
-ARG LEGION
+ARG MPI_PACKAGE
 ARG BUILD_TYPE
 ARG RUNTIME
 ARG COVERAGE
@@ -24,32 +29,36 @@ ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
 
-RUN rm -rf /home/flecsi/.ccache
-COPY flecsi /home/flecsi/flecsi
-COPY ccache/ /home/flecsi/.ccache
+RUN rm -rf $HOME/.ccache
+COPY flecsi $HOME/flecsi
+COPY ccache/ $HOME/.ccache
 USER root
-RUN chown -R flecsi:flecsi /home/flecsi/flecsi /home/flecsi/.ccache
+RUN chown -R flecsi:flecsi $HOME/flecsi $HOME/.ccache
 USER flecsi
 
-WORKDIR /home/flecsi/flecsi
+WORKDIR $HOME
+RUN spack repo add --scope site $HOME/flecsi/spack-repo && \
+    export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE"
+    spack install --show-log-on-error $SPACK_SPEC && \
+    spack module tcl loads parmetis ^$MPI_PACKAGE | tee -a deps.sh && \
+    spack module tcl loads --dependencies $SPACK_SPEC | tee -a deps.sh && \
+    echo ". $HOME/spack/share/spack/setup-env.sh && . $HOME/deps.sh" >> ~/.bashrc
+
+WORKDIR $HOME/flecsi
 RUN mkdir build
 
 WORKDIR build
 RUN ${CC} --version
 RUN ccache -z
-RUN cmake -DMPIEXEC_PREFLAGS=$([ "$DISTRO" = "fedora" ] || [ "$DISTRO" = "ubuntu" ] && echo '--oversubscribe -mca pml ^ucx') \
-          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-          -DENABLE_LEGION=$LEGION \
+RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
-          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
-	  -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && \
-                     echo OFF || echo ON) \
+          -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
+          -DENABLE_FLECSI_TUTORIAL=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
           -DENABLE_UNIT_TESTS=ON \
-          -DENABLE_PARMETIS=ON \
-          -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_DOCUMENTATION=ON \
-          ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
+          ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
+          ..
 
 RUN make VERBOSE=1 -j2
 RUN ccache -s
@@ -76,4 +85,4 @@ fi && cd -
 USER root
 RUN make install
 USER flecsi
-WORKDIR /home/flecsi
+WORKDIR $HOME
