@@ -37,9 +37,9 @@ RUN chown -R flecsi:flecsi $HOME/flecsi $HOME/.ccache
 USER flecsi
 
 WORKDIR $HOME
-ENV SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE"
-RUN spack repo add --scope site $HOME/flecsi/spack-repo && \
-    echo 'spack install --show-log-on-error $SPACK_SPEC' && \
+RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE" && \
+    spack repo add --scope site $HOME/flecsi/spack-repo && \
+    echo "spack install --show-log-on-error $SPACK_SPEC" && \
     spack install --show-log-on-error $SPACK_SPEC && \
     spack module tcl loads parmetis ^$MPI_PACKAGE | tee -a deps.sh && \
     spack module tcl loads --dependencies $SPACK_SPEC | tee -a deps.sh && \
@@ -57,7 +57,6 @@ RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DENABLE_FLECSI_TUTORIAL=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
           -DENABLE_UNIT_TESTS=ON \
           -DENABLE_DOXYGEN=ON \
-          -DENABLE_DOCUMENTATION=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
           ..
 
