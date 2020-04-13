@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/runtime/types.hh>
+#include "flecsi/run/types.hh"
 
 #include <cstddef>
 #include <limits>

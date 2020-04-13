@@ -19,8 +19,8 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/topo/core.hh"
 #include <flecsi/data/topology_registration.hh>
-#include <flecsi/topology/core.hh>
 
 #include <optional>
 

@@ -24,11 +24,11 @@
 #include <boost/program_options.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
 
-#include <flecsi/execution/backend.hh>
-#include <flecsi/execution/launch.hh>
-#include <flecsi/execution/reduction.hh>
-#include <flecsi/execution/task_attributes.hh>
-#include <flecsi/runtime/backend.hh>
+#include "flecsi/exec/backend.hh"
+#include "flecsi/exec/fold.hh"
+#include "flecsi/exec/launch.hh"
+#include "flecsi/exec/task_attributes.hh"
+#include "flecsi/run/backend.hh"
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface

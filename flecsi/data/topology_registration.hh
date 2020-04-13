@@ -26,18 +26,18 @@
 #error Do not include this file directly!
 #endif
 
-#include "../topology/core.hh"
-#include "flecsi/runtime/backend.hh"
-#include <flecsi/runtime/types.hh>
-#include <flecsi/topology/internal/global.hh>
-#include <flecsi/topology/internal/index.hh>
-//#include <flecsi/topology/mesh_topology.hh>
+#include "../topo/core.hh"
+#include "flecsi/run/backend.hh"
+#include "flecsi/run/types.hh"
+#include "flecsi/topo/global.hh"
+#include "flecsi/topo/index.hh"
+//#include "flecsi/topo/mesh_topology.hh"
+#include "flecsi/util/common.hh"
+#include "flecsi/util/const_string.hh"
+#include "flecsi/util/demangle.hh"
+#include "flecsi/util/hash.hh"
+#include "flecsi/util/tuple_walker.hh"
 #include <flecsi/flog.hh>
-#include <flecsi/utils/common.hh>
-#include <flecsi/utils/const_string.hh>
-#include <flecsi/utils/demangle.hh>
-#include <flecsi/utils/hash.hh>
-#include <flecsi/utils/tuple_walker.hh>
 
 #include <string>
 #include <tuple>

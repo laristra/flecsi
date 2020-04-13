@@ -20,7 +20,7 @@
 #endif
 
 #include "flecsi/data/backend.hh"
-#include "flecsi/topology/base.hh"
+#include "flecsi/topo/base.hh"
 
 namespace flecsi::data {
 

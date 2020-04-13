@@ -30,7 +30,7 @@ enum completeness { incomplete = -1, complete = 1 };
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include <flecsi/data/legion/policy.hh>
+#include "flecsi/data/leg/policy.hh"
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 

@@ -17,11 +17,11 @@
 
 #include <flecsi-config.h>
 
-#include <flecsi/control/point_walker.hh>
+#include "flecsi/ctrl/point_walker.hh"
+#include "flecsi/util/dag.hh"
+#include "flecsi/util/demangle.hh"
 #include <flecsi/execution.hh>
 #include <flecsi/flog.hh>
-#include <flecsi/utils/dag.hh>
-#include <flecsi/utils/demangle.hh>
 
 #include <functional>
 #include <map>

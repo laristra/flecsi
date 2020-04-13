@@ -13,8 +13,8 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
+#include "flecsi/util/ftest.hh"
 #include <flecsi/data/privilege.hh>
-#include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 

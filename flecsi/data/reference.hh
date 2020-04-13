@@ -23,8 +23,8 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/runtime/types.hh>
-#include <flecsi/utils/serialize.hh>
+#include "flecsi/run/types.hh"
+#include "flecsi/util/serialize.hh"
 
 namespace flecsi {
 namespace data {

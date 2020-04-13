@@ -13,10 +13,10 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
+#include "flecsi/util/demangle.hh"
+#include "flecsi/util/ftest.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
-#include <flecsi/utils/demangle.hh>
-#include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 using namespace flecsi::data;

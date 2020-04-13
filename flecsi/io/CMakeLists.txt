@@ -24,7 +24,7 @@ set(io_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(io_HEADERS
-    legion/policy.hh
+    leg/policy.hh
     ${io_HEADERS}
   )
 
@@ -75,7 +75,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 ftest_add_unit(io
   SOURCES
-    test/legion/io.cc
+    test/leg/io.cc
   THREADS 4
 )
 endif()

@@ -13,10 +13,10 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
+#include "flecsi/topo/canonical/interface.hh"
+#include "flecsi/util/ftest.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
-#include <flecsi/topology/canonical/interface.hh>
-#include <flecsi/utils/ftest.hh>
 
 #include <tuple>
 

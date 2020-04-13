@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include <flecsi/utils/bitutils.hh>
+#include "flecsi/util/bitutils.hh"
 
 #include <cstddef>
 #include <tuple>

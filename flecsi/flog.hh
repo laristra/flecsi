@@ -17,11 +17,11 @@
 
 #include <flecsi-config.h>
 
-#include <flecsi/flog/utils.hh>
+#include "flecsi/log/utils.hh"
 
 #if defined(FLECSI_ENABLE_FLOG)
-#include <flecsi/flog/message.hh>
-#include <flecsi/flog/tag_scope.hh>
+#include "flecsi/log/message.hh"
+#include "flecsi/log/tag_scope.hh"
 #endif
 
 #include <iostream>

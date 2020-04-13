@@ -13,10 +13,10 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
+#include "flecsi/topo/structured/interface.hh"
+#include "flecsi/util/ftest.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
-#include <flecsi/topology/structured/interface.hh>
-#include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 
