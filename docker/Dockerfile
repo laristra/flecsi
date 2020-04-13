@@ -37,8 +37,9 @@ RUN chown -R flecsi:flecsi $HOME/flecsi $HOME/.ccache
 USER flecsi
 
 WORKDIR $HOME
+ENV SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE"
 RUN spack repo add --scope site $HOME/flecsi/spack-repo && \
-    export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE"
+    echo 'spack install --show-log-on-error $SPACK_SPEC' && \
     spack install --show-log-on-error $SPACK_SPEC && \
     spack module tcl loads parmetis ^$MPI_PACKAGE | tee -a deps.sh && \
     spack module tcl loads --dependencies $SPACK_SPEC | tee -a deps.sh && \
