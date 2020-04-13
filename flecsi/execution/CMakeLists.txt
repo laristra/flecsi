@@ -98,9 +98,9 @@ ftest_add_unit(gpu_task
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-ftest_add_unit(future
-  SOURCES
-    test/future.cc
-  THREADS 2
-)
+  ftest_add_unit(future
+    SOURCES
+      test/future.cc
+    THREADS 2
+  )
 endif()

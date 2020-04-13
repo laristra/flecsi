@@ -183,6 +183,14 @@ ftest_add_unit(ftest
     1 2 4
 )
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+  ftest_add_unit(ftest_task
+    SOURCES
+      test/ftest_task.cc
+    THREADS 2
+  )
+endif()
+
 #------------------------------------------------------------------------------#
 # function_traits
 #------------------------------------------------------------------------------#
