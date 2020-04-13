@@ -308,7 +308,7 @@ Add the flecsi spack repo:
 
 .. code-block:: console
 
-  $ spack add repo flecsi/spack-repo
+  $ spack repo add flecsi/spack-repo
 
 Load gcc module and update spack compilers:
 
