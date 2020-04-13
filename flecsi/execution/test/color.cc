@@ -12,10 +12,8 @@
    All rights reserved.
                                                                               */
 
-#include <flecsi/utils/ftest.hh>
-
-#define __FLECSI_PRIVATE__
 #include <flecsi/execution.hh>
+#include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 

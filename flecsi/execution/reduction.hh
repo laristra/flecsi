@@ -48,7 +48,7 @@ struct min {
       lhs = lhs < rhs ? lhs : rhs;
     }
     else {
-      int64_t * target = (int64_t *)&lhs;
+      int64_t * target = reinterpret_cast<int64_t *>(&lhs);
 
       union
       {
@@ -57,7 +57,7 @@ struct min {
       } oldval, newval;
 
       do {
-        oldval.as_int = *target;
+        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
         newval.as_T = std::min(oldval.as_T, rhs);
       } while(
         !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
@@ -71,7 +71,7 @@ struct min {
       rhs1 = std::min(rhs1, rhs2);
     }
     else {
-      int64_t * target = (int64_t *)&rhs1;
+      int64_t * target = reinterpret_cast<int64_t *>(&rhs1);
 
       union
       {
@@ -80,7 +80,7 @@ struct min {
       } oldval, newval;
 
       do {
-        oldval.as_int = *target;
+        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
         newval.as_T = std::min(oldval.as_T, rhs2);
       } while(
         !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
@@ -106,7 +106,7 @@ struct max {
       lhs = lhs > rhs ? lhs : rhs;
     }
     else {
-      int64_t * target = (int64_t *)&lhs;
+      int64_t * target = reinterpret_cast<int64_t *>(&lhs);
 
       union
       {
@@ -115,7 +115,7 @@ struct max {
       } oldval, newval;
 
       do {
-        oldval.as_int = *target;
+        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
         newval.as_T = std::max(oldval.as_T, rhs);
       } while(
         !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
@@ -129,7 +129,7 @@ struct max {
       rhs1 = std::max(rhs1, rhs2);
     }
     else {
-      int64_t * target = (int64_t *)&rhs1;
+      int64_t * target = reinterpret_cast<int64_t *>(&rhs1);
 
       union
       {
@@ -138,7 +138,7 @@ struct max {
       } oldval, newval;
 
       do {
-        oldval.as_int = *target;
+        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
         newval.as_T = std::max(oldval.as_T, rhs2);
       } while(
         !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
@@ -165,19 +165,43 @@ struct sum {
       lhs += rhs;
     }
     else {
-      flog_fatal("unimplemented method");
+      int64_t * target = reinterpret_cast<int64_t *>(&lhs);
+
+      union
+      {
+        int64_t as_int;
+        T as_T;
+      } oldval, newval;
+
+      do {
+        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
+        newval.as_T = oldval.as_T + rhs;
+      } while(
+        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
     } // if constexpr
 
   } // apply
 
   template<bool EXCLUSIVE = true>
-  static void fold(LHS & lhs, RHS rhs) {
+  static void fold(RHS & rhs1, RHS rhs2) {
 
     if constexpr(EXCLUSIVE) {
-      lhs += rhs;
+      rhs1 += rhs2;
     }
     else {
-      flog_fatal("unimplemented method");
+      int64_t * target = reinterpret_cast<int64_t *>(&rhs1);
+
+      union
+      {
+        int64_t as_int;
+        T as_T;
+      } oldval, newval;
+
+      do {
+        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
+        newval.as_T = oldval.as_T + rhs2;
+      } while(
+        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
     } // if constexpr
 
   } // fold
@@ -202,19 +226,43 @@ struct product {
       lhs *= rhs;
     }
     else {
-      flog_fatal("unimplemented method");
+      int64_t * target = reinterpret_cast<int64_t *>(&lhs);
+
+      union
+      {
+        int64_t as_int;
+        T as_T;
+      } oldval, newval;
+
+      do {
+        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
+        newval.as_T = oldval.as_T * rhs;
+      } while(
+        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
     } // if constexpr
 
   } // apply
 
   template<bool EXCLUSIVE = true>
-  static void fold(LHS & lhs, RHS rhs) {
+  static void fold(RHS & rhs1, RHS rhs2) {
 
     if constexpr(EXCLUSIVE) {
-      lhs *= rhs;
+      rhs1 *= rhs2;
     }
     else {
-      flog_fatal("unimplemented method");
+      int64_t * target = reinterpret_cast<int64_t *>(&rhs1);
+
+      union
+      {
+        int64_t as_int;
+        T as_T;
+      } oldval, newval;
+
+      do {
+        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
+        newval.as_T = oldval.as_T * rhs2;
+      } while(
+        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
     } // if constexpr
 
   } // fold
