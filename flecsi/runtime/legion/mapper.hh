@@ -242,49 +242,50 @@ public:
     const Legion::Mapping::Mapper::SliceTaskInput & input,
     Legion::Mapping::Mapper::SliceTaskOutput & output) {
 
-    if(task.tag == FLECSI_MAPPER_SUBRANK_LAUNCH) {
-      // expect a 1-D index domain
-      assert(input.domain.get_dim() == 1);
-      // send the whole domain to our local processor
-      output.slices.resize(1);
-      output.slices[0].domain = input.domain;
-      output.slices[0].proc = task.target_proc;
-      return;
-    } // end if FLECSI_MAPPER_SUBRANK_LAUNCH
+    switch(task.tag) {
+      case FLECSI_MAPPER_SUBRANK_LAUNCH:
+        // expect a 1-D index domain
+        assert(input.domain.get_dim() == 1);
+        // send the whole domain to our local processor
+        output.slices.resize(1);
+        output.slices[0].domain = input.domain;
+        output.slices[0].proc = task.target_proc;
+        break;
 
-    if(task.tag == FLECSI_MAPPER_FORCE_RANK_MATCH) {
-      // expect a 1-D index domain - each point goes to the corresponding node
-      assert(input.domain.get_dim() == 1);
-      LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
+      case FLECSI_MAPPER_FORCE_RANK_MATCH: {
+        // expect a 1-D index domain - each point goes to the corresponding node
+        assert(input.domain.get_dim() == 1);
+        LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
 
-      // go through all the CPU processors and find a representative for each
-      //  node (i.e. address space)
-      std::map<int, Legion::Processor> targets;
+        // go through all the CPU processors and find a representative for each
+        //  node (i.e. address space)
+        std::map<int, Legion::Processor> targets;
 
-      Legion::Machine::ProcessorQuery pq =
-        Legion::Machine::ProcessorQuery(machine).only_kind(
-          Legion::Processor::LOC_PROC);
-      for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
-          it != pq.end();
-          ++it) {
-        Legion::Processor p = *it;
-        int a = p.address_space();
-        if(targets.count(a) == 0)
-          targets[a] = p;
+        Legion::Machine::ProcessorQuery pq =
+          Legion::Machine::ProcessorQuery(machine).only_kind(
+            Legion::Processor::LOC_PROC);
+        for(Legion::Machine::ProcessorQuery::iterator it = pq.begin();
+            it != pq.end();
+            ++it) {
+          Legion::Processor p = *it;
+          int a = p.address_space();
+          if(targets.count(a) == 0)
+            targets[a] = p;
+        }
+
+        output.slices.resize(1);
+        for(int a = r.lo[0]; a <= r.hi[0]; a++) {
+          assert(targets.count(a) > 0);
+          output.slices[0].domain = // Legion::Domain::from_rect<1>(
+            Legion::Rect<1>(a, a);
+          output.slices[0].proc = targets[a];
+        }
+        break;
       }
 
-      output.slices.resize(1);
-      for(int a = r.lo[0]; a <= r.hi[0]; a++) {
-        assert(targets.count(a) > 0);
-        output.slices[0].domain = // Legion::Domain::from_rect<1>(
-          Legion::Rect<1>(a, a);
-        output.slices[0].proc = targets[a];
-      }
-      return;
-    } // FLECSI_MAPPER_FORCE_RANK_MATCH
-
-    DefaultMapper::slice_task(ctx, task, input, output);
-    // end else
+      default:
+        DefaultMapper::slice_task(ctx, task, input, output);
+    }
   }
 
 private:
