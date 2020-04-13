@@ -50,7 +50,6 @@ set(utils_HEADERS
   simple_id.hh
   static_verify.hh
   target.hh
-  tuple_function.hh
   tuple_type_converter.hh
   tuple_visitor.hh
   tuple_walker.hh
