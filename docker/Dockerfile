@@ -37,10 +37,9 @@ RUN chown -R flecsi:flecsi $HOME/flecsi #$HOME/.ccache
 USER flecsi
 
 WORKDIR $HOME
+RUN echo ". $HOME/spack/share/spack/setup-env.sh" >> ~/.bashrc
 RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE" && \
-    echo ". $HOME/spack/share/spack/setup-env.sh" >> ~/.bashrc
-
-RUN spack repo add --scope site $HOME/flecsi/spack-repo && \
+    spack repo add --scope site $HOME/flecsi/spack-repo && \
     spack find && \
     echo "spack install --show-log-on-error $SPACK_SPEC" && \
     spack install --show-log-on-error $SPACK_SPEC && \
