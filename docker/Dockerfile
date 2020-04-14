@@ -29,16 +29,18 @@ ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
 
-RUN rm -rf $HOME/.ccache
+#RUN rm -rf $HOME/.ccache
 COPY flecsi $HOME/flecsi
-COPY ccache/ $HOME/.ccache
+#COPY ccache/ $HOME/.ccache
 USER root
-RUN chown -R flecsi:flecsi $HOME/flecsi $HOME/.ccache
+RUN chown -R flecsi:flecsi $HOME/flecsi #$HOME/.ccache
 USER flecsi
 
 WORKDIR $HOME
 RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE" && \
     spack repo add --scope site $HOME/flecsi/spack-repo && \
+    spack find && \
+    spack find $SPACK_SPEC && \
     echo "spack install --show-log-on-error $SPACK_SPEC" && \
     spack install --show-log-on-error $SPACK_SPEC && \
     spack module tcl loads parmetis ^$MPI_PACKAGE | tee -a deps.sh && \
