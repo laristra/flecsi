@@ -150,6 +150,13 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     MPI_Waitall(send_count + h.num_ghost_, requests.data(), statuses.data());
 
+    // resize rows when we have type information
+    for (int i = 0; i < h.num_ghost_; i++) {
+      int r = h.num_exclusive_ + h.num_shared_ + i;
+      auto & row = h.rows[r];
+      int count = ghost_row_sizes[i];
+      row.resize(count);
+    }
 
     sparse_exchange_queue.emplace(h.index_space, h.fid);
   }
@@ -547,14 +554,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         if (gsize != ghost_sizes.end())
           gsize->second += el.second;
         else
-          ghost_sizes[el.first] = 0;
+          ghost_sizes[el.first] = el.second;
       }
       for (const auto & el : field_metadata.shared_field_sizes) {
         auto ssize = shared_sizes.find(el.first);
         if (ssize != shared_sizes.end())
           ssize->second += el.second;
         else
-          shared_sizes[el.first] = 0;
+          shared_sizes[el.first] = el.second;
       }
 
       sparse_exchange_queue.pop();
@@ -562,8 +569,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     std::map<int, std::vector<uint8_t>> all_send_buf;
     std::map<int, std::vector<uint8_t>> all_recv_buf;
-    std::vector<MPI_Request> all_send_req(shared_sizes.size());
-    std::vector<MPI_Request> all_recv_req(ghost_sizes.size());
+    std::vector<MPI_Request> all_send_req;
+    std::vector<MPI_Request> all_recv_req;
 
     // post recieves
     for (const auto & el : ghost_sizes) {
@@ -641,10 +648,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       auto *rows = reinterpret_cast<data::row_vector_u<uint8_t>*>(field_data.rows.data());
       for (int i = 0; i < field_data.num_ghost; i++) {
         int r = field_data.num_exclusive + field_data.num_shared + i;
-        auto & row = rows[r * field_data.type_size];
+        auto & row = rows[r];
         int count = field_metadata.ghost_row_sizes[i];
-        row.resize(count * field_data.type_size);
-        std::memcpy(row.begin(), &field_metadata.ghost_data_buffer[i * mepi],
+        std::memcpy(row.begin(),
+                    &field_metadata.ghost_data_buffer[i * mepi * field_data.type_size],
                     count * field_data.type_size);
       }
     }

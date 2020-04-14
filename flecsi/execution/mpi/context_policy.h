@@ -399,7 +399,7 @@ struct mpi_context_policy_t {
 
 #if defined(FLECSI_USE_AGGCOMM)
     // compute ghost and shared indicies
-    size_t ghost_count;
+    size_t ghost_count = 0;
     for (auto const & ghost : index_coloring.ghost) {
       if ((metadata.ghost_indices.find(ghost.rank) == metadata.ghost_indices.end()) or
           (ghost_count*sizeof(T) !=
