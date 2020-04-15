@@ -22,34 +22,34 @@ jobs:
   fast_finish: true
   include:
     - stage: canary
-      env: DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=legion BUILD_TYPE=Release
+      env: DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=legion BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=mpi BUILD_TYPE=Release
+    - env: DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=mpi BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
       compiler: gcc
 
     - stage: coverage
-      env: DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+      env: DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=legion COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
-    - env: DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+    - env: DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=mpi COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
-    - env: DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+    - env: DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
 
   allow_failures:
-    - env: DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
+    - env: DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=hpx COVERAGE=ON BUILD_TYPE=Release CLANG_FORMAT=yes
       compiler: clang
 
-    - env: DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
       compiler: clang
-    - env: DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=hpx BUILD_TYPE=Release
       compiler: gcc
-    - env: DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=hpx BUILD_TYPE=Release
+    - env: DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=hpx BUILD_TYPE=Release
       compiler: clang
       
 compiler:
@@ -58,12 +58,12 @@ compiler:
 
 env:
   matrix:
-    - DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=mpi BUILD_TYPE=Release
-    - DISTRO=ubuntu18 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
-    - DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=legion BUILD_TYPE=Release
-    - DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=mpi BUILD_TYPE=Release
-    - DISTRO=fedora30 MPI_PACKAGE=mpich RUNTIME=hpx BUILD_TYPE=Release
+    - DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
+    - DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=mpi BUILD_TYPE=Release
+    - DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=hpx BUILD_TYPE=Release
 
 before_install:
   - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"

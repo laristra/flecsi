@@ -29,20 +29,23 @@ ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
 ARG IGNORE_NOCI
 
-RUN rm -rf $HOME/.ccache
+#RUN rm -rf $HOME/.ccache
 COPY flecsi $HOME/flecsi
-COPY ccache/ $HOME/.ccache
+#COPY ccache/ $HOME/.ccache
 USER root
-RUN chown -R flecsi:flecsi $HOME/flecsi $HOME/.ccache
+RUN chown -R flecsi:flecsi $HOME/flecsi #$HOME/.ccache
 USER flecsi
 
 WORKDIR $HOME
-RUN spack repo add --scope site $HOME/flecsi/spack-repo && \
-    export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE"
+RUN echo ". $HOME/spack/share/spack/setup-env.sh" >> ~/.bashrc
+RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE" && \
+    spack repo add --scope site $HOME/flecsi/spack-repo && \
+    spack find && \
+    echo "spack install --show-log-on-error $SPACK_SPEC" && \
     spack install --show-log-on-error $SPACK_SPEC && \
     spack module tcl loads parmetis ^$MPI_PACKAGE | tee -a deps.sh && \
     spack module tcl loads --dependencies $SPACK_SPEC | tee -a deps.sh && \
-    echo ". $HOME/spack/share/spack/setup-env.sh && . $HOME/deps.sh" >> ~/.bashrc
+    echo ". $HOME/deps.sh" >> ~/.bashrc
 
 WORKDIR $HOME/flecsi
 RUN mkdir build
@@ -56,7 +59,6 @@ RUN cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DENABLE_FLECSI_TUTORIAL=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
           -DENABLE_UNIT_TESTS=ON \
           -DENABLE_DOXYGEN=ON \
-          -DENABLE_DOCUMENTATION=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} \
           ..
 
