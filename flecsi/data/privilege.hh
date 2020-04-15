@@ -69,27 +69,25 @@ inline constexpr size_t privilege_pack = [] {
 /*!
   Return the number of privileges stored in a privilege pack.
 
-  \tparam PACK a \c privilege_pack value
+  \param PACK a \c privilege_pack value
  */
 
-template<size_t PACK>
 constexpr size_t
-privilege_count() {
+privilege_count(std::size_t PACK) {
   return (util::bit_width(PACK) - 1) / privilege_bits;
 } // privilege_count
 
 /*!
   Get a privilege out of a pack for the specified id.
 
-  @tparam INDEX The index of the privilege to get.
-  \tparam PACK a \c privilege_pack value
+  \param i privilege index
+  \param pack a \c privilege_pack value
  */
 
-template<size_t INDEX, size_t PACK>
 constexpr partition_privilege_t
-get_privilege() {
+get_privilege(std::size_t i, std::size_t pack) {
   return partition_privilege_t(
-    PACK >> ((privilege_count<PACK>() - 1 - INDEX) * privilege_bits) &
+    pack >> (privilege_count(pack) - 1 - i) * privilege_bits &
     ((1 << privilege_bits) - 1));
 } // get_privilege
 

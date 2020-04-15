@@ -131,10 +131,10 @@ struct task_prologue_t {
         ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
-    static_assert(privilege_count<PRIVILEGES>() == 1,
+    static_assert(privilege_count(PRIVILEGES) == 1,
       "global topology accessor type only takes one privilege");
 
-    constexpr auto priv = get_privilege<0, PRIVILEGES>();
+    constexpr auto priv = get_privilege(0, PRIVILEGES);
 
     if(priv > partition_privilege_t::ro)
       flog_assert(domain_ == 1,
@@ -164,12 +164,12 @@ struct task_prologue_t {
         << instance_data.colors()
         << " partitions into task with launch domain of size " << domain_);
 
-    static_assert(privilege_count<PRIVILEGES>() == 1,
+    static_assert(privilege_count(PRIVILEGES) == 1,
       "accessors for this topology type take only one privilege");
 
     Legion::RegionRequirement rr(instance_data.logical_partition,
       0,
-      privilege_mode(get_privilege<0, PRIVILEGES>()),
+      privilege_mode(get_privilege(0, PRIVILEGES)),
       EXCLUSIVE,
       Legion::Runtime::get_runtime()->get_parent_logical_region(
         instance_data.logical_partition));
