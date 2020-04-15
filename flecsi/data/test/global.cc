@@ -52,6 +52,7 @@ assign(double1::accessor<wo> ga) {
 int
 check(double1::accessor<ro> ga) {
   UNIT {
+    static_assert(std::is_same_v<decltype(ga.get()), const double &>);
     flog(info) << "check on " << color() << std::endl;
     ASSERT_EQ(ga, 0);
   };
