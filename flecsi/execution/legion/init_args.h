@@ -80,6 +80,8 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
         return WRITE_DISCARD;
       case size_t(rw):
         return READ_WRITE;
+      case size_t(na):
+        return WRITE_DISCARD;
       default:
         clog_fatal("invalid privilege mode");
     } // switch
