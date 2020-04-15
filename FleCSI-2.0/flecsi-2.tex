@@ -4,13 +4,39 @@
 
 \documentclass{article}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \usepackage{amsfonts,amsmath,amsthm,amssymb}
 \usepackage{pstricks,pst-node,pst-text,pst-3d}
 \usepackage{color}
 \usepackage{algorithm}
 \usepackage{algorithmic}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{FleCSI 2.0}
+
+\author{
+  Ben Bergen\\
+  \texttt{bergen@lanl.gov}
+  \and
+  Irina Demeshko\\
+  \texttt{irina@lanl.gov}
+}
+
+\date{\today}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Begin
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
+
+\maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Introduction
@@ -18,25 +44,27 @@
 
 \input{tex/introduction}
 
+This is a citation \cite{LegeionSC12}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Algorithm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{algorithm}
-\begin{algorithmic}[1]
-\FOR{each edge in the input grid}
-\STATE create new instance
-\STATE set edge id
-\STATE set edge flags (\emph{boundary}, \emph{boundary type})
-\STATE request vertex pointer from the mesh using first vertex id
-\STATE add vertex to the edge
-\STATE request vertex pointer from the mesh using second vertex id
-\STATE add vertex to the edge
-\STATE add edge to the mesh
-\ENDFOR
-\end{algorithmic}
-\caption{Adding volume edges to the mesh.}
-\label{algo:volume_edge_assembly}
+  \begin{algorithmic}[1]
+    \FOR{each edge in the input grid}
+    \STATE create new instance
+    \STATE set edge id
+    \STATE set edge flags (\emph{boundary}, \emph{boundary type})
+    \STATE request vertex pointer from the mesh using first vertex id
+    \STATE add vertex to the edge
+    \STATE request vertex pointer from the mesh using second vertex id
+    \STATE add vertex to the edge
+    \STATE add edge to the mesh
+    \ENDFOR
+  \end{algorithmic}
+  \caption{Adding volume edges to the mesh.}
+  \label{algo:volume_edge_assembly}
 \end{algorithm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,5 +109,9 @@
 
 \bibliographystyle{alpha}
 \bibliography{bib/articles,bib/proceedings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
