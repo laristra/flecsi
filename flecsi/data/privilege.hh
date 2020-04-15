@@ -75,7 +75,7 @@ inline constexpr size_t privilege_pack = [] {
 template<size_t PACK>
 constexpr size_t
 privilege_count() {
-  return util::msb<PACK>() / privilege_bits;
+  return (util::bit_width(PACK) - 1) / privilege_bits;
 } // privilege_count
 
 /*!

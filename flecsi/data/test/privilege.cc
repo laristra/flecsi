@@ -27,7 +27,7 @@ int
 privilege() {
   UNIT {
     {
-      static_assert(util::msb<prvs1>() == 2u);
+      static_assert(util::bit_width(prvs1) == 3u);
 
       constexpr size_t p0 = get_privilege<0, prvs1>();
 
@@ -35,7 +35,7 @@ privilege() {
     } // scope
 
     {
-      static_assert(util::msb<prvs2>() == 4u);
+      static_assert(util::bit_width(prvs2) == 5u);
 
       constexpr size_t p0 = get_privilege<0, prvs2>();
       constexpr size_t p1 = get_privilege<1, prvs2>();
@@ -45,7 +45,7 @@ privilege() {
     } // scope
 
     {
-      static_assert(util::msb<prvs3>() == 6u);
+      static_assert(util::bit_width(prvs3) == 7u);
 
       constexpr size_t p1 = get_privilege<0, prvs3>();
       constexpr size_t p2 = get_privilege<1, prvs3>();
@@ -57,7 +57,7 @@ privilege() {
     } // scope
 
     {
-      static_assert(util::msb<prvs4>() == 8u);
+      static_assert(util::bit_width(prvs4) == 9u);
 
       constexpr size_t p0 = get_privilege<0, prvs4>();
       constexpr size_t p1 = get_privilege<1, prvs4>();
