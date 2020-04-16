@@ -20,7 +20,6 @@
 #endif
 
 #include <flecsi/data/backend.hh>
-#include <flecsi/data/reference.hh>
 #include <flecsi/execution.hh>
 #include <flecsi/runtime/types.hh>
 

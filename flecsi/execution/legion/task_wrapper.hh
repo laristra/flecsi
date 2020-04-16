@@ -31,7 +31,6 @@
 #include "flecsi/utils/serialize.hh"
 #include "unbind_accessors.hh"
 #include <flecsi/flog.hh>
-#include <flecsi/utils/common.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!

@@ -65,5 +65,3 @@ struct io_interface_t {
 #endif
 
 } // namespace flecsi::io
-
-#include "io/backend.hh"

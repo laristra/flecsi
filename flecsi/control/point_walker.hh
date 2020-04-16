@@ -17,7 +17,6 @@
 
 #include <flecsi-config.h>
 
-#include <flecsi/utils/const_string.hh>
 #include <flecsi/utils/tuple_walker.hh>
 #include <flecsi/utils/typeify.hh>
 

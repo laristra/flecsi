@@ -29,12 +29,7 @@
 #include "flecsi/runtime/backend.hh"
 #include "flecsi/utils/demangle.hh"
 #include "flecsi/utils/function_traits.hh"
-#include "task_prologue.hh"
-#include "task_wrapper.hh"
-#include <flecsi/execution/legion/future.hh>
-#include <flecsi/execution/legion/reduction_wrapper.hh>
 #include <flecsi/flog.hh>
-#include <flecsi/flog/utils.hh>
 
 #include <functional>
 #include <memory>

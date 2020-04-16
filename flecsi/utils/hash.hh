@@ -16,7 +16,6 @@
 /*! @file */
 
 #include <cstddef>
-#include <utility>
 
 namespace flecsi {
 namespace utils {
