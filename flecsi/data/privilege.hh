@@ -20,7 +20,6 @@
 #endif
 
 #include <flecsi/utils/bitutils.hh>
-#include <flecsi/utils/typeify.hh>
 
 #include <cstddef>
 #include <tuple>
@@ -49,48 +48,49 @@ enum partition_privilege_t : size_t {
   rw = 0b11
 }; // enum partition_privilege_t
 
+inline constexpr short privilege_bits = 2;
+
 /*!
-  Utility type to allow general privilege components that will match the old
+  Utility to allow general privilege components that will match the old
   style of specifying permissions, e.g., <EX, SH, GH> (The old approach was
   only valid for mesh type topologies, and didn't make sense for all topology
-  types). A terminator with value 0x02 is appended to the privileges provided
-  in the template pararmeter so that a count can be determined.
+  types).
 
-  @tparam PRIVILEGES A variadic list of partition_privilege_t elements.
+  \tparam PP privileges
  */
-
-template<size_t... PRIVILEGES>
-struct privilege_pack {
-  using terminator_t = utils::typeify<size_t, 0x02>;
-  using tuple_t =
-    std::tuple<terminator_t, utils::typeify<size_t, PRIVILEGES>...>;
-  static constexpr size_t value = utils::shift_or<0, tuple_t, 2>();
-}; // struct privilege_pack
+template<partition_privilege_t... PP>
+inline constexpr size_t privilege_pack = [] {
+  static_assert(((PP < 1 << privilege_bits) && ...));
+  std::size_t ret = 1; // nonzero to allow recovering sizeof...(PP)
+  ((ret <<= privilege_bits, ret |= PP), ...);
+  return ret;
+}();
 
 /*!
   Return the number of privileges stored in a privilege pack.
 
-  @tparam PACK  A valid size_t from a privilege_pack type.
+  \tparam PACK a \c privilege_pack value
  */
 
 template<size_t PACK>
 constexpr size_t
 privilege_count() {
-  return (utils::msb<PACK>() - 1) >> 1;
+  return utils::msb<PACK>() / privilege_bits;
 } // privilege_count
 
 /*!
   Get a privilege out of a pack for the specified id.
 
   @tparam INDEX The index of the privilege to get.
-  @tparam PACK  A valid size_t from a privilege_pack type.
+  \tparam PACK a \c privilege_pack value
  */
 
 template<size_t INDEX, size_t PACK>
 constexpr partition_privilege_t
 get_privilege() {
   return partition_privilege_t(
-    PACK >> ((privilege_count<PACK>() - 1 - INDEX) * 2) & 0x03);
+    PACK >> ((privilege_count<PACK>() - 1 - INDEX) * privilege_bits) &
+    ((1 << privilege_bits) - 1));
 } // get_privilege
 
 } // namespace flecsi

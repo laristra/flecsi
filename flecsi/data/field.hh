@@ -116,8 +116,8 @@ template<typename DATA_TYPE,
 struct field_member : field_register<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> {
   using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 
-  template<size_t... PRIVILEGES>
-  using accessor = accessor<L, DATA_TYPE, privilege_pack<PRIVILEGES...>::value>;
+  template<partition_privilege_t... PP>
+  using accessor = accessor<L, DATA_TYPE, privilege_pack<PP...>>;
 
   /*!
     Return a reference to the field instance associated with the given topology
