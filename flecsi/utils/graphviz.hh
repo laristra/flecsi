@@ -24,7 +24,7 @@
 #include <graphviz/gvc.h>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 // attribute strings
 static constexpr const char * gv_graph = "graph";
@@ -271,5 +271,5 @@ private:
 
 }; // class graphviz_t
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

@@ -21,7 +21,7 @@
 #include <ostream>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 //----------------------------------------------------------------------------//
 // Convenience macro to avoid having to reimplement this for each member.
@@ -124,7 +124,7 @@ struct crs {
     auto operator*() {
       auto i = data_.offsets[pos_];
       auto n = data_.offsets[pos_ + 1] - i;
-      return utils::make_array_ref(&data_.indices[i], n);
+      return util::make_array_ref(&data_.indices[i], n);
     }
     auto & operator++() {
       pos_++;
@@ -150,7 +150,7 @@ struct crs {
     auto operator*() {
       auto i = data_.offsets[pos_];
       auto n = data_.offsets[pos_ + 1] - i;
-      return utils::make_array_ref(&data_.indices[i], n);
+      return util::make_array_ref(&data_.indices[i], n);
     }
     auto & operator++() {
       pos_++;
@@ -282,5 +282,5 @@ operator<<(std::ostream & stream, const dcrs & dcrs) {
 
 #undef define_as
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

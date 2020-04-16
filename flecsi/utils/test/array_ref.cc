@@ -6,7 +6,7 @@
 
 // Prints an array_ref<char>, as a character string
 inline void
-print_refc(const flecsi::utils::array_ref<char> & arr) {
+print_refc(const flecsi::util::array_ref<char> & arr) {
   for(auto c = arr.begin(); c != arr.end(); ++c)
     FTEST_CAPTURE() << *c;
   FTEST_CAPTURE() << std::endl;
@@ -15,10 +15,10 @@ print_refc(const flecsi::utils::array_ref<char> & arr) {
 int
 array_ref(int, char **) {
   FTEST {
-    using refd = flecsi::utils::array_ref<double>;
-    using refc = flecsi::utils::array_ref<char>;
-    using reff = flecsi::utils::array_ref<float>;
-    using refi = flecsi::utils::array_ref<int>;
+    using refd = flecsi::util::array_ref<double>;
+    using refc = flecsi::util::array_ref<char>;
+    using reff = flecsi::util::array_ref<float>;
+    using refi = flecsi::util::array_ref<int>;
 
     FTEST_CAPTURE() << std::endl;
 
@@ -254,24 +254,24 @@ array_ref(int, char **) {
       // from * and length
       const std::size_t length = 9;
       int ints[length] = {1, 9, 2, 8, 3, 7, 4, 6, 5};
-      refi a = flecsi::utils::make_array_ref(&ints[0], length);
+      refi a = flecsi::util::make_array_ref(&ints[0], length);
       FTEST_CAPTURE() << a.front() << '\n';
       FTEST_CAPTURE() << a.back() << '\n' << std::endl;
 
       // from T [n]
-      refi b = flecsi::utils::make_array_ref(ints);
+      refi b = flecsi::util::make_array_ref(ints);
       FTEST_CAPTURE() << b.front() << '\n';
       FTEST_CAPTURE() << b.back() << '\n' << std::endl;
 
       // from std::vector
       std::vector<int> ivec(10, 1); // 10 1s
-      refi c = flecsi::utils::make_array_ref(ivec);
+      refi c = flecsi::util::make_array_ref(ivec);
       FTEST_CAPTURE() << c.front() << '\n';
       FTEST_CAPTURE() << c.back() << '\n' << std::endl;
 
       // from std::array
       const std::array<int, 2> iarr = {{10, 20}};
-      refi d = flecsi::utils::make_array_ref(iarr);
+      refi d = flecsi::util::make_array_ref(iarr);
       FTEST_CAPTURE() << d.front() << '\n';
       FTEST_CAPTURE() << d.back() << '\n';
     }

@@ -24,7 +24,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
  \class array_ref<T> represents an immutable array of \c size()
@@ -320,5 +320,5 @@ make_array_ref(const std::array<T, N> & a) {
 
 /// @}
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

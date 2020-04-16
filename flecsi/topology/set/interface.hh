@@ -22,7 +22,7 @@
 #include <flecsi/topology/set/types.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 //----------------------------------------------------------------------------//
 // Mesh topology.
@@ -35,5 +35,5 @@ namespace topology {
 template<typename POLICY_TYPE>
 struct set : set_base_t, data::reference_base {}; // struct set
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

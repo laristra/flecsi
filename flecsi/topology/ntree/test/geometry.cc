@@ -29,8 +29,8 @@ rnd(const double & min, const double & max) {
          min;
 }
 
-using geo1d = flecsi::topology::ntree_geometry<double, 1>;
-using p1d = utils::point<double, 1>;
+using geo1d = topo::ntree_geometry<double, 1>;
+using p1d = util::point<double, 1>;
 
 int
 geometry_1d_sanity(int, char **) {
@@ -67,7 +67,7 @@ geometry_1d_sanity(int, char **) {
       for(int i = 0; i < num_tests; ++i) {
         p1d c2(rnd(c1[0], c1[0] + 1 * 4));
         double r2 = rnd(0, c1[0] + r1 * 5);
-        bool res = std::max(r1, r2) >= utils::distance(c1, c2);
+        bool res = std::max(r1, r2) >= util::distance(c1, c2);
         ASSERT_EQ(res, geo1d::within_square(c1, c2, r1, r2));
       }
     }
@@ -147,8 +147,8 @@ geometry_1d_sanity(int, char **) {
 }
 ftest_register_driver(geometry_1d_sanity);
 
-using geo2d = flecsi::topology::ntree_geometry<double, 2>;
-using p2d = utils::point<double, 2>;
+using geo2d = topo::ntree_geometry<double, 2>;
+using p2d = util::point<double, 2>;
 
 int
 geometry_2d_sanity(int, char **) {
@@ -165,7 +165,7 @@ geometry_2d_sanity(int, char **) {
       for(int i = 0; i < num_tests; ++i) {
         p2d origin(rnd(center[0] - radius, center[0] + radius),
           rnd(center[1] - radius, center[1] + radius));
-        bool res = utils::distance(center, origin) <= radius;
+        bool res = util::distance(center, origin) <= radius;
         ASSERT_EQ(res, geo2d::within(origin, center, radius));
       }
     }
@@ -178,7 +178,7 @@ geometry_2d_sanity(int, char **) {
       for(int i = 0; i < num_tests; ++i) {
         p2d c2(rnd(c1[0], c1[0] + 1 * 4), rnd(c1[1], c1[1] + 1 * 4));
         double r2 = rnd(0, c1[0] + r1 * 5);
-        bool res = std::max(r1, r2) >= utils::distance(c1, c2);
+        bool res = std::max(r1, r2) >= util::distance(c1, c2);
         ASSERT_EQ(res, geo2d::within_square(c1, c2, r1, r2));
       }
     }
@@ -227,7 +227,7 @@ geometry_2d_sanity(int, char **) {
         p2d c = p2d(rnd(center[0] - radius, center[0] + radius),
           rnd(center[0] - radius, center[0] + radius));
         double r = rnd(radius / 100., radius);
-        bool res = utils::distance(center, c) <= radius + r;
+        bool res = util::distance(center, c) <= radius + r;
         ASSERT_EQ(res, geo2d::intersects_sphere_sphere(center, radius, c, r));
       }
     }
@@ -250,8 +250,8 @@ geometry_2d_sanity(int, char **) {
 }
 ftest_register_driver(geometry_2d_sanity);
 
-using geo3d = flecsi::topology::ntree_geometry<double, 3>;
-using p3d = utils::point<double, 3>;
+using geo3d = topo::ntree_geometry<double, 3>;
+using p3d = util::point<double, 3>;
 
 int
 geometry_3d_sanity(int, char **) {
@@ -269,7 +269,7 @@ geometry_3d_sanity(int, char **) {
         p3d origin(rnd(center[0] - radius, center[0] + radius),
           rnd(center[1] - radius, center[1] + radius),
           rnd(center[2] - radius, center[2] + radius));
-        bool res = utils::distance(center, origin) <= radius;
+        bool res = util::distance(center, origin) <= radius;
         ASSERT_EQ(res, geo3d::within(origin, center, radius));
       }
     }
@@ -284,7 +284,7 @@ geometry_3d_sanity(int, char **) {
           rnd(c1[1], c1[1] + 1 * 4),
           rnd(c1[2], c1[2] + 1 * 4));
         double r2 = rnd(0, c1[0] + r1 * 5);
-        bool res = std::max(r1, r2) >= utils::distance(c1, c2);
+        bool res = std::max(r1, r2) >= util::distance(c1, c2);
         ASSERT_EQ(res, geo3d::within_square(c1, c2, r1, r2));
       }
     }
@@ -339,7 +339,7 @@ geometry_3d_sanity(int, char **) {
           rnd(center[0] - radius, center[0] + radius),
           rnd(center[2] - radius, center[2] + radius));
         double r = rnd(radius / 100., radius);
-        bool res = utils::distance(center, c) <= radius + r;
+        bool res = util::distance(center, c) <= radius + r;
         ASSERT_EQ(res, geo3d::intersects_sphere_sphere(center, radius, c, r));
       }
     }

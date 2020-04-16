@@ -22,7 +22,7 @@
 #include <flecsi/topology/core.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 /*!
   The \c global type allows users to register data on a
@@ -37,5 +37,5 @@ struct global {
   struct coloring {};
 }; // struct global
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

@@ -24,7 +24,7 @@
 #include <string>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 struct canonical_base {
 
@@ -41,5 +41,5 @@ struct canonical_base {
 
 }; // struct canonical_base
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

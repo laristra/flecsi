@@ -32,7 +32,7 @@
 namespace flecsi {
 namespace data {
 
-namespace legion {
+namespace leg {
 inline auto &
 run() {
   return *Legion::Runtime::get_runtime();
@@ -137,10 +137,10 @@ struct partition {
   unique_index_partition index_partition;
   unique_logical_partition logical_partition;
 };
-} // namespace legion
+} // namespace leg
 
 namespace detail {
-using legion::region, legion::partition; // for backend-agnostic interface
+using leg::region, leg::partition; // for backend-agnostic interface
 }
 
 } // namespace data

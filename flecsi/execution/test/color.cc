@@ -17,7 +17,7 @@
 
 using namespace flecsi;
 
-flog::devel_tag color_tag("color");
+log::devel_tag color_tag("color");
 
 /*
   Test the raw context interface for gettting color information from
@@ -27,7 +27,7 @@ flog::devel_tag color_tag("color");
 int
 color_raw(int, char **) {
   FTEST {
-    auto & c = runtime::context_t::instance();
+    auto & c = run::context::instance();
     flog(info) << "task depth: " << c.task_depth() << std::endl;
     ASSERT_EQ(c.task_depth(), 0u);
 
@@ -36,7 +36,7 @@ color_raw(int, char **) {
     auto tpp = c.threads_per_process();
 
     {
-      flog::devel_guard guard(color_tag);
+      log::devel_guard guard(color_tag);
       flog(info) << "(raw)" << std::endl
                  << "\tprocess: " << process << std::endl
                  << "\tprocesses: " << processes << std::endl
@@ -63,7 +63,7 @@ color_ui(int, char **) {
   auto colors = flecsi_colors();
 
   {
-    flog::devel_guard guard(color_tag);
+    log::devel_guard guard(color_tag);
     flog(info) << "color(macro): " << color << std::endl
                << "colors(macro): " << colors << std::endl;
   }

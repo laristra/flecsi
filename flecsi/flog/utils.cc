@@ -20,7 +20,7 @@
 #if defined(FLECSI_ENABLE_FLOG)
 
 namespace flecsi {
-namespace flog {
+namespace log {
 
 #if defined(FLOG_ENABLE_MPI)
 
@@ -34,8 +34,8 @@ send_to_one() {
                     ? new int[flog_t::instance().processes()]
                     : nullptr;
 
-    std::vector<std::byte> data = flecsi::utils::serial_put(
-                             flog_t::instance().packets()),
+    std::vector<std::byte> data =
+                             util::serial_put(flog_t::instance().packets()),
                            buffer;
 
     const int bytes = data.size();
@@ -74,9 +74,8 @@ send_to_one() {
 
         if(!flog_t::instance().one_process() ||
            p == flog_t::instance().output_process()) {
-          const auto remote_packets =
-            flecsi::utils::serial_get1<std::vector<packet_t>>(
-              buffer.data() + offsets[p]);
+          const auto remote_packets = util::serial_get1<std::vector<packet_t>>(
+            buffer.data() + offsets[p]);
 
           std::vector<packet_t> & packets = flog_t::instance().packets();
 
@@ -97,7 +96,7 @@ send_to_one() {
 
 #endif // FLOG_ENABLE_MPI
 
-} // namespace flog
+} // namespace log
 } // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

@@ -24,7 +24,7 @@
 #include <flecsi/utils/geometry/point.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 using ntree_entity_base_t = entity_base<0>;
 
@@ -48,8 +48,8 @@ public:
   enum LOCALITY : int { LOCAL = 0, NON_LOCAL = 1, SHARED = 2 };
 
   static constexpr size_t dimension = DIM;
-  using point_t = utils::point<double, dimension>;
-  using id_t = flecsi::utils::id_t;
+  using point_t = util::point<double, dimension>;
+  using id_t = util::id_t;
   using key_t = KEY;
 
   ntree_entity() : locality_(LOCAL) {}
@@ -129,8 +129,8 @@ class ntree_entity_holder : public ntree_entity_base_t
 {
 public:
   static constexpr size_t dimension = DIM;
-  using point_t = utils::point<double, dimension>;
-  using id_t = flecsi::utils::id_t;
+  using point_t = util::point<double, dimension>;
+  using id_t = util::id_t;
   using key_t = KEY;
 
   ntree_entity_holder() {}
@@ -169,8 +169,8 @@ public:
 
   static constexpr size_t dimension = DIM;
   using entity_id_t = typename TREE_ENTITY_TYPE::id_t;
-  using id_t = flecsi::utils::id_t;
-  using point_t = utils::point<double, dimension>;
+  using id_t = util::id_t;
+  using point_t = util::point<double, dimension>;
   using key_t = KEY;
 
   ntree_node() : size_(0), is_leaf_(true) {}
@@ -288,5 +288,5 @@ private:
   LOCALITY locality_;
 }; // class ntree_node
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

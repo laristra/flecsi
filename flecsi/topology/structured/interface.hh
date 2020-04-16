@@ -23,7 +23,7 @@
 #include <flecsi/topology/structured/types.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 /*!
   @ingroup topology
@@ -43,5 +43,5 @@ struct structured : structured_base {
 
 }; // struct structured
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

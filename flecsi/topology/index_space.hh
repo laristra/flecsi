@@ -22,7 +22,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 /*----------------------------------------------------------------------------*
  * class index_space
@@ -1781,5 +1781,5 @@ private:
   T entry_;
 };
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

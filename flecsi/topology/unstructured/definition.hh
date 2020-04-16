@@ -22,7 +22,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace unstructured_impl {
 
 /*!
@@ -35,7 +35,7 @@ template<size_t DIMENSION, typename REAL_TYPE = double>
 class definition
 {
 public:
-  using point_t = utils::point<double, DIMENSION>;
+  using point_t = util::point<double, DIMENSION>;
   using connectivity_t = std::vector<std::vector<size_t>>;
 
   definition(const definition &) = delete;
@@ -106,5 +106,5 @@ public:
 }; // class definition
 
 } // namespace unstructured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

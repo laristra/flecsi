@@ -35,7 +35,7 @@
 #include <memory>
 
 namespace flecsi {
-namespace execution {
+namespace exec {
 
 /*!
   Base legion future  type.
@@ -119,5 +119,5 @@ constexpr bool is_index_future = false;
 template<class R>
 constexpr bool is_index_future<legion_future<R, launch_type_t::index>> = true;
 
-} // namespace execution
+} // namespace exec
 } // namespace flecsi

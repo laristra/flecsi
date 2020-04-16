@@ -20,7 +20,7 @@
 #include <tuple>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 namespace detail {
 
@@ -249,5 +249,5 @@ public:
 
 }; // simple_id
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

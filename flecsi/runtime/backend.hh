@@ -38,10 +38,10 @@
 
 #endif // FLECSI_RUNTIME_MODEL
 
-namespace flecsi::runtime {
+namespace flecsi::run {
 context_t &
 context::instance() {
   static context_t context;
   return context;
 } // instance
-} // namespace flecsi::runtime
+} // namespace flecsi::run

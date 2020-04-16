@@ -32,7 +32,7 @@
 
 #include <map>
 
-namespace flecsi::runtime {
+namespace flecsi::run {
 
 struct context_t : context {
 
@@ -103,4 +103,4 @@ struct context_t : context {
   }
 };
 
-} // namespace flecsi::runtime
+} // namespace flecsi::run

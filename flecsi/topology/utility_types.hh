@@ -22,7 +22,7 @@
 #include "flecsi/utils/typeify.hh"
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 //----------------------------------------------------------------------------//
 // Type creation utilities to create C++ types from size_t ids.
@@ -35,7 +35,7 @@ namespace topology {
  */
 
 template<size_t TOPOLOGICAL_DIMENSION>
-using topological_dimension = utils::typeify<size_t, TOPOLOGICAL_DIMENSION>;
+using topological_dimension = util::typeify<size_t, TOPOLOGICAL_DIMENSION>;
 
 /*!
   Type to define different topological domain types from size_t ids.
@@ -44,7 +44,7 @@ using topological_dimension = utils::typeify<size_t, TOPOLOGICAL_DIMENSION>;
  */
 
 template<size_t TOPOLOGICAL_DOMAIN>
-using topological_domain = utils::typeify<size_t, TOPOLOGICAL_DOMAIN>;
+using topological_domain = util::typeify<size_t, TOPOLOGICAL_DOMAIN>;
 
 /*!
   Type to define different index subspace types from size_t ids.
@@ -53,13 +53,13 @@ using topological_domain = utils::typeify<size_t, TOPOLOGICAL_DOMAIN>;
  */
 
 template<size_t INDEX_SUBSPACE>
-using index_subspace = utils::typeify<size_t, INDEX_SUBSPACE>;
+using index_subspace = util::typeify<size_t, INDEX_SUBSPACE>;
 
 //----------------------------------------------------------------------------//
 // Simple Types.
 //----------------------------------------------------------------------------//
 
-using id_vector_t = std::vector<utils::id_t>;
+using id_vector_t = std::vector<util::id_t>;
 using connection_vector_t = std::vector<id_vector_t>;
 
 // Hash type use for mappings in building topology connectivity
@@ -67,7 +67,7 @@ using connection_vector_t = std::vector<id_vector_t>;
 struct id_vector_hash_t {
   size_t operator()(const id_vector_t & v) const {
     size_t h = 0;
-    for(utils::id_t id : v) {
+    for(util::id_t id : v) {
       h |= static_cast<size_t>(id.local_id());
     } // for
 
@@ -79,7 +79,7 @@ struct id_vector_hash_t {
 // Map type used when building the topology connectivities.
 
 using id_vector_map_t =
-  std::unordered_map<id_vector_t, utils::id_t, id_vector_hash_t>;
+  std::unordered_map<id_vector_t, util::id_t, id_vector_hash_t>;
 
 // The second topology vector holds the offsets into to from dimension
 
@@ -95,7 +95,7 @@ using index_vector_t = std::vector<size_t>;
 class entity_base_
 {
 public:
-  using id_t = flecsi::utils::id_t;
+  using id_t = util::id_t;
 };
 
 template<size_t NUM_DOMAINS>
@@ -166,5 +166,5 @@ private:
 template<size_t NUM_DOMAINS>
 using entity_vector_t = std::vector<entity_base<NUM_DOMAINS> *>;
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

@@ -19,14 +19,14 @@
 #include <unordered_map>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace unstructured_impl {
 
 /*!
   FIXME Add description.
  */
 struct index_coloring {
-  // using entity_info = flecsi::topology::unstructured_impl::entity_info;
+  // using entity_info = topo::unstructured_impl::entity_info;
 
   //------------------------------------------------------------------------//
   // Data members.
@@ -63,5 +63,5 @@ struct index_coloring {
 }; // struct index_coloring
 
 } // namespace unstructured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

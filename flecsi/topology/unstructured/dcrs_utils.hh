@@ -35,9 +35,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag dcrs_utils_tag("dcrs_utils");
+inline log::devel_tag dcrs_utils_tag("dcrs_utils");
 
-namespace topology {
+namespace topo {
 namespace unstructured_impl {
 
 /*!
@@ -55,7 +55,7 @@ naive_coloring(definition<MESH_DIMENSION> & md) {
   std::set<size_t> indices;
 
   {
-    flog::devel_guard guard(dcrs_utils_tag);
+    log::devel_guard guard(dcrs_utils_tag);
 
     int size;
     int rank;
@@ -113,7 +113,7 @@ template<std::size_t DIMENSION,
   std::size_t FROM_DIMENSION = DIMENSION,
   std::size_t TO_DIMENSION = DIMENSION,
   std::size_t THRU_DIMENSION = DIMENSION - 1>
-inline flecsi::utils::dcrs
+inline util::dcrs
 make_dcrs(const definition<DIMENSION> & md) {
   int size;
   int rank;
@@ -133,7 +133,7 @@ make_dcrs(const definition<DIMENSION> & md) {
   size_t init_indices = quot + ((size_t(rank) >= (size - rem)) ? 1 : 0);
 
   // Start to initialize the return object.
-  flecsi::utils::dcrs dcrs;
+  util::dcrs dcrs;
   dcrs.distribution.push_back(0);
 
   // Set the distributions for each rank. This happens on all ranks.
@@ -209,7 +209,7 @@ template<std::size_t DIMENSION,
   std::size_t THRU_DIMENSION = DIMENSION - 1>
 void
 make_dcrs_have_connectivity(const definition<DIMENSION> & md,
-  flecsi::utils::dcrs & dcrs) {
+  util::dcrs & dcrs) {
   int size;
   int rank;
 
@@ -302,9 +302,9 @@ alltoallv(const SEND_TYPE & sendbuf,
   decltype(MPI_COMM_WORLD) comm) {
 
   const auto mpi_send_t =
-    utils::mpi_typetraits<typename SEND_TYPE::value_type>::type();
+    util::mpi_typetraits<typename SEND_TYPE::value_type>::type();
   const auto mpi_recv_t =
-    utils::mpi_typetraits<typename RECV_TYPE::value_type>::type();
+    util::mpi_typetraits<typename RECV_TYPE::value_type>::type();
 
   auto num_ranks = sendcounts.size();
 
@@ -391,7 +391,7 @@ make_dcrs_distributed(const parallel_definition<MESH_DIMENSION> & md,
   size_t from_dimension,
   size_t to_dimension,
   size_t min_connections,
-  flecsi::utils::dcrs & dcrs) {
+  util::dcrs & dcrs) {
   int size;
   int rank;
 
@@ -399,7 +399,7 @@ make_dcrs_distributed(const parallel_definition<MESH_DIMENSION> & md,
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   // the mpi data type for size_t
-  const auto mpi_size_t = utils::mpi_typetraits<size_t>::type();
+  const auto mpi_size_t = util::mpi_typetraits<size_t>::type();
 
   //----------------------------------------------------------------------------
   // Get cell partitioning
@@ -758,7 +758,7 @@ template<std::size_t DIMENSION>
 void
 migrate(size_t dimension,
   const std::vector<size_t> & partitioning,
-  flecsi::utils::dcrs & dcrs,
+  util::dcrs & dcrs,
   parallel_definition<DIMENSION> & md) {
 
   int comm_size, comm_rank;
@@ -850,7 +850,7 @@ migrate(size_t dimension,
   //----------------------------------------------------------------------------
 
   // the mpi data type for size_t
-  const auto mpi_size_t = utils::mpi_typetraits<size_t>::type();
+  const auto mpi_size_t = util::mpi_typetraits<size_t>::type();
 
   std::vector<size_t> recvcounts(comm_size, 0);
 
@@ -960,7 +960,7 @@ migrate(size_t dimension,
 }
 
 inline void
-get_owner_info(const flecsi::utils::dcrs & dcrs,
+get_owner_info(const util::dcrs & dcrs,
   index_coloring & entities,
   coloring_info & color_info) {
 
@@ -1035,7 +1035,7 @@ get_owner_info(const flecsi::utils::dcrs & dcrs,
 ////////////////////////////////////////////////////////////////////////////////
 #if 0 // FIXME: DO WE NEED THIS?
 inline void
-color_entities(const flecsi::utils::crs & cells2entity,
+color_entities(const util::crs & cells2entity,
   const std::vector<size_t> & local2global,
   const std::map<size_t, size_t> & global2local,
   const index_coloring & cells,
@@ -1048,7 +1048,7 @@ color_entities(const flecsi::utils::crs & cells2entity,
   MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
 
   // the mpi data type for size_t
-  const auto mpi_size_t = utils::mpi_typetraits<size_t>::type();
+  const auto mpi_size_t = util::mpi_typetraits<size_t>::type();
 
   //----------------------------------------------------------------------------
   // Start marking all vertices as exclusive
@@ -1516,7 +1516,7 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
   MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
 
   // the mpi data type for size_t
-  const auto mpi_size_t = utils::mpi_typetraits<size_t>::type();
+  const auto mpi_size_t = util::mpi_typetraits<size_t>::type();
 
   //----------------------------------------------------------------------------
   // Create a naive initial distribution of the vertices
@@ -1664,7 +1664,7 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
     auto & rank_data = rank_edges[r];
     for(size_t i = recvdispls[r]; i < recvdispls[r + 1];) {
       auto n = recvbuf[i];
-      auto vs = utils::make_array_ref(&recvbuf[i + 1], n);
+      auto vs = util::make_array_ref(&recvbuf[i + 1], n);
       auto it = add_to_map(vs, entities, entities.size());
       rank_data.emplace_back(it);
       i += n + 1;
@@ -1769,7 +1769,7 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
     for(size_t i = recvdispls[r]; i < recvdispls[r + 1];) {
       auto global_id = recvbuf[i];
       auto n = recvbuf[i + 1];
-      auto vs = utils::make_array_ref(&recvbuf[i + 2], n);
+      auto vs = util::make_array_ref(&recvbuf[i + 2], n);
       i += n + 2;
       add_to_map(vs, entities, global_id);
     }
@@ -1803,18 +1803,18 @@ match_ids(const parallel_definition<MESH_DIMENSION> & md,
 /// \brief Color an auxiliary index space like vertices or edges
 ////////////////////////////////////////////////////////////////////////////////
 inline void
-ghost_connectivity(const flecsi::utils::crs & from2to,
+ghost_connectivity(const util::crs & from2to,
   const std::vector<size_t> & local2global,
   const index_coloring & from_entities,
   std::vector<size_t> & from_ids,
-  flecsi::utils::crs & connectivity) {
+  util::crs & connectivity) {
 
   int comm_size, comm_rank;
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
 
   // the mpi data type for size_t
-  const auto mpi_size_t = utils::mpi_typetraits<size_t>::type();
+  const auto mpi_size_t = util::mpi_typetraits<size_t>::type();
 
   //----------------------------------------------------------------------------
   // Determine cell-to-vertex connecitivity for my shared cells
@@ -1945,7 +1945,7 @@ ghost_connectivity(const parallel_definition<MESH_DIMENSION> & md,
   size_t to_dimension,
   const index_coloring & from_entities,
   std::vector<size_t> & from_ids,
-  flecsi::utils::crs & connectivity) {
+  util::crs & connectivity) {
 
   const auto & to_local2global = md.local_to_global(to_dimension);
   const auto & from2to = md.entities_crs(from_dimension, to_dimension);
@@ -1955,5 +1955,5 @@ ghost_connectivity(const parallel_definition<MESH_DIMENSION> & md,
 }
 
 } // namespace unstructured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

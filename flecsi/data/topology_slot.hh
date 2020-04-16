@@ -40,10 +40,10 @@ struct convert_tag {}; // must be recognized as a task argument
 template<typename TOPOLOGY_TYPE>
 struct topology_slot : convert_tag, topology_id<topology_slot<TOPOLOGY_TYPE>> {
 
-  using core_t = topology::core_t<TOPOLOGY_TYPE>;
+  using core_t = topo::core_t<TOPOLOGY_TYPE>;
   static_assert(sizeof(TOPOLOGY_TYPE) == sizeof(core_t),
     "topologies may not add data members");
-  using data_t = topology_data<topology::category_t<core_t>>;
+  using data_t = topology_data<topo::category_t<core_t>>;
 
   using coloring = typename TOPOLOGY_TYPE::coloring;
 

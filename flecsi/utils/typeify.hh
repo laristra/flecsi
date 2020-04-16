@@ -16,7 +16,7 @@
 /*! @file */
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
   Create a C++ type from a non-type value, e.g., an integer literal.
@@ -36,5 +36,5 @@ struct typeify {
 template<typename T, T M>
 constexpr T typeify<T, M>::value;
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

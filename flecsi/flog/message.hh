@@ -24,7 +24,7 @@
 #include <iostream>
 
 namespace flecsi {
-namespace flog {
+namespace log {
 
 /*!
   Function always returning true. Used for defaults.
@@ -315,5 +315,5 @@ severity_message_t(error, {
 
 #undef severity_message_t
 
-} // namespace flog
+} // namespace log
 } // namespace flecsi

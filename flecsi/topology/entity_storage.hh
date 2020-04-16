@@ -20,7 +20,7 @@
 #include <flecsi/utils/offset.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 template<typename T>
 using topology_storage = array_buffer<T>;
@@ -28,7 +28,7 @@ using topology_storage = array_buffer<T>;
 class offset_storage_t
 {
 public:
-  using offset_t = utils::offset_t;
+  using offset_t = util::offset_t;
 
   const offset_t operator[](size_t i) const {
     return s_[i];
@@ -157,5 +157,5 @@ private:
   size_t size_;
 }; // struct identity_storage
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

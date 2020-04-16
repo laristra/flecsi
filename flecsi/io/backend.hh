@@ -21,7 +21,7 @@
 #include "flecsi/topology/core.hh"
 
 namespace flecsi::io {
-using field_reference_t = data::field_reference_t<topology::index>;
+using field_reference_t = data::field_reference_t<topo::index>;
 }
 
 /*----------------------------------------------------------------------------*

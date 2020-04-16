@@ -18,7 +18,7 @@
 #include <bitset>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 namespace ftest {
 
 struct node_t {
@@ -65,5 +65,5 @@ operator<<(std::ostream & stream, node_t const & node) {
 } // operator <<
 
 } // namespace ftest
-} // namespace utils
+} // namespace util
 } // namespace flecsi

@@ -42,11 +42,10 @@ struct partition {
 #endif
 
 template<class Topo,
-  topology::index_space_t<Topo> Index = topology::default_space<Topo>>
+  topo::index_space_t<Topo> Index = topo::default_space<Topo>>
 region
 make_region(std::size_t n) {
-  return {
-    n, runtime::context_t::instance().get_field_info_store<Topo, Index>()};
+  return {n, run::context::instance().get_field_info_store<Topo, Index>()};
 }
 
 template<class Topo>
@@ -64,7 +63,7 @@ struct topology_data;
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::global> : detail::simple<topology::global> {
+struct topology_data<topo::global> : detail::simple<topo::global> {
   topology_data(const type::coloring &) {}
 };
 
@@ -73,8 +72,8 @@ struct topology_data<topology::global> : detail::simple<topology::global> {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::index> : detail::simple<topology::index>,
-                                        detail::partition {
+struct topology_data<topo::index> : detail::simple<topo::index>,
+                                    detail::partition {
   topology_data(const type::coloring & coloring)
     : simple(coloring.size()), partition(
                                  *this,
@@ -87,14 +86,14 @@ struct topology_data<topology::index> : detail::simple<topology::index>,
 };
 
 template<>
-struct topology_data<topology::canonical_base> {
-  using type = topology::canonical_base;
+struct topology_data<topo::canonical_base> {
+  using type = topo::canonical_base;
   topology_data(const type::coloring &) {}
 };
 
 template<>
-struct topology_data<topology::ntree_base> {
-  using type = topology::ntree_base;
+struct topology_data<topo::ntree_base> {
+  using type = topo::ntree_base;
   topology_data(const type::coloring &) {}
 };
 
@@ -103,8 +102,8 @@ struct topology_data<topology::ntree_base> {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::unstructured_base> {
-  using type = topology::unstructured_base;
+struct topology_data<topo::unstructured_base> {
+  using type = topo::unstructured_base;
   topology_data(const type::coloring &);
 
 #if 0
@@ -122,8 +121,8 @@ struct topology_data<topology::unstructured_base> {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topology::structured_base> {
-  using type = topology::structured_base;
+struct topology_data<topo::structured_base> {
+  using type = topo::structured_base;
   topology_data(const type::coloring &);
 };
 

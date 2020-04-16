@@ -98,7 +98,7 @@
 #endif // FLOG_ENABLE_COLOR_OUTPUT
 
 namespace flecsi {
-namespace flog {
+namespace log {
 
 /*!
   Create a timestamp.
@@ -140,5 +140,5 @@ rstrip(const char * file) {
 
 void send_to_one();
 
-} // namespace flog
+} // namespace log
 } // namespace flecsi

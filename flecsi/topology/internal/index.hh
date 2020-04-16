@@ -20,7 +20,7 @@
 #endif
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 /*!
   The \c index type allows users to register data on an
@@ -50,5 +50,5 @@ struct index {
 
 }; // struct index
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

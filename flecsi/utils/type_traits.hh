@@ -18,7 +18,7 @@
 #include <type_traits>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 ////////////////////////////////////////////////////////////////////////////////
 // A type trait utility to detect if a type is a strict STL container.
@@ -138,5 +138,5 @@ struct is_iterative_container<T,
 template<typename T>
 constexpr bool is_iterative_container_v = is_iterative_container<T>::value;
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

@@ -18,7 +18,7 @@
 #include <tuple>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 template<typename _Tuple, typename _Fn, size_t... _Idx>
 void
@@ -83,5 +83,5 @@ tuple_visitor(_Fn && f) {
     std::forward<_Tuple>({}), std::forward<_Fn>(f), _Indices{});
 }
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

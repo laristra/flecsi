@@ -18,7 +18,7 @@
 #include <flecsi/utils/crs.hh>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 namespace graph {
 
 /*!
@@ -46,5 +46,5 @@ struct colorer {
 }; // class colorer
 
 } // namespace graph
-} // namespace utils
+} // namespace util
 } // namespace flecsi

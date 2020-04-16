@@ -31,7 +31,7 @@ namespace flecsi {
   Default global topology instance.
  */
 
-inline data::topology_slot<topology::global> global_topology;
+inline data::topology_slot<topo::global> global_topology;
 
 /*
   Convenience type for global field members.
@@ -39,19 +39,19 @@ inline data::topology_slot<topology::global> global_topology;
 
 template<typename DATA_TYPE>
 using global_field_member =
-  data::field_member<DATA_TYPE, data::singular, topology::global>;
+  data::field_member<DATA_TYPE, data::singular, topo::global>;
 
 /*
   Per-process coloring.
  */
 
-inline data::coloring_slot<topology::index> process_coloring;
+inline data::coloring_slot<topo::index> process_coloring;
 
 /*
   Per-process topology instance.
  */
 
-inline data::topology_slot<topology::index> process_topology;
+inline data::topology_slot<topo::index> process_topology;
 
 /*
   Convenience type for index field members.
@@ -59,7 +59,7 @@ inline data::topology_slot<topology::index> process_topology;
 
 template<typename DATA_TYPE>
 using index_field_member =
-  data::field_member<DATA_TYPE, data::singular, topology::index>;
+  data::field_member<DATA_TYPE, data::singular, topo::index>;
 
 namespace detail {
 /// An RAII type to manage the global coloring and topologies.
@@ -75,7 +75,7 @@ struct data_guard {
   } g;
   struct color_guard {
     color_guard() {
-      process_coloring.allocate(runtime::context_t::instance().processes());
+      process_coloring.allocate(run::context::instance().processes());
     }
     color_guard(color_guard &&) = delete;
     ~color_guard() {

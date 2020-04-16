@@ -29,7 +29,7 @@
 #include <array>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 template<size_t, size_t>
 class mesh_entity;
@@ -41,7 +41,7 @@ template<size_t NUM_DIMS, size_t NUM_DOMAINS, size_t NUM_INDEX_SUBSPACES>
 struct mesh_storage {
   static constexpr size_t num_partitions = 5;
 
-  using id_t = utils::id_t;
+  using id_t = util::id_t;
 
   using index_spaces_t = std::array<
     index_space<mesh_entity_base_ *, true, true, true, void, topology_storage>,
@@ -78,14 +78,14 @@ struct mesh_storage {
   size_t color;
 
   mesh_storage() {
-    auto & context_ = flecsi::runtime::context_t::instance();
+    auto & context_ = run::context::instance();
     color = context_.color();
   } // mesh_storage
 
   void init_entities(size_t domain,
     size_t dim,
     mesh_entity_base_ * entities,
-    utils::id_t * ids,
+    util::id_t * ids,
     size_t,
     size_t num_entities,
     size_t num_exclusive,
@@ -148,15 +148,15 @@ struct mesh_storage {
     size_t index_subspace,
     size_t domain,
     size_t dim,
-    utils::id_t * ids,
+    util::id_t * ids,
     size_t,
     bool read) {
 
-    auto & context_ = runtime::context_t::instance();
+    auto & context_ = run::context::instance();
     auto & ssm = context_.index_subspace_info();
     auto itr = ssm.find(index_subspace);
     flog_assert(itr != ssm.end(), "invalid index subspace");
-    const runtime::context_t::index_subspace_info_t & si = itr->second;
+    const run::context_t::index_subspace_info_t & si = itr->second;
 
     auto & is = index_spaces[domain][dim];
     auto & iss = index_subspaces[index_subspace];
@@ -177,9 +177,9 @@ struct mesh_storage {
     size_t to_domain,
     size_t from_dim,
     size_t to_dim,
-    utils::offset_t * offsets,
+    util::offset_t * offsets,
     size_t num_offsets,
-    utils::id_t * indices,
+    util::id_t * indices,
     size_t num_indices,
     bool read) {
     // TODO - this is an initial implementation for testing purposes.
@@ -244,5 +244,5 @@ struct mesh_storage {
 
 }; // class mesh_storage
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

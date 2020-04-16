@@ -23,9 +23,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag ftest_tag("ftest");
+inline log::devel_tag ftest_tag("ftest");
 
-namespace utils {
+namespace util {
 namespace ftest {
 
 struct assert_handler_t;
@@ -38,7 +38,7 @@ struct state_t {
   } // initialize
 
   ~state_t() {
-    flog::devel_guard guard(ftest_tag);
+    log::devel_guard guard(ftest_tag);
 
     if(error_stream_.str().size()) {
       std::stringstream stream;
@@ -196,166 +196,166 @@ string_case_compare(const char * lhs, const char * rhs) {
 } // string_case_compare
 
 } // namespace ftest
-} // namespace utils
+} // namespace util
 } // namespace flecsi
 
 #define FTEST                                                                  \
-  flecsi::flog::flog_t::instance().config_stream().add_buffer(                 \
+  ::flecsi::log::flog_t::instance().config_stream().add_buffer(                \
     "flog", std::clog, true);                                                  \
-  flecsi::utils::ftest::state_t auto_ftest_state(__func__);                    \
+  ::flecsi::util::ftest::state_t auto_ftest_state(__func__);                   \
   return auto_ftest_state->*[&]() -> void
 
-#define FTEST_TYPE(name) flecsi::utils::demangle((name))
+#define FTEST_TYPE(name) ::flecsi::util::demangle((name))
 
-#define FTEST_TTYPE(type) flecsi::utils::demangle(typeid(type).name())
+#define FTEST_TTYPE(type) ::flecsi::util::demangle(typeid(type).name())
 
 #define ASSERT_TRUE(condition)                                                 \
   if(condition)                                                                \
     ;                                                                          \
   else                                                                         \
-    return auto_ftest_state >>= ::flecsi::utils::ftest::assert_handler_t(      \
+    return auto_ftest_state >>= ::flecsi::util::ftest::assert_handler_t(       \
              #condition, __FILE__, __LINE__, auto_ftest_state)
 
 #define EXPECT_TRUE(condition)                                                 \
   if(condition)                                                                \
     ;                                                                          \
   else                                                                         \
-    flecsi::utils::ftest::expect_handler_t(                                    \
+    ::flecsi::util::ftest::expect_handler_t(                                   \
       #condition, __FILE__, __LINE__, auto_ftest_state)
 
 #define ASSERT_FALSE(condition)                                                \
   if(!(condition))                                                             \
     ;                                                                          \
   else                                                                         \
-    return auto_ftest_state >>= ::flecsi::utils::ftest::assert_handler_t(      \
+    return auto_ftest_state >>= ::flecsi::util::ftest::assert_handler_t(       \
              #condition, __FILE__, __LINE__, auto_ftest_state)
 
 #define EXPECT_FALSE(condition)                                                \
   if(!(condition))                                                             \
     ;                                                                          \
   else                                                                         \
-    flecsi::utils::ftest::expect_handler_t(                                    \
+    ::flecsi::util::ftest::expect_handler_t(                                   \
       #condition, __FILE__, __LINE__, auto_ftest_state)
 
 #define ASSERT_EQ(val1, val2)                                                  \
-  ASSERT_TRUE(flecsi::utils::ftest::test_equal((val1), (val2)))
+  ASSERT_TRUE(::flecsi::util::ftest::test_equal((val1), (val2)))
 
 #define EXPECT_EQ(val1, val2)                                                  \
-  EXPECT_TRUE(flecsi::utils::ftest::test_equal((val1), (val2)))
+  EXPECT_TRUE(::flecsi::util::ftest::test_equal((val1), (val2)))
 
 #define ASSERT_NE(val1, val2)                                                  \
-  ASSERT_TRUE(!flecsi::utils::ftest::test_equal((val1), (val2)))
+  ASSERT_TRUE(!::flecsi::util::ftest::test_equal((val1), (val2)))
 
 #define EXPECT_NE(val1, val2)                                                  \
-  EXPECT_TRUE(!flecsi::utils::ftest::test_equal((val1), (val2)))
+  EXPECT_TRUE(!::flecsi::util::ftest::test_equal((val1), (val2)))
 
 #define ASSERT_LT(val1, val2)                                                  \
-  ASSERT_TRUE(flecsi::utils::ftest::test_less((val1), (val2)))
+  ASSERT_TRUE(::flecsi::util::ftest::test_less((val1), (val2)))
 
 #define EXPECT_LT(val1, val2)                                                  \
-  EXPECT_TRUE(flecsi::utils::ftest::test_less((val1), (val2)))
+  EXPECT_TRUE(::flecsi::util::ftest::test_less((val1), (val2)))
 
 #define ASSERT_LE(val1, val2)                                                  \
-  ASSERT_TRUE(flecsi::utils::ftest::test_greater((val2), (val1)))
+  ASSERT_TRUE(::flecsi::util::ftest::test_greater((val2), (val1)))
 
 #define EXPECT_LE(val1, val2)                                                  \
-  EXPECT_TRUE(flecsi::utils::ftest::test_greater((val2), (val1)))
+  EXPECT_TRUE(::flecsi::util::ftest::test_greater((val2), (val1)))
 
 #define ASSERT_GT(val1, val2)                                                  \
-  ASSERT_TRUE(flecsi::utils::ftest::test_greater((val1), (val2)))
+  ASSERT_TRUE(::flecsi::util::ftest::test_greater((val1), (val2)))
 
 #define EXPECT_GT(val1, val2)                                                  \
-  EXPECT_TRUE(flecsi::utils::ftest::test_greater((val1), (val2)))
+  EXPECT_TRUE(::flecsi::util::ftest::test_greater((val1), (val2)))
 
 #define ASSERT_GE(val1, val2)                                                  \
-  ASSERT_TRUE(flecsi::utils::ftest::test_less((val2), (val1)))
+  ASSERT_TRUE(::flecsi::util::ftest::test_less((val2), (val1)))
 
 #define EXPECT_GE(val1, val2)                                                  \
-  EXPECT_TRUE(flecsi::utils::ftest::test_less((val2), (val1)))
+  EXPECT_TRUE(::flecsi::util::ftest::test_less((val2), (val1)))
 
 #define ASSERT_STREQ(str1, str2)                                               \
-  if(flecsi::utils::ftest::string_compare(str1, str2))                         \
+  if(::flecsi::util::ftest::string_compare(str1, str2))                        \
     ;                                                                          \
   else                                                                         \
-    return auto_ftest_state >>= ::flecsi::utils::ftest::assert_handler_t(      \
+    return auto_ftest_state >>= ::flecsi::util::ftest::assert_handler_t(       \
              str1 " == " str2, __FILE__, __LINE__, auto_ftest_state)
 
 #define EXPECT_STREQ(str1, str2)                                               \
-  if(flecsi::utils::ftest::string_compare(str1, str2))                         \
+  if(::flecsi::util::ftest::string_compare(str1, str2))                        \
     ;                                                                          \
   else                                                                         \
-    flecsi::utils::ftest::expect_handler_t(                                    \
+    ::flecsi::util::ftest::expect_handler_t(                                   \
       str1 " == " str2, __FILE__, __LINE__, auto_ftest_state)
 
 #define ASSERT_STRNE(str1, str2)                                               \
-  if(!flecsi::utils::ftest::string_compare(str1, str2))                        \
+  if(!::flecsi::util::ftest::string_compare(str1, str2))                       \
     ;                                                                          \
   else                                                                         \
-    return auto_ftest_state >>= ::flecsi::utils::ftest::assert_handler_t(      \
+    return auto_ftest_state >>= ::flecsi::util::ftest::assert_handler_t(       \
              str1 " != " str2, __FILE__, __LINE__, auto_ftest_state)
 
 #define EXPECT_STRNE(str1, str2)                                               \
-  if(!flecsi::utils::ftest::string_compare(str1, str2))                        \
+  if(!::flecsi::util::ftest::string_compare(str1, str2))                       \
     ;                                                                          \
   else                                                                         \
-    flecsi::utils::ftest::expect_handler_t(                                    \
+    ::flecsi::util::ftest::expect_handler_t(                                   \
       str1 " != " str2, __FILE__, __LINE__, auto_ftest_state)
 
 #define ASSERT_STRCASEEQ(str1, str2)                                           \
-  if(flecsi::utils::ftest::string_case_compare(str1, str2))                    \
+  if(::flecsi::util::ftest::string_case_compare(str1, str2))                   \
     ;                                                                          \
   else                                                                         \
-    return auto_ftest_state >>= ::flecsi::utils::ftest::assert_handler_t(str1  \
+    return auto_ftest_state >>= ::flecsi::util::ftest::assert_handler_t(str1   \
              " == " str2 " (case insensitive)",                                \
              __FILE__,                                                         \
              __LINE__,                                                         \
              auto_ftest_state)
 
 #define EXPECT_STRCASEEQ(str1, str2)                                           \
-  if(flecsi::utils::ftest::string_case_compare(str1, str2))                    \
+  if(::flecsi::util::ftest::string_case_compare(str1, str2))                   \
     ;                                                                          \
   else                                                                         \
-    flecsi::utils::ftest::expect_handler_t(str1 " == " str2                    \
-                                                " (case insensitive)",         \
+    ::flecsi::util::ftest::expect_handler_t(str1 " == " str2                   \
+                                                 " (case insensitive)",        \
       __FILE__,                                                                \
       __LINE__,                                                                \
       auto_ftest_state)
 
 #define ASSERT_STRCASENE(str1, str2)                                           \
-  if(!flecsi::utils::ftest::string_case_compare(str1, str2))                   \
+  if(!::flecsi::util::ftest::string_case_compare(str1, str2))                  \
     ;                                                                          \
   else                                                                         \
-    return auto_ftest_state >>= ::flecsi::utils::ftest::assert_handler_t(str1  \
+    return auto_ftest_state >>= ::flecsi::util::ftest::assert_handler_t(str1   \
              " == " str2 " (case insensitive)",                                \
              __FILE__,                                                         \
              __LINE__,                                                         \
              auto_ftest_state)
 
 #define EXPECT_STRCASENE(str1, str2)                                           \
-  if(!flecsi::utils::ftest::string_case_compare(str1, str2))                   \
+  if(!::flecsi::util::ftest::string_case_compare(str1, str2))                  \
     ;                                                                          \
   else                                                                         \
-    flecsi::utils::ftest::expect_handler_t(str1 " == " str2                    \
-                                                " (case insensitive)",         \
+    ::flecsi::util::ftest::expect_handler_t(str1 " == " str2                   \
+                                                 " (case insensitive)",        \
       __FILE__,                                                                \
       __LINE__,                                                                \
       auto_ftest_state)
 
 // Provide access to the output stream to allow user to capture output
 #define FTEST_CAPTURE()                                                        \
-  flecsi::utils::ftest::test_output_t::instance().get_stream()
+  ::flecsi::util::ftest::test_output_t::instance().get_stream()
 
 // Return captured output as a std::string
 #define FTEST_DUMP()                                                           \
-  flecsi::utils::ftest::test_output_t::instance().get_buffer()
+  ::flecsi::util::ftest::test_output_t::instance().get_buffer()
 
 // Compare captured output to a blessed file
 #define FTEST_EQUAL_BLESSED(f)                                                 \
-  flecsi::utils::ftest::test_output_t::instance().equal_blessed((f))
+  ::flecsi::util::ftest::test_output_t::instance().equal_blessed((f))
 
 // Write captured output to file
 #define FTEST_WRITE(f)                                                         \
-  flecsi::utils::ftest::test_output_t::instance().to_file((f))
+  ::flecsi::util::ftest::test_output_t::instance().to_file((f))
 
 // Dump captured output on failure
 #if !defined(_MSC_VER)
@@ -378,11 +378,11 @@ string_case_compare(const char * lhs, const char * rhs) {
 
 // compare collections with varying levels of assertions
 #define FTEST_CHECK_EQUAL_COLLECTIONS(...)                                     \
-  flecsi::utils::ftest::CheckEqualCollections(__VA_ARGS__)
+  ::flecsi::util::ftest::CheckEqualCollections(__VA_ARGS__)
 
 #define FTEST_ASSERT_EQUAL_COLLECTIONS(...)                                    \
-  ASSERT_TRUE(flecsi::utils::ftest::CheckEqualCollections(__VA_ARGS__) << FTEST_DUMP()
+  ASSERT_TRUE(::flecsi::util::ftest::CheckEqualCollections(__VA_ARGS__) << FTEST_DUMP()
 
 #define FTEST_EXPECT_EQUAL_COLLECTIONS(...)                                    \
-  EXPECT_TRUE(flecsi::utils::ftest::CheckEqualCollections(__VA_ARGS__))        \
+  EXPECT_TRUE(::flecsi::util::ftest::CheckEqualCollections(__VA_ARGS__))       \
     << FTEST_DUMP()

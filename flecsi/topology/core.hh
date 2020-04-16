@@ -24,7 +24,7 @@
 #include <flecsi/utils/type_traits.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 // Declarations for the base topology types.
 
@@ -59,8 +59,8 @@ template<class, class = void>
 struct core;
 
 template<class T>
-struct core<T, utils::voided<utils::base_specialization_t<canonical, T>>> {
-  using type = utils::base_specialization_t<canonical, T>;
+struct core<T, util::voided<util::base_specialization_t<canonical, T>>> {
+  using type = util::base_specialization_t<canonical, T>;
 };
 
 template<class T>
@@ -74,23 +74,23 @@ struct core<T, std::enable_if_t<std::is_base_of_v<index, T>>> {
 };
 
 template<class T>
-struct core<T, utils::voided<utils::base_specialization_t<ntree, T>>> {
-  using type = utils::base_specialization_t<ntree, T>;
+struct core<T, util::voided<util::base_specialization_t<ntree, T>>> {
+  using type = util::base_specialization_t<ntree, T>;
 };
 
 template<class T>
-struct core<T, utils::voided<utils::base_specialization_t<set, T>>> {
-  using type = utils::base_specialization_t<set, T>;
+struct core<T, util::voided<util::base_specialization_t<set, T>>> {
+  using type = util::base_specialization_t<set, T>;
 };
 
 template<class T>
-struct core<T, utils::voided<utils::base_specialization_t<structured, T>>> {
-  using type = utils::base_specialization_t<structured, T>;
+struct core<T, util::voided<util::base_specialization_t<structured, T>>> {
+  using type = util::base_specialization_t<structured, T>;
 };
 
 template<class T>
-struct core<T, utils::voided<utils::base_specialization_t<unstructured, T>>> {
-  using type = utils::base_specialization_t<unstructured, T>;
+struct core<T, util::voided<util::base_specialization_t<unstructured, T>>> {
+  using type = util::base_specialization_t<unstructured, T>;
 };
 
 template<class T>
@@ -124,7 +124,7 @@ struct index_space {
   static constexpr single_space default_space = elements;
 };
 template<class T> // TIP: SFINAE uses T::index_space if defined
-struct index_space<T, utils::voided<typename T::index_space>> {
+struct index_space<T, util::voided<typename T::index_space>> {
   using type = typename T::index_space;
 };
 
@@ -162,5 +162,5 @@ using index_space_t = typename detail::index_space<T>::type;
 template<class T>
 inline constexpr auto default_space = detail::default_space<T>::value;
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

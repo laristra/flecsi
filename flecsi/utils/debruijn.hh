@@ -19,7 +19,7 @@
 #include <cstdint>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 //----------------------------------------------------------------------------//
 //!
@@ -104,5 +104,5 @@ public:
 
 }; // debruijn32_t
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

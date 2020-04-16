@@ -6,7 +6,7 @@
 int
 debruijn(int, char **) {
   FTEST {
-    using flecsi::utils::debruijn32_t;
+    using flecsi::util::debruijn32_t;
 
     // index()
     // For: 0, 1, 2

@@ -25,14 +25,14 @@
 #endif
 
 namespace flecsi {
-namespace control {
+namespace ctrl {
 
 /*!
   Convenience type for defining control points.
  */
 
 template<size_t POINT>
-using point_ = utils::typeify<size_t, POINT>;
+using point_ = util::typeify<size_t, POINT>;
 
 /*!
   Allow users to define cyclic control points. Cycles can be nested.
@@ -70,7 +70,7 @@ struct cycle {
  */
 
 template<typename CONTROL_POLICY>
-struct point_walker : public utils::tuple_walker<point_walker<CONTROL_POLICY>> {
+struct point_walker : public util::tuple_walker<point_walker<CONTROL_POLICY>> {
   point_walker(int argc, char ** argv) : argc_(argc), argv_(argv) {}
 
   /*!
@@ -126,9 +126,8 @@ private:
  */
 
 template<typename CONTROL_POLICY>
-struct point_writer
-  : public flecsi::utils::tuple_walker<point_writer<CONTROL_POLICY>> {
-  using graphviz_t = flecsi::utils::graphviz_t;
+struct point_writer : public util::tuple_walker<point_writer<CONTROL_POLICY>> {
+  using graphviz_t = util::graphviz_t;
 
   point_writer(graphviz_t & gv) : gv_(gv) {}
 
@@ -213,5 +212,5 @@ private:
 
 #endif // FLECSI_ENABLE_GRAPHVIZ
 
-} // namespace control
+} // namespace ctrl
 } // namespace flecsi

@@ -41,7 +41,7 @@
 #endif
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 //----------------------------------------------------------------------------//
 // Entity id type.
@@ -135,5 +135,5 @@ unique_name(const T * const t) {
   return ss.str();
 } // unique_name
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

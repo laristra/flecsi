@@ -19,7 +19,7 @@
 
 using namespace boost::program_options;
 
-namespace flecsi::runtime {
+namespace flecsi::run {
 
 //----------------------------------------------------------------------------//
 // Implementation of context_t::initialize.
@@ -86,4 +86,4 @@ context_t::start(const std::function<int(int, char **)> & action) {
   return action(largv.size(), largv.data());
 }
 
-} // namespace flecsi::runtime
+} // namespace flecsi::run

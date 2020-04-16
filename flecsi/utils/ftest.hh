@@ -29,7 +29,7 @@
 #include <tuple>
 
 namespace flecsi {
-namespace control {
+namespace ctrl {
 
 /*!
   The simulation_control_points_t type is part of the control
@@ -51,21 +51,15 @@ enum simulation_control_points_t : size_t {
 
 struct ftest_control_policy_t {
 
-  using control_t = flecsi::control::control<ftest_control_policy_t>;
-  using node_t = flecsi::utils::ftest::node_t;
+  using control_t = control<ftest_control_policy_t>;
+  using node_t = flecsi::util::ftest::node_t;
 
-#define control_point(name) flecsi::control::point_<name>
-
-  using control_points = std::tuple<control_point(initialize),
-    control_point(driver),
-    control_point(finalize)>;
-
-#undef control_point
+  using control_points =
+    std::tuple<point_<initialize>, point_<driver>, point_<finalize>>;
 
 }; // struct ftest_control_policy_t
 
-using control_t =
-  flecsi::control::control<flecsi::control::ftest_control_policy_t>;
+using control_t = control<ftest_control_policy_t>;
 
 /*
   Register a command-line option "--control-model" to output a dot file
@@ -76,14 +70,14 @@ using control_t =
 
 flecsi_register_control_options(control_t);
 
-} // namespace control
+} // namespace ctrl
 } // namespace flecsi
 
 #define ftest_register_action(action, control_point, ...)                      \
   inline bool ftest_initialize_##action##_registered =                         \
-    flecsi::control::control_t::instance()                                     \
-      .control_point_map(flecsi::control::control_point,                       \
-        flecsi_internal_stringify(flecsi::control::control_point))             \
+    ::flecsi::ctrl::control_t::instance()                                      \
+      .control_point_map(::flecsi::ctrl::control_point,                        \
+        flecsi_internal_stringify(::flecsi::ctrl::control_point))              \
       .initialize_node({flecsi_internal_hash(action),                          \
         flecsi_internal_stringify(action),                                     \
         action,                                                                \
@@ -91,8 +85,8 @@ flecsi_register_control_options(control_t);
 
 #define ftest_add_dependency(control_point, to, from)                          \
   inline bool ftest_registered_initialize_##to##from =                         \
-    flecsi::control::control_t::instance()                                     \
-      .control_point_map(flecsi::control::control_point)                       \
+    ::flecsi::ctrl::control_t::instance()                                      \
+      .control_point_map(::flecsi::ctrl::control_point)                        \
       .add_edge(flecsi_internal_hash(to), flecsi_internal_hash(from))
 
 #define ftest_register_initialize(action, ...)                                 \

@@ -37,7 +37,7 @@ struct field_register;
 template<class T, class Topo, std::size_t Space>
 struct field_register<T, dense, Topo, Space> : field_info_t {
   field_register() : field_info_t{unique_fid_t::instance().next(), sizeof(T)} {
-    runtime::context_t::instance().add_field_info<Topo, Space>(*this);
+    run::context::instance().add_field_info<Topo, Space>(*this);
   }
   // Copying/moving is inadvisable because the context knows the address.
   field_register(const field_register &) = delete;
@@ -79,7 +79,7 @@ private:
 /// \tparam T data type (merely for type safety)
 /// \tparam L data layout (similarly)
 /// \tparam Space topology-relative index space
-template<class T, layout L, class Topo, topology::index_space_t<Topo> Space>
+template<class T, layout L, class Topo, topo::index_space_t<Topo> Space>
 struct field_reference : field_reference_t<Topo> {
   using Base = typename field_reference::field_reference_t; // TIP: dependent
   using value_type = T;
@@ -111,8 +111,8 @@ struct field_reference : field_reference_t<Topo> {
 template<typename DATA_TYPE,
   layout L,
   typename TOPOLOGY_TYPE,
-  topology::index_space_t<TOPOLOGY_TYPE> INDEX_SPACE =
-    topology::default_space<TOPOLOGY_TYPE>>
+  topo::index_space_t<TOPOLOGY_TYPE> INDEX_SPACE =
+    topo::default_space<TOPOLOGY_TYPE>>
 struct field_member : field_register<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> {
   using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
 

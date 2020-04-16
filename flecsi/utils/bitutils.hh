@@ -18,7 +18,7 @@
 #include <cstddef>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
   Utility to find the most-significant-bit of the given _Bits argument. This
@@ -78,5 +78,5 @@ msb() {
   return msb_place<((msb_bit + 1) >> 1)>();
 } // msb
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

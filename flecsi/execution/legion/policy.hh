@@ -43,9 +43,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag execution_tag("execution");
+inline log::devel_tag execution_tag("execution");
 
-namespace execution {
+namespace exec {
 namespace detail {
 
 // Remove const from under a reference, if there is one.
@@ -71,34 +71,34 @@ auto
 serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
   static_assert((std::is_const_v<std::remove_reference_t<const PP>> && ...),
     "Tasks cannot accept non-const references");
-  return utils::serial_put(std::tuple<std::conditional_t<
+  return util::serial_put(std::tuple<std::conditional_t<
       std::is_constructible_v<nonconst_ref_t<PP> &, nonconst_ref_t<AA>>,
       const PP &,
       std::decay_t<PP>>...>(std::forward<AA>(aa)...));
 }
 
 } // namespace detail
-} // namespace execution
+} // namespace exec
 
 template<auto & F,
-  const execution::launch_domain & LAUNCH_DOMAIN,
+  const exec::launch_domain & LAUNCH_DOMAIN,
   class REDUCTION,
   size_t ATTRIBUTES,
   typename... ARGS>
 decltype(auto)
 reduce(ARGS &&... args) {
   using namespace Legion;
-  using namespace execution;
+  using namespace exec;
 
-  using traits_t = utils::function_traits<decltype(F)>;
+  using traits_t = util::function_traits<decltype(F)>;
   using RETURN = typename traits_t::return_type;
   using param_tuple = typename traits_t::arguments_type;
 
   // This will guard the entire method
-  flog::devel_guard guard(execution_tag);
+  log::devel_guard guard(execution_tag);
 
   // Get the FleCSI runtime context
-  auto & flecsi_context = runtime::context_t::instance();
+  auto & flecsi_context = run::context::instance();
 
   // Get the processor type.
   constexpr auto processor_type = mask_to_processor_type(ATTRIBUTES);
@@ -119,30 +119,27 @@ reduce(ARGS &&... args) {
     Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
     constexpr auto red = [] {
-      return flog::flog_t::instance().packets().size();
+      return log::flog_t::instance().packets().size();
     };
     Legion::ArgumentMap arg_map;
-    Legion::IndexLauncher reduction_launcher(
-      legion::task_id<legion::verb<*red>>,
+    Legion::IndexLauncher reduction_launcher(leg::task_id<leg::verb<*red>>,
       launch_domain,
       Legion::TaskArgument(NULL, 0),
       arg_map);
 
-    Legion::Future future = legion_runtime->execute_index_space(legion_context,
-      reduction_launcher,
-      reduction_op<reduction::max<std::size_t>>);
+    Legion::Future future = legion_runtime->execute_index_space(
+      legion_context, reduction_launcher, reduction_op<fold::max<std::size_t>>);
 
     if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
       constexpr auto send = [] {
-        runtime::context_t::instance().set_mpi_task(flog::send_to_one);
+        run::context::instance().set_mpi_task(log::send_to_one);
       };
-      Legion::IndexLauncher flog_mpi_launcher(
-        legion::task_id<legion::verb<*send>>,
+      Legion::IndexLauncher flog_mpi_launcher(leg::task_id<leg::verb<*send>>,
         launch_domain,
         Legion::TaskArgument(NULL, 0),
         arg_map);
 
-      flog_mpi_launcher.tag = runtime::FLECSI_MAPPER_FORCE_RANK_MATCH;
+      flog_mpi_launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
 
       // Launch the MPI task
       auto future_mpi =
@@ -165,7 +162,7 @@ reduce(ARGS &&... args) {
 
   ++flecsi_context.tasks_executed();
 
-  legion::task_prologue_t pro(domain_size);
+  leg::task_prologue_t pro(domain_size);
   pro.walk<param_tuple>(args...);
 
   std::optional<param_tuple> mpi_args;
@@ -173,7 +170,7 @@ reduce(ARGS &&... args) {
   if constexpr(processor_type == task_processor_type_t::mpi) {
     // MPI tasks must be invoked collectively from one task on each rank.
     // We therefore can transmit merely a pointer to a tuple of the arguments.
-    // utils::serial_put deliberately doesn't support this, so just memcpy it.
+    // util::serial_put deliberately doesn't support this, so just memcpy it.
     mpi_args.emplace(std::forward<ARGS>(args)...);
     const auto p = &*mpi_args;
     buf.resize(sizeof p);
@@ -188,8 +185,8 @@ reduce(ARGS &&... args) {
   // Single launch
   //------------------------------------------------------------------------//
 
-  using wrap = legion::task_wrapper<F, processor_type>;
-  const auto task = legion::task_id<wrap::execute,
+  using wrap = leg::task_wrapper<F, processor_type>;
+  const auto task = leg::task_id<wrap::execute,
     (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
 
   if constexpr(LAUNCH_DOMAIN == single) {
@@ -198,7 +195,7 @@ reduce(ARGS &&... args) {
       "reductions are not supported for single tasks");
 
     {
-      flog::devel_guard guard(execution_tag);
+      log::devel_guard guard(execution_tag);
       flog_devel(info) << "Executing single task" << std::endl;
     }
 
@@ -238,7 +235,7 @@ reduce(ARGS &&... args) {
   else {
 
     {
-      flog::devel_guard guard(execution_tag);
+      log::devel_guard guard(execution_tag);
       flog_devel(info) << "Executing index task" << std::endl;
     }
 
@@ -267,7 +264,7 @@ reduce(ARGS &&... args) {
 
       if constexpr(!std::is_void_v<REDUCTION>) {
         flog_devel(info) << "executing reduction logic for "
-                         << utils::type<REDUCTION>() << std::endl;
+                         << util::type<REDUCTION>() << std::endl;
 
         Legion::Future future;
 
@@ -287,7 +284,7 @@ reduce(ARGS &&... args) {
     else {
       static_assert(
         processor_type == task_processor_type_t::mpi, "Unknown launch type");
-      launcher.tag = runtime::FLECSI_MAPPER_FORCE_RANK_MATCH;
+      launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
 
       // Launch the MPI task
       auto future =

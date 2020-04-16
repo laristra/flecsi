@@ -27,7 +27,7 @@
 #include <flecsi/flog.hh>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 // Similar to that in GNU libc.  NB: memcpy has no alignment requirements.
 inline void
@@ -229,5 +229,5 @@ struct serial<T, decltype(void(serial_convert<T>::put))> {
   }
 };
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

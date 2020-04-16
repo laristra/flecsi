@@ -23,7 +23,7 @@
 #endif
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 std::string
 demangle(const char * const name) {
@@ -38,5 +38,5 @@ demangle(const char * const name) {
   return name;
 } // demangle
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

@@ -3,7 +3,7 @@
 4
 60
 
-flecsi::utils::id_<20ul, 40ul, 4ul, 60ul>
+flecsi::util::id_<20ul, 40ul, 4ul, 60ul>
 int
 int
 

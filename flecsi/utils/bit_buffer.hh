@@ -22,7 +22,7 @@
 #include <iostream>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
  The bit_buffer type provides a bit-addressable buffer which can set
@@ -180,5 +180,5 @@ private:
   T * buffer_;
 };
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

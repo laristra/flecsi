@@ -16,7 +16,7 @@
 #include <flecsi/topology/unstructured/definition.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace unstructured_impl {
 
 class simple_definition : public definition<2>
@@ -148,5 +148,5 @@ private:
 }; // class simple_definition
 
 } // namespace unstructured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

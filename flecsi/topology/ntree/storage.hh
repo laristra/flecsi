@@ -29,12 +29,12 @@
 #include <array>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 template<class TREE_TYPE>
 struct ntree_storage {
 
-  using id_t = utils::id_t;
+  using id_t = util::id_t;
   static constexpr size_t num_partitions = 5;
 
   using entity_t = typename TREE_TYPE::entity_t;
@@ -81,11 +81,11 @@ struct ntree_storage {
     node_partition_index_spaces;
 
   ntree_storage() {
-    // auto & context_ = flecsi::runtime::context_t::instance();
+    // auto & context_ = run::context::instance();
   }
 
   void finalize_storage() {
-    // auto & context = runtime::context_t::instance();
+    // auto & context = run::context::instance();
   }
 
   /**
@@ -130,5 +130,5 @@ struct ntree_storage {
 
 }; // class mpi_topology_storage_policy
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

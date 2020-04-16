@@ -27,7 +27,7 @@ int
 privilege(int, char **) {
   FTEST {
     {
-      static_assert(utils::msb<prvs1>() == 2u);
+      static_assert(util::msb<prvs1>() == 2u);
 
       constexpr size_t p0 = get_privilege<0, prvs1>();
 
@@ -35,7 +35,7 @@ privilege(int, char **) {
     } // scope
 
     {
-      static_assert(utils::msb<prvs2>() == 4u);
+      static_assert(util::msb<prvs2>() == 4u);
 
       constexpr size_t p0 = get_privilege<0, prvs2>();
       constexpr size_t p1 = get_privilege<1, prvs2>();
@@ -45,7 +45,7 @@ privilege(int, char **) {
     } // scope
 
     {
-      static_assert(utils::msb<prvs3>() == 6u);
+      static_assert(util::msb<prvs3>() == 6u);
 
       constexpr size_t p1 = get_privilege<0, prvs3>();
       constexpr size_t p2 = get_privilege<1, prvs3>();
@@ -57,7 +57,7 @@ privilege(int, char **) {
     } // scope
 
     {
-      static_assert(utils::msb<prvs4>() == 8u);
+      static_assert(util::msb<prvs4>() == 8u);
 
       constexpr size_t p0 = get_privilege<0, prvs4>();
       constexpr size_t p1 = get_privilege<1, prvs4>();

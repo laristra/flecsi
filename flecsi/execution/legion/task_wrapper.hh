@@ -43,11 +43,11 @@
 
 namespace flecsi {
 
-inline flog::devel_tag task_wrapper_tag("task_wrapper");
+inline log::devel_tag task_wrapper_tag("task_wrapper");
 
 // Send and receive only the reference_base portion:
 template<class T, std::size_t Priv>
-struct utils::serial_convert<data::accessor<data::dense, T, Priv>> {
+struct util::serial_convert<data::accessor<data::dense, T, Priv>> {
   using type = data::accessor<data::dense, T, Priv>;
   using Rep = std::size_t;
   static Rep put(const type & r) {
@@ -58,7 +58,7 @@ struct utils::serial_convert<data::accessor<data::dense, T, Priv>> {
   }
 };
 template<class T, std::size_t Priv>
-struct utils::serial_convert<data::accessor<data::singular, T, Priv>> {
+struct util::serial_convert<data::accessor<data::singular, T, Priv>> {
   using type = data::accessor<data::singular, T, Priv>;
   using Base = typename type::base_type;
   static const Base & put(const type & a) {
@@ -70,8 +70,8 @@ struct utils::serial_convert<data::accessor<data::singular, T, Priv>> {
 };
 
 template<class T>
-struct utils::serial_convert<execution::flecsi_future<T>> {
-  using type = execution::flecsi_future<T>;
+struct util::serial_convert<exec::flecsi_future<T>> {
+  using type = exec::flecsi_future<T>;
   struct Rep {};
   static Rep put(const type &) {
     return {};
@@ -81,9 +81,8 @@ struct utils::serial_convert<execution::flecsi_future<T>> {
   }
 };
 
-namespace execution {
-namespace legion {
-using runtime::legion::task;
+namespace exec::leg {
+using run::leg::task;
 
 namespace detail {
 inline task_id_t last_task; // 0 is the top-level task
@@ -118,7 +117,7 @@ tuple_get(const Legion::Task & t) {
       flog_assert(b == e, "Bad Task::arglen");
     }
   } ch(t);
-  return utils::serial_get<typename decay<T>::type>(ch.b);
+  return util::serial_get<typename decay<T>::type>(ch.b);
 }
 } // namespace detail
 
@@ -133,8 +132,8 @@ tuple_get(const Legion::Task & t) {
 template<auto & F, size_t A = loc | leaf>
 // 'extern' works around GCC bug #90493
 extern const task_id_t
-  task_id = (runtime::context_t::instance().register_init(detail::register_task<
-               typename utils::function_traits<decltype(F)>::return_type,
+  task_id = (run::context::instance().register_init(detail::register_task<
+               typename util::function_traits<decltype(F)>::return_type,
                F,
                A>),
     ++detail::last_task);
@@ -146,9 +145,9 @@ detail::register_task() {
   static_assert(processor_type != task_processor_type_t::mpi,
     "Legion tasks cannot use MPI");
 
-  const std::string name = utils::symbol<*TASK>();
+  const std::string name = util::symbol<*TASK>();
   {
-    flog::devel_guard guard(task_wrapper_tag);
+    log::devel_guard guard(task_wrapper_tag);
     flog_devel(info) << "registering pure Legion task " << name << std::endl;
   }
 
@@ -199,7 +198,7 @@ verb(const Legion::Task *,
 template<auto & F, task_processor_type_t P> // P is for specialization only
 struct task_wrapper {
 
-  using Traits = utils::function_traits<decltype(F)>;
+  using Traits = util::function_traits<decltype(F)>;
   using RETURN = typename Traits::return_type;
   using param_tuple = typename Traits::arguments_type;
 
@@ -214,7 +213,7 @@ struct task_wrapper {
     Legion::Context context,
     Legion::Runtime * runtime) {
     {
-      flog::devel_guard guard(task_wrapper_tag);
+      log::devel_guard guard(task_wrapper_tag);
       flog_devel(info) << "In execute_user_task" << std::endl;
     }
 
@@ -248,7 +247,7 @@ struct task_wrapper {
 
 template<auto & F>
 struct task_wrapper<F, task_processor_type_t::mpi> {
-  using Traits = utils::function_traits<decltype(F)>;
+  using Traits = util::function_traits<decltype(F)>;
   using RETURN = typename Traits::return_type;
   using param_tuple = typename Traits::arguments_type;
 
@@ -260,7 +259,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     Legion::Runtime *) {
     // FIXME: Refactor
     //    {
-    //      flog::devel_guard guard(task_wrapper_tag);
+    //      log::devel_guard guard(task_wrapper_tag);
     //      flog_devel(info) << "In execute_mpi_task" << std::endl;
     //    }
 
@@ -275,7 +274,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     // init_handles.walk(mpi_task_args);
 
     // Set the MPI function and make the runtime active.
-    auto & c = runtime::context_t::instance();
+    auto & c = run::context::instance();
     c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
     // FIXME: Refactor
@@ -284,6 +283,5 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
   }
 };
 
-} // namespace legion
-} // namespace execution
+} // namespace exec::leg
 } // namespace flecsi

@@ -24,7 +24,6 @@
 
 using namespace flecsi;
 using namespace flecsi::data;
-using namespace flecsi::topology;
 
 using index_field_t = index_field_member<double>;
 const index_field_t test_value_1;
@@ -60,7 +59,7 @@ index_driver(int, char **) {
     execute<assign>(fh2);
     execute<assign>(fh3);
 
-    auto & flecsi_context = runtime::context_t::instance();
+    auto & flecsi_context = run::context::instance();
     int my_rank = flecsi_context.process();
     int num_files = 4;
     io::io_interface_t cp_io;

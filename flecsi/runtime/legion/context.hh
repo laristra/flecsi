@@ -44,7 +44,7 @@
 #include <string_view>
 #include <unordered_map>
 
-namespace flecsi::runtime {
+namespace flecsi::run {
 
 const size_t FLECSI_TOP_LEVEL_TASK_ID = 0;
 const size_t FLECSI_MAPPER_FORCE_RANK_MATCH = 0x00001000;
@@ -52,7 +52,7 @@ const size_t FLECSI_MAPPER_COMPACTED_STORAGE = 0x00002000;
 const size_t FLECSI_MAPPER_SUBRANK_LAUNCH = 0x00003000;
 const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
-namespace legion {
+namespace leg {
 template<class R = void>
 using task = R(const Legion::Task *,
   const std::vector<Legion::PhysicalRegion> &,
@@ -67,7 +67,7 @@ struct context_t : context {
     to avoid inadvertent corruption of initialization logic.
    */
 
-  friend legion::task<> top_level_task;
+  friend leg::task<> top_level_task;
 
   //--------------------------------------------------------------------------//
   //  Runtime.
@@ -202,7 +202,7 @@ struct context_t : context {
 
   void set_mpi_task(std::function<void()> mpi_task) {
     {
-      flog::devel_guard guard(context_tag);
+      log::devel_guard guard(context_tag);
       flog_devel(info) << "In set_mpi_task" << std::endl;
     }
 
@@ -262,7 +262,7 @@ private:
 
   void handoff_to_legion() {
     {
-      flog::devel_guard guard(context_tag);
+      log::devel_guard guard(context_tag);
       flog_devel(info) << "In handoff_to_legion" << std::endl;
     }
 
@@ -276,7 +276,7 @@ private:
 
   void wait_on_legion() {
     {
-      flog::devel_guard guard(context_tag);
+      log::devel_guard guard(context_tag);
       flog_devel(info) << "In wait_on_legion" << std::endl;
     }
 
@@ -333,4 +333,4 @@ private:
   LegionRuntime::Arrays::Rect<1> all_processes_;
 };
 
-} // namespace flecsi::runtime
+} // namespace flecsi::run

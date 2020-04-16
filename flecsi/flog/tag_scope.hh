@@ -22,7 +22,7 @@
 #include <flecsi/flog/state.hh>
 
 namespace flecsi {
-namespace flog {
+namespace log {
 
 /*!
   This type sets the active tag id to the id passed to the constructor,
@@ -58,7 +58,7 @@ private:
 
 }; // tag_scope_t
 
-} // namespace flog
+} // namespace log
 } // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

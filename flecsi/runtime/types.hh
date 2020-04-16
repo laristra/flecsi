@@ -82,7 +82,7 @@ namespace flecsi {
 
 struct fid_counter_t {};
 using unique_fid_t =
-  utils::unique_id<fid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
+  util::unique_id<fid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
 /*!
   Unique counter for index space ids.
@@ -90,6 +90,6 @@ using unique_fid_t =
 
 struct isid_counter_t {};
 using unique_isid_t =
-  utils::unique_id<isid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
+  util::unique_id<isid_counter_t, field_id_t, FLECSI_GENERATED_ID_MAX>;
 
 } // namespace flecsi

@@ -22,7 +22,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 template<size_t I, class T, size_t DIM, size_t DOM>
 struct find_entity {
@@ -503,5 +503,5 @@ struct num_index_subspaces {
   static constexpr size_t value = std::tuple_size<type>::value;
 };
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

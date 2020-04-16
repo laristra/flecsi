@@ -29,9 +29,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag control_tag("control");
+inline log::devel_tag control_tag("control");
 
-namespace control {
+namespace ctrl {
 
 /*!
   The control type provides a control model for specifying a
@@ -51,7 +51,7 @@ namespace control {
 template<typename CONTROL_POLICY>
 struct control : public CONTROL_POLICY {
 
-  using dag_t = flecsi::utils::dag<typename CONTROL_POLICY::node_t>;
+  using dag_t = util::dag<typename CONTROL_POLICY::node_t>;
   using node_t = typename dag_t::node_t;
   using point_walker_t = point_walker<control<CONTROL_POLICY>>;
 
@@ -93,10 +93,10 @@ struct control : public CONTROL_POLICY {
   static int execute(int argc, char ** argv) {
 
     {
-      flog::devel_guard guard(control_tag);
+      log::devel_guard guard(control_tag);
       flog_devel(info) << "Invoking control model" << std::endl
                        << "\tpolicy type: "
-                       << utils::demangle(typeid(CONTROL_POLICY).name())
+                       << util::demangle(typeid(CONTROL_POLICY).name())
                        << std::endl;
     } // scope
 
@@ -108,7 +108,7 @@ struct control : public CONTROL_POLICY {
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
   using point_writer_t = point_writer<control<CONTROL_POLICY>>;
-  using graphviz_t = flecsi::utils::graphviz_t;
+  using graphviz_t = util::graphviz_t;
 
   /*!
     Write the control flow graph to the graphviz object \em gv.
@@ -175,7 +175,7 @@ private:
 
 }; // control
 
-} // namespace control
+} // namespace ctrl
 } // namespace flecsi
 
 #if 0
@@ -207,9 +207,9 @@ private:
   inline int flecsi_control_initialize(                                        \
     int argc, char ** argv, boost::program_options::variables_map & vm) {      \
     if(vm.count("control-model")) {                                            \
-      flecsi::utils::graphviz_t gv;                                            \
+      ::flecsi::util::graphviz_t gv;                                           \
       control_type::instance().write(gv);                                      \
-      auto file = flog::rstrip<'/'>(argv[0]) + "-control-model.dot";           \
+      auto file = ::flecsi::log::rstrip<'/'>(argv[0]) + "-control-model.dot";  \
       std::cout << "Writing control model to " << file << std::endl;           \
       std::cout << "Execute:" << std::endl;                                    \
       std::cout << "\t$ dot -Tpdf " << file << " > model.pdf" << std::endl;    \

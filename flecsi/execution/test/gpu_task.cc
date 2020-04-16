@@ -22,9 +22,9 @@
 #define MIN_CTAS_PER_SM 4
 
 #if 0
-using namespace flecsi::execution;
+using namespace flecsi::exec;
 
-flog::devel_tag gpu_task_tag("gpu_task");
+log::devel_tag gpu_task_tag("gpu_task");
 
 namespace gpu_task {
 

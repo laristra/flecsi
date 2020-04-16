@@ -18,7 +18,7 @@
 #include <tuple>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 template<typename T>
 struct convert_tuple_type_ {
@@ -58,5 +58,5 @@ struct base_convert_tuple_type<B, TO, std::tuple<Args...>> {
     std::is_base_of<B, Args>::value>::type...>;
 };
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

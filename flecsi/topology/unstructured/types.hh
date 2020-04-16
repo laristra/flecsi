@@ -31,7 +31,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 /*----------------------------------------------------------------------------*
  * class mesh_entity_base
@@ -173,7 +173,7 @@ template<size_t DIM>
 class domain_connectivity
 {
 public:
-  using id_t = flecsi::utils::id_t;
+  using id_t = util::id_t;
 
   void init_(size_t from_domain, size_t to_domain) {
     from_domain_ = from_domain;
@@ -293,7 +293,7 @@ template<class STORAGE_TYPE>
 class mesh_base : data::data_client_t, unstructured_base
 {
 public:
-  using id_t = utils::id_t;
+  using id_t = util::id_t;
 
   // Default constructor
   mesh_base(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
@@ -402,14 +402,14 @@ unserialize_dimension_(mesh_base<STORAGE_TYPE> & mesh,
   std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
   pos += sizeof(num_entities);
 
-  using id_t = utils::id_t;
+  using id_t = util::id_t;
 
   std::vector<entity_base_ *> ents;
   std::vector<id_t> ids;
   ents.reserve(num_entities);
   ids.reserve(num_entities);
 
-  auto & context_ = flecsi::runtime::context_t::instance();
+  auto & context_ = run::context::instance();
 
   size_t partition_id = context_.color();
 
@@ -501,5 +501,5 @@ struct unserialize_domains_<STORAGE_TYPE,
   static void unserialize(mesh_base<STORAGE_TYPE> &, char *, uint64_t &) {}
 };
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

@@ -25,7 +25,7 @@
 #include <iostream>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 using local_id_t = __uint128_t;
 
@@ -195,12 +195,12 @@ private:
   std::size_t global_ : GBITS;
 }; // id_
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi
 
 // Defining operator<< out-of-namespace prevents an overload ambiguity problem
-// that the unit-test code uncovered when the definition was in flecsi::utils.
+// that the unit-test code uncovered when the definition was in flecsi::util.
 inline std::ostream &
-operator<<(std::ostream & ostr, const flecsi::utils::local_id_t x) {
+operator<<(std::ostream & ostr, const flecsi::util::local_id_t x) {
   return ostr << uint64_t(x >> 64) << ":" << uint64_t(x);
 }

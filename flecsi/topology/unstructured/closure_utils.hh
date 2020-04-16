@@ -25,7 +25,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace unstructured_impl {
 
 /*!
@@ -64,7 +64,7 @@ entity_neighbors(const definition<D> & md, size_t entity_id) {
     auto other = md.entities_set(to_dim, 0, e);
 
     // Get the intersection set
-    auto intersect = flecsi::utils::set_intersection(vertices, other);
+    auto intersect = util::set_intersection(vertices, other);
 
     // Add this entity id if the intersection shares at least
     // intersections vertices
@@ -97,7 +97,7 @@ template<size_t from_dim,
   size_t thru_dim,
   size_t D,
   typename U,
-  typename = std::enable_if_t<utils::is_iterative_container_v<U>>>
+  typename = std::enable_if_t<util::is_iterative_container_v<U>>>
 std::set<size_t>
 entity_neighbors(const definition<D> & md, U && indices) {
   flog_assert(from_dim == to_dim, "from_dim does not equal to to_dim");
@@ -210,5 +210,5 @@ entity_closure(const definition<D> & md, U && indices) {
 } // entity_closure
 
 } // namespace unstructured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

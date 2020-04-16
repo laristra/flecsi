@@ -19,7 +19,7 @@
 
 using namespace flecsi;
 using namespace flecsi::data;
-using namespace flecsi::topology;
+using namespace flecsi::topo;
 
 namespace {
 static_assert(std::is_same_v<core_t<global>, global>);

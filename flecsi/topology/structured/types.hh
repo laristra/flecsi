@@ -22,7 +22,7 @@
 #include "flecsi/runtime/types.hh"
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 /*!
   @ingroup topology
@@ -32,5 +32,5 @@ struct structured_base {
   using coloring = size_t;
 }; // structured_base
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

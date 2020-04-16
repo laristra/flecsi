@@ -41,10 +41,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag task_prologue_tag("task_prologue");
+inline log::devel_tag task_prologue_tag("task_prologue");
 
-namespace execution {
-namespace legion {
+namespace exec::leg {
 
 /*!
   The task_prologue_t type can be called to walk task args before the
@@ -114,7 +113,7 @@ struct task_prologue_t {
   template<class T,
     std::size_t Priv,
     class Topo,
-    topology::index_space_t<Topo> Space>
+    topo::index_space_t<Topo> Space>
   void visit(data::accessor<data::singular, T, Priv> * null_p,
     const data::field_reference<T, data::singular, Topo, Space> & ref) {
     visit(get_null_base(null_p), ref.template cast<data::dense>());
@@ -127,10 +126,9 @@ struct task_prologue_t {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE,
-      data::dense,
-      topology::global,
-      topology::elements> & ref) {
+    const data::
+      field_reference<DATA_TYPE, data::dense, topo::global, topo::elements> &
+        ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
     static_assert(privilege_count<PRIVILEGES>() == 1,
@@ -158,10 +156,9 @@ struct task_prologue_t {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE,
-      data::dense,
-      topology::index,
-      topology::elements> & ref) {
+    const data::
+      field_reference<DATA_TYPE, data::dense, topo::index, topo::elements> &
+        ref) {
     auto & instance_data = ref.topology().get();
 
     flog_assert(instance_data.colors() == domain_,
@@ -186,16 +183,15 @@ struct task_prologue_t {
     Futures
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
-  void visit(execution::flecsi_future<DATA_TYPE, launch_type_t::single> *,
-    const execution::legion_future<DATA_TYPE,
-      flecsi::execution::launch_type_t::single> & future) {
+  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> *,
+    const exec::legion_future<DATA_TYPE, exec::launch_type_t::single> &
+      future) {
     futures_.push_back(future.legion_future_);
   }
 
   template<typename DATA_TYPE>
-  void visit(execution::flecsi_future<DATA_TYPE, launch_type_t::single> *,
-    const execution::legion_future<DATA_TYPE,
-      flecsi::execution::launch_type_t::index> & future) {
+  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> *,
+    const exec::legion_future<DATA_TYPE, exec::launch_type_t::index> & future) {
     future_maps_.push_back(future.legion_future_);
   }
 
@@ -208,9 +204,9 @@ struct task_prologue_t {
     static_assert(!std::is_base_of_v<data::convert_tag, DATA_TYPE>,
       "Unknown task argument type");
     {
-      flog::devel_guard guard(task_prologue_tag);
+      log::devel_guard guard(task_prologue_tag);
       flog_devel(info) << "Skipping argument with type "
-                       << flecsi::utils::type<DATA_TYPE>() << std::endl;
+                       << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit
 
@@ -233,6 +229,5 @@ private:
   std::vector<Legion::FutureMap> future_maps_;
 }; // task_prologue_t
 
-} // namespace legion
-} // namespace execution
+} // namespace exec::leg
 } // namespace flecsi

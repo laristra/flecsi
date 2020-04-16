@@ -24,7 +24,7 @@
 #include <new>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 ///////////////////////////////////////////////////////////////////////////
 class uint128;
 
@@ -507,8 +507,8 @@ inline bool
 operator!=(const uint128 & a, const uint128 & b) noexcept {
   return !(a == b);
 };
-} // namespace utils
+} // namespace util
 } // namespace flecsi
 
-typedef flecsi::utils::uint128 __uint128_t;
+typedef flecsi::util::uint128 __uint128_t;
 #endif

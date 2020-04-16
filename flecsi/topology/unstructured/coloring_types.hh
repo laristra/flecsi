@@ -19,7 +19,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace unstructured_impl {
 
 /*!
@@ -161,5 +161,5 @@ struct set_coloring_info_t {
 }; // set_coloring_info_t
 
 } // namespace unstructured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

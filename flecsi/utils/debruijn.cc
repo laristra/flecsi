@@ -14,9 +14,9 @@
 #include "debruijn.hh"
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 constexpr uint32_t debruijn32_t::index_[];
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

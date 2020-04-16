@@ -19,7 +19,7 @@
 #include <set>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 //!
 //! Convenience function wrapper around std::set_intersection function. This
@@ -93,5 +93,5 @@ set_difference(const std::set<T> & s1, const std::set<T> & s2) {
   return difference;
 } // set_difference
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

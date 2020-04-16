@@ -30,14 +30,14 @@
 namespace flecsi {
 
 template<auto & F,
-  const execution::launch_domain & LAUNCH_DOMAIN,
+  const exec::launch_domain & LAUNCH_DOMAIN,
   class REDUCTION,
   size_t ATTRIBUTES,
   typename... ARGS>
 decltype(auto)
 reduce(ARGS &&... args) {
-  using R = typename utils::function_traits<decltype(F)>::return_type;
-  execution::mpi_future<R> ret;
+  using R = typename util::function_traits<decltype(F)>::return_type;
+  exec::mpi_future<R> ret;
   if constexpr(std::is_same_v<R, void>)
     F(std::forward<ARGS>(args)...);
   else

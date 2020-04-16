@@ -21,7 +21,7 @@ test_function(double, int, long) {
 int
 function_traits(int, char **) {
   FTEST {
-    using flecsi::utils::function_traits;
+    using flecsi::util::function_traits;
 
     // general
     FTEST_CAPTURE() << FTEST_TTYPE(function_traits<type_t>::return_type)

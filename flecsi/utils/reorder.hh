@@ -19,7 +19,7 @@
 #include <utility>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 //!
 //! \brief Reorders an array in place
@@ -83,5 +83,5 @@ reorder_destructive(const order_iterator order_begin,
   }
 }
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

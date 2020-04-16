@@ -20,7 +20,7 @@
 
 template<std::size_t P, std::size_t E, std::size_t F, std::size_t G>
 void
-print(const flecsi::utils::id_<P, E, F, G> & value) {
+print(const flecsi::util::id_<P, E, F, G> & value) {
   FTEST_CAPTURE() << "\ndimension == " << value.dimension();
   FTEST_CAPTURE() << "\ndomain    == " << value.domain();
   FTEST_CAPTURE() << "\npartition == " << value.partition();
@@ -55,8 +55,8 @@ template<std::size_t PBITS,
   std::size_t FBITS,
   std::size_t GBITS>
 inline bool
-identical(const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
-  const flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS> & rhs) {
+identical(const flecsi::util::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
+  const flecsi::util::id_<PBITS, EBITS, FBITS, GBITS> & rhs) {
   return lhs.dimension() == rhs.dimension() && lhs.domain() == rhs.domain() &&
          lhs.partition() == rhs.partition() && lhs.entity() == rhs.entity() &&
          lhs.flags() == rhs.flags() && lhs.global() == rhs.global();
@@ -73,17 +73,17 @@ int
 id(int, char **) {
   FTEST {
     // type: id == id_<PBITS,EBITS,FBITS,GBITS>
-    using id = flecsi::utils::id_<PBITS, EBITS, FBITS, GBITS>;
-    using flecsi::utils::local_id_t;
+    using id = flecsi::util::id_<PBITS, EBITS, FBITS, GBITS>;
+    using flecsi::util::local_id_t;
 
     // ------------------------
     // misc
     // ------------------------
 
     // local_id_t
-    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::utils::local_id_t) << std::endl;
-    FTEST_CAPTURE() << "sizeof(flecsi::utils::local_id_t) == "
-                    << sizeof(flecsi::utils::local_id_t) << std::endl;
+    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::util::local_id_t) << std::endl;
+    FTEST_CAPTURE() << "sizeof(flecsi::util::local_id_t) == "
+                    << sizeof(flecsi::util::local_id_t) << std::endl;
 
     // id::FLAGS_UNMASK
     FTEST_CAPTURE() << "FLAGS_UNMASK == " << id::FLAGS_UNMASK << '\n';
@@ -283,7 +283,7 @@ id(int, char **) {
     // ------------------------
 
     {
-      flecsi::utils::local_id_t a = 1, b = 2;
+      flecsi::util::local_id_t a = 1, b = 2;
       FTEST_CAPTURE() << a << std::endl;
       FTEST_CAPTURE() << b << std::endl;
     }

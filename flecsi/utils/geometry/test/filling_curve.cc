@@ -18,12 +18,12 @@
 
 using namespace flecsi;
 
-using point_t = utils::point<double, 3>;
+using point_t = util::point<double, 3>;
 using range_t = std::array<point_t, 2>;
 using hc = hilbert_curve<3, uint64_t>;
 using mc = morton_curve<3, uint64_t>;
 
-using point_2d = utils::point<double, 2>;
+using point_2d = util::point<double, 2>;
 using range_2d = std::array<point_2d, 2>;
 using hc_2d = hilbert_curve<2, uint64_t>;
 using mc_2d = morton_curve<2, uint64_t>;

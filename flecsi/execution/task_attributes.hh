@@ -45,7 +45,7 @@ enum task_attributes_mask_t : size_t {
   mpi = 0x20
 }; // task_attributes_mask_t
 
-namespace execution {
+namespace exec {
 
 /*!
   Enumeration of task types.
@@ -71,7 +71,7 @@ using task_attributes_bitset_t = std::bitset<task_attributes_bits>;
 
 inline task_type_t
 mask_to_task_type(size_t mask) {
-  return static_cast<task_type_t>(flecsi::utils::debruijn32_t::index(mask));
+  return static_cast<task_type_t>(util::debruijn32_t::index(mask));
 } // mask_to_task_type
 
 constexpr task_processor_type_t
@@ -82,7 +82,7 @@ mask_to_processor_type(size_t mask) {
   //    "only one processor type can be specified");
 
   return static_cast<task_processor_type_t>(
-    flecsi::utils::debruijn32_t::index(processor_mask));
+    util::debruijn32_t::index(processor_mask));
 } // mask_to_processor_type
 
 constexpr bool
@@ -100,5 +100,5 @@ idempotent_task(task_attributes_bitset_t const & bs) {
   return bs[static_cast<size_t>(task_type_t::idempotent)];
 }
 
-} // namespace execution
+} // namespace exec
 } // namespace flecsi

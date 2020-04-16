@@ -20,7 +20,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace unstructured_impl {
 
 template<size_t DIMENSION, typename REAL_TYPE = double>
@@ -36,7 +36,7 @@ public:
   virtual std::vector<size_t>
   entities(size_t from_dimension, size_t to_dimension, size_t id) const = 0;
 
-  virtual const flecsi::utils::crs & entities_crs(size_t, size_t) const = 0;
+  virtual const util::crs & entities_crs(size_t, size_t) const = 0;
 
   virtual const std::vector<size_t> & local_to_global(size_t dim) const = 0;
 
@@ -46,7 +46,7 @@ public:
   virtual void create_graph(size_t from_dimension,
     size_t to_dimension,
     size_t min_connections,
-    flecsi::utils::dcrs & dcrs) const = 0;
+    util::dcrs & dcrs) const = 0;
 
   virtual void pack(size_t dimension,
     size_t local_id,
@@ -92,5 +92,5 @@ uncast(BUFFER_TYPE const *& buffer, size_t len, DATA_TYPE * data) {
 };
 
 } // namespace unstructured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

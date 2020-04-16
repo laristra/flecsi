@@ -28,8 +28,7 @@
  *----------------------------------------------------------------------------*/
 
 namespace flecsi {
-namespace execution {
-namespace reduction {
+namespace exec::fold {
 
 /*!
   Minimum reduction type.
@@ -269,6 +268,5 @@ struct product {
 
 }; // struct product
 
-} // namespace reduction
-} // namespace execution
+} // namespace exec::fold
 } // namespace flecsi

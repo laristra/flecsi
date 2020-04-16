@@ -23,7 +23,7 @@ const_string(int, char **) {
     // const_string_t
     // ------------------------
 
-    using flecsi::utils::const_string_t;
+    using flecsi::util::const_string_t;
 
     // constructor from C-style string
     // ...................0123456789
@@ -68,7 +68,7 @@ const_string(int, char **) {
     // const_string_hasher_t
     // ------------------------
 
-    const flecsi::utils::const_string_hasher_t hasher{};
+    const flecsi::util::const_string_hasher_t hasher{};
     EXPECT_EQ(const_string_t("abc").hash(), hasher(const_string_t("abc")));
   };
 }

@@ -18,7 +18,7 @@
 int
 hash(int, char **) {
   FTEST {
-    using flecsi::utils::string_hash;
+    using flecsi::util::string_hash;
 
     if(sizeof(std::size_t) == 8) {
       ASSERT_EQ(string_hash<std::size_t>("", 0), 0UL);
@@ -328,7 +328,7 @@ hash(int, char **) {
 
     for(auto s : strs) {
       // compute hash of string s and check whether it's already in the list
-      auto hash = flecsi::utils::string_hash<std::size_t>(s, s.size());
+      auto hash = flecsi::util::string_hash<std::size_t>(s, s.size());
       if(hashes.count(hash) > 0) {
         printf("COLLISION: '%s' collides with '%s'\n",
           s.c_str(),

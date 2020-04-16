@@ -15,7 +15,7 @@
 #include <flecsi/utils/ftest.hh>
 #include <flecsi/utils/simple_id.hh>
 
-using namespace flecsi::utils;
+using namespace flecsi::util;
 
 using id_types_t = std::tuple<int, int, int>;
 using my_id_t = simple_id_t<id_types_t, lexical_comparison<id_types_t>>;

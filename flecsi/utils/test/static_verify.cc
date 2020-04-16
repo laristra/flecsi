@@ -57,7 +57,7 @@ template<class T>
 bool const has_member_bar<T>::value;
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 template<class T>
 bool const is_tuple<T>::value;
@@ -65,12 +65,14 @@ bool const is_tuple<T>::value;
 template<class... T>
 bool const is_tuple<std::tuple<T...>>::value;
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi
 
 int
 static_verify(int, char **) {
   FTEST {
+    using namespace flecsi::util;
+
     // first{} has foo only
     EXPECT_EQ(has_member_foo<first>::value, true);
     EXPECT_EQ(has_member_bar<first>::value, false);
@@ -96,13 +98,12 @@ static_verify(int, char **) {
     // ------------------------
 
     // with non-tuple
-    EXPECT_EQ(flecsi::utils::is_tuple<int>::value, false);
+    static_assert(!is_tuple<int>::value);
 
     // with tuple
-    EXPECT_EQ(flecsi::utils::is_tuple<std::tuple<>>::value, true);
-    EXPECT_EQ(flecsi::utils::is_tuple<std::tuple<int>>::value, true);
-    EXPECT_EQ((flecsi::utils::is_tuple<std::tuple<int, char>>::value), true);
-    // the last line needed () because of ,
+    static_assert(is_tuple<std::tuple<>>::value);
+    static_assert(is_tuple<std::tuple<int>>::value);
+    static_assert(is_tuple<std::tuple<int, char>>::value);
   };
 }
 

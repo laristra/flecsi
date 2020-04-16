@@ -1,5 +1,5 @@
-class flecsi::utils::uint128
-sizeof(flecsi::utils::local_id_t) == 16
+class flecsi::util::uint128
+sizeof(flecsi::util::local_id_t) == 16
 FLAGS_UNMASK == 9799832789158199295
 FLAGS_UNMASK == 1000011111111111111111111111111111111111111111111111111111111111
 

@@ -23,18 +23,18 @@ using namespace flecsi;
 int
 naive_coloring() {
   FTEST {
-    topology::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
+    topo::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
 
-    auto naive = topology::unstructured_impl::naive_coloring<2, 2>(sd);
+    auto naive = topo::unstructured_impl::naive_coloring<2, 2>(sd);
   };
 } // naive_coloring
 
 int
 simple2d_8x8() {
   FTEST {
-    topology::unstructured_impl::simple_definition sd("simple2d-8x8.msh");
+    topo::unstructured_impl::simple_definition sd("simple2d-8x8.msh");
 
-    auto dcrs = topology::unstructured_impl::make_dcrs(sd);
+    auto dcrs = topo::unstructured_impl::make_dcrs(sd);
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);

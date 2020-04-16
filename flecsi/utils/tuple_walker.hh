@@ -18,7 +18,7 @@
 #include <tuple>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
   Type for iterating through tuples. This type uses CRTP to expose
@@ -90,5 +90,5 @@ public:
   }
 }; // struct tuple_walker
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

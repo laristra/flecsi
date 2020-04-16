@@ -22,7 +22,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 //----------------------------------------------------------------------------//
 // NTree topology coloring.
@@ -48,5 +48,5 @@ struct ntree_base {
 
 // using coloring_t = std::map<size_t, index_coloring_t>;
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

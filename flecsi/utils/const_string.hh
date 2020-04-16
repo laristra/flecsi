@@ -23,7 +23,7 @@
 #include <stdexcept>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
   \class const_string const_string.h
@@ -76,7 +76,7 @@ public:
    */
 
   constexpr hash_type_t hash() const {
-    return flecsi::utils::string_hash<hash_type_t>(str_, size_);
+    return string_hash<hash_type_t>(str_, size_);
   } // hash
 
 private:
@@ -117,7 +117,7 @@ struct const_string_hasher_t {
 
 }; // const_string_hasher_t
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi
 
 /*----------------------------------------------------------------------------*
@@ -135,7 +135,7 @@ struct const_string_hasher_t {
  */
 
 #define flecsi_internal_string_hash(name)                                      \
-  flecsi::utils::const_string_t{name}.hash()
+  ::flecsi::util::const_string_t{name}.hash()
 
 /*!
   @def flecsi_internal_hash
@@ -148,4 +148,4 @@ struct const_string_hasher_t {
  */
 
 #define flecsi_internal_hash(name)                                             \
-  flecsi::utils::const_string_t{flecsi_internal_stringify(name)}.hash()
+  ::flecsi::util::const_string_t{flecsi_internal_stringify(name)}.hash()

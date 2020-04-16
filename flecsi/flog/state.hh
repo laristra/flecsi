@@ -30,7 +30,7 @@
 #include <unordered_map>
 
 namespace flecsi {
-namespace flog {
+namespace log {
 
 // Forward
 void flush_packets();
@@ -431,7 +431,7 @@ private:
 
 }; // class flog_t
 
-} // namespace flog
+} // namespace log
 } // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

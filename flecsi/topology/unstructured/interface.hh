@@ -43,7 +43,7 @@
 // tuple, connectivities, bindings, etc.
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace verify_mesh {
 
 FLECSI_MEMBER_CHECKER(num_dimensions);
@@ -132,19 +132,19 @@ struct unstructured : unstructured_base, data::reference_base {
   static_assert(verify_mesh::has_member_entity_types<POLICY_TYPE>::value,
     "mesh policy missing entity_types tuple");
 
-  static_assert(utils::is_tuple<typename POLICY_TYPE::entity_types>::value,
+  static_assert(util::is_tuple<typename POLICY_TYPE::entity_types>::value,
     "mesh policy entity_types is not a tuple");
 
   static_assert(verify_mesh::has_member_connectivities<POLICY_TYPE>::value,
     "mesh policy missing connectivities tuple");
 
-  static_assert(utils::is_tuple<typename POLICY_TYPE::connectivities>::value,
+  static_assert(util::is_tuple<typename POLICY_TYPE::connectivities>::value,
     "mesh policy connectivities is not a tuple");
 
   static_assert(verify_mesh::has_member_bindings<POLICY_TYPE>::value,
     "mesh policy missing bindings tuple");
 
-  static_assert(utils::is_tuple<typename POLICY_TYPE::bindings>::value,
+  static_assert(util::is_tuple<typename POLICY_TYPE::bindings>::value,
     "mesh policy bindings is not a tuple");
 
   static_assert(verify_mesh::has_member_create_entity<POLICY_TYPE>::value,
@@ -175,10 +175,10 @@ public:
   using base_t = mesh_base<storage_t>;
 
   // entity ID type
-  using id_t = utils::id_t;
+  using id_t = util::id_t;
 
   // offset type use by connectivities to give offsets and counts
-  using offset_t = utils::offset_t;
+  using offset_t = util::offset_t;
 
   // used to find the entity type of topological dimension DIM and domain DOM
   template<size_t DIM, size_t DOM = 0>
@@ -1335,7 +1335,7 @@ private:
       Domain>::find();
 
     // get the global to local index space map
-    auto & context_ = flecsi::runtime::context_t::instance();
+    auto & context_ = run::context::instance();
     size_t color = context_.color();
     auto & gis_to_cis = context_.reverse_index_map(cell_index_space);
 
@@ -1476,7 +1476,7 @@ private:
     // sort the entity connectivity. Entities may have been created out of
     // order.  Sort them using the list of entity ids we kept track of
     if(has_intermediate_map)
-      utils::reorder_destructive(
+      util::reorder_destructive(
         entity_ids.begin(), entity_ids.end(), entity_vertex_conn.begin());
 
     // Set the connectivity information from the created entities to
@@ -1538,7 +1538,7 @@ private:
     //    in order of global id
 
     // we need the context to get the global-to-local mapping
-    const auto & context_ = flecsi::runtime::context_t::instance();
+    const auto & context_ = run::context::instance();
 
     // find the from index space and get the mapping from global to local
     constexpr size_t to_index_space = find_index_space_from_dimension<
@@ -1679,7 +1679,7 @@ private:
             // intersection is sufficient. i.e. one set does not need to
             // be a subset of the other
             else {
-              if(utils::intersects(from_verts.begin(),
+              if(util::intersects(from_verts.begin(),
                    from_verts.end(),
                    to_verts.begin(),
                    to_verts.end()))
@@ -1947,7 +1947,7 @@ private:
       base_t::ms_->topology[FROM_DOM][TO_DOM];
 
     // get the global to local index space map
-    auto & context_ = flecsi::runtime::context_t::instance();
+    auto & context_ = run::context::instance();
     auto color = context_.color();
     const auto & cell_gis_to_cis = context_.reverse_index_map(cell_index_space);
     const auto & binding_gis_to_cis =
@@ -2253,5 +2253,5 @@ private:
 }; // class unstructured
 #endif
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

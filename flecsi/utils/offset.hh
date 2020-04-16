@@ -21,7 +21,7 @@
 #include <utility>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /**
  * @brief offset represents an offset range (a start index plus a count of
@@ -143,5 +143,5 @@ private:
   uint64_t o_;
 };
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

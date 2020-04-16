@@ -19,21 +19,21 @@
 
 using namespace flecsi;
 
-flog::devel_tag task_tag("task");
+log::devel_tag task_tag("task");
 
 namespace hydro {
 
 template<typename TYPE>
 void
 simple(TYPE arg) {
-  flog::devel_guard guard(task_tag);
+  log::devel_guard guard(task_tag);
   flog(info) << "arg(" << arg << ")\n";
 } // simple
 
 template<class T>
 void
 seq(const T & s) {
-  flog::devel_guard guard(task_tag);
+  log::devel_guard guard(task_tag);
   [&s](auto && log) {
     bool first = true;
     for(auto & x : s) {

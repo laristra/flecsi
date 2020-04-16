@@ -22,7 +22,7 @@
 #include <cstddef>
 
 namespace flecsi {
-namespace execution {
+namespace exec {
 
 enum class launch_type_t : size_t { single, index };
 
@@ -46,8 +46,8 @@ private:
   std::size_t sz;
 };
 
-} // namespace execution
+} // namespace exec
 
-inline constexpr execution::launch_domain single(1), index;
+inline constexpr exec::launch_domain single(1), index;
 
 } // namespace flecsi

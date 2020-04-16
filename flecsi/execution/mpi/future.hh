@@ -21,7 +21,7 @@
 #include <flecsi/execution/launch.hh>
 
 namespace flecsi {
-namespace execution {
+namespace exec {
 
 //----------------------------------------------------------------------------//
 // Future concept.
@@ -84,5 +84,5 @@ struct mpi_future<void, launch> {
 template<typename RETURN, launch_type_t launch>
 using flecsi_future = mpi_future<RETURN, launch>;
 
-} // namespace execution
+} // namespace exec
 } // namespace flecsi

@@ -6,7 +6,7 @@
 #include <regex>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 namespace ftest {
 
 class test_output_t
@@ -81,5 +81,5 @@ private:
 }; // class test_output_t
 
 } // namespace ftest
-} // namespace utils
+} // namespace util
 } // namespace flecsi

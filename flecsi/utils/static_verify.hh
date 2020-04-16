@@ -45,7 +45,7 @@
 #endif
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 //! Check if the object is a tuple
 template<typename T>
@@ -59,5 +59,5 @@ struct is_tuple<std::tuple<T...>> {
   static bool const value = true;
 };
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

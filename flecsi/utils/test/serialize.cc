@@ -19,7 +19,7 @@
 
 #include <limits>
 
-using namespace flecsi::utils;
+using namespace flecsi::util;
 
 //----------------------------------------------------------------------------//
 // Sanity test.
@@ -157,7 +157,7 @@ private:
 }; // struct simple_context_t
 
 template<>
-struct flecsi::utils::serial_convert<simple_context_t> {
+struct flecsi::util::serial_convert<simple_context_t> {
   using Rep = decltype(simple_context_t::element_map_);
   static const Rep & put(const simple_context_t & c) {
     return c.element_map_;

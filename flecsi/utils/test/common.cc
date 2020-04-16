@@ -42,14 +42,14 @@ common(int, char **) {
     FTEST_CAPTURE() << std::endl;
 
     // types
-    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::utils::id_t) << std::endl;
+    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::util::id_t) << std::endl;
     FTEST_CAPTURE() << FTEST_TTYPE(FLECSI_COUNTER_TYPE) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::utils::counter_t) << std::endl;
+    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::util::counter_t) << std::endl;
     FTEST_CAPTURE() << std::endl;
 
     // square
-    FTEST_CAPTURE() << flecsi::utils::square(10) << std::endl;
-    FTEST_CAPTURE() << flecsi::utils::square(20.0) << std::endl;
+    FTEST_CAPTURE() << flecsi::util::square(10) << std::endl;
+    FTEST_CAPTURE() << flecsi::util::square(20.0) << std::endl;
     FTEST_CAPTURE() << std::endl;
 
     // ------------------------
@@ -63,12 +63,12 @@ common(int, char **) {
 
     // unique_id_t
     struct unique_type_t {};
-    auto & a = flecsi::utils::unique_id<unique_type_t, int, 10>::instance();
-    auto & b = flecsi::utils::unique_id<unique_type_t, int, 10>::instance();
+    auto & a = flecsi::util::unique_id<unique_type_t, int, 10>::instance();
+    auto & b = flecsi::util::unique_id<unique_type_t, int, 10>::instance();
     EXPECT_EQ(&a, &b); // because type is a singleton
 
-    auto & c = flecsi::utils::unique_id<unique_type_t, int>::instance();
-    auto & d = flecsi::utils::unique_id<unique_type_t, int>::instance();
+    auto & c = flecsi::util::unique_id<unique_type_t, int>::instance();
+    auto & d = flecsi::util::unique_id<unique_type_t, int>::instance();
     EXPECT_EQ(&c, &d); // singleton again
     EXPECT_NE(
       (void *)&c, (void *)&a); // != (different template specializations)
@@ -82,10 +82,10 @@ common(int, char **) {
     // Just exercise; return value generally changes between runs
     const int i = 2;
     const float f = float(3.14);
-    EXPECT_NE(flecsi::utils::unique_name(&i), "");
-    EXPECT_NE(flecsi::utils::unique_name(&i), "");
-    EXPECT_NE(flecsi::utils::unique_name(&f), "");
-    EXPECT_NE(flecsi::utils::unique_name(&f), "");
+    EXPECT_NE(flecsi::util::unique_name(&i), "");
+    EXPECT_NE(flecsi::util::unique_name(&i), "");
+    EXPECT_NE(flecsi::util::unique_name(&f), "");
+    EXPECT_NE(flecsi::util::unique_name(&f), "");
 
     // ------------------------
     // Compare

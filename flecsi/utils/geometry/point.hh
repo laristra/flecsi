@@ -23,7 +23,7 @@
 #include <cmath>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 //----------------------------------------------------------------------------//
 //! The point type defines an interface for storing and manipulating
@@ -37,7 +37,7 @@ namespace utils {
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-using point = utils::dimensioned_array<TYPE, DIMENSION, 1>;
+using point = dimensioned_array<TYPE, DIMENSION, 1>;
 
 //----------------------------------------------------------------------------//
 //! Multiplication operator.
@@ -76,7 +76,7 @@ TYPE
 distance(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
   TYPE sum(0);
   for(size_t d(0); d < DIMENSION; ++d) {
-    sum += utils::square(a[d] - b[d]);
+    sum += (square)(a[d] - b[d]);
   } // for
 
   return std::sqrt(sum);
@@ -150,5 +150,5 @@ centroid(std::initializer_list<point<TYPE, DIMENSION>> points) {
   return tmp;
 } // centroid
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

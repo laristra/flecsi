@@ -20,7 +20,7 @@ using namespace flecsi;
 namespace future_test {
 
 template<typename T>
-using handle_t = flecsi::execution::flecsi_future<T>;
+using handle_t = flecsi::exec::flecsi_future<T>;
 
 double
 init(double a) {
@@ -41,7 +41,7 @@ read(handle_t<double> x, handle_t<double> y) {
 double
 index_init(double a) {
 
-  auto & c = flecsi::runtime::context_t::instance();
+  auto & c = run::context::instance();
   auto process = c.process();
   double x = process * a;
   return x;
@@ -71,9 +71,6 @@ index_void_task() {
 int
 driver(int, char **) {
   FTEST {
-    using namespace flecsi;
-    using namespace flecsi::execution;
-
     // single future
     auto f1 = execute<future_test::init, single>(6.2);
     auto f2 = execute<future_test::init, single>(3.1);

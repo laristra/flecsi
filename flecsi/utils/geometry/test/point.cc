@@ -18,24 +18,24 @@
 
 using namespace flecsi;
 
-using point_1d_t = utils::point<double, 1>;
-using point_2d_t = utils::point<double, 2>;
-using point_3d_t = utils::point<double, 3>;
+using point_1d_t = util::point<double, 1>;
+using point_2d_t = util::point<double, 2>;
+using point_3d_t = util::point<double, 3>;
 
 int
 point_sanity(int, char **) {
   FTEST {
-    point_1d_t a1{-1.0};
-    ASSERT_EQ(-1.0, a1[utils::axis::x]);
+    constexpr point_1d_t a1{-1.0};
+    static_assert(-1.0 == a1[util::axis::x]);
 
-    point_2d_t a2{3.0, 0.0};
-    ASSERT_EQ(3.0, a2[utils::axis::x]);
-    ASSERT_EQ(0.0, a2[utils::axis::y]);
+    constexpr point_2d_t a2{3.0, 0.0};
+    static_assert(3.0 == a2[util::axis::x]);
+    static_assert(0.0 == a2[util::axis::y]);
 
-    point_3d_t a3{3.0, 0.0, -1.0};
-    ASSERT_EQ(3.0, a3[utils::axis::x]);
-    ASSERT_EQ(0.0, a3[utils::axis::y]);
-    ASSERT_EQ(-1.0, a3[utils::axis::z]);
+    constexpr point_3d_t a3{3.0, 0.0, -1.0};
+    static_assert(3.0 == a3[util::axis::x]);
+    static_assert(0.0 == a3[util::axis::y]);
+    static_assert(-1.0 == a3[util::axis::z]);
   };
 } // TEST
 ftest_register_driver(point_sanity);

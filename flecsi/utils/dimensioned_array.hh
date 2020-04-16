@@ -22,7 +22,7 @@
 #include <flecsi/utils/common.hh>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 template<typename... CONDITIONS>
 struct and_ : std::true_type {};
@@ -314,5 +314,5 @@ operator<<(std::ostream & stream,
   return stream;
 } // operator <<
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

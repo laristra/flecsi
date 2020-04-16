@@ -28,7 +28,7 @@
 #include <string>
 
 namespace flecsi {
-namespace execution {
+namespace exec {
 
 /*!
   This function is a wrapper for Kokkos::parallel_for that has been adapted to
@@ -125,5 +125,5 @@ private:
 
 }; // struct forall
 
-} // namespace execution
+} // namespace exec
 } // namespace flecsi

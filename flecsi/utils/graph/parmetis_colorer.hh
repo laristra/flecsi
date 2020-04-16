@@ -29,7 +29,7 @@
 #include <set>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 namespace graph {
 
 /*!
@@ -171,10 +171,10 @@ struct parmetis_colorer : public colorer {
     std::vector<idx_t> recv_cnts(size);
     result = MPI_Alltoall(&send_cnts[0],
       1,
-      utils::mpi_typetraits<idx_t>::type(),
+      mpi_typetraits<idx_t>::type(),
       &recv_cnts[0],
       1,
-      utils::mpi_typetraits<idx_t>::type(),
+      mpi_typetraits<idx_t>::type(),
       MPI_COMM_WORLD);
 
 #if 0
@@ -198,7 +198,7 @@ struct parmetis_colorer : public colorer {
         requests.push_back({});
         MPI_Irecv(&rbuffers[r][0],
           recv_cnts[r],
-          utils::mpi_typetraits<idx_t>::type(),
+          mpi_typetraits<idx_t>::type(),
           r,
           0,
           MPI_COMM_WORLD,
@@ -212,7 +212,7 @@ struct parmetis_colorer : public colorer {
         sbuffers[r].resize(send_cnts[r]);
         MPI_Send(&sbuffers[r][0],
           send_cnts[r],
-          utils::mpi_typetraits<idx_t>::type(),
+          mpi_typetraits<idx_t>::type(),
           r,
           0,
           MPI_COMM_WORLD);
@@ -309,5 +309,5 @@ struct parmetis_colorer : public colorer {
 }; // struct parmetis_colorer
 
 } // namespace graph
-} // namespace utils
+} // namespace util
 } // namespace flecsi

@@ -26,7 +26,7 @@
 #include <flecsi/utils/reorder.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 /*----------------------------------------------------------------------------*
  * class connectivity_t
@@ -41,8 +41,8 @@ namespace topology {
 class connectivity_t
 {
 public:
-  using id_t = utils::id_t;
-  using offset_t = utils::offset_t;
+  using id_t = util::id_t;
+  using offset_t = util::offset_t;
 
   connectivity_t(const connectivity_t &) = delete;
 
@@ -189,8 +189,7 @@ public:
   auto get_entity_vec(size_t index) const {
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
-    return utils::make_array_ref(
-      index_space_.id_array() + o.start(), o.count());
+    return util::make_array_ref(index_space_.id_array() + o.start(), o.count());
   }
 
   //-----------------------------------------------------------------//
@@ -211,7 +210,7 @@ public:
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
     assert(order.size() == o.count());
-    utils::reorder(
+    util::reorder(
       order.begin(), order.end(), index_space_.id_array() + o.start());
   }
 
@@ -318,5 +317,5 @@ public:
   offset_storage_t offsets_;
 }; // class connectivity_t
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

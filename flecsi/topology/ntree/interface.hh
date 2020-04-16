@@ -30,7 +30,7 @@
 #include <unordered_map>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 //----------------------------------------------------------------------------//
 // NTree topology.
@@ -58,14 +58,14 @@ public:
   // tree storage type definition
   using storage_t = ntree_storage<Policy>;
   // entity ID type
-  using id_t = utils::id_t;
+  using id_t = util::id_t;
   // offset type use by connectivities to give offsets and counts
-  using offset_t = utils::offset_t;
+  using offset_t = util::offset_t;
 
   // ------- Basic declarations: types and subtypes
   static constexpr size_t dimension = Policy::dimension;
   using element_t = typename Policy::element_t;
-  using point_t = utils::point<element_t, dimension>;
+  using point_t = util::point<element_t, dimension>;
   using range_t = std::array<point_t, 2>;
   // ------- Space filling curve
   using key_t = typename Policy::key_t;
@@ -514,5 +514,5 @@ operator<<(std::ostream & os, const ntree<TREE_TYPE> & t) {
   return os;
 }
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

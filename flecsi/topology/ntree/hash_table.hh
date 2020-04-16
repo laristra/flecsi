@@ -22,7 +22,7 @@
 #include <flecsi/topology/ntree/types.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 //----------------------------------------------------------------------------//
 //! Hash table class for the tree topology. This is a generic representation
@@ -32,7 +32,7 @@ namespace topology {
 template<class KEY, class TYPE>
 struct hash_table {
 
-  using id_t = utils::id_t;
+  using id_t = util::id_t;
   using key_t = KEY;
   using type_t = TYPE;
 
@@ -96,5 +96,5 @@ struct hash_table {
 template<class K, class T>
 size_t hash_table<K, T>::collision = 0;
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

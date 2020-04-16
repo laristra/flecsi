@@ -37,10 +37,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag bind_accessors_tag("bind_accessors");
+inline log::devel_tag bind_accessors_tag("bind_accessors");
 
-namespace execution {
-namespace legion {
+namespace exec::leg {
 
 /*!
   The bind_accessors_t type is called to walk the user task arguments inside of
@@ -49,7 +48,7 @@ namespace legion {
   buffers.
  */
 
-struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
+struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
 
   /*!
     Construct an bind_accessors_t instance.
@@ -93,8 +92,7 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
    Futures
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
-  void visit(
-    execution::flecsi_future<DATA_TYPE, launch_type_t::single> & future) {
+  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> & future) {
     future.legion_future_ = futures_[future_id];
     future_id++;
   }
@@ -108,9 +106,9 @@ struct bind_accessors_t : public flecsi::utils::tuple_walker<bind_accessors_t> {
     !std::is_base_of_v<data::reference_base, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
-      flog::devel_guard guard(bind_accessors_tag);
+      log::devel_guard guard(bind_accessors_tag);
       flog_devel(info) << "Skipping argument with type "
-                       << flecsi::utils::type<DATA_TYPE>() << std::endl;
+                       << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit
 
@@ -124,6 +122,5 @@ private:
 
 }; // struct bind_accessors_t
 
-} // namespace legion
-} // namespace execution
+} // namespace exec::leg
 } // namespace flecsi

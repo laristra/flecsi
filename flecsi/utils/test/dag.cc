@@ -36,14 +36,14 @@ operator<<(std::ostream & stream, node_policy_t const & node) {
   return stream;
 } // operator <<
 
-using dag_t = flecsi::utils::dag<node_policy_t>;
+using dag_t = flecsi::util::dag<node_policy_t>;
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-using graphviz_t = flecsi::utils::graphviz_t;
+using graphviz_t = flecsi::util::graphviz_t;
 #endif
 
 #define flecsi_hash(name)                                                      \
-  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
+  flecsi::util::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()
 
 const size_t a = flecsi_hash(a);
 const size_t b = flecsi_hash(b);

@@ -28,7 +28,7 @@
 
 namespace flecsi {
 
-inline flog::devel_tag io_tag("io");
+inline log::devel_tag io_tag("io");
 
 namespace io {
 
@@ -69,7 +69,7 @@ struct legion_hdf5_region_t {
         runtime->get_index_space_domain(ctx, lr.get_index_space());
       dim_size[0] = domain.get_volume();
       {
-        flog::devel_guard guard(io_tag);
+        log::devel_guard guard(io_tag);
         flog_devel(info) << "ID logical region size " << dim_size[0]
                          << std::endl;
       }
@@ -79,7 +79,7 @@ struct legion_hdf5_region_t {
         runtime->get_index_space_domain(ctx, lr.get_index_space());
       dim_size[0] = domain.get_volume();
       {
-        flog::devel_guard guard(io_tag);
+        log::devel_guard guard(io_tag);
         flog_devel(info) << "ID logical region size " << dim_size[0]
                          << std::endl;
       }
@@ -111,7 +111,7 @@ struct legion_hdf5_t {
     hdf5_region_vector.clear();
     hdf5_group_map.clear();
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Init HDF5 file " << file_name << " num_files "
                        << num_files << std::endl;
     }
@@ -136,7 +136,7 @@ struct legion_hdf5_t {
       return false;
     }
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Create HDF5 file " << fname << " file_id "
                        << hdf5_file_id << std::endl;
     }
@@ -155,7 +155,7 @@ struct legion_hdf5_t {
       return false;
     }
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Open HDF5 file " << fname << " file_id "
                        << hdf5_file_id << std::endl;
     }
@@ -170,7 +170,7 @@ struct legion_hdf5_t {
     H5Fflush(hdf5_file_id, H5F_SCOPE_LOCAL);
     H5Fclose(hdf5_file_id);
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Close HDF5 file_id " << hdf5_file_id << std::endl;
     }
     hdf5_file_id = -1;
@@ -312,7 +312,7 @@ struct legion_hdf5_t {
     Legion::Context ctx = Legion::Runtime::get_context();
 
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Create HDF5 datasets file_id " << hdf5_file_id
                        << " regions size " << hdf5_region_vector.size()
                        << std::endl;
@@ -470,12 +470,12 @@ checkpoint_data(legion_hdf5_t & hdf5_file,
   }
 
   std::vector<std::byte> task_args;
-  task_args = utils::serial_put(std::tie(field_string_map_vector, file_name));
+  task_args = util::serial_put(std::tie(field_string_map_vector, file_name));
 
   auto task_id =
     attach_flag
-      ? execution::legion::task_id<checkpoint_with_attach_task, loc | inner>
-      : execution::legion::task_id<checkpoint_without_attach_task, loc | leaf>;
+      ? exec::leg::task_id<checkpoint_with_attach_task, loc | inner>
+      : exec::leg::task_id<checkpoint_without_attach_task, loc | leaf>;
 
   Legion::IndexLauncher checkpoint_launcher(task_id,
     launch_space,
@@ -500,7 +500,7 @@ checkpoint_data(legion_hdf5_t & hdf5_file,
   }
 
   {
-    flog::devel_guard guard(io_tag);
+    log::devel_guard guard(io_tag);
     flog_devel(info) << "Start checkpoint file " << file_name
                      << " regions size " << hdf5_region_vector.size()
                      << std::endl;
@@ -527,12 +527,11 @@ recover_data(legion_hdf5_t & hdf5_file,
   }
 
   std::vector<std::byte> task_args;
-  task_args = utils::serial_put(std::tie(field_string_map_vector, file_name));
+  task_args = util::serial_put(std::tie(field_string_map_vector, file_name));
 
   auto task_id =
-    attach_flag
-      ? execution::legion::task_id<recover_with_attach_task, loc | inner>
-      : execution::legion::task_id<recover_without_attach_task, loc | leaf>;
+    attach_flag ? exec::leg::task_id<recover_with_attach_task, loc | inner>
+                : exec::leg::task_id<recover_without_attach_task, loc | leaf>;
 
   Legion::IndexLauncher recover_launcher(task_id,
     launch_space,
@@ -556,7 +555,7 @@ recover_data(legion_hdf5_t & hdf5_file,
   }
 
   {
-    flog::devel_guard guard(io_tag);
+    log::devel_guard guard(io_tag);
     flog_devel(info) << "Start recover file " << file_name << " regions size "
                      << hdf5_region_vector.size() << std::endl;
   }
@@ -572,14 +571,14 @@ struct io_interface_t {
     std::map<Legion::FieldID, std::string> field_string_map;
 
     for(const auto p :
-      runtime::context_t::instance().get_field_info_store<topology::index>()) {
+      run::context::instance().get_field_info_store<topo::index>()) {
       field_string_map[p->fid] = std::to_string(p->fid);
     }
 
     Legion::Runtime * runtime = Legion::Runtime::get_runtime();
     Legion::Context ctx = Legion::Runtime::get_context();
     Legion::Rect<1> file_color_bounds(0, hdf5_file.num_files - 1);
-    data::legion::unique_index_space process_topology_file_is =
+    data::leg::unique_index_space process_topology_file_is =
       runtime->create_index_space(ctx, file_color_bounds);
 #if 0 
     process_topology_file_ip = runtime->create_pending_partition(ctx, index_runtime_data.index_space, process_topology_file_is);
@@ -594,11 +593,11 @@ struct io_interface_t {
       runtime->create_index_space_union(ctx, process_topology_file_ip, point, subspaces);
     }
 #else
-    data::legion::unique_index_partition process_topology_file_ip =
+    data::leg::unique_index_partition process_topology_file_ip =
       runtime->create_equal_partition(
         ctx, index_runtime_data.index_space, process_topology_file_is);
 #endif
-    data::legion::unique_logical_partition process_topology_file_lp =
+    data::leg::unique_logical_partition process_topology_file_lp =
       runtime->get_logical_partition(
         ctx, index_runtime_data.logical_region, process_topology_file_ip);
     hdf5_file.add_logical_region(index_runtime_data.logical_region,
@@ -613,11 +612,11 @@ struct io_interface_t {
 
   void checkpoint_process_topology(legion_hdf5_t & hdf5_file) {
     auto const & fid_vector =
-      runtime::context_t::instance().get_field_info_store<topology::index>();
+      run::context::instance().get_field_info_store<topo::index>();
 
     auto & index_runtime_data = process_topology.get();
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint default index topology, fields size "
                        << fid_vector.size() << std::endl;
     }
@@ -636,7 +635,7 @@ struct io_interface_t {
   } // checkpoint_process_topology
 
   // void checkpoint_index_topology(legion_hdf5_t & hdf5_file, const
-  // flecsi::utils::const_string_t &index_topology_name);
+  // flecsi::util::const_string_t &index_topology_name);
 
   void checkpoint_index_topology_field(hdf5_t & hdf5_file,
     const field_reference_t & fh) {
@@ -644,7 +643,7 @@ struct io_interface_t {
     auto & index_runtime_data = fh.topology().get();
 
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint index topology, field " << fid
                        << std::endl;
     }
@@ -662,12 +661,12 @@ struct io_interface_t {
 
   void recover_process_topology(legion_hdf5_t & hdf5_file) {
     auto const & fid_vector =
-      runtime::context_t::instance().get_field_info_store<topology::index>();
+      run::context::instance().get_field_info_store<topo::index>();
 
     auto & index_runtime_data = process_topology.get();
 
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Recover default index topology, fields size "
                        << fid_vector.size() << std::endl;
     }
@@ -691,7 +690,7 @@ struct io_interface_t {
     auto & index_runtime_data = fh.topology().get();
 
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Recover index topology, field " << fid << std::endl;
     }
 
@@ -708,12 +707,11 @@ struct io_interface_t {
 
 private:
   struct topology_data {
-    data::legion::unique_index_space index_space;
-    data::legion::unique_index_partition index_partition;
-    data::legion::unique_logical_partition logical_partition;
+    data::leg::unique_index_space index_space;
+    data::leg::unique_index_partition index_partition;
+    data::leg::unique_logical_partition logical_partition;
   };
-  std::map<const data::topology_data<topology::index> *, topology_data>
-    file_map;
+  std::map<const data::topology_data<topo::index> *, topology_data> file_map;
 };
 
 inline void
@@ -729,10 +727,10 @@ checkpoint_with_attach_task(const Legion::Task * task,
   std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
 
   field_string_map_vector =
-    utils::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(
+    util::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(
       task_args);
 
-  std::string fname = utils::serial_get<std::string>(task_args);
+  std::string fname = util::serial_get<std::string>(task_args);
 
   fname = fname + std::to_string(point);
   char * file_name = const_cast<char *>(fname.c_str());
@@ -759,7 +757,7 @@ checkpoint_with_attach_task(const Legion::Task * task,
     }
 
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint data to HDF5 file attach " << file_name
                        << " region_id " << rid
                        << " (dataset(fid) size= " << field_map.size() << ")"
@@ -804,10 +802,10 @@ checkpoint_without_attach_task(const Legion::Task * task,
   std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
 
   field_string_map_vector =
-    utils::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(
+    util::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(
       task_args);
 
-  std::string fname = utils::serial_get<std::string>(task_args);
+  std::string fname = util::serial_get<std::string>(task_args);
 
   fname = fname + std::to_string(point);
   char * file_name = const_cast<char *>(fname.c_str());
@@ -851,7 +849,7 @@ checkpoint_without_attach_task(const Legion::Task * task,
     }
 
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint data to HDF5 file no attach " << file_name
                        << " region_id " << rid
                        << " (dataset(fid) size= " << field_set.size() << ")"
@@ -876,10 +874,10 @@ recover_with_attach_task(const Legion::Task * task,
   std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
 
   field_string_map_vector =
-    utils::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(
+    util::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(
       task_args);
 
-  std::string fname = utils::serial_get<std::string>(task_args);
+  std::string fname = util::serial_get<std::string>(task_args);
 
   fname = fname + std::to_string(point);
   char * file_name = const_cast<char *>(fname.c_str());
@@ -906,7 +904,7 @@ recover_with_attach_task(const Legion::Task * task,
     }
 
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Recorver data to HDF5 file attach " << file_name
                        << " region_id " << rid
                        << " (dataset(fid) size= " << field_map.size() << ")"
@@ -950,10 +948,10 @@ recover_without_attach_task(const Legion::Task * task,
   std::vector<std::map<Legion::FieldID, std::string>> field_string_map_vector;
 
   field_string_map_vector =
-    utils::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(
+    util::serial_get<std::vector<std::map<Legion::FieldID, std::string>>>(
       task_args);
 
-  std::string fname = utils::serial_get<std::string>(task_args);
+  std::string fname = util::serial_get<std::string>(task_args);
 
   fname = fname + std::to_string(point);
   char * file_name = const_cast<char *>(fname.c_str());
@@ -997,7 +995,7 @@ recover_without_attach_task(const Legion::Task * task,
     }
 
     {
-      flog::devel_guard guard(io_tag);
+      log::devel_guard guard(io_tag);
       flog_devel(info) << "Checkpoint data to HDF5 file no attach " << file_name
                        << " region_id " << rid
                        << " (dataset(fid) size= " << field_set.size() << ")"

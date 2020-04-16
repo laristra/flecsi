@@ -26,7 +26,7 @@
 #include <unordered_map>
 
 namespace flecsi {
-namespace flog {
+namespace log {
 
 /*!
   The tee_buffer_t type provides a stream buffer that allows output to
@@ -258,7 +258,7 @@ private:
 struct tee_stream_t : public std::ostream {
 
   tee_stream_t() : std::ostream(&tee_) {
-    // Allow users to turn std::flog output on and off from
+    // Allow users to turn std::clog output on and off from
     // their environment.
     if(std::getenv("FLOG_ENABLE_STDLOG")) {
       tee_.add_buffer("flog", std::clog.rdbuf(), true);
@@ -306,7 +306,7 @@ private:
 
 }; // struct tee_stream_t
 
-} // namespace flog
+} // namespace log
 } // namespace flecsi
 
 #endif // FLECSI_ENABLE_FLOG

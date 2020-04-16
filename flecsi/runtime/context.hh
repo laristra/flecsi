@@ -43,9 +43,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag context_tag("context");
+inline log::devel_tag context_tag("context");
 
-namespace runtime {
+namespace run {
 
 struct context_t; // supplied by backend
 
@@ -263,7 +263,7 @@ struct context {
         std::cout << flecsi << std::endl;
 
 #if defined(FLECSI_ENABLE_FLOG)
-        auto const & tm = flog::flog_t::instance().tag_map();
+        auto const & tm = log::flog_t::instance().tag_map();
 
         if(tm.size()) {
           std::cout << "Available FLOG Tags (FleCSI Logging Utility):"
@@ -324,7 +324,7 @@ struct context {
       parsed.options, boost::program_options::include_positional);
 
 #if defined(FLECSI_ENABLE_FLOG)
-    if(flog::flog_t::instance().initialize(
+    if(log::flog_t::instance().initialize(
          flog_tags_, flog_verbose_, flog_output_process_)) {
       return status::error;
     } // if
@@ -344,7 +344,7 @@ struct context {
 
   inline void finalize_generic() {
 #if defined(FLECSI_ENABLE_FLOG)
-    flog::flog_t::instance().finalize();
+    log::flog_t::instance().finalize();
 #endif
 
     if(initialize_dependent_) {
@@ -473,9 +473,9 @@ struct context {
    */
   template<class Topo, std::size_t Index>
   void add_field_info(const data::field_info_t & field_info) {
-    constexpr std::size_t NIndex = topology::index_spaces<Topo>;
+    constexpr std::size_t NIndex = topo::index_spaces<Topo>;
     static_assert(Index < NIndex, "No such index space");
-    topology_field_info_map_.try_emplace(topology::id<Topo>(), NIndex)
+    topology_field_info_map_.try_emplace(topo::id<Topo>(), NIndex)
       .first->second[Index]
       .push_back(&field_info);
   } // add_field_information
@@ -487,13 +487,13 @@ struct context {
     \tparam Topo topology type
     \tparam Index topology-relative index space
    */
-  template<class Topo, std::size_t Index = topology::default_space<Topo>>
+  template<class Topo, std::size_t Index = topo::default_space<Topo>>
   field_info_store_t const & get_field_info_store() const {
-    static_assert(Index < topology::index_spaces<Topo>, "No such index space");
+    static_assert(Index < topo::index_spaces<Topo>, "No such index space");
 
     static const field_info_store_t empty;
 
-    auto const & tita = topology_field_info_map_.find(topology::id<Topo>());
+    auto const & tita = topology_field_info_map_.find(topo::id<Topo>());
     if(tita == topology_field_info_map_.end())
       return empty;
 
@@ -665,5 +665,5 @@ private:
   std::vector<void (*)()> init_registry;
 }; // struct context
 
-} // namespace runtime
+} // namespace run
 } // namespace flecsi

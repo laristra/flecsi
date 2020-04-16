@@ -19,7 +19,7 @@
 
 using namespace flecsi;
 using namespace flecsi::data;
-using namespace flecsi::topology;
+using namespace flecsi::topo;
 
 #if 0
 using cell_field_t = field_member<double, dense, mesh_t, cells>;

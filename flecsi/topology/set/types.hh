@@ -21,7 +21,7 @@
 //#include "flecsi/data/reference.hh"
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 //----------------------------------------------------------------------------//
 // Mesh topology.
@@ -35,5 +35,5 @@ struct set_base_t {
   using coloring = size_t;
 }; // set_base_t
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

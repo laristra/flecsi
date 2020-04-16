@@ -16,7 +16,7 @@
 
 #include <Kokkos_Core.hpp>
 
-flog::devel_tag kokkos_tag("kokkos");
+log::devel_tag kokkos_tag("kokkos");
 
 /*
 

@@ -21,7 +21,7 @@ using namespace flecsi;
 int
 simple2d_16x16() {
   FTEST {
-    topology::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
+    topo::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
 
     ASSERT_EQ(sd.dimension(), 2lu);
     ASSERT_EQ(sd.num_entities(0), 289lu);

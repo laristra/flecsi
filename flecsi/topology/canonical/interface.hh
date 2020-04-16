@@ -24,7 +24,7 @@
 #include <string>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 /*!
   The canonical type is a dummy topology for development and testing.
@@ -48,5 +48,5 @@ struct canonical : canonical_base {
 
 }; // struct canonical
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

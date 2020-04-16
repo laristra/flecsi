@@ -35,18 +35,16 @@
 
 namespace flecsi {
 
-inline flog::devel_tag unbind_accessors_tag("unbind_accessors");
+inline log::devel_tag unbind_accessors_tag("unbind_accessors");
 
-namespace execution {
-namespace legion {
+namespace exec::leg {
 
 /*!
   The unbind_accessors_t type is called to walk the user task arguments inside
   of an executing legion task to properly unbind the user's accessors.
  */
 
-struct unbind_accessors_t
-  : public flecsi::utils::tuple_walker<unbind_accessors_t> {
+struct unbind_accessors_t : public util::tuple_walker<unbind_accessors_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> &) {
@@ -61,13 +59,12 @@ struct unbind_accessors_t
     !std::is_base_of_v<data::reference_base, DATA_TYPE>>
   visit(DATA_TYPE &) {
     {
-      flog::devel_guard guard(unbind_accessors_tag);
+      log::devel_guard guard(unbind_accessors_tag);
       flog_devel(info) << "Skipping argument with type "
-                       << flecsi::utils::type<DATA_TYPE>() << std::endl;
+                       << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit
 }; // struct unbind_accessors_t
 
-} // namespace legion
-} // namespace execution
+} // namespace exec::leg
 } // namespace flecsi

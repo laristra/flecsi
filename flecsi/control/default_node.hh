@@ -18,7 +18,7 @@
 #include <bitset>
 
 namespace flecsi {
-namespace control {
+namespace ctrl {
 
 struct default_node_t {
 
@@ -61,5 +61,5 @@ operator<<(std::ostream & stream, default_node_t const & node) {
   return stream;
 } // operator <<
 
-} // namespace control
+} // namespace ctrl
 } // namespace flecsi

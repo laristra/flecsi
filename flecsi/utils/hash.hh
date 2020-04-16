@@ -18,7 +18,7 @@
 #include <cstddef>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 template<typename T, typename U>
 inline constexpr T
@@ -40,5 +40,5 @@ string_hash(U && str, const std::size_t n) {
   return h;
 } // string_hash
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

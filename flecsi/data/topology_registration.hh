@@ -44,7 +44,7 @@
 
 namespace flecsi {
 
-inline flog::devel_tag registration_tag("registration");
+inline log::devel_tag registration_tag("registration");
 
 namespace data {
 
@@ -62,20 +62,20 @@ struct topology_registration;
 
 template<typename POLICY_TYPE, size_t NAMESPACE, size_t NAME>
 struct topology_registration<
-  topology::mesh<POLICY_TYPE>,
+  topo::mesh<POLICY_TYPE>,
   NAMESPACE,
   NAME> {
-  using CLIENT_TYPE = typename topology::mesh<POLICY_TYPE>;
+  using CLIENT_TYPE = typename topo::mesh<POLICY_TYPE>;
 
   /*!
 
    */
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker<entity_walker_t> {
+      : public util::tuple_walker<entity_walker_t> {
 
     template<typename T, T V>
-    T value(utils::typeify<T, V>) {
+    T value(util::typeify<T, V>) {
       return V;
     }
 
@@ -88,7 +88,7 @@ struct topology_registration<
         typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
 
       constexpr size_t entity_hash =
-        utils::hash::client_entity_hash<NAMESPACE, NAME,
+        util::hash::client_entity_hash<NAMESPACE, NAME,
           INDEX_TYPE::value, DOMAIN_TYPE::value, ENTITY_TYPE::dimension>();
 
       using registration_t = field_registration<CLIENT_TYPE,
@@ -97,41 +97,41 @@ struct topology_registration<
       const size_t type_key =
         typeid(CLIENT_TYPE).hash_code();
 
-      using flecsi::utils::const_string_t;
+      using util::const_string_t;
       const size_t field_key =
-        utils::hash::client_internal_field_hash<
+        util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_entity_data").hash(),
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
       {
-      flog::devel_guard guard(registration_tag);
+      log::devel_guard guard(registration_tag);
       flog(info) << "registering field for type id: " <<
-        flecsi::utils::demangle(
+        util::demangle(
           typeid(CLIENT_TYPE).name()
         ) << std::endl <<
         " index: " << INDEX_TYPE::value << std::endl <<
         " namespace: " << NAMESPACE << std::endl <<
         " name: " << NAME << std::endl;
       flog(info) << "new key: " <<
-        utils::hash::client_internal_field_hash<
+        util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_entity_data").hash(),
           NAMESPACE, NAME, INDEX_TYPE::value>() << std::endl;
       } // scope
 
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, field_key, registration_t::register_callback);
 
       using id_registration_t = field_registration<CLIENT_TYPE,
-        flecsi::data::dense, utils::id_t, entity_hash, 0, 1, INDEX_TYPE::value>;
+        data::dense, util::id_t, entity_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t id_key =
-        utils::hash::client_internal_field_hash<
+        util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_entity_id").hash(),
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, id_key, id_registration_t::register_callback);
 
     } // visit_type
@@ -139,10 +139,10 @@ struct topology_registration<
   }; // struct entity_walker_t
 
   struct connectivity_walker
-      : public flecsi::utils::tuple_walker<connectivity_walker> {
+      : public util::tuple_walker<connectivity_walker> {
 
     template<typename T, T V>
-    T value(utils::typeify<T, V>) {
+    T value(util::typeify<T, V>) {
       return V;
     }
 
@@ -159,15 +159,15 @@ struct topology_registration<
       using entity_types_t = typename POLICY_TYPE::entity_types;
 
       constexpr size_t from_index_space =
-        topology::find_index_space<std::tuple_size<entity_types_t>::value,
+        topo::find_index_space<std::tuple_size<entity_types_t>::value,
           entity_types_t, FROM_ENTITY_TYPE>::find();
 
       constexpr size_t to_index_space =
-        topology::find_index_space<std::tuple_size<entity_types_t>::value,
+        topo::find_index_space<std::tuple_size<entity_types_t>::value,
           entity_types_t, TO_ENTITY_TYPE>::find();
 
       constexpr size_t adjacency_hash =
-        utils::hash::client_adjacency_hash<NAMESPACE, NAME,
+        util::hash::client_adjacency_hash<NAMESPACE, NAME,
           INDEX_TYPE::value,
           DOMAIN_TYPE::value, // from and to domains are the same
           DOMAIN_TYPE::value, // for connectivity information
@@ -175,46 +175,46 @@ struct topology_registration<
 
       using index_registration_t =
         field_registration<CLIENT_TYPE, flecsi::data::dense,
-          utils::id_t, adjacency_hash, 0, 1, INDEX_TYPE::value>;
+          util::id_t, adjacency_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t type_key =
         typeid(CLIENT_TYPE).hash_code();
 
-      using flecsi::utils::const_string_t;
+      using util::const_string_t;
       const size_t index_key =
-        utils::hash::client_internal_field_hash<
+        util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_adjacency_index").hash(),
           NAMESPACE,
           NAME,
           INDEX_TYPE::value
         >();
       int ispace = INDEX_TYPE::value;
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, index_key, index_registration_t::register_callback);
 
       using offset_registration_t =
         field_registration<CLIENT_TYPE, flecsi::data::dense,
-          utils::offset_t, adjacency_hash, 0, 1, from_index_space>;
+          util::offset_t, adjacency_hash, 0, 1, from_index_space>;
 
       // This field resides in the main entities (BLIS) index space, but
       // is unique to an adjacency, so it is registered using the
       // adjacency hash.
       const size_t offset_key =
-        utils::hash::client_internal_field_hash<
+        util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_adjacency_offset").hash(),
           NAMESPACE,
           NAME,
           INDEX_TYPE::value
         >();
 
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, offset_key, offset_registration_t::register_callback);
     } // visit_type
 
   }; // struct connectivity_walker
 
   struct binding_walker
-      : public flecsi::utils::tuple_walker<binding_walker> {
+      : public util::tuple_walker<binding_walker> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void visit_type() {
@@ -231,53 +231,53 @@ struct topology_registration<
       using entity_types_t = typename POLICY_TYPE::entity_types;
 
       constexpr size_t from_index_space =
-        topology::find_index_space<std::tuple_size<entity_types_t>::value,
+        topo::find_index_space<std::tuple_size<entity_types_t>::value,
           entity_types_t, FROM_ENTITY_TYPE>::find();
 
       constexpr size_t to_index_space =
-        topology::find_index_space<std::tuple_size<entity_types_t>::value,
+        topo::find_index_space<std::tuple_size<entity_types_t>::value,
           entity_types_t, TO_ENTITY_TYPE>::find();
 
       constexpr size_t adjacency_hash =
-        utils::hash::client_adjacency_hash<NAMESPACE, NAME,
+        util::hash::client_adjacency_hash<NAMESPACE, NAME,
           INDEX_TYPE::value, FROM_DOMAIN_TYPE::value, TO_DOMAIN_TYPE::value,
           FROM_ENTITY_TYPE::dimension, TO_ENTITY_TYPE::dimension>();
 
       using index_registration_t =
         field_registration<CLIENT_TYPE, flecsi::data::dense,
-          utils::id_t, adjacency_hash, 0, 1, INDEX_TYPE::value>;
+          util::id_t, adjacency_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t type_key =
         typeid(CLIENT_TYPE).hash_code();
 
-      using flecsi::utils::const_string_t;
+      using util::const_string_t;
       const size_t index_key =
-        utils::hash::client_internal_field_hash<
+        util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_adjacency_index").hash(),
           NAMESPACE,
           NAME,
           INDEX_TYPE::value
         >();
       int ispace = INDEX_TYPE::value;
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, index_key, index_registration_t::register_callback);
 
       using offset_registration_t =
         field_registration<CLIENT_TYPE, flecsi::data::dense,
-          utils::offset_t, adjacency_hash, 0, 1, from_index_space>;
+          util::offset_t, adjacency_hash, 0, 1, from_index_space>;
 
       // This field resides in the main entities (BLIS) index space, but
       // is unique to an adjacency, so it is registered using the
       // adjacency hash.
       const size_t offset_key =
-        utils::hash::client_internal_field_hash<
+        util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_adjacency_offset").hash(),
           NAMESPACE,
           NAME,
           INDEX_TYPE::value
         >();
 
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, offset_key, offset_registration_t::register_callback);
 
     } // visit_type
@@ -285,7 +285,7 @@ struct topology_registration<
   }; // struct binding_walker
 
   struct index_subspaces_walker
-      : public flecsi::utils::tuple_walker<index_subspaces_walker> {
+      : public util::tuple_walker<index_subspaces_walker> {
 
     template<typename TUPLE_ENTRY_TYPE>
     void visit_type() {
@@ -294,26 +294,26 @@ struct topology_registration<
         typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
 
       constexpr size_t index_subspace_hash =
-        utils::hash::client_index_subspace_hash<NAMESPACE, NAME,
+        util::hash::client_index_subspace_hash<NAMESPACE, NAME,
           INDEX_TYPE::value, INDEX_SUBSPACE_TYPE::value>();
 
       using registration_t =
         field_registration<CLIENT_TYPE, flecsi::data::subspace,
-          utils::id_t, index_subspace_hash, 0, 1, INDEX_TYPE::value>;
+          util::id_t, index_subspace_hash, 0, 1, INDEX_TYPE::value>;
 
       const size_t type_key =
         typeid(CLIENT_TYPE).hash_code();
 
-      using flecsi::utils::const_string_t;
+      using util::const_string_t;
       const size_t field_key =
-        utils::hash::client_internal_field_hash<
+        util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_index_subspace_index").hash(),
           NAMESPACE,
           NAME,
           INDEX_SUBSPACE_TYPE::value
         >();
 
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, field_key, registration_t::register_callback);
 
     } // visit_type
@@ -332,11 +332,11 @@ struct topology_registration<
     const size_t type_hash =
       typeid(CLIENT_TYPE).hash_code();
     const size_t instance_hash =
-      utils::hash::client_hash<NAMESPACE, NAME>();
+      util::hash::client_hash<NAMESPACE, NAME>();
 
     // Only register field attributes if this is the first time
     // that we have seen this type.
-    if(!runtime::context_t::instance().client_fields_registered(type_hash, instance_hash)) {
+    if(!run::context::instance().client_fields_registered(type_hash, instance_hash)) {
       entity_walker_t entity_walker;
       entity_walker.template walk_types<entity_types_t>();
 
@@ -347,7 +347,7 @@ struct topology_registration<
       binding_walker.template walk_types<bindings>();
 
       using index_subspaces =
-        typename topology::get_index_subspaces<POLICY_TYPE>::type;
+        typename topo::get_index_subspaces<POLICY_TYPE>::type;
 
       index_subspaces_walker index_subspaces_walker;
       index_subspaces_walker.template walk_types<index_subspaces>();
@@ -363,20 +363,20 @@ struct topology_registration<
 
 template<typename POLICY_TYPE, size_t NAMESPACE, size_t NAME>
 struct topology_registration<
-  topology::set<POLICY_TYPE>,
+  topo::set<POLICY_TYPE>,
   NAMESPACE,
   NAME> {
-  using CLIENT_TYPE = typename topology::set<POLICY_TYPE>;
+  using CLIENT_TYPE = typename topo::set<POLICY_TYPE>;
 
   /*!
 
    */
 
   struct entity_walker_t
-      : public flecsi::utils::tuple_walker<entity_walker_t> {
+      : public util::tuple_walker<entity_walker_t> {
 
     template<typename T, T V>
-    T value(utils::typeify<T, V>) {
+    T value(util::typeify<T, V>) {
       return V;
     }
 
@@ -386,7 +386,7 @@ struct topology_registration<
       using ENTITY_TYPE =
         typename std::tuple_element<1, TUPLE_ENTRY_TYPE>::type;
 
-      constexpr size_t entity_hash = utils::hash::client_entity_hash<
+      constexpr size_t entity_hash = util::hash::client_entity_hash<
         NAMESPACE, NAME, INDEX_TYPE::value, 0, 0>();
 
       using registration_t = field_registration<
@@ -396,29 +396,29 @@ struct topology_registration<
       const size_t type_key =
         typeid(CLIENT_TYPE).hash_code();
 
-      using flecsi::utils::const_string_t;
-      const size_t field_key = utils::hash::client_internal_field_hash<
+      using util::const_string_t;
+      const size_t field_key = util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_entity_data").hash(),
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, field_key, registration_t::register_callback);
 
-      const size_t active_key = utils::hash::client_internal_field_hash<
+      const size_t active_key = util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_active_entity_data").hash(),
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, active_key, registration_t::register_callback);
 
-      const size_t migrate_key = utils::hash::client_internal_field_hash<
+      const size_t migrate_key = util::hash::client_internal_field_hash<
           const_string_t("flecsi_internal_migrate_entity_data").hash(),
           NAMESPACE, NAME, INDEX_TYPE::value
         >();
 
-      runtime::context_t::instance().register_field(
+      run::context::instance().register_field(
         type_key, migrate_key, registration_t::register_callback);
 
     } // visit_type
@@ -449,9 +449,9 @@ struct topology_registration<
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct topology_registration<flecsi::topology::structured<POLICY_TYPE>> {
+struct topology_registration<topo::structured<POLICY_TYPE>> {
 
-  using TOPOLOGY_TYPE = flecsi::topology::structured<POLICY_TYPE>;
+  using TOPOLOGY_TYPE = topo::structured<POLICY_TYPE>;
 
   static void register_fields() {
     flog(info) << "topology_registration::register_fields()" << std::endl;
@@ -464,9 +464,9 @@ struct topology_registration<flecsi::topology::structured<POLICY_TYPE>> {
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct topology_registration<flecsi::topology::ntree<POLICY_TYPE>> {
+struct topology_registration<topo::ntree<POLICY_TYPE>> {
 
-  using TOPOLOGY_TYPE = flecsi::topology::ntree<POLICY_TYPE>;
+  using TOPOLOGY_TYPE = topo::ntree<POLICY_TYPE>;
 
   static void register_fields() {
     flog(info) << "topology_registration::register_fields()" << std::endl;
@@ -479,9 +479,9 @@ struct topology_registration<flecsi::topology::ntree<POLICY_TYPE>> {
 //----------------------------------------------------------------------------//
 
 template<typename POLICY_TYPE>
-struct topology_registration<topology::canonical<POLICY_TYPE>> {
+struct topology_registration<topo::canonical<POLICY_TYPE>> {
 
-  using TOPOLOGY_TYPE = topology::canonical<POLICY_TYPE>;
+  using TOPOLOGY_TYPE = topo::canonical<POLICY_TYPE>;
 
   static void register_fields() {
     flog(info) << "topology_registration::register_fields()" << std::endl;
@@ -499,9 +499,9 @@ struct topology_registration<topology::canonical<POLICY_TYPE>> {
  */
 
 template<>
-struct topology_registration<topology::global> {
+struct topology_registration<topo::global> {
 
-  using TOPOLOGY_TYPE = topology::global;
+  using TOPOLOGY_TYPE = topo::global;
 
   static void register_fields() {} // register_fields
 
@@ -516,9 +516,9 @@ struct topology_registration<topology::global> {
  */
 
 template<>
-struct topology_registration<topology::index> {
+struct topology_registration<topo::index> {
 
-  using TOPOLOGY_TYPE = topology::index;
+  using TOPOLOGY_TYPE = topo::index;
 
   static void register_fields() {} // register_fields
 

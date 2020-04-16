@@ -28,9 +28,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag reduction_wrapper_tag("reduction_wrapper");
+inline log::devel_tag reduction_wrapper_tag("reduction_wrapper");
 
-namespace execution {
+namespace exec {
 
 namespace detail {
 template<class>
@@ -39,7 +39,7 @@ void register_reduction();
 
 // NB: The real initialization is in the callback.
 template<class R>
-inline MPI_Op reduction_op = (runtime::context::instance().register_init(
+inline MPI_Op reduction_op = (run::context::instance().register_init(
                                 detail::register_reduction<R>),
   MPI_Op());
 
@@ -56,9 +56,9 @@ detail::register_reduction() {
     "type mismatch: LHS != RHS");
 
   {
-    flog::devel_guard guard(reduction_wrapper_tag);
+    log::devel_guard guard(reduction_wrapper_tag);
     flog(info) << "Executing reduction wrapper callback for "
-               << utils::type<TYPE>() << std::endl;
+               << util::type<TYPE>() << std::endl;
   } // scope
 
   // Create the operator and register it with the runtime
@@ -75,5 +75,5 @@ detail::register_reduction() {
     &reduction_op<TYPE>);
 }
 
-} // namespace execution
+} // namespace exec
 } // namespace flecsi

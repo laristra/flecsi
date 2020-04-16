@@ -31,7 +31,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
   The dag_node type defines a compile-time extensible node for the
@@ -287,5 +287,5 @@ operator<<(std::ostream & stream, dag<NODE_POLICY> const & dag) {
   return stream;
 } // operator <<
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

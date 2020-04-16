@@ -19,7 +19,7 @@
 #include <typeinfo> // typeid()
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
   Return the demangled name.
@@ -68,10 +68,10 @@ struct Symbol {};
 template<auto & S>
 std::string
 symbol() {
-  constexpr int PFX = sizeof("flecsi::utils::Symbol<") - 1;
+  constexpr int PFX = sizeof("flecsi::util::Symbol<") - 1;
   const auto s = type<Symbol<S>>();
   return s.substr(PFX, s.size() - 1 - PFX);
 }
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

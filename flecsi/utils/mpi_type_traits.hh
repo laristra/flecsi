@@ -24,7 +24,7 @@
 #include <mpi.h>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 /*!
  Wrapper to convert from C++ types to MPI types.
@@ -130,5 +130,5 @@ struct mpi_typetraits<long double> {
   }
 }; // mpi_typetraits
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

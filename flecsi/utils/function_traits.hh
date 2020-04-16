@@ -23,7 +23,7 @@
 #include <tuple>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 template<typename T>
 struct function_traits : function_traits<decltype(&T::operator())> {};
@@ -69,5 +69,5 @@ struct function_traits<volatile T> : function_traits<T> {};
 template<typename T>
 struct function_traits<const volatile T> : function_traits<T> {};
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

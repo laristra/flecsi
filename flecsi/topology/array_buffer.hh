@@ -18,7 +18,7 @@
 #include <flecsi/utils/id.hh>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 
 template<size_t, typename>
 class domain_entity;
@@ -199,5 +199,5 @@ private:
   size_t capacity_;
 };
 
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

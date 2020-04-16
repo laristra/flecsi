@@ -33,9 +33,9 @@
 
 namespace flecsi {
 
-inline flog::devel_tag legion_mapper_tag("legion_mapper");
+inline log::devel_tag legion_mapper_tag("legion_mapper");
 
-namespace runtime {
+namespace run {
 
 /*
  The mpi_mapper_t - is a custom mapper that handles mpi-legion
@@ -96,7 +96,7 @@ public:
     } // end for
 
     {
-      flog::devel_guard guard(legion_mapper_tag);
+      log::devel_guard guard(legion_mapper_tag);
       flog_devel(info) << "Mapper constructor" << std::endl
                        << "\tlocal: " << local << std::endl
                        << "\tcpus: " << local_cpus.size() << std::endl
@@ -314,5 +314,5 @@ mapper_registration(Legion::Machine machine,
   }
 } // mapper registration
 
-} // namespace runtime
+} // namespace run
 } // namespace flecsi

@@ -18,7 +18,7 @@
 #include <algorithm>
 
 namespace flecsi {
-namespace utils {
+namespace util {
 
 //!
 //! \brief  Detect intersections of sorted lists.
@@ -60,5 +60,5 @@ bool intersects(
 }
 #endif
 
-} // namespace utils
+} // namespace util
 } // namespace flecsi

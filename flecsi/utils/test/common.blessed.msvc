@@ -3,7 +3,7 @@
 4
 60
 
-class flecsi::utils::id_<20,40,4,60>
+class flecsi::util::id_<20,40,4,60>
 int
 int
 
