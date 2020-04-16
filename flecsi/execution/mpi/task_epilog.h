@@ -85,7 +85,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     auto & h = a.handle;
 #if !defined(FLECSI_USE_AGGCOMM)
     // Skip Read Only handles
-    if ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
+    if constexpr ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
      return;
 
     auto & context = context_t::instance();
@@ -109,7 +109,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 #else
     auto & context = context_t::instance();
 
-    if ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
+    if constexpr ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
       *(h.ghost_is_readable) = true;
     else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
       *(h.ghost_is_readable) = false;
