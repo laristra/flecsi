@@ -55,6 +55,41 @@ parallel_for(ITERATOR iterator, LAMBDA lambda, std::string const & name = "") {
 
 } // parallel_for
 
+
+template<
+  typename ITERATOR, 
+  typename LAMBDA,
+  typename REDUCER
+  >
+void
+parallel_reduce(
+  ITERATOR iterator, 
+  LAMBDA lambda, 
+  REDUCER result,
+  std::string const & name = "") {
+
+  using value_type = typename REDUCER::value_type; 
+
+
+  struct functor_t {
+
+    functor_t(ITERATOR & iterator, LAMBDA & lambda)
+      : iterator_(iterator), lambda_(lambda) {}
+
+    KOKKOS_INLINE_FUNCTION void operator()(int i, value_type& tmp) const {
+      lambda_(iterator_[i], tmp);
+    } // operator()
+
+  private:
+    ITERATOR & iterator_;
+    LAMBDA & lambda_;
+
+  }; // struct functor_t
+
+  Kokkos::parallel_reduce(name, iterator.size(), functor_t{iterator, lambda}, result);
+  
+} // parallel_reduce
+
 template<typename ITERATOR>
 struct forall_t {
 

@@ -1063,6 +1063,7 @@ private:
   friend struct compute_bindings_u;
 
   template<class D, class IS>
+  FLECSI_INLINE_TARGET
   static auto xform(IS && is) {
     // We depend on the fact that is.ids does not own its iterators/elements.
     return utils::transform_view(
