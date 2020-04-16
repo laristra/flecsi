@@ -25,27 +25,25 @@
 using namespace flecsi;
 using namespace flecsi::data;
 
-using index_field_t = index_field_member<double>;
-const index_field_t test_value_1;
-const index_field_t test_value_2;
-const index_field_t test_value_3;
+using double1 = field<double, singular>;
+const double1::definition<topo::index> test_value_1, test_value_2, test_value_3;
 
 const auto fh1 = test_value_1(process_topology);
 const auto fh2 = test_value_2(process_topology);
 const auto fh3 = test_value_3(process_topology);
 
 void
-assign(index_field_t::accessor<rw> ia) {
+assign(double1::accessor<rw> ia) {
   ia = color();
 } // assign
 
 void
-reset_zero(index_field_t::accessor<rw> ia) {
+reset_zero(double1::accessor<rw> ia) {
   ia = -1;
 } // assign
 
 int
-check(index_field_t::accessor<ro> ia) {
+check(double1::accessor<ro> ia) {
   FTEST { ASSERT_EQ(ia, color()); };
 } // print
 

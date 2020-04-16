@@ -93,45 +93,32 @@ struct field_reference : field_reference_t<Topo> {
   }
 };
 
-/*!
-  The field_member type provides a mechanism to define and register
-  fundamental field types with the FleCSI runtime.
-
-  @tparam DATA_TYPE     A compact type that will be defined at each index of
-                        the associated topological index space. FleCSI defines
-                        a compact type as either a P.O.D. type, or a
-                        user-defined type that does not have external
-                        references, i.e., sizeof for a compact type is equal to
-                        the logical serialization of that type.
-  @tparam L data layout
-  @tparam TOPOLOGY_TYPE A specialization of a core FleCSI topology type.
-  @tparam INDEX_SPACE   The index space on which to define the field.
- */
-
-template<typename DATA_TYPE,
-  layout L,
-  typename TOPOLOGY_TYPE,
-  topo::index_space_t<TOPOLOGY_TYPE> INDEX_SPACE =
-    topo::default_space<TOPOLOGY_TYPE>>
-struct field_member : field_register<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> {
-  using topology_reference_t = topology_slot<TOPOLOGY_TYPE>;
-
-  template<partition_privilege_t... PP>
-  using accessor = accessor<L, DATA_TYPE, privilege_pack<PP...>>;
-
-  /*!
-    Return a reference to the field instance associated with the given topology
-    reference.
-
-    @param topology_reference A reference to a valid topology instance.
-   */
-
-  field_reference<DATA_TYPE, L, TOPOLOGY_TYPE, INDEX_SPACE> operator()(
-    topology_reference_t const & topology_reference) const {
-
-    return {*this, topology_reference};
-  } // operator()
-}; // struct field_member
-
 } // namespace data
+
+/// Helper type to define and access fields.
+/// \tparam T field value type: a trivially copyable type with no pointers
+///   or references
+/// \tparam L data layout
+template<class T, data::layout L = data::dense>
+struct field {
+  /// The accessor to use as a parameter to receive this sort of field.
+  /// \tparam PP the appropriate number of privilege values
+  template<partition_privilege_t... PP>
+  using accessor = data::accessor<L, T, privilege_pack<PP...>>;
+
+  /// A field registration.
+  /// \tparam Topo (specialized) topology type
+  /// \tparam Space index space
+  template<class Topo,
+    topo::index_space_t<Topo> Space = topo::default_space<Topo>>
+  struct definition : data::field_register<T, L, Topo, Space> {
+    /// Return a reference to a field instance.
+    /// \tparam t topology instance (need not be allocated yet)
+    data::field_reference<T, L, Topo, Space> operator()(
+      const data::topology_slot<Topo> & t) const {
+      return {*this, t};
+    }
+  };
+};
+
 } // namespace flecsi

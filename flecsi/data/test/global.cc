@@ -38,19 +38,19 @@ struct test_u : u_base {};
 static_assert(std::is_same_v<core_t<test_u>, u_base>);
 } // namespace
 
-using global_field_t = global_field_member<double>;
-const global_field_t energy_field;
+using double1 = field<double, singular>;
+const double1::definition<global> energy_field;
 
 const auto energy = energy_field(global_topology);
 
 void
-assign(global_field_t::accessor<wo> ga) {
+assign(double1::accessor<wo> ga) {
   flog(info) << "assign on " << color() << std::endl;
   ga = color();
 } // assign
 
 int
-check(global_field_t::accessor<ro> ga) {
+check(double1::accessor<ro> ga) {
   FTEST {
     flog(info) << "check on " << color() << std::endl;
     ASSERT_EQ(ga, 0);

@@ -49,9 +49,7 @@ canonical_topology canonical;
 
 data::coloring_slot<topology_type> coloring;
 
-using cell_field_t =
-  data::field_member<double, data::dense, topology_type, policy::cells>;
-const cell_field_t cell_field;
+const field<double>::definition<topology_type, policy::cells> cell_field;
 auto pressure = cell_field(canonical);
 
 int

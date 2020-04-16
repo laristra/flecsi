@@ -34,14 +34,6 @@ namespace flecsi {
 inline data::topology_slot<topo::global> global_topology;
 
 /*
-  Convenience type for global field members.
- */
-
-template<typename DATA_TYPE>
-using global_field_member =
-  data::field_member<DATA_TYPE, data::singular, topo::global>;
-
-/*
   Per-process coloring.
  */
 
@@ -52,14 +44,6 @@ inline data::coloring_slot<topo::index> process_coloring;
  */
 
 inline data::topology_slot<topo::index> process_topology;
-
-/*
-  Convenience type for index field members.
- */
-
-template<typename DATA_TYPE>
-using index_field_member =
-  data::field_member<DATA_TYPE, data::singular, topo::index>;
 
 namespace detail {
 /// An RAII type to manage the global coloring and topologies.
