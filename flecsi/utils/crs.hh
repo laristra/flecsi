@@ -17,6 +17,9 @@
 
 #include <flecsi/utils/array_ref.hh>
 
+#include <algorithm>
+#include <ostream>
+
 namespace flecsi {
 namespace utils {
 

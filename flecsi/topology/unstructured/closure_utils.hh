@@ -15,10 +15,12 @@
 
 /*! @file */
 
+#include "flecsi/flog.hh"
 #include <flecsi/topology/unstructured/definition.hh>
 #include <flecsi/utils/set_utils.hh>
 #include <flecsi/utils/type_traits.hh>
 
+#include <map>
 #include <set>
 #include <vector>
 
