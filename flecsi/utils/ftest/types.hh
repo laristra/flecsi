@@ -199,9 +199,9 @@ string_case_compare(const char * lhs, const char * rhs) {
 #define FTEST()                                                                \
   flecsi::flog::flog_t::instance().config_stream().add_buffer(                 \
     "flog", std::clog, true);                                                  \
-  flecsi::utils::ftest::state_t __ftest_state_instance(__FUNCTION__)
+  flecsi::utils::ftest::state_t auto_ftest_state(__FUNCTION__)
 
-#define FTEST_RESULT() __ftest_state_instance.result()
+#define FTEST_RESULT() auto_ftest_state.result()
 
 #define FTEST_TYPE(name) flecsi::utils::demangle((name))
 
@@ -212,28 +212,28 @@ string_case_compare(const char * lhs, const char * rhs) {
     ;                                                                          \
   else                                                                         \
     return flecsi::utils::ftest::assert_handler_t(                             \
-      #condition, __FILE__, __LINE__, __ftest_state_instance)
+      #condition, __FILE__, __LINE__, auto_ftest_state)
 
 #define EXPECT_TRUE(condition)                                                 \
   if(condition)                                                                \
     ;                                                                          \
   else                                                                         \
     flecsi::utils::ftest::expect_handler_t(                                    \
-      #condition, __FILE__, __LINE__, __ftest_state_instance)
+      #condition, __FILE__, __LINE__, auto_ftest_state)
 
 #define ASSERT_FALSE(condition)                                                \
   if(!(condition))                                                             \
     ;                                                                          \
   else                                                                         \
     return flecsi::utils::ftest::assert_handler_t(                             \
-      #condition, __FILE__, __LINE__, __ftest_state_instance)
+      #condition, __FILE__, __LINE__, auto_ftest_state)
 
 #define EXPECT_FALSE(condition)                                                \
   if(!(condition))                                                             \
     ;                                                                          \
   else                                                                         \
     flecsi::utils::ftest::expect_handler_t(                                    \
-      #condition, __FILE__, __LINE__, __ftest_state_instance)
+      #condition, __FILE__, __LINE__, auto_ftest_state)
 
 #define ASSERT_EQ(val1, val2)                                                  \
   ASSERT_TRUE(flecsi::utils::ftest::test_equal((val1), (val2)))
@@ -276,28 +276,28 @@ string_case_compare(const char * lhs, const char * rhs) {
     ;                                                                          \
   else                                                                         \
     return flecsi::utils::ftest::assert_handler_t(                             \
-      str1 " == " str2, __FILE__, __LINE__, __ftest_state_instance)
+      str1 " == " str2, __FILE__, __LINE__, auto_ftest_state)
 
 #define EXPECT_STREQ(str1, str2)                                               \
   if(flecsi::utils::ftest::string_compare(str1, str2))                         \
     ;                                                                          \
   else                                                                         \
     flecsi::utils::ftest::expect_handler_t(                                    \
-      str1 " == " str2, __FILE__, __LINE__, __ftest_state_instance)
+      str1 " == " str2, __FILE__, __LINE__, auto_ftest_state)
 
 #define ASSERT_STRNE(str1, str2)                                               \
   if(!flecsi::utils::ftest::string_compare(str1, str2))                        \
     ;                                                                          \
   else                                                                         \
     return flecsi::utils::ftest::assert_handler_t(                             \
-      str1 " != " str2, __FILE__, __LINE__, __ftest_state_instance)
+      str1 " != " str2, __FILE__, __LINE__, auto_ftest_state)
 
 #define EXPECT_STRNE(str1, str2)                                               \
   if(!flecsi::utils::ftest::string_compare(str1, str2))                        \
     ;                                                                          \
   else                                                                         \
     flecsi::utils::ftest::expect_handler_t(                                    \
-      str1 " != " str2, __FILE__, __LINE__, __ftest_state_instance)
+      str1 " != " str2, __FILE__, __LINE__, auto_ftest_state)
 
 #define ASSERT_STRCASEEQ(str1, str2)                                           \
   if(flecsi::utils::ftest::string_case_compare(str1, str2))                    \
@@ -307,7 +307,7 @@ string_case_compare(const char * lhs, const char * rhs) {
                                                        " (case insensitive)",  \
       __FILE__,                                                                \
       __LINE__,                                                                \
-      __ftest_state_instance)
+      auto_ftest_state)
 
 #define EXPECT_STRCASEEQ(str1, str2)                                           \
   if(flecsi::utils::ftest::string_case_compare(str1, str2))                    \
@@ -317,7 +317,7 @@ string_case_compare(const char * lhs, const char * rhs) {
                                                 " (case insensitive)",         \
       __FILE__,                                                                \
       __LINE__,                                                                \
-      __ftest_state_instance)
+      auto_ftest_state)
 
 #define ASSERT_STRCASENE(str1, str2)                                           \
   if(!flecsi::utils::ftest::string_case_compare(str1, str2))                   \
@@ -327,7 +327,7 @@ string_case_compare(const char * lhs, const char * rhs) {
                                                        " (case insensitive)",  \
       __FILE__,                                                                \
       __LINE__,                                                                \
-      __ftest_state_instance)
+      auto_ftest_state)
 
 #define EXPECT_STRCASENE(str1, str2)                                           \
   if(!flecsi::utils::ftest::string_case_compare(str1, str2))                   \
@@ -337,7 +337,7 @@ string_case_compare(const char * lhs, const char * rhs) {
                                                 " (case insensitive)",         \
       __FILE__,                                                                \
       __LINE__,                                                                \
-      __ftest_state_instance)
+      auto_ftest_state)
 
 // Provide access to the output stream to allow user to capture output
 #define FTEST_CAPTURE()                                                        \
