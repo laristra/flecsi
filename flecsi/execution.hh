@@ -403,7 +403,8 @@ test(ARGS &&... args) {
   return reduce<TASK,
     LAUNCH_DOMAIN,
     execution::reduction::sum<int>,
-    ATTRIBUTES>(std::forward<ARGS>(args)...).get();
+    ATTRIBUTES>(std::forward<ARGS>(args)...)
+    .get();
 } // test
 
 } // namespace flecsi

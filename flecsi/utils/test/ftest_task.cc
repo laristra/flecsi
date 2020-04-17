@@ -17,24 +17,27 @@
 
 using namespace flecsi;
 
-int task_pass() {
+int
+task_pass() {
   FTEST();
   flog(info) << "this test passes" << std::endl;
-  ASSERT_EQ(1,1);
+  ASSERT_EQ(1, 1);
   return FTEST_RESULT();
 }
 
-int task_assert_fail() {
+int
+task_assert_fail() {
   FTEST();
   flog(info) << "this test fails an assertion" << std::endl;
-  ASSERT_EQ(0,1);
+  ASSERT_EQ(0, 1);
   return FTEST_RESULT();
 }
 
-int task_expect_fail() {
+int
+task_expect_fail() {
   FTEST();
   flog(info) << "this test fails an expectation" << std::endl;
-  EXPECT_EQ(0,1);
+  EXPECT_EQ(0, 1);
   return FTEST_RESULT();
 }
 
@@ -43,7 +46,8 @@ program_option<bool> fail("Test Options",
   "Force test failure.",
   {{flecsi::option_implicit, true}, {flecsi::option_zero}});
 
-int driver(int, char **) {
+int
+driver(int, char **) {
   FTEST();
 
   ASSERT_EQ(test<task_pass>(), 0);
