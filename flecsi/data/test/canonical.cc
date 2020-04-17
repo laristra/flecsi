@@ -61,14 +61,13 @@ check() {
 
 int
 canonical_driver(int, char **) {
+  FTEST {
+    const std::string filename = "input.txt";
+    coloring.allocate(filename);
+    canonical.allocate(coloring.get());
 
-  const std::string filename = "input.txt";
-  coloring.allocate(filename);
-  canonical.allocate(coloring.get());
-
-  execute<check>();
-
-  return 0;
+    EXPECT_EQ(test<check>(), 0);
+  };
 } // index
 
 ftest_register_driver(canonical_driver);

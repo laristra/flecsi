@@ -20,7 +20,7 @@ using namespace flecsi;
 
 int
 crs_driver(int, char **) {
-  return 0;
+  FTEST {};
 } // simple2d_8x8
 
 ftest_register_driver(crs_driver);

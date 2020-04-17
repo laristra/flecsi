@@ -90,11 +90,11 @@ simple2d_8x8() {
 
 int
 dcrs_driver(int, char **) {
-
-  execute<naive_coloring, flecsi::index, mpi>();
-  execute<simple2d_8x8, flecsi::index, mpi>();
-
-  return 0;
+  FTEST {
+    // TODO: use test<> when reduction works for MPI tasks
+    execute<naive_coloring, flecsi::index, mpi>();
+    execute<simple2d_8x8, flecsi::index, mpi>();
+  };
 } // simple2d_8x8
 
 ftest_register_driver(dcrs_driver);

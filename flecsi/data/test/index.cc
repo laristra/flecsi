@@ -43,11 +43,10 @@ check(index_field_t::accessor<ro> p) {
 
 int
 index_driver(int, char **) {
-
-  execute<assign>(pressure);
-  execute<check>(pressure);
-
-  return 0;
+  FTEST {
+    execute<assign>(pressure);
+    EXPECT_EQ(test<check>(pressure), 0);
+  };
 } // index
 
 ftest_register_driver(index_driver);

@@ -31,10 +31,10 @@ simple2d_16x16() {
 
 int
 driver(int, char **) {
-
-  execute<simple2d_16x16, flecsi::index, mpi>();
-
-  return 0;
+  FTEST {
+    // TODO: use test<> when reduction works for MPI tasks
+    execute<simple2d_16x16, flecsi::index, mpi>();
+  };
 }
 
 ftest_register_driver(driver);

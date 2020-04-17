@@ -266,7 +266,7 @@ ftest_register_driver(simple_context);
 
 int
 flecsi_context(int, char **) {
-  return 0;
+  FTEST {};
 } // simple_context
 
 ftest_register_driver(flecsi_context);

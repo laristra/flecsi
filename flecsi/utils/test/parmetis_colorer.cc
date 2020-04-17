@@ -26,10 +26,7 @@ simple2d_16x16() {
 
 int
 colorer_driver(int argc, char ** argv) {
-
-  execute<simple2d_16x16, flecsi::index, mpi>();
-
-  return 0;
+  FTEST { EXPECT_EQ((test<simple2d_16x16, flecsi::index, mpi>()), 0); };
 } // simple2d_8x8
 
 ftest_register_driver(colorer_driver);

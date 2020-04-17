@@ -34,8 +34,8 @@ struct test_policy {
 
 using u_base = unstructured<test_policy>;
 static_assert(std::is_same_v<core_t<u_base>, u_base>);
-struct test : u_base {};
-static_assert(std::is_same_v<core_t<test>, u_base>);
+struct test_u : u_base {};
+static_assert(std::is_same_v<core_t<test_u>, u_base>);
 } // namespace
 
 using global_field_t = global_field_member<double>;
@@ -59,11 +59,10 @@ check(global_field_t::accessor<ro> ga) {
 
 int
 driver(int, char **) {
-
-  execute<assign, single>(energy);
-  execute<check>(energy);
-
-  return 0;
+  FTEST {
+    execute<assign, single>(energy);
+    EXPECT_EQ(test<check>(energy), 0);
+  };
 }
 
 ftest_register_driver(driver);
