@@ -274,8 +274,6 @@ struct mpi_context_policy_t {
     std::map<int, std::vector<std::array<size_t, 2>>> ghost_indices;
     std::map<int, size_t> shared_field_sizes;
     std::map<int, size_t> ghost_field_sizes;
-    std::vector<uint8_t> shared_data_buffer;
-    std::vector<uint8_t> ghost_data_buffer;
     std::vector<uint32_t> ghost_row_sizes;
 #endif
   };

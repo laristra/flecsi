@@ -100,19 +100,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     auto index_coloring = context.coloring(h.index_space);
     auto & field_metadata = context.registered_sparse_field_metadata().at(h.fid);
 
-    field_metadata.shared_data_buffer.resize(h.num_shared_ * h.max_entries_per_index * sizeof(T));
-    field_metadata.ghost_data_buffer.resize(h.num_ghost_ * h.max_entries_per_index * sizeof(T));
-
-    auto * shared_data = reinterpret_cast<T*>(field_metadata.shared_data_buffer.data());
-
-    // load data into shared data buffer
-    for (int i = 0; i < h.num_shared_; ++i) {
-      int r = i + h.num_exclusive_;
-      const auto & row = h.rows[r];
-      size_t count = row.size();
-      std::memcpy(&shared_data[i * h.max_entries_per_index], row.begin(), count * sizeof(T));
-    }
-
     // send shared row counts to populate ghost row count list (TODO: aggregate this communication)
     int send_count = 0;
     for(auto & shared : index_coloring.shared) {
@@ -595,12 +582,20 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       size_t buf_offset = 0;
       for (auto & fi : modified_fields) {
         auto & field_metadata = context.registered_sparse_field_metadata().at(fi.second);
-        auto mepi = context.registered_sparse_field_data().at(fi.second).max_entries_per_index;
+        auto & field_data = context.registered_sparse_field_data().at(fi.second);
+        auto *rows = reinterpret_cast<data::row_vector_u<uint8_t>*>(field_data.rows.data());
         for (const auto & ind : field_metadata.shared_indices[rank]) {
-          std::memcpy(&all_send_buf[rank][buf_offset],
-                      &field_metadata.shared_data_buffer[ind[0]*mepi],
-                      ind[1]*mepi);
-          buf_offset += ind[1]*mepi;
+          size_t ibeg = ind[0] / field_data.type_size;
+          size_t iend = ibeg + (ind[1] / field_data.type_size);
+          for (size_t i = ibeg; i < iend; i++) {
+            int r = i + field_data.num_exclusive;
+            const auto & row = rows[r];
+            size_t count = row.size();
+            std::memcpy(&all_send_buf[rank][buf_offset],
+                        row.begin(),
+                        count * field_data.type_size);
+            buf_offset += count * field_data.type_size;
+          }
         }
       }
 
@@ -627,34 +622,26 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       size_t buf_offset = 0;
       for (auto & fi : modified_fields) {
         auto & field_metadata = context.registered_sparse_field_metadata().at(fi.second);
-        auto mepi = context.registered_sparse_field_data().at(fi.second).max_entries_per_index;
+        auto & field_data = context.registered_sparse_field_data().at(fi.second);
+        auto *rows = reinterpret_cast<data::row_vector_u<uint8_t>*>(field_data.rows.data());
         for (const auto & ind : field_metadata.ghost_indices[rank]) {
-          std::memcpy(&field_metadata.ghost_data_buffer[ind[0]*mepi],
-                      &all_recv_buf[rank][buf_offset],
-                      ind[1]*mepi);
-          buf_offset += ind[1]*mepi;
+          size_t ibeg = ind[0] / field_data.type_size;
+          size_t iend = ibeg + (ind[1] / field_data.type_size);
+          for (size_t i = ibeg; i < iend; i++) {
+            int r = field_data.num_exclusive + field_data.num_shared + i;
+            auto & row = rows[r];
+            int count = field_metadata.ghost_row_sizes[i];
+            std::memcpy(row.begin(),
+                        &all_recv_buf[rank][buf_offset],
+                        count * field_data.type_size);
+            buf_offset += count * field_data.type_size;
+          }
         }
       }
     }
 
     // wait for sends
     MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
-
-    // unpack ghost data
-    for (auto & fi : modified_fields) {
-      auto & field_metadata = context.registered_sparse_field_metadata().at(fi.second);
-      auto & field_data = context.registered_sparse_field_data().at(fi.second);
-      auto mepi = field_data.max_entries_per_index;
-      auto *rows = reinterpret_cast<data::row_vector_u<uint8_t>*>(field_data.rows.data());
-      for (int i = 0; i < field_data.num_ghost; i++) {
-        int r = field_data.num_exclusive + field_data.num_shared + i;
-        auto & row = rows[r];
-        int count = field_metadata.ghost_row_sizes[i];
-        std::memcpy(row.begin(),
-                    &field_metadata.ghost_data_buffer[i * mepi * field_data.type_size],
-                    count * field_data.type_size);
-      }
-    }
   }
 
   std::queue<std::pair<size_t, field_id_t>> exchange_queue;
