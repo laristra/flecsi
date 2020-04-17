@@ -47,12 +47,7 @@ reset_zero(index_field_t::accessor<rw> ia) {
 
 int
 check(index_field_t::accessor<ro> ia) {
-
-  FTEST();
-
-  ASSERT_EQ(ia, color());
-
-  return FTEST_RESULT();
+  FTEST { ASSERT_EQ(ia, color()); };
 } // print
 
 int

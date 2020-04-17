@@ -17,7 +17,5 @@
 
 int
 trivial_driver(int, char **) {
-  FTEST();
-
-  return FTEST_RESULT();
+  FTEST {};
 } // trivial_driver

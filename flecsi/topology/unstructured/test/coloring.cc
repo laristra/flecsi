@@ -18,10 +18,7 @@
 
 int
 sanity(int, char **) {
-
-  FTEST();
-
-  return FTEST_RESULT();
+  FTEST {};
 }
 
 ftest_register_driver(sanity);

@@ -19,26 +19,26 @@ using namespace flecsi;
 
 int
 task_pass() {
-  FTEST();
-  flog(info) << "this test passes" << std::endl;
-  ASSERT_EQ(1, 1);
-  return FTEST_RESULT();
+  FTEST {
+    flog(info) << "this test passes" << std::endl;
+    ASSERT_EQ(1, 1);
+  };
 }
 
 int
 task_assert_fail() {
-  FTEST();
-  flog(info) << "this test fails an assertion" << std::endl;
-  ASSERT_EQ(0, 1);
-  return FTEST_RESULT();
+  FTEST {
+    flog(info) << "this test fails an assertion" << std::endl;
+    ASSERT_EQ(0, 1);
+  };
 }
 
 int
 task_expect_fail() {
-  FTEST();
-  flog(info) << "this test fails an expectation" << std::endl;
-  EXPECT_EQ(0, 1);
-  return FTEST_RESULT();
+  FTEST {
+    flog(info) << "this test fails an expectation" << std::endl;
+    EXPECT_EQ(0, 1);
+  };
 }
 
 program_option<bool> fail("Test Options",
@@ -48,25 +48,23 @@ program_option<bool> fail("Test Options",
 
 int
 driver(int, char **) {
-  FTEST();
+  FTEST {
+    ASSERT_EQ(test<task_pass>(), 0);
+    ASSERT_NE(test<task_assert_fail>(), 0);
+    ASSERT_NE(test<task_expect_fail>(), 0);
 
-  ASSERT_EQ(test<task_pass>(), 0);
-  ASSERT_NE(test<task_assert_fail>(), 0);
-  ASSERT_NE(test<task_expect_fail>(), 0);
+    flog(info) << "output from driver" << std::endl;
 
-  flog(info) << "output from driver" << std::endl;
+    EXPECT_EQ(test<task_pass>(), 0);
+    EXPECT_NE(test<task_assert_fail>(), 0);
+    EXPECT_NE(test<task_expect_fail>(), 0);
 
-  EXPECT_EQ(test<task_pass>(), 0);
-  EXPECT_NE(test<task_assert_fail>(), 0);
-  EXPECT_NE(test<task_expect_fail>(), 0);
-
-  // These show what happens during actual failure
-  if(fail.has_value()) {
-    EXPECT_EQ(test<task_expect_fail>(), 0);
-    ASSERT_EQ(test<task_assert_fail>(), 0);
-  } // if
-
-  return FTEST_RESULT();
+    // These show what happens during actual failure
+    if(fail.has_value()) {
+      EXPECT_EQ(test<task_expect_fail>(), 0);
+      ASSERT_EQ(test<task_assert_fail>(), 0);
+    } // if
+  };
 } // driver
 
 ftest_register_driver(driver);

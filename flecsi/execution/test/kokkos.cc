@@ -24,14 +24,11 @@ flog::devel_tag kokkos_tag("kokkos");
 
 int
 kokkos_sanity(int, char **) {
-
-  FTEST();
-
-  // Kokkos::initialize(argc, argv);
-  Kokkos::print_configuration(std::cerr);
-  // Kokkos::finalize();
-
-  return FTEST_RESULT();
+  FTEST {
+    // Kokkos::initialize(argc, argv);
+    Kokkos::print_configuration(std::cerr);
+    // Kokkos::finalize();
+  };
 }
 
 ftest_register_driver(kokkos_sanity);

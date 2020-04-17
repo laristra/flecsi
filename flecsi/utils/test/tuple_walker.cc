@@ -23,33 +23,30 @@ struct thrice : public flecsi::utils::tuple_walker<thrice> {
 
 int
 tuple_walker(int, char **) {
+  FTEST {
+    std::tuple<> nothing;
+    std::tuple<int, float, double> t(1, float(2), double(3));
 
-  FTEST();
+    // walk tuples via struct once
+    once a;
+    a.walk(nothing);
+    a.walk(t);
+    CINCH_CAPTURE() << std::endl;
 
-  std::tuple<> nothing;
-  std::tuple<int, float, double> t(1, float(2), double(3));
+    // walk tuples via struct twice
+    twice b;
+    b.walk(nothing);
+    b.walk(t);
+    CINCH_CAPTURE() << std::endl;
 
-  // walk tuples via struct once
-  once a;
-  a.walk(nothing);
-  a.walk(t);
-  CINCH_CAPTURE() << std::endl;
+    // walk tuples via struct thrice
+    thrice c;
+    c.walk(nothing);
+    c.walk(t);
 
-  // walk tuples via struct twice
-  twice b;
-  b.walk(nothing);
-  b.walk(t);
-  CINCH_CAPTURE() << std::endl;
-
-  // walk tuples via struct thrice
-  thrice c;
-  c.walk(nothing);
-  c.walk(t);
-
-  // compare
-  EXPECT_TRUE(CINCH_EQUAL_BLESSED("tuple_walker.blessed"));
-
-  return 0;
+    // compare
+    EXPECT_TRUE(CINCH_EQUAL_BLESSED("tuple_walker.blessed"));
+  };
 }
 
 ftest_register_driver(tuple_walker);

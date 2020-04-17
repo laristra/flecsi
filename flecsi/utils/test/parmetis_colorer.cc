@@ -21,11 +21,7 @@ using namespace flecsi;
 
 int
 simple2d_16x16() {
-  FTEST();
-
-  topology::simple_definition sd("simple2d-16x16.msh");
-
-  return FTEST_RESULT();
+  FTEST { topology::simple_definition sd("simple2d-16x16.msh"); };
 } // simple2d_16x16
 
 int

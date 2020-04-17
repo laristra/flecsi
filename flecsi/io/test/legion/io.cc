@@ -30,11 +30,9 @@ using namespace Legion;
 
 using namespace flecsi;
 
-void
+int
 check() {
-
-  FTEST();
-
+  FTEST {};
 } // check
 
 enum FieldIDs {

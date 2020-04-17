@@ -70,43 +70,40 @@ bool const is_tuple<std::tuple<T...>>::value;
 
 int
 static_verify(int, char **) {
+  FTEST {
+    // first{} has foo only
+    EXPECT_EQ(has_member_foo<first>::value, true);
+    EXPECT_EQ(has_member_bar<first>::value, false);
 
-  FTEST();
+    // second{} has bar only
+    EXPECT_EQ(has_member_foo<second>::value, false);
+    EXPECT_EQ(has_member_bar<second>::value, true);
 
-  // first{} has foo only
-  EXPECT_EQ(has_member_foo<first>::value, true);
-  EXPECT_EQ(has_member_bar<first>::value, false);
+    // both{} has both
+    EXPECT_EQ(has_member_foo<both>::value, true);
+    EXPECT_EQ(has_member_bar<both>::value, true);
 
-  // second{} has bar only
-  EXPECT_EQ(has_member_foo<second>::value, false);
-  EXPECT_EQ(has_member_bar<second>::value, true);
+    // neither{} has neither
+    EXPECT_EQ(has_member_foo<neither>::value, false);
+    EXPECT_EQ(has_member_bar<neither>::value, false);
 
-  // both{} has both
-  EXPECT_EQ(has_member_foo<both>::value, true);
-  EXPECT_EQ(has_member_bar<both>::value, true);
+    // bars{} has two bars, but no foo
+    EXPECT_EQ(has_member_foo<bars>::value, false);
+    EXPECT_EQ(has_member_bar<bars>::value, true);
 
-  // neither{} has neither
-  EXPECT_EQ(has_member_foo<neither>::value, false);
-  EXPECT_EQ(has_member_bar<neither>::value, false);
+    // ------------------------
+    // is_tuple
+    // ------------------------
 
-  // bars{} has two bars, but no foo
-  EXPECT_EQ(has_member_foo<bars>::value, false);
-  EXPECT_EQ(has_member_bar<bars>::value, true);
+    // with non-tuple
+    EXPECT_EQ(flecsi::utils::is_tuple<int>::value, false);
 
-  // ------------------------
-  // is_tuple
-  // ------------------------
-
-  // with non-tuple
-  EXPECT_EQ(flecsi::utils::is_tuple<int>::value, false);
-
-  // with tuple
-  EXPECT_EQ(flecsi::utils::is_tuple<std::tuple<>>::value, true);
-  EXPECT_EQ(flecsi::utils::is_tuple<std::tuple<int>>::value, true);
-  EXPECT_EQ((flecsi::utils::is_tuple<std::tuple<int, char>>::value), true);
-  // the last line needed () because of ,
-
-  return 0;
+    // with tuple
+    EXPECT_EQ(flecsi::utils::is_tuple<std::tuple<>>::value, true);
+    EXPECT_EQ(flecsi::utils::is_tuple<std::tuple<int>>::value, true);
+    EXPECT_EQ((flecsi::utils::is_tuple<std::tuple<int, char>>::value), true);
+    // the last line needed () because of ,
+  };
 }
 
 ftest_register_driver(static_verify);

@@ -27,47 +27,44 @@ using namespace flecsi::utils;
 
 int
 sanity(int, char **) {
+  FTEST {
+    std::vector<std::byte> data;
 
-  FTEST();
+    {
+      std::vector<double> v{0.0, 1.0, 2.0, 3.0, 4.0};
+      std::map<size_t, size_t> m{{0, 1}, {1, 0}};
+      std::unordered_map<size_t, size_t> um{{2, 1}, {3, 2}};
+      std::set<size_t> s{0, 1, 2, 3, 4};
 
-  std::vector<std::byte> data;
+      data = serial_put(std::tie(v, m, um, s));
+    } // scope
 
-  {
-    std::vector<double> v{0.0, 1.0, 2.0, 3.0, 4.0};
-    std::map<size_t, size_t> m{{0, 1}, {1, 0}};
-    std::unordered_map<size_t, size_t> um{{2, 1}, {3, 2}};
-    std::set<size_t> s{0, 1, 2, 3, 4};
+    {
+      const auto * p = data.data();
 
-    data = serial_put(std::tie(v, m, um, s));
-  } // scope
+      const auto v = serial_get<std::vector<double>>(p);
+      ASSERT_EQ(v[0], 0.0);
+      ASSERT_EQ(v[1], 1.0);
+      ASSERT_EQ(v[2], 2.0);
+      ASSERT_EQ(v[3], 3.0);
+      ASSERT_EQ(v[4], 4.0);
 
-  {
-    const auto * p = data.data();
+      const auto m = serial_get<std::map<size_t, size_t>>(p);
+      ASSERT_EQ(m.at(0), 1u);
+      ASSERT_EQ(m.at(1), 0u);
 
-    const auto v = serial_get<std::vector<double>>(p);
-    ASSERT_EQ(v[0], 0.0);
-    ASSERT_EQ(v[1], 1.0);
-    ASSERT_EQ(v[2], 2.0);
-    ASSERT_EQ(v[3], 3.0);
-    ASSERT_EQ(v[4], 4.0);
+      const auto um = serial_get<std::unordered_map<size_t, size_t>>(p);
+      ASSERT_EQ(um.at(2), 1u);
+      ASSERT_EQ(um.at(3), 2u);
 
-    const auto m = serial_get<std::map<size_t, size_t>>(p);
-    ASSERT_EQ(m.at(0), 1u);
-    ASSERT_EQ(m.at(1), 0u);
-
-    const auto um = serial_get<std::unordered_map<size_t, size_t>>(p);
-    ASSERT_EQ(um.at(2), 1u);
-    ASSERT_EQ(um.at(3), 2u);
-
-    const auto s = serial_get<std::set<size_t>>(p);
-    ASSERT_NE(s.find(0), s.end());
-    ASSERT_NE(s.find(1), s.end());
-    ASSERT_NE(s.find(2), s.end());
-    ASSERT_NE(s.find(3), s.end());
-    ASSERT_NE(s.find(4), s.end());
-  } // scope
-
-  return 0;
+      const auto s = serial_get<std::set<size_t>>(p);
+      ASSERT_NE(s.find(0), s.end());
+      ASSERT_NE(s.find(1), s.end());
+      ASSERT_NE(s.find(2), s.end());
+      ASSERT_NE(s.find(3), s.end());
+      ASSERT_NE(s.find(4), s.end());
+    } // scope
+  };
 } // sanity
 
 ftest_register_driver(sanity);
@@ -90,32 +87,29 @@ private:
 
 int
 user_type(int, char **) {
+  FTEST {
+    std::vector<std::byte> data;
 
-  FTEST();
+    {
+      type_t t0(0);
+      type_t t1(1);
+      type_t t2(2);
+      type_t t3(3);
+      type_t t4(4);
 
-  std::vector<std::byte> data;
+      data = serial_put(std::tie(t0, t1, t2, t3, t4));
+    } // scope
 
-  {
-    type_t t0(0);
-    type_t t1(1);
-    type_t t2(2);
-    type_t t3(3);
-    type_t t4(4);
+    {
+      const auto * p = data.data();
 
-    data = serial_put(std::tie(t0, t1, t2, t3, t4));
-  } // scope
-
-  {
-    const auto * p = data.data();
-
-    ASSERT_EQ(serial_get<type_t>(p).id(), 0u);
-    ASSERT_EQ(serial_get<type_t>(p).id(), 1u);
-    ASSERT_EQ(serial_get<type_t>(p).id(), 2u);
-    ASSERT_EQ(serial_get<type_t>(p).id(), 3u);
-    ASSERT_EQ(serial_get<type_t>(p).id(), 4u);
-  } // scope
-
-  return 0;
+      ASSERT_EQ(serial_get<type_t>(p).id(), 0u);
+      ASSERT_EQ(serial_get<type_t>(p).id(), 1u);
+      ASSERT_EQ(serial_get<type_t>(p).id(), 2u);
+      ASSERT_EQ(serial_get<type_t>(p).id(), 3u);
+      ASSERT_EQ(serial_get<type_t>(p).id(), 4u);
+    } // scope
+  };
 } // user_type
 
 ftest_register_driver(user_type);
@@ -177,62 +171,60 @@ struct flecsi::utils::serial_convert<simple_context_t> {
 
 int
 simple_context(int, char **) {
+  FTEST {
+    std::vector<std::byte> data;
 
-  FTEST();
-
-  std::vector<std::byte> data;
-
-  simple_context_t & context = simple_context_t::instance();
-
-  {
-    simple_context_t::element_info_t info;
-
-    info.id = 10;
-    context.add_map_element_info(0, 0, info);
-
-    info.id = 11;
-    context.add_map_element_info(0, 1, info);
-
-    info.id = 12;
-    context.add_map_element_info(0, 2, info);
-
-    info.id = 13;
-    context.add_map_element_info(0, 3, info);
-
-    info.id = 14;
-    context.add_map_element_info(0, 4, info);
-
-    info.id = 20;
-    context.add_map_element_info(1, 0, info);
-
-    info.id = 21;
-    context.add_map_element_info(1, 1, info);
-
-    info.id = 22;
-    context.add_map_element_info(1, 2, info);
-
-    info.id = 23;
-    context.add_map_element_info(1, 3, info);
-
-    info.id = 24;
-    context.add_map_element_info(1, 4, info);
-
-    data = serial_put(context);
-  } // scope
-
-  context.clear();
-
-  {
-    context = serial_get1<simple_context_t>(data.data());
-
-    auto & element_map = context.element_map();
+    simple_context_t & context = simple_context_t::instance();
 
     {
-      auto mita = element_map.find(0);
-      ASSERT_NE(mita, element_map.end());
-    }
+      simple_context_t::element_info_t info;
 
-    auto m0 = element_map[0];
+      info.id = 10;
+      context.add_map_element_info(0, 0, info);
+
+      info.id = 11;
+      context.add_map_element_info(0, 1, info);
+
+      info.id = 12;
+      context.add_map_element_info(0, 2, info);
+
+      info.id = 13;
+      context.add_map_element_info(0, 3, info);
+
+      info.id = 14;
+      context.add_map_element_info(0, 4, info);
+
+      info.id = 20;
+      context.add_map_element_info(1, 0, info);
+
+      info.id = 21;
+      context.add_map_element_info(1, 1, info);
+
+      info.id = 22;
+      context.add_map_element_info(1, 2, info);
+
+      info.id = 23;
+      context.add_map_element_info(1, 3, info);
+
+      info.id = 24;
+      context.add_map_element_info(1, 4, info);
+
+      data = serial_put(context);
+    } // scope
+
+    context.clear();
+
+    {
+      context = serial_get1<simple_context_t>(data.data());
+
+      auto & element_map = context.element_map();
+
+      {
+        auto mita = element_map.find(0);
+        ASSERT_NE(mita, element_map.end());
+      }
+
+      auto m0 = element_map[0];
 
 #define check_entry(map, key, value)                                           \
   {                                                                            \
@@ -241,30 +233,29 @@ simple_context(int, char **) {
     ASSERT_EQ(map[key].id, value);                                             \
   }
 
-    check_entry(m0, 0, 10u);
-    check_entry(m0, 1, 11u);
-    check_entry(m0, 2, 12u);
-    check_entry(m0, 3, 13u);
-    check_entry(m0, 4, 14u);
+      check_entry(m0, 0, 10u);
+      check_entry(m0, 1, 11u);
+      check_entry(m0, 2, 12u);
+      check_entry(m0, 3, 13u);
+      check_entry(m0, 4, 14u);
 
-    {
-      auto mita = element_map.find(1);
-      ASSERT_NE(mita, element_map.end());
-    }
+      {
+        auto mita = element_map.find(1);
+        ASSERT_NE(mita, element_map.end());
+      }
 
-    auto m1 = element_map[1];
+      auto m1 = element_map[1];
 
-    check_entry(m1, 0, 20u);
-    check_entry(m1, 1, 21u);
-    check_entry(m1, 2, 22u);
-    check_entry(m1, 3, 23u);
-    check_entry(m1, 4, 24u);
+      check_entry(m1, 0, 20u);
+      check_entry(m1, 1, 21u);
+      check_entry(m1, 2, 22u);
+      check_entry(m1, 3, 23u);
+      check_entry(m1, 4, 24u);
 
 #undef check_entry
 
-  } // scope
-
-  return 0;
+    } // scope
+  };
 } // simple_context
 
 ftest_register_driver(simple_context);

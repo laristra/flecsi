@@ -32,19 +32,17 @@ ftest_add_initialize_dependency(init_b, init_a);
 
 int
 test1(int, char **) {
-  FTEST();
-  ASSERT_EQ(0, 1);
-  EXPECT_EQ(0, 1);
-  return 0;
+  FTEST {
+    ASSERT_EQ(0, 1);
+    EXPECT_EQ(0, 1);
+  };
 }
 
 ftest_register_driver(test1);
 
 int
 test2(int, char **) {
-  FTEST();
-  ASSERT_EQ(0, 0);
-  return 0;
+  FTEST { ASSERT_EQ(0, 0); };
 }
 
 ftest_register_driver(test2);

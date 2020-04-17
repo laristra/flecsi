@@ -35,13 +35,10 @@ assign(index_field_t::accessor<wo> p) {
 
 int
 check(index_field_t::accessor<ro> p) {
-
-  FTEST();
-
-  flog(info) << "check on " << color() << std::endl;
-  ASSERT_EQ(p, color());
-
-  return FTEST_RESULT();
+  FTEST {
+    flog(info) << "check on " << color() << std::endl;
+    ASSERT_EQ(p, color());
+  };
 } // print
 
 int

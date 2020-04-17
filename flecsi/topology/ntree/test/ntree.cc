@@ -48,12 +48,10 @@ data::coloring_slot<sph_ntree_topology> coloring;
 
 int
 ntree_driver(int, char **) {
-  FTEST();
-
-  coloring.allocate();
-  sph_ntree.allocate(coloring.get());
-
-  return 0;
+  FTEST {
+    coloring.allocate();
+    sph_ntree.allocate(coloring.get());
+  };
 } // TEST
 
 ftest_register_driver(ntree_driver);

@@ -29,21 +29,18 @@ struct foo {
 
 int
 tuple_function(int, char **) {
+  FTEST {
+    std::tuple<> zero;
+    std::tuple<int> one(1);
+    std::tuple<int, float> two(1, float(2));
+    std::tuple<int, float, double> three(1, float(2), double(3));
 
-  FTEST();
-
-  std::tuple<> zero;
-  std::tuple<int> one(1);
-  std::tuple<int, float> two(1, float(2));
-  std::tuple<int, float, double> three(1, float(2), double(3));
-
-  foo f;
-  EXPECT_EQ(flecsi::utils::tuple_function(f, zero), "abc");
-  EXPECT_EQ(flecsi::utils::tuple_function(f, one), 11);
-  EXPECT_EQ(flecsi::utils::tuple_function(f, two), 3);
-  EXPECT_EQ(flecsi::utils::tuple_function(f, three), 6);
-
-  return 0;
+    foo f;
+    EXPECT_EQ(flecsi::utils::tuple_function(f, zero), "abc");
+    EXPECT_EQ(flecsi::utils::tuple_function(f, one), 11);
+    EXPECT_EQ(flecsi::utils::tuple_function(f, two), 3);
+    EXPECT_EQ(flecsi::utils::tuple_function(f, three), 6);
+  };
 }
 
 ftest_register_driver(tuple_function);

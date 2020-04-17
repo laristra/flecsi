@@ -51,12 +51,10 @@ assign(global_field_t::accessor<wo> ga) {
 
 int
 check(global_field_t::accessor<ro> ga) {
-  FTEST();
-
-  flog(info) << "check on " << color() << std::endl;
-  ASSERT_EQ(ga, 0);
-
-  return FTEST_RESULT();
+  FTEST {
+    flog(info) << "check on " << color() << std::endl;
+    ASSERT_EQ(ga, 0);
+  };
 } // check
 
 int

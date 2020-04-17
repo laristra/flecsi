@@ -30,13 +30,12 @@ init(double a) {
 
 int
 read(handle_t<double> x, handle_t<double> y) {
-  FTEST();
-  auto x1 = x.get();
-  auto y1 = 2 * y.get();
+  FTEST {
+    auto x1 = x.get();
+    auto y1 = 2 * y.get();
 
-  ASSERT_EQ(x1, y1);
-
-  return FTEST_RESULT();
+    ASSERT_EQ(x1, y1);
+  };
 }
 
 double
@@ -50,13 +49,12 @@ index_init(double a) {
 
 int
 index_read(handle_t<double> x, handle_t<double> y) {
-  FTEST();
-  auto x1 = x.get();
-  auto y1 = 2 * y.get();
+  FTEST {
+    auto x1 = x.get();
+    auto y1 = 2 * y.get();
 
-  ASSERT_EQ(x1, y1);
-
-  return FTEST_RESULT();
+    ASSERT_EQ(x1, y1);
+  };
 }
 
 void
@@ -72,44 +70,42 @@ index_void_task() {
 
 int
 driver(int, char **) {
-  FTEST();
+  FTEST {
+    using namespace flecsi;
+    using namespace flecsi::execution;
 
-  using namespace flecsi;
-  using namespace flecsi::execution;
+    // single future
+    auto f1 = execute<future_test::init, single>(6.2);
+    auto f2 = execute<future_test::init, single>(3.1);
 
-  // single future
-  auto f1 = execute<future_test::init, single>(6.2);
-  auto f2 = execute<future_test::init, single>(3.1);
+    execute<future_test::read, single>(f1, f2);
 
-  execute<future_test::read, single>(f1, f2);
+    f1 = execute<future_test::init, single>(8.2);
+    f2 = execute<future_test::init, single>(4.1);
 
-  f1 = execute<future_test::init, single>(8.2);
-  f2 = execute<future_test::init, single>(4.1);
+    ASSERT_EQ(f1.get(), (2 * f2.get()));
 
-  ASSERT_EQ(f1.get(), (2 * f2.get()));
+    execute<future_test::read, single>(f1, f2);
+    execute<future_test::read>(f1, f2);
 
-  execute<future_test::read, single>(f1, f2);
-  execute<future_test::read>(f1, f2);
+    // future map
+    auto fm1 = execute<future_test::index_init>(1.4);
+    auto fm2 = execute<future_test::index_init>(0.7);
 
-  // future map
-  auto fm1 = execute<future_test::index_init>(1.4);
-  auto fm2 = execute<future_test::index_init>(0.7);
+    execute<future_test::index_read>(fm1, fm2);
 
-  execute<future_test::index_read>(fm1, fm2);
+    ASSERT_EQ(fm1.get(0), (2 * fm2.get(0)));
 
-  ASSERT_EQ(fm1.get(0), (2 * fm2.get(0)));
+    auto fv = execute<future_test::void_task, single>();
 
-  auto fv = execute<future_test::void_task, single>();
+    fv.wait();
+    fv.get();
 
-  fv.wait();
-  fv.get();
+    auto fv2 = execute<future_test::index_void_task>();
 
-  auto fv2 = execute<future_test::index_void_task>();
-
-  fv2.wait();
-  fv2.get();
-
-  return FTEST_RESULT();
+    fv2.wait();
+    fv2.get();
+  };
 }
 
 ftest_register_driver(driver);
