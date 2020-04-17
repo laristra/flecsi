@@ -53,7 +53,6 @@ set(utils_HEADERS
   tuple_type_converter.hh
   tuple_visitor.hh
   tuple_walker.hh
-  tuple_wrapper.hh
   typeify.hh
   type_traits.hh
   uint128.hh
