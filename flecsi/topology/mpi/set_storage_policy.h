@@ -34,13 +34,8 @@ struct mpi_set_topology_storage_policy_u {
 
   static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
 
-  using index_spaces_t = std::array<index_space_u<set_entity_t *,
-                                      true,
-                                      true,
-                                      true,
-                                      void,
-                                      identity_storage_u,
-                                      topology_storage_u>,
+  using index_spaces_t = std::array<
+    index_space_u<set_entity_t, identity_storage_u, entity_storage_t>,
     num_index_spaces>;
 
   index_spaces_t index_spaces;
@@ -78,7 +73,7 @@ struct mpi_set_topology_storage_policy_u {
     auto & is = index_spaces[itr->second];
     auto s = is.storage();
 
-    s->set_buffer(entities, num_entities, read);
+    *s = {{entities, num_entities}, read ? num_entities : 0};
 
     itr = index_space_map.find(active_migrate_index_space);
     clog_assert(
@@ -118,15 +113,9 @@ struct mpi_set_topology_storage_policy_u {
     constexpr size_t index_space =
       find_set_index_space_u<num_index_spaces, entity_types_t, T>::find();
 
-    auto & is = index_spaces[index_space].template cast<T *>();
-    size_t entity = is.size();
-
-    auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
+    auto & is = index_spaces[index_space];
+    auto placement_ptr = static_cast<T *>(is.data.buffer()) + is.ids.size();
     auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
-    auto storage = is.storage();
-    storage->pushed();
-    is.pushed();
-
     return ent;
   }
 };

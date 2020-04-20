@@ -556,18 +556,18 @@ install(
 #------------------------------------------------------------------------------#
 
 if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
-  cinch_target_link_libraries(
-    FleCSI ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
+  target_link_libraries(
+    FleCSI PUBLIC ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
   )
 endif()
 
 if (ENABLE_KOKKOS)
-  cinch_target_link_libraries(
-    FleCSI ${Kokkos_LIBRARIES}
+  target_link_libraries(
+    FleCSI PUBLIC ${Kokkos_LIBRARIES}
   )
-  cinch_target_link_libraries(
-    FleCSI-Tut ${Kokkos_LIBRARIES}
-  )
+  if(ENABLE_FLECSI_TUTORIAL) 
+    target_link_libraries(FleCSI-Tut PUBLIC ${Kokkos_LIBRARIES})
+  endif()
 endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "hpx")

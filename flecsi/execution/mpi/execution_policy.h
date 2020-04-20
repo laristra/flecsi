@@ -197,20 +197,7 @@ struct mpi_execution_policy_t {
     if constexpr(REDUCTION != ZERO) {
 
       MPI_Datatype datatype;
-
-      if constexpr(!std::is_pod_v<RETURN>) {
-
-        size_t typehash = typeid(RETURN).hash_code();
-        auto reduction_type = context_.reduction_types().find(typehash);
-
-        clog_assert(reduction_type != context_.reduction_types().end(),
-          "invalid reduction operation");
-
-        datatype = reduction_type->second;
-      }
-      else {
-        datatype = flecsi::utils::mpi_typetraits_u<RETURN>::type();
-      } // if
+      datatype = flecsi::utils::mpi_typetraits_u<RETURN>::type();
 
       auto reduction_op = context_.reduction_operations().find(REDUCTION);
 

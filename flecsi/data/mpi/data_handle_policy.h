@@ -22,7 +22,7 @@ struct mpi_data_handle_policy_t {
   field_id_t fid;
   size_t index_space;
   size_t data_client_hash;
-  bool *ghost_is_readable;
+  bool * ghost_is_readable;
 }; // class mpi_data_handle_policy_t
 
 } // namespace flecsi

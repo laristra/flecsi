@@ -30,7 +30,7 @@
 #include <cinchlog.h>
 #include <flecsi-config.h>
 
-#include <flecsi/coloring/mpi_utils.h>
+#include "flecsi/utils/mpi_type_traits.h"
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/hpx/runtime_driver.h>
@@ -191,8 +191,7 @@ struct hpx_context_policy_t {
       mpi_exec_, [](hpx::shared_future<T> && local_future) -> T {
         T global_max{};
         T local_max = local_future.get();
-        MPI_Allreduce(&local_max, &global_max, 1,
-          flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
+        MPI_Allreduce(&local_max, &global_max, 1, utils::mpi_type<T>(), MPI_MAX,
           MPI_COMM_WORLD);
         return global_max;
       });
@@ -230,8 +229,7 @@ struct hpx_context_policy_t {
       mpi_exec_, [](hpx::shared_future<T> && local_future) -> T {
         T global_min{};
         T local_min = local_future.get();
-        MPI_Allreduce(&local_min, &global_min, 1,
-          flecsi::coloring::mpi_typetraits_u<T>::type(), MPI_MAX,
+        MPI_Allreduce(&local_min, &global_min, 1, utils::mpi_type<T>(), MPI_MAX,
           MPI_COMM_WORLD);
         return global_min;
       });

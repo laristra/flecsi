@@ -34,11 +34,11 @@
 #include "mpi.h"
 
 #include <flecsi/coloring/dcrs_utils.h>
-#include <flecsi/coloring/mpi_utils.h>
 #include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/execution/context.h>
 
+#include "flecsi/utils/mpi_type_traits.h"
 #include <flecsi/utils/tuple_walker.h>
 #include <flecsi/utils/type_traits.h>
 
@@ -85,8 +85,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     auto & h = a.handle;
 #if !defined(FLECSI_USE_AGGCOMM)
     // Skip Read Only handles
-    if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
-      return;
+    if constexpr ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
+     return;
 
     auto & context = context_t::instance();
     const int my_color = context.color();
@@ -109,7 +109,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 #else
     auto & context = context_t::instance();
 
-    if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
+    if constexpr ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
       *(h.ghost_is_readable) = true;
     else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
       *(h.ghost_is_readable) = false;
@@ -126,8 +126,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
     auto & context = context_t::instance();
     const int my_color = context.color();
-    MPI_Bcast(&a.data(), 1, flecsi::coloring::mpi_typetraits_u<T>::type(), 0,
-      MPI_COMM_WORLD);
+    MPI_Bcast(&a.data(), sizeof(T), MPI_BYTE, 0, MPI_COMM_WORLD);
   } // handle
 
   template<typename T,
@@ -195,6 +194,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     MPI_Win_wait(win);
 
     MPI_Win_free(&win);
+    MPI_Type_free(&shared_ghost_type);
 
     for(int i = 0; i < h.num_ghost_ * h.max_entries_per_index; i++)
       clog_rank(warn, 0) << "ghost after: " << ghost_data[i] << std::endl;
@@ -208,6 +208,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     std::vector<MPI_Request> requests(send_count + h.num_ghost_);
     std::vector<MPI_Status> statuses(send_count + h.num_ghost_);
 
+    const MPI_Datatype count_mpi_type = utils::mpi_type<std::uint32_t>();
     std::vector<uint32_t> send_count_buf;
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
@@ -219,8 +220,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     i = 0;
     for(auto & shared : index_coloring.shared) {
       for(auto peer : shared.shared) {
-        MPI_Isend(&send_count_buf[i], 1,
-          flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), peer, shared.id,
+        MPI_Isend(&send_count_buf[i], 1, count_mpi_type, peer, shared.id,
           MPI_COMM_WORLD, &requests[i]);
         i++;
       }
@@ -230,9 +230,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     i = 0;
     for(auto & ghost : index_coloring.ghost) {
       MPI_Status status;
-      MPI_Irecv(&recv_count_buf[i], 1,
-        flecsi::coloring::mpi_typetraits_u<uint32_t>::type(), ghost.rank,
-        ghost.id, MPI_COMM_WORLD, &requests[i + send_count]);
+      MPI_Irecv(&recv_count_buf[i], 1, count_mpi_type, ghost.rank, ghost.id,
+        MPI_COMM_WORLD, &requests[i + send_count]);
       i++;
     }
 
@@ -255,9 +254,9 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     delete[] shared_data;
     delete[] ghost_data;
 #else
-    if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
+    if constexpr (SHARED_PERMISSIONS == ro)
       *(h.ghost_is_readable) = true;
-    else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
+    else if constexpr (SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
       *(h.ghost_is_readable) = false;
 #endif
   } // handle
@@ -326,7 +325,6 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
       // allocate send and receive buffers
       using byte_t = unsigned char;
-      auto mpi_byte_t = flecsi::coloring::mpi_typetraits_u<byte_t>::type();
 
       // setup send buffers
       std::vector<size_t> sendcounts(comm_size, 0);

@@ -17,6 +17,8 @@
 
 #include <flecsi-config.h>
 
+#include <flecsi/topology/common/array_buffer.h>
+
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
 // implemenation for the task model. If you add to the possible runtimes,
@@ -32,7 +34,7 @@
 namespace flecsi {
 
 template<typename T>
-using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage_u<T>;
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::array_buffer_u<T>;
 
 using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
@@ -46,7 +48,7 @@ using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 namespace flecsi {
 
 template<typename T>
-using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage_u<T>;
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::array_buffer_u<T>;
 
 using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
@@ -60,7 +62,7 @@ using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 namespace flecsi {
 
 template<typename T>
-using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage_u<T>;
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::array_buffer_u<T>;
 
 using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
