@@ -25,12 +25,6 @@ const_string(int, char **) {
 
     using flecsi::utils::const_string_t;
 
-    // hash_type_t
-#ifdef __GNUG__
-    EXPECT_EQ(flecsi::utils::type<typename const_string_t::hash_type_t>(),
-      "unsigned long");
-#endif
-
     // constructor from C-style string
     // ...................0123456789
     const char str[10] = "abcdefghi";
