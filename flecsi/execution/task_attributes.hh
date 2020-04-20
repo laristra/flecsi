@@ -85,19 +85,19 @@ mask_to_processor_type(size_t mask) {
     flecsi::utils::debruijn32_t::index(processor_mask));
 } // mask_to_processor_type
 
-inline bool
+constexpr bool
 leaf_task(task_attributes_bitset_t const & bs) {
-  return bs.test(static_cast<size_t>(task_type_t::leaf));
+  return bs[static_cast<size_t>(task_type_t::leaf)];
 }
 
-inline bool
+constexpr bool
 inner_task(task_attributes_bitset_t const & bs) {
-  return bs.test(static_cast<size_t>(task_type_t::inner));
+  return bs[static_cast<size_t>(task_type_t::inner)];
 }
 
-inline bool
+constexpr bool
 idempotent_task(task_attributes_bitset_t const & bs) {
-  return bs.test(static_cast<size_t>(task_type_t::idempotent));
+  return bs[static_cast<size_t>(task_type_t::idempotent)];
 }
 
 } // namespace execution
