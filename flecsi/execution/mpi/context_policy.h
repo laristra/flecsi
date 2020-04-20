@@ -401,12 +401,13 @@ struct mpi_context_policy_t {
     const coloring_info_t & coloring_info,
     const index_coloring_t & index_coloring) {
     sparse_field_metadata_t metadata;
+#if !defined(FLECSI_USE_AGGCOMM)
 
     register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
 
-#if defined(FLECSI_USE_AGGCOMM)
+#else
     // compute ghost and shared indicies
     size_t ghost_count = 0;
     for (auto const & ghost : index_coloring.ghost) {
@@ -669,6 +670,7 @@ struct mpi_context_policy_t {
 
   void finalize() {
     for (auto & md : field_metadata) {
+#if !defined(FLECSI_USE_AGGCOMM)
       for ( auto & ty : md.second.origin_types ) MPI_Type_free(&ty.second);
       for ( auto & ty : md.second.target_types ) MPI_Type_free(&ty.second);
       MPI_Type_free(&md.second.data_type);
@@ -676,14 +678,17 @@ struct mpi_context_policy_t {
       MPI_Group_free( &md.second.shared_users_grp );
       MPI_Group_free( &md.second.comm_grp );
       if (md.second.win != MPI_WIN_NULL) MPI_Win_free( &md.second.win );
+#endif
     }
     for (auto & md : sparse_field_metadata) {
+#if !defined(FLECSI_USE_AGGCOMM)
       for ( auto & ty : md.second.origin_types ) MPI_Type_free(&ty.second);
       for ( auto & ty : md.second.target_types ) MPI_Type_free(&ty.second);
       MPI_Group_free( &md.second.ghost_owners_grp );
       MPI_Group_free( &md.second.shared_users_grp );
       MPI_Group_free( &md.second.comm_grp );
       if (md.second.win != MPI_WIN_NULL) MPI_Win_free( &md.second.win );
+#endif
       md.second.deleter();
     }
   }

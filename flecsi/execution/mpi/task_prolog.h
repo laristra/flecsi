@@ -98,55 +98,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     if (*(h.ghost_is_readable)) return;
 
-    auto & context = context_t::instance();
-    auto index_coloring = context.coloring(h.index_space);
-    auto & field_metadata = context.registered_sparse_field_metadata().at(h.fid);
-
-    // send shared row counts to populate ghost row count list (TODO: aggregate this communication)
-    int send_count = 0;
-    for(auto & shared : index_coloring.shared) {
-      send_count += shared.shared.size();
-    }
-    std::vector<MPI_Request> requests(send_count + h.num_ghost_);
-    std::vector<MPI_Status> statuses(send_count + h.num_ghost_);
-
-    const MPI_Datatype count_mpi_type = utils::mpi_type<std::uint32_t>();
-    std::vector<uint32_t> shared_row_counts;
-    for(auto & shared : index_coloring.shared) {
-      for(auto peer : shared.shared) {
-        shared_row_counts.push_back(
-          h.rows[h.num_exclusive_ + shared.offset].size());
-      }
-    }
-
-    int i = 0;
-    for(auto & shared : index_coloring.shared) {
-      for(auto peer : shared.shared) {
-        MPI_Isend(&shared_row_counts[i], 1,
-                  count_mpi_type, peer, shared.id,
-                  MPI_COMM_WORLD, &requests[i]);
-        i++;
-      }
-    }
-
-    auto & ghost_row_sizes = field_metadata.ghost_row_sizes;
-    i = 0;
-    for(auto & ghost : index_coloring.ghost) {
-      MPI_Irecv(&ghost_row_sizes[i], 1,
-                count_mpi_type, ghost.rank,
-                ghost.id, MPI_COMM_WORLD, &requests[i + send_count]);
-      i++;
-    }
-
-    MPI_Waitall(send_count + h.num_ghost_, requests.data(), statuses.data());
-
-    // resize rows when we have type information
-    for (int i = 0; i < h.num_ghost_; i++) {
-      int r = h.num_exclusive_ + h.num_shared_ + i;
-      auto & row = h.rows[r];
-      int count = ghost_row_sizes[i];
-      row.resize(count);
-    }
+    update_ghost_row_sizes<T>(h);
 
     sparse_exchange_queue.emplace(h.index_space, h.fid);
   }
@@ -161,6 +113,24 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     GHOST_PERMISSIONS> & a) {
     handle(a.ragged);
   } // handle
+
+
+  template<typename T>
+  void handle(ragged_mutator<T> & m) {
+    auto & h = m.handle;
+
+    if (*(h.ghost_is_readable)) return;
+
+    update_ghost_row_sizes<T>(h);
+
+    sparse_exchange_queue.emplace(h.index_space, h.fid);
+    *(h.ghost_is_readable) = true;
+  } // handle
+
+  template<typename T>
+  void handle(sparse_mutator<T> & m) {
+    handle(m.ragged);
+  }
 #endif
 
   template<typename T, size_t PERMISSIONS>
@@ -655,6 +625,61 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     // wait for sends
     MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
+  }
+
+  template<typename T,
+           typename HANDLE_TYPE>
+  void update_ghost_row_sizes(HANDLE_TYPE & h)
+  {
+    auto & context = context_t::instance();
+    auto index_coloring = context.coloring(h.index_space);
+    auto & field_metadata = context.registered_sparse_field_metadata().at(h.fid);
+
+    // send shared row counts to populate ghost row count list (TODO: aggregate this communication)
+    int send_count = 0;
+    for(auto & shared : index_coloring.shared) {
+      send_count += shared.shared.size();
+    }
+    std::vector<MPI_Request> requests(send_count + h.num_ghost_);
+    std::vector<MPI_Status> statuses(send_count + h.num_ghost_);
+
+    const MPI_Datatype count_mpi_type = utils::mpi_type<std::uint32_t>();
+    std::vector<uint32_t> shared_row_counts;
+    for(auto & shared : index_coloring.shared) {
+      for(auto peer : shared.shared) {
+        shared_row_counts.push_back(
+          h.rows[h.num_exclusive_ + shared.offset].size());
+      }
+    }
+
+    int i = 0;
+    for(auto & shared : index_coloring.shared) {
+      for(auto peer : shared.shared) {
+        MPI_Isend(&shared_row_counts[i], 1,
+                  count_mpi_type, peer, shared.id,
+                  MPI_COMM_WORLD, &requests[i]);
+        i++;
+      }
+    }
+
+    auto & ghost_row_sizes = field_metadata.ghost_row_sizes;
+    i = 0;
+    for(auto & ghost : index_coloring.ghost) {
+      MPI_Irecv(&ghost_row_sizes[i], 1,
+                count_mpi_type, ghost.rank,
+                ghost.id, MPI_COMM_WORLD, &requests[i + send_count]);
+      i++;
+    }
+
+    MPI_Waitall(send_count + h.num_ghost_, requests.data(), statuses.data());
+
+    // resize rows when we have type information
+    for (int i = 0; i < h.num_ghost_; i++) {
+      int r = h.num_exclusive_ + h.num_shared_ + i;
+      auto & row = h.rows[r];
+      int count = ghost_row_sizes[i];
+      row.resize(count);
+    }
   }
 
   std::queue<std::pair<size_t, field_id_t>> exchange_queue;
