@@ -414,7 +414,9 @@ dumpstack() {
 #define flog_assert(test, message)                                             \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  if(!(test)) {                                                                \
-    flog_fatal(message);                                                       \
-  }
+  do                                                                           \
+    if(!(test)) {                                                              \
+      flog_fatal(message);                                                     \
+    }                                                                          \
+  while(0)
 #endif // NDEBUG
