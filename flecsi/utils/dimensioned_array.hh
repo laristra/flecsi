@@ -68,9 +68,11 @@ public:
   //! Initializer list constructor.
   //--------------------------------------------------------------------------//
 
-  dimensioned_array(std::initializer_list<TYPE> list) {
+  constexpr dimensioned_array(std::initializer_list<TYPE> list) : data_() {
     assert(list.size() == DIMENSION && "dimension size mismatch");
-    std::copy(list.begin(), list.end(), data_.begin());
+    auto p = list.begin();
+    for(auto & x : data_)
+      x = *p++; // std::copy isn't constexpr until C++20
   } // dimensioned_array
 
   //--------------------------------------------------------------------------//
@@ -80,16 +82,16 @@ public:
   template<typename... ARGS,
     typename = typename std::enable_if<sizeof...(ARGS) == DIMENSION &&
                                        are_type<TYPE, ARGS...>::value>>
-  dimensioned_array(ARGS... args) {
-    data_ = {args...};
-  } // dimensioned_array
+  constexpr dimensioned_array(ARGS... args)
+    : data_{args...} {} // dimensioned_array
 
   //--------------------------------------------------------------------------//
   //! Constructor (fill with given value).
   //--------------------------------------------------------------------------//
 
-  dimensioned_array(TYPE const & val) {
-    data_.fill(val);
+  constexpr dimensioned_array(TYPE const & val) : data_() {
+    for(auto & x : data_)
+      x = val; // array::fill isn't constexpr until C++20
   } // dimensioned_array
 
   //--------------------------------------------------------------------------//
@@ -106,7 +108,7 @@ public:
   //--------------------------------------------------------------------------//
 
   template<typename ENUM_TYPE>
-  TYPE & operator[](ENUM_TYPE e) {
+  constexpr TYPE & operator[](ENUM_TYPE e) {
     return data_[static_cast<size_t>(e)];
   } // operator []
 
@@ -116,7 +118,7 @@ public:
   //--------------------------------------------------------------------------//
 
   template<typename ENUM_TYPE>
-  TYPE const & operator[](ENUM_TYPE e) const {
+  constexpr TYPE const & operator[](ENUM_TYPE e) const {
     return data_[static_cast<size_t>(e)];
   } // operator []
 
@@ -124,7 +126,7 @@ public:
   //! Assignment operator.
   //--------------------------------------------------------------------------//
 
-  dimensioned_array & operator=(dimensioned_array const & rhs) {
+  constexpr dimensioned_array & operator=(dimensioned_array const & rhs) {
     if(this != &rhs) {
       data_ = rhs.data_;
     } // if
@@ -136,7 +138,7 @@ public:
   //! Assignment operator.
   //--------------------------------------------------------------------------//
 
-  dimensioned_array & operator=(const TYPE & val) {
+  constexpr dimensioned_array & operator=(const TYPE & val) {
     for(size_t i = 0; i < DIMENSION; i++) {
       data_[i] = val;
     } // for
@@ -149,7 +151,7 @@ public:
   //--------------------------------------------------------------------------//
 
 #define define_operator(op)                                                    \
-  dimensioned_array & operator op(dimensioned_array const & rhs) {             \
+  constexpr dimensioned_array & operator op(dimensioned_array const & rhs) {   \
     if(this != &rhs) {                                                         \
       for(size_t i{0}; i < DIMENSION; i++) {                                   \
         data_[i] op rhs[i];                                                    \
@@ -164,7 +166,7 @@ public:
   //--------------------------------------------------------------------------//
 
 #define define_operator_type(op)                                               \
-  dimensioned_array & operator op(TYPE val) {                                  \
+  constexpr dimensioned_array & operator op(TYPE val) {                        \
     for(size_t i{0}; i < DIMENSION; i++) {                                     \
       data_[i] op val;                                                         \
     } /* for */                                                                \
@@ -224,14 +226,14 @@ public:
   //! Equality operator
   //--------------------------------------------------------------------------//
 
-  bool operator==(const dimensioned_array & da) {
+  constexpr bool operator==(const dimensioned_array & da) {
     return this->data_ == da.data_;
   }
 
   //! \brief Division operator involving a constant.
   //! \param[in] val The constant on the right hand side of the operator.
   //! \return A reference to the current object.
-  dimensioned_array operator/(TYPE val) {
+  constexpr dimensioned_array operator/(TYPE val) {
     dimensioned_array tmp(*this);
     tmp /= val;
 
@@ -255,7 +257,7 @@ private:
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION, size_t NAMESPACE>
-dimensioned_array<TYPE, DIMENSION, NAMESPACE>
+constexpr dimensioned_array<TYPE, DIMENSION, NAMESPACE>
 operator+(const dimensioned_array<TYPE, DIMENSION, NAMESPACE> & lhs,
   const dimensioned_array<TYPE, DIMENSION, NAMESPACE> & rhs) {
   dimensioned_array<TYPE, DIMENSION, NAMESPACE> tmp(lhs);
@@ -275,7 +277,7 @@ operator+(const dimensioned_array<TYPE, DIMENSION, NAMESPACE> & lhs,
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION, size_t NAMESPACE>
-dimensioned_array<TYPE, DIMENSION, NAMESPACE>
+constexpr dimensioned_array<TYPE, DIMENSION, NAMESPACE>
 operator-(const dimensioned_array<TYPE, DIMENSION, NAMESPACE> & lhs,
   const dimensioned_array<TYPE, DIMENSION, NAMESPACE> & rhs) {
   dimensioned_array<TYPE, DIMENSION, NAMESPACE> tmp(lhs);

@@ -49,7 +49,7 @@ using point = utils::dimensioned_array<TYPE, DIMENSION, 1>;
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-point<TYPE, DIMENSION> operator*(TYPE const val,
+constexpr point<TYPE, DIMENSION> operator*(TYPE const val,
   point<TYPE, DIMENSION> const & p) {
   point<TYPE, DIMENSION> tmp(p);
   for(size_t d(0); d < DIMENSION; ++d) {
@@ -95,7 +95,7 @@ distance(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-point<TYPE, DIMENSION>
+constexpr point<TYPE, DIMENSION>
 midpoint(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
   return point<TYPE, DIMENSION>((a + b) / 2.0);
 } // midpoint
@@ -112,7 +112,7 @@ midpoint(point<TYPE, DIMENSION> const & a, point<TYPE, DIMENSION> const & b) {
 //----------------------------------------------------------------------------//
 
 template<template<typename...> class CONTAINER, typename TYPE, size_t DIMENSION>
-auto
+constexpr auto
 centroid(CONTAINER<point<TYPE, DIMENSION>> const & points) {
   point<TYPE, DIMENSION> tmp(0.0);
 
@@ -137,7 +137,7 @@ centroid(CONTAINER<point<TYPE, DIMENSION>> const & points) {
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-auto
+constexpr auto
 centroid(std::initializer_list<point<TYPE, DIMENSION>> points) {
   point<TYPE, DIMENSION> tmp(0.0);
 
