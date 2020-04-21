@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1util_1_1detail_1_1base__specialization.html" title="flecsi::util::detail\l::base_specialization\l\&lt; B, D \&gt;" alt="" coords="5,5,149,61"/>
+<area shape="rect" id="node2" href="$classflecsi_1_1utils_1_1detail_1_1are__integral.html" title="A helper to identify if all types Ts are integral. " alt="" coords="189,5,325,47"/>
+<area shape="rect" id="node3" href="$classflecsi_1_1utils_1_1detail_1_1are__integral_3_01T_00_01Ts_8_8_8_01_4.html" title="flecsi::utils::detail\l::are_integral\&lt; T, Ts... \&gt;" alt="" coords="175,71,339,112"/>
 </map>

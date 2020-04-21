@@ -1,6 +1,6 @@
-<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/topo/unstructured/definition.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/topo/unstructured/definition.hh">
-<area shape="rect" id="node2" href="$closure__utils_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/closure\l_utils.hh" alt="" coords="5,109,179,180"/>
-<area shape="rect" id="node3" href="$dcrs__utils_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/dcrs\l_utils.hh" alt="" coords="138,228,294,299"/>
-<area shape="rect" id="node4" href="$parallel__definition_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/parallel\l_definition.hh" alt="" coords="254,109,426,180"/>
-<area shape="rect" id="node5" href="$simple__definition_8hh_source.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/simple\l_definition.hh" alt="" coords="450,109,619,180"/>
+<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/topology/unstructured/definition.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/topology/unstructured/definition.hh">
+<area shape="rect" id="node2" href="$closure__utils_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/closure_utils.hh" alt="" coords="5,124,156,195"/>
+<area shape="rect" id="node3" href="$dcrs__utils_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/dcrs_utils.hh" alt="" coords="119,243,269,313"/>
+<area shape="rect" id="node4" href="$parallel__definition_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/parallel_definition.hh" alt="" coords="232,124,383,195"/>
+<area shape="rect" id="node5" href="$simple__definition_8hh_source.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/simple_definition.hh" alt="" coords="407,124,557,195"/>
 </map>

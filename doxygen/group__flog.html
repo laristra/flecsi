@@ -80,9 +80,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1log_1_1tag.html">flecsi::log::tag</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1flog_1_1tag.html">flecsi::flog::tag</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1log_1_1guard.html">flecsi::log::guard</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1flog_1_1guard.html">flecsi::flog::guard</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -106,8 +106,8 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaff02373bbe55366cecbb8da009b6b5be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#gaff02373bbe55366cecbb8da009b6b5be">flecsi::log::add_output_stream</a> (std::string const &amp;label, std::ostream &amp;stream, bool colorize=false)</td></tr>
-<tr class="separator:gaff02373bbe55366cecbb8da009b6b5be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga30a104842c480561c573bc656b9d8f4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__flog.html#ga30a104842c480561c573bc656b9d8f4c">flecsi::flog::add_output_stream</a> (std::string const &amp;label, std::ostream &amp;stream, bool colorize=false)</td></tr>
+<tr class="separator:ga30a104842c480561c573bc656b9d8f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>The FleCSI logging utility (flog) provides a C++ interface for capturing output during program execution. </p>
@@ -145,7 +145,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  true &amp;&amp; ::flecsi::log::severity##_log_message_t(__FILE__, __LINE__, <span class="keyword">false</span>)   \</div><div class="line">            .stream()</div></div><!-- fragment --><p>This handles all of the different logging modes for the insertion style logging interface.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  true &amp;&amp;                                                                      \</div><div class="line">    flecsi::flog::severity##_log_message_t(__FILE__, __LINE__, <span class="keyword">false</span>).stream()</div></div><!-- fragment --><p>This handles all of the different logging modes for the insertion style logging interface.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">severity</td><td>The severity level of the log entry.</td></tr>
@@ -181,7 +181,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  if(!(<a class="code" href="namespaceflecsi.html#af889e397f21960fe76619e439c809b9d">test</a>)) {                                                                \</div><div class="line">    flog_fatal(message);                                                       \</div><div class="line">  }</div><div class="ttc" id="namespaceflecsi_html_af889e397f21960fe76619e439c809b9d"><div class="ttname"><a href="namespaceflecsi.html#af889e397f21960fe76619e439c809b9d">flecsi::test</a></div><div class="ttdeci">int test(ARGS &amp;&amp;... args)</div><div class="ttdef"><b>Definition:</b> execution.hh:401</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  do                                                                           \</div><div class="line">    if(!(<a class="code" href="namespaceflecsi.html#af889e397f21960fe76619e439c809b9d">test</a>)) {                                                              \</div><div class="line">      flog_fatal(message);                                                     \</div><div class="line">    }                                                                          \</div><div class="line">  while(0)</div><div class="ttc" id="namespaceflecsi_html_af889e397f21960fe76619e439c809b9d"><div class="ttname"><a href="namespaceflecsi.html#af889e397f21960fe76619e439c809b9d">flecsi::test</a></div><div class="ttdeci">int test(ARGS &amp;&amp;... args)</div><div class="ttdef"><b>Definition:</b> execution.hh:402</div></div>
 </div><!-- fragment --><p>Clog assertion interface. Assertions allow the developer to catch invalid program state. This call will invoke flog_fatal if the test condition is false.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -209,7 +209,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  ::flecsi::log::error_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for error level severity log entries.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::flog::error_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for error level severity log entries.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -234,7 +234,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  {                                                                            \</div><div class="line">    std::stringstream _sstream;                                                \</div><div class="line">    _sstream &lt;&lt; FLOG_OUTPUT_LTRED(<span class="stringliteral">&quot;FATAL ERROR &quot;</span>)                              \</div><div class="line">             &lt;&lt; FLOG_OUTPUT_YELLOW(::flecsi::log::rstrip&lt;&#39;/&#39;&gt;(__FILE__)        \</div><div class="line">                                   &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; __LINE__ &lt;&lt; <span class="stringliteral">&quot; &quot;</span>)                  \</div><div class="line">             &lt;&lt; FLOG_OUTPUT_LTRED(message) &lt;&lt; std::endl;                       \</div><div class="line">    __flog_internal_wait_on_flusher();                                         \</div><div class="line">    std::cerr &lt;&lt; _sstream.str() &lt;&lt; std::endl;                                  \</div><div class="line">    ::flecsi::log::dumpstack();                                                \</div><div class="line">    std::abort();                                                              \</div><div class="line">  } <span class="comment">/* scope */</span></div></div><!-- fragment --><p>Throw a runtime exception with the provided message.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  {                                                                            \</div><div class="line">    std::stringstream _sstream;                                                \</div><div class="line">    _sstream &lt;&lt; FLOG_OUTPUT_LTRED(<span class="stringliteral">&quot;FATAL ERROR &quot;</span>)                              \</div><div class="line">             &lt;&lt; FLOG_OUTPUT_YELLOW(flecsi::flog::rstrip&lt;&#39;/&#39;&gt;(__FILE__)         \</div><div class="line">                                   &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; __LINE__ &lt;&lt; <span class="stringliteral">&quot; &quot;</span>)                  \</div><div class="line">             &lt;&lt; FLOG_OUTPUT_LTRED(message) &lt;&lt; std::endl;                       \</div><div class="line">    __flog_internal_wait_on_flusher();                                         \</div><div class="line">    std::cerr &lt;&lt; _sstream.str() &lt;&lt; std::endl;                                  \</div><div class="line">    flecsi::flog::dumpstack();                                                 \</div><div class="line">    std::abort();                                                              \</div><div class="line">  } <span class="comment">/* scope */</span></div></div><!-- fragment --><p>Throw a runtime exception with the provided message.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -260,7 +260,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  ::flecsi::log::info_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for info level severity log entries.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::flog::info_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for info level severity log entries.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -285,7 +285,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  ::flecsi::log::trace_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for trace level severity log entries.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::flog::trace_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for trace level severity log entries.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -310,7 +310,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  ::flecsi::log::warn_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for warn level severity log entries.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                   \</div><div class="line">                                                                               \</div><div class="line">  flecsi::flog::warn_log_message_t(__FILE__, __LINE__).stream() &lt;&lt; message</div></div><!-- fragment --><p>Method style interface for warn level severity log entries.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The stream message to be printed.</td></tr>
@@ -321,8 +321,8 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="gaff02373bbe55366cecbb8da009b6b5be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaff02373bbe55366cecbb8da009b6b5be">&#9670;&nbsp;</a></span>add_output_stream()</h2>
+<a id="ga30a104842c480561c573bc656b9d8f4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga30a104842c480561c573bc656b9d8f4c">&#9670;&nbsp;</a></span>add_output_stream()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -331,7 +331,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void flecsi::log::add_output_stream </td>
+          <td class="memname">void flecsi::flog::add_output_stream </td>
           <td>(</td>
           <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>label</em>, </td>

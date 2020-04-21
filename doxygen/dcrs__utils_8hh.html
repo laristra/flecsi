@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: /home/bergen/devel/tuxfan/flecsi/flecsi/topo/unstructured/dcrs_utils.hh File Reference</title>
+<title>Interface Documentation: /home/bergen/devel/tuxfan/flecsi/flecsi/topology/unstructured/dcrs_utils.hh File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,7 +69,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_e2d6e056c0f74e9bd2892dd85d34b528.html">topo</a></li><li class="navelem"><a class="el" href="dir_c78688590e325345335132b7f8276e3a.html">unstructured</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_fa984fdc1f8d7593d1791a3e6fdaa211.html">topology</a></li><li class="navelem"><a class="el" href="dir_d5442cdb05a27293f9cb15fb6f2bba84.html">unstructured</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -82,42 +82,35 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;flecsi-config.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="closure__utils_8hh_source.html">flecsi/topo/unstructured/closure_utils.hh</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="coloring__types_8hh_source.html">flecsi/topo/unstructured/coloring_types.hh</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="definition_8hh_source.html">flecsi/topo/unstructured/definition.hh</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="index__coloring_8hh_source.html">flecsi/topo/unstructured/index_coloring.hh</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="parallel__definition_8hh_source.html">flecsi/topo/unstructured/parallel_definition.hh</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="crs_8hh_source.html">flecsi/util/crs.hh</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="mpi__type__traits_8hh_source.html">flecsi/util/mpi_type_traits.hh</a>&quot;</code><br />
+<code>#include &lt;<a class="el" href="closure__utils_8hh_source.html">flecsi/topology/unstructured/closure_utils.hh</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="coloring__types_8hh_source.html">flecsi/topology/unstructured/coloring_types.hh</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="definition_8hh_source.html">flecsi/topology/unstructured/definition.hh</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="index__coloring_8hh_source.html">flecsi/topology/unstructured/index_coloring.hh</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="parallel__definition_8hh_source.html">flecsi/topology/unstructured/parallel_definition.hh</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="crs_8hh_source.html">flecsi/utils/crs.hh</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="mpi__type__traits_8hh_source.html">flecsi/utils/mpi_type_traits.hh</a>&gt;</code><br />
 <code>#include &lt;mpi.h&gt;</code><br />
 <code>#include &lt;map&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for dcrs_utils.hh:</div>
 <div class="dyncontent">
-<div class="center"><img src="dcrs__utils_8hh__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2topo_2unstructured_2dcrs__utils_8hh" alt=""/></div>
-<map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2topo_2unstructured_2dcrs__utils_8hh" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2topo_2unstructured_2dcrs__utils_8hh">
-<area shape="rect" id="node3" href="closure__utils_8hh.html" title="flecsi/topo/unstructured\l/closure_utils.hh" alt="" coords="1143,124,1302,165"/>
-<area shape="rect" id="node4" href="definition_8hh.html" title="flecsi/topo/unstructured\l/definition.hh" alt="" coords="1618,213,1777,255"/>
-<area shape="rect" id="node5" href="crs_8hh.html" title="flecsi/util/crs.hh" alt="" coords="1667,399,1781,426"/>
-<area shape="rect" id="node47" href="coloring__types_8hh.html" title="flecsi/topo/unstructured\l/coloring_types.hh" alt="" coords="1261,213,1419,255"/>
-<area shape="rect" id="node48" href="index__coloring_8hh.html" title="flecsi/topo/unstructured\l/index_coloring.hh" alt="" coords="857,213,1015,255"/>
-<area shape="rect" id="node49" href="parallel__definition_8hh.html" title="flecsi/topo/unstructured\l/parallel_definition.hh" alt="" coords="1501,124,1659,165"/>
-<area shape="rect" id="node50" href="mpi__type__traits_8hh.html" title="flecsi/util/mpi_type\l_traits.hh" alt="" coords="43,556,173,597"/>
-<area shape="rect" id="node31" href="set__utils_8hh.html" title="flecsi/util/set_utils.hh" alt="" coords="1039,221,1185,247"/>
-<area shape="rect" id="node32" href="type__traits_8hh.html" title="flecsi/util/type_traits.hh" alt="" coords="405,221,563,247"/>
-<area shape="rect" id="node34" href="flog_8hh.html" title="flecsi/flog.hh" alt="" coords="736,221,832,247"/>
-<area shape="rect" id="node16" href="point_8hh.html" title="flecsi/util/geometry\l/point.hh" alt="" coords="1915,303,2047,344"/>
-<area shape="rect" id="node6" href="array__ref_8hh.html" title="flecsi/util/array_ref.hh" alt="" coords="1645,563,1792,590"/>
-<area shape="rect" id="node17" href="common_8hh.html" title="flecsi/util/common.hh" alt="" coords="2101,481,2248,508"/>
-<area shape="rect" id="node28" href="dimensioned__array_8hh.html" title="flecsi/util/dimensioned\l_array.hh" alt="" coords="1906,392,2057,433"/>
-<area shape="rect" id="node22" href="id_8hh.html" title="flecsi/util/id.hh" alt="" coords="2265,563,2372,590"/>
-<area shape="rect" id="node26" href="offset_8hh.html" title="flecsi/util/offset.hh" alt="" coords="2397,563,2526,590"/>
-<area shape="rect" id="node35" href="log_2utils_8hh_source.html" title="flecsi/log/utils.hh" alt="" coords="683,563,803,590"/>
-<area shape="rect" id="node36" href="message_8hh.html" title="flecsi/log/message.hh" alt="" coords="784,310,933,337"/>
-<area shape="rect" id="node44" href="tag__scope_8hh.html" title="flecsi/log/tag_scope.hh" alt="" coords="553,310,709,337"/>
-<area shape="rect" id="node37" href="state_8hh.html" title="flecsi/log/state.hh" alt="" coords="785,399,911,426"/>
-<area shape="rect" id="node41" href="log_2types_8hh.html" title="flecsi/log/types.hh" alt="" coords="885,481,1013,508"/>
-<area shape="rect" id="node38" href="packet_8hh_source.html" title="flecsi/log/packet.hh" alt="" coords="979,563,1114,590"/>
+<div class="center"><img src="dcrs__utils_8hh__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2topology_2unstructured_2dcrs__utils_8hh" alt=""/></div>
+<map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2topology_2unstructured_2dcrs__utils_8hh" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2topology_2unstructured_2dcrs__utils_8hh">
+<area shape="rect" id="node3" href="closure__utils_8hh.html" title="flecsi/topology/unstructured\l/closure_utils.hh" alt="" coords="255,124,437,165"/>
+<area shape="rect" id="node4" href="definition_8hh.html" title="flecsi/topology/unstructured\l/definition.hh" alt="" coords="916,213,1099,255"/>
+<area shape="rect" id="node5" href="crs_8hh.html" title="flecsi/utils/crs.hh" alt="" coords="1165,310,1287,337"/>
+<area shape="rect" id="node34" href="coloring__types_8hh.html" title="flecsi/topology/unstructured\l/coloring_types.hh" alt="" coords="657,213,840,255"/>
+<area shape="rect" id="node35" href="index__coloring_8hh.html" title="flecsi/topology/unstructured\l/index_coloring.hh" alt="" coords="487,124,669,165"/>
+<area shape="rect" id="node37" href="parallel__definition_8hh.html" title="flecsi/topology/unstructured\l/parallel_definition.hh" alt="" coords="848,124,1031,165"/>
+<area shape="rect" id="node38" href="mpi__type__traits_8hh.html" title="flecsi/utils/mpi_type\l_traits.hh" alt="" coords="1207,124,1346,165"/>
+<area shape="rect" id="node30" href="set__utils_8hh.html" title="flecsi/utils/set_utils.hh" alt="" coords="245,221,397,247"/>
+<area shape="rect" id="node32" href="type__traits_8hh.html" title="flecsi/utils/type_traits.hh" alt="" coords="5,221,169,247"/>
+<area shape="rect" id="node14" href="point_8hh.html" title="flecsi/utils/geometry\l/point.hh" alt="" coords="1002,303,1141,344"/>
+<area shape="rect" id="node6" href="array__ref_8hh.html" title="flecsi/utils/array\l_ref.hh" alt="" coords="1339,392,1454,433"/>
+<area shape="rect" id="node15" href="common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="1076,481,1229,508"/>
+<area shape="rect" id="node26" href="dimensioned__array_8hh.html" title="flecsi/utils/dimensioned\l_array.hh" alt="" coords="997,392,1156,433"/>
+<area shape="rect" id="node20" href="id_8hh.html" title="flecsi/utils/id.hh" alt="" coords="940,556,1053,583"/>
+<area shape="rect" id="node24" href="offset_8hh.html" title="flecsi/utils/offset.hh" alt="" coords="1315,556,1451,583"/>
 </map>
 </div>
 </div>
@@ -130,66 +123,66 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a143ecaebf4fd0a1d1d3d5f0eb657e6d5"><td class="memTemplParams" colspan="2">template&lt;size_t DIMENSION, size_t MESH_DIMENSION&gt; </td></tr>
-<tr class="memitem:a143ecaebf4fd0a1d1d3d5f0eb657e6d5"><td class="memTemplItemLeft" align="right" valign="top">std::set&lt; size_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a143ecaebf4fd0a1d1d3d5f0eb657e6d5">flecsi::topo::unstructured_impl::naive_coloring</a> (definition&lt; MESH_DIMENSION &gt; &amp;md)</td></tr>
-<tr class="separator:a143ecaebf4fd0a1d1d3d5f0eb657e6d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24fbb802fe512b25d9d73fc4923e8a38"><td class="memTemplParams" colspan="2">template&lt;std::size_t DIMENSION, std::size_t FROM_DIMENSION = DIMENSION, std::size_t TO_DIMENSION = DIMENSION, std::size_t THRU_DIMENSION = DIMENSION - 1&gt; </td></tr>
-<tr class="memitem:a24fbb802fe512b25d9d73fc4923e8a38"><td class="memTemplItemLeft" align="right" valign="top">util::dcrs&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a24fbb802fe512b25d9d73fc4923e8a38">flecsi::topo::unstructured_impl::make_dcrs</a> (const definition&lt; DIMENSION &gt; &amp;md)</td></tr>
-<tr class="separator:a24fbb802fe512b25d9d73fc4923e8a38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a081df3a1a11543e7aaaae0e0ef9b7bc1"><td class="memTemplParams" colspan="2"><a id="a081df3a1a11543e7aaaae0e0ef9b7bc1"></a>
+<tr class="memitem:a99a3716f69505869a41f1f7ddd08f3af"><td class="memTemplParams" colspan="2">template&lt;size_t DIMENSION, size_t MESH_DIMENSION&gt; </td></tr>
+<tr class="memitem:a99a3716f69505869a41f1f7ddd08f3af"><td class="memTemplItemLeft" align="right" valign="top">std::set&lt; size_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a99a3716f69505869a41f1f7ddd08f3af">flecsi::topology::unstructured_impl::naive_coloring</a> (definition&lt; MESH_DIMENSION &gt; &amp;md)</td></tr>
+<tr class="separator:a99a3716f69505869a41f1f7ddd08f3af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a815e223edf756393f92327e52fe74611"><td class="memTemplParams" colspan="2">template&lt;std::size_t DIMENSION, std::size_t FROM_DIMENSION = DIMENSION, std::size_t TO_DIMENSION = DIMENSION, std::size_t THRU_DIMENSION = DIMENSION - 1&gt; </td></tr>
+<tr class="memitem:a815e223edf756393f92327e52fe74611"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1utils_1_1dcrs.html">flecsi::utils::dcrs</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a815e223edf756393f92327e52fe74611">flecsi::topology::unstructured_impl::make_dcrs</a> (const definition&lt; DIMENSION &gt; &amp;md)</td></tr>
+<tr class="separator:a815e223edf756393f92327e52fe74611"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3036d06151e272fa725937341efd7f59"><td class="memTemplParams" colspan="2"><a id="a3036d06151e272fa725937341efd7f59"></a>
 template&lt;std::size_t DIMENSION, std::size_t FROM_DIMENSION = DIMENSION, std::size_t TO_DIMENSION = DIMENSION, std::size_t THRU_DIMENSION = DIMENSION - 1&gt; </td></tr>
-<tr class="memitem:a081df3a1a11543e7aaaae0e0ef9b7bc1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a081df3a1a11543e7aaaae0e0ef9b7bc1">flecsi::topo::unstructured_impl::make_dcrs_have_connectivity</a> (const definition&lt; DIMENSION &gt; &amp;md, util::dcrs &amp;dcrs)</td></tr>
-<tr class="memdesc:a081df3a1a11543e7aaaae0e0ef9b7bc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create distributed CRS representation of the graph. <br /></td></tr>
-<tr class="separator:a081df3a1a11543e7aaaae0e0ef9b7bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf9d2fe98ea2f2b5ced33788a281365e"><td class="memTemplParams" colspan="2"><a id="aaf9d2fe98ea2f2b5ced33788a281365e"></a>
+<tr class="memitem:a3036d06151e272fa725937341efd7f59"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a3036d06151e272fa725937341efd7f59">flecsi::topology::unstructured_impl::make_dcrs_have_connectivity</a> (const definition&lt; DIMENSION &gt; &amp;md, <a class="el" href="structflecsi_1_1utils_1_1dcrs.html">flecsi::utils::dcrs</a> &amp;dcrs)</td></tr>
+<tr class="memdesc:a3036d06151e272fa725937341efd7f59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create distributed CRS representation of the graph. <br /></td></tr>
+<tr class="separator:a3036d06151e272fa725937341efd7f59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a176f94fca96dc7ce940d7d75e9d98c14"><td class="memTemplParams" colspan="2"><a id="a176f94fca96dc7ce940d7d75e9d98c14"></a>
 template&lt;typename SEND_TYPE , typename ID_TYPE , typename RECV_TYPE &gt; </td></tr>
-<tr class="memitem:aaf9d2fe98ea2f2b5ced33788a281365e"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topo::unstructured_impl::alltoallv</b> (const SEND_TYPE &amp;sendbuf, const ID_TYPE &amp;sendcounts, const ID_TYPE &amp;senddispls, RECV_TYPE &amp;recvbuf, const ID_TYPE &amp;recvcounts, const ID_TYPE &amp;recvdispls, decltype(MPI_COMM_WORLD) comm)</td></tr>
-<tr class="separator:aaf9d2fe98ea2f2b5ced33788a281365e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0c235687cb4d383559bb1c8464a9421"><td class="memTemplParams" colspan="2"><a id="ad0c235687cb4d383559bb1c8464a9421"></a>
+<tr class="memitem:a176f94fca96dc7ce940d7d75e9d98c14"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::unstructured_impl::alltoallv</b> (const SEND_TYPE &amp;sendbuf, const ID_TYPE &amp;sendcounts, const ID_TYPE &amp;senddispls, RECV_TYPE &amp;recvbuf, const ID_TYPE &amp;recvcounts, const ID_TYPE &amp;recvdispls, decltype(MPI_COMM_WORLD) comm)</td></tr>
+<tr class="separator:a176f94fca96dc7ce940d7d75e9d98c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fc7610dc5f30ed93db03ed8e72d1fde"><td class="memTemplParams" colspan="2"><a id="a9fc7610dc5f30ed93db03ed8e72d1fde"></a>
 template&lt;typename T , typename Vector &gt; </td></tr>
-<tr class="memitem:ad0c235687cb4d383559bb1c8464a9421"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#ad0c235687cb4d383559bb1c8464a9421">flecsi::topo::unstructured_impl::rank_owner</a> (const Vector &amp;distribution, T i)</td></tr>
-<tr class="memdesc:ad0c235687cb4d383559bb1c8464a9421"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple utility for determining which rank owns an id. <br /></td></tr>
-<tr class="separator:ad0c235687cb4d383559bb1c8464a9421"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a106b2577043167555438dda4aa1b4030"><td class="memTemplParams" colspan="2"><a id="a106b2577043167555438dda4aa1b4030"></a>
+<tr class="memitem:a9fc7610dc5f30ed93db03ed8e72d1fde"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a9fc7610dc5f30ed93db03ed8e72d1fde">flecsi::topology::unstructured_impl::rank_owner</a> (const Vector &amp;distribution, T i)</td></tr>
+<tr class="memdesc:a9fc7610dc5f30ed93db03ed8e72d1fde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple utility for determining which rank owns an id. <br /></td></tr>
+<tr class="separator:a9fc7610dc5f30ed93db03ed8e72d1fde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e4f22578731f7acd467a38c4bd89909"><td class="memTemplParams" colspan="2"><a id="a6e4f22578731f7acd467a38c4bd89909"></a>
 template&lt;typename Vector &gt; </td></tr>
-<tr class="memitem:a106b2577043167555438dda4aa1b4030"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a106b2577043167555438dda4aa1b4030">flecsi::topo::unstructured_impl::subdivide</a> (size_t nelem, size_t npart, Vector &amp;dist)</td></tr>
-<tr class="memdesc:a106b2577043167555438dda4aa1b4030"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple utility for subdividing an index space into several parts. <br /></td></tr>
-<tr class="separator:a106b2577043167555438dda4aa1b4030"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d442af77abcc07bab5b91010155513d"><td class="memTemplParams" colspan="2"><a id="a8d442af77abcc07bab5b91010155513d"></a>
+<tr class="memitem:a6e4f22578731f7acd467a38c4bd89909"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a6e4f22578731f7acd467a38c4bd89909">flecsi::topology::unstructured_impl::subdivide</a> (size_t nelem, size_t npart, Vector &amp;dist)</td></tr>
+<tr class="memdesc:a6e4f22578731f7acd467a38c4bd89909"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple utility for subdividing an index space into several parts. <br /></td></tr>
+<tr class="separator:a6e4f22578731f7acd467a38c4bd89909"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a309269aa8ec557624fcbb4e2318b1cab"><td class="memTemplParams" colspan="2"><a id="a309269aa8ec557624fcbb4e2318b1cab"></a>
 template&lt;std::size_t MESH_DIMENSION&gt; </td></tr>
-<tr class="memitem:a8d442af77abcc07bab5b91010155513d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a8d442af77abcc07bab5b91010155513d">flecsi::topo::unstructured_impl::make_dcrs_distributed</a> (const parallel_definition&lt; MESH_DIMENSION &gt; &amp;md, size_t from_dimension, size_t to_dimension, size_t min_connections, util::dcrs &amp;dcrs)</td></tr>
-<tr class="memdesc:a8d442af77abcc07bab5b91010155513d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create distributed CRS representation of the graph. <br /></td></tr>
-<tr class="separator:a8d442af77abcc07bab5b91010155513d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8266329d20e8e3554e009a373a3056f"><td class="memTemplParams" colspan="2"><a id="ae8266329d20e8e3554e009a373a3056f"></a>
+<tr class="memitem:a309269aa8ec557624fcbb4e2318b1cab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a309269aa8ec557624fcbb4e2318b1cab">flecsi::topology::unstructured_impl::make_dcrs_distributed</a> (const parallel_definition&lt; MESH_DIMENSION &gt; &amp;md, size_t from_dimension, size_t to_dimension, size_t min_connections, <a class="el" href="structflecsi_1_1utils_1_1dcrs.html">flecsi::utils::dcrs</a> &amp;dcrs)</td></tr>
+<tr class="memdesc:a309269aa8ec557624fcbb4e2318b1cab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create distributed CRS representation of the graph. <br /></td></tr>
+<tr class="separator:a309269aa8ec557624fcbb4e2318b1cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a325743e4a088468e15021ed8f3837cee"><td class="memTemplParams" colspan="2"><a id="a325743e4a088468e15021ed8f3837cee"></a>
 template&lt;std::size_t DIMENSION&gt; </td></tr>
-<tr class="memitem:ae8266329d20e8e3554e009a373a3056f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#ae8266329d20e8e3554e009a373a3056f">flecsi::topo::unstructured_impl::migrate</a> (size_t dimension, const std::vector&lt; size_t &gt; &amp;partitioning, util::dcrs &amp;dcrs, parallel_definition&lt; DIMENSION &gt; &amp;md)</td></tr>
-<tr class="memdesc:ae8266329d20e8e3554e009a373a3056f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Migrate pieces of a mesh from one processor to another. <br /></td></tr>
-<tr class="separator:ae8266329d20e8e3554e009a373a3056f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace60e2212d8cce211b4ea4d7f208ce9a"><td class="memItemLeft" align="right" valign="top"><a id="ace60e2212d8cce211b4ea4d7f208ce9a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topo::unstructured_impl::get_owner_info</b> (const util::dcrs &amp;dcrs, index_coloring &amp;entities, coloring_info &amp;color_info)</td></tr>
-<tr class="separator:ace60e2212d8cce211b4ea4d7f208ce9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a139e76fbd9f95ea41f1d98a10f5367bc"><td class="memTemplParams" colspan="2">template&lt;std::size_t MESH_DIMENSION&gt; </td></tr>
-<tr class="memitem:a139e76fbd9f95ea41f1d98a10f5367bc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a139e76fbd9f95ea41f1d98a10f5367bc">flecsi::topo::unstructured_impl::match_ids</a> (const parallel_definition&lt; MESH_DIMENSION &gt; &amp;md, size_t dimension, std::vector&lt; size_t &gt; &amp;local2global, std::map&lt; size_t, size_t &gt; &amp;global2local)</td></tr>
-<tr class="memdesc:a139e76fbd9f95ea41f1d98a10f5367bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Color an auxiliary index space like vertices or edges.  <a href="dcrs__utils_8hh.html#a139e76fbd9f95ea41f1d98a10f5367bc">More...</a><br /></td></tr>
-<tr class="separator:a139e76fbd9f95ea41f1d98a10f5367bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cd9d412722344d863004b51de8ac097"><td class="memItemLeft" align="right" valign="top"><a id="a7cd9d412722344d863004b51de8ac097"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a7cd9d412722344d863004b51de8ac097">flecsi::topo::unstructured_impl::ghost_connectivity</a> (const util::crs &amp;from2to, const std::vector&lt; size_t &gt; &amp;local2global, const index_coloring &amp;from_entities, std::vector&lt; size_t &gt; &amp;from_ids, util::crs &amp;connectivity)</td></tr>
-<tr class="memdesc:a7cd9d412722344d863004b51de8ac097"><td class="mdescLeft">&#160;</td><td class="mdescRight">Color an auxiliary index space like vertices or edges. <br /></td></tr>
-<tr class="separator:a7cd9d412722344d863004b51de8ac097"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a742a58a137a75c29706a53425dd4bb02"><td class="memTemplParams" colspan="2"><a id="a742a58a137a75c29706a53425dd4bb02"></a>
+<tr class="memitem:a325743e4a088468e15021ed8f3837cee"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a325743e4a088468e15021ed8f3837cee">flecsi::topology::unstructured_impl::migrate</a> (size_t dimension, const std::vector&lt; size_t &gt; &amp;partitioning, <a class="el" href="structflecsi_1_1utils_1_1dcrs.html">flecsi::utils::dcrs</a> &amp;dcrs, parallel_definition&lt; DIMENSION &gt; &amp;md)</td></tr>
+<tr class="memdesc:a325743e4a088468e15021ed8f3837cee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Migrate pieces of a mesh from one processor to another. <br /></td></tr>
+<tr class="separator:a325743e4a088468e15021ed8f3837cee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a246d77e872ac6878b222b8a2d52ae855"><td class="memItemLeft" align="right" valign="top"><a id="a246d77e872ac6878b222b8a2d52ae855"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::unstructured_impl::get_owner_info</b> (const <a class="el" href="structflecsi_1_1utils_1_1dcrs.html">flecsi::utils::dcrs</a> &amp;dcrs, index_coloring &amp;entities, coloring_info &amp;color_info)</td></tr>
+<tr class="separator:a246d77e872ac6878b222b8a2d52ae855"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ee2424355016d5183af24665084bee4"><td class="memTemplParams" colspan="2">template&lt;std::size_t MESH_DIMENSION&gt; </td></tr>
+<tr class="memitem:a8ee2424355016d5183af24665084bee4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a8ee2424355016d5183af24665084bee4">flecsi::topology::unstructured_impl::match_ids</a> (const parallel_definition&lt; MESH_DIMENSION &gt; &amp;md, size_t dimension, std::vector&lt; size_t &gt; &amp;local2global, std::map&lt; size_t, size_t &gt; &amp;global2local)</td></tr>
+<tr class="memdesc:a8ee2424355016d5183af24665084bee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Color an auxiliary index space like vertices or edges.  <a href="dcrs__utils_8hh.html#a8ee2424355016d5183af24665084bee4">More...</a><br /></td></tr>
+<tr class="separator:a8ee2424355016d5183af24665084bee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a031ddf394125ba1041bc3e42156184"><td class="memItemLeft" align="right" valign="top"><a id="a6a031ddf394125ba1041bc3e42156184"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dcrs__utils_8hh.html#a6a031ddf394125ba1041bc3e42156184">flecsi::topology::unstructured_impl::ghost_connectivity</a> (const <a class="el" href="structflecsi_1_1utils_1_1crs.html">flecsi::utils::crs</a> &amp;from2to, const std::vector&lt; size_t &gt; &amp;local2global, const index_coloring &amp;from_entities, std::vector&lt; size_t &gt; &amp;from_ids, <a class="el" href="structflecsi_1_1utils_1_1crs.html">flecsi::utils::crs</a> &amp;connectivity)</td></tr>
+<tr class="memdesc:a6a031ddf394125ba1041bc3e42156184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Color an auxiliary index space like vertices or edges. <br /></td></tr>
+<tr class="separator:a6a031ddf394125ba1041bc3e42156184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32a03ea2341278501f04044fa5f60f52"><td class="memTemplParams" colspan="2"><a id="a32a03ea2341278501f04044fa5f60f52"></a>
 template&lt;std::size_t MESH_DIMENSION&gt; </td></tr>
-<tr class="memitem:a742a58a137a75c29706a53425dd4bb02"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topo::unstructured_impl::ghost_connectivity</b> (const parallel_definition&lt; MESH_DIMENSION &gt; &amp;md, size_t from_dimension, size_t to_dimension, const index_coloring &amp;from_entities, std::vector&lt; size_t &gt; &amp;from_ids, util::crs &amp;connectivity)</td></tr>
-<tr class="separator:a742a58a137a75c29706a53425dd4bb02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32a03ea2341278501f04044fa5f60f52"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::unstructured_impl::ghost_connectivity</b> (const parallel_definition&lt; MESH_DIMENSION &gt; &amp;md, size_t from_dimension, size_t to_dimension, const index_coloring &amp;from_entities, std::vector&lt; size_t &gt; &amp;from_ids, <a class="el" href="structflecsi_1_1utils_1_1crs.html">flecsi::utils::crs</a> &amp;connectivity)</td></tr>
+<tr class="separator:a32a03ea2341278501f04044fa5f60f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:ac6654f35c2719557f670ccc0fddaa8ae"><td class="memItemLeft" align="right" valign="top"><a id="ac6654f35c2719557f670ccc0fddaa8ae"></a>
-log::devel_tag&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::dcrs_utils_tag</b> (&quot;dcrs_utils&quot;)</td></tr>
-<tr class="separator:ac6654f35c2719557f670ccc0fddaa8ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c19246dd18258e75bb8d8ffbd1843ba"><td class="memItemLeft" align="right" valign="top"><a id="a2c19246dd18258e75bb8d8ffbd1843ba"></a>
+flog::devel_tag&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::dcrs_utils_tag</b> (&quot;dcrs_utils&quot;)</td></tr>
+<tr class="separator:a2c19246dd18258e75bb8d8ffbd1843ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="file_a24fbb802fe512b25d9d73fc4923e8a38"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a24fbb802fe512b25d9d73fc4923e8a38">&#9670;&nbsp;</a></span>make_dcrs()</h2>
+<a id="file_a815e223edf756393f92327e52fe74611"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a815e223edf756393f92327e52fe74611">&#9670;&nbsp;</a></span>make_dcrs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -200,9 +193,9 @@ template&lt;std::size_t DIMENSION, std::size_t FROM_DIMENSION = DIMENSION, std::
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">util::dcrs flecsi::topo::unstructured_impl::make_dcrs </td>
+          <td class="memname"><a class="el" href="structflecsi_1_1utils_1_1dcrs.html">flecsi::utils::dcrs</a> flecsi::topology::unstructured_impl::make_dcrs </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1topo_1_1unstructured__impl_1_1definition.html">definition</a>&lt; DIMENSION &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1topology_1_1unstructured__impl_1_1definition.html">definition</a>&lt; DIMENSION &gt; &amp;&#160;</td>
           <td class="paramname"><em>md</em></td><td>)</td>
           <td></td>
         </tr>
@@ -231,8 +224,8 @@ template&lt;std::size_t DIMENSION, std::size_t FROM_DIMENSION = DIMENSION, std::
 
 </div>
 </div>
-<a id="file_a139e76fbd9f95ea41f1d98a10f5367bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a139e76fbd9f95ea41f1d98a10f5367bc">&#9670;&nbsp;</a></span>match_ids()</h2>
+<a id="file_a8ee2424355016d5183af24665084bee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a8ee2424355016d5183af24665084bee4">&#9670;&nbsp;</a></span>match_ids()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -240,9 +233,9 @@ template&lt;std::size_t DIMENSION, std::size_t FROM_DIMENSION = DIMENSION, std::
 template&lt;std::size_t MESH_DIMENSION&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void flecsi::topo::unstructured_impl::match_ids </td>
+          <td class="memname">void flecsi::topology::unstructured_impl::match_ids </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1topo_1_1unstructured__impl_1_1parallel__definition.html">parallel_definition</a>&lt; MESH_DIMENSION &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1topology_1_1unstructured__impl_1_1parallel__definition.html">parallel_definition</a>&lt; MESH_DIMENSION &gt; &amp;&#160;</td>
           <td class="paramname"><em>md</em>, </td>
         </tr>
         <tr>
@@ -276,8 +269,8 @@ template&lt;std::size_t MESH_DIMENSION&gt; </div>
 
 </div>
 </div>
-<a id="file_a143ecaebf4fd0a1d1d3d5f0eb657e6d5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a143ecaebf4fd0a1d1d3d5f0eb657e6d5">&#9670;&nbsp;</a></span>naive_coloring()</h2>
+<a id="file_a99a3716f69505869a41f1f7ddd08f3af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a99a3716f69505869a41f1f7ddd08f3af">&#9670;&nbsp;</a></span>naive_coloring()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -288,9 +281,9 @@ template&lt;size_t DIMENSION, size_t MESH_DIMENSION&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::set&lt;size_t&gt; flecsi::topo::unstructured_impl::naive_coloring </td>
+          <td class="memname">std::set&lt;size_t&gt; flecsi::topology::unstructured_impl::naive_coloring </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classflecsi_1_1topo_1_1unstructured__impl_1_1definition.html">definition</a>&lt; MESH_DIMENSION &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1unstructured__impl_1_1definition.html">definition</a>&lt; MESH_DIMENSION &gt; &amp;&#160;</td>
           <td class="paramname"><em>md</em></td><td>)</td>
           <td></td>
         </tr>

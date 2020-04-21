@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: /home/bergen/devel/tuxfan/flecsi/flecsi/util/dimensioned_array.hh File Reference</title>
+<title>Interface Documentation: /home/bergen/devel/tuxfan/flecsi/flecsi/utils/dimensioned_array.hh File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,7 +69,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_03cb165d49ddeda38b6426910c537f95.html">util</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_f75713275d4ea00e650b137792bd2c87.html">utils</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -87,44 +87,44 @@ $(function() {
 <div class="textblock"><code>#include &lt;array&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;ostream&gt;</code><br />
-<code>#include &quot;<a class="el" href="common_8hh_source.html">flecsi/util/common.hh</a>&quot;</code><br />
+<code>#include &lt;<a class="el" href="common_8hh_source.html">flecsi/utils/common.hh</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for dimensioned_array.hh:</div>
 <div class="dyncontent">
-<div class="center"><img src="dimensioned__array_8hh__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2dimensioned__array_8hh" alt=""/></div>
-<map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2dimensioned__array_8hh" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2dimensioned__array_8hh">
-<area shape="rect" id="node5" href="common_8hh.html" title="flecsi/util/common.hh" alt="" coords="423,109,570,136"/>
-<area shape="rect" id="node11" href="id_8hh.html" title="flecsi/util/id.hh" alt="" coords="326,184,433,211"/>
-<area shape="rect" id="node15" href="offset_8hh.html" title="flecsi/util/offset.hh" alt="" coords="121,184,251,211"/>
+<div class="center"><img src="dimensioned__array_8hh__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2dimensioned__array_8hh" alt=""/></div>
+<map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2dimensioned__array_8hh" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2dimensioned__array_8hh">
+<area shape="rect" id="node5" href="common_8hh.html" title="flecsi/utils/common.hh" alt="" coords="423,109,576,136"/>
+<area shape="rect" id="node11" href="id_8hh.html" title="flecsi/utils/id.hh" alt="" coords="323,184,436,211"/>
+<area shape="rect" id="node15" href="offset_8hh.html" title="flecsi/utils/offset.hh" alt="" coords="111,184,247,211"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="dimensioned__array_8hh__dep__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2dimensioned__array_8hhdep" alt=""/></div>
-<map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2dimensioned__array_8hhdep" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2dimensioned__array_8hhdep">
-<area shape="rect" id="node2" href="point_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/util/geometry/point.hh" alt="" coords="607,109,758,165"/>
-<area shape="rect" id="node3" href="geometry_8hh_source.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/ntree/geometry.hh" alt="" coords="245,221,405,277"/>
-<area shape="rect" id="node15" href="topo_2ntree_2types_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/ntree/types.hh" alt="" coords="429,221,568,277"/>
-<area shape="rect" id="node18" href="definition_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/definition.hh" alt="" coords="742,221,943,277"/>
-<area shape="rect" id="node23" href="filling__curve_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/util/geometry/filling\l_curve.hh" alt="" coords="968,213,1104,284"/>
-<area shape="rect" id="node4" href="ntree_2interface_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/ntree/interface.hh" alt="" coords="211,458,367,514"/>
-<area shape="rect" id="node5" href="task__prologue_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/leg/task_prologue.hh" alt="" coords="137,569,316,625"/>
-<area shape="rect" id="node13" href="base_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/base.hh" alt="" coords="308,673,444,729"/>
-<area shape="rect" id="node6" href="exec_2leg_2policy_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/leg/policy.hh" alt="" coords="143,673,279,729"/>
-<area shape="rect" id="node7" href="exec_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/backend.hh" alt="" coords="143,777,279,833"/>
-<area shape="rect" id="node8" href="execution_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution.hh" alt="" coords="136,881,272,937"/>
-<area shape="rect" id="node9" href="control_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/control.hh" alt="" coords="5,985,141,1041"/>
-<area shape="rect" id="node10" href="ftest_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/util/ftest.hh" alt="" coords="71,1089,207,1145"/>
-<area shape="rect" id="node11" href="data_2coloring_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/coloring.hh" alt="" coords="216,985,352,1041"/>
-<area shape="rect" id="node12" href="data_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data.hh" alt="" coords="256,1089,392,1145"/>
-<area shape="rect" id="node14" href="topology_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/topology.hh" alt="" coords="315,777,451,833"/>
-<area shape="rect" id="node16" href="hash__table_8hh_source.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/ntree/hash_table.hh" alt="" coords="327,339,497,395"/>
-<area shape="rect" id="node17" href="ntree_2storage_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/ntree/storage.hh" alt="" coords="521,339,671,395"/>
-<area shape="rect" id="node19" href="closure__utils_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/closure\l_utils.hh" alt="" coords="695,332,868,403"/>
-<area shape="rect" id="node20" href="dcrs__utils_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/dcrs\l_utils.hh" alt="" coords="827,451,983,521"/>
-<area shape="rect" id="node21" href="parallel__definition_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/parallel\l_definition.hh" alt="" coords="943,332,1115,403"/>
-<area shape="rect" id="node22" href="simple__definition_8hh_source.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/simple\l_definition.hh" alt="" coords="1139,332,1309,403"/>
+<div class="center"><img src="dimensioned__array_8hh__dep__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2dimensioned__array_8hhdep" alt=""/></div>
+<map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2dimensioned__array_8hhdep" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2dimensioned__array_8hhdep">
+<area shape="rect" id="node2" href="point_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/utils/geometry/point.hh" alt="" coords="599,109,758,165"/>
+<area shape="rect" id="node3" href="geometry_8hh_source.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/ntree/geometry.hh" alt="" coords="199,221,383,277"/>
+<area shape="rect" id="node15" href="topology_2ntree_2types_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/ntree/types.hh" alt="" coords="456,221,619,277"/>
+<area shape="rect" id="node18" href="definition_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/definition.hh" alt="" coords="802,213,953,284"/>
+<area shape="rect" id="node23" href="filling__curve_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/utils/geometry/filling\l_curve.hh" alt="" coords="977,213,1119,284"/>
+<area shape="rect" id="node4" href="ntree_2interface_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/ntree/interface.hh" alt="" coords="202,458,382,514"/>
+<area shape="rect" id="node5" href="task__prologue_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/task\l_prologue.hh" alt="" coords="161,569,311,640"/>
+<area shape="rect" id="node13" href="base_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/base.hh" alt="" coords="319,688,455,744"/>
+<area shape="rect" id="node6" href="execution_2legion_2policy_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/policy.hh" alt="" coords="115,688,291,744"/>
+<area shape="rect" id="node7" href="execution_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/backend.hh" alt="" coords="125,792,278,848"/>
+<area shape="rect" id="node8" href="execution_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution.hh" alt="" coords="119,896,255,952"/>
+<area shape="rect" id="node9" href="control_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/control.hh" alt="" coords="5,1000,141,1056"/>
+<area shape="rect" id="node10" href="ftest_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/utils/ftest.hh" alt="" coords="71,1104,207,1160"/>
+<area shape="rect" id="node11" href="data_2coloring_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/coloring.hh" alt="" coords="216,1000,352,1056"/>
+<area shape="rect" id="node12" href="data_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data.hh" alt="" coords="256,1104,392,1160"/>
+<area shape="rect" id="node14" href="topology_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/topology.hh" alt="" coords="320,792,456,848"/>
+<area shape="rect" id="node16" href="hash__table_8hh_source.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/ntree/hash_table.hh" alt="" coords="330,339,523,395"/>
+<area shape="rect" id="node17" href="ntree_2storage_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/ntree/storage.hh" alt="" coords="548,339,721,395"/>
+<area shape="rect" id="node19" href="closure__utils_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/closure_utils.hh" alt="" coords="746,332,897,403"/>
+<area shape="rect" id="node20" href="dcrs__utils_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/dcrs_utils.hh" alt="" coords="859,451,1010,521"/>
+<area shape="rect" id="node21" href="parallel__definition_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/parallel_definition.hh" alt="" coords="973,332,1123,403"/>
+<area shape="rect" id="node22" href="simple__definition_8hh_source.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/simple_definition.hh" alt="" coords="1147,332,1298,403"/>
 </map>
 </div>
 </div>
@@ -132,11 +132,11 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1util_1_1and__.html">flecsi::util::and_&lt; CONDITIONS &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1and__.html">flecsi::utils::and_&lt; CONDITIONS &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1util_1_1and___3_01CONDITION_00_01CONDITIONS_8_8_8_01_4.html">flecsi::util::and_&lt; CONDITION, CONDITIONS... &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1and___3_01CONDITION_00_01CONDITIONS_8_8_8_01_4.html">flecsi::utils::and_&lt; CONDITION, CONDITIONS... &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1util_1_1dimensioned__array.html">flecsi::util::dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">flecsi::utils::dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -153,31 +153,31 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ab65e7ccd5a77de92fea3a6c5257d1e62"><td class="memTemplParams" colspan="2"><a id="ab65e7ccd5a77de92fea3a6c5257d1e62"></a>
+<tr class="memitem:a2817e7634f479c6f6e2fddf4eec6c1fc"><td class="memTemplParams" colspan="2"><a id="a2817e7634f479c6f6e2fddf4eec6c1fc"></a>
 template&lt;typename TARGET , typename... TARGETS&gt; </td></tr>
-<tr class="memitem:ab65e7ccd5a77de92fea3a6c5257d1e62"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::util::are_type</b> = and_&lt; std::is_same&lt; TARGETS, TARGET &gt;... &gt;</td></tr>
-<tr class="separator:ab65e7ccd5a77de92fea3a6c5257d1e62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2817e7634f479c6f6e2fddf4eec6c1fc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::utils::are_type</b> = and_&lt; std::is_same&lt; TARGETS, TARGET &gt;... &gt;</td></tr>
+<tr class="separator:a2817e7634f479c6f6e2fddf4eec6c1fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a5064fd439e377b58fa6c76ebcbabc66e"><td class="memItemLeft" align="right" valign="top"><a id="a5064fd439e377b58fa6c76ebcbabc66e"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dimensioned__array_8hh.html#a5064fd439e377b58fa6c76ebcbabc66e">flecsi::util::axis</a> : size_t { <b>x</b> = 0, 
+<tr class="memitem:a95371a68573ff7ee30033e12cea640fb"><td class="memItemLeft" align="right" valign="top"><a id="a95371a68573ff7ee30033e12cea640fb"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dimensioned__array_8hh.html#a95371a68573ff7ee30033e12cea640fb">flecsi::utils::axis</a> : size_t { <b>x</b> = 0, 
 <b>y</b> = 1, 
 <b>z</b> = 2
- }<tr class="memdesc:a5064fd439e377b58fa6c76ebcbabc66e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration for axes. <br /></td></tr>
+ }<tr class="memdesc:a95371a68573ff7ee30033e12cea640fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration for axes. <br /></td></tr>
 </td></tr>
-<tr class="separator:a5064fd439e377b58fa6c76ebcbabc66e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a95371a68573ff7ee30033e12cea640fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a46471881cd4ee801d93e122111119ed8"><td class="memTemplParams" colspan="2">template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </td></tr>
-<tr class="memitem:a46471881cd4ee801d93e122111119ed8"><td class="memTemplItemLeft" align="right" valign="top">dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8hh.html#a46471881cd4ee801d93e122111119ed8">flecsi::util::operator+</a> (const dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;lhs, const dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;rhs)</td></tr>
-<tr class="separator:a46471881cd4ee801d93e122111119ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b9c0c2a908321903cb13eada4c930b3"><td class="memTemplParams" colspan="2">template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </td></tr>
-<tr class="memitem:a5b9c0c2a908321903cb13eada4c930b3"><td class="memTemplItemLeft" align="right" valign="top">dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8hh.html#a5b9c0c2a908321903cb13eada4c930b3">flecsi::util::operator-</a> (const dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;lhs, const dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;rhs)</td></tr>
-<tr class="separator:a5b9c0c2a908321903cb13eada4c930b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad682867310c9922ea0edb3bfe911b4fb"><td class="memTemplParams" colspan="2">template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </td></tr>
-<tr class="memitem:ad682867310c9922ea0edb3bfe911b4fb"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8hh.html#ad682867310c9922ea0edb3bfe911b4fb">flecsi::util::operator&lt;&lt;</a> (std::ostream &amp;stream, dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; const &amp;a)</td></tr>
-<tr class="separator:ad682867310c9922ea0edb3bfe911b4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc96b7755784c6b7c341d167609f7e3b"><td class="memTemplParams" colspan="2">template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </td></tr>
+<tr class="memitem:afc96b7755784c6b7c341d167609f7e3b"><td class="memTemplItemLeft" align="right" valign="top">dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8hh.html#afc96b7755784c6b7c341d167609f7e3b">flecsi::utils::operator+</a> (const dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;lhs, const dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;rhs)</td></tr>
+<tr class="separator:afc96b7755784c6b7c341d167609f7e3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cac6f39545270d7c43a4caea1a9b0c5"><td class="memTemplParams" colspan="2">template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </td></tr>
+<tr class="memitem:a1cac6f39545270d7c43a4caea1a9b0c5"><td class="memTemplItemLeft" align="right" valign="top">dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8hh.html#a1cac6f39545270d7c43a4caea1a9b0c5">flecsi::utils::operator-</a> (const dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;lhs, const dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;rhs)</td></tr>
+<tr class="separator:a1cac6f39545270d7c43a4caea1a9b0c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29fc0fabde78a59acb1cac0aec7a6a33"><td class="memTemplParams" colspan="2">template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </td></tr>
+<tr class="memitem:a29fc0fabde78a59acb1cac0aec7a6a33"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8hh.html#a29fc0fabde78a59acb1cac0aec7a6a33">flecsi::utils::operator&lt;&lt;</a> (std::ostream &amp;stream, dimensioned_array&lt; TYPE, DIMENSION, NAMESPACE &gt; const &amp;a)</td></tr>
+<tr class="separator:a29fc0fabde78a59acb1cac0aec7a6a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a2894bcd11b3f071126b87e69775c793e"></a>
@@ -217,8 +217,8 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="file_a46471881cd4ee801d93e122111119ed8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a46471881cd4ee801d93e122111119ed8">&#9670;&nbsp;</a></span>operator+()</h2>
+<a id="file_afc96b7755784c6b7c341d167609f7e3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_afc96b7755784c6b7c341d167609f7e3b">&#9670;&nbsp;</a></span>operator+()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -226,15 +226,15 @@ Functions</h2></td></tr>
 template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">dimensioned_array&lt;TYPE, DIMENSION, NAMESPACE&gt; flecsi::util::operator+ </td>
+          <td class="memname">dimensioned_array&lt;TYPE, DIMENSION, NAMESPACE&gt; flecsi::utils::operator+ </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1util_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;&#160;</td>
           <td class="paramname"><em>lhs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1util_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;&#160;</td>
           <td class="paramname"><em>rhs</em>&#160;</td>
         </tr>
         <tr>
@@ -256,8 +256,8 @@ template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </div>
 
 </div>
 </div>
-<a id="file_a5b9c0c2a908321903cb13eada4c930b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a5b9c0c2a908321903cb13eada4c930b3">&#9670;&nbsp;</a></span>operator-()</h2>
+<a id="file_a1cac6f39545270d7c43a4caea1a9b0c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a1cac6f39545270d7c43a4caea1a9b0c5">&#9670;&nbsp;</a></span>operator-()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -265,15 +265,15 @@ template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </div>
 template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">dimensioned_array&lt;TYPE, DIMENSION, NAMESPACE&gt; flecsi::util::operator- </td>
+          <td class="memname">dimensioned_array&lt;TYPE, DIMENSION, NAMESPACE&gt; flecsi::utils::operator- </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1util_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;&#160;</td>
           <td class="paramname"><em>lhs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1util_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; &amp;&#160;</td>
           <td class="paramname"><em>rhs</em>&#160;</td>
         </tr>
         <tr>
@@ -295,8 +295,8 @@ template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </div>
 
 </div>
 </div>
-<a id="file_ad682867310c9922ea0edb3bfe911b4fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_ad682867310c9922ea0edb3bfe911b4fb">&#9670;&nbsp;</a></span>operator<<()</h2>
+<a id="file_a29fc0fabde78a59acb1cac0aec7a6a33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a29fc0fabde78a59acb1cac0aec7a6a33">&#9670;&nbsp;</a></span>operator<<()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -304,7 +304,7 @@ template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </div>
 template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::ostream&amp; flecsi::util::operator&lt;&lt; </td>
+          <td class="memname">std::ostream&amp; flecsi::utils::operator&lt;&lt; </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
           <td class="paramname"><em>stream</em>, </td>
@@ -312,7 +312,7 @@ template&lt;typename TYPE , size_t DIMENSION, size_t NAMESPACE&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classflecsi_1_1util_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; TYPE, DIMENSION, NAMESPACE &gt; const &amp;&#160;</td>
           <td class="paramname"><em>a</em>&#160;</td>
         </tr>
         <tr>

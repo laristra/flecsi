@@ -1,5 +1,8 @@
 <map id="flecsi::data::topology_data&lt; topology::index &gt;" name="flecsi::data::topology_data&lt; topology::index &gt;">
-<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; topology::index \&gt;" alt="" coords="5,97,208,138"/>
-<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1detail_1_1region.html" title="flecsi::data::detail\l::region" alt="" coords="37,6,176,47"/>
-<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1detail_1_1partition.html" title="flecsi::data::detail\l::partition" alt="" coords="233,97,372,138"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; topology::index \&gt;" alt="" coords="656,88,836,129"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1legion_1_1region.html" title="flecsi::data::legion\l::region" alt="" coords="352,112,480,153"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::IndexSpace, &amp;Legion::\lRuntime::destroy_index_space \&gt;" alt="" coords="5,5,220,76"/>
+<area shape="rect" id="node7" href="$structflecsi_1_1data_1_1legion_1_1partition.html" title="flecsi::data::legion\l::partition" alt="" coords="504,23,632,64"/>
+<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::FieldSpace, &amp;Legion::\lRuntime::destroy_field_space \&gt;" alt="" coords="9,100,216,171"/>
+<area shape="rect" id="node6" href="$structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::LogicalRegion, &amp;Legion\l::Runtime::destroy_logical\l_region \&gt;" alt="" coords="25,195,200,281"/>
 </map>

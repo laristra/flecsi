@@ -350,7 +350,7 @@ Configure and build flecsi:
 .. code-block:: console
 
   $ cd flecsi && mkdir -p build/legion && cd build/legion
-  $ ../../tools/configure clang/legion
+  $ ../../tools/configure clang legion
   $ make -j 16
 
 Advanced

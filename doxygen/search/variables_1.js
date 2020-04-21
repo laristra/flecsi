@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['count_5fmask',['count_mask',['../classflecsi_1_1util_1_1offset.html#a2d5eb127d143d3b1a4e946e3639a4749',1,'flecsi::util::offset']]]
+  ['count_5fmask',['count_mask',['../classflecsi_1_1utils_1_1offset.html#af6a1a6e811f5459441c5a8870db2e5b9',1,'flecsi::utils::offset']]]
 ];

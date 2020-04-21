@@ -80,11 +80,11 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1util_1_1bit__buffer.html">flecsi::util::bit_buffer&lt; T, BITS_PER_INDEX &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1bit__buffer.html">flecsi::utils::bit_buffer&lt; T, BITS_PER_INDEX &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1util_1_1tuple__walker.html">flecsi::util::tuple_walker&lt; CRTP_TYPE &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1tuple__walker.html">flecsi::utils::tuple_walker&lt; CRTP_TYPE &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1util_1_1typeify.html">flecsi::util::typeify&lt; T, M &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1typeify.html">flecsi::utils::typeify&lt; T, M &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconst__string.html">const_string</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classconst__string.html" title="const_string provides compile-time string constants and hashing... ">const_string</a> provides compile-time string constants and hashing...  <a href="classconst__string.html#details">More...</a><br /></td></tr>
@@ -92,26 +92,66 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:gac96b31c3919e7cd7c2bcdc964ffdfb12"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a>(name)&#160;&#160;&#160;::<a class="el" href="classflecsi_1_1util_1_1const__string__t.html">flecsi::util::const_string_t</a>{name}.hash()</td></tr>
+<tr class="memitem:gac96b31c3919e7cd7c2bcdc964ffdfb12"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a>(name)&#160;&#160;&#160;<a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a>{name}.hash()</td></tr>
 <tr class="separator:gac96b31c3919e7cd7c2bcdc964ffdfb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga41398506ffdcc9ef7ef1aae859a3c4f8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(name)&#160;&#160;&#160;::<a class="el" href="classflecsi_1_1util_1_1const__string__t.html">flecsi::util::const_string_t</a>{flecsi_internal_stringify(name)}.hash()</td></tr>
+<tr class="memitem:ga41398506ffdcc9ef7ef1aae859a3c4f8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(name)&#160;&#160;&#160;<a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a>{flecsi_internal_stringify(name)}.hash()</td></tr>
 <tr class="separator:ga41398506ffdcc9ef7ef1aae859a3c4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gae5a9706d22037b6e748128689fb0b6ac"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gae5a9706d22037b6e748128689fb0b6ac">flecsi::util::demangle</a> (const char *const name)</td></tr>
-<tr class="separator:gae5a9706d22037b6e748128689fb0b6ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6e5af774450374ecdbbc2898bb65031e"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:ga6e5af774450374ecdbbc2898bb65031e"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga6e5af774450374ecdbbc2898bb65031e">flecsi::util::type</a> ()</td></tr>
-<tr class="separator:ga6e5af774450374ecdbbc2898bb65031e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab14902e541853aef2482e355ba22bf1b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gab14902e541853aef2482e355ba22bf1b">flecsi::util::type</a> (const std::type_info &amp;type_info)</td></tr>
-<tr class="separator:gab14902e541853aef2482e355ba22bf1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac0f38e82d20da05a1e36542f96e7d167"><td class="memTemplParams" colspan="2">template&lt;typename TUPLE_TYPE &gt; </td></tr>
-<tr class="memitem:gac0f38e82d20da05a1e36542f96e7d167"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#gac0f38e82d20da05a1e36542f96e7d167">flecsi::util::tuple_walker&lt; CRTP_TYPE &gt;::walk</a> (TUPLE_TYPE &amp;t)</td></tr>
-<tr class="separator:gac0f38e82d20da05a1e36542f96e7d167"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga661afc8b98f3e475bd0a4f47fb335be4"><td class="memTemplParams" colspan="2">template&lt;typename TUPLE_TYPE &gt; </td></tr>
-<tr class="memitem:ga661afc8b98f3e475bd0a4f47fb335be4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga661afc8b98f3e475bd0a4f47fb335be4">flecsi::util::tuple_walker&lt; CRTP_TYPE &gt;::walk_types</a> ()</td></tr>
-<tr class="separator:ga661afc8b98f3e475bd0a4f47fb335be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab2a7b452e19b5f67a27d9a129f44b805"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:gab2a7b452e19b5f67a27d9a129f44b805"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#gab2a7b452e19b5f67a27d9a129f44b805">flecsi::utils::checksum</a> (T *buffer, std::size_t elements, <a class="el" href="structflecsi_1_1utils_1_1checksum__t.html">checksum_t</a> &amp;sum, const char *digest=&quot;md5&quot;)</td></tr>
+<tr class="separator:gab2a7b452e19b5f67a27d9a129f44b805"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga02accc209c261769de032ef902a3f8d2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga02accc209c261769de032ef902a3f8d2">flecsi::utils::demangle</a> (const char *const name)</td></tr>
+<tr class="separator:ga02accc209c261769de032ef902a3f8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga772d97c8cb5af2fc0f815a1b2449c6e6"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ga772d97c8cb5af2fc0f815a1b2449c6e6"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga772d97c8cb5af2fc0f815a1b2449c6e6">flecsi::utils::type</a> ()</td></tr>
+<tr class="separator:ga772d97c8cb5af2fc0f815a1b2449c6e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabd2ac87675d6a5655a9df03d8d76ef14"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gabd2ac87675d6a5655a9df03d8d76ef14">flecsi::utils::type</a> (const std::type_info &amp;type_info)</td></tr>
+<tr class="separator:gabd2ac87675d6a5655a9df03d8d76ef14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga67b0d3e3d9f936c8198c2f49f9844341"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t DOMAIN_, size_t DIMENSION&gt; </td></tr>
+<tr class="memitem:ga67b0d3e3d9f936c8198c2f49f9844341"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga67b0d3e3d9f936c8198c2f49f9844341">flecsi::utils::hash::topology_entity_hash</a> ()</td></tr>
+<tr class="separator:ga67b0d3e3d9f936c8198c2f49f9844341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga20da601ede337cfcec9476ee6f0e3fee"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga20da601ede337cfcec9476ee6f0e3fee">flecsi::utils::hash::topology_entity_index</a> (size_t key)</td></tr>
+<tr class="separator:ga20da601ede337cfcec9476ee6f0e3fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa7b908734810512b027c3a2e2b7585e1"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gaa7b908734810512b027c3a2e2b7585e1">flecsi::utils::hash::topology_entity_domain</a> (size_t key)</td></tr>
+<tr class="separator:gaa7b908734810512b027c3a2e2b7585e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1b1af78fff3f229964e2603bac4f2575"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga1b1af78fff3f229964e2603bac4f2575">flecsi::utils::hash::topology_entity_dimension</a> (size_t key)</td></tr>
+<tr class="separator:ga1b1af78fff3f229964e2603bac4f2575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae0178c1208c0526325379b2b838074e6"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t FROM_DOMAIN, size_t TO_DOMAIN, size_t FROM_DIMENSION, size_t TO_DIMENSION&gt; </td></tr>
+<tr class="memitem:gae0178c1208c0526325379b2b838074e6"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#gae0178c1208c0526325379b2b838074e6">flecsi::utils::hash::topology_adjacency_hash</a> ()</td></tr>
+<tr class="separator:gae0178c1208c0526325379b2b838074e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga630d61b20c0bfb73648ba65ab7309bd3"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t INDEX_SUBSPACE&gt; </td></tr>
+<tr class="memitem:ga630d61b20c0bfb73648ba65ab7309bd3"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga630d61b20c0bfb73648ba65ab7309bd3">flecsi::utils::hash::topology_index_subspace_hash</a> ()</td></tr>
+<tr class="separator:ga630d61b20c0bfb73648ba65ab7309bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabdbb37f7a99667c55e2a0fe934ae56b8"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gabdbb37f7a99667c55e2a0fe934ae56b8">flecsi::utils::hash::topology_adjacency_index</a> (size_t key)</td></tr>
+<tr class="separator:gabdbb37f7a99667c55e2a0fe934ae56b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaca810bb4ed42427ed1d78f605789c2b0"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gaca810bb4ed42427ed1d78f605789c2b0">flecsi::utils::hash::topology_adjacency_from_domain</a> (size_t key)</td></tr>
+<tr class="separator:gaca810bb4ed42427ed1d78f605789c2b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6b9b9b2eb95bbdfb4db33dd4baa20230"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga6b9b9b2eb95bbdfb4db33dd4baa20230">flecsi::utils::hash::topology_adjacency_to_domain</a> (size_t key)</td></tr>
+<tr class="separator:ga6b9b9b2eb95bbdfb4db33dd4baa20230"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga76ed788d79210d1e10eb42a8411152a9"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga76ed788d79210d1e10eb42a8411152a9">flecsi::utils::hash::topology_adjacency_from_dimension</a> (size_t key)</td></tr>
+<tr class="separator:ga76ed788d79210d1e10eb42a8411152a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3a8d3b3449ddae7e734313ab9aaa2f4c"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga3a8d3b3449ddae7e734313ab9aaa2f4c">flecsi::utils::hash::topology_adjacency_to_dimension</a> (size_t key)</td></tr>
+<tr class="separator:ga3a8d3b3449ddae7e734313ab9aaa2f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadef29ea4515850d291de08d56eea1cc2"><td class="memTemplParams" colspan="2">template&lt;size_t LABEL, size_t NAMESPACE, size_t NAME, size_t INDEX_SPACE&gt; </td></tr>
+<tr class="memitem:gadef29ea4515850d291de08d56eea1cc2"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#gadef29ea4515850d291de08d56eea1cc2">flecsi::utils::hash::topology_internal_field_hash</a> ()</td></tr>
+<tr class="separator:gadef29ea4515850d291de08d56eea1cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8d5c49f83304fef0f004f26a1ca4b13a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga8d5c49f83304fef0f004f26a1ca4b13a">flecsi::utils::hash::topology_internal_field_hash</a> (size_t label, size_t nspace, size_t name, size_t index_space)</td></tr>
+<tr class="separator:ga8d5c49f83304fef0f004f26a1ca4b13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab076f72f86858d8f6c76e0c6378f8b22"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gab076f72f86858d8f6c76e0c6378f8b22">flecsi::utils::hash::topology_internal_field_index_space</a> (size_t key)</td></tr>
+<tr class="separator:gab076f72f86858d8f6c76e0c6378f8b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8e0feaf3e88cb778f03665548a6a50e4"><td class="memTemplParams" colspan="2">template&lt;size_t DIMENSION, size_t DOMAIN_&gt; </td></tr>
+<tr class="memitem:ga8e0feaf3e88cb778f03665548a6a50e4"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga8e0feaf3e88cb778f03665548a6a50e4">flecsi::utils::hash::intermediate_hash</a> ()</td></tr>
+<tr class="separator:ga8e0feaf3e88cb778f03665548a6a50e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga468cd97557ee3a381b31530362e86e74"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga468cd97557ee3a381b31530362e86e74">flecsi::utils::hash::intermediate_hash</a> (size_t dimension, size_t domain)</td></tr>
+<tr class="separator:ga468cd97557ee3a381b31530362e86e74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5f66c87e949e2e38b8f8b5d16ff47549"><td class="memTemplParams" colspan="2">template&lt;typename TUPLE_TYPE &gt; </td></tr>
+<tr class="memitem:ga5f66c87e949e2e38b8f8b5d16ff47549"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga5f66c87e949e2e38b8f8b5d16ff47549">flecsi::utils::tuple_walker&lt; CRTP_TYPE &gt;::walk</a> (TUPLE_TYPE &amp;t)</td></tr>
+<tr class="separator:ga5f66c87e949e2e38b8f8b5d16ff47549"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5e48bc9f96a2ebd73cf90556bdbe4670"><td class="memTemplParams" colspan="2">template&lt;typename TUPLE_TYPE &gt; </td></tr>
+<tr class="memitem:ga5e48bc9f96a2ebd73cf90556bdbe4670"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__utils.html#ga5e48bc9f96a2ebd73cf90556bdbe4670">flecsi::utils::tuple_walker&lt; CRTP_TYPE &gt;::walk_types</a> ()</td></tr>
+<tr class="separator:ga5e48bc9f96a2ebd73cf90556bdbe4670"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Define the utilities group. </p>
@@ -127,7 +167,7 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">name</td><td>)</td>
-          <td>&#160;&#160;&#160;::<a class="el" href="classflecsi_1_1util_1_1const__string__t.html">flecsi::util::const_string_t</a>{flecsi_internal_stringify(name)}.hash()</td>
+          <td>&#160;&#160;&#160;<a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a>{flecsi_internal_stringify(name)}.hash()</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -152,7 +192,7 @@ Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">name</td><td>)</td>
-          <td>&#160;&#160;&#160;::<a class="el" href="classflecsi_1_1util_1_1const__string__t.html">flecsi::util::const_string_t</a>{name}.hash()</td>
+          <td>&#160;&#160;&#160;<a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">flecsi::utils::const_string_t</a>{name}.hash()</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -167,14 +207,73 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="gae5a9706d22037b6e748128689fb0b6ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae5a9706d22037b6e748128689fb0b6ac">&#9670;&nbsp;</a></span>demangle()</h2>
+<a id="gab2a7b452e19b5f67a27d9a129f44b805"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab2a7b452e19b5f67a27d9a129f44b805">&#9670;&nbsp;</a></span>checksum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::utils::checksum </td>
+          <td>(</td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1utils_1_1checksum__t.html">checksum_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>sum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>digest</em> = <code>&quot;md5&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute the checksum of an array.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">buffer</td><td>The data buffer on which to compute the checksum. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">elements</td><td>The size of the buffer. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">sum</td><td>The checksum data structure to fill. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">digest</td><td>The digest context. </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Add all digests to table</p>
+<p>Initialize context</p>
+<p>Get digest</p>
+<p>Initialize digest</p>
+<p>Update digest with buffer</p>
+<p>Finalize</p>
+<p>Free resources</p>
+
+</div>
+</div>
+<a id="ga02accc209c261769de032ef902a3f8d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga02accc209c261769de032ef902a3f8d2">&#9670;&nbsp;</a></span>demangle()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string flecsi::util::demangle </td>
+          <td class="memname">std::string flecsi::utils::demangle </td>
           <td>(</td>
           <td class="paramtype">const char *const&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -192,8 +291,596 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga6e5af774450374ecdbbc2898bb65031e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6e5af774450374ecdbbc2898bb65031e">&#9670;&nbsp;</a></span>type() <span class="overload">[1/2]</span></h2>
+<a id="ga8e0feaf3e88cb778f03665548a6a50e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8e0feaf3e88cb778f03665548a6a50e4">&#9670;&nbsp;</a></span>intermediate_hash() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t DIMENSION, size_t DOMAIN_&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::intermediate_hash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a hash key suitable for mapping intermediate entity types.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">DIMENSION</td><td>The entity dimension. </td></tr>
+    <tr><td class="paramname">DOMAIN</td><td>The entity domain. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga468cd97557ee3a381b31530362e86e74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga468cd97557ee3a381b31530362e86e74">&#9670;&nbsp;</a></span>intermediate_hash() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t flecsi::utils::hash::intermediate_hash </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>dimension</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>domain</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a hash key suitable for mapping intermediate entity types.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">DIMENSION</td><td>The entity dimension. </td></tr>
+    <tr><td class="paramname">DOMAIN</td><td>The entity domain. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga76ed788d79210d1e10eb42a8411152a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga76ed788d79210d1e10eb42a8411152a9">&#9670;&nbsp;</a></span>topology_adjacency_from_dimension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_adjacency_from_dimension </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Recover the dimension from a key to a topology entity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The topology entity key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaca810bb4ed42427ed1d78f605789c2b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaca810bb4ed42427ed1d78f605789c2b0">&#9670;&nbsp;</a></span>topology_adjacency_from_domain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_adjacency_from_domain </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Recover the domain from a key to a topology entity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The topology entity key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gae0178c1208c0526325379b2b838074e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae0178c1208c0526325379b2b838074e6">&#9670;&nbsp;</a></span>topology_adjacency_hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t FROM_DOMAIN, size_t TO_DOMAIN, size_t FROM_DIMENSION, size_t TO_DIMENSION&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_adjacency_hash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a hash key suitable for registering topology adjacency types with the low-level field registry.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">NAMESPACE</td><td>A namespace identifier. </td></tr>
+    <tr><td class="paramname">NAME</td><td>A name identifier. </td></tr>
+    <tr><td class="paramname">INDEX</td><td>The associated index space. </td></tr>
+    <tr><td class="paramname">FROM_DOMAIN</td><td>The from domain. </td></tr>
+    <tr><td class="paramname">TO_DOMAIN</td><td>The to domain. </td></tr>
+    <tr><td class="paramname">FROM_DIMENSION</td><td>The topological from dimension. </td></tr>
+    <tr><td class="paramname">TO_DIMENSION</td><td>The topological to dimension. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gabdbb37f7a99667c55e2a0fe934ae56b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabdbb37f7a99667c55e2a0fe934ae56b8">&#9670;&nbsp;</a></span>topology_adjacency_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_adjacency_index </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Recover the index space from a key to a topology entity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The topology entity key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga3a8d3b3449ddae7e734313ab9aaa2f4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3a8d3b3449ddae7e734313ab9aaa2f4c">&#9670;&nbsp;</a></span>topology_adjacency_to_dimension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_adjacency_to_dimension </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Recover the dimension from a key to a topology entity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The topology entity key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga6b9b9b2eb95bbdfb4db33dd4baa20230"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6b9b9b2eb95bbdfb4db33dd4baa20230">&#9670;&nbsp;</a></span>topology_adjacency_to_domain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_adjacency_to_domain </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Recover the to domain from a key to a topology entity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The topology entity key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga1b1af78fff3f229964e2603bac4f2575"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1b1af78fff3f229964e2603bac4f2575">&#9670;&nbsp;</a></span>topology_entity_dimension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_entity_dimension </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Recover the dimension from a key to a topology entity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The topology entity key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaa7b908734810512b027c3a2e2b7585e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa7b908734810512b027c3a2e2b7585e1">&#9670;&nbsp;</a></span>topology_entity_domain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_entity_domain </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Recover the domain from a key to a topology entity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The topology entity key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga67b0d3e3d9f936c8198c2f49f9844341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga67b0d3e3d9f936c8198c2f49f9844341">&#9670;&nbsp;</a></span>topology_entity_hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t DOMAIN_, size_t DIMENSION&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_entity_hash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a hash key suitable for registering topology entity types with the low-level field registry.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">NAMESPACE</td><td>A namespace identifier. </td></tr>
+    <tr><td class="paramname">NAME</td><td>A name identifier. </td></tr>
+    <tr><td class="paramname">INDEX</td><td>The associated index space. </td></tr>
+    <tr><td class="paramname">DOMAIN</td><td>The domain. </td></tr>
+    <tr><td class="paramname">DIMENSION</td><td>The topological dimension. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga20da601ede337cfcec9476ee6f0e3fee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga20da601ede337cfcec9476ee6f0e3fee">&#9670;&nbsp;</a></span>topology_entity_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_entity_index </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Recover the index space from a key to a topology entity.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The topology entity key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga630d61b20c0bfb73648ba65ab7309bd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga630d61b20c0bfb73648ba65ab7309bd3">&#9670;&nbsp;</a></span>topology_index_subspace_hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t INDEX_SUBSPACE&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_index_subspace_hash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a hash key suitable for registering topology index subspaces with the low-level field registry.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">NAMESPACE</td><td>A namespace identifier. </td></tr>
+    <tr><td class="paramname">NAME</td><td>A name identifier. </td></tr>
+    <tr><td class="paramname">INDEX</td><td>The associated index space. </td></tr>
+    <tr><td class="paramname">INDEX_SUBSPACE</td><td>The associated index subspace. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gadef29ea4515850d291de08d56eea1cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadef29ea4515850d291de08d56eea1cc2">&#9670;&nbsp;</a></span>topology_internal_field_hash() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t LABEL, size_t NAMESPACE, size_t NAME, size_t INDEX_SPACE&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_internal_field_hash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a hash key suitable for registering internal topology field data with the low-level field registry.</p>
+<dl class="section note"><dt>Note</dt><dd>This hash sets the most significant bit to '1' to be used as a boolean that distinguishes topology fields from normal fields.</dd></dl>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">LABEL</td><td>The internal label for the topology field. </td></tr>
+    <tr><td class="paramname">NAMESPACE</td><td>The namespace of the topology instance. </td></tr>
+    <tr><td class="paramname">NAME</td><td>The name of the topology instance. </td></tr>
+    <tr><td class="paramname">INDEX_SPACE</td><td>The index space id of the associated field. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga8d5c49f83304fef0f004f26a1ca4b13a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8d5c49f83304fef0f004f26a1ca4b13a">&#9670;&nbsp;</a></span>topology_internal_field_hash() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t flecsi::utils::hash::topology_internal_field_hash </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>nspace</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index_space</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a hash key suitable for registering internal topology field data with the low-level field registry.</p>
+<dl class="section note"><dt>Note</dt><dd>This hash sets the most significant bit to '1' to be used as a boolean that distinguishes topology fields from normal fields.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">label</td><td>The internal label for the topology field. </td></tr>
+    <tr><td class="paramname">nspace</td><td>The namespace of the topology instance. </td></tr>
+    <tr><td class="paramname">name</td><td>The name of the topology instance. </td></tr>
+    <tr><td class="paramname">index_space</td><td>The index space id of the associated field. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gab076f72f86858d8f6c76e0c6378f8b22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab076f72f86858d8f6c76e0c6378f8b22">&#9670;&nbsp;</a></span>topology_internal_field_index_space()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::utils::hash::topology_internal_field_index_space </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the index space component of an internal topology key.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The internal topology key. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga772d97c8cb5af2fc0f815a1b2449c6e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga772d97c8cb5af2fc0f815a1b2449c6e6">&#9670;&nbsp;</a></span>type() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -204,7 +891,7 @@ template&lt;class T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string flecsi::util::type </td>
+          <td class="memname">std::string flecsi::utils::type </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -226,8 +913,8 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="gab14902e541853aef2482e355ba22bf1b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab14902e541853aef2482e355ba22bf1b">&#9670;&nbsp;</a></span>type() <span class="overload">[2/2]</span></h2>
+<a id="gabd2ac87675d6a5655a9df03d8d76ef14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabd2ac87675d6a5655a9df03d8d76ef14">&#9670;&nbsp;</a></span>type() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -236,7 +923,7 @@ template&lt;class T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string flecsi::util::type </td>
+          <td class="memname">std::string flecsi::utils::type </td>
           <td>(</td>
           <td class="paramtype">const std::type_info &amp;&#160;</td>
           <td class="paramname"><em>type_info</em></td><td>)</td>
@@ -259,8 +946,8 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="gac0f38e82d20da05a1e36542f96e7d167"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac0f38e82d20da05a1e36542f96e7d167">&#9670;&nbsp;</a></span>walk()</h2>
+<a id="ga5f66c87e949e2e38b8f8b5d16ff47549"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5f66c87e949e2e38b8f8b5d16ff47549">&#9670;&nbsp;</a></span>walk()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -273,7 +960,7 @@ template&lt;typename TUPLE_TYPE &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structflecsi_1_1util_1_1tuple__walker.html">flecsi::util::tuple_walker</a>&lt; CRTP_TYPE &gt;::walk </td>
+          <td class="memname">void <a class="el" href="structflecsi_1_1utils_1_1tuple__walker.html">flecsi::utils::tuple_walker</a>&lt; CRTP_TYPE &gt;::walk </td>
           <td>(</td>
           <td class="paramtype">TUPLE_TYPE &amp;&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
@@ -302,8 +989,8 @@ template&lt;typename TUPLE_TYPE &gt; </div>
 
 </div>
 </div>
-<a id="ga661afc8b98f3e475bd0a4f47fb335be4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga661afc8b98f3e475bd0a4f47fb335be4">&#9670;&nbsp;</a></span>walk_types()</h2>
+<a id="ga5e48bc9f96a2ebd73cf90556bdbe4670"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5e48bc9f96a2ebd73cf90556bdbe4670">&#9670;&nbsp;</a></span>walk_types()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -316,7 +1003,7 @@ template&lt;typename TUPLE_TYPE &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structflecsi_1_1util_1_1tuple__walker.html">flecsi::util::tuple_walker</a>&lt; CRTP_TYPE &gt;::walk_types </td>
+          <td class="memname">void <a class="el" href="structflecsi_1_1utils_1_1tuple__walker.html">flecsi::utils::tuple_walker</a>&lt; CRTP_TYPE &gt;::walk_types </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

@@ -1,4 +1,4 @@
 <map id="flecsi::topology::ntree_entity&lt; DIM, KEY &gt;" name="flecsi::topology::ntree_entity&lt; DIM, KEY &gt;">
-<area shape="rect" id="node2" href="$classflecsi_1_1topology_1_1entity__base.html" title="entity_base defines a base class that stores the raw info that a topology needs, i.e: id and rank data " alt="" coords="13,96,163,123"/>
-<area shape="rect" id="node3" href="$classflecsi_1_1topology_1_1entity__base__.html" title="flecsi::topology::entity\l_base_" alt="" coords="5,6,171,47"/>
+<area shape="rect" id="node2" href="$classflecsi_1_1topology_1_1entity__base.html" title="entity_base defines a base class that stores the raw info that a topology needs, i.e: id and rank data " alt="" coords="13,95,149,121"/>
+<area shape="rect" id="node3" href="$classflecsi_1_1topology_1_1entity__base__.html" title="flecsi::topology::entity\l_base_" alt="" coords="5,5,156,47"/>
 </map>

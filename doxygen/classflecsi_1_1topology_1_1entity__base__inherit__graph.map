@@ -1,7 +1,7 @@
 <map id="flecsi::topology::entity_base&lt; NUM_DOMAINS &gt;" name="flecsi::topology::entity_base&lt; NUM_DOMAINS &gt;">
-<area shape="rect" id="node3" href="$classflecsi_1_1topology_1_1mesh__entity.html" title="mesh_entity parameterizes a mesh entity base with its dimension and number of domains ..." alt="" coords="461,5,659,46"/>
-<area shape="rect" id="node4" href="$classflecsi_1_1topology_1_1ntree__entity.html" title="flecsi::topology::ntree\l_entity\&lt; 0 \&gt;" alt="" coords="479,70,641,111"/>
-<area shape="rect" id="node5" href="$classflecsi_1_1topology_1_1ntree__entity__holder.html" title="flecsi::topology::ntree\l_entity_holder\&lt; 0 \&gt;" alt="" coords="479,135,641,177"/>
-<area shape="rect" id="node6" href="$classflecsi_1_1topology_1_1ntree__node.html" title="flecsi::topology::ntree\l_node\&lt; 0 \&gt;" alt="" coords="479,201,641,242"/>
-<area shape="rect" id="node2" href="$classflecsi_1_1topology_1_1entity__base__.html" title="flecsi::topology::entity\l_base_" alt="" coords="6,103,173,145"/>
+<area shape="rect" id="node3" href="$classflecsi_1_1topology_1_1mesh__entity.html" title="mesh_entity parameterizes a mesh entity base with its dimension and number of domains ..." alt="" coords="435,5,621,47"/>
+<area shape="rect" id="node4" href="$classflecsi_1_1topology_1_1ntree__entity.html" title="flecsi::topology::ntree\l_entity\&lt; 0 \&gt;" alt="" coords="455,71,601,112"/>
+<area shape="rect" id="node5" href="$classflecsi_1_1topology_1_1ntree__entity__holder.html" title="flecsi::topology::ntree\l_entity_holder\&lt; 0 \&gt;" alt="" coords="455,136,601,177"/>
+<area shape="rect" id="node6" href="$classflecsi_1_1topology_1_1ntree__node.html" title="flecsi::topology::ntree\l_node\&lt; 0 \&gt;" alt="" coords="455,201,601,243"/>
+<area shape="rect" id="node2" href="$classflecsi_1_1topology_1_1entity__base__.html" title="flecsi::topology::entity\l_base_" alt="" coords="5,104,156,145"/>
 </map>

@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>Interface Documentation: /home/bergen/devel/tuxfan/flecsi/flecsi/util/bitutils.hh File Reference</title>
+<title>Interface Documentation: /home/bergen/devel/tuxfan/flecsi/flecsi/utils/bitutils.hh File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,7 +69,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_03cb165d49ddeda38b6426910c537f95.html">util</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_688c864b7b93022ab3a371d21adf78fb.html">flecsi</a></li><li class="navelem"><a class="el" href="dir_f75713275d4ea00e650b137792bd2c87.html">utils</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -79,34 +79,35 @@ $(function() {
 <div class="title">bitutils.hh File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cstddef&gt;</code><br />
+<div class="textblock"><code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for bitutils.hh:</div>
 <div class="dyncontent">
-<div class="center"><img src="bitutils_8hh__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2bitutils_8hh" alt=""/></div>
+<div class="center"><img src="bitutils_8hh__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2bitutils_8hh" alt=""/></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="bitutils_8hh__dep__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2bitutils_8hhdep" alt=""/></div>
-<map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2bitutils_8hhdep" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2util_2bitutils_8hhdep">
-<area shape="rect" id="node2" href="privilege_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/privilege.hh" alt="" coords="383,109,519,165"/>
-<area shape="rect" id="node3" href="field_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/field.hh" alt="" coords="593,213,729,269"/>
-<area shape="rect" id="node6" href="bind__accessors_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/leg/bind_accessors.hh" alt="" coords="233,421,421,477"/>
-<area shape="rect" id="node14" href="task__prologue_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/leg/task_prologue.hh" alt="" coords="496,421,675,477"/>
-<area shape="rect" id="node15" href="unbind__accessors_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/leg/unbind_accessors.hh" alt="" coords="5,421,208,477"/>
-<area shape="rect" id="node4" href="accessor_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/accessor.hh" alt="" coords="383,317,519,373"/>
-<area shape="rect" id="node16" href="io_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/io/backend.hh" alt="" coords="699,421,835,477"/>
-<area shape="rect" id="node18" href="io_2leg_2policy_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/io/leg/policy.hh" alt="" coords="699,317,835,373"/>
-<area shape="rect" id="node5" href="data_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data.hh" alt="" coords="456,1045,592,1101"/>
-<area shape="rect" id="node7" href="task__wrapper_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/leg/task_wrapper.hh" alt="" coords="239,525,414,581"/>
-<area shape="rect" id="node8" href="exec_2leg_2policy_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/leg/policy.hh" alt="" coords="517,629,653,685"/>
-<area shape="rect" id="node9" href="exec_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/exec/backend.hh" alt="" coords="539,733,675,789"/>
-<area shape="rect" id="node10" href="execution_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution.hh" alt="" coords="580,837,716,893"/>
-<area shape="rect" id="node11" href="control_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/control.hh" alt="" coords="707,941,843,997"/>
-<area shape="rect" id="node12" href="ftest_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/util/ftest.hh" alt="" coords="641,1045,777,1101"/>
-<area shape="rect" id="node13" href="data_2coloring_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/coloring.hh" alt="" coords="496,941,632,997"/>
-<area shape="rect" id="node17" href="io_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi/io.hh" alt="" coords="685,533,849,574"/>
+<div class="center"><img src="bitutils_8hh__dep__incl.png" border="0" usemap="#_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2bitutils_8hhdep" alt=""/></div>
+<map name="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2bitutils_8hhdep" id="_2home_2bergen_2devel_2tuxfan_2flecsi_2flecsi_2utils_2bitutils_8hhdep">
+<area shape="rect" id="node2" href="privilege_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/privilege.hh" alt="" coords="304,109,440,165"/>
+<area shape="rect" id="node3" href="field_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/field.hh" alt="" coords="515,213,651,269"/>
+<area shape="rect" id="node6" href="bind__accessors_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/bind\l_accessors.hh" alt="" coords="193,421,341,492"/>
+<area shape="rect" id="node14" href="task__prologue_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/task\l_prologue.hh" alt="" coords="416,421,565,492"/>
+<area shape="rect" id="node15" href="unbind__accessors_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/unbind\l_accessors.hh" alt="" coords="5,421,168,492"/>
+<area shape="rect" id="node4" href="accessor_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/accessor.hh" alt="" coords="304,317,440,373"/>
+<area shape="rect" id="node16" href="io_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/io/backend.hh" alt="" coords="597,429,733,485"/>
+<area shape="rect" id="node18" href="io_2legion_2policy_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/io/legion/policy.hh" alt="" coords="612,317,748,373"/>
+<area shape="rect" id="node5" href="data_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data.hh" alt="" coords="376,1075,512,1131"/>
+<area shape="rect" id="node7" href="task__wrapper_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/task\l_wrapper.hh" alt="" coords="192,540,341,611"/>
+<area shape="rect" id="node8" href="execution_2legion_2policy_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/policy.hh" alt="" coords="416,659,592,715"/>
+<area shape="rect" id="node9" href="execution_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/backend.hh" alt="" coords="449,763,602,819"/>
+<area shape="rect" id="node10" href="execution_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution.hh" alt="" coords="500,867,636,923"/>
+<area shape="rect" id="node11" href="control_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/control.hh" alt="" coords="627,971,763,1027"/>
+<area shape="rect" id="node12" href="ftest_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/utils/ftest.hh" alt="" coords="561,1075,697,1131"/>
+<area shape="rect" id="node13" href="data_2coloring_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/coloring.hh" alt="" coords="416,971,552,1027"/>
+<area shape="rect" id="node17" href="io_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi/io.hh" alt="" coords="583,555,747,596"/>
 </map>
 </div>
 </div>

@@ -1,6 +1,6 @@
 <map id="flecsi::data::reference_base" name="flecsi::data::reference_base">
 <area shape="rect" id="node2" href="$structflecsi_1_1data_1_1accessor_3_01dense_00_01DATA__TYPE_00_01PRIVILEGES_01_4.html" title="flecsi::data::accessor\l\&lt; dense, DATA_TYPE, PRIVILEGES \&gt;" alt="" coords="236,5,491,47"/>
 <area shape="rect" id="node3" href="$structflecsi_1_1data_1_1topology__accessor.html" title="flecsi::data::topology\l_accessor\&lt; TOPOLOGY_TYPE,\l PRIVILEGES \&gt;" alt="" coords="257,71,470,127"/>
-<area shape="rect" id="node4" href="$structflecsi_1_1topo_1_1set.html" title="flecsi::topo::set\&lt;\l POLICY_TYPE \&gt;" alt="" coords="299,152,428,193"/>
-<area shape="rect" id="node5" href="$structflecsi_1_1topo_1_1unstructured.html" title="flecsi::topo::unstructured\l\&lt; POLICY_TYPE \&gt;" alt="" coords="280,217,447,259"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1topology_1_1set.html" title="flecsi::topology::set\l\&lt; POLICY_TYPE \&gt;" alt="" coords="295,152,432,193"/>
+<area shape="rect" id="node5" href="$structflecsi_1_1topology_1_1unstructured.html" title="flecsi::topology::unstructured\l\&lt; POLICY_TYPE \&gt;" alt="" coords="268,217,459,259"/>
 </map>
