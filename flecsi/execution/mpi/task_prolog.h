@@ -632,54 +632,55 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   void update_ghost_row_sizes(HANDLE_TYPE & h)
   {
     auto & context = context_t::instance();
-    auto index_coloring = context.coloring(h.index_space);
+    auto & index_coloring = context.coloring(h.index_space);
     auto & field_metadata = context.registered_sparse_field_metadata().at(h.fid);
 
     // send shared row counts to populate ghost row count list (TODO: aggregate this communication)
-    int send_count = 0;
-    for(auto & shared : index_coloring.shared) {
-      send_count += shared.shared.size();
-    }
-    std::vector<MPI_Request> requests(send_count + h.num_ghost_);
-    std::vector<MPI_Status> statuses(send_count + h.num_ghost_);
-
+    std::map<int, std::vector<uint32_t>> all_send_buf;
+    std::map<int, std::vector<uint32_t>> all_recv_buf;
+    std::vector<MPI_Request> all_send_req;
+    std::vector<MPI_Request> all_recv_req;
     const MPI_Datatype count_mpi_type = utils::mpi_type<std::uint32_t>();
-    std::vector<uint32_t> shared_row_counts;
-    for(auto & shared : index_coloring.shared) {
-      for(auto peer : shared.shared) {
-        shared_row_counts.push_back(
-          h.rows[h.num_exclusive_ + shared.offset].size());
+
+    // post revieves
+    for (const auto & el : field_metadata.ghost_indices) {
+      int rank = el.first;
+      int bufsize = el.second.size();
+      all_recv_buf.emplace(rank, bufsize);
+      all_recv_req.push_back(MPI_REQUEST_NULL);
+      MPI_Irecv(all_recv_buf[rank].data(), bufsize, count_mpi_type,
+                rank, rank, MPI_COMM_WORLD, &all_recv_req.back());
+    }
+
+    // pack and send data
+    for (const auto & el : field_metadata.shared_indices) {
+      int rank = el.first;
+      all_send_req.push_back(MPI_REQUEST_NULL);
+      for (size_t i : field_metadata.shared_indices[rank]) {
+        all_send_buf[rank].push_back(h.rows[h.num_exclusive_ + i].size());
+      }
+      int my_color = context.color();
+      MPI_Isend(all_send_buf[rank].data(), all_send_buf[rank].size(), count_mpi_type,
+                rank, my_color, MPI_COMM_WORLD, &all_send_req.back());
+    }
+
+    // wait for row sizes
+    MPI_Waitall(all_recv_req.size(), all_recv_req.data(), MPI_STATUSES_IGNORE);
+
+    for (const auto & el : field_metadata.ghost_indices) {
+      int rank = el.first;
+      int buf_offset = 0;
+      for (size_t i : field_metadata.ghost_indices[rank]) {
+        field_metadata.ghost_row_sizes[i] = all_recv_buf[rank][buf_offset];
+        int r = h.num_exclusive_ + h.num_shared_ + i;
+        auto & row = h.rows[r];
+        row.resize(field_metadata.ghost_row_sizes[i]);
+        buf_offset++;
       }
     }
 
-    int i = 0;
-    for(auto & shared : index_coloring.shared) {
-      for(auto peer : shared.shared) {
-        MPI_Isend(&shared_row_counts[i], 1,
-                  count_mpi_type, peer, shared.id,
-                  MPI_COMM_WORLD, &requests[i]);
-        i++;
-      }
-    }
-
-    auto & ghost_row_sizes = field_metadata.ghost_row_sizes;
-    i = 0;
-    for(auto & ghost : index_coloring.ghost) {
-      MPI_Irecv(&ghost_row_sizes[i], 1,
-                count_mpi_type, ghost.rank,
-                ghost.id, MPI_COMM_WORLD, &requests[i + send_count]);
-      i++;
-    }
-
-    MPI_Waitall(send_count + h.num_ghost_, requests.data(), statuses.data());
-
-    // resize rows when we have type information
-    for (int i = 0; i < h.num_ghost_; i++) {
-      int r = h.num_exclusive_ + h.num_shared_ + i;
-      auto & row = h.rows[r];
-      int count = ghost_row_sizes[i];
-      row.resize(count);
-    }
+    // wait for sends
+    MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
   }
 
   std::queue<std::pair<size_t, field_id_t>> exchange_queue;
