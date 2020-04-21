@@ -55,41 +55,38 @@ const size_t g = flecsi_hash(g);
 
 int
 dag(int, char **) {
+  FTEST {
+    dag_t dag;
 
-  FTEST();
+    dag.initialize_node({e, "e", 0x10 | 0x20});
+    dag.initialize_node({f, "f", 0x20 | 0x40});
+    dag.initialize_node({g, "g", 0x40 | 0x80});
 
-  dag_t dag;
+    dag.add_edge(b, a);
+    dag.add_edge(c, a);
+    dag.add_edge(c, b);
+    dag.add_edge(e, d);
 
-  dag.initialize_node({e, "e", 0x10 | 0x20});
-  dag.initialize_node({f, "f", 0x20 | 0x40});
-  dag.initialize_node({g, "g", 0x40 | 0x80});
+    dag.initialize_node({a, "a", 0x01 | 0x02});
+    dag.initialize_node({b, "b", 0x02 | 0x04});
+    dag.initialize_node({c, "c", 0x04 | 0x08});
+    dag.initialize_node({d, "d", 0x08 | 0x10});
 
-  dag.add_edge(b, a);
-  dag.add_edge(c, a);
-  dag.add_edge(c, b);
-  dag.add_edge(e, d);
+    dag.add_edge(e, b);
+    dag.add_edge(e, f);
+    dag.add_edge(b, f);
+    dag.add_edge(d, c);
+    dag.add_edge(d, a);
+    dag.add_edge(g, e);
 
-  dag.initialize_node({a, "a", 0x01 | 0x02});
-  dag.initialize_node({b, "b", 0x02 | 0x04});
-  dag.initialize_node({c, "c", 0x04 | 0x08});
-  dag.initialize_node({d, "d", 0x08 | 0x10});
-
-  dag.add_edge(e, b);
-  dag.add_edge(e, f);
-  dag.add_edge(b, f);
-  dag.add_edge(d, c);
-  dag.add_edge(d, a);
-  dag.add_edge(g, e);
-
-  std::cout << dag << std::endl;
+    std::cout << dag << std::endl;
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-  graphviz_t gv;
-  dag.add(gv);
-  gv.write("dag.gv");
+    graphviz_t gv;
+    dag.add(gv);
+    gv.write("dag.gv");
 #endif
-
-  return 0;
+  };
 }
 
 ftest_register_driver(dag);

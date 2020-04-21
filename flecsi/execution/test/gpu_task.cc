@@ -58,14 +58,11 @@ flecsi_register_task(simple, task, toc, index);
 
 int
 gpu_task(int,char**) {
-
-  FTEST();
-
+  FTEST {
   flecsi_execute_task(simple, task, single, 10);
 
   flecsi_execute_task(simple, task, index, 8);
-
-  return FTEST_RESULT();
+};
 }
 
 ftest_register_test(gpu_task);

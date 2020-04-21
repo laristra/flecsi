@@ -56,21 +56,18 @@ mpi(int * p) {
 
 int
 test_driver(int, char **) {
+  FTEST {
+    execute<hydro::simple<float>>(6.2);
+    execute<hydro::simple<double>>(5.3);
+    execute<hydro::simple<const float &>>(4.4);
+    execute<hydro::simple<const double &>>(3.5);
+    using V = std::vector<std::string>;
+    execute<hydro::seq<V>>(V{"Elementary", " Dear Data"});
 
-  FTEST();
-
-  execute<hydro::simple<float>>(6.2);
-  execute<hydro::simple<double>>(5.3);
-  execute<hydro::simple<const float &>>(4.4);
-  execute<hydro::simple<const double &>>(3.5);
-  using V = std::vector<std::string>;
-  execute<hydro::seq<V>>(V{"Elementary", " Dear Data"});
-
-  int x = 0;
-  execute<hydro::mpi, flecsi::index, mpi>(&x);
-  ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
-
-  return FTEST_RESULT();
+    int x = 0;
+    execute<hydro::mpi, flecsi::index, mpi>(&x);
+    ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
+  };
 }
 
 ftest_register_driver(test_driver);

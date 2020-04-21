@@ -40,29 +40,23 @@ ftest_add_initialize_dependency(init_b, init_a);
 
 int
 test1(int, char **) {
-
-  FTEST();
-
-  ASSERT_EQ(0, 0);
-  EXPECT_EQ(0, 0);
-  flog(info) << "result " << FTEST_RESULT() << std::endl;
-
-  flecsi::flog::devel_guard guard(flecsi::ftest_tag);
-  flog(info) << "THIS IS SOME LOG INFO FOR A TEST" << std::endl;
-  return FTEST_RESULT();
+  FTEST {
+    ASSERT_EQ(0, 0);
+    EXPECT_EQ(0, 0);
+    flecsi::flog::devel_guard guard(flecsi::ftest_tag);
+    flog(info) << "THIS IS SOME LOG INFO FOR A TEST" << std::endl;
+  };
 }
 
 ftest_register_driver(test1);
 
 int
 test2(int, char **) {
-
-  FTEST();
-
-  ASSERT_EQ(0, 0);
-  int v{0};
-  ASSERT_EQ(v, 0);
-  return FTEST_RESULT();
+  FTEST {
+    ASSERT_EQ(0, 0);
+    int v{0};
+    ASSERT_EQ(v, 0);
+  };
 }
 
 ftest_register_driver(test2);

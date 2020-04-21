@@ -47,22 +47,17 @@ auto pressure = cell_field(structured);
 
 int
 check() {
-  FTEST();
-
-  flog(info) << "check" << std::endl;
-
-  return FTEST_RESULT();
+  FTEST { flog(info) << "check" << std::endl; };
 } // check
 
 int
 structured_driver(int, char **) {
+  FTEST {
+    coloring.allocate();
+    // structured.allocate(coloring.get());
 
-  coloring.allocate();
-  // structured.allocate(coloring.get());
-
-  execute<check>();
-
-  return 0;
+    EXPECT_EQ(test<check>(), 0);
+  };
 } // index
 
 ftest_register_driver(structured_driver);

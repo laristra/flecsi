@@ -25,7 +25,6 @@
 
 #include "flecsi/data/reference.hh"
 #include <flecsi/data/field.hh>
-#include"flecsi/data/reference.hh"
 
 namespace flecsi {
 namespace data {

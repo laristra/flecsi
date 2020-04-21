@@ -35,22 +35,18 @@ assign(index_field_t::accessor<wo> p) {
 
 int
 check(index_field_t::accessor<ro> p) {
-
-  FTEST();
-
-  flog(info) << "check on " << color() << std::endl;
-  ASSERT_EQ(p, color());
-
-  return FTEST_RESULT();
+  FTEST {
+    flog(info) << "check on " << color() << std::endl;
+    ASSERT_EQ(p, color());
+  };
 } // print
 
 int
 index_driver(int, char **) {
-
-  execute<assign>(pressure);
-  execute<check>(pressure);
-
-  return 0;
+  FTEST {
+    execute<assign>(pressure);
+    EXPECT_EQ(test<check>(pressure), 0);
+  };
 } // index
 
 ftest_register_driver(index_driver);

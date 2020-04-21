@@ -26,29 +26,26 @@ flog::devel_tag color_tag("color");
 
 int
 color_raw(int, char **) {
+  FTEST {
+    auto & c = runtime::context_t::instance();
+    flog(info) << "task depth: " << c.task_depth() << std::endl;
+    ASSERT_EQ(c.task_depth(), 0u);
 
-  FTEST();
+    auto process = c.process();
+    auto processes = c.processes();
+    auto tpp = c.threads_per_process();
 
-  auto & c = runtime::context_t::instance();
-  flog(info) << "task depth: " << c.task_depth() << std::endl;
-  ASSERT_EQ(c.task_depth(), 0u);
+    {
+      flog::devel_guard guard(color_tag);
+      flog(info) << "(raw)" << std::endl
+                 << "\tprocess: " << process << std::endl
+                 << "\tprocesses: " << processes << std::endl
+                 << "\tthreads_per_process: " << tpp << std::endl;
+    }
 
-  auto process = c.process();
-  auto processes = c.processes();
-  auto tpp = c.threads_per_process();
-
-  {
-    flog::devel_guard guard(color_tag);
-    flog(info) << "(raw)" << std::endl
-               << "\tprocess: " << process << std::endl
-               << "\tprocesses: " << processes << std::endl
-               << "\tthreads_per_process: " << tpp << std::endl;
-  }
-
-  ASSERT_EQ(processes, 4u);
-  ASSERT_LT(process, processes);
-
-  return FTEST_RESULT();
+    ASSERT_EQ(processes, 4u);
+    ASSERT_LT(process, processes);
+  };
 }
 
 ftest_register_driver(color_raw);
@@ -61,9 +58,7 @@ ftest_register_driver(color_raw);
 
 int
 color_ui(int, char **) {
-
-  FTEST();
-
+  FTEST {
   auto color = flecsi_color();
   auto colors = flecsi_colors();
 
@@ -75,8 +70,7 @@ color_ui(int, char **) {
 
   ASSERT_EQ(colors, 4);
   ASSERT_LT(color, colors);
-
-  return 0;
+  };
 }
 
 ftest_register_driver(color_ui);

@@ -29,7 +29,7 @@ auto pressure = cell_field(m);
 
 int
 index_driver(int, char **) {
-
+  FTEST {
 #if 0
   coloring.create(/* arg list */);
 
@@ -42,8 +42,7 @@ index_driver(int, char **) {
   mesh0.destroy();
   mesh1.destroy();
 #endif
-
-  return 0;
+  };
 } // index
 
 ftest_register_driver(index_driver);

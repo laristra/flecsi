@@ -21,19 +21,12 @@ using namespace flecsi;
 
 int
 simple2d_16x16() {
-  FTEST();
-
-  topology::simple_definition sd("simple2d-16x16.msh");
-
-  return FTEST_RESULT();
+  FTEST { topology::simple_definition sd("simple2d-16x16.msh"); };
 } // simple2d_16x16
 
 int
 colorer_driver(int argc, char ** argv) {
-
-  execute<simple2d_16x16, flecsi::index, mpi>();
-
-  return 0;
+  FTEST { EXPECT_EQ((test<simple2d_16x16, flecsi::index, mpi>()), 0); };
 } // simple2d_8x8
 
 ftest_register_driver(colorer_driver);

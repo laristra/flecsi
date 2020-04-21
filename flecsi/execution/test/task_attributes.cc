@@ -23,58 +23,55 @@ flog::devel_tag task_attributes_tag("task_attributes");
 
 int
 task_attributes(int, char **) {
+  FTEST {
+    {
+      size_t mask = loc | leaf;
 
-  FTEST();
+      ASSERT_TRUE(execution::leaf_task(mask));
+      ASSERT_EQ(execution::mask_to_processor_type(mask),
+        execution::task_processor_type_t::loc);
+    }
 
-  {
-    size_t mask = loc | leaf;
+    {
+      size_t mask = loc | inner;
 
-    ASSERT_TRUE(execution::leaf_task(mask));
-    ASSERT_EQ(execution::mask_to_processor_type(mask),
-      execution::task_processor_type_t::loc);
-  }
+      ASSERT_TRUE(execution::inner_task(mask));
+      ASSERT_EQ(execution::mask_to_processor_type(mask),
+        execution::task_processor_type_t::loc);
+    }
 
-  {
-    size_t mask = loc | inner;
+    {
+      size_t mask = loc | idempotent;
 
-    ASSERT_TRUE(execution::inner_task(mask));
-    ASSERT_EQ(execution::mask_to_processor_type(mask),
-      execution::task_processor_type_t::loc);
-  }
+      ASSERT_TRUE(execution::idempotent_task(mask));
+      ASSERT_EQ(execution::mask_to_processor_type(mask),
+        execution::task_processor_type_t::loc);
+    }
 
-  {
-    size_t mask = loc | idempotent;
+    {
+      size_t mask = toc | leaf;
 
-    ASSERT_TRUE(execution::idempotent_task(mask));
-    ASSERT_EQ(execution::mask_to_processor_type(mask),
-      execution::task_processor_type_t::loc);
-  }
+      ASSERT_TRUE(execution::leaf_task(mask));
+      ASSERT_EQ(execution::mask_to_processor_type(mask),
+        execution::task_processor_type_t::toc);
+    }
 
-  {
-    size_t mask = toc | leaf;
+    {
+      size_t mask = toc | inner;
 
-    ASSERT_TRUE(execution::leaf_task(mask));
-    ASSERT_EQ(execution::mask_to_processor_type(mask),
-      execution::task_processor_type_t::toc);
-  }
+      ASSERT_TRUE(execution::inner_task(mask));
+      ASSERT_EQ(execution::mask_to_processor_type(mask),
+        execution::task_processor_type_t::toc);
+    }
 
-  {
-    size_t mask = toc | inner;
+    {
+      size_t mask = toc | idempotent;
 
-    ASSERT_TRUE(execution::inner_task(mask));
-    ASSERT_EQ(execution::mask_to_processor_type(mask),
-      execution::task_processor_type_t::toc);
-  }
-
-  {
-    size_t mask = toc | idempotent;
-
-    ASSERT_TRUE(execution::idempotent_task(mask));
-    ASSERT_EQ(execution::mask_to_processor_type(mask),
-      execution::task_processor_type_t::toc);
-  }
-
-  return FTEST_RESULT();
+      ASSERT_TRUE(execution::idempotent_task(mask));
+      ASSERT_EQ(execution::mask_to_processor_type(mask),
+        execution::task_processor_type_t::toc);
+    }
+  };
 }
 
 ftest_register_driver(task_attributes);

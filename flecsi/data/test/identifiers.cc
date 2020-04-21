@@ -20,13 +20,10 @@ using namespace flecsi;
 
 int
 identifiers(int, char **) {
-
-  FTEST();
-
-  flog(info) << "global: " << topology::id<topology::global>() << std::endl;
-  flog(info) << "index: " << topology::id<topology::index>() << std::endl;
-
-  return FTEST_RESULT();
+  FTEST {
+    flog(info) << "global: " << topology::id<topology::global>() << std::endl;
+    flog(info) << "index: " << topology::id<topology::index>() << std::endl;
+  };
 }
 
 ftest_register_driver(identifiers);

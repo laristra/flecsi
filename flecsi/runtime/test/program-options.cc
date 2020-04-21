@@ -39,14 +39,11 @@ flecsi::program_option<bool> bpo("Custom Options",
 
 int
 program_options(int, char **) {
-
-  FTEST();
-
-  ASSERT_EQ(po.value(), 1);
-  ASSERT_FALSE(spo.has_value());
-  ASSERT_FALSE(bpo.has_value());
-
-  return FTEST_RESULT();
+  FTEST {
+    ASSERT_EQ(po.value(), 1);
+    ASSERT_FALSE(spo.has_value());
+    ASSERT_FALSE(bpo.has_value());
+  };
 }
 
 ftest_register_driver(program_options);

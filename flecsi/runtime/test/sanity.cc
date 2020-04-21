@@ -18,8 +18,7 @@
 
 int
 runtime_sanity(int, char **) {
-  std::cerr << "Hello World" << std::endl;
-  return 0;
+  FTEST { std::cerr << "Hello World" << std::endl; };
 }
 
 ftest_register_driver(runtime_sanity);

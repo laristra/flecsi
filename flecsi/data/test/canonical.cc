@@ -56,23 +56,18 @@ auto pressure = cell_field(canonical);
 
 int
 check() {
-  FTEST();
-
-  flog(info) << "check" << std::endl;
-
-  return FTEST_RESULT();
+  FTEST { flog(info) << "check" << std::endl; };
 } // check
 
 int
 canonical_driver(int, char **) {
+  FTEST {
+    const std::string filename = "input.txt";
+    coloring.allocate(filename);
+    canonical.allocate(coloring.get());
 
-  const std::string filename = "input.txt";
-  coloring.allocate(filename);
-  canonical.allocate(coloring.get());
-
-  execute<check>();
-
-  return 0;
+    EXPECT_EQ(test<check>(), 0);
+  };
 } // index
 
 ftest_register_driver(canonical_driver);
