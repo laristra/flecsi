@@ -267,17 +267,17 @@ To keep temporary staging files in /tmp/*$USER*:
 Git Cheat Sheet
 ***************
 
-To lookup the hash referenced by a tag:
+Show tag information (including annotation):
 
 .. code-block:: console
 
-  $ git rev-list -n 1 $TAG
+  $ git show tag
 
-To get the message for an annotated tag:
+To lookup only the hash referenced by a tag:
 
 .. code-block:: console
 
-  $ git tag -nX (X specifies lines of annotation)
+  $ git rev-parse tag^{}
 
 To sync tags:
 

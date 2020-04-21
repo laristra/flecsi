@@ -410,12 +410,12 @@ automatically be rebuilt when the docker file is updated on GitHub.</p>
 </div>
 <div class="section" id="git-cheat-sheet">
 <h2>Git Cheat Sheet<a class="headerlink" href="#git-cheat-sheet" title="Permalink to this headline">¶</a></h2>
-<p>To lookup the hash referenced by a tag:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git rev-list -n <span class="m">1</span> <span class="nv">$TAG</span>
+<p>Show tag information (including annotation):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git show tag
 </pre></div>
 </div>
-<p>To get the message for an annotated tag:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git tag -nX <span class="o">(</span>X specifies lines of annotation<span class="o">)</span>
+<p>To lookup only the hash referenced by a tag:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git rev-parse tag^<span class="o">{}</span>
 </pre></div>
 </div>
 <p>To sync tags:</p>
