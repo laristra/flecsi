@@ -17,10 +17,9 @@ class Flecsi(CMakePackage):
        interfaces,and dependency closures.
     '''
     homepage = 'http://flecsi.org/'
-    #git      = 'https://github.com/laristra/flecsi.git'
-    git      = 'https://github.com/tuxfan/flecsi.git'
+    git      = 'https://github.com/laristra/flecsi.git'
 
-    version('devel', branch='flog-tutorial', submodules=False, preferred=False)
+    version('devel', branch='devel', submodules=False, preferred=False)
 
     # These are ordered in the same way as ccmake, i.e., alphabetically
 
