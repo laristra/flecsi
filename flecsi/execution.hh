@@ -24,11 +24,11 @@
 #include <boost/program_options.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
 
-#include <flecsi/execution/backend.hh>
-#include <flecsi/execution/launch.hh>
-#include <flecsi/execution/reduction.hh>
-#include <flecsi/execution/task_attributes.hh>
-#include <flecsi/runtime/backend.hh>
+#include "flecsi/exec/backend.hh"
+#include "flecsi/exec/fold.hh"
+#include "flecsi/exec/launch.hh"
+#include "flecsi/exec/task_attributes.hh"
+#include "flecsi/run/backend.hh"
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface
@@ -46,13 +46,13 @@ namespace flecsi {
                    runtimes on which it depends.
 
   @return An integer indicating the initialization status. This may be
-          interpreted as a \em flecsi::runtime::status enumeration, e.g.,
-          a value of 1 is equivalent to flecsi::runtime::status::help.
+          interpreted as a \em flecsi::run::status enumeration, e.g.,
+          a value of 1 is equivalent to flecsi::run::status::help.
  */
 
 inline int
 initialize(int argc, char ** argv, bool dependent = true) {
-  return runtime::context_t::instance().initialize(argc, argv, dependent);
+  return run::context::instance().initialize(argc, argv, dependent);
 }
 
 /*!
@@ -61,12 +61,12 @@ initialize(int argc, char ** argv, bool dependent = true) {
 
   @return An integer indicating the finalization status. This will either
           be 0 for successful completion, or an error code from
-          flecsi::runtime::status.
+          flecsi::run::status.
  */
 
 inline int
 start(const std::function<int(int, char **)> & action) {
-  return runtime::context_t::instance().start(action);
+  return run::context::instance().start(action);
 }
 
 /*!
@@ -77,7 +77,7 @@ start(const std::function<int(int, char **)> & action) {
 
 inline void
 finalize() {
-  runtime::context_t::instance().finalize();
+  run::context::instance().finalize();
 }
 
 enum option_attribute : size_t {
@@ -205,7 +205,7 @@ struct program_option {
       boost::make_shared<boost::program_options::option_description>(
         flag, semantic_, help);
 
-    runtime::context_t::instance()
+    run::context::instance()
       .descriptions_map()
       .try_emplace(section, section)
       .first->second.add(option);
@@ -213,8 +213,7 @@ struct program_option {
     std::string sflag(flag);
     sflag = sflag.substr(0, sflag.find(','));
 
-    runtime::context_t::instance().option_checks().try_emplace(
-      sflag, false, check);
+    run::context::instance().option_checks().try_emplace(sflag, false, check);
   } // program_option
 
   /*!
@@ -240,11 +239,11 @@ struct program_option {
       boost::make_shared<boost::program_options::option_description>(
         name, semantic_, help);
 
-    runtime::context_t::instance().positional_description().add(name, count);
-    runtime::context_t::instance().positional_help().try_emplace(name, help);
-    runtime::context_t::instance().hidden_options().add(option);
-    runtime::context_t::instance().option_checks().try_emplace(
-      name, true, check);
+    auto & c = run::context::instance();
+    c.positional_description().add(name, count);
+    c.positional_help().try_emplace(name, help);
+    c.hidden_options().add(option);
+    c.option_checks().try_emplace(name, true, check);
   } // program_options
 
   ValueType value() const {
@@ -274,7 +273,7 @@ private:
 
 inline size_t
 process() {
-  return runtime::context_t::instance().process();
+  return run::context::instance().process();
 }
 
 /*!
@@ -283,7 +282,7 @@ process() {
 
 inline size_t
 processes() {
-  return runtime::context_t::instance().processes();
+  return run::context::instance().processes();
 }
 
 /*!
@@ -292,7 +291,7 @@ processes() {
 
 inline size_t
 threads_per_process() {
-  return runtime::context_t::instance().threads_per_process();
+  return run::context::instance().threads_per_process();
 }
 
 /*!
@@ -305,7 +304,7 @@ threads_per_process() {
 
 inline size_t
 threads() {
-  return runtime::context_t::instance().threads();
+  return run::context::instance().threads();
 }
 
 /*!
@@ -315,7 +314,7 @@ threads() {
 
 inline size_t
 color() {
-  return runtime::context_t::instance().color();
+  return run::context::instance().color();
 }
 
 /*!
@@ -325,7 +324,7 @@ color() {
 
 inline size_t
 colors() {
-  return runtime::context_t::instance().colors();
+  return run::context::instance().colors();
 }
 
 /*!
@@ -339,7 +338,7 @@ colors() {
  */
 
 template<auto & TASK,
-  const execution::launch_domain & LAUNCH_DOMAIN,
+  const exec::launch_domain & LAUNCH_DOMAIN,
   class REDUCTION_OPERATION,
   size_t ATTRIBUTES,
   typename... ARGS>
@@ -360,13 +359,13 @@ decltype(auto) reduce(ARGS &&... args);
     parameter types for \a TASK.
 
   \note Additional types may be supported by defining appropriate
-    specializations of \c utils::serial or \c utils::serial_convert.  Avoid
+    specializations of \c util::serial or \c util::serial_convert.  Avoid
     passing large objects to tasks repeatedly; use global variables (and,
     perhaps, pass keys to select from them) or fields.
  */
 
 template<auto & TASK,
-  const execution::launch_domain & LAUNCH_DOMAIN = flecsi::index,
+  const exec::launch_domain & LAUNCH_DOMAIN = index,
   size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
   typename... ARGS>
 decltype(auto)
@@ -395,15 +394,13 @@ execute(ARGS &&... args) {
  */
 
 template<auto & TASK,
-  const execution::launch_domain & LAUNCH_DOMAIN = flecsi::index,
+  const exec::launch_domain & LAUNCH_DOMAIN = flecsi::index,
   size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
   typename... ARGS>
 int
 test(ARGS &&... args) {
-  return reduce<TASK,
-    LAUNCH_DOMAIN,
-    execution::reduction::sum<int>,
-    ATTRIBUTES>(std::forward<ARGS>(args)...)
+  return reduce<TASK, LAUNCH_DOMAIN, exec::fold::sum<int>, ATTRIBUTES>(
+    std::forward<ARGS>(args)...)
     .get();
 } // test
 

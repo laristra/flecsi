@@ -37,8 +37,8 @@ set(data_SOURCES
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
-    legion/policy.hh
-    legion/types.hh
+    leg/policy.hh
+    leg/types.hh
     ${data_HEADERS}
   )
 

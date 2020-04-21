@@ -156,7 +156,7 @@ function(ftest_add_unit name)
 
   add_executable(${name}
     ${unit_SOURCES}
-    ${CMAKE_SOURCE_DIR}/flecsi/utils/ftest/ftest-main.cc
+    ${CMAKE_SOURCE_DIR}/flecsi/util/ftest/ftest-main.cc
   )
   
   set_target_properties(${name}

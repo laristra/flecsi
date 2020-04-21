@@ -13,17 +13,16 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
+#include "flecsi/util/ftest.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
-#include <flecsi/utils/ftest.hh>
 
 using namespace flecsi;
 using namespace flecsi::data;
-using namespace flecsi::topology;
+using namespace flecsi::topo;
 
 #if 0
-using cell_field_t = field_member<double, dense, mesh_t, cells>;
-const cell_field_t cell_field;
+const field<double>::definition<mesh_t,cells> cell_field;
 auto pressure = cell_field(m);
 #endif
 

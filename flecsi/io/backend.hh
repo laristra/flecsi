@@ -18,10 +18,10 @@
 #include <flecsi-config.h>
 
 #include "flecsi/data/field.hh"
-#include "flecsi/topology/core.hh"
+#include "flecsi/topo/core.hh"
 
 namespace flecsi::io {
-using field_reference_t = data::field_reference_t<topology::index>;
+using field_reference_t = data::field_reference_t<topo::index>;
 }
 
 /*----------------------------------------------------------------------------*
@@ -31,7 +31,7 @@ using field_reference_t = data::field_reference_t<topology::index>;
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-#include <flecsi/io/legion/policy.hh>
+#include "flecsi/io/leg/policy.hh"
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
