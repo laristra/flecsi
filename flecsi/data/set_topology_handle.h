@@ -23,7 +23,7 @@ enum class set_topology_buffer_t { main, active };
 
 template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS>
 struct set_topology_handle_base_u
-  : public data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> {
+  : public data_client_handle<DATA_CLIENT_TYPE, PERMISSIONS> {
   set_topology_buffer_t buffer;
   bool pack;
   bool migrate;
@@ -38,7 +38,7 @@ struct set_topology_handle_u
       PACK,
       MIGRATE> {
   using independent_data_client_handle_t =
-    data_client_handle_u<INDEPENDENT_DATA_CLIENT_TYPE, PERMISSIONS>;
+    data_client_handle<INDEPENDENT_DATA_CLIENT_TYPE, PERMISSIONS>;
 
   independent_data_client_handle_t independent_handle;
 };

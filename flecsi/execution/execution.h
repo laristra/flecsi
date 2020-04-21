@@ -245,7 +245,7 @@ clog_register_tag(execution);
   /* a tuple. */                                                               \
   inline flecsi_internal_return_type(task)                                     \
     task##_tuple_delegate(flecsi_internal_arguments_type(task) args) {         \
-    return flecsi::utils::tuple_function(task, args);                          \
+    return std::apply(task, std::move(args));                                  \
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
@@ -280,7 +280,7 @@ clog_register_tag(execution);
   /* a tuple. */                                                               \
   inline flecsi_internal_return_type(task)                                     \
     task##_tuple_delegate(flecsi_internal_arguments_type(task) args) {         \
-    return flecsi::utils::tuple_function(task, args);                          \
+    return std::apply(task, std::move(args));                                  \
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
@@ -511,7 +511,7 @@ clog_register_tag(execution);
   /* a tuple. */                                                               \
   inline flecsi_internal_return_type(func)                                     \
     func##_tuple_delegate(flecsi_internal_arguments_type(func) args) {         \
-    return flecsi::utils::tuple_function(func, args);                          \
+    return std::apply(func, std::move(args));                                  \
   } /* delegate func */                                                        \
                                                                                \
   using function_handle_##func##_t =                                           \

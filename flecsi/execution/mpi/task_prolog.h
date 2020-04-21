@@ -97,16 +97,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
-
-    // h is partially initialized in client.h
-    auto storage = h.set_storage(new typename T::storage_t);
 
     bool _read{PERMISSIONS == ro || PERMISSIONS == rw};
 
     int color = context_.color();
 
+    // Finish h initialization started in client.h:
     for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
@@ -143,7 +141,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         registered_field_data[ent.id_fid].data());
 
       // new allocation every time.
-      storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size,
+      h.storage.init_entities(ent.domain, ent.dim, ents, ids, ent.size,
         num_entities, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
     } // for
 
@@ -180,7 +178,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       adj.indices_buf =
         reinterpret_cast<id_t *>(registered_field_data[adj.index_fid].data());
 
-      storage->init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
+      h.storage.init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
         adj.to_dim, reinterpret_cast<utils::offset_t *>(adj.offsets_buf),
         adj.num_offsets, reinterpret_cast<utils::id_t *>(adj.indices_buf),
         adj.num_indices, _read);
@@ -204,7 +202,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       iss.indices_buf =
         reinterpret_cast<id_t *>(registered_field_data[iss.index_fid].data());
       // now initialize the index subspace
-      storage->init_index_subspace(iss.index_space, iss.index_subspace,
+      h.storage.init_index_subspace(iss.index_space, iss.index_subspace,
         iss.domain, iss.dim, reinterpret_cast<utils::id_t *>(iss.indices_buf),
         num_indices, _read);
     }
@@ -225,18 +223,16 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
 
     auto & ism = context_.set_index_space_map();
-
-    // h is partially initialized in client.h
-    auto storage = h.set_storage(new typename T::storage_t);
 
     bool _read{PERMISSIONS == ro || PERMISSIONS == rw};
 
     int color = context_.color();
 
+    // Finish h initialization started in client.h:
     for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];
 
@@ -269,7 +265,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       auto migrate_ents = reinterpret_cast<topology::set_entity_t *>(
         registered_field_data[ent.fid3].data());
 
-      storage->init_entities(ent.index_space, ent.index_space2, ents, 0,
+      h.storage.init_entities(ent.index_space, ent.index_space2, ents, 0,
         active_ents, 0, migrate_ents, 0, ent.size, _read);
     }
   }
