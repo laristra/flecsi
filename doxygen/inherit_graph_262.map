@@ -1,3 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1serial__convert_3_01execution_1_1flecsi__future_3_01T_01_4_01_4.html" title="flecsi::utils::serial\l_convert\&lt; execution::\lflecsi_future\&lt; T \&gt; \&gt;" alt="" coords="5,5,171,61"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1util_1_1serial_3_01T_00_01voided_3_01decltype_07_6T_1_1legion__buffer__size_08_002d213013eee11f651f940155aefe60f.html" title="flecsi::util::serial\l\&lt; T, voided\&lt; decltype\l(&amp;T::legion_buffer_size)\l, std::enable_if_t\&lt;!memcpyable\l_v\&lt; T \&gt; \&gt; \&gt; \&gt;" alt="" coords="5,5,211,91"/>
 </map>

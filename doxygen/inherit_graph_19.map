@@ -1,3 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1data_1_1legion_1_1unique__handle.html" title="flecsi::data::legion\l::unique_handle\&lt; Legion\l::IndexSpace,&amp;Legion::Runtime\l::destroy_index_space \&gt;" alt="" coords="5,5,229,75"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1data_1_1leg_1_1partition.html" title="flecsi::data::leg::\lpartition" alt="" coords="192,5,311,47"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1topology__data_3_01topo_1_1index_01_4.html" title="flecsi::data::topology\l_data\&lt; topo::index \&gt;" alt="" coords="380,71,523,112"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1leg_1_1region.html" title="flecsi::data::leg::\lregion" alt="" coords="5,136,124,177"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; Topo \&gt;" alt="" coords="189,71,314,112"/>
+<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; topo::global \&gt;" alt="" coords="172,201,331,243"/>
+<area shape="rect" id="node7" href="$structflecsi_1_1data_1_1detail_1_1simple.html" title="flecsi::data::detail\l::simple\&lt; topo::index \&gt;" alt="" coords="173,136,329,177"/>
+<area shape="rect" id="node6" href="$structflecsi_1_1data_1_1topology__data_3_01topo_1_1global_01_4.html" title="flecsi::data::topology\l_data\&lt; topo::global \&gt;" alt="" coords="379,201,524,243"/>
 </map>

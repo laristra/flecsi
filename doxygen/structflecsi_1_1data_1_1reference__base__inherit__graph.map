@@ -1,8 +1,6 @@
 <map id="flecsi::data::reference_base" name="flecsi::data::reference_base">
-<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1accessor_3_01storage__label__t_1_1dense_00_01topology_1_1global_00_01DATA__TYPE_00_01PRIVILEGES_01_4.html" title="flecsi::data::accessor\l\&lt; storage_label_t::dense,\l topology::global, DATA\l_TYPE, PRIVILEGES \&gt;" alt="" coords="274,5,462,75"/>
-<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1accessor_3_01storage__label__t_1_1dense_00_01topology_1_1index_00_01DATA__TYPE_00_01PRIVILEGES_01_4.html" title="flecsi::data::accessor\l\&lt; storage_label_t::dense,\l topology::index, DATA_TYPE,\l PRIVILEGES \&gt;" alt="" coords="263,99,473,170"/>
-<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1accessor_3_01storage__label__t_1_1dense_00_01topology_1_1unstructured_3_50e03e472099957fa887e00eda946159.html" title="flecsi::data::accessor\l\&lt; storage_label_t::dense,\l topology::unstructured\l\&lt; POLICY_TYPE \&gt;, DATA_TYPE,\l PRIVILEGES \&gt;" alt="" coords="257,195,479,280"/>
-<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1topology__accessor.html" title="flecsi::data::topology\l_accessor\&lt; TOPOLOGY_TYPE,\l PRIVILEGES \&gt;" alt="" coords="261,304,475,360"/>
-<area shape="rect" id="node6" href="$structflecsi_1_1topology_1_1set.html" title="flecsi::topology::set\l\&lt; POLICY_TYPE \&gt;" alt="" coords="294,385,442,426"/>
-<area shape="rect" id="node7" href="$structflecsi_1_1topology_1_1unstructured.html" title="flecsi::topology::unstructured\l\&lt; POLICY_TYPE \&gt;" alt="" coords="263,450,473,491"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1accessor_3_01dense_00_01DATA__TYPE_00_01PRIVILEGES_01_4.html" title="flecsi::data::accessor\l\&lt; dense, DATA_TYPE, PRIVILEGES \&gt;" alt="" coords="236,5,491,47"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1topology__accessor.html" title="flecsi::data::topology\l_accessor\&lt; TOPOLOGY_TYPE,\l PRIVILEGES \&gt;" alt="" coords="257,71,470,127"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1topo_1_1set.html" title="flecsi::topo::set\&lt;\l POLICY_TYPE \&gt;" alt="" coords="299,152,428,193"/>
+<area shape="rect" id="node5" href="$structflecsi_1_1topo_1_1unstructured.html" title="flecsi::topo::unstructured\l\&lt; POLICY_TYPE \&gt;" alt="" coords="280,217,447,259"/>
 </map>

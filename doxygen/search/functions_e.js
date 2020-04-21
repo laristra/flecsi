@@ -1,16 +1,19 @@
 var searchData=
 [
-  ['range',['range',['../classflecsi_1_1utils_1_1offset.html#a373ce24f859c9fee1cb4f88be9952115',1,'flecsi::utils::offset']]],
-  ['recall',['recall',['../structflecsi_1_1runtime_1_1context__t.html#aac8b20ccf9a8892e44b516db37a49343',1,'flecsi::runtime::context_t']]],
-  ['record',['record',['../structflecsi_1_1runtime_1_1context__t.html#ad89e81ff928e8841c79836dcdc5bbd71',1,'flecsi::runtime::context_t']]],
-  ['reduce',['reduce',['../classflecsi_1_1topology_1_1index__space.html#a142e50bb40b17228d3057effa8a9bb17',1,'flecsi::topology::index_space::reduce()'],['../namespaceflecsi.html#a5ffacaab2c7f4fa988c41c1e5e27f9a7',1,'flecsi::reduce()']]],
-  ['register_5ftag',['register_tag',['../classflecsi_1_1flog_1_1flog__t.html#a133e4be76c2eb1efa6944925cc299439',1,'flecsi::flog::flog_t']]],
-  ['register_5ftask',['register_task',['../structflecsi_1_1runtime_1_1context__t.html#ac27bcf5c722c1633279eaeb63edfd9d9',1,'flecsi::runtime::context_t::register_task()'],['../group__legion-execution.html#gad117d37918dde8974776ede31e7c7f32',1,'flecsi::execution::legion::detail::register_task()']]],
-  ['registertype',['registerType',['../classflecsi_1_1utils_1_1Factory__.html#a4882a57e2e1f7200230995ab79be0b2a',1,'flecsi::utils::Factory_']]],
-  ['remove_5fprefix',['remove_prefix',['../classflecsi_1_1utils_1_1array__ref.html#a0f658eaa6fa81d550ed1bccd556ae232',1,'flecsi::utils::array_ref']]],
-  ['remove_5fsuffix',['remove_suffix',['../classflecsi_1_1utils_1_1array__ref.html#afffcdd4341c9aa512f7924dcfa615037',1,'flecsi::utils::array_ref']]],
-  ['reorder_5fentities',['reorder_entities',['../classflecsi_1_1topology_1_1connectivity__t.html#afd140d5a347c2d5e7832f6d95db005ac',1,'flecsi::topology::connectivity_t']]],
-  ['resize',['resize',['../classflecsi_1_1topology_1_1connectivity__t.html#a702826349a4265ed6a89f24c9365e01c',1,'flecsi::topology::connectivity_t']]],
-  ['reverse_5fentities',['reverse_entities',['../classflecsi_1_1topology_1_1connectivity__t.html#ae8f8cfa808c8edc6a612b6e5e5ebc059',1,'flecsi::topology::connectivity_t']]],
-  ['root',['root',['../structflecsi_1_1topology_1_1ntree.html#a39bddfe69fc3951fa5adeedb8d61858e',1,'flecsi::topology::ntree::root()'],['../classflecsi_1_1filling__curve.html#a9c56a24cdc5709b6b2a6bdcad0e1f231',1,'flecsi::filling_curve::root()']]]
+  ['range',['range',['../classflecsi_1_1util_1_1offset.html#a7ad2e6afb7605369defa574a8608180e',1,'flecsi::util::offset']]],
+  ['rank_5fowner',['rank_owner',['../dcrs__utils_8hh.html#ad0c235687cb4d383559bb1c8464a9421',1,'flecsi::topo::unstructured_impl']]],
+  ['recall',['recall',['../structflecsi_1_1run_1_1context__t.html#a427cd9725faf2e490bf5cc744aa3e143',1,'flecsi::run::context_t']]],
+  ['record',['record',['../structflecsi_1_1run_1_1context__t.html#a72ad5a3dd6b6453cc0d977f289b08674',1,'flecsi::run::context_t']]],
+  ['reduce',['reduce',['../classflecsi_1_1topo_1_1index__space.html#a5830b40bf055eda5cde1b3ab0bd49482',1,'flecsi::topo::index_space::reduce()'],['../namespaceflecsi.html#a1657093a0dbb622dc8a4df35dd4fce46',1,'flecsi::reduce()']]],
+  ['register_5freduction',['register_reduction',['../leg_2reduction__wrapper_8hh.html#ad211a93cf28ec00f11c822d6a9f669b5',1,'flecsi::exec::detail']]],
+  ['register_5ftag',['register_tag',['../classflecsi_1_1log_1_1flog__t.html#ace5a64e3de2c960f0dd1ea2729be94b3',1,'flecsi::log::flog_t']]],
+  ['register_5ftask',['register_task',['../group__legion-execution.html#ga23b8f20ed46a7997e2af670af6fb26b0',1,'flecsi::exec::leg::detail']]],
+  ['remove_5fprefix',['remove_prefix',['../classflecsi_1_1util_1_1array__ref.html#a342528edd81c588f08ff385732436127',1,'flecsi::util::array_ref']]],
+  ['remove_5fsuffix',['remove_suffix',['../classflecsi_1_1util_1_1array__ref.html#a78163e44e87102b2356ce1c418ed1a76',1,'flecsi::util::array_ref']]],
+  ['reorder',['reorder',['../reorder_8hh.html#a1859e483fdc35d0102a16d01fec65b28',1,'flecsi::util']]],
+  ['reorder_5fdestructive',['reorder_destructive',['../reorder_8hh.html#a26a08619de9304c975c01d2315b286a5',1,'flecsi::util']]],
+  ['reorder_5fentities',['reorder_entities',['../classflecsi_1_1topo_1_1connectivity__t.html#a6d770c2b20f314b723627fb8785a97d9',1,'flecsi::topo::connectivity_t']]],
+  ['resize',['resize',['../classflecsi_1_1topo_1_1connectivity__t.html#a54cea6b3e6bc1ef3a0f2fa3b68847c84',1,'flecsi::topo::connectivity_t']]],
+  ['reverse_5fentities',['reverse_entities',['../classflecsi_1_1topo_1_1connectivity__t.html#a1768373ef6f076f5b2b3a93cb6d765c7',1,'flecsi::topo::connectivity_t']]],
+  ['root',['root',['../structflecsi_1_1topo_1_1ntree.html#adf86b68c2d02c75a1e7c414892040f77',1,'flecsi::topo::ntree::root()'],['../classflecsi_1_1filling__curve.html#a9c56a24cdc5709b6b2a6bdcad0e1f231',1,'flecsi::filling_curve::root()']]]
 ];

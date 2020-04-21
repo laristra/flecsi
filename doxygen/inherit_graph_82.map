@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classflecsi_1_1runtime_1_1mpi__mapper__t.html" title="flecsi::runtime::mpi\l_mapper_t" alt="" coords="174,5,322,46"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1run_1_1context.html" title="flecsi::run::context" alt="" coords="5,5,136,32"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1run_1_1context__t.html" title="flecsi::run::context_t" alt="" coords="184,5,325,32"/>
 </map>

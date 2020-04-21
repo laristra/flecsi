@@ -1,19 +1,8 @@
-<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/topology/connectivity.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/topology/connectivity.hh">
-<area shape="rect" id="node2" href="$topology_2unstructured_2types_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/types.hh" alt="" coords="110,110,279,181"/>
-<area shape="rect" id="node3" href="$base_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/base.hh" alt="" coords="5,237,157,293"/>
-<area shape="rect" id="node6" href="$unstructured_2interface_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/interface.hh" alt="" coords="202,350,371,421"/>
-<area shape="rect" id="node18" href="$unstructured_2storage_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topology/unstructured\l/storage.hh" alt="" coords="233,230,401,301"/>
-<area shape="rect" id="node4" href="$topology_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/topology.hh" alt="" coords="5,469,157,525"/>
-<area shape="rect" id="node5" href="$data_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data.hh" alt="" coords="56,1229,208,1285"/>
-<area shape="rect" id="node7" href="$accessor_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/accessor.hh" alt="" coords="211,469,363,525"/>
-<area shape="rect" id="node8" href="$bind__accessors_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/bind\l_accessors.hh" alt="" coords="170,574,336,645"/>
-<area shape="rect" id="node16" href="$task__prologue_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/task\l_prologue.hh" alt="" coords="498,694,664,765"/>
-<area shape="rect" id="node17" href="$unbind__accessors_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/unbind\l_accessors.hh" alt="" coords="361,574,543,645"/>
-<area shape="rect" id="node9" href="$task__wrapper_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/task\l_wrapper.hh" alt="" coords="307,694,473,765"/>
-<area shape="rect" id="node10" href="$execution_2legion_2policy_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/legion/policy.hh" alt="" coords="324,813,519,869"/>
-<area shape="rect" id="node11" href="$execution_2backend_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution/backend.hh" alt="" coords="337,917,505,973"/>
-<area shape="rect" id="node12" href="$execution_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/execution.hh" alt="" coords="345,1021,497,1077"/>
-<area shape="rect" id="node13" href="$control_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/control.hh" alt="" coords="345,1125,497,1181"/>
-<area shape="rect" id="node15" href="$data_2coloring_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/coloring.hh" alt="" coords="169,1125,321,1181"/>
-<area shape="rect" id="node14" href="$ftest_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/utils/ftest.hh" alt="" coords="401,1229,553,1285"/>
+<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/topo/connectivity.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/topo/connectivity.hh">
+<area shape="rect" id="node2" href="$topo_2unstructured_2types_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/types.hh" alt="" coords="14,109,195,165"/>
+<area shape="rect" id="node3" href="$unstructured_2interface_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/interface.hh" alt="" coords="5,317,204,373"/>
+<area shape="rect" id="node7" href="$unstructured_2storage_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/unstructured/storage.hh" alt="" coords="75,213,267,269"/>
+<area shape="rect" id="node4" href="$base_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/topo/base.hh" alt="" coords="37,421,173,477"/>
+<area shape="rect" id="node5" href="$topology_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data/topology.hh" alt="" coords="37,525,173,581"/>
+<area shape="rect" id="node6" href="$data_8hh.html" title="/home/bergen/devel\l/tuxfan/flecsi/flecsi\l/data.hh" alt="" coords="37,629,173,685"/>
 </map>

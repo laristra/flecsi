@@ -5,7 +5,5 @@ var searchData=
   ['simple_5fid_2ehh',['simple_id.hh',['../simple__id_8hh.html',1,'']]],
   ['state_2ehh',['state.hh',['../state_8hh.html',1,'']]],
   ['static_5fverify_2ehh',['static_verify.hh',['../static__verify_8hh.html',1,'']]],
-  ['storage_2ehh',['storage.hh',['../unstructured_2storage_8hh.html',1,'']]],
-  ['storage_2ehh',['storage.hh',['../ntree_2storage_8hh.html',1,'']]],
-  ['storage_5fclasses_2ehh',['storage_classes.hh',['../storage__classes_8hh.html',1,'']]]
+  ['storage_2ehh',['storage.hh',['../ntree_2storage_8hh.html',1,'(Global Namespace)'],['../unstructured_2storage_8hh.html',1,'(Global Namespace)']]]
 ];

@@ -1,6 +1,6 @@
-<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/topology/entity_storage.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/topology/entity_storage.hh">
-<area shape="rect" id="node2" href="$array__buffer_8hh.html" title="array_buffer.hh" alt="" coords="285,109,405,136"/>
-<area shape="rect" id="node8" href="$index__space_8hh.html" title="index_space.hh" alt="" coords="555,109,677,136"/>
-<area shape="rect" id="node14" href="$offset_8hh.html" title="flecsi/utils/offset.hh" alt="" coords="109,184,259,211"/>
-<area shape="rect" id="node3" href="$id_8hh.html" title="flecsi/utils/id.hh" alt="" coords="283,184,407,211"/>
+<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/topo/entity_storage.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/topo/entity_storage.hh">
+<area shape="rect" id="node2" href="$array__buffer_8hh.html" title="array_buffer.hh" alt="" coords="266,109,375,136"/>
+<area shape="rect" id="node8" href="$offset_8hh.html" title="flecsi/util/offset.hh" alt="" coords="113,184,243,211"/>
+<area shape="rect" id="node11" href="$index__space_8hh.html" title="index_space.hh" alt="" coords="512,109,625,136"/>
+<area shape="rect" id="node3" href="$id_8hh.html" title="flecsi/util/id.hh" alt="" coords="267,184,374,211"/>
 </map>

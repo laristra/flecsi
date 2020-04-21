@@ -1,3 +1,4 @@
 <map id="flecsi::data::field_info_t" name="flecsi::data::field_info_t">
-<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1field__member.html" title="flecsi::data::field\l_member\&lt; DATA_TYPE,\l STORAGE_CLASS, TOPOLOGY\l_TYPE, INDEX_SPACE \&gt;" alt="" coords="184,5,397,75"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1field__register_3_01T_00_01dense_00_01Topo_00_01Space_01_4.html" title="flecsi::data::field\l_register\&lt; T, dense,\l Topo, Space \&gt;" alt="" coords="11,95,149,151"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1field__register_3_01T_00_01singular_00_01Topo_00_01Space_01_4.html" title="flecsi::data::field\l_register\&lt; T, singular,\l Topo, Space \&gt;" alt="" coords="5,199,155,255"/>
 </map>
