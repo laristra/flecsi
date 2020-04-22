@@ -142,7 +142,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     using value_t = T;
 
     // Skip Read Only handles
-    if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
+    if constexpr ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
       return;
 
     auto & context = context_t::instance();
