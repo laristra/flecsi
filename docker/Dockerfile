@@ -47,8 +47,7 @@ RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debu
 RUN echo ". $HOME/deps.sh" >> ~/.bashrc
 RUN echo ". $HOME/spack/share/spack/setup-env.sh && . $HOME/deps.sh" >> $HOME/load_deps.sh
 
-CMD [".","$HOME/load_deps.sh"]
-RUN module list
+RUN source $HOME/load_deps.sh && module list
 
 WORKDIR $HOME/flecsi
 RUN mkdir build
@@ -56,7 +55,7 @@ RUN mkdir build
 WORKDIR build
 RUN ${CC} --version
 RUN ccache -z
-RUN . ~/.bashrc && \
+RUN source $HOME/load_deps.sh && \
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
@@ -68,7 +67,7 @@ RUN . ~/.bashrc && \
     make VERBOSE=1 -j2
 RUN ccache -s
 
-RUN . ~/.bashrc && \
+RUN source $HOME/load_deps.sh && \
     make doxygen && \
     if [[ ${CLANG_FORMAT} ]]; then \
       make format && git diff --exit-code --ignore-submodules; \
