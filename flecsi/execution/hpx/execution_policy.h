@@ -32,7 +32,6 @@
 #include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/execution/hpx/task_wrapper.h>
 #include <flecsi/utils/export_definitions.h>
-#include <flecsi/utils/tuple_function.h>
 
 #include <flecsi/utils/const_string.h>
 

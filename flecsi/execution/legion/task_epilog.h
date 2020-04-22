@@ -149,7 +149,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     bool write_phase;
     write_phase = (PERMISSIONS == wo) || (PERMISSIONS == rw);
 

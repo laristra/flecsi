@@ -41,41 +41,7 @@ class set_topology_base_u : public data::data_client_t,
                             public set_topology_base_t
 {
 public:
-  // Default constructor
-  set_topology_base_u(STORAGE_TYPE * ss = nullptr) : ss_(ss) {}
-
-  // Don't allow the set to be copied or copy constructed
-  set_topology_base_u(const set_topology_base_u & s) : ss_(s.ss_) {}
-
-  set_topology_base_u & operator=(const set_topology_base_u &) = delete;
-
-  /// Allow move operations
-  set_topology_base_u(set_topology_base_u &&) = default;
-
-  //! override default move assignement
-  set_topology_base_u & operator=(set_topology_base_u && o) {
-    // call base_t move operator
-    data::data_client_t::operator=(std::move(o));
-    // return a reference to the object
-    return *this;
-  };
-
-  STORAGE_TYPE * set_storage(STORAGE_TYPE * ss) {
-    ss_ = ss;
-    return ss_;
-  } // set_storage
-
-  STORAGE_TYPE * storage() {
-    return ss_;
-  } // set_storage
-
-  void clear_storage() {
-    ss_ = nullptr;
-  } // clear_storage
-
-  void delete_storage() {
-    delete ss_;
-  } // delete_storage
+  STORAGE_TYPE storage;
 
   /*!
     This method should be called to construct and entity rather than
@@ -84,11 +50,8 @@ public:
   */
   template<class T, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
-    return ss_->template make<T>(std::forward<ARG_TYPES>(args)...);
+    return storage.template make<T>(std::forward<ARG_TYPES>(args)...);
   } // make
-
-protected:
-  STORAGE_TYPE * ss_ = nullptr;
 };
 
 } // namespace topology
