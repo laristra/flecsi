@@ -46,6 +46,10 @@ RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debu
     spack module tcl loads --dependencies $SPACK_SPEC | tee -a deps.sh
 RUN echo ". $HOME/deps.sh" >> ~/.bashrc
 
+RUN echo "-------------------------"
+RUN cat ~/.bashrc
+RUN echo "-------------------------"
+
 WORKDIR $HOME/flecsi
 RUN mkdir build
 
