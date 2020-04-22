@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/execution.hh>
 
 using namespace flecsi;
@@ -30,7 +30,7 @@ init(double a) {
 
 int
 read(handle_t<double> x, handle_t<double> y) {
-  FTEST {
+  UNIT {
     auto x1 = x.get();
     auto y1 = 2 * y.get();
 
@@ -49,7 +49,7 @@ index_init(double a) {
 
 int
 index_read(handle_t<double> x, handle_t<double> y) {
-  FTEST {
+  UNIT {
     auto x1 = x.get();
     auto y1 = 2 * y.get();
 
@@ -69,8 +69,8 @@ index_void_task() {
 } // namespace future_test
 
 int
-driver(int, char **) {
-  FTEST {
+future_driver() {
+  UNIT {
     // single future
     auto f1 = execute<future_test::init, single>(6.2);
     auto f2 = execute<future_test::init, single>(3.1);
@@ -103,6 +103,6 @@ driver(int, char **) {
     fv2.wait();
     fv2.get();
   };
-}
+} // future
 
-ftest_register_driver(driver);
+flecsi::unit::driver<future_driver> driver;

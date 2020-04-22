@@ -14,7 +14,7 @@
 
 #define __FLECSI_PRIVATE__
 #include "flecsi/topo/structured/interface.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
 
@@ -45,17 +45,19 @@ auto pressure = cell_field(structured);
 
 int
 check() {
-  FTEST { flog(info) << "check" << std::endl; };
+  UNIT {
+    flog(info) << "check" << std::endl;
+  };
 } // check
 
 int
-structured_driver(int, char **) {
-  FTEST {
+structured_driver() {
+  UNIT {
     coloring.allocate();
     // structured.allocate(coloring.get());
 
     EXPECT_EQ(test<check>(), 0);
   };
-} // index
+} // structured_driver
 
-ftest_register_driver(structured_driver);
+flecsi::unit::driver<structured_driver> driver;

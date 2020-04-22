@@ -23,9 +23,10 @@ mark_as_advanced(ENABLE_EXPENSIVE_TESTS)
 
 if(ENABLE_UNIT_TESTS)
   enable_testing()
+  add_library(unit-main OBJECT ${CMAKE_SOURCE_DIR}/flecsi/util/unit/main.cc)
 endif()
 
-function(ftest_add_unit name)
+function(add_unit name)
 
   #----------------------------------------------------------------------------#
   # Enable new behavior for in-list if statements.
@@ -156,7 +157,7 @@ function(ftest_add_unit name)
 
   add_executable(${name}
     ${unit_SOURCES}
-    ${CMAKE_SOURCE_DIR}/flecsi/util/ftest/ftest-main.cc
+    $<TARGET_OBJECTS:unit-main>
   )
   
   set_target_properties(${name}

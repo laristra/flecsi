@@ -13,22 +13,22 @@
                                                                               */
 
 #include "flecsi/util/set_utils.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #include <iostream>
 
 template<class T>
 void
 print_set(const char * const prefix, const std::set<T> & set) {
-  FTEST_CAPTURE() << prefix << " == {";
+  UNIT_CAPTURE() << prefix << " == {";
   for(auto i = set.begin(); i != set.end(); ++i)
-    FTEST_CAPTURE() << " " << *i;
-  FTEST_CAPTURE() << " }" << std::endl;
+    UNIT_CAPTURE() << " " << *i;
+  UNIT_CAPTURE() << " }" << std::endl;
 }
 
 int
-set_utils(int, char **) {
-  FTEST {
+set_utils() {
+  UNIT {
     using namespace flecsi::util;
 
     std::set<std::size_t> a = {1, 3, 5, 7, 10, 11};
@@ -42,7 +42,7 @@ set_utils(int, char **) {
     print_set("c", c);
     print_set("d", d);
     print_set("e", e);
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     print_set("intersection(a,a)", set_intersection(a, a));
     print_set("intersection(a,b)", set_intersection(a, b));
@@ -59,7 +59,7 @@ set_utils(int, char **) {
     print_set("intersection(d,d)", set_intersection(a, d));
     print_set("intersection(d,e)", set_intersection(a, e));
     print_set("intersection(e,e)", set_intersection(a, e));
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     print_set("union(a,a)", set_union(a, a));
     print_set("union(a,b)", set_union(a, b));
@@ -76,7 +76,7 @@ set_utils(int, char **) {
     print_set("union(d,d)", set_union(a, d));
     print_set("union(d,e)", set_union(a, e));
     print_set("union(e,e)", set_union(a, e));
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     print_set("difference(a,a)", set_difference(a, a));
     print_set("difference(a,b)", set_difference(a, b));
@@ -95,8 +95,8 @@ set_utils(int, char **) {
     print_set("difference(e,e)", set_difference(a, e));
 
     // compare
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("set_utils.blessed"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("set_utils.blessed"));
   };
-}
+} // set_utils
 
-ftest_register_driver(set_utils);
+flecsi::unit::driver<set_utils> driver;

@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #define __FLECSI_PRIVATE__
 //#include "flecsi/exec/launch.hh"
@@ -58,7 +58,7 @@ flecsi_register_task(simple, task, toc, index);
 
 int
 gpu_task(int,char**) {
-  FTEST {
+  UNIT {
   flecsi_execute_task(simple, task, single, 10);
 
   flecsi_execute_task(simple, task, index, 8);

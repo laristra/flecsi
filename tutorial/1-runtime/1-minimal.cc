@@ -25,7 +25,7 @@
  */
 
 int
-top_level_action(int, char **) {
+top_level_action() {
   std::cout << "Hello World" << std::endl;
   return 0;
 } // top_level_action
@@ -47,8 +47,8 @@ main(int argc, char ** argv) {
     documented in the next example.
    */
 
-  if(status != flecsi::runtime::status::success) {
-    return status == flecsi::runtime::status::help ? 0 : status;
+  if(status != flecsi::run::status::success) {
+    return status == flecsi::run::status::help ? 0 : status;
   } // if
 
   /*

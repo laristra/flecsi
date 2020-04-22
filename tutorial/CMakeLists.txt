@@ -64,6 +64,20 @@ target_link_libraries(flog ${FleCSI_LIBRARIES}
 # 2-control
 #------------------------------------------------------------------------------#
 
+add_executable(simple
+  2-control/1-simple.cc
+  2-control/1-simple.hh
+)
+target_link_libraries(simple ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+
+add_executable(cycle
+  2-control/2-cycle.cc
+  2-control/2-cycle.hh
+)
+target_link_libraries(cycle ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+
 #------------------------------------------------------------------------------#
 # 3-control
 #------------------------------------------------------------------------------#

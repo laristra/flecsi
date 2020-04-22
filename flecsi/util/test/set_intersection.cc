@@ -13,7 +13,7 @@
                                                                               */
 
 #include "flecsi/util/set_intersection.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 template<class CONTAINER>
 inline bool
@@ -23,8 +23,8 @@ intersects(const CONTAINER & one, const CONTAINER & two) {
 }
 
 int
-set_intersection(int, char **) {
-  FTEST {
+set_intersection() {
+  UNIT {
     std::vector<int> a = {1, 3, 5, 7, 10, 11};
     std::vector<int> b = {2, 4, 6, 8, 10, 12};
     std::vector<int> c = {0, 20};
@@ -51,6 +51,6 @@ set_intersection(int, char **) {
     EXPECT_EQ(intersects(a, e), false);
     EXPECT_EQ(intersects(e, f), false);
   };
-}
+} // set_intersection
 
-ftest_register_driver(set_intersection);
+flecsi::unit::driver<set_intersection> driver;

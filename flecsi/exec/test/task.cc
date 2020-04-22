@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #define __FLECSI_PRIVATE__
 #include <flecsi/execution.hh>
@@ -55,8 +55,8 @@ mpi(int * p) {
 } // namespace hydro
 
 int
-test_driver(int, char **) {
-  FTEST {
+test_driver() {
+  UNIT {
     execute<hydro::simple<float>>(6.2);
     execute<hydro::simple<double>>(5.3);
     execute<hydro::simple<const float &>>(4.4);
@@ -68,6 +68,6 @@ test_driver(int, char **) {
     execute<hydro::mpi, flecsi::index, mpi>(&x);
     ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
   };
-}
+} // test_driver
 
-ftest_register_driver(test_driver);
+flecsi::unit::driver<test_driver> driver;

@@ -13,7 +13,7 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/execution.hh>
 
 flecsi::program_option<int> po("Custom Options",
@@ -38,12 +38,12 @@ flecsi::program_option<bool> bpo("Custom Options",
   {{flecsi::option_implicit, true}, {flecsi::option_zero}});
 
 int
-program_options(int, char **) {
-  FTEST {
+program_options() {
+  UNIT {
     ASSERT_EQ(po.value(), 1);
     ASSERT_FALSE(spo.has_value());
     ASSERT_FALSE(bpo.has_value());
   };
-}
+} // program_options
 
-ftest_register_driver(program_options);
+flecsi::unit::driver<program_options> driver;

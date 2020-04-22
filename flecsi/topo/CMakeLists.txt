@@ -81,7 +81,7 @@ set(topo_SOURCES
 
 #---------------------------   Unstructured Mesh  -----------------------------#
 
-ftest_add_unit(dcrs
+add_unit(dcrs
   SOURCES unstructured/test/dcrs.cc
   INPUTS
     unstructured/test/simple2d-16x16.msh
@@ -89,22 +89,22 @@ ftest_add_unit(dcrs
   THREADS 5
 )
 
-ftest_add_unit(simple_definition
+add_unit(simple_definition
   SOURCES unstructured/test/simple_definition.cc
   INPUTS unstructured/test/simple2d-16x16.msh
 )
 
-ftest_add_unit(umesh_coloring
+add_unit(umesh_coloring
   SOURCES unstructured/test/coloring.cc
 )
 
 #----------------------------------  NTREE  -----------------------------------#
 
-ftest_add_unit(ntree
+add_unit(ntree
   SOURCES ntree/test/ntree.cc
   INPUTS ntree/test/coordinates.blessed
 )
 
-ftest_add_unit(ntree_geometry
+add_unit(ntree_geometry
   SOURCES ntree/test/geometry.cc
 )

@@ -14,7 +14,7 @@
 
 #define __FLECSI_PRIVATE__
 #include "flecsi/util/demangle.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
 #include <flecsi/io.hh>
@@ -24,8 +24,8 @@
 using namespace flecsi;
 
 int
-index_topology(int, char **) {
-  FTEST {
+index_topology() {
+  UNIT {
     char file_name[256];
     strcpy(file_name, "checkpoint.dat");
 
@@ -81,6 +81,6 @@ index_topology(int, char **) {
 
     io::close_hdf5_file(checkpoint_file);
   };
-} // index
+} // index_topology
 
-ftest_register_driver(index_topology);
+flecsi::unit::driver<index_topology> driver;

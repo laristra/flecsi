@@ -28,6 +28,7 @@
 #include "flecsi/exec/fold.hh"
 #include "flecsi/exec/launch.hh"
 #include "flecsi/exec/task_attributes.hh"
+#include "flecsi/flog.hh"
 #include "flecsi/run/backend.hh"
 
 /*----------------------------------------------------------------------------*
@@ -65,7 +66,7 @@ initialize(int argc, char ** argv, bool dependent = true) {
  */
 
 inline int
-start(const std::function<int(int, char **)> & action) {
+start(const std::function<int()> & action) {
   return run::context::instance().start(action);
 }
 
@@ -266,6 +267,15 @@ private:
   boost::optional<ValueType> value_{};
 
 }; // struct program_option
+
+/*!
+  Return the program name.
+ */
+
+inline std::string const &
+program() {
+  return run::context::instance().program();
+}
 
 /*!
   Return the current process id.

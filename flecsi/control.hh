@@ -18,10 +18,11 @@
 #include <flecsi-config.h>
 
 #include "flecsi/ctrl/point_walker.hh"
+#include "flecsi/execution.hh"
+#include "flecsi/flog.hh"
+#include "flecsi/util/constant.hh"
 #include "flecsi/util/dag.hh"
 #include "flecsi/util/demangle.hh"
-#include <flecsi/execution.hh>
-#include <flecsi/flog.hh>
 
 #include <functional>
 #include <map>
@@ -31,7 +32,28 @@ namespace flecsi {
 
 inline log::devel_tag control_tag("control");
 
-namespace ctrl {
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
+inline program_option<bool> control_model_option("FleCSI Options",
+  "control-model",
+  "Output a dot file of the control model. This can be processed into a pdf "
+  "using the dot command, like:\n\033[0;36m$ dot -Tpdf input.dot > "
+  "output.pdf\033[0m",
+  {{flecsi::option_implicit, true}, {flecsi::option_zero}});
+
+inline program_option<bool> control_model_sorted_option("FleCSI Options",
+  "control-model-sorted",
+  "Output a dot file of the sorted control model actions.",
+  {{flecsi::option_implicit, true}, {flecsi::option_zero}});
+#endif
+
+template<auto CP>
+using control_point = util::constant<CP>;
+
+/*!
+ */
+
+template<bool (*Predicate)(), typename... ControlPoints>
+using cycle = ctrl_impl::cycle<Predicate, ControlPoints...>;
 
 /*!
   The control type provides a control model for specifying a
@@ -48,192 +70,224 @@ namespace ctrl {
   @ingroup control
  */
 
-template<typename CONTROL_POLICY>
-struct control : public CONTROL_POLICY {
+template<typename ControlPolicy>
+struct control : ControlPolicy {
 
-  using dag_t = util::dag<typename CONTROL_POLICY::node_t>;
-  using node_t = typename dag_t::node_t;
-  using point_walker_t = point_walker<control<CONTROL_POLICY>>;
+  using target_type = int (*)(void);
 
-  /*!
-    Meyer's singleton.
+private:
+  friend ControlPolicy;
+
+  using control_points = typename ControlPolicy::control_points;
+  using control_points_enum = typename ControlPolicy::control_points_enum;
+  using node_policy = typename ControlPolicy::node_policy;
+
+  using point_walker = ctrl_impl::point_walker<control<ControlPolicy>>;
+  friend point_walker;
+
+  using init_walker = ctrl_impl::init_walker<control<ControlPolicy>>;
+  friend init_walker;
+
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
+  using point_writer = ctrl_impl::point_writer<control<ControlPolicy>>;
+  friend point_writer;
+#endif
+
+  /*
+    Control node type. This just adds an executable target.
+   */
+
+  struct control_node : node_policy {
+
+    template<typename... Args>
+    control_node(target_type target, Args &&... args)
+      : node_policy(std::forward<Args>(args)...), target_(target) {}
+
+    int execute() const {
+      return target_();
+    }
+
+  private:
+    target_type target_;
+  }; // struct control_node
+
+  /*
+    Use the ndoe type that is defined by the specialized DAG.
+   */
+
+  using node_type = typename util::dag<control_node>::node_type;
+
+  /*
+    Initialize the control point dags. This is necessary in order to
+    assign labels in the case that no actions are registered at one
+    or more control points.
+   */
+
+  control() {
+    init_walker(registry_).template walk_types<control_points>();
+  }
+
+  /*
+    The singleton instance is private, and should only be accessed by internal
+    types.
    */
 
   static control & instance() {
     static control c;
     return c;
-  } // instance
-
-  /*!
-    Allow control points to set the exit status for execution.
-   */
-
-  int exit_status() const {
-    return exit_status_;
   }
 
-  /*!
-    Allow control points to set the exit status for execution.
+  /*
+    Return the dag at the given control point.
    */
 
-  int & exit_status() {
-    return exit_status_;
+  util::dag<control_node> & control_point_dag(control_points_enum cp) {
+    registry_.try_emplace(cp, *cp);
+    return registry_[cp];
   }
 
-  /*!
-    Execute the control flow graph.
-
-    @param argc The number of command-line arguments.
-    @param argv The command-line arguments.
-
-    @return An integer with \em 0 being success, and any other value
-            being failure.
+  /*
+    Return a map of the sorted dags under each control point.
    */
 
-  static int execute(int argc, char ** argv) {
+  std::map<control_points_enum, std::vector<node_type const *>> sort() {
+    std::map<control_points_enum, std::vector<node_type const *>> sorted;
+    for(auto & d : registry_) {
+      sorted.try_emplace(d.first, d.second.sort());
+    }
+    return sorted;
+  }
 
-    {
-      log::devel_guard guard(control_tag);
-      flog_devel(info) << "Invoking control model" << std::endl
-                       << "\tpolicy type: "
-                       << util::demangle(typeid(CONTROL_POLICY).name())
-                       << std::endl;
-    } // scope
+  /*
+    Run the control model.
+   */
 
-    instance().sort_control_points();
-    point_walker_t pw(argc, argv);
-    pw.template walk_types<typename CONTROL_POLICY::control_points>();
-    return instance().exit_status();
-  } // execute
+  int run() {
+    int status{flecsi::run::status::success};
+    point_walker(sort(), status).template walk_types<control_points>();
+    return status;
+  } // run
+
+  /*
+    Output a graph of the control model.
+   */
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-  using point_writer_t = point_writer<control<CONTROL_POLICY>>;
-  using graphviz_t = util::graphviz_t;
-
-  /*!
-    Write the control flow graph to the graphviz object \em gv.
-
-    @param gv An instance of the graphviz_t type. Elements of the
-              control flow graph will be written to this object, which
-              may then be output to a file.
-   */
-
-  void write(graphviz_t & gv) {
-    sort_control_points();
-    point_writer_t pw(gv);
-    pw.template walk_types<typename CONTROL_POLICY::control_points>();
+  int write() {
+    flecsi::util::graphviz gv;
+    point_writer(registry_, gv).template walk_types<control_points>();
+    std::string file = program() + "-control-model.dot";
+    gv.write(file);
+    return flecsi::run::status::control;
   } // write
-#endif // FLECSI_ENABLE_GRAPHVIZ
+
+  int write_sorted() {
+    flecsi::util::graphviz gv;
+    point_writer::write_sorted(sort(), gv);
+    std::string file = program() + "-control-model-sorted.dot";
+    gv.write(file);
+    return flecsi::run::status::control;
+  } // write_sorted
+#endif
+
+  std::map<control_points_enum, util::dag<control_node>> registry_;
+
+public:
+  /*!
+    The action type provides a mechanism to add execution elements to the
+    FleCSI control model.
+
+    @tparam Target       The execution target.
+    @tparam ControlPoint The control point under which this action is
+                         executed.
+   */
+
+  template<target_type Target, control_points_enum ControlPoint>
+  struct action {
+
+    template<target_type U, control_points_enum V>
+    friend struct action;
+
+    /*!
+      Add a function to be executed under the specified control point.
+
+      @param target The target function.
+      @param label  The label for the function. This is used to label the node
+                    when the control model is printed with graphviz.
+      @param args   A variadic list of arguments that are forwarded to the
+                    user-defined node type, as spcified in the control policy.
+     */
+
+    template<typename... Args>
+    action(Args &&... args)
+      : node_(util::symbol<*Target>(), Target, std::forward<Args>(args)...) {
+      instance().control_point_dag(ControlPoint).push_back(&node_);
+    }
+
+    /*
+      Dummy type used to force namespace scope execution.
+     */
+
+    struct dependency {};
+
+    /*!
+      Add a dependency on the given action.
+
+      @param from The upstream node in the dependency.
+
+      @note It is illegal to add depencdencies between actions under
+            different  control  points. Attempting to do so will result
+            in a compile-time error.
+     */
+
+    template<target_type U, control_points_enum V>
+    dependency add(action<U, V> const & from) {
+      static_assert(ControlPoint == V,
+        "you cannot add dependencies between actions under different control "
+        "points");
+      node_.push_back(&from.node_);
+      return {};
+    }
+
+    /*!
+     */
+
+    template<target_type F>
+    void push_back(action<F, ControlPoint> const & from) {
+      node_.push_back(&from.node_);
+    }
+
+  private:
+    node_type node_;
+  }; // struct action
 
   /*!
-    Return the control map for the given control point.
-
-    @param control_point The control point id or \em control point. Control
-                         points are defined by the specialization.
+    Execute the control model. This method does a topological sort of the
+    actions under each of the control points to determine a non-unique, but
+    valid ordering, and executes the actions.
    */
 
-  dag_t & control_point_map(size_t control_point,
-    std::string const & label = "default") {
-    if(registry_.find(control_point) == registry_.end()) {
-      registry_[control_point].label() = label;
-    } // if
-
-    return registry_[control_point];
-  } // control_point_map
+  static int execute() {
+    return instance().run();
+  } // execute
 
   /*!
-    Return the sorted control map for the given control point.
-
-    @param control_point The control point id or \em control point. Control
-                         points are defined by the specialization.
+    Process control model command-line options.
    */
 
-  std::vector<node_t> const & sorted_control_point_map(size_t control_point) {
-    return sorted_[control_point];
-  } // sorted_control_point_map
-
-private:
-  /*
-    Sort the dag under each control point.
-   */
-
-  void sort_control_points() {
-    if(sorted_.size() == 0) {
-      for(auto & d : registry_) {
-        sorted_[d.first] = d.second.sort();
-      } // for
+  static int check_options() {
+    int retval{flecsi::run::status::success};
+#if defined(FLECSI_ENABLE_GRAPHVIZ)
+    if(control_model_option.has_value()) {
+      retval |= instance().write();
     } // if
-  } // sort_control_points
+    if(control_model_sorted_option.has_value()) {
+      retval |= instance().write_sorted();
+    } // if
+#endif
+    return retval;
+  } // write
 
-  /*--------------------------------------------------------------------------*
-    Data members.
-   *--------------------------------------------------------------------------*/
+}; // struct control
 
-  int exit_status_ = 0;
-  std::map<size_t, dag_t> registry_;
-  std::map<size_t, std::vector<node_t>> sorted_;
-
-}; // control
-
-} // namespace ctrl
 } // namespace flecsi
-
-#if 0
-// FIXME: This needs to be factored into the new runtime style.
-#include "runtime.hh"
-
-/*!
-  @def flecsi_register_control_options
-
-  This macro registers a command-line option "--control-model" that,
-  when invoked, outputs a graphviz dot file that can be used to
-  visualize the control points and actions of an executable that
-  uses the control type passed as an argument.
-
-  @param control_type A qualified specialization of control.
-
-  @ingroup execution
- */
-
-#define flecsi_register_control_options(control_type)                          \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  inline void flecsi_control_add_options(                                      \
-    boost::program_options::options_description & desc) {                      \
-    desc.add_options()(                                                        \
-      "control-model", "Output the current control model and exit.");          \
-  }                                                                            \
-                                                                               \
-  inline int flecsi_control_initialize(                                        \
-    int argc, char ** argv, boost::program_options::variables_map & vm) {      \
-    if(vm.count("control-model")) {                                            \
-      ::flecsi::util::graphviz_t gv;                                           \
-      control_type::instance().write(gv);                                      \
-      auto file = ::flecsi::log::rstrip<'/'>(argv[0]) + "-control-model.dot";  \
-      std::cout << "Writing control model to " << file << std::endl;           \
-      std::cout << "Execute:" << std::endl;                                    \
-      std::cout << "\t$ dot -Tpdf " << file << " > model.pdf" << std::endl;    \
-      std::cout << "to create a pdf image of the control model" << std::endl;  \
-      gv.write(file.c_str());                                                  \
-      return 1;                                                                \
-    }                                                                          \
-                                                                               \
-    return 0;                                                                  \
-  }                                                                            \
-                                                                               \
-  inline int flecsi_control_finalize(                                          \
-    int argc, char ** argv, exit_mode_t mode) {                                \
-    return 0;                                                                  \
-  }                                                                            \
-                                                                               \
-  inline runtime_handler_t flecsi_control_handler{flecsi_control_initialize,   \
-    flecsi_control_finalize,                                                   \
-    flecsi_control_add_options};                                               \
-                                                                               \
-  flecsi_append_runtime_handler(flecsi_control_handler);
-
-#else
-
-#define flecsi_register_control_options(control_type)
-
-#endif // FLECSI_ENABLE_GRAPHVIZ

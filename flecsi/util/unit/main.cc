@@ -11,8 +11,8 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
-#include "flecsi/util/ftest.hh"
 #include <flecsi/execution.hh>
+#include <flecsi/util/unit.hh>
 
 int
 main(int argc, char ** argv) {
@@ -23,7 +23,14 @@ main(int argc, char ** argv) {
     return status == flecsi::run::status::help ? 0 : status;
   } // if
 
-  status = flecsi::start(flecsi::ctrl::control_t::execute);
+  status = flecsi::unit::control::check_options();
+
+  if(status != flecsi::run::status::success) {
+    flecsi::finalize();
+    return status == flecsi::run::status::control ? 0 : status;
+  } // if
+
+  status = flecsi::start(flecsi::unit::control::execute);
 
   flecsi::finalize();
 

@@ -13,7 +13,7 @@
                                                                               */
 #define __FLECSI_PRIVATE__
 #include "flecsi/topo/ntree/geometry.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 using namespace flecsi;
 
@@ -33,8 +33,8 @@ using geo1d = topo::ntree_geometry<double, 1>;
 using p1d = util::point<double, 1>;
 
 int
-geometry_1d_sanity(int, char **) {
-  FTEST {
+geometry_1d_sanity() {
+  UNIT {
     using namespace flecsi;
     const int num_tests = 100;
 
@@ -144,15 +144,16 @@ geometry_1d_sanity(int, char **) {
       }
     }
   };
-}
-ftest_register_driver(geometry_1d_sanity);
+} // geometry_1d_sanity
+
+flecsi::unit::driver<geometry_1d_sanity> driver_1d;
 
 using geo2d = topo::ntree_geometry<double, 2>;
 using p2d = util::point<double, 2>;
 
 int
-geometry_2d_sanity(int, char **) {
-  FTEST {
+geometry_2d_sanity() {
+  UNIT {
     using namespace flecsi;
     const int num_tests = 100;
 
@@ -247,15 +248,16 @@ geometry_2d_sanity(int, char **) {
       }
     }
   };
-}
-ftest_register_driver(geometry_2d_sanity);
+} // geometry_2d_sanity
+
+flecsi::unit::driver<geometry_2d_sanity> driver_2d;
 
 using geo3d = topo::ntree_geometry<double, 3>;
 using p3d = util::point<double, 3>;
 
 int
-geometry_3d_sanity(int, char **) {
-  FTEST {
+geometry_3d_sanity() {
+  UNIT {
     using namespace flecsi;
     const int num_tests = 100;
 
@@ -360,5 +362,6 @@ geometry_3d_sanity(int, char **) {
       }
     }
   };
-}
-ftest_register_driver(geometry_3d_sanity);
+} // geometry_3d_sanity
+
+flecsi::unit::driver<geometry_3d_sanity> driver_3d;

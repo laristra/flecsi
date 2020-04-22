@@ -12,33 +12,33 @@
    All rights reserved.
                                                                               */
 
-#include "flecsi/util/ftest.hh"
 #include <flecsi/execution.hh>
+#include <flecsi/util/unit.hh>
 
 using namespace flecsi;
 
 int
 task_pass() {
-  FTEST {
+  UNIT {
     flog(info) << "this test passes" << std::endl;
     ASSERT_EQ(1, 1);
-  };
+  }; // UNIT
 }
 
 int
 task_assert_fail() {
-  FTEST {
+  UNIT {
     flog(info) << "this test fails an assertion" << std::endl;
     ASSERT_EQ(0, 1);
-  };
+  }; // UNIT
 }
 
 int
 task_expect_fail() {
-  FTEST {
+  UNIT {
     flog(info) << "this test fails an expectation" << std::endl;
     EXPECT_EQ(0, 1);
-  };
+  }; // UNIT
 }
 
 program_option<bool> fail("Test Options",
@@ -47,8 +47,8 @@ program_option<bool> fail("Test Options",
   {{flecsi::option_implicit, true}, {flecsi::option_zero}});
 
 int
-driver(int, char **) {
-  FTEST {
+dag() {
+  UNIT {
     ASSERT_EQ(test<task_pass>(), 0);
     ASSERT_NE(test<task_assert_fail>(), 0);
     ASSERT_NE(test<task_expect_fail>(), 0);
@@ -64,7 +64,7 @@ driver(int, char **) {
       EXPECT_EQ(test<task_expect_fail>(), 0);
       ASSERT_EQ(test<task_assert_fail>(), 0);
     } // if
-  };
-} // driver
+  }; // UNIT
+} // dag
 
-ftest_register_driver(driver);
+flecsi::unit::driver<dag> driver;

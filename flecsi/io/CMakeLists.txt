@@ -73,20 +73,20 @@ set(io_SOURCES
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-ftest_add_unit(io
+add_unit(io
   SOURCES
     test/leg/io.cc
   THREADS 4
 )
 endif()
         
-ftest_add_unit(io_index
+add_unit(io_index
   SOURCES
     test/io_index.cc
   THREADS 4
 )
 
-ftest_add_unit(io_metadata
+add_unit(io_metadata
   SOURCES
     test/io_metadata.cc
   THREADS 2

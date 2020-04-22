@@ -13,14 +13,14 @@
                                                                               */
 
 #include "flecsi/topo/unstructured/simple_definition.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/execution.hh>
 
 using namespace flecsi;
 
 int
 simple2d_16x16() {
-  FTEST {
+  UNIT {
     topo::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
 
     ASSERT_EQ(sd.dimension(), 2lu);
@@ -30,11 +30,11 @@ simple2d_16x16() {
 }
 
 int
-driver(int, char **) {
-  FTEST {
+simple_definition() {
+  UNIT {
     // TODO: use test<> when reduction works for MPI tasks
     execute<simple2d_16x16, flecsi::index, mpi>();
   };
-}
+} // simple_definition
 
-ftest_register_driver(driver);
+flecsi::unit::driver<simple_definition> driver;

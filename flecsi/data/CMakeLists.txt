@@ -90,45 +90,45 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(canonical
+add_unit(canonical
   SOURCES
     test/canonical.cc
   THREADS 2
 )
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-ftest_add_unit(global
+add_unit(global
   SOURCES
     test/global.cc
   THREADS 2
 )
 endif()
 
-ftest_add_unit(identifiers
+add_unit(identifiers
   SOURCES
     test/identifiers.cc
 )
 
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-ftest_add_unit(index
+add_unit(index
   SOURCES
     test/index.cc
   THREADS 2
 )
 endif()
 
-ftest_add_unit(privilege
+add_unit(privilege
   SOURCES
     test/privilege.cc
 )
 
-ftest_add_unit(structured
+add_unit(structured
   SOURCES
     test/structured.cc
   THREADS 2
 )
 
-ftest_add_unit(unstructured
+add_unit(unstructured
   SOURCES
     test/unstructured.cc
   THREADS 2

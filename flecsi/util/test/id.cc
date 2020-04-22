@@ -14,20 +14,20 @@
 
 #include "flecsi/util/id.hh"
 #include "flecsi/util/common.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #include <vector>
 
 template<std::size_t P, std::size_t E, std::size_t F, std::size_t G>
 void
 print(const flecsi::util::id_<P, E, F, G> & value) {
-  FTEST_CAPTURE() << "\ndimension == " << value.dimension();
-  FTEST_CAPTURE() << "\ndomain    == " << value.domain();
-  FTEST_CAPTURE() << "\npartition == " << value.partition();
-  FTEST_CAPTURE() << "\nentity    == " << value.entity();
-  FTEST_CAPTURE() << "\nflags     == " << value.flags();
-  FTEST_CAPTURE() << "\nglobal    == " << value.global();
-  FTEST_CAPTURE() << std::endl;
+  UNIT_CAPTURE() << "\ndimension == " << value.dimension();
+  UNIT_CAPTURE() << "\ndomain    == " << value.domain();
+  UNIT_CAPTURE() << "\npartition == " << value.partition();
+  UNIT_CAPTURE() << "\nentity    == " << value.entity();
+  UNIT_CAPTURE() << "\nflags     == " << value.flags();
+  UNIT_CAPTURE() << "\nglobal    == " << value.global();
+  UNIT_CAPTURE() << std::endl;
 }
 
 /*
@@ -70,8 +70,8 @@ identical(const flecsi::util::id_<PBITS, EBITS, FBITS, GBITS> & lhs,
 #define GBITS 60 /* for global    */
 
 int
-id(int, char **) {
-  FTEST {
+id() {
+  UNIT {
     // type: id == id_<PBITS,EBITS,FBITS,GBITS>
     using id = flecsi::util::id_<PBITS, EBITS, FBITS, GBITS>;
     using flecsi::util::local_id_t;
@@ -81,26 +81,26 @@ id(int, char **) {
     // ------------------------
 
     // local_id_t
-    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::util::local_id_t) << std::endl;
-    FTEST_CAPTURE() << "sizeof(flecsi::util::local_id_t) == "
-                    << sizeof(flecsi::util::local_id_t) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(flecsi::util::local_id_t) << std::endl;
+    UNIT_CAPTURE() << "sizeof(flecsi::util::local_id_t) == "
+                   << sizeof(flecsi::util::local_id_t) << std::endl;
 
     // id::FLAGS_UNMASK
-    FTEST_CAPTURE() << "FLAGS_UNMASK == " << id::FLAGS_UNMASK << '\n';
-    FTEST_CAPTURE() << "FLAGS_UNMASK == " << binary(id::FLAGS_UNMASK) << '\n';
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << "FLAGS_UNMASK == " << id::FLAGS_UNMASK << '\n';
+    UNIT_CAPTURE() << "FLAGS_UNMASK == " << binary(id::FLAGS_UNMASK) << '\n';
+    UNIT_CAPTURE() << std::endl;
 
     // These here just exercise my binary() function...
-    FTEST_CAPTURE() << binary(0u) << std::endl;
-    FTEST_CAPTURE() << binary(1u) << std::endl;
-    FTEST_CAPTURE() << binary(2u) << std::endl;
-    FTEST_CAPTURE() << binary(3u) << std::endl;
-    FTEST_CAPTURE() << binary(4u) << std::endl;
-    FTEST_CAPTURE() << binary(5u) << std::endl;
-    FTEST_CAPTURE() << binary(6u) << std::endl;
-    FTEST_CAPTURE() << binary(7u) << std::endl;
-    FTEST_CAPTURE() << binary(8u) << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << binary(0u) << std::endl;
+    UNIT_CAPTURE() << binary(1u) << std::endl;
+    UNIT_CAPTURE() << binary(2u) << std::endl;
+    UNIT_CAPTURE() << binary(3u) << std::endl;
+    UNIT_CAPTURE() << binary(4u) << std::endl;
+    UNIT_CAPTURE() << binary(5u) << std::endl;
+    UNIT_CAPTURE() << binary(6u) << std::endl;
+    UNIT_CAPTURE() << binary(7u) << std::endl;
+    UNIT_CAPTURE() << binary(8u) << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // ------------------------
     // constructors
@@ -157,23 +157,22 @@ id(int, char **) {
       const id a = id::make<1, 2>(3, 4, 5, 6);
       print(a);
 
-      FTEST_CAPTURE() << std::endl;
-      FTEST_CAPTURE() << "entity    : " << binary(a.entity(), EBITS)
-                      << std::endl;
-      FTEST_CAPTURE() << "partition : " << binary(a.partition(), PBITS)
-                      << std::endl;
-      FTEST_CAPTURE() << "domain    : " << binary(a.domain(), 2) << std::endl;
-      FTEST_CAPTURE() << "dimension : " << binary(a.dimension(), 2)
-                      << std::endl;
+      UNIT_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << "entity    : " << binary(a.entity(), EBITS)
+                     << std::endl;
+      UNIT_CAPTURE() << "partition : " << binary(a.partition(), PBITS)
+                     << std::endl;
+      UNIT_CAPTURE() << "domain    : " << binary(a.domain(), 2) << std::endl;
+      UNIT_CAPTURE() << "dimension : " << binary(a.dimension(), 2) << std::endl;
 
-      FTEST_CAPTURE() << "\nlocal_id(): "
-                      << binary(a.local_id(), EBITS + PBITS + 2 + 2)
-                      << std::endl;
+      UNIT_CAPTURE() << "\nlocal_id(): "
+                     << binary(a.local_id(), EBITS + PBITS + 2 + 2)
+                     << std::endl;
 
-      FTEST_CAPTURE() << std::endl;
-      FTEST_CAPTURE() << "local_id()  == " << a.local_id() << std::endl;
-      FTEST_CAPTURE() << "global_id() == " << a.global_id() << std::endl;
-      FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << "local_id()  == " << a.local_id() << std::endl;
+      UNIT_CAPTURE() << "global_id() == " << a.global_id() << std::endl;
+      UNIT_CAPTURE() << std::endl;
     }
 
     // ------------------------
@@ -207,13 +206,13 @@ id(int, char **) {
     {
       id a = id::make<1, 2>(3, 4, 5, 6);
 
-      FTEST_CAPTURE() << a.dimension() << std::endl;
-      FTEST_CAPTURE() << a.domain() << std::endl;
-      FTEST_CAPTURE() << a.partition() << std::endl;
-      FTEST_CAPTURE() << a.entity() << std::endl;
-      FTEST_CAPTURE() << a.flags() << std::endl;
-      FTEST_CAPTURE() << a.global() << std::endl;
-      FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << a.dimension() << std::endl;
+      UNIT_CAPTURE() << a.domain() << std::endl;
+      UNIT_CAPTURE() << a.partition() << std::endl;
+      UNIT_CAPTURE() << a.entity() << std::endl;
+      UNIT_CAPTURE() << a.flags() << std::endl;
+      UNIT_CAPTURE() << a.global() << std::endl;
+      UNIT_CAPTURE() << std::endl;
 
       EXPECT_EQ(a.entity(), a.index_space_index());
     }
@@ -241,9 +240,9 @@ id(int, char **) {
       const id b = id::make<2, 3>(50, 60, 70, 80);
       const id c = id::make<2, 3>(50, 60, 7000, 8000);
 
-      FTEST_CAPTURE() << a.local_id() << std::endl;
-      FTEST_CAPTURE() << b.local_id() << std::endl;
-      FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << a.local_id() << std::endl;
+      UNIT_CAPTURE() << b.local_id() << std::endl;
+      UNIT_CAPTURE() << std::endl;
 
       // <
       EXPECT_TRUE(a < b);
@@ -255,15 +254,15 @@ id(int, char **) {
       // Note: my (Martin's) analysis suggests that large values of entity have
       // high-order bits that would run into the FBITS 0s in FLAGS_UNMASK. So,
       // I should clarify if the definition is really as it was intended.
-      FTEST_CAPTURE() << binary(a.local_id()) << std::endl;
-      FTEST_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
-      FTEST_CAPTURE() << binary(a.local_id() & id::FLAGS_UNMASK) << std::endl;
-      FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << binary(a.local_id()) << std::endl;
+      UNIT_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
+      UNIT_CAPTURE() << binary(a.local_id() & id::FLAGS_UNMASK) << std::endl;
+      UNIT_CAPTURE() << std::endl;
 
-      FTEST_CAPTURE() << binary(b.local_id()) << std::endl;
-      FTEST_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
-      FTEST_CAPTURE() << binary(b.local_id() & id::FLAGS_UNMASK) << std::endl;
-      FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << binary(b.local_id()) << std::endl;
+      UNIT_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
+      UNIT_CAPTURE() << binary(b.local_id() & id::FLAGS_UNMASK) << std::endl;
+      UNIT_CAPTURE() << std::endl;
 
       // Not really fully testing the operator here...
       EXPECT_FALSE(a == b);
@@ -284,8 +283,8 @@ id(int, char **) {
 
     {
       flecsi::util::local_id_t a = 1, b = 2;
-      FTEST_CAPTURE() << a << std::endl;
-      FTEST_CAPTURE() << b << std::endl;
+      UNIT_CAPTURE() << a << std::endl;
+      UNIT_CAPTURE() << b << std::endl;
     }
 
     // ------------------------
@@ -293,13 +292,13 @@ id(int, char **) {
     // ------------------------
 
 #ifdef __GNUG__
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("id.blessed.gnug"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("id.blessed.gnug"));
 #elif defined(_MSC_VER)
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("id.blessed.msvc"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("id.blessed.msvc"));
 #else
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("id.blessed"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("id.blessed"));
 #endif
   };
-}
+} // id
 
-ftest_register_driver(id);
+flecsi::unit::driver<id> driver;

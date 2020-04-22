@@ -14,7 +14,7 @@
 
 #define __FLECSI_PRIVATE__
 #include "flecsi/util/demangle.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
 
@@ -35,18 +35,18 @@ assign(double1::accessor<wo> p) {
 
 int
 check(double1::accessor<ro> p) {
-  FTEST {
+  UNIT {
     flog(info) << "check on " << color() << std::endl;
     ASSERT_EQ(p, color());
   };
 } // print
 
 int
-index_driver(int, char **) {
-  FTEST {
+index_driver() {
+  UNIT {
     execute<assign>(pressure);
     EXPECT_EQ(test<check>(pressure), 0);
   };
 } // index
 
-ftest_register_driver(index_driver);
+flecsi::unit::driver<index_driver> driver;

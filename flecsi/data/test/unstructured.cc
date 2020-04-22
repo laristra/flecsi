@@ -13,7 +13,7 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
 
@@ -27,8 +27,8 @@ auto pressure = cell_field(m);
 #endif
 
 int
-index_driver(int, char **) {
-  FTEST {
+unstructured_driver() {
+  UNIT {
 #if 0
   coloring.create(/* arg list */);
 
@@ -44,4 +44,4 @@ index_driver(int, char **) {
   };
 } // index
 
-ftest_register_driver(index_driver);
+flecsi::unit::driver<unstructured_driver> driver;

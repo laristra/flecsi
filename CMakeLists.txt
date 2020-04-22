@@ -343,7 +343,7 @@ message(STATUS "${FLECSI_Yellow}Set id_t bits to allow:\n"
 #------------------------------------------------------------------------------#
 
 include(flog)
-include(ftest)
+include(unit)
 
 #------------------------------------------------------------------------------#
 # Capture enable settings.
@@ -361,12 +361,6 @@ endforeach()
 # Configure header.
 #------------------------------------------------------------------------------#
 
-#set(FLECSI_ENABLE_MPI ${ENABLE_MPI})
-#set(FLECSI_ENABLE_LEGION ${ENABLE_LEGION})
-#set(FLECSI_ENABLE_METIS ENABLE_METIS)
-#set(FLECSI_ENABLE_PARMETIS ENABLE_PARMETIS)
-#set(FLECSI_ENABLE_GRAPHVIZ ${ENABLE_GRAPHVIZ})
-
 configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-config.h.in
   ${CMAKE_BINARY_DIR}/flecsi-config.h @ONLY)
 
@@ -376,6 +370,13 @@ install(
   FILES ${CMAKE_BINARY_DIR}/flecsi-config.h
   DESTINATION include
 )
+
+#------------------------------------------------------------------------------#
+# Configure environment module.
+#------------------------------------------------------------------------------#
+
+configure_file(${PROJECT_SOURCE_DIR}/config/flecsi-module.in
+  ${CMAKE_BINARY_DIR}/flecsi-module @ONLY)
 
 #------------------------------------------------------------------------------#
 # FleCSI library.

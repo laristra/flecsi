@@ -1,7 +1,7 @@
 #include "flecsi/util/dag.hh"
 #include "flecsi/util/common.hh"
 #include "flecsi/util/const_string.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #include <bitset>
 
@@ -39,7 +39,7 @@ operator<<(std::ostream & stream, node_policy_t const & node) {
 using dag_t = flecsi::util::dag<node_policy_t>;
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-using graphviz_t = flecsi::util::graphviz_t;
+using graphviz = flecsi::util::graphviz;
 #endif
 
 #define flecsi_hash(name)                                                      \
@@ -54,8 +54,8 @@ const size_t f = flecsi_hash(f);
 const size_t g = flecsi_hash(g);
 
 int
-dag(int, char **) {
-  FTEST {
+dag() {
+  UNIT {
     dag_t dag;
 
     dag.initialize_node({e, "e", 0x10 | 0x20});
@@ -82,11 +82,11 @@ dag(int, char **) {
     std::cout << dag << std::endl;
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-    graphviz_t gv;
+    graphviz gv;
     dag.add(gv);
     gv.write("dag.gv");
 #endif
   };
-}
+} // dag
 
-ftest_register_driver(dag);
+flecsi::unit::driver<dag> driver;

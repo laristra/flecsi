@@ -1,11 +1,11 @@
 #include "flecsi/util/debruijn.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #include <random>
 
 int
-debruijn(int, char **) {
-  FTEST {
+debruijn() {
+  UNIT {
     using flecsi::util::debruijn32_t;
 
     // index()
@@ -36,6 +36,6 @@ debruijn(int, char **) {
       } // for
     } // for
   };
-}
+} // debruijn
 
-ftest_register_driver(debruijn);
+flecsi::unit::driver<debruijn> driver;

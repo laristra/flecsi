@@ -23,11 +23,11 @@ using namespace flecsi;
   Create some tags to control output.
  */
 
-flog::tag tag1("tag1");
-flog::tag tag2("tag2");
+log::tag tag1("tag1");
+log::tag tag2("tag2");
 
 int
-top_level_action(int, char **) {
+top_level_action() {
 
   /*
     This output will always be generated because it is not scoped within a tag
@@ -45,7 +45,7 @@ top_level_action(int, char **) {
    */
 
   {
-    flog::guard guard(tag1);
+    log::guard guard(tag1);
     flog(trace) << "Trace level output (in tag1 guard)" << std::endl;
     flog(info) << "Info level output (in tag1 guard)" << std::endl;
     flog(warn) << "Warn level output (in tag1 guard)" << std::endl;
@@ -58,7 +58,7 @@ top_level_action(int, char **) {
    */
 
   {
-    flog::guard guard(tag2);
+    log::guard guard(tag2);
     flog(trace) << "Trace level output (in tag2 guard)" << std::endl;
     flog(info) << "Info level output (in tag2 guard)" << std::endl;
     flog(warn) << "Warn level output (in tag2 guard)" << std::endl;
@@ -78,9 +78,13 @@ main(int argc, char ** argv) {
 
   auto status = flecsi::initialize(argc, argv);
 
+  if(status != flecsi::run::status::success) {
+    return status == flecsi::run::status::help ? 0 : status;
+  } // if
+
   /*
     In order to see or capture any output from FLOG, the user must add at least
-    one output stream. The function flog::add_output_stream provides an
+    one output stream. The function log::add_output_stream provides an
     interface for adding output streams to FLOG. The FleCSI runtime must have
     been initialized before this function can be invoked.
    */
@@ -89,18 +93,14 @@ main(int argc, char ** argv) {
     Add the standard log descriptor to FLOG's buffers.
    */
 
-  flog::add_output_stream("clog", std::clog, true);
+  log::add_output_stream("clog", std::clog, true);
 
   /*
     Add an output file to FLOG's buffers.
    */
 
   std::ofstream log_file("output.txt");
-  flog::add_output_stream("log file", log_file);
-
-  if(status != flecsi::runtime::status::success) {
-    return status == flecsi::runtime::status::help ? 0 : status;
-  } // if
+  log::add_output_stream("log file", log_file);
 
   status = flecsi::start(top_level_action);
 

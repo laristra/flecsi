@@ -14,9 +14,9 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/data.hh>
 
-#include "flecsi/util/ftest.hh"
 #include "flecsi/util/geometry/filling_curve.hh"
 #include "flecsi/util/geometry/point.hh"
+#include "flecsi/util/unit.hh"
 
 #include "flecsi/topo/ntree/interface.hh"
 #include "flecsi/topo/ntree/types.hh"
@@ -47,11 +47,11 @@ data::topology_slot<sph_ntree_topology> sph_ntree;
 data::coloring_slot<sph_ntree_topology> coloring;
 
 int
-ntree_driver(int, char **) {
-  FTEST {
+ntree_driver() {
+  UNIT {
     coloring.allocate();
     sph_ntree.allocate(coloring.get());
   };
-} // TEST
+} // ntree_driver
 
-ftest_register_driver(ntree_driver);
+flecsi::unit::driver<ntree_driver> driver;
