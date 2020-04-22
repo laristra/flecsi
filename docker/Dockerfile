@@ -45,7 +45,7 @@ RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debu
     spack module tcl loads parmetis ^$MPI_PACKAGE | tee -a deps.sh && \
     spack module tcl loads --dependencies $SPACK_SPEC | tee -a deps.sh && \
     echo "source $HOME/deps.sh" >> ~/.bashrc
-RUN source $HOME/deps.sh && module list
+RUN source $HOME/spack/share/spack/setup-env.sh && source $HOME/deps.sh && module list
 
 WORKDIR $HOME/flecsi
 RUN mkdir build
