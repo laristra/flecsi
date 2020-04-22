@@ -1,7 +1,6 @@
 FROM laristra/spack-buildenv:fedora30
 
 SHELL ["/bin/bash", "-c"]
-CMD [".","~/.bashrc"]
 
 ENV DEBIAN_FRONTEND=noninteractive \
     HOME=/home/flecsi \
@@ -46,6 +45,9 @@ RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debu
     #spack module tcl loads parmetis ^$MPI_PACKAGE | tee -a deps.sh && \
     spack module tcl loads --dependencies $SPACK_SPEC | tee -a deps.sh
 RUN echo ". $HOME/deps.sh" >> ~/.bashrc
+RUN echo ". $HOME/spack/share/spack/setup-env.sh && . $HOME/deps.sh" >> $HOME/load_deps.sh
+
+CMD [".","$HOME/load_deps.sh"]
 RUN module list
 
 WORKDIR $HOME/flecsi
