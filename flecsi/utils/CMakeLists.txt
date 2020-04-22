@@ -46,7 +46,6 @@ set(utils_HEADERS
   simple_id.h
   static_verify.h
   target.h
-  tuple_function.h
   tuple_type_converter.h
   tuple_visit.h
   tuple_walker.h
@@ -215,11 +214,6 @@ cinch_add_unit(tuple_wrapper
   SOURCES
     demangle.cc
     test/tuple_wrapper.cc
-)
-
-cinch_add_unit(tuple_function
-  SOURCES
-    test/tuple_function.cc
 )
 
 set(array_ref_blessed_input test/array_ref.blessed.gnug)

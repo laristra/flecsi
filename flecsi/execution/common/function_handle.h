@@ -17,8 +17,6 @@
 
 #include <functional>
 
-#include <flecsi/utils/tuple_function.h>
-
 namespace flecsi {
 namespace execution {
 

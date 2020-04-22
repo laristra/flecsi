@@ -44,17 +44,6 @@ public:
   using id_t = utils::id_t;
   using offset_t = utils::offset_t;
 
-  connectivity_t(const connectivity_t &) = delete;
-
-  connectivity_t & operator=(const connectivity_t &) = delete;
-
-  // allow move operations
-  connectivity_t(connectivity_t &&) = default;
-  connectivity_t & operator=(connectivity_t &&) = default;
-
-  //! Constructor.
-  connectivity_t() = default;
-
   // We don't ever mutate this ourselves:
   auto & entity_storage() {
     return index_space_.data;

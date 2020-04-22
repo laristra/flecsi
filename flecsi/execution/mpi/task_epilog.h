@@ -275,7 +275,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   }
 
   template<size_t I, typename T, size_t PERMISSIONS>
-  void client_handler(data_client_handle_u<T, PERMISSIONS> & h) {
+  void client_handler(data_client_handle_u<T, PERMISSIONS> h) {
 
     using entity_types_t = typename T::types_t::entity_types;
 
@@ -394,7 +394,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
 
     // skip read only
     if(PERMISSIONS == ro)
