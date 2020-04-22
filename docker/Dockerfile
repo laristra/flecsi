@@ -1,7 +1,7 @@
 FROM laristra/spack-buildenv:fedora30
 
 SHELL ["/bin/bash", "-c"]
-CMD ["source","~/.bashrc"]
+CMD [".","~/.bashrc"]
 
 ENV DEBIAN_FRONTEND=noninteractive \
     HOME=/home/flecsi \
@@ -54,7 +54,7 @@ RUN mkdir build
 WORKDIR build
 RUN ${CC} --version
 RUN ccache -z
-RUN source ~/.bashrc && \
+RUN . ~/.bashrc && \
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
@@ -66,7 +66,7 @@ RUN source ~/.bashrc && \
     make VERBOSE=1 -j2
 RUN ccache -s
 
-RUN source ~/.bashrc && \
+RUN . ~/.bashrc && \
     make doxygen && \
     if [[ ${CLANG_FORMAT} ]]; then \
       make format && git diff --exit-code --ignore-submodules; \
