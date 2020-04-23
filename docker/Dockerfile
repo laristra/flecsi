@@ -56,7 +56,8 @@ WORKDIR build
 RUN ${CC} --version
 RUN ccache -z
 RUN source $HOME/load_deps.sh && \
-    cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+    cmake -DMPIEXEC_PREFLAGS=$([ "$MPI_PACKAGE" = "openmpi" ] && echo '--oversubscribe') \
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
           -DENABLE_FLECSI_TUTORIAL=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
