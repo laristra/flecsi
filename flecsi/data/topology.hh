@@ -67,7 +67,7 @@ struct topology_data;
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topo::global> : detail::simple<topo::global> {
+struct topology_data<topo::global::core> : detail::simple<topo::global> {
   topology_data(const type::coloring &) {}
 };
 
@@ -76,8 +76,8 @@ struct topology_data<topo::global> : detail::simple<topo::global> {
  *----------------------------------------------------------------------------*/
 
 template<>
-struct topology_data<topo::index> : detail::simple<topo::index>,
-                                    detail::partition {
+struct topology_data<topo::index::core> : detail::simple<topo::index>,
+                                          detail::partition {
   topology_data(const type::coloring & coloring)
     : simple(coloring.size()), partition(
                                  *this,

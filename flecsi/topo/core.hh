@@ -21,11 +21,19 @@
 
 #include <cstddef> // size_t
 
+#include "flecsi/data/privilege.hh"
+#include "flecsi/data/topology_accessor.hh"
 #include "flecsi/util/type_traits.hh"
 
 namespace flecsi {
-namespace topo {
+namespace data {
+template<class>
+struct topology_slot; // avoid circular dependency
+template<class>
+struct coloring_slot; // avoid dependency on flecsi::execute
+} // namespace data
 
+namespace topo {
 // Declarations for the base topology types.
 
 struct global;
@@ -54,45 +62,6 @@ struct unstructured;
 enum single_space { elements };
 
 namespace detail {
-
-template<class, class = void>
-struct core;
-
-template<class T>
-struct core<T, util::voided<util::base_specialization_t<canonical, T>>> {
-  using type = util::base_specialization_t<canonical, T>;
-};
-
-template<class T>
-struct core<T, std::enable_if_t<std::is_base_of_v<global, T>>> {
-  using type = global;
-};
-
-template<class T>
-struct core<T, std::enable_if_t<std::is_base_of_v<index, T>>> {
-  using type = index;
-};
-
-template<class T>
-struct core<T, util::voided<util::base_specialization_t<ntree, T>>> {
-  using type = util::base_specialization_t<ntree, T>;
-};
-
-template<class T>
-struct core<T, util::voided<util::base_specialization_t<set, T>>> {
-  using type = util::base_specialization_t<set, T>;
-};
-
-template<class T>
-struct core<T, util::voided<util::base_specialization_t<structured, T>>> {
-  using type = util::base_specialization_t<structured, T>;
-};
-
-template<class T>
-struct core<T, util::voided<util::base_specialization_t<unstructured, T>>> {
-  using type = util::base_specialization_t<unstructured, T>;
-};
-
 template<class T>
 struct category {
   using type = T;
@@ -123,7 +92,7 @@ struct index_space {
   using type = single_space;
   static constexpr single_space default_space = elements;
 };
-template<class T> // TIP: SFINAE uses T::index_space if defined
+template<class T> // TIP: SFINAE uses index_space member if defined
 struct index_space<T, util::voided<typename T::index_space>> {
   using type = typename T::index_space;
 };
@@ -141,8 +110,6 @@ struct default_space<T, decltype(void(T::default_space))> {
 } // namespace detail
 
 template<class T>
-using core_t = typename detail::core<T>::type;
-template<class T>
 using category_t = typename detail::category<T>::type; // of a core type only
 
 template<class T>
@@ -153,20 +120,45 @@ id() {
 
 template<class, class = void>
 inline constexpr std::size_t index_spaces = 1;
+// TIP: expression SFINAE uses index_spaces member if defined
 template<class T>
-inline constexpr std::size_t index_spaces<T, decltype(void(T::index_spaces))> =
-  T::index_spaces; // TIP: expression SFINAE uses T::index_spaces if defined
+inline constexpr std::size_t
+  index_spaces<T, decltype(void(T::core::index_spaces))> =
+    T::core::index_spaces;
 
 template<class T>
-using index_space_t = typename detail::index_space<T>::type;
+using index_space_t = typename detail::index_space<typename T::core>::type;
 template<class T>
-inline constexpr auto default_space = detail::default_space<T>::value;
+inline constexpr auto default_space =
+  detail::default_space<typename T::core>::value;
 template<class T, index_space_t<T> S, class = const std::size_t>
 inline constexpr std::size_t privilege_count = 1;
 template<class T, index_space_t<T> S>
 inline constexpr std::size_t
-  privilege_count<T, S, decltype(T::template privilege_count<S>)> =
-    T::template privilege_count<S>;
+  privilege_count<T, S, decltype(T::core::template privilege_count<S>)> =
+    T::core::template privilege_count<S>;
+
+/// CRTP base for specializations.
+/// \tparam C core topology
+/// \tparam D derived topology type
+template<template<class> class C, class D>
+struct specialization {
+  using core = C<D>;
+  using base = category_t<core>;
+  // This is just core::coloring, but core is incomplete here.
+  using coloring = typename base::coloring;
+
+  // NB: nested classes would prevent template argument deduction.
+  using slot = data::topology_slot<D>;
+  using cslot = data::coloring_slot<D>;
+
+  /// The topology accessor to use as a parameter to receive a \c slot.
+  /// \tparam Priv the appropriate number of privileges
+  template<partition_privilege_t... Priv>
+  using accessor = data::topology_accessor<D, privilege_pack<Priv...>>;
+
+  specialization() = delete;
+};
 
 } // namespace topo
 } // namespace flecsi

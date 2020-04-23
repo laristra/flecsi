@@ -24,6 +24,14 @@
 namespace flecsi {
 namespace topo {
 
+struct global_base {
+  struct coloring {};
+  global_base() = delete;
+};
+
+template<class>
+using global_category = global_base;
+
 /*!
   The \c global type allows users to register data on a
   topology with a single index, i.e., there is one instance of
@@ -31,11 +39,7 @@ namespace topo {
 
   @ingroup topology
  */
-
-struct global {
-  global() = delete;
-  struct coloring {};
-}; // struct global
+struct global : specialization<global_category, global> {}; // struct global
 
 } // namespace topo
 } // namespace flecsi

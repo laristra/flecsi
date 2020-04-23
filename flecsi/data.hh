@@ -30,20 +30,17 @@ namespace flecsi {
 /*
   Default global topology instance.
  */
-
-inline data::topology_slot<topo::global> global_topology;
+inline topo::global::slot global_topology;
 
 /*
   Per-process coloring.
  */
-
-inline data::coloring_slot<topo::index> process_coloring;
+inline topo::index::cslot process_coloring;
 
 /*
   Per-process topology instance.
  */
-
-inline data::topology_slot<topo::index> process_topology;
+inline topo::index::slot process_topology;
 
 namespace detail {
 /// An RAII type to manage the global coloring and topologies.

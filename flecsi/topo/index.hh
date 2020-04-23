@@ -19,20 +19,12 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/topo/core.hh"
+
 namespace flecsi {
 namespace topo {
 
-/*!
-  The \c index type allows users to register data on an
-  arbitrarily-sized set of indices that have an implicit one-to-one coloring.
-
-  @ingroup topology
- */
-
-struct index {
-
-  index() = delete;
-
+struct index_base {
   struct coloring {
     coloring(size_t size) : size_(size) {}
 
@@ -43,7 +35,19 @@ struct index {
   private:
     size_t size_;
   };
+  index_base() = delete;
+};
 
+template<class>
+using index_category = index_base;
+
+/*!
+  The \c index type allows users to register data on an
+  arbitrarily-sized set of indices that have an implicit one-to-one coloring.
+
+  @ingroup topology
+ */
+struct index : specialization<index_category, index> {
   static coloring color(size_t size) {
     return {size};
   } // color
