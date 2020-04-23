@@ -138,15 +138,21 @@ inline constexpr std::size_t
   privilege_count<T, S, decltype(T::core::template privilege_count<S>)> =
     T::core::template privilege_count<S>;
 
+template<class T>
+using identity = T; // can be a trivial specialization interface
+
 /// CRTP base for specializations.
 /// \tparam C core topology
 /// \tparam D derived topology type
-template<template<class> class C, class D>
+/// \tparam I specialization interface accepting a base class
+template<template<class> class C, class D, template<class> class I = identity>
 struct specialization {
   using core = C<D>;
   using base = category_t<core>;
   // This is just core::coloring, but core is incomplete here.
   using coloring = typename base::coloring;
+  template<class B>
+  using interface = I<B>;
 
   // NB: nested classes would prevent template argument deduction.
   using slot = data::topology_slot<D>;

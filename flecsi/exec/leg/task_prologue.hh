@@ -179,6 +179,15 @@ struct task_prologue_t {
     region_reqs_.push_back(rr);
   } // visit
 
+  template<class Topo, std::size_t Priv>
+  void visit(data::topology_accessor<Topo, Priv> * /* parameter */,
+    const data::topology_slot<Topo> & slot) {
+    Topo::core::fields([&](auto & f) {
+      visit(static_cast<data::field_accessor<decltype(f), Priv> *>(nullptr),
+        f(slot));
+    });
+  }
+
   /*--------------------------------------------------------------------------*
     Futures
    *--------------------------------------------------------------------------*/

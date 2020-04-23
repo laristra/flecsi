@@ -23,6 +23,7 @@
 
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/privilege.hh"
+#include "flecsi/data/topology_accessor.hh"
 #include "flecsi/exec/leg/future.hh"
 #include "flecsi/run/backend.hh"
 #include "flecsi/util/demangle.hh"
@@ -85,6 +86,11 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
     visit(accessor.get_base());
+  }
+
+  template<class Topo, std::size_t Priv>
+  void visit(data::topology_accessor<Topo, Priv> & a) {
+    a.bind([&](auto & x) { visit(x); }); // Clang 8.0.1 deems 'this' unused
   }
 
   /*--------------------------------------------------------------------------*

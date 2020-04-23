@@ -68,6 +68,7 @@ struct util::serial_convert<data::accessor<data::singular, T, Priv>> {
     return b;
   }
 };
+// NB: topology_accessor is trivially copyable.
 
 template<class T>
 struct util::serial_convert<exec::flecsi_future<T>> {
