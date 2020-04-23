@@ -76,7 +76,6 @@ struct finalize_handles_t
     MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
 
-
     MPI_Win win;
     MPI_Win_create(shared_data,
       sizeof(value_t) * h.num_shared() * h.max_entries_per_index,
@@ -180,11 +179,8 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
-    auto & context_ = context_t::instance();
-
-    auto storage = h.storage();
-    storage->finalize_storage();
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
+    h.storage.finalize_storage();
   } // handle
 
   /*!
@@ -197,7 +193,7 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     if(PERMISSIONS == wo || PERMISSIONS == rw) {
       auto & context_ = context_t::instance();
       auto & ssm = context_.index_subspace_info();
@@ -213,8 +209,6 @@ struct finalize_handles_t
         si.size = h.get_index_subspace_size_(iss.index_subspace);
       } // for
     } // if
-
-    h.delete_storage();
   } // handle
 
   /*!

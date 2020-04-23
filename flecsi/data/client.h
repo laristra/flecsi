@@ -71,8 +71,8 @@ template<>
 struct data_client_policy_handler_u<topology::global_topology_u> {
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-  static data_client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
-    data_client_handle_u<DATA_CLIENT_TYPE, 0> h;
+  static data_client_handle<DATA_CLIENT_TYPE, 0> get_client_handle() {
+    data_client_handle<DATA_CLIENT_TYPE, 0> h;
 
     h.type_hash =
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
@@ -93,8 +93,8 @@ template<>
 struct data_client_policy_handler_u<topology::color_topology_u> {
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-  static data_client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
-    data_client_handle_u<DATA_CLIENT_TYPE, 0> h;
+  static data_client_handle<DATA_CLIENT_TYPE, 0> get_client_handle() {
+    data_client_handle<DATA_CLIENT_TYPE, 0> h;
 
     h.type_hash =
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
@@ -296,7 +296,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
   }; // struct index_subspace_walker_t
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-  static data_client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
+  static data_client_handle<DATA_CLIENT_TYPE, 0> get_client_handle() {
     using entity_types = typename POLICY_TYPE::entity_types;
     using connectivities = typename POLICY_TYPE::connectivities;
     using bindings = typename POLICY_TYPE::bindings;
@@ -304,7 +304,7 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
       typename topology::get_index_subspaces_u<POLICY_TYPE>::type;
     using field_info_t = execution::context_t::field_info_t;
 
-    data_client_handle_u<DATA_CLIENT_TYPE, 0> h;
+    data_client_handle<DATA_CLIENT_TYPE, 0> h;
 
     auto & context = execution::context_t::instance();
 
@@ -542,11 +542,11 @@ struct data_client_policy_handler_u<topology::set_topology_u<POLICY_TYPE>> {
   }; // struct entity_walker_t
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-  static data_client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
+  static data_client_handle<DATA_CLIENT_TYPE, 0> get_client_handle() {
     using entity_types = typename POLICY_TYPE::entity_types;
     using field_info_t = execution::context_t::field_info_t;
 
-    data_client_handle_u<DATA_CLIENT_TYPE, 0> h;
+    data_client_handle<DATA_CLIENT_TYPE, 0> h;
 
     auto & context = execution::context_t::instance();
 
@@ -661,7 +661,7 @@ struct data_client_interface_u {
    */
 
   template<typename DATA_CLIENT_TYPE, size_t NAMESPACE_HASH, size_t NAME_HASH>
-  static data_client_handle_u<DATA_CLIENT_TYPE, 0> get_client_handle() {
+  static data_client_handle<DATA_CLIENT_TYPE, 0> get_client_handle() {
     using data_client_policy_handler_t = data_client_policy_handler_u<
       typename DATA_CLIENT_TYPE::type_identifier_t>;
 

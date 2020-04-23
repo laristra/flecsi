@@ -131,7 +131,6 @@ public:
   } // get_dim_
 
 protected:
-
 private:
   id_t id_;
 

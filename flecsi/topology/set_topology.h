@@ -51,7 +51,7 @@ public:
   template<size_t INDEX_SPACE>
   auto entities() {
     using etype = entity_type<INDEX_SPACE>;
-    auto is = this->ss_->index_spaces[INDEX_SPACE].template cast<etype>();
+    auto is = this->storage.index_spaces[INDEX_SPACE].template cast<etype>();
     return utils::transform_view(
       is.ids, [d = std::move(is).data](
                 const auto & i) { return &d[i.index_space_index()]; });

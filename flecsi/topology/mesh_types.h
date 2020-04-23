@@ -310,41 +310,7 @@ class mesh_topology_base_u : public data::data_client_t,
 public:
   using id_t = utils::id_t;
 
-  // Default constructor
-  mesh_topology_base_u(STORAGE_TYPE * ms = nullptr) : ms_(ms) {}
-
-  // Don't allow the mesh to be copied or copy constructed
-  mesh_topology_base_u(const mesh_topology_base_u & m) : ms_(m.ms_) {}
-
-  mesh_topology_base_u & operator=(const mesh_topology_base_u &) = delete;
-
-  /// Allow move operations
-  mesh_topology_base_u(mesh_topology_base_u &&) = default;
-
-  //! override default move assignement
-  mesh_topology_base_u & operator=(mesh_topology_base_u && o) {
-    // call base_t move operator
-    data::data_client_t::operator=(std::move(o));
-    // return a reference to the object
-    return *this;
-  };
-
-  STORAGE_TYPE * set_storage(STORAGE_TYPE * ms) {
-    ms_ = ms;
-    return ms_;
-  } // set_storage
-
-  STORAGE_TYPE * storage() {
-    return ms_;
-  } // set_storage
-
-  void clear_storage() {
-    ms_ = nullptr;
-  } // clear_storage
-
-  void delete_storage() {
-    delete ms_;
-  } // delete_storage
+  STORAGE_TYPE storage;
 
   //-----------------------------------------------------------------//
   //! Return the number of entities in for a specific domain and topology dim.
@@ -391,12 +357,8 @@ public:
   //-----------------------------------------------------------------//
   template<class T, size_t DOM = 0, class... S>
   T * make(S &&... args) {
-    return ms_->template make<T, DOM>(std::forward<S>(args)...);
+    return storage.template make<T, DOM>(std::forward<S>(args)...);
   } // make
-
-protected:
-  STORAGE_TYPE * ms_ = nullptr;
-
 }; // mesh_topology_base_u
 
 template<class MESH_TYPE, size_t DIM, size_t DOM>

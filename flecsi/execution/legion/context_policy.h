@@ -193,7 +193,7 @@ struct legion_context_policy_t {
     it will execute whichever function is currently set.
    */
 
-  void set_mpi_task(std::function<void()> & mpi_task) {
+  void set_mpi_task(std::function<void()> mpi_task) {
     {
       clog_tag_guard(context);
       clog(info) << "set_mpi_task" << std::endl;

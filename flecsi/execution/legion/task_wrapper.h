@@ -32,7 +32,6 @@
 #include <flecsi/execution/legion/finalize_handles.h>
 #include <flecsi/execution/legion/init_handles.h>
 #include <flecsi/utils/common.h>
-#include <flecsi/utils/tuple_function.h>
 #include <flecsi/utils/tuple_type_converter.h>
 
 #if defined(ENABLE_CALIPER)
@@ -220,7 +219,9 @@ struct task_wrapper_u {
     tw.begin(tname1.c_str());
 #endif
     // Unpack task arguments
-    ARG_TUPLE & task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
+    auto & task_args =
+      *reinterpret_cast<utils::convert_tuple_t<ARG_TUPLE, std::decay_t> *>(
+        task->args);
 
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(task_args);
@@ -238,7 +239,7 @@ struct task_wrapper_u {
       tname1 = "execute_task->user_task->" + tname;
       tw.begin(tname1.c_str());
 #endif
-      (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+      DELEGATE(utils::forward_tuple(std::move(task_args)));
 
 #if defined(ENABLE_CALIPER)
       tw.end();
@@ -260,7 +261,7 @@ struct task_wrapper_u {
       tw.begin(tname1.c_str());
 #endif
 
-      RETURN result = (*DELEGATE)(std::forward<ARG_TUPLE>(task_args));
+      RETURN result = DELEGATE(utils::forward_tuple(std::move(task_args)));
 
 #if defined(ENABLE_CALIPER)
       tw.end();
@@ -294,16 +295,18 @@ struct task_wrapper_u {
     }
 
     // Unpack task arguments.
-    ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
+    auto & mpi_task_args =
+      *reinterpret_cast<utils::convert_tuple_t<ARG_TUPLE, std::decay_t> *>(
+        task->args);
 
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(mpi_task_args);
 
-    // Create bound function to pass to MPI runtime.
-    std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
-
     // Set the MPI function and make the runtime active.
-    context_t::instance().set_mpi_task(bound_mpi_task);
+    context_t::instance().set_mpi_task(
+      [args = std::move(mpi_task_args)]() mutable {
+        DELEGATE(utils::forward_tuple(args));
+      });
     context_t::instance().set_mpi_state(true);
 
     finalize_handles_t finalize_handles;

@@ -85,8 +85,9 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     auto & h = a.handle;
 #if !defined(FLECSI_USE_AGGCOMM)
     // Skip Read Only handles
-    if constexpr ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
-     return;
+    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
+                 (GHOST_PERMISSIONS == wo))
+      return;
 
     auto & context = context_t::instance();
     const int my_color = context.color();
@@ -109,7 +110,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 #else
     auto & context = context_t::instance();
 
-    if constexpr ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) 
+    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
+                 (GHOST_PERMISSIONS == wo))
       *(h.ghost_is_readable) = true;
     else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
       *(h.ghost_is_readable) = false;
@@ -281,7 +283,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   }
 
   template<size_t I, typename T, size_t PERMISSIONS>
-  void client_handler(data_client_handle_u<T, PERMISSIONS> & h) {
+  void client_handler(data_client_handle_u<T, PERMISSIONS> h) {
 
     using entity_types_t = typename T::types_t::entity_types;
 
@@ -400,7 +402,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
 
     // skip read only
     if(PERMISSIONS == ro)
