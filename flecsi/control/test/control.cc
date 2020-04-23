@@ -207,8 +207,8 @@ TEST(control, testname) {
 
   // fake command-line arguments
   int argc = 1;
-  std::string argv0="control";
-  char *argv[]={argv0.data(),nullptr};
+  std::string argv0 = "control";
+  char * argv[] = {argv0.data(), nullptr};
 
   auto & control = control_t::instance();
   control.execute(argc, &argv[0]);

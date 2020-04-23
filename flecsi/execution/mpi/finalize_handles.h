@@ -75,7 +75,6 @@ struct finalize_handles_t
     MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
 
-
     MPI_Win win;
     MPI_Win_create(shared_data,
       sizeof(value_t) * h.num_shared() * h.max_entries_per_index,
