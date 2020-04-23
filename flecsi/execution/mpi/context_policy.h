@@ -251,7 +251,6 @@ struct mpi_context_policy_t {
     unsigned char * shared_data_buffer;
     unsigned char * ghost_data_buffer;
 #endif
-
   };
 
   /*!
@@ -308,15 +307,15 @@ struct mpi_context_policy_t {
 
       MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
         compact_origin_lengs[ghost_owner].data(),
-        compact_origin_disps[ghost_owner].data(),
-        metadata.data_type, &origin_type);
+        compact_origin_disps[ghost_owner].data(), metadata.data_type,
+        &origin_type);
       MPI_Type_commit(&origin_type);
       metadata.origin_types.insert({ghost_owner, origin_type});
 
       MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
         compact_target_lengs[ghost_owner].data(),
-        compact_target_disps[ghost_owner].data(),
-        metadata.data_type, &target_type);
+        compact_target_disps[ghost_owner].data(), metadata.data_type,
+        &target_type);
       MPI_Type_commit(&target_type);
       metadata.target_types.insert({ghost_owner, target_type});
     }
@@ -403,10 +402,10 @@ struct mpi_context_policy_t {
     auto it = sparse_field_data.find(fid);
     auto rows = &it->second.rows[0];
     auto num_total = &it->second.num_total;
-    metadata.deleter = [=]() { 
+    metadata.deleter = [=]() {
       using vector_t = typename ragged_data_handle_u<T>::vector_t;
       auto vec = reinterpret_cast<vector_t *>(rows);
-      for (size_t i=0; i<*num_total; ++i)
+      for(size_t i = 0; i < *num_total; ++i)
         vec[i].clear();
     };
 
@@ -440,13 +439,13 @@ struct mpi_context_policy_t {
     std::vector<int> ghost_owners(
       coloring_info.ghost_owners.begin(), coloring_info.ghost_owners.end());
 
-    if ( metadata.comm_grp == MPI_GROUP_NULL ) {
+    if(metadata.comm_grp == MPI_GROUP_NULL) {
       MPI_Comm_group(MPI_COMM_WORLD, &metadata.comm_grp);
 
-      MPI_Group_incl(metadata.comm_grp, shared_users.size(), shared_users.data(),
-        &metadata.shared_users_grp);
-      MPI_Group_incl(metadata.comm_grp, ghost_owners.size(), ghost_owners.data(),
-        &metadata.ghost_owners_grp);
+      MPI_Group_incl(metadata.comm_grp, shared_users.size(),
+        shared_users.data(), &metadata.shared_users_grp);
+      MPI_Group_incl(metadata.comm_grp, ghost_owners.size(),
+        ghost_owners.data(), &metadata.ghost_owners_grp);
     }
 
     std::map<int, std::vector<int>> origin_lens;
@@ -645,22 +644,28 @@ struct mpi_context_policy_t {
   } // reduction_types
 
   void finalize() {
-    for (auto & md : field_metadata) {
-      for ( auto & ty : md.second.origin_types ) MPI_Type_free(&ty.second);
-      for ( auto & ty : md.second.target_types ) MPI_Type_free(&ty.second);
+    for(auto & md : field_metadata) {
+      for(auto & ty : md.second.origin_types)
+        MPI_Type_free(&ty.second);
+      for(auto & ty : md.second.target_types)
+        MPI_Type_free(&ty.second);
       MPI_Type_free(&md.second.data_type);
-      MPI_Group_free( &md.second.ghost_owners_grp );
-      MPI_Group_free( &md.second.shared_users_grp );
-      MPI_Group_free( &md.second.comm_grp );
-      if (md.second.win != MPI_WIN_NULL) MPI_Win_free( &md.second.win );
+      MPI_Group_free(&md.second.ghost_owners_grp);
+      MPI_Group_free(&md.second.shared_users_grp);
+      MPI_Group_free(&md.second.comm_grp);
+      if(md.second.win != MPI_WIN_NULL)
+        MPI_Win_free(&md.second.win);
     }
-    for (auto & md : sparse_field_metadata) {
-      for ( auto & ty : md.second.origin_types ) MPI_Type_free(&ty.second);
-      for ( auto & ty : md.second.target_types ) MPI_Type_free(&ty.second);
-      MPI_Group_free( &md.second.ghost_owners_grp );
-      MPI_Group_free( &md.second.shared_users_grp );
-      MPI_Group_free( &md.second.comm_grp );
-      if (md.second.win != MPI_WIN_NULL) MPI_Win_free( &md.second.win );
+    for(auto & md : sparse_field_metadata) {
+      for(auto & ty : md.second.origin_types)
+        MPI_Type_free(&ty.second);
+      for(auto & ty : md.second.target_types)
+        MPI_Type_free(&ty.second);
+      MPI_Group_free(&md.second.ghost_owners_grp);
+      MPI_Group_free(&md.second.shared_users_grp);
+      MPI_Group_free(&md.second.comm_grp);
+      if(md.second.win != MPI_WIN_NULL)
+        MPI_Win_free(&md.second.win);
       md.second.deleter();
     }
   }

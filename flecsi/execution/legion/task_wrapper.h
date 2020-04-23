@@ -219,7 +219,9 @@ struct task_wrapper_u {
     tw.begin(tname1.c_str());
 #endif
     // Unpack task arguments
-    auto & task_args = *reinterpret_cast<utils::convert_tuple_t<ARG_TUPLE,std::decay_t> *>(task->args);
+    auto & task_args =
+      *reinterpret_cast<utils::convert_tuple_t<ARG_TUPLE, std::decay_t> *>(
+        task->args);
 
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(task_args);
@@ -259,7 +261,7 @@ struct task_wrapper_u {
       tw.begin(tname1.c_str());
 #endif
 
-      RETURN result =DELEGATE(utils::forward_tuple(std::move(task_args)));
+      RETURN result = DELEGATE(utils::forward_tuple(std::move(task_args)));
 
 #if defined(ENABLE_CALIPER)
       tw.end();
@@ -293,13 +295,18 @@ struct task_wrapper_u {
     }
 
     // Unpack task arguments.
-    auto & mpi_task_args = *reinterpret_cast<utils::convert_tuple_t<ARG_TUPLE,std::decay_t> *>(task->args);
+    auto & mpi_task_args =
+      *reinterpret_cast<utils::convert_tuple_t<ARG_TUPLE, std::decay_t> *>(
+        task->args);
 
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(mpi_task_args);
 
     // Set the MPI function and make the runtime active.
-    context_t::instance().set_mpi_task([args=std::move(mpi_task_args)]() mutable {DELEGATE(utils::forward_tuple(args));});
+    context_t::instance().set_mpi_task(
+      [args = std::move(mpi_task_args)]() mutable {
+        DELEGATE(utils::forward_tuple(args));
+      });
     context_t::instance().set_mpi_state(true);
 
     finalize_handles_t finalize_handles;

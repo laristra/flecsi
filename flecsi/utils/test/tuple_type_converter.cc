@@ -41,11 +41,18 @@ class thing
 // TEST
 TEST(tuple_type_converter, all) {
   using namespace flecsi::utils;
-  static_assert(std::is_same_v<convert_tuple_t<std::tuple<>,std::remove_reference_t>,std::tuple<>>);
-  static_assert(std::is_same_v<convert_tuple_t<std::tuple<int,int&>,std::remove_reference_t>,std::tuple<int,int>>);
+  static_assert(
+    std::is_same_v<convert_tuple_t<std::tuple<>, std::remove_reference_t>,
+      std::tuple<>>);
+  static_assert(std::is_same_v<
+    convert_tuple_t<std::tuple<int, int &>, std::remove_reference_t>,
+    std::tuple<int, int>>);
 
-  static_assert(std::is_same_v<decltype(forward_tuple(std::tuple<int>())),std::tuple<int&&>>);
-  static_assert(std::is_same_v<decltype(forward_tuple(std::declval<std::tuple<int>&>())),std::tuple<int&>>);
+  static_assert(std::is_same_v<decltype(forward_tuple(std::tuple<int>())),
+    std::tuple<int &&>>);
+  static_assert(
+    std::is_same_v<decltype(forward_tuple(std::declval<std::tuple<int> &>())),
+      std::tuple<int &>>);
 
   // base_convert_tuple_type_
   print_type<
