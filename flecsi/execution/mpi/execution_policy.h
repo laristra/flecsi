@@ -21,6 +21,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "flecsi/utils/tuple_type_converter.h"
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/mpi/finalize_handles.h>
@@ -28,7 +29,6 @@
 #include <flecsi/execution/mpi/reduction_wrapper.h>
 #include <flecsi/execution/mpi/task_epilog.h>
 #include <flecsi/execution/mpi/task_prolog.h>
-#include "flecsi/utils/tuple_type_converter.h"
 
 #if defined(ENABLE_CALIPER)
 #include <caliper/Annotation.h>
@@ -158,7 +158,8 @@ struct mpi_execution_policy_t {
     auto function = context_.function(TASK);
 
     // Make a tuple from the task arguments.
-    utils::convert_tuple_t<ARG_TUPLE,std::decay_t> task_args = std::make_tuple(std::forward<ARGS>(args)...);
+    utils::convert_tuple_t<ARG_TUPLE, std::decay_t> task_args =
+      std::make_tuple(std::forward<ARGS>(args)...);
 
     // run task_prolog to copy ghost cells.
     task_prolog_t task_prolog;

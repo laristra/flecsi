@@ -76,10 +76,9 @@ struct data_client_type_u<flecsi::
 
 namespace flecsi {
 
-  template<typename T, std::size_t Perms>
-using data_client_handle = data_client_handle_base_u<T,
-  Perms,
-  FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY>;
+template<typename T, std::size_t Perms>
+using data_client_handle =
+  data_client_handle_base_u<T, Perms, FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY>;
 
 /*!
   The data_handle_u type is the high-level data handle type.
@@ -91,7 +90,7 @@ using data_client_handle = data_client_handle_base_u<T,
  */
 
 template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS>
-using data_client_handle_u = data_client_handle<DATA_CLIENT_TYPE,
-                                                PERMISSIONS>&;
+using data_client_handle_u =
+  data_client_handle<DATA_CLIENT_TYPE, PERMISSIONS> &;
 
 } // namespace flecsi

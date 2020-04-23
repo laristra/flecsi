@@ -353,7 +353,8 @@ private:
   // must already have been populated for exception safety; end() is adjusted
   // here.  Note that std::uninitialized_move is not constexpr.
   void slide(iterator i, size_type n) {
-    if(!n) return;             // std::move_backward doesn't allow no-op usage
+    if(!n)
+      return; // std::move_backward doesn't allow no-op usage
     const size_type mv = e - i, nun = std::min(n, mv);
     // Move some elements into the uninitialized space:
     const iterator um = e - nun;
