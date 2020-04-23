@@ -58,10 +58,10 @@ compiler:
 
 env:
   matrix:
-    - DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=legion BUILD_TYPE=Release DEPLOY=yes
     - DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=fedora30 MPI_PACKAGE=openmpi RUNTIME=hpx BUILD_TYPE=Release
-    - DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=legion BUILD_TYPE=Release
+    - DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=legion BUILD_TYPE=Release DEPLOY=yes
     - DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=mpi BUILD_TYPE=Release
     - DISTRO=ubuntu18 MPI_PACKAGE=mpich RUNTIME=hpx BUILD_TYPE=Release
 
@@ -101,7 +101,7 @@ script:
 
 after_success:
   - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable|1.4) ]] && DEPLOY=yes
-  - if [[ ${TRAVIS_BUILD_STAGE_NAME} = Test && ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+  - if [[ ${TRAVIS_BUILD_STAGE_NAME} = test && ${TRAVIS_COMPILER} = gcc && ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
     fi
