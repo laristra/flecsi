@@ -94,16 +94,16 @@ script:
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
                 --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
                 --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT}
-                -t ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ &&
+                -t ${TRAVIS_REPO_SLUG}:${DISTRO}_${MPI_PACKAGE}_${RUNTIME}${TAG} ${HOME}/docker/ &&
     rm -rf ${HOME}/.ccache &&
-    CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
+    CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${MPI_PACKAGE}_${RUNTIME}${TAG} /bin/bash) &&
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
   - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable|1.4) ]] && DEPLOY=yes
-  - if [[ ${TRAVIS_BUILD_STAGE_NAME} = test && ${TRAVIS_COMPILER} = gcc && ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+  - if [[ ${TRAVIS_BUILD_STAGE_NAME} = test && ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-      docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
+      docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${MPI_PACKAGE}_${RUNTIME}${TAG}";
     fi
   - if [[ ${TRAVIS_BRANCH} = master && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
       cd $HOME/docker/flecsi;
