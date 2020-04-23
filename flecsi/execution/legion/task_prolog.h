@@ -245,7 +245,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     read_phase = GHOST_PERMISSIONS != na;
     write_phase = ((SHARED_PERMISSIONS == wo) || (SHARED_PERMISSIONS == rw)) &&
-   		    ((GHOST_PERMISSIONS == ro) || (GHOST_PERMISSIONS == na));
+                  ((GHOST_PERMISSIONS == ro) || (GHOST_PERMISSIONS == na));
 
     if(read_phase) {
       if(!*(h.ghost_is_readable)) {
