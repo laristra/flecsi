@@ -97,7 +97,7 @@ script:
                 -t ${TRAVIS_REPO_SLUG}:${DISTRO}_${MPI_PACKAGE}_${RUNTIME}${TAG} ${HOME}/docker/ &&
     rm -rf ${HOME}/.ccache &&
     CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${MPI_PACKAGE}_${RUNTIME}${TAG} /bin/bash) &&
-    docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
+    docker cp ${CON}:/home/laristra/.ccache ${HOME}/
 
 after_success:
   - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable|1.4) ]] && DEPLOY=yes
