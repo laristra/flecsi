@@ -35,10 +35,6 @@ namespace topo {
 
 template<typename Policy>
 struct canonical : canonical_base {
-
-  using index_space = typename Policy::index_space;
-  static constexpr std::size_t index_spaces = Policy::index_spaces;
-
   canonical(const coloring &) {}
 }; // struct canonical
 

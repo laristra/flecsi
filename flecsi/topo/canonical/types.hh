@@ -27,6 +27,8 @@ namespace flecsi {
 namespace topo {
 
 struct canonical_base {
+  enum index_space { vertices, cells };
+  static constexpr std::size_t index_spaces = 2;
 
   struct coloring {
 

@@ -25,11 +25,8 @@ using namespace flecsi;
 struct canon : topo::specialization<topo::canonical, canon> {
   constexpr static size_t value = 12;
 
-  enum index_space { vertices, cells };
-  static constexpr std::size_t index_spaces = 2;
-
-  using entity_types =
-    std::tuple<util::constant<vertices>, flecsi::util::constant<cells>>;
+  using entity_types = std::tuple<util::constant<base::vertices>,
+    flecsi::util::constant<base::cells>>;
 
   static coloring color(std::string const &) {
     coloring c;
@@ -40,7 +37,7 @@ struct canon : topo::specialization<topo::canonical, canon> {
 canon::slot canonical;
 canon::cslot coloring;
 
-const field<double>::definition<canon, canon::cells> cell_field;
+const field<double>::definition<canon, canon::base::cells> cell_field;
 auto pressure = cell_field(canonical);
 
 int
