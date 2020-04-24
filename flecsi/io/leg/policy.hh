@@ -711,7 +711,7 @@ private:
     data::leg::unique_index_partition index_partition;
     data::leg::unique_logical_partition logical_partition;
   };
-  std::map<const data::topology_data<topo::index> *, topology_data> file_map;
+  std::map<const topo::index::core *, topology_data> file_map;
 };
 
 inline void

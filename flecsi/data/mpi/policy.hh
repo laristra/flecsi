@@ -21,7 +21,6 @@
 namespace flecsi {
 namespace data {
 
-namespace detail {
 struct region {
   region(std::size_t, const fields &) {}
 };
@@ -41,7 +40,6 @@ struct partition {
     return *this;
   }
 };
-} // namespace detail
 
 } // namespace data
 } // namespace flecsi

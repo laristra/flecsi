@@ -108,8 +108,8 @@ struct partition {
   partition(const region & reg,
     std::size_t n,
     F f,
-    detail::disjointness dis = {},
-    detail::completeness cpt = {})
+    disjointness dis = {},
+    completeness cpt = {})
     : color_space(index1(n)),
       index_partition(run().create_partition_by_domain(
         ctx(),
@@ -145,9 +145,7 @@ struct partition {
 };
 } // namespace leg
 
-namespace detail {
 using leg::region, leg::partition; // for backend-agnostic interface
-}
 
 } // namespace data
 } // namespace flecsi

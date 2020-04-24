@@ -19,7 +19,6 @@
 
 set(topo_HEADERS
   array_buffer.hh
-  base.hh
   canonical/interface.hh
   canonical/types.hh
   connectivity.hh

@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/topology.hh"
 #include "flecsi/topo/core.hh"
 
 namespace flecsi {
@@ -35,11 +36,24 @@ struct index_base {
   private:
     size_t size_;
   };
-  index_base() = delete;
 };
 
-template<class>
-using index_category = index_base;
+template<class P>
+struct index_category : index_base, data::simple<P>, data::partition {
+  index_category(const coloring & c)
+    : index_category::simple(c.size()), partition(
+                                          *this,
+                                          c.size(),
+                                          [](std::size_t i) {
+                                            return std::pair{i, i + 1};
+                                          },
+                                          data::disjoint,
+                                          data::complete) {}
+};
+template<>
+struct detail::base<index_category> {
+  using type = index_base;
+};
 
 /*!
   The \c index type allows users to register data on an

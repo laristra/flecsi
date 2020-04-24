@@ -18,7 +18,7 @@
 #include <flecsi-config.h>
 
 #include "flecsi/data/field.hh"
-#include "flecsi/topo/core.hh"
+#include "flecsi/topo/index.hh"
 
 namespace flecsi::io {
 using field_reference_t = data::field_reference_t<topo::index>;

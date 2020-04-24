@@ -19,23 +19,16 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/topo/core.hh"
-
 #include <optional>
 
 namespace flecsi {
 namespace data {
 
-// Clients #include the (backend-specific) definitions elsewhere:
-template<typename>
-struct topology_data;
-
 struct convert_tag {}; // must be recognized as a task argument
 
 template<typename TOPOLOGY_TYPE>
 struct topology_slot : convert_tag {
-  using data_t = topology_data<topo::category_t<typename TOPOLOGY_TYPE::core>>;
-
+  using data_t = typename TOPOLOGY_TYPE::core;
   using coloring = typename TOPOLOGY_TYPE::coloring;
 
   data_t & allocate(const coloring & coloring_reference) {

@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 //#include "flecsi/run/backend.hh"
+#include "flecsi/topo/core.hh" // base
 //#include "flecsi/topo/unstructured/partition.hh"
 #include "flecsi/topo/unstructured/storage.hh"
 #include "flecsi/topo/unstructured/types.hh"
@@ -152,7 +153,16 @@ struct unstructured : unstructured_base {
   template<std::size_t>
   struct access;
 
-  unstructured() = delete;
+  unstructured(const coloring &);
+
+#if 0
+  std::vector<base_data_t> entities;
+  std::vector<base_data_t> adjacencies;
+  std::vector<data::partition> exclusive;
+  std::vector<data::partition> shared;
+  std::vector<data::partition> ghost;
+  std::vector<data::partition> ghost_owners;
+#endif
 };
 
 template<class POLICY_TYPE>
@@ -163,6 +173,11 @@ private:
     POLICY_TYPE::num_domains,
     num_index_subspaces<POLICY_TYPE>::value>
     ms_;
+};
+
+template<>
+struct detail::base<unstructured> {
+  using type = unstructured_base;
 };
 
 #if 0

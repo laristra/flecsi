@@ -56,7 +56,7 @@ struct field_register<T, singular, Topo, Space>
 template<class Topo>
 struct field_reference_t : convert_tag {
   // The use of the slot allows creating field references statically, before
-  // the topology_data has been allocated.
+  // the topology object has been created.
   using topology_t = topology_slot<Topo>;
 
   field_reference_t(const field_info_t & info, const topology_t & topology)

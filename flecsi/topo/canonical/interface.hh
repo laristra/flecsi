@@ -20,6 +20,7 @@
 #endif
 
 #include "flecsi/topo/canonical/types.hh"
+#include "flecsi/topo/core.hh" // base
 
 #include <string>
 
@@ -38,8 +39,13 @@ struct canonical : canonical_base {
   using index_space = typename Policy::index_space;
   static constexpr std::size_t index_spaces = Policy::index_spaces;
 
-  canonical() = delete;
+  canonical(const coloring &) {}
 }; // struct canonical
+
+template<>
+struct detail::base<canonical> {
+  using type = canonical_base;
+};
 
 } // namespace topo
 } // namespace flecsi

@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 #include "flecsi/data/privilege.hh"
+#include "flecsi/topo/core.hh" // base
 #include "flecsi/topo/ntree/coloring.hh"
 #include "flecsi/topo/ntree/geometry.hh"
 #include "flecsi/topo/ntree/storage.hh"
@@ -50,7 +51,7 @@ struct ntree : ntree_base {
   template<std::size_t>
   struct access;
 
-  ntree() = delete;
+  ntree(const coloring &) {}
 };
 
 template<class Policy>
@@ -504,6 +505,11 @@ private:
     os << "Tree: range: " << t.range_[0] << "-" << t.range_[1];
     return os;
   }
+};
+
+template<>
+struct detail::base<ntree> {
+  using type = ntree_base;
 };
 
 } // namespace topo

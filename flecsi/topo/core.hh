@@ -23,60 +23,21 @@
 
 #include "flecsi/data/privilege.hh"
 #include "flecsi/data/topology_accessor.hh"
+#include "flecsi/data/topology_slot.hh"
 #include "flecsi/util/type_traits.hh"
 
 namespace flecsi {
 namespace data {
 template<class>
-struct topology_slot; // avoid circular dependency
-template<class>
 struct coloring_slot; // avoid dependency on flecsi::execute
-} // namespace data
+}
 
 namespace topo {
-// Declarations for the base topology types.
-
-struct global;
-struct index;
-
-struct canonical_base;
-template<typename>
-struct canonical;
-
-struct ntree_base;
-template<typename>
-struct ntree;
-
-struct set_base_t;
-template<typename>
-struct set;
-
-struct structured_base;
-template<typename>
-struct structured;
-
-struct unstructured_base;
-template<typename>
-struct unstructured;
-
 enum single_space { elements };
 
 namespace detail {
-template<class T>
-struct category {
-  using type = T;
-};
-
-template<class P>
-struct category<canonical<P>> : category<canonical_base> {};
-template<class P>
-struct category<ntree<P>> : category<ntree_base> {};
-template<class P>
-struct category<set<P>> : category<set_base_t> {};
-template<class P>
-struct category<structured<P>> : category<structured_base> {};
-template<class P>
-struct category<unstructured<P>> : category<unstructured_base> {};
+template<template<class> class>
+struct base;
 
 inline std::size_t next_id;
 // Use functions because these are needed during non-local initialization:
@@ -109,8 +70,8 @@ struct default_space<T, decltype(void(T::default_space))> {
 };
 } // namespace detail
 
-template<class T>
-using category_t = typename detail::category<T>::type; // of a core type only
+template<template<class> class T>
+using base_t = typename detail::base<T>::type;
 
 template<class T>
 std::size_t
@@ -148,7 +109,7 @@ using identity = T; // can be a trivial specialization interface
 template<template<class> class C, class D, template<class> class I = identity>
 struct specialization {
   using core = C<D>;
-  using base = category_t<core>;
+  using base = base_t<C>;
   // This is just core::coloring, but core is incomplete here.
   using coloring = typename base::coloring;
   template<class B>
