@@ -44,7 +44,7 @@ init(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> sm) {
 
 void
 modify(client_handle_t<test_mesh_t, ro> mesh,
-  sparse_accessor<double, rw, rw, rw> sh) {
+  sparse_accessor<double, rw, rw, ro> sh) {
   for(auto c : mesh.cells(owned)) {
     for(auto entry : sh.entries(c)) {
       sh(c, entry) = -sh(c, entry);
