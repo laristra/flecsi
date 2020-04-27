@@ -100,8 +100,9 @@ init_toc(client_handle_t<test_mesh_t, ro> mesh,
   dense_accessor<double, rw, rw, na> pressure,
   color_accessor<int, rw> color) {
 
-  flecsi::parallel_for(mesh.cells(),
-    KOKKOS_LAMBDA(auto c) { pressure(c) = 1.0; }, std::string("init"));
+  flecsi::parallel_for(
+    mesh.cells(), KOKKOS_LAMBDA(auto c) { pressure(c) = 1.0; },
+    std::string("init"));
 #if 0
   auto rank = execution::context_t::instance().color();
   forall(mesh.cells(), "init2") {
@@ -133,7 +134,8 @@ test(client_handle_t<test_mesh_t, ro> mesh,
   color_accessor<int, ro> color) {
   //  sparse_accessor<double, rw, rw, rw> alpha) {
 
-  flecsi::parallel_for(mesh.cells(),
+  flecsi::parallel_for(
+    mesh.cells(),
     KOKKOS_LAMBDA(auto c) {
       assert(pressure(c) == 1.0);
       assert(global == 2042);

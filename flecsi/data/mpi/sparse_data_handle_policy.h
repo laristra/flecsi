@@ -18,7 +18,7 @@ struct mpi_sparse_data_handle_policy_t {
   // across multiple ranks/colors and should be used ONLY as read-only data
 
   field_id_t fid;
-  bool *ghost_is_readable;
+  bool * ghost_is_readable;
 }; // class mpi_sparse_data_handle_policy_t
 
 } // namespace flecsi

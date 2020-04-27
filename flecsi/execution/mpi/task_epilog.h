@@ -267,12 +267,13 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       delete[] ghost_data;
     } // else
 #else
-    if constexpr ((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
+    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
                  (GHOST_PERMISSIONS == wo)) {
-        *(h.ghost_is_readable) = true;
-      } else {
-        *(h.ghost_is_readable) = false;
-      }
+      *(h.ghost_is_readable) = true;
+    }
+    else {
+      *(h.ghost_is_readable) = false;
+    }
 #endif
   } // handle
 
