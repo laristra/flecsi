@@ -147,6 +147,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
     using value_t = T;
 
+#if !defined(FLECSI_USE_AGGCOMM)
     // Skip Read Only handles
     if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
                  (GHOST_PERMISSIONS == wo)) {
@@ -264,9 +265,16 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
       delete[] shared_data;
       delete[] ghost_data;
-
     } // else
-
+#else
+    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
+                 (GHOST_PERMISSIONS == wo)) {
+      *(h.ghost_is_readable) = true;
+    }
+    else {
+      *(h.ghost_is_readable) = false;
+    }
+#endif
   } // handle
 
   template<typename T,
