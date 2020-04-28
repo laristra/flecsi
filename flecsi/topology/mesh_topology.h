@@ -173,31 +173,6 @@ public:
   //--------------------------------------------------------------------------//
   using type_identifier_t = mesh_topology_u;
 
-  // Don't allow the mesh to be copied or copy constructed
-
-  //! don't allow mesh to be assigned
-  mesh_topology_u & operator=(const mesh_topology_u &) = delete;
-
-  //! Allow move operations
-  mesh_topology_u(mesh_topology_u && o) = default;
-
-  //! override default move assignement
-  mesh_topology_u & operator=(mesh_topology_u && o) = default;
-
-  //! Constructor, takes as input a mesh storage or storage can later be set
-  mesh_topology_u(storage_t * ms = nullptr) : base_t(ms) {
-    if(ms != nullptr) {
-      initialize_storage();
-    } // if
-  } // mesh_topology_u()
-
-  //! Copy constructor: alias another mesh
-  mesh_topology_u(const mesh_topology_u & m) : base_t(m.ms_) {}
-
-  // The mesh retains ownership of the entities and deletes them
-  // upon mesh destruction
-  virtual ~mesh_topology_u() {}
-
   //--------------------------------------------------------------------------//
   //! Initialize the mesh storage after it has been set
   //! This is needed to initialize raw connectivity buffers,
@@ -208,14 +183,14 @@ public:
         ++from_domain) {
       for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
           ++to_domain) {
-        base_t::ms_->topology[from_domain][to_domain].init_(
+        this->storage.topology[from_domain][to_domain].init_(
           from_domain, to_domain);
       } // for
     } // for
 
     for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains; ++to_domain) {
       for(size_t to_dim = 0; to_dim <= MESH_TYPE::num_dimensions; ++to_dim) {
-        auto & master = base_t::ms_->index_spaces[to_domain][to_dim];
+        const auto & master = this->storage.index_spaces[to_domain][to_dim];
 
         for(size_t from_domain = 0; from_domain < MESH_TYPE::num_domains;
             ++from_domain) {
@@ -358,7 +333,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
   decltype(auto) num_entities() const {
-    return this->ms_->index_spaces[DOM][DIM].ids.size();
+    return this->storage.index_spaces[DOM][DIM].ids.size();
   } // num_entities
 
   //--------------------------------------------------------------------------//
@@ -372,7 +347,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
   decltype(auto) num_entities(partition_t partition) const {
-    return this->ms_->partition_index_spaces[partition][DOM][DIM].ids.size();
+    return this->storage.partition_index_spaces[partition][DOM][DIM].ids.size();
   } // num_entities
 
   //--------------------------------------------------------------------------//
@@ -432,7 +407,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DOM = 0>
   const auto & get_index_space_(size_t dim) const {
-    return base_t::ms_->index_spaces[DOM][dim];
+    return this->storage.index_spaces[DOM][dim];
   } // get_entities_
 
   //--------------------------------------------------------------------------//
@@ -444,7 +419,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DOM = 0>
   auto & get_index_space_(size_t dim) {
-    return base_t::ms_->index_spaces[DOM][dim];
+    return this->storage.index_spaces[DOM][dim];
   } // get_entities_
 
   //--------------------------------------------------------------------------//
@@ -459,7 +434,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DOM = 0>
   const auto & get_index_space_(size_t dim, partition_t partition) const {
-    return base_t::ms_->partition_index_spaces[partition][DOM][dim];
+    return this->storage.partition_index_spaces[partition][DOM][dim];
   } // get_entities_
 
   //--------------------------------------------------------------------------//
@@ -474,13 +449,15 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DOM = 0>
   auto & get_index_space_(size_t dim, partition_t partition) {
-    return base_t::ms_->partition_index_spaces[partition][DOM][dim];
+    return this->storage.partition_index_spaces[partition][DOM][dim];
   } // get_entities_
 
   template<size_t DIM, size_t DOM = 0>
   auto get_entities() const {
     using etype = entity_type<DIM, DOM>;
-    return this->ms_->index_spaces[DOM][DIM].template cast<etype>().data.data();
+    return this->storage.index_spaces[DOM][DIM]
+      .template cast<etype>()
+      .data.data();
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -493,8 +470,9 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto get_entity(id_t global_id) const {
     using etype = entity_type<DIM, DOM>;
-    return this->ms_->index_spaces[DOM][DIM].template cast<etype>().get_offset(
-      global_id.entity());
+    return this->storage.index_spaces[DOM][DIM]
+      .template cast<etype>()
+      .get_offset(global_id.entity());
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -510,7 +488,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DOM = 0>
   auto get_entity(size_t dim, id_t global_id) {
-    return this->ms_->index_spaces[DOM][dim].get_offset(global_id.entity());
+    return this->storage.index_spaces[DOM][dim].get_offset(global_id.entity());
   } // get_entity
 
   //--------------------------------------------------------------------------//
@@ -528,7 +506,7 @@ public:
   template<size_t DIM, size_t DOM = 0>
   auto get_entity(id_t global_id, partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
-    return this->ms_->partition_index_spaces[partition][DOM][DIM]
+    return this->storage.partition_index_spaces[partition][DOM][DIM]
       .template cast<etype>()
       .get_offset(global_id.entity());
   } // get_entity
@@ -546,7 +524,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DOM = 0>
   auto get_entity(size_t dim, id_t global_id, partition_t partition) {
-    return this->ms_->partition_index_spaces[partition][DOM][dim].get_offset(
+    return this->storage.partition_index_spaces[partition][DOM][dim].get_offset(
       global_id.entity());
   } // get_entity
 
@@ -628,7 +606,7 @@ public:
     using etype = entity_type<DIM, DOM>;
     using dtype = domain_entity_u<DOM, etype>;
     return xform<dtype>(
-      this->ms_->index_spaces[DOM][DIM].template cast<etype>());
+      this->storage.index_spaces[DOM][DIM].template cast<etype>());
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -645,8 +623,9 @@ public:
   auto entities(partition_t partition) const {
     using etype = entity_type<DIM, DOM>;
     using dtype = domain_entity_u<DOM, etype>;
-    return xform<dtype>(this->ms_->partition_index_spaces[partition][DOM][DIM]
-                          .template cast<etype>());
+    return xform<dtype>(
+      this->storage.partition_index_spaces[partition][DOM][DIM]
+        .template cast<etype>());
   } // entities
 
   //--------------------------------------------------------------------------//
@@ -658,7 +637,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
   const auto & entity_ids() const {
-    return this->ms_->index_spaces[DOM][DIM].ids;
+    return this->storage.index_spaces[DOM][DIM].ids;
   } // entity_ids
 
   //--------------------------------------------------------------------------//
@@ -672,7 +651,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t DIM, size_t DOM = 0>
   const auto & entity_ids(partition_t partition) const {
-    return this->ms_->partition_index_spaces[partition][DOM][DIM].ids;
+    return this->storage.partition_index_spaces[partition][DOM][DIM].ids;
   } // entity_ids
 
   //--------------------------------------------------------------------------//
@@ -816,7 +795,7 @@ public:
   }
   template<std::size_t Subspace>
   auto & sub_ids() {
-    return this->storage()->index_subspaces[Subspace].ids;
+    return this->storage.index_subspaces[Subspace].ids;
   }
 
   //--------------------------------------------------------------------------//
@@ -826,7 +805,7 @@ public:
   //--------------------------------------------------------------------------//
   template<size_t INDEX_SUBSPACE>
   auto num_subentities() const {
-    return this->ms_->index_subspaces[INDEX_SUBSPACE].ids.size();
+    return this->storage.index_subspaces[INDEX_SUBSPACE].ids.size();
   }
 
   //--------------------------------------------------------------------------//
@@ -842,7 +821,7 @@ public:
       for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
           ++to_domain) {
         stream << "========== to domain: " << to_domain << std::endl;
-        base_t::ms_->topology[from_domain][to_domain].dump(stream);
+        this->storage.topology[from_domain][to_domain].dump(stream);
       }
     }
     return stream;
@@ -904,7 +883,8 @@ public:
     for(size_t domain = 0; domain < MESH_TYPE::num_domains; ++domain) {
       for(size_t dimension = 0; dimension <= MESH_TYPE::num_dimensions;
           ++dimension) {
-        uint64_t num_entities = base_t::ms_->entities[domain][dimension].size();
+        const uint64_t num_entities =
+          this->storage.entities[domain][dimension].size();
         std::memcpy(buf + pos, &num_entities, sizeof(num_entities));
         pos += sizeof(num_entities);
       }
@@ -915,7 +895,7 @@ public:
       for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
           ++to_domain) {
 
-        auto & dc = base_t::ms_->topology[from_domain][to_domain];
+        const auto & dc = this->storage.topology[from_domain][to_domain];
 
         for(size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
             ++from_dim) {
@@ -986,7 +966,7 @@ public:
       for(size_t to_domain = 0; to_domain < MESH_TYPE::num_domains;
           ++to_domain) {
 
-        auto & dc = base_t::ms_->topology[from_domain][to_domain];
+        const auto & dc = this->storage.topology[from_domain][to_domain];
 
         for(size_t from_dim = 0; from_dim <= MESH_TYPE::num_dimensions;
             ++from_dim) {
@@ -1048,11 +1028,11 @@ public:
     using entity_t = typename std::tuple_element<2, entry_t>::type;
 
     return xform<domain_entity_u<domain_t::value, entity_t>>(
-      this->ms_->index_subspaces[INDEX_SUBSPACE].template cast<entity_t>());
+      this->storage.index_subspaces[INDEX_SUBSPACE].template cast<entity_t>());
   }
 
   size_t get_index_subspace_size_(size_t index_subspace) {
-    return this->ms_->index_subspaces[index_subspace].ids.size();
+    return this->storage.index_subspaces[index_subspace].ids.size();
   }
 
 private:
@@ -1118,12 +1098,13 @@ private:
 
   // Get the number of entities in a given domain and topological dimension
   size_t num_entities_(size_t dim, size_t domain = 0) const {
-    return this->ms_->index_spaces[domain][dim].ids.size();
+    return this->storage.index_spaces[domain][dim].ids.size();
   } // num_entities_
 
   // Get the number of entities in a given domain and topological dimension
   size_t num_entities_(size_t dim, size_t domain, partition_t partition) const {
-    return this->ms_->partition_index_spaces[partition][domain][dim].ids.size();
+    return this->storage.partition_index_spaces[partition][domain][dim]
+      .ids.size();
   } // num_entities_
 
   //--------------------------------------------------------------------------//
@@ -1181,7 +1162,7 @@ private:
     std::vector<size_t> entity_ids;
 
     domain_connectivity_u<MESH_TYPE::num_dimensions> & dc =
-      base_t::ms_->topology[Domain][Domain];
+      this->storage.topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
     connectivity_t & cell_to_vertex = dc.template get<UsingDimension>(0);
@@ -1205,7 +1186,7 @@ private:
     using cell_type = entity_type<UsingDimension, Domain>;
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
-    const auto cis = this->ms_->index_spaces[Domain][UsingDimension]
+    const auto cis = this->storage.index_spaces[Domain][UsingDimension]
                        .template cast<cell_type>();
 
     // Lookup the index space for the entity type being created.
@@ -1777,7 +1758,7 @@ private:
 
     // get the cells from mesh storage
     const auto cell_storage =
-      this->ms_->index_spaces[FROM_DOM][cell_dim].template cast<cell_type>();
+      this->storage.index_spaces[FROM_DOM][cell_dim].template cast<cell_type>();
 
     // Lookup the index space for the cell type.
     constexpr auto cell_index_space = find_index_space_from_dimension_u<
@@ -1795,9 +1776,9 @@ private:
 
     // get the primal mesh connectivity and the domain connectivity
     domain_connectivity_u<num_dims> & primal_conn =
-      base_t::ms_->topology[FROM_DOM][FROM_DOM];
+      this->storage.topology[FROM_DOM][FROM_DOM];
     domain_connectivity_u<num_dims> & domain_conn =
-      base_t::ms_->topology[FROM_DOM][TO_DOM];
+      this->storage.topology[FROM_DOM][TO_DOM];
 
     // get the global to local index space map
     auto & context_ = flecsi::execution::context_t::instance();
@@ -2030,7 +2011,7 @@ private:
     size_t to_dim) const {
     assert(from_domain < MESH_TYPE::num_domains && "invalid from domain");
     assert(to_domain < MESH_TYPE::num_domains && "invalid to domain");
-    return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
+    return this->storage.topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
   //--------------------------------------------------------------------------//
@@ -2043,7 +2024,7 @@ private:
     size_t to_dim) {
     assert(from_domain < MESH_TYPE::num_domains && "invalid from domain");
     assert(to_domain < MESH_TYPE::num_domains && "invalid to domain");
-    return base_t::ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
+    return this->storage.topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
   //--------------------------------------------------------------------------//
@@ -2056,7 +2037,7 @@ private:
   //--------------------------------------------------------------------------//
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM>
   connectivity_t & get_connectivity_(size_t to_dim) {
-    return base_t::ms_->topology[FROM_DOM][TO_DOM].template get<FROM_DIM>(
+    return this->storage.topology[FROM_DOM][TO_DOM].template get<FROM_DIM>(
       to_dim);
   } // get_connectivity
 
@@ -2071,7 +2052,7 @@ private:
   //--------------------------------------------------------------------------//
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
   connectivity_t & get_connectivity_() {
-    return base_t::ms_->topology[FROM_DOM][TO_DOM]
+    return this->storage.topology[FROM_DOM][TO_DOM]
       .template get<FROM_DIM, TO_DIM>();
   } // get_connectivity
 

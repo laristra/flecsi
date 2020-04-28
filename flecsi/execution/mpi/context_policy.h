@@ -251,7 +251,6 @@ struct mpi_context_policy_t {
     unsigned char * shared_data_buffer;
     unsigned char * ghost_data_buffer;
 #endif
-
   };
 
   /*!
@@ -271,6 +270,12 @@ struct mpi_context_policy_t {
 
     std::map<int, MPI_Datatype> origin_types;
     std::map<int, MPI_Datatype> target_types;
+
+#if defined(FLECSI_USE_AGGCOMM)
+    std::map<int, std::vector<size_t>> shared_indices;
+    std::map<int, std::vector<size_t>> ghost_indices;
+    std::vector<uint32_t> ghost_row_sizes;
+#endif
 
     MPI_Win win = MPI_WIN_NULL;
 
@@ -308,15 +313,15 @@ struct mpi_context_policy_t {
 
       MPI_Type_indexed(compact_origin_lengs[ghost_owner].size(),
         compact_origin_lengs[ghost_owner].data(),
-        compact_origin_disps[ghost_owner].data(),
-        metadata.data_type, &origin_type);
+        compact_origin_disps[ghost_owner].data(), metadata.data_type,
+        &origin_type);
       MPI_Type_commit(&origin_type);
       metadata.origin_types.insert({ghost_owner, origin_type});
 
       MPI_Type_indexed(compact_target_lengs[ghost_owner].size(),
         compact_target_lengs[ghost_owner].data(),
-        compact_target_disps[ghost_owner].data(),
-        metadata.data_type, &target_type);
+        compact_target_disps[ghost_owner].data(), metadata.data_type,
+        &target_type);
       MPI_Type_commit(&target_type);
       metadata.target_types.insert({ghost_owner, target_type});
     }
@@ -395,18 +400,36 @@ struct mpi_context_policy_t {
     const coloring_info_t & coloring_info,
     const index_coloring_t & index_coloring) {
     sparse_field_metadata_t metadata;
+#if !defined(FLECSI_USE_AGGCOMM)
 
     register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
 
+#else
+    // compute ghost and shared indicies
+    size_t ghost_count = 0;
+    for(auto const & ghost : index_coloring.ghost) {
+      metadata.ghost_indices[ghost.rank].push_back(ghost_count);
+      ++ghost_count;
+    }
+    for(auto const & shared : index_coloring.shared) {
+      for(auto const & s : shared.shared) {
+        metadata.shared_indices[s].push_back(shared.offset);
+      }
+    }
+
+    // allocate ghost_row_sizes
+    metadata.ghost_row_sizes.resize(index_coloring.ghost.size());
+#endif
+
     auto it = sparse_field_data.find(fid);
     auto rows = &it->second.rows[0];
     auto num_total = &it->second.num_total;
-    metadata.deleter = [=]() { 
+    metadata.deleter = [=]() {
       using vector_t = typename ragged_data_handle_u<T>::vector_t;
       auto vec = reinterpret_cast<vector_t *>(rows);
-      for (size_t i=0; i<*num_total; ++i)
+      for(size_t i = 0; i < *num_total; ++i)
         vec[i].clear();
     };
 
@@ -440,13 +463,13 @@ struct mpi_context_policy_t {
     std::vector<int> ghost_owners(
       coloring_info.ghost_owners.begin(), coloring_info.ghost_owners.end());
 
-    if ( metadata.comm_grp == MPI_GROUP_NULL ) {
+    if(metadata.comm_grp == MPI_GROUP_NULL) {
       MPI_Comm_group(MPI_COMM_WORLD, &metadata.comm_grp);
 
-      MPI_Group_incl(metadata.comm_grp, shared_users.size(), shared_users.data(),
-        &metadata.shared_users_grp);
-      MPI_Group_incl(metadata.comm_grp, ghost_owners.size(), ghost_owners.data(),
-        &metadata.ghost_owners_grp);
+      MPI_Group_incl(metadata.comm_grp, shared_users.size(),
+        shared_users.data(), &metadata.shared_users_grp);
+      MPI_Group_incl(metadata.comm_grp, ghost_owners.size(),
+        ghost_owners.data(), &metadata.ghost_owners_grp);
     }
 
     std::map<int, std::vector<int>> origin_lens;
@@ -645,22 +668,32 @@ struct mpi_context_policy_t {
   } // reduction_types
 
   void finalize() {
-    for (auto & md : field_metadata) {
-      for ( auto & ty : md.second.origin_types ) MPI_Type_free(&ty.second);
-      for ( auto & ty : md.second.target_types ) MPI_Type_free(&ty.second);
+#if !defined(FLECSI_USE_AGGCOMM)
+    for(auto & md : field_metadata) {
+      for(auto & ty : md.second.origin_types)
+        MPI_Type_free(&ty.second);
+      for(auto & ty : md.second.target_types)
+        MPI_Type_free(&ty.second);
       MPI_Type_free(&md.second.data_type);
-      MPI_Group_free( &md.second.ghost_owners_grp );
-      MPI_Group_free( &md.second.shared_users_grp );
-      MPI_Group_free( &md.second.comm_grp );
-      if (md.second.win != MPI_WIN_NULL) MPI_Win_free( &md.second.win );
+      MPI_Group_free(&md.second.ghost_owners_grp);
+      MPI_Group_free(&md.second.shared_users_grp);
+      MPI_Group_free(&md.second.comm_grp);
+      if(md.second.win != MPI_WIN_NULL)
+        MPI_Win_free(&md.second.win);
     }
-    for (auto & md : sparse_field_metadata) {
-      for ( auto & ty : md.second.origin_types ) MPI_Type_free(&ty.second);
-      for ( auto & ty : md.second.target_types ) MPI_Type_free(&ty.second);
-      MPI_Group_free( &md.second.ghost_owners_grp );
-      MPI_Group_free( &md.second.shared_users_grp );
-      MPI_Group_free( &md.second.comm_grp );
-      if (md.second.win != MPI_WIN_NULL) MPI_Win_free( &md.second.win );
+#endif
+    for(auto & md : sparse_field_metadata) {
+#if !defined(FLECSI_USE_AGGCOMM)
+      for(auto & ty : md.second.origin_types)
+        MPI_Type_free(&ty.second);
+      for(auto & ty : md.second.target_types)
+        MPI_Type_free(&ty.second);
+      MPI_Group_free(&md.second.ghost_owners_grp);
+      MPI_Group_free(&md.second.shared_users_grp);
+      MPI_Group_free(&md.second.comm_grp);
+      if(md.second.win != MPI_WIN_NULL)
+        MPI_Win_free(&md.second.win);
+#endif
       md.second.deleter();
     }
   }

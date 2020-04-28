@@ -49,6 +49,7 @@ struct finalize_handles_t
 
     using value_t = T;
 
+#if !defined(FLECSI_USE_AGGCOMM)
     auto & context = context_t::instance();
     const int my_color = context.color();
     auto & my_coloring_info = context.coloring_info(h.index_space).at(my_color);
@@ -74,7 +75,6 @@ struct finalize_handles_t
     MPI_Datatype shared_ghost_type;
     MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
     MPI_Type_commit(&shared_ghost_type);
-
 
     MPI_Win win;
     MPI_Win_create(shared_data,
@@ -162,7 +162,9 @@ struct finalize_handles_t
 
     delete[] shared_data;
     delete[] ghost_data;
-
+#else
+    *(h.ghost_is_readable) = false;
+#endif
   } // handle
 
   template<typename T>
@@ -177,11 +179,8 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
-    auto & context_ = context_t::instance();
-
-    auto storage = h.storage();
-    storage->finalize_storage();
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
+    h.storage.finalize_storage();
   } // handle
 
   /*!
@@ -194,7 +193,7 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     if(PERMISSIONS == wo || PERMISSIONS == rw) {
       auto & context_ = context_t::instance();
       auto & ssm = context_.index_subspace_info();
@@ -210,8 +209,6 @@ struct finalize_handles_t
         si.size = h.get_index_subspace_size_(iss.index_subspace);
       } // for
     } // if
-
-    h.delete_storage();
   } // handle
 
   /*!
