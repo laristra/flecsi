@@ -55,41 +55,6 @@ parallel_for(ITERATOR iterator, LAMBDA lambda, std::string const & name = "") {
 
 } // parallel_for
 
-
-template<
-  typename ITERATOR, 
-  typename LAMBDA,
-  typename REDUCER
-  >
-void
-parallel_reduce(
-  ITERATOR iterator, 
-  LAMBDA lambda, 
-  REDUCER result,
-  std::string const & name = "") {
-
-  using value_type = typename REDUCER::value_type; 
-
-
-  struct functor_t {
-
-    functor_t(ITERATOR & iterator, LAMBDA & lambda)
-      : iterator_(iterator), lambda_(lambda) {}
-
-    KOKKOS_INLINE_FUNCTION void operator()(int i, value_type& tmp) const {
-      lambda_(iterator_[i], tmp);
-    } // operator()
-
-  private:
-    ITERATOR & iterator_;
-    LAMBDA & lambda_;
-
-  }; // struct functor_t
-
-  Kokkos::parallel_reduce(name, iterator.size(), functor_t{iterator, lambda}, result);
-  
-} // parallel_reduce
-
 template<typename ITERATOR>
 struct forall_t {
 
@@ -125,6 +90,74 @@ private:
 
 #define forall(it, iterator, name)                                             \
   forall_t{iterator, name} + KOKKOS_LAMBDA(auto it)
+
+template<typename ITERATOR, typename LAMBDA, typename REDUCER>
+void
+parallel_reduce(ITERATOR iterator,
+  LAMBDA lambda,
+  REDUCER result,
+  std::string const & name = "") {
+
+  using value_type = typename REDUCER::value_type;
+
+  struct functor_t {
+
+    functor_t(ITERATOR & iterator, LAMBDA & lambda)
+      : iterator_(iterator), lambda_(lambda) {}
+
+    KOKKOS_INLINE_FUNCTION void operator()(int i, value_type & tmp) const {
+      lambda_(iterator_[i], tmp);
+    } // operator()
+
+  private:
+    ITERATOR & iterator_;
+    LAMBDA & lambda_;
+
+  }; // struct functor_t
+
+  Kokkos::parallel_reduce(
+    name, iterator.size(), functor_t{iterator, lambda}, result);
+
+} // parallel_reduce
+
+template<typename ITERATOR, typename REDUCER>
+struct reduceall_t {
+
+  reduceall_t(ITERATOR iterator, REDUCER reducer, std::string const & name = "")
+    : iterator_(iterator), reducer_(reducer) {}
+
+  using value_type = typename REDUCER::value_type;
+
+  template<typename LAMBDA>
+  struct functor_u {
+
+    functor_u(ITERATOR & iterator, LAMBDA & lambda)
+      : iterator_(iterator), lambda_(lambda) {}
+
+    KOKKOS_INLINE_FUNCTION void operator()(int i, value_type & tmp) const {
+      lambda_(iterator_[i], tmp);
+    } // operator()
+
+  private:
+    ITERATOR iterator_;
+    LAMBDA lambda_;
+
+  }; // struct functor_u
+
+  template<typename LAMBDA>
+  void operator+(LAMBDA lambda) {
+    Kokkos::parallel_reduce(
+      "  ", iterator_.size(), functor_u<LAMBDA>{iterator_, lambda}, reducer_);
+  } // operator+
+
+private:
+  ITERATOR iterator_;
+  REDUCER reducer_;
+
+}; // forall_t
+
+#define reduceall(it, tmp, iterator, reducer, name)                            \
+  reduceall_t{iterator, reducer, name} + KOKKOS_LAMBDA(auto it, auto tmp)
 
 } // namespace flecsi
 #endif
@@ -169,4 +202,34 @@ reduce_each_u(R && r, REDUCTION & reduction, FUNCTION && function) {
     function(e, reduction);
 } // reduce_each_u
 
+} // namespace flecsi
+
+// Reducers extracted from Kokkos
+namespace flecsi {
+namespace reducer {
+template<typename TYPE>
+using sum = Kokkos::Sum<TYPE>;
+template<typename TYPE>
+using prod = Kokkos::Prod<TYPE>;
+template<typename TYPE>
+using max = Kokkos::Max<TYPE>;
+template<typename TYPE>
+using min = Kokkos::Min<TYPE>;
+template<typename TYPE>
+using land = Kokkos::LAnd<TYPE>;
+template<typename TYPE>
+using lor = Kokkos::LOr<TYPE>;
+template<typename TYPE>
+using band = Kokkos::BAnd<TYPE>;
+template<typename TYPE>
+using bor = Kokkos::BOr<TYPE>;
+template<typename TYPE>
+using minmax = Kokkos::MinMax<TYPE>;
+template<typename TYPE, typename IDX, typename SPACE>
+using minloc = Kokkos::MinLoc<TYPE, IDX, SPACE>;
+template<typename TYPE, typename IDX, typename SPACE>
+using maxloc = Kokkos::MaxLoc<TYPE, IDX, SPACE>;
+template<typename TYPE, typename IDX, typename SPACE>
+using minmaxloc = Kokkos::MinMaxLoc<TYPE, IDX, SPACE>;
+} // namespace reducer
 } // namespace flecsi
