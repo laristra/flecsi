@@ -100,9 +100,8 @@ init_toc(client_handle_t<test_mesh_t, ro> mesh,
   dense_accessor<double, rw, rw, na> pressure,
   color_accessor<int, rw> color) {
 
-  flecsi::parallel_for(
-    mesh.cells(), KOKKOS_LAMBDA(auto c) { pressure(c) = 1.0; },
-    std::string("init"));
+  flecsi::parallel_for(mesh.cells(),
+    KOKKOS_LAMBDA(auto c) { pressure(c) = 1.0; }, std::string("init"));
 #if 0
   auto rank = execution::context_t::instance().color();
   forall(mesh.cells(), "init2") {
@@ -134,8 +133,7 @@ test(client_handle_t<test_mesh_t, ro> mesh,
   color_accessor<int, ro> color) {
   //  sparse_accessor<double, rw, rw, rw> alpha) {
 
-  flecsi::parallel_for(
-    mesh.cells(),
+  flecsi::parallel_for(mesh.cells(),
     KOKKOS_LAMBDA(auto c) {
       assert(pressure(c) == 1.0);
       assert(global == 2042);
@@ -153,16 +151,16 @@ test(client_handle_t<test_mesh_t, ro> mesh,
   int total_cells = mesh.cells().size();
   int total_sum = (total_cells - 1) * (total_cells) / 2;
   int res = 0;
-  flecsi::parallel_reduce(
-    mesh.cells(), KOKKOS_LAMBDA(auto c, int & up) { up += c; },
+  flecsi::parallel_reduce(mesh.cells(),
+    KOKKOS_LAMBDA(auto c, int & up) { up += c; },
     flecsi::reducer::sum<int>(res), std::string("test"));
   assert(total_sum == res);
 
   // Test reduction prod
   double total_prod = pow(1.2, total_cells);
   double resd = 1;
-  flecsi::parallel_reduce(
-    mesh.cells(), KOKKOS_LAMBDA(auto c, double & up) { up *= 1.2; },
+  flecsi::parallel_reduce(mesh.cells(),
+    KOKKOS_LAMBDA(auto c, double & up) { up *= 1.2; },
     flecsi::reducer::prod<double>(resd), std::string("test"));
   assert(fabs(total_prod - resd) < 1.0e-9);
 
