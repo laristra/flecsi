@@ -204,6 +204,7 @@ reduce_each_u(R && r, REDUCTION & reduction, FUNCTION && function) {
 
 } // namespace flecsi
 
+#ifdef FLECSI_ENABLE_KOKKOS
 // Reducers extracted from Kokkos
 namespace flecsi {
 namespace reducer {
@@ -233,3 +234,4 @@ template<typename TYPE, typename IDX, typename SPACE>
 using minmaxloc = Kokkos::MinMaxLoc<TYPE, IDX, SPACE>;
 } // namespace reducer
 } // namespace flecsi
+#endif // FLECSI_ENABLE_KOKKOS
