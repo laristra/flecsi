@@ -8,13 +8,29 @@
 % Packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\usepackage[dvipsnames]{xcolor}
+\usepackage{color}
 \usepackage{amsfonts,amsmath,amsthm,amssymb}
 \usepackage{pstricks,pst-node,pst-text,pst-3d}
-\usepackage{color}
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage[margin=1.0in]{geometry}
+\usepackage{listings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set defaults for code listings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lstset{
+    frame=tb, % draw a frame at the top and bottom of the code block
+    tabsize=4, % tab space width
+    showstringspaces=false, % don't mark spaces in strings
+    numbers=left, % display line numbers on the left
+    commentstyle=\color{Cerulean}, % comment color
+    keywordstyle=\color{ForestGreen}, % keyword color
+    stringstyle=\color{Fuchsia} % string color
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Title
@@ -46,16 +62,13 @@
 
 \input{tex/introduction}
 
-This is a citation \cite{LegeionSC12}.
-In Figure \ref{fig:cycle}, we see some stuff
+This is a citation \cite{LegionSC12}.
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=1.0\textwidth]{images/cycle.pdf}
-\end{center}
-\caption{This is a pdf figure.}
-\label{fig:cycle}
-\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Control-Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{tex/model}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Algorithm
