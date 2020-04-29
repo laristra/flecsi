@@ -11,20 +11,26 @@ This is the central repository for FleCSI papers and technical reports.
 ## Fedora
 
 Installing *texlive-scheme-full* works:
-
 ```
-$ dnf install texlive-scheme-full
+$ sudo dnf install texlive-scheme-full
+```
+
+## Ubuntu
+
+Installing *texlive-full* works:
+```
+$ sudo apt install texlive-full
 ```
 
 ## MacOS
 
 Installing *cmake*, *texlive*, *texlive-pstricks*, and *ImageMagick* with
-**MacPorts** works:
+[MacPorts](https://www.macports.org) works:
 ```
-$ port install cmake
-$ port install texlive
-$ port install texlive-pstricks
-$ port install ImageMagick
+$ sudo port install cmake
+$ sudo port install texlive
+$ sudo port install texlive-pstricks
+$ sudo port install ImageMagick
 ```
 
 # Building a Paper
