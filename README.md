@@ -19,6 +19,30 @@ directory.
 
 Add a *add_subdirectory* entry to the top-level *CMakeLists.txt* file.
 
+# Prequisites
+
+* Latex
+* ImageMagick
+
+## Fedora
+
+Installing *texlive-scheme-full* works:
+
+```
+$ dnf install texlive-scheme-full
+```
+
+## MacOS
+
+Installing *cmake*, *texlive*, *texlive-pstricks*, and *ImageMagick* with
+**MacPorts** works:
+```
+$ port install cmake
+$ port install texlive
+$ port install texlive-pstricks
+$ port install ImageMagick
+```
+
 # Building a Paper
 
 The build system for this project uses standard CMake.
