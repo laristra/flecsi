@@ -64,10 +64,9 @@ add_latex_document(
 )
 ```
 where *NAME_OF_MAIN.tex* is the name of your master tex document.
-The *add_latex_document* command takes other arguments.
-For a good example, take a look at the structure of the *FleCSI-2.0*
-directory.
-
-Add a *add_subdirectory* entry to the top-level *CMakeLists.txt* file.
+The *add_latex_document* command takes other arguments
+*(For a good example, take a look at the structure of the 'FleCSI-2.0'
+directory.)* Lastly, add a *add_subdirectory* entry to the top-level
+*CMakeLists.txt* file.
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
