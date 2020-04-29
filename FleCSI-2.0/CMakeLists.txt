@@ -12,8 +12,15 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-file(GLOB TEXFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} tex/*.tex)
-file(GLOB BIBFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} bib/*.bib)
+set(TEXFILES
+  tex/introduction.tex
+  tex/model.tex
+)
+
+set(BIBFILES
+  bib/articles.bib
+  bib/proceedings.bib
+)
 
 add_latex_document(
   flecsi-2.tex
