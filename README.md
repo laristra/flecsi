@@ -17,6 +17,8 @@ The *add_latex_document* command takes other arguments.
 For a good example, take a look at the structure of the *FleCSI-2.0*
 directory.
 
+Add a *add_subdirectory* entry to the top-level *CMakeLists.txt* file.
+
 # Building a Paper
 
 The build system for this project uses standard CMake.

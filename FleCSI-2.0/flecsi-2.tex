@@ -13,6 +13,8 @@
 \usepackage{color}
 \usepackage{algorithm}
 \usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage[margin=1.0in]{geometry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Title
@@ -45,6 +47,15 @@
 \input{tex/introduction}
 
 This is a citation \cite{LegeionSC12}.
+In Figure \ref{fig:cycle}, we see some stuff
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=1.0\textwidth]{images/cycle.pdf}
+\end{center}
+\caption{This is a pdf figure.}
+\label{fig:cycle}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Algorithm
