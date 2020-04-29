@@ -30,8 +30,6 @@
 namespace flecsi {
 namespace topology {
 
-class mesh_entity_base_;
-
 template<size_t, size_t>
 class mesh_entity_t;
 
@@ -75,6 +73,7 @@ struct hpx_topology_storage_policy_u {
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
 
+  index_subspaces_t index_subspaces;
   std::array<std::array<partition_index_spaces_t, NUM_DOMS>, num_partitions>
     partition_index_spaces;
 
@@ -101,7 +100,7 @@ struct hpx_topology_storage_policy_u {
     auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
 
     id_t global_id = id_t::make<T::dimension, DOM>(entity, color);
-    ent->template set_global_id<DOM>(global_id);
+    ent->set_global_id(global_id);
 
     auto & id_storage = is.id_storage();
 
@@ -123,7 +122,7 @@ struct hpx_topology_storage_policy_u {
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
     auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
 
-    ent->template set_global_id<DOM>(id);
+    ent->set_global_id(id);
 
     auto & id_storage = is.id_storage();
 

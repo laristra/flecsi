@@ -13,6 +13,8 @@
                                                                               */
 
 #include <bitset>
+#include <chrono>
+#include <thread>
 #include <tuple>
 
 #include <cinchtest.h>
@@ -21,7 +23,7 @@
 #include <flecsi/utils/macros.h>
 
 /*----------------------------------------------------------------------------*
- * Define simulation phases. This is considered part of the specializeation.
+ * Define simulation phases. This is considered part of the specialization.
  *----------------------------------------------------------------------------*/
 
 enum simulation_phases_t : size_t {
@@ -143,7 +145,7 @@ define_action(init_mesh) define_action(init_fields) define_action(init_species)
         define_action(fixup_mesh) define_action(finalize)
           define_action(super_duper)
 
-#define register_action(phase, name, action)                                   \
+#define flecsi_register_action(phase, name, action)                            \
   bool name##_registered =                                                     \
     control_t::instance()                                                      \
       .phase_map(phase, EXPAND_AND_STRINGIFY(phase))                           \
@@ -162,28 +164,30 @@ define_action(init_mesh) define_action(init_fields) define_action(init_species)
    *----------------------------------------------------------------------------*/
 
   // Initialization
-  register_action(initialize, init_mesh, action_init_mesh);
-register_action(initialize, init_fields, action_init_fields);
-register_action(initialize, init_species, action_init_species);
+  flecsi_register_action(initialize, init_mesh, action_init_mesh);
+flecsi_register_action(initialize, init_fields, action_init_fields);
+flecsi_register_action(initialize, init_species, action_init_species);
 
 // Advance
-register_action(advance, advance_particles, action_advance_particles);
-register_action(advance, accumulate_currents, action_accumulate_currents);
-register_action(advance, update_fields, action_update_fields);
+flecsi_register_action(advance, advance_particles, action_advance_particles);
+flecsi_register_action(advance,
+  accumulate_currents,
+  action_accumulate_currents);
+flecsi_register_action(advance, update_fields, action_update_fields);
 
 // Analysis
-register_action(analyze, poynting_flux, action_poynting_flux);
+flecsi_register_action(analyze, poynting_flux, action_poynting_flux);
 
 // I/O
-register_action(io, restart_dump, action_restart_dump);
-register_action(io, write_flux, action_write_flux);
+flecsi_register_action(io, restart_dump, action_restart_dump);
+flecsi_register_action(io, write_flux, action_write_flux);
 
 // Mesh
-register_action(mesh, fixup_mesh, action_fixup_mesh);
+flecsi_register_action(mesh, fixup_mesh, action_fixup_mesh);
 
 #define ENABLE_M 0
 #if ENABLE_M
-register_action(advance, super_duper, action_super_duper);
+flecsi_register_action(advance, super_duper, action_super_duper);
 #endif
 
 add_dependency(initialize, init_fields, init_mesh);
@@ -197,7 +201,7 @@ add_dependency(advance, super_duper, advance_particles);
 add_dependency(advance, accumulate_currents, super_duper);
 #endif
 
-register_action(finalize, finalize, action_finalize);
+flecsi_register_action(finalize, finalize, action_finalize);
 
 /*----------------------------------------------------------------------------*
  * Run the test...

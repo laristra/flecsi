@@ -38,7 +38,9 @@ variables:
   FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
   FLECSI_MPI_PACKAGE: ""
   FLECSI_MPICH_VERSION: "3.2.1"
+  FLECSI_MPICH_SPEC: ""
   FLECSI_OPENMPI_VERSION: "3.1.3"
+  FLECSI_OPENMPI_SPEC: "+thread_multiple"
   FLECSI_INTEL_VERSION: "19.0.2"
   FLECSI_CLANG_VERSION: "8.0.1"
   FLECSI_GCC_VERSION: "8.3.0"
@@ -57,7 +59,7 @@ before_script:
   - module unload gcc
   - module load gcc/${FLECSI_GCC_VERSION}
   - echo ${FLECSI_ENV_SOURCE_FILE}
-  - export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_BASE_SPEC} $([ ${BUILD_TYPE} == 'Debug' ] && echo +debug_backend || echo '' ) ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} == 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}"
+  - export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_BASE_SPEC} $([ ${BUILD_TYPE} == 'Debug' ] && echo +debug_backend || echo '' ) ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} == 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} ${FLECSI_OPENMPI_SPEC} || echo ${FLECSI_MPICH_VERSION} ${FLECSI_MPICH_SPEC} ) %gcc@${FLECSI_GCC_VERSION}"
   - rm ${FLECSI_ENV_SOURCE_FILE} || /bin/true
   - |
     ( flock -e 200
@@ -202,10 +204,10 @@ before_script:
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
       spack clean --all;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION} ${FLECSI_OPENMPI_SPEC} %gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION} ${FLECSI_MPICH_SPEC} %gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^openmpi@${FLECSI_OPENMPI_VERSION} ${FLECSI_OPENMPI_SPEC} %gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^mpich@${FLECSI_MPICH_VERSION} ${FLECSI_MPICH_SPEC} %gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
       spack repo rm ${FLECSI_SPACK_SCOPE};
       ) 200>${DEPS_LOCK}
     - $([ "$(grep -c "Errno " spack_tmp.out)" = "0" ] && exit 0 || exit 1)
@@ -234,6 +236,7 @@ before_script:
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_UNIT_TESTS=ON \
+        -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_HDF5=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_DOXYGEN=ON \
         -DENABLE_DOCUMENTATION=OFF \
@@ -413,7 +416,7 @@ canary:centOS_mpich_hpx:
     <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *mpich
-  allow_failure: true 
+  allow_failure: false 
 
 ##############
 # Build Jobs #
@@ -582,19 +585,21 @@ build:centOS_hpx:
   script:
     - *build_script
     - *test_script
-  allow_failure: true
+  allow_failure: false
 
 build:centOS_mpich_hpx_clang:
   extends: build:centOS_hpx
   variables:
     <<: *compiler_clang
     <<: *mpich
+  allow_failure: true
 
 build:centOS_hpx_intel_release:
   extends: build:centOS_hpx
   variables:
     <<: *buildtype_release
     <<: *compiler_intel
+  allow_failure: true
 
 build:centOS_mpi.ignoreNoCI:
   extends: build:centOS_mpi

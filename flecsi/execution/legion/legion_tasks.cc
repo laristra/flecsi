@@ -141,7 +141,7 @@ const double MaxReductionOp::identity = std::numeric_limits<double>::min();
 template<>
 void
 MaxReductionOp::apply<true>(LHS & lhs, RHS rhs) {
-  lhs = std::max(lhs, rhs);
+  lhs = (std::max)(lhs, rhs);
 }
 
 template<>
@@ -155,14 +155,14 @@ MaxReductionOp::apply<false>(LHS & lhs, RHS rhs) {
   } oldval, newval;
   do {
     oldval.as_int = *target;
-    newval.as_T = std::max(oldval.as_T, rhs);
+    newval.as_T = (std::max)(oldval.as_T, rhs);
   } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
 template<>
 void
 MaxReductionOp::fold<true>(RHS & rhs1, RHS rhs2) {
-  rhs1 = std::max(rhs1, rhs2);
+  rhs1 = (std::max)(rhs1, rhs2);
 }
 
 template<>
@@ -176,7 +176,7 @@ MaxReductionOp::fold<false>(RHS & rhs1, RHS rhs2) {
   } oldval, newval;
   do {
     oldval.as_int = *target;
-    newval.as_T = std::max(oldval.as_T, rhs2);
+    newval.as_T = (std::max)(oldval.as_T, rhs2);
   } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
@@ -185,7 +185,7 @@ const double MinReductionOp::identity = std::numeric_limits<double>::max();
 template<>
 void
 MinReductionOp::apply<true>(LHS & lhs, RHS rhs) {
-  lhs = std::min(lhs, rhs);
+  lhs = (std::min)(lhs, rhs);
 }
 
 template<>
@@ -199,14 +199,14 @@ MinReductionOp::apply<false>(LHS & lhs, RHS rhs) {
   } oldval, newval;
   do {
     oldval.as_int = *target;
-    newval.as_T = std::min(oldval.as_T, rhs);
+    newval.as_T = (std::min)(oldval.as_T, rhs);
   } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 
 template<>
 void
 MinReductionOp::fold<true>(RHS & rhs1, RHS rhs2) {
-  rhs1 = std::min(rhs1, rhs2);
+  rhs1 = (std::min)(rhs1, rhs2);
 }
 
 template<>
@@ -220,7 +220,7 @@ MinReductionOp::fold<false>(RHS & rhs1, RHS rhs2) {
   } oldval, newval;
   do {
     oldval.as_int = *target;
-    newval.as_T = std::min(oldval.as_T, rhs2);
+    newval.as_T = (std::min)(oldval.as_T, rhs2);
   } while(!__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
 }
 

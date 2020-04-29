@@ -22,6 +22,8 @@
 #include <flecsi/topology/set_utils.h>
 #include <flecsi/topology/types.h>
 
+#include <cstddef>
+
 namespace flecsi {
 namespace topology {
 
@@ -32,7 +34,8 @@ struct hpx_set_topology_storage_policy_u {
 
   using entity_types_t = typename SET_TYPE::entity_types;
 
-  static const size_t num_index_spaces = std::tuple_size<entity_types_t>::value;
+  static const std::size_t num_index_spaces =
+    std::tuple_size<entity_types_t>::value;
 
   using index_spaces_t = std::array<index_space_u<set_entity_t *,
                                       true,
@@ -45,9 +48,9 @@ struct hpx_set_topology_storage_policy_u {
 
   index_spaces_t index_spaces;
 
-  size_t color;
+  std::size_t color;
 
-  using index_space_map_t = std::map<size_t, size_t>;
+  using index_space_map_t = std::map<std::size_t, std::size_t>;
 
   index_space_map_t index_space_map;
 
@@ -86,7 +89,7 @@ struct hpx_set_topology_storage_policy_u {
 
     auto & im = context.local_index_space_data_map();
     for(auto & itr : im) {
-      size_t index_space = itr.first;
+      std::size_t index_space = itr.first;
 
       auto sitr = index_space_map.find(index_space);
       clog_assert(sitr != index_space_map.end(), "invalid index space");
@@ -98,11 +101,11 @@ struct hpx_set_topology_storage_policy_u {
 
   template<class T, class... ARG_TYPES>
   T * make(ARG_TYPES &&... args) {
-    constexpr size_t index_space =
+    constexpr std::size_t index_space =
       find_set_index_space_u<num_index_spaces, entity_types_t, T>::find();
 
     auto & is = index_spaces[index_space].template cast<T *>();
-    size_t entity = is.size();
+    std::size_t entity = is.size();
 
     auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
     auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
