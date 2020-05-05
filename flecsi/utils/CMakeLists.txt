@@ -19,6 +19,7 @@
 
 set(utils_HEADERS
   array_ref.h
+  annotation.h
   bit_buffer.h
   checksum.h
   common.h
@@ -63,6 +64,7 @@ set(utils_HEADERS
 set(utils_SOURCES
   debruijn.cc
   demangle.cc
+  annotation.cc
 )
 
 #------------------------------------------------------------------------------#

@@ -33,11 +33,7 @@
 #include <flecsi/execution/legion/init_handles.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/tuple_type_converter.h>
-
-#if defined(ENABLE_CALIPER)
-#include <caliper/Annotation.h>
-#include <caliper/cali.h>
-#endif
+#include <flecsi/utils/annotation.h>
 
 clog_register_tag(task_wrapper);
 
@@ -212,12 +208,9 @@ struct task_wrapper_u {
       clog(info) << "In execute_user_task" << std::endl;
     }
 
-#if defined(ENABLE_CALIPER)
-    cali::Annotation tw("FleCSI-Execution");
+    using annotation = flecsi::utils::annotation;
     std::string tname = task->get_task_name();
-    std::string tname1 = "execute_task->init-handles->" + tname;
-    tw.begin(tname1.c_str());
-#endif
+    annotation::begin<annotation::execute_task_init>(tname);
     // Unpack task arguments
     auto & task_args =
       *reinterpret_cast<utils::convert_tuple_t<ARG_TUPLE, std::decay_t> *>(
@@ -226,55 +219,36 @@ struct task_wrapper_u {
     init_handles_t init_handles(runtime, context, regions, task->futures);
     init_handles.walk(task_args);
 
-#if defined(ENABLE_CALIPER)
-    tw.end();
-#endif
+    annotation::end<annotation::execute_task_init>();
 
     context_t & context_ = context_t::instance();
     context_.set_color(task->index_point.point_data[0]);
 
     if constexpr(std::is_same_v<RETURN, void>) {
 
-#if defined(ENABLE_CALIPER)
-      tname1 = "execute_task->user_task->" + tname;
-      tw.begin(tname1.c_str());
-#endif
+      annotation::begin<annotation::execute_task_user>(tname);
       DELEGATE(utils::forward_tuple(std::move(task_args)));
+      annotation::end<annotation::execute_task_user>();
 
-#if defined(ENABLE_CALIPER)
-      tw.end();
-      tname1 = "execute_task->finalize-handles->" + tname;
-      tw.begin(tname1.c_str());
-#endif
+      annotation::begin<annotation::execute_task_finalize>(tname);
 
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
 
-#if defined(ENABLE_CALIPER)
-      tw.end();
-#endif
+      annotation::end<annotation::execute_task_finalize>();
     }
     else {
 
-#if defined(ENABLE_CALIPER)
-      tname1 = "execute_task->user_task->" + tname;
-      tw.begin(tname1.c_str());
-#endif
-
+      annotation::begin<annotation::execute_task_user>(tname);
       RETURN result = DELEGATE(utils::forward_tuple(std::move(task_args)));
+      annotation::end<annotation::execute_task_user>();
 
-#if defined(ENABLE_CALIPER)
-      tw.end();
-      tname1 = "execute_task->finalize-handles->" + tname;
-      tw.begin(tname1.c_str());
-#endif
+      annotation::begin<annotation::execute_task_finalize>(tname);
 
       finalize_handles_t finalize_handles;
       finalize_handles.walk(task_args);
 
-#if defined(ENABLE_CALIPER)
-      tw.end();
-#endif
+      annotation::end<annotation::execute_task_finalize>();
 
       return result;
     } // if
