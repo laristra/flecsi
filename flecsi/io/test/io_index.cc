@@ -14,7 +14,7 @@
 
 #define __FLECSI_PRIVATE__
 #include "flecsi/util/demangle.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
 #include <flecsi/io.hh>
@@ -44,12 +44,14 @@ reset_zero(double1::accessor<rw> ia) {
 
 int
 check(double1::accessor<ro> ia) {
-  FTEST { ASSERT_EQ(ia, color()); };
+  UNIT {
+    ASSERT_EQ(ia, color());
+  };
 } // print
 
 int
-index_driver(int, char **) {
-  FTEST {
+index_driver() {
+  UNIT {
     char file_name[256];
     strcpy(file_name, "checkpoint.dat");
 
@@ -125,6 +127,6 @@ index_driver(int, char **) {
     EXPECT_EQ(test<check>(fh3), 0);
 #endif
   };
-} // index
+} // index_driver
 
-ftest_register_driver(index_driver);
+flecsi::unit::driver<index_driver> driver;

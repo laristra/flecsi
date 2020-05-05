@@ -49,14 +49,12 @@ top_level_task(const Legion::Task *,
   context_.connect_with_mpi(ctx, runtime);
   context_.wait_on_mpi(ctx, runtime);
 
-  auto args = runtime->get_input_args();
-
   /*
     Invoke the FleCSI runtime top-level action.
    */
 
-  detail::data_guard(), context_.exit_status() =
-                          (*context_.top_level_action_)(args.argc, args.argv);
+  detail::data_guard(),
+    context_.exit_status() = (*context_.top_level_action_)();
 
   /*
     Finish up Legion runtime and fall back out to MPI.
@@ -134,7 +132,7 @@ context_t::finalize() {
 //----------------------------------------------------------------------------//
 
 int
-context_t::start(const std::function<int(int, char **)> & action) {
+context_t::start(const std::function<int()> & action) {
   using namespace Legion;
 
   /*

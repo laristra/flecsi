@@ -22,8 +22,8 @@ struct thrice : public flecsi::util::tuple_walker<thrice> {
 };
 
 int
-tuple_walker(int, char **) {
-  FTEST {
+tuple_walker() {
+  UNIT {
     std::tuple<> nothing;
     std::tuple<int, float, double> t(1, float(2), double(3));
 
@@ -47,6 +47,6 @@ tuple_walker(int, char **) {
     // compare
     EXPECT_TRUE(CINCH_EQUAL_BLESSED("tuple_walker.blessed"));
   };
-}
+} // tuple_walker
 
-ftest_register_driver(tuple_walker);
+flecsi::unit::driver<tuple_walker> driver;

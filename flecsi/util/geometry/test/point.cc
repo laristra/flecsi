@@ -14,7 +14,7 @@
 
 #define __FLECSI_PRIVATE__
 #include "flecsi/util/geometry/point.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 using namespace flecsi;
 
@@ -23,8 +23,8 @@ using point_2d_t = util::point<double, 2>;
 using point_3d_t = util::point<double, 3>;
 
 int
-point_sanity(int, char **) {
-  FTEST {
+point_sanity() {
+  UNIT {
     constexpr point_1d_t a1{-1.0};
     static_assert(-1.0 == a1[util::axis::x]);
 
@@ -37,12 +37,13 @@ point_sanity(int, char **) {
     static_assert(0.0 == a3[util::axis::y]);
     static_assert(-1.0 == a3[util::axis::z]);
   };
-} // TEST
-ftest_register_driver(point_sanity);
+} // point_sanity
+
+flecsi::unit::driver<point_sanity> point_sanity_driver;
 
 int
-point_distance(int, char **) {
-  FTEST {
+point_distance() {
+  UNIT {
     point_1d_t a1{1.0};
     point_1d_t b1{4.0};
     double d = distance(a1, b1);
@@ -58,12 +59,13 @@ point_distance(int, char **) {
     d = distance(a3, b3);
     ASSERT_EQ(6.0, d) << "Distance calculation failed";
   };
-} // TEST
-ftest_register_driver(point_distance);
+} // point_distance
+
+flecsi::unit::driver<point_distance> point_distance_driver;
 
 int
-point_midpoint(int, char **) {
-  FTEST {
+point_midpoint() {
+  UNIT {
     point_1d_t a1{1.0};
     point_1d_t b1{4.0};
     point_1d_t c1 = midpoint(a1, b1);
@@ -82,10 +84,6 @@ point_midpoint(int, char **) {
     ASSERT_EQ(4.0, c3[1]) << "Midpoint calculation failed";
     ASSERT_EQ(-2.5, c3[2]) << "Midpoint calculation failed";
   };
-} // TEST
-ftest_register_driver(point_midpoint);
+} // point_midpoint
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+flecsi::unit::driver<point_midpoint> point_midpoint_driver;

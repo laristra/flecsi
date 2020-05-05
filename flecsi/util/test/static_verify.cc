@@ -13,7 +13,7 @@
                                                                               */
 
 #include "flecsi/util/static_verify.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #include <iostream>
 
@@ -69,8 +69,8 @@ bool const is_tuple<std::tuple<T...>>::value;
 } // namespace flecsi
 
 int
-static_verify(int, char **) {
-  FTEST {
+static_verify() {
+  UNIT {
     using namespace flecsi::util;
 
     // first{} has foo only
@@ -105,6 +105,6 @@ static_verify(int, char **) {
     static_assert(is_tuple<std::tuple<int>>::value);
     static_assert(is_tuple<std::tuple<int, char>>::value);
   };
-}
+} // static_verify
 
-ftest_register_driver(static_verify);
+flecsi::unit::driver<static_verify> driver;

@@ -13,7 +13,7 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
 #include <flecsi/io.hh>
@@ -32,7 +32,7 @@ using namespace flecsi;
 
 int
 check() {
-  FTEST {};
+  UNIT{};
 } // check
 
 enum FieldIDs {
@@ -41,8 +41,8 @@ enum FieldIDs {
 };
 
 int
-io_sanity(int, char **) {
-  FTEST {
+io_sanity() {
+  UNIT {
     int num_elements = 1023;
     int num_files = 16;
     char file_name[256];
@@ -238,4 +238,4 @@ io_sanity(int, char **) {
   };
 } // io_sanity
 
-ftest_register_driver(io_sanity);
+flecsi::unit::driver<io_sanity> driver;

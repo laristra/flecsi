@@ -63,7 +63,7 @@ set(exec_HEADERS
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(color
+add_unit(color
   SOURCES
     test/color.cc
   THREADS
@@ -71,34 +71,34 @@ ftest_add_unit(color
 )
 
 if(ENABLE_KOKKOS)
-  ftest_add_unit(kokkos
+  add_unit(kokkos
     SOURCES
       test/kokkos.cc
   )
 endif()
 
-#ftest_add_unit(reduction
+#add_unit(reduction
 #  SOURCES
 #    test/reduction.cc
 #)
 
-ftest_add_unit(task
+add_unit(task
   SOURCES
     test/task.cc
 )
 
-ftest_add_unit(task_attributes
+add_unit(task_attributes
   SOURCES
     test/task_attributes.cc
 )
 
-ftest_add_unit(gpu_task
+add_unit(gpu_task
   SOURCES
     test/gpu_task.cc
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  ftest_add_unit(future
+  add_unit(future
     SOURCES
       test/future.cc
     THREADS 2

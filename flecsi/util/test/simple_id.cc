@@ -13,7 +13,7 @@
                                                                               */
 
 #include "flecsi/util/simple_id.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 using namespace flecsi::util;
 
@@ -21,8 +21,8 @@ using id_types_t = std::tuple<int, int, int>;
 using my_id_t = simple_id_t<id_types_t, lexical_comparison<id_types_t>>;
 
 int
-simple_id(int, char **) {
-  FTEST {
+simple_id() {
+  UNIT {
     auto a = my_id_t{1, 2, 3};
     auto b = my_id_t{4, 5, 6};
     auto c = my_id_t{0, 1, 0};
@@ -42,6 +42,6 @@ simple_id(int, char **) {
     EXPECT_TRUE((d < c));
     EXPECT_TRUE((d < e));
   };
-}
+} // simple_id
 
-ftest_register_driver(simple_id);
+flecsi::unit::driver<simple_id> driver;

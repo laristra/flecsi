@@ -68,7 +68,7 @@ context_t::finalize() {
 //----------------------------------------------------------------------------//
 
 int
-context_t::start(const std::function<int(int, char **)> & action) {
+context_t::start(const std::function<int(void)> & action) {
   context::start();
 
   context::threads_per_process_ = 1;
@@ -83,7 +83,7 @@ context_t::start(const std::function<int(int, char **)> & action) {
     largv.push_back(opt->data());
   } // for
 
-  return action(largv.size(), largv.data());
+  return action();
 }
 
 } // namespace flecsi::run

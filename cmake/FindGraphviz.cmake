@@ -26,17 +26,11 @@ FIND_PATH(Graphviz_INCLUDE_DIR NAMES graphviz/cgraph.h)
 FIND_LIBRARY(Graphviz_cdt_LIBRARY NAMES cdt )
 FIND_LIBRARY(Graphviz_cgraph_LIBRARY NAMES cgraph )
 FIND_LIBRARY(Graphviz_gvc_LIBRARY NAMES gvc )
-FIND_LIBRARY(Graphviz_gvpr_LIBRARY NAMES gvpr )
-FIND_LIBRARY(Graphviz_pathplan_LIBRARY NAMES pathplan )
-FIND_LIBRARY(Graphviz_xdot_LIBRARY NAMES xdot )
 
 SET(Graphviz_LIBRARY
 	${Graphviz_cdt_LIBRARY}
 	${Graphviz_cgraph_LIBRARY}
 	${Graphviz_gvc_LIBRARY}
-	${Graphviz_gvpr_LIBRARY}
-	${Graphviz_pathplan_LIBRARY}
-	${Graphviz_xdot_LIBRARY}
 )
 
 # Handle the QUIETLY and REQUIRED arguments and set Graphviz_FOUND to TRUE if all listed variables are TRUE.
@@ -53,4 +47,4 @@ ELSE(Graphviz_FOUND)
 	SET(Graphviz_INCLUDE_DIRS)
 ENDIF(Graphviz_FOUND)
 
-MARK_AS_ADVANCED(Graphviz_INCLUDE_DIRS Graphviz_INCLUDE_DIR Graphviz_LIBRARIES Graphviz_cdt_LIBRARY Graphviz_cgraph_LIBRARY Graphviz_gvc_LIBRARY Graphviz_gvpr_LIBRARY Graphviz_pathplan_LIBRARY Graphviz_xdot_LIBRARY)
+MARK_AS_ADVANCED(Graphviz_INCLUDE_DIRS Graphviz_INCLUDE_DIR Graphviz_LIBRARIES Graphviz_cdt_LIBRARY Graphviz_cgraph_LIBRARY Graphviz_gvc_LIBRARY)

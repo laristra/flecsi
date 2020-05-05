@@ -104,7 +104,7 @@ flecsi::program_option<std::string> passenger_list("passenger-list",
  */
 
 int
-top_level_action(int, char **) {
+top_level_action() {
   double price{0.0};
 
   /*
@@ -169,8 +169,8 @@ main(int argc, char ** argv) {
 
   auto status = flecsi::initialize(argc, argv);
 
-  if(status != flecsi::runtime::status::success) {
-    return status == flecsi::runtime::status::help ? 0 : status;
+  if(status != flecsi::run::status::success) {
+    return status == flecsi::run::status::help ? 0 : status;
   } // if
 
   status = flecsi::start(top_level_action);

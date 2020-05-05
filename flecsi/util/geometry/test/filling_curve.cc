@@ -14,7 +14,7 @@
 
 #define __FLECSI_PRIVATE__
 #include "flecsi/util/geometry/filling_curve.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 using namespace flecsi;
 
@@ -29,8 +29,8 @@ using hc_2d = hilbert_curve<2, uint64_t>;
 using mc_2d = morton_curve<2, uint64_t>;
 
 int
-hilbert_sanity(int, char **) {
-  FTEST {
+hilbert_sanity() {
+  UNIT {
     using namespace flecsi;
 
     range_t range;
@@ -58,12 +58,13 @@ hilbert_sanity(int, char **) {
     }
     ASSERT_TRUE(hc5 == hc4);
   };
-}
-ftest_register_driver(hilbert_sanity);
+} // hilbert_sanity
+
+flecsi::unit::driver<hilbert_sanity> hilbert_driver;
 
 int
-hilbert_2d_rnd(int, char **) {
-  FTEST {
+hilbert_2d_rnd() {
+  UNIT {
     using namespace flecsi;
     // Test the generation 2D
     range_2d rge;
@@ -85,12 +86,13 @@ hilbert_2d_rnd(int, char **) {
       ASSERT_TRUE(dist < 1.0e-4);
     }
   };
-}
-ftest_register_driver(hilbert_2d_rnd);
+} // hilbert_2d_rnd
+
+flecsi::unit::driver<hilbert_2d_rnd> hilbert_2d_rnd_driver;
 
 int
-hilbert_3d_rnd(int, char **) {
-  FTEST {
+hilbert_3d_rnd() {
+  UNIT {
     using namespace flecsi;
     // Test the generation
     range_t range;
@@ -130,12 +132,13 @@ hilbert_3d_rnd(int, char **) {
       ASSERT_TRUE(dist < 1.0e-4);
     }
   };
-} // TEST
-ftest_register_driver(hilbert_3d_rnd);
+} // hilbert_3d_rnd
+
+flecsi::unit::driver<hilbert_3d_rnd> hilbert_3d_rnd_driver;
 
 int
-morton_sanity(int, char **) {
-  FTEST {
+morton_sanity() {
+  UNIT {
     range_t range;
     range[0] = {-1, -1, -1};
     range[1] = {1, 1, 1};
@@ -162,11 +165,12 @@ morton_sanity(int, char **) {
     ASSERT_TRUE(hc5 == hc4);
   };
 }
-ftest_register_driver(morton_sanity);
+
+flecsi::unit::driver<morton_sanity> morton_driver;
 
 int
-morton_2d_rnd(int, char **) {
-  FTEST {
+morton_2d_rnd() {
+  UNIT {
     using namespace flecsi;
     // Test the generation 2d
     range_2d rge;
@@ -200,13 +204,13 @@ morton_2d_rnd(int, char **) {
       ASSERT_TRUE(dist < 1.0e-4);
     }
   };
-}
+} // morton_2d_rnd
 
-ftest_register_driver(morton_2d_rnd);
+flecsi::unit::driver<morton_2d_rnd> morton_2d_rnd_driver;
 
 int
-morton_3d_rnd(int, char **) {
-  FTEST {
+morton_3d_rnd() {
+  UNIT {
     using namespace flecsi;
     range_t range;
 
@@ -246,10 +250,6 @@ morton_3d_rnd(int, char **) {
       ASSERT_TRUE(dist < 1.0e-4);
     }
   };
-}
-ftest_register_driver(morton_3d_rnd);
+} // morton_3d_rnd
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+flecsi::unit::driver<morton_3d_rnd> morton_3d_rnd_driver;

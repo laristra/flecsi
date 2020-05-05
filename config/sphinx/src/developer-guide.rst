@@ -353,6 +353,23 @@ Configure and build flecsi:
   $ ../../tools/configure clang legion
   $ make -j 16
 
+Graphviz Notes
+**************
+
+FleCSI uses the `libcgraph`__ interface to `Graphviz`__ to create
+control model visualizations. The *libcgraph* interface is fairly
+counterintuitive. One particular gotcha is that graph, node, and edge
+attributes can only be set on attributes that have been defined for the
+graph. If an attribute type has not been defined, the graph will ignore
+it. There is not easy to remedy to this problem: attributes that are
+added after initialization will reset all previously added elements to
+whatever the default of the new attribute is. If you need to add an
+attribute, the best thing to do is to look at the *graphviz.hh* file in
+'flecsi/utils', and add it there with a reasonable default.
+
+__ https://graphviz.gitlab.io/_pages/pdf/libguide.pdf
+__ https://www.graphviz.org
+
 Advanced
 ********
 

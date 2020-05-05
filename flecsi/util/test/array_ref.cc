@@ -1,6 +1,6 @@
 #include "flecsi/util/array_ref.hh"
 #include "flecsi/util/common.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #include <iostream>
 
@@ -8,35 +8,35 @@
 inline void
 print_refc(const flecsi::util::array_ref<char> & arr) {
   for(auto c = arr.begin(); c != arr.end(); ++c)
-    FTEST_CAPTURE() << *c;
-  FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << *c;
+  UNIT_CAPTURE() << std::endl;
 }
 
 int
-array_ref(int, char **) {
-  FTEST {
+array_ref() {
+  UNIT {
     using refd = flecsi::util::array_ref<double>;
     using refc = flecsi::util::array_ref<char>;
     using reff = flecsi::util::array_ref<float>;
     using refi = flecsi::util::array_ref<int>;
 
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // ------------------------
     // types
     // ------------------------
 
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::value_type) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::pointer) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::reference) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::const_reference) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::const_iterator) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::iterator) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::const_reverse_iterator) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::reverse_iterator) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::size_type) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(refd::difference_type) << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::value_type) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::pointer) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::reference) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::const_reference) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::const_iterator) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::iterator) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::const_reverse_iterator) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::reverse_iterator) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::size_type) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(refd::difference_type) << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // ------------------------
     // constructor/assignment
@@ -101,7 +101,7 @@ array_ref(int, char **) {
     const std::string abc = "abcdefghi";
 
     print_refc(refc(abc));
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     print_refc(refc(abc).substr(0));
     print_refc(refc(abc).substr(1));
@@ -110,7 +110,7 @@ array_ref(int, char **) {
     print_refc(refc(abc).substr(8));
     print_refc(refc(abc).substr(9)); // blank
     print_refc(refc(abc).substr(100)); // blank
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     print_refc(refc(abc).substr(0, 2));
     print_refc(refc(abc).substr(1, 4));
@@ -119,24 +119,24 @@ array_ref(int, char **) {
     print_refc(refc(abc).substr(8, 1));
     print_refc(refc(abc).substr(9, 1)); // blank
     print_refc(refc(abc).substr(100, 1)); // blank
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // ------------------------
     // iterators
     // ------------------------
 
     for(auto it = abc.begin(); it != abc.end(); ++it)
-      FTEST_CAPTURE() << *it;
-    FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << *it;
+    UNIT_CAPTURE() << std::endl;
     for(auto it = abc.cbegin(); it != abc.cend(); ++it)
-      FTEST_CAPTURE() << *it;
-    FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << *it;
+    UNIT_CAPTURE() << std::endl;
     for(auto it = abc.rbegin(); it != abc.rend(); ++it)
-      FTEST_CAPTURE() << *it;
-    FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << *it;
+    UNIT_CAPTURE() << std::endl;
     for(auto it = abc.crbegin(); it != abc.crend(); ++it)
-      FTEST_CAPTURE() << *it;
-    FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << *it;
+    UNIT_CAPTURE() << std::endl;
 
     // ------------------------
     // capacity
@@ -146,11 +146,11 @@ array_ref(int, char **) {
     const std::vector<double> vec3 = {3.14, 2.18, 2.72};
     const refd cap3 = vec3;
 
-    FTEST_CAPTURE() << cap0.size() << std::endl;
-    FTEST_CAPTURE() << (cap0.empty() ? "true" : "false") << std::endl; // empty
-    FTEST_CAPTURE() << cap3.size() << std::endl;
-    FTEST_CAPTURE() << (cap3.empty() ? "true" : "false") << std::endl; // not
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << cap0.size() << std::endl;
+    UNIT_CAPTURE() << (cap0.empty() ? "true" : "false") << std::endl; // empty
+    UNIT_CAPTURE() << cap3.size() << std::endl;
+    UNIT_CAPTURE() << (cap3.empty() ? "true" : "false") << std::endl; // not
+    UNIT_CAPTURE() << std::endl;
 
     // max_size() is machine-dependent, so I won't put it into a comparison
     // file. Let's basically just be sure it's callable and reasonable...
@@ -162,30 +162,30 @@ array_ref(int, char **) {
     // ------------------------
 
     // []
-    FTEST_CAPTURE() << cap3[0] << std::endl;
-    FTEST_CAPTURE() << cap3[1] << std::endl;
-    FTEST_CAPTURE() << cap3[2] << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << cap3[0] << std::endl;
+    UNIT_CAPTURE() << cap3[1] << std::endl;
+    UNIT_CAPTURE() << cap3[2] << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // at()
-    FTEST_CAPTURE() << cap3.at(0) << std::endl;
-    FTEST_CAPTURE() << cap3.at(1) << std::endl;
-    FTEST_CAPTURE() << cap3.at(2) << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << cap3.at(0) << std::endl;
+    UNIT_CAPTURE() << cap3.at(1) << std::endl;
+    UNIT_CAPTURE() << cap3.at(2) << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // test at() exception
     try {
-      FTEST_CAPTURE() << cap3.at(3) << std::endl;
+      UNIT_CAPTURE() << cap3.at(3) << std::endl;
     }
     catch(...) {
-      FTEST_CAPTURE() << "Caught an (intentionally generated!) test exception";
+      UNIT_CAPTURE() << "Caught an (intentionally generated!) test exception";
     }
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // front(), back()
-    FTEST_CAPTURE() << cap3.front() << std::endl;
-    FTEST_CAPTURE() << cap3.back() << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << cap3.front() << std::endl;
+    UNIT_CAPTURE() << cap3.back() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // data()
     EXPECT_NE(cap3.data(), nullptr);
@@ -221,15 +221,15 @@ array_ref(int, char **) {
       refi f = iarray;
       f.remove_prefix(2);
       f.remove_suffix(1);
-      FTEST_CAPTURE() << f.front() << std::endl;
-      FTEST_CAPTURE() << f.back() << std::endl;
-      FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << f.front() << std::endl;
+      UNIT_CAPTURE() << f.back() << std::endl;
+      UNIT_CAPTURE() << std::endl;
 
       f.remove_prefix(3);
       f.remove_suffix(2);
-      FTEST_CAPTURE() << f.front() << std::endl;
-      FTEST_CAPTURE() << f.back() << std::endl;
-      FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << f.front() << std::endl;
+      UNIT_CAPTURE() << f.back() << std::endl;
+      UNIT_CAPTURE() << std::endl;
 
       f.remove_prefix(1); // ==> nothing left!
       EXPECT_EQ(f.size(), 0u);
@@ -241,9 +241,9 @@ array_ref(int, char **) {
       refd d = darray;
       d.pop_back();
       d.pop_front();
-      FTEST_CAPTURE() << d.front() << std::endl;
-      FTEST_CAPTURE() << d.back() << std::endl;
-      FTEST_CAPTURE() << std::endl;
+      UNIT_CAPTURE() << d.front() << std::endl;
+      UNIT_CAPTURE() << d.back() << std::endl;
+      UNIT_CAPTURE() << std::endl;
     }
 
     // ------------------------
@@ -255,38 +255,38 @@ array_ref(int, char **) {
       const std::size_t length = 9;
       int ints[length] = {1, 9, 2, 8, 3, 7, 4, 6, 5};
       refi a = flecsi::util::make_array_ref(&ints[0], length);
-      FTEST_CAPTURE() << a.front() << '\n';
-      FTEST_CAPTURE() << a.back() << '\n' << std::endl;
+      UNIT_CAPTURE() << a.front() << '\n';
+      UNIT_CAPTURE() << a.back() << '\n' << std::endl;
 
       // from T [n]
       refi b = flecsi::util::make_array_ref(ints);
-      FTEST_CAPTURE() << b.front() << '\n';
-      FTEST_CAPTURE() << b.back() << '\n' << std::endl;
+      UNIT_CAPTURE() << b.front() << '\n';
+      UNIT_CAPTURE() << b.back() << '\n' << std::endl;
 
       // from std::vector
       std::vector<int> ivec(10, 1); // 10 1s
       refi c = flecsi::util::make_array_ref(ivec);
-      FTEST_CAPTURE() << c.front() << '\n';
-      FTEST_CAPTURE() << c.back() << '\n' << std::endl;
+      UNIT_CAPTURE() << c.front() << '\n';
+      UNIT_CAPTURE() << c.back() << '\n' << std::endl;
 
       // from std::array
       const std::array<int, 2> iarr = {{10, 20}};
       refi d = flecsi::util::make_array_ref(iarr);
-      FTEST_CAPTURE() << d.front() << '\n';
-      FTEST_CAPTURE() << d.back() << '\n';
+      UNIT_CAPTURE() << d.front() << '\n';
+      UNIT_CAPTURE() << d.back() << '\n';
     }
 
     // ------------------------
     // compare
     // ------------------------
 #ifdef __GNUG__
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("array_ref.blessed.gnug"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("array_ref.blessed.gnug"));
 #elif defined(_MSC_VER)
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("array_ref.blessed.msvc"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("array_ref.blessed.msvc"));
 #else
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("array_ref.blessed"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("array_ref.blessed"));
 #endif
   };
-}
+} // array_ref
 
-ftest_register_driver(array_ref);
+flecsi::unit::driver<array_ref> driver;

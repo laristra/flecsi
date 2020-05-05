@@ -14,11 +14,11 @@
 
 #include "flecsi/util/const_string.hh"
 #include "flecsi/util/common.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 int
-const_string(int, char **) {
-  FTEST {
+const_string() {
+  UNIT {
     // ------------------------
     // const_string_t
     // ------------------------
@@ -71,6 +71,6 @@ const_string(int, char **) {
     const flecsi::util::const_string_hasher_t hasher{};
     EXPECT_EQ(const_string_t("abc").hash(), hasher(const_string_t("abc")));
   };
-}
+} // const_string
 
-ftest_register_driver(const_string);
+flecsi::unit::driver<const_string> driver;

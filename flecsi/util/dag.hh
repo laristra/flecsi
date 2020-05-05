@@ -17,7 +17,7 @@
 
 #include <flecsi-config.h>
 
-#include <flecsi/flog.hh>
+#include "flecsi/flog.hh"
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 #include "flecsi/util/graphviz.hh"
@@ -28,180 +28,84 @@
 #include <list>
 #include <map>
 #include <queue>
+#include <sstream>
 #include <vector>
 
 namespace flecsi {
 namespace util {
 
-/*!
-  The dag_node type defines a compile-time extensible node for the
-  FleCSI dag data structure.
+namespace dag_impl {
+
+/*
  */
 
-template<typename NODE_POLICY>
-struct dag_node : public NODE_POLICY {
+template<typename NodePolicy>
+struct node : NodePolicy, std::list<node<NodePolicy> const *> {
 
-  using edge_list_t = std::list<size_t>;
-
-  /*! Constructor */
-
-  dag_node() : NODE_POLICY() {}
-
-  /*!
-    Constructor.
-
-    @param hash  The node identifier.
-    @param label The string label of the node.
-    @param ARGS  A variadic list of arguments that are passed to
-                 the node policy constructor.
-   */
-
-  template<typename... ARGS>
-  dag_node(size_t hash, std::string const & label, ARGS &&... args)
-    : NODE_POLICY(std::forward<ARGS>(args)...), hash_(hash), label_(label) {}
-
-  size_t const & hash() const {
-    return hash_;
+  template<typename... Args>
+  node(std::string const & label, Args &&... args)
+    : NodePolicy(std::forward<Args>(args)...), label_(label) {
+    const void * address = static_cast<const void *>(this);
+    std::stringstream ss;
+    ss << address;
+    identifier_ = ss.str();
   }
-  size_t & hash() {
-    return hash_;
+
+  std::string const & identifier() const {
+    return identifier_;
   }
 
   std::string const & label() const {
     return label_;
   }
-
-  std::string & label() {
-    return label_;
-  }
-
-  edge_list_t const & edges() const {
-    return edge_list_;
-  }
-
-  edge_list_t & edges() {
-    return edge_list_;
-  }
-
-  /*!
-    This method initializes the node state without overwriting any of the
-    edge information. This is useful for allowing users to access the node
-    from anywhere in the code in a way that does not destroy the graph.
-
-    @param node The node.
-
-    @return A boolean value that can be used to capture registrations
-            at file scope.
-   */
-
-  bool initialize(dag_node const & node) {
-    hash_ = node.hash_;
-    label_ = node.label_;
-    return NODE_POLICY::initialize(node);
-  } // update
 
 private:
-  size_t hash_ = 0;
-  std::string label_ = "";
-  edge_list_t edge_list_ = {};
+  std::string identifier_;
+  std::string label_;
+};
 
-}; // struct dag_node
+} // namespace dag_impl
 
-template<typename NODE_POLICY>
-inline std::ostream &
-operator<<(std::ostream & stream, dag_node<NODE_POLICY> const & node) {
-  stream << "hash: " << node.hash() << std::endl;
-  stream << "label: " << node.label() << std::endl;
-  stream << static_cast<NODE_POLICY const &>(node);
+/*!
+  Basic DAG type.
+ */
 
-  stream << "edges: ";
-  for(auto e : node.edges()) {
-    stream << e << " ";
-  } // for
-  stream << std::endl;
+template<typename NodePolicy>
+struct dag : std::vector<dag_impl::node<NodePolicy> *> {
 
-  return stream;
-} // operator <<
+  using node_type = dag_impl::node<NodePolicy>;
 
-template<typename NODE_POLICY>
-struct dag {
-  using node_t = dag_node<NODE_POLICY>;
-  using node_map_t = std::map<size_t, node_t>;
-  using node_vector_t = std::vector<node_t>;
-  using node_list_t = std::list<node_t>;
+  dag(const char * label = "empty") : label_(label) {}
+
+  /*!
+    @return the DAG label.
+   */
 
   std::string const & label() const {
     return label_;
   }
-  std::string & label() {
-    return label_;
-  }
-
-  node_map_t const & nodes() const {
-    return nodes_;
-  }
-  node_map_t & nodes() {
-    return nodes_;
-  }
-
-  node_t & node(size_t hash) {
-    return nodes_[hash];
-  }
-
-  bool initialize_node(node_t const & node) {
-    return nodes_[node.hash()].initialize(node);
-  } // initialize_node
 
   /*!
-    This adds an edge to the graph. The edges are stored as edge
-    dependencies, hence the semantic of \em to <- \em from.
+    Topological sort using Kahn's algorithm.
 
-    @param to   The 'to' side of the directed dependency.
-    @param from The 'from' side of the directed dependency.
-
-    @return A boolean value that can be used to capture additions
-            at file scope.
+    @return A valid sequence of the nodes in the DAG.
    */
 
-  bool add_edge(size_t to, size_t from) {
+  std::vector<node_type const *> sort() {
+    std::vector<node_type const *> sorted;
 
-    // Add the 'to' node if it doesn't already exist
-    if(nodes_.find(to) == nodes_.end()) {
-      nodes_[to].hash() = to;
-    } // if
-
-    // Add the 'from' node if it doesn't already exist
-    if(nodes_.find(from) == nodes_.end()) {
-      nodes_[from].hash() = from;
-    } // if
-
-    nodes_[to].edges().push_back(from);
-
-    return true;
-  } // add_edge
-
-  /*!
-    Topological sort of the DAG using Kahn's algorithm.
-
-    @return A std::vector<node_t> with a node ordering that respects
-            the DAG dependencies.
-   */
-
-  node_vector_t sort() {
-    node_vector_t sorted;
-
-    // Create a list of the nodes
-    node_list_t nodes;
-    for(auto n = nodes_.begin(); n != nodes_.end(); ++n) {
-      nodes.push_back(n->second);
+    // Create a temporary list of the nodes.
+    std::list<node_type *> nodes;
+    for(auto n : *this) {
+      nodes.push_back(n);
     } // for
 
     // Create a tally of the number of dependencies of each node
-    // in the graph.
-    std::queue<node_t> q;
-
+    // in the graph. Remove nodes from the temporary list that do not
+    // have any depenendencies.
+    std::queue<node_type *> q;
     for(auto n = nodes.begin(); n != nodes.end();) {
-      if(n->edges().size() == 0) {
+      if((*n)->size() == 0) {
         q.push(*n);
         n = nodes.erase(n);
       }
@@ -212,17 +116,19 @@ struct dag {
 
     size_t count{0};
     while(!q.empty()) {
-      auto root = q.front();
+      const auto root = q.front();
       sorted.push_back(root);
       q.pop();
 
       for(auto n = nodes.begin(); n != nodes.end();) {
-        auto it = std::find(n->edges().begin(), n->edges().end(), root.hash());
+        auto it = std::find_if((*n)->begin(),
+          (*n)->end(),
+          [&root](const auto p) { return root == p; });
 
-        if(it != n->edges().end()) {
-          n->edges().erase(it);
+        if(it != (*n)->end()) {
+          (*n)->erase(it);
 
-          if(!n->edges().size()) {
+          if(!(*n)->size()) {
             q.push(*n);
             n = nodes.erase(n);
           } // if
@@ -235,36 +141,34 @@ struct dag {
       ++count;
     } // while
 
-    if(count != nodes_.size()) {
-      flog_fatal("sorting failed. This is not a DAG!!!");
-    } // if
+    flog_assert(count == this->size(), "sorting failed. This is not a DAG!!!");
 
     return sorted;
   } // sort
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-
   /*!
-    Add the DAG to the graphviz graph.
+    Add the DAG to the given graphviz graph.
    */
 
-  void add(graphviz_t & gv) {
-    std::map<size_t, Agnode_t *> node_map;
+  void add(graphviz & gv, const char * color = "#c5def5") {
+    std::map<uintptr_t, Agnode_t *> node_map;
 
-    for(auto n : nodes_) {
-      const std::string hash = std::to_string(n.second.hash());
+    for(auto n : *this) {
 
-      node_map[n.second.hash()] =
-        gv.add_node(hash.c_str(), n.second.label().c_str());
+      auto * node = gv.add_node(n->identifier().c_str(), n->label().c_str());
+      node_map[uintptr_t(n)] = node;
 
-      gv.set_node_attribute(hash.c_str(), "color", "#c5def5");
-      gv.set_node_attribute(hash.c_str(), "style", "filled");
-      gv.set_node_attribute(hash.c_str(), "fillcolor", "#c5def5");
+      gv.set_node_attribute(node, "color", "black");
+      gv.set_node_attribute(node, "style", "filled");
+      gv.set_node_attribute(node, "fillcolor", color);
     } // for
 
-    for(auto n : nodes_) {
-      for(auto e : n.second.edges()) {
-        gv.add_edge(node_map[e], node_map[n.first]);
+    for(auto n : *this) {
+      for(auto e : *n) {
+        auto * edge =
+          gv.add_edge(node_map[uintptr_t(e)], node_map[uintptr_t(n)]);
+        gv.set_edge_attribute(edge, "penwidth", "1.5");
       } // for
     } // for
   } // add
@@ -273,19 +177,7 @@ struct dag {
 
 private:
   std::string label_;
-  node_map_t nodes_;
-
 }; // struct dag
-
-template<typename NODE_POLICY>
-inline std::ostream &
-operator<<(std::ostream & stream, dag<NODE_POLICY> const & dag) {
-  for(auto n : dag.nodes()) {
-    stream << n.second << std::endl;
-  } // for
-
-  return stream;
-} // operator <<
 
 } // namespace util
 } // namespace flecsi

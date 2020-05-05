@@ -23,15 +23,12 @@ set(util_HEADERS
   bitutils.hh
   common.hh
   const_string.hh
+  constant.hh
   crs.hh
   dag.hh debruijn.hh
   demangle.hh
   dimensioned_array.hh
   export_definitions.hh
-  ftest.hh
-  ftest/node.hh
-  ftest/output.hh
-  ftest/types.hh
   function_traits.hh
   geometry/filling_curve.hh
   geometry/point.hh
@@ -56,6 +53,9 @@ set(util_HEADERS
   typeify.hh
   type_traits.hh
   uint128.hh
+  unit.hh
+  unit/output.hh
+  unit/types.hh
 )
 
 #------------------------------------------------------------------------------#
@@ -100,7 +100,7 @@ if(MSVC)
   set(array_ref_blessed_input test/array_ref.blessed.msvc)
 endif()
 
-ftest_add_unit(array_ref
+add_unit(array_ref
   SOURCES
     test/array_ref.cc
   INPUTS
@@ -118,7 +118,7 @@ if(MSVC)
   set(common_blessed_input test/common.blessed.msvc)
 endif()
 
-ftest_add_unit(common
+add_unit(common
   SOURCES
     test/common.cc
   INPUTS
@@ -133,7 +133,7 @@ ftest_add_unit(common
 
 if(FLECSI_ENABLE_PARMETIS)
 
-ftest_add_unit(crs
+add_unit(crs
   SOURCES
     test/crs.cc
 )
@@ -145,26 +145,26 @@ endif()
 # demangle
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(demangle
+add_unit(demangle
   SOURCES
     test/demangle.cc
 )
 
 #------------------------------------------------------------------------------#
-# ftest
+# unit
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(ftest
+add_unit(unit
   SOURCES
-    test/ftest.cc
+    test/unit.cc
   THREADS
     1 2 4
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  ftest_add_unit(ftest_task
+  add_unit(unit_task
     SOURCES
-      test/ftest_task.cc
+      test/unit_task.cc
     THREADS 2
   )
 endif()
@@ -179,7 +179,7 @@ if(MSVC)
   set(function_traits_input test/function_traits.blessed.msvc)
 endif()
 
-ftest_add_unit(function_traits
+add_unit(function_traits
   SOURCES
     test/function_traits.cc
   INPUTS
@@ -197,7 +197,7 @@ if(MSVC)
   set(id_blessed_input test/id.blessed.msvc)
 endif()
 
-ftest_add_unit(id
+add_unit(id
   SOURCES
     test/id.cc
   INPUTS
@@ -209,7 +209,7 @@ ftest_add_unit(id
 # hash
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(hash
+add_unit(hash
   SOURCES
     test/hash.cc
 )
@@ -218,7 +218,7 @@ ftest_add_unit(hash
 # serialize
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(serialize
+add_unit(serialize
   SOURCES
     test/serialize.cc
 )
@@ -227,7 +227,7 @@ ftest_add_unit(serialize
 # set_intersection
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(set_intersection
+add_unit(set_intersection
   SOURCES
     test/set_intersection.cc
 )
@@ -236,7 +236,7 @@ ftest_add_unit(set_intersection
 # set_utils
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(set_utils
+add_unit(set_utils
   SOURCES
     test/set_utils.cc
   INPUTS
@@ -247,7 +247,7 @@ ftest_add_unit(set_utils
 # simple_id
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(simple_id
+add_unit(simple_id
   SOURCES
     test/simple_id.cc
 )
@@ -256,7 +256,7 @@ ftest_add_unit(simple_id
 # static_verify
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(static_verify
+add_unit(static_verify
   SOURCES
     test/static_verify.cc
 )
@@ -272,7 +272,7 @@ if(MSVC)
     test/tuple_type_converter.blessed.msvc)
 endif()
 
-ftest_add_unit(tuple_type_converter
+add_unit(tuple_type_converter
   SOURCES
     test/tuple_type_converter.cc
   INPUTS
@@ -283,10 +283,10 @@ ftest_add_unit(tuple_type_converter
 # geometry
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(point
+add_unit(point
   SOURCES geometry/test/point.cc
 )
 
-ftest_add_unit(filling_curve
+add_unit(filling_curve
   SOURCES geometry/test/filling_curve.cc
 )

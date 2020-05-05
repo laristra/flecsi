@@ -13,7 +13,7 @@
                                                                               */
 
 #include "flecsi/util/common.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 struct MyClass {
   int operator()(float, double, long double) const {
@@ -32,25 +32,25 @@ MyFun(double, int, long) {
 }
 
 int
-common(int, char **) {
-  FTEST {
+common() {
+  UNIT {
     // *BITS #defines
-    FTEST_CAPTURE() << FLECSI_ID_PBITS << std::endl;
-    FTEST_CAPTURE() << FLECSI_ID_EBITS << std::endl;
-    FTEST_CAPTURE() << FLECSI_ID_FBITS << std::endl;
-    FTEST_CAPTURE() << FLECSI_ID_GBITS << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << FLECSI_ID_PBITS << std::endl;
+    UNIT_CAPTURE() << FLECSI_ID_EBITS << std::endl;
+    UNIT_CAPTURE() << FLECSI_ID_FBITS << std::endl;
+    UNIT_CAPTURE() << FLECSI_ID_GBITS << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // types
-    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::util::id_t) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(FLECSI_COUNTER_TYPE) << std::endl;
-    FTEST_CAPTURE() << FTEST_TTYPE(flecsi::util::counter_t) << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(flecsi::util::id_t) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(FLECSI_COUNTER_TYPE) << std::endl;
+    UNIT_CAPTURE() << UNIT_TTYPE(flecsi::util::counter_t) << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // square
-    FTEST_CAPTURE() << flecsi::util::square(10) << std::endl;
-    FTEST_CAPTURE() << flecsi::util::square(20.0) << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << flecsi::util::square(10) << std::endl;
+    UNIT_CAPTURE() << flecsi::util::square(20.0) << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // ------------------------
     // Unique ID constructs
@@ -73,10 +73,10 @@ common(int, char **) {
     EXPECT_NE(
       (void *)&c, (void *)&a); // != (different template specializations)
 
-    FTEST_CAPTURE() << a.next() << std::endl;
-    FTEST_CAPTURE() << a.next() << std::endl;
-    FTEST_CAPTURE() << a.next() << std::endl;
-    FTEST_CAPTURE() << std::endl;
+    UNIT_CAPTURE() << a.next() << std::endl;
+    UNIT_CAPTURE() << a.next() << std::endl;
+    UNIT_CAPTURE() << a.next() << std::endl;
+    UNIT_CAPTURE() << std::endl;
 
     // unique_name
     // Just exercise; return value generally changes between runs
@@ -93,16 +93,16 @@ common(int, char **) {
 
 #ifdef __GNUG__
 #ifdef __PPC64__
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.ppc"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("common.blessed.ppc"));
 #else
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.gnug"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("common.blessed.gnug"));
 #endif
 #elif defined(_MSC_VER)
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed.msvc"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("common.blessed.msvc"));
 #else
-    EXPECT_TRUE(FTEST_EQUAL_BLESSED("common.blessed"));
+    EXPECT_TRUE(UNIT_EQUAL_BLESSED("common.blessed"));
 #endif
   };
-}
+} // common
 
-ftest_register_driver(common);
+flecsi::unit::driver<common> driver;

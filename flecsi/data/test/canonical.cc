@@ -14,7 +14,7 @@
 
 #define __FLECSI_PRIVATE__
 #include "flecsi/topo/canonical/interface.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
 
@@ -25,13 +25,11 @@ using namespace flecsi;
 struct policy {
   constexpr static size_t value = 12;
 
-  template<size_t VALUE>
-  using typeify = util::typeify<size_t, VALUE>;
-
   enum index_space { vertices, cells };
   static constexpr std::size_t index_spaces = 2;
 
-  using entity_types = std::tuple<typeify<vertices>, typeify<cells>>;
+  using entity_types =
+    std::tuple<util::constant<vertices>, flecsi::util::constant<cells>>;
 
   using coloring = topo::canonical_base::coloring;
 
@@ -54,12 +52,14 @@ auto pressure = cell_field(canonical);
 
 int
 check() {
-  FTEST { flog(info) << "check" << std::endl; };
+  UNIT {
+    flog(info) << "check" << std::endl;
+  };
 } // check
 
 int
-canonical_driver(int, char **) {
-  FTEST {
+canonical_driver() {
+  UNIT {
     const std::string filename = "input.txt";
     coloring.allocate(filename);
     canonical.allocate(coloring.get());
@@ -68,4 +68,4 @@ canonical_driver(int, char **) {
   };
 } // index
 
-ftest_register_driver(canonical_driver);
+flecsi::unit::driver<canonical_driver> driver;

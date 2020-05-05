@@ -14,11 +14,11 @@
 
 #define __FLECSI_PRIVATE__
 #include "flecsi/topo/unstructured/coloring.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 int
-sanity(int, char **) {
-  FTEST {};
+sanity() {
+  UNIT{};
 }
 
-ftest_register_driver(sanity);
+flecsi::unit::driver<sanity> driver;

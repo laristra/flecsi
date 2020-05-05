@@ -13,11 +13,11 @@
                                                                               */
 
 #include "flecsi/util/hash.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 int
-hash(int, char **) {
-  FTEST {
+hash() {
+  UNIT {
     using flecsi::util::string_hash;
 
     if(sizeof(std::size_t) == 8) {
@@ -342,6 +342,6 @@ hash(int, char **) {
 
     ASSERT_EQ(num_collisions, 0u);
   };
-}
+} // hash
 
-ftest_register_driver(hash);
+flecsi::unit::driver<hash> driver;

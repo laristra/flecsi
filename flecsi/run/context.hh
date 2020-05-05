@@ -52,6 +52,7 @@ struct context_t; // supplied by backend
 enum status : int {
   success,
   help,
+  control,
   command_line_error,
   error, // add specific error modes
 }; // initialization_codes
@@ -129,6 +130,10 @@ struct context {
     return argv_;
   }
 
+  std::string const & program() {
+    return program_;
+  }
+
   auto & descriptions_map() {
     return descriptions_map_;
   }
@@ -153,18 +158,23 @@ struct context {
       argv_.push_back(argv[i]);
     } // for
 
-    std::string program(argv[0]);
-    program = program.substr(program.rfind('/') + 1);
+    program_ = argv[0];
+    program_ = program_.substr(program_.rfind('/') + 1);
 
     boost::program_options::options_description master("Basic Options");
     master.add_options()("help,h", "Print this message and exit.");
 
-    // Add all of the user-defined descriptions to the main description
+    // Add externally-defined descriptions to the main description
     for(auto & od : descriptions_map_) {
-      master.add(od.second);
+      if(od.first != "FleCSI Options") {
+        master.add(od.second);
+      } // if
     } // for
 
-    boost::program_options::options_description flecsi_desc("FleCSI Options");
+    boost::program_options::options_description flecsi_desc =
+      descriptions_map_.count("FleCSI Options")
+        ? descriptions_map_["FleCSI Options"]
+        : boost::program_options::options_description("FleCSI Options");
 #if defined(FLECSI_ENABLE_FLOG)
     // Add FleCSI options
     flecsi_desc.add_options() // clang-format off
@@ -282,7 +292,7 @@ struct context {
       boost::program_options::store(parsed, vm);
 
       if(vm.count("help")) {
-        print_usage(program, master, flecsi_desc);
+        print_usage(program_, master, flecsi_desc);
         return status::help;
       } // if
 
@@ -299,7 +309,7 @@ struct context {
             std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED
                       << "invalid argument for '" << dash << name
                       << "' option!!!" << FLOG_COLOR_PLAIN << std::endl;
-            print_usage(program, master, flecsi_desc);
+            print_usage(program_, master, flecsi_desc);
             return status::help;
           } // if
         } // if
@@ -316,7 +326,7 @@ struct context {
       std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED << error
                 << "!!!" << FLOG_COLOR_PLAIN << std::endl
                 << std::endl;
-      print_usage(program, master, flecsi_desc);
+      print_usage(program_, master, flecsi_desc);
       return status::command_line_error;
     } // try
 
@@ -588,6 +598,7 @@ protected:
     Program options data members.
    *--------------------------------------------------------------------------*/
 
+  std::string program_;
   std::vector<char *> argv_;
 
   std::string flog_tags_;

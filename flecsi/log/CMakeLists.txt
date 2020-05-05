@@ -32,7 +32,7 @@ set(log_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-ftest_add_unit(trivial
+add_unit(trivial
   SOURCES
     test/trivial.cc
   THREADS 2

@@ -13,7 +13,7 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
 
@@ -51,18 +51,18 @@ assign(double1::accessor<wo> ga) {
 
 int
 check(double1::accessor<ro> ga) {
-  FTEST {
+  UNIT {
     flog(info) << "check on " << color() << std::endl;
     ASSERT_EQ(ga, 0);
   };
 } // check
 
 int
-driver(int, char **) {
-  FTEST {
+global_driver() {
+  UNIT {
     execute<assign, single>(energy);
     EXPECT_EQ(test<check>(energy), 0);
   };
-}
+} // global_driver
 
-ftest_register_driver(driver);
+flecsi::unit::driver<global_driver> driver;

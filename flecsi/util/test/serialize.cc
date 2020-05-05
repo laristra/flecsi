@@ -15,7 +15,7 @@
 #define __FLECSI_PRIVATE__
 #include "flecsi/util/serialize.hh"
 #include "flecsi/run/context.hh"
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 #include <limits>
 
@@ -26,8 +26,8 @@ using namespace flecsi::util;
 //----------------------------------------------------------------------------//
 
 int
-sanity(int, char **) {
-  FTEST {
+sanity() {
+  UNIT {
     std::vector<std::byte> data;
 
     {
@@ -67,7 +67,7 @@ sanity(int, char **) {
   };
 } // sanity
 
-ftest_register_driver(sanity);
+flecsi::unit::driver<sanity> driver;
 
 //----------------------------------------------------------------------------//
 // Simple user type.
@@ -86,8 +86,8 @@ private:
 }; // struct type_t
 
 int
-user_type(int, char **) {
-  FTEST {
+user_type() {
+  UNIT {
     std::vector<std::byte> data;
 
     {
@@ -112,7 +112,7 @@ user_type(int, char **) {
   };
 } // user_type
 
-ftest_register_driver(user_type);
+flecsi::unit::driver<user_type> user_type_driver;
 
 //----------------------------------------------------------------------------//
 // Simple context test.
@@ -170,8 +170,8 @@ struct flecsi::util::serial_convert<simple_context_t> {
 };
 
 int
-simple_context(int, char **) {
-  FTEST {
+simple_context() {
+  UNIT {
     std::vector<std::byte> data;
 
     simple_context_t & context = simple_context_t::instance();
@@ -258,15 +258,15 @@ simple_context(int, char **) {
   };
 } // simple_context
 
-ftest_register_driver(simple_context);
+flecsi::unit::driver<simple_context> simple_context_driver;
 
 //----------------------------------------------------------------------------//
 // FleCSI context test.
 //----------------------------------------------------------------------------//
 
 int
-flecsi_context(int, char **) {
-  FTEST {};
+flecsi_context() {
+  UNIT{};
 } // simple_context
 
-ftest_register_driver(flecsi_context);
+flecsi::unit::driver<flecsi_context> flecsi_context_driver;

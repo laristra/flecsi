@@ -12,17 +12,17 @@
    All rights reserved.
                                                                               */
 
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 int
-demangle(int, char **) {
-  FTEST {
+demangle() {
+  UNIT {
     // demangle, type
     // The results depend on #ifdef __GNUG__, so we'll just exercise
     // these functions, without checking for particular results.
     EXPECT_NE(flecsi::util::demangle("foo"), "");
 
-    auto str_demangle = FTEST_TTYPE(int);
+    auto str_demangle = UNIT_TTYPE(int);
     auto str_type = flecsi::util::type<int>();
 
     EXPECT_NE(str_demangle, "");
@@ -31,11 +31,11 @@ demangle(int, char **) {
 
     const auto sym = flecsi::util::symbol<demangle>();
 #ifdef __GNUG__
-    EXPECT_EQ(sym, "demangle(int, char**)");
+    EXPECT_EQ(sym, "demangle()");
 #else
     EXPECT_NE(sym, "");
 #endif
   };
-}
+} // demangle
 
-ftest_register_driver(demangle);
+flecsi::unit::driver<demangle> driver;

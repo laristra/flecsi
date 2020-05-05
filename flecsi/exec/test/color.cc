@@ -12,7 +12,7 @@
    All rights reserved.
                                                                               */
 
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/execution.hh>
 
 using namespace flecsi;
@@ -25,8 +25,8 @@ log::devel_tag color_tag("color");
  */
 
 int
-color_raw(int, char **) {
-  FTEST {
+color_raw() {
+  UNIT {
     auto & c = run::context::instance();
     flog(info) << "task depth: " << c.task_depth() << std::endl;
     ASSERT_EQ(c.task_depth(), 0u);
@@ -46,32 +46,6 @@ color_raw(int, char **) {
     ASSERT_EQ(processes, 4u);
     ASSERT_LT(process, processes);
   };
-}
+} // color_raw
 
-ftest_register_driver(color_raw);
-
-#if 0
-/*
-  Test the macro interface for gettting color information from
-  the FleCSI runtime.
- */
-
-int
-color_ui(int, char **) {
-  FTEST {
-  auto color = flecsi_color();
-  auto colors = flecsi_colors();
-
-  {
-    log::devel_guard guard(color_tag);
-    flog(info) << "color(macro): " << color << std::endl
-               << "colors(macro): " << colors << std::endl;
-  }
-
-  ASSERT_EQ(colors, 4);
-  ASSERT_LT(color, colors);
-  };
-}
-
-ftest_register_driver(color_ui);
-#endif
+flecsi::unit::driver<color_raw> driver;

@@ -13,9 +13,9 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
-#include "flecsi/util/ftest.hh"
+#include "flecsi/util/unit.hh"
 
 int
 trivial_driver(int, char **) {
-  FTEST {};
+  UNIT{};
 } // trivial_driver

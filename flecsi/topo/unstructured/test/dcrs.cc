@@ -14,15 +14,15 @@
 
 #include "flecsi/topo/unstructured/dcrs_utils.hh"
 #include "flecsi/topo/unstructured/simple_definition.hh"
-#include "flecsi/util/ftest.hh"
 #include "flecsi/util/graph/parmetis_colorer.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/execution.hh>
 
 using namespace flecsi;
 
 int
 naive_coloring() {
-  FTEST {
+  UNIT {
     topo::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
 
     auto naive = topo::unstructured_impl::naive_coloring<2, 2>(sd);
@@ -31,7 +31,7 @@ naive_coloring() {
 
 int
 simple2d_8x8() {
-  FTEST {
+  UNIT {
     topo::unstructured_impl::simple_definition sd("simple2d-8x8.msh");
 
     auto dcrs = topo::unstructured_impl::make_dcrs(sd);
@@ -89,12 +89,12 @@ simple2d_8x8() {
 } // simple2d_8x8
 
 int
-dcrs_driver(int, char **) {
-  FTEST {
+dcrs_driver() {
+  UNIT {
     // TODO: use test<> when reduction works for MPI tasks
     execute<naive_coloring, flecsi::index, mpi>();
     execute<simple2d_8x8, flecsi::index, mpi>();
   };
 } // simple2d_8x8
 
-ftest_register_driver(dcrs_driver);
+flecsi::unit::driver<dcrs_driver> driver;
