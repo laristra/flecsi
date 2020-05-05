@@ -5,6 +5,8 @@
 
 
 from spack import *
+import os
+
 
 class Flecsi(CMakePackage):
     '''FleCSI is a compile-time configurable framework designed to support
@@ -33,7 +35,7 @@ class Flecsi(CMakePackage):
     variant('graphviz', default=False,
             description='Enable GraphViz Support')
 
-    variant('hdf5', default=False,
+    variant('hdf5', default=True,
              description='Enable HDF5 Support')
 
     variant('kokkos', default=False,
@@ -56,19 +58,19 @@ class Flecsi(CMakePackage):
 
     # Dependencies
 
-    depends_on('cmake@3.12:',  type='build')
+    depends_on('cmake@3.12:')
 
     depends_on('mpi', when='backend=legion')
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=hpx')
 
-    depends_on('legion@ctrl-rep+shared+mpi+hdf5 build_type=Debug',
+    depends_on('legion@ctrl-rep-5+shared+mpi+hdf5 build_type=Debug',
         when='backend=legion +debug_backend +hdf5')
-    depends_on('legion@ctrl-rep+shared+mpi build_type=Debug',
+    depends_on('legion@ctrl-rep-5+shared+mpi build_type=Debug',
         when='backend=legion +debug_backend ~hdf5')
-    depends_on('legion@ctrl-rep+shared+mpi+hdf5 build_type=Release',
+    depends_on('legion@ctrl-rep-5+shared+mpi+hdf5 build_type=Release',
         when='backend=legion ~debug_backend +hdf5')
-    depends_on('legion@ctrl-rep+shared+mpi build_type=Release',
+    depends_on('legion@ctrl-rep-5+shared+mpi build_type=Release',
         when='backend=legion ~debug_backend ~hdf5')
 
     depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Debug',
@@ -96,12 +98,17 @@ class Flecsi(CMakePackage):
             options.append('-DFLECSI_RUNTIME_MODEL=hpx')
             options.append('-DENABLE_MPI=ON')
 
-        if '+flog' in spec:
-            options.append('-DENABLE_FLOG=ON')
-
         if self.run_tests:
             options.append('-DENABLE_FLOG=ON')
             options.append('-DENABLE_UNIT_TESTS=ON')
+        else:
+            options.append('-DENABLE_FLOG=OFF')
+            options.append('-DENABLE_UNIT_TESTS=OFF')
+
+        if '+openmp' in spec:
+            options.append('-DENABLE_OPENMP=ON')
+        else:
+            options.append('-DENABLE_OPENMP=OFF')
 
         if '+shared' in spec:
             options.append('-DBUILD_SHARED_LIBS=ON')
@@ -114,3 +121,16 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_HDF5=OFF')
 
         return options
+
+    # Dummy build for now,  remove when flecsi@devel can actually be built and installed through spack
+    def build(self, spec, prefix):
+        print("In build stage...")
+
+    # Dummy install for now,  remove when flecsi@devel can actually be built and installed through spack
+    def install(self, spec, prefix):
+        with open(os.path.join(spec.prefix, 'package-list.txt'), 'w') as out:
+            for dep in spec.dependencies(deptype='build'):
+                out.write('%s\n' % dep.format(
+                    format_string='${PACKAGE} ${VERSION}'))
+                os.symlink(dep.prefix, os.path.join(spec.prefix, dep.name))
+            out.close()
