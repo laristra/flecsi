@@ -253,6 +253,19 @@ public:
     return agget(node, _attr);
   } // set_node_attribute
 
+  int inedge_count(const char * name) {
+    char buffer[1024];
+    sprintf(buffer, "%s", name);
+    Agnode_t * node = agnode(graph_, buffer, ag_access);
+
+    if(node == nullptr) {
+      flog(warn) << "node " << name << " does not exist";
+      return -1;
+    } // if
+
+    return agdegree(graph_, node, true, false);
+  } // edge_count
+
   /*-------------------------------------------------------------------------*
    * Add an edge to the graph.
    *-------------------------------------------------------------------------*/

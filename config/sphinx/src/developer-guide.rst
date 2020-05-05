@@ -204,6 +204,20 @@ everything from scratch. To do this, you can pass the *--no-cache* flag:
 
 This is particularly useful if a repository has changed.
 
+The default repository and branch for the container are
+*https://gitlab.lanl.gov/laristra/flecsi.git* and *devel*, respectively.
+If you are in the process of updating the container, and would like to
+use a different repository and branch, you can specifiy them like:
+
+.. code-block:: console
+
+  $ docker build --build-arg REPO=https://github.com/tuxfan/flecsi.git \
+    --build-arg BRANCH=tutorial-update --no-cache \
+    -t laristra/flecsi-tutorial:TAG -f RUNTIME .
+
+where *REPO* is the git repo to use, and *BRANCH* is the branch name to
+use.
+
 Once you have successfully built the imager, you can test it using the
 *run* command:
 
