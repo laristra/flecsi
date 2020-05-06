@@ -29,8 +29,7 @@ struct canon : topo::specialization<topo::canonical, canon> {
     flecsi::util::constant<base::cells>>;
 
   static coloring color(std::string const &) {
-    coloring c;
-    return c;
+    return {16, 2};
   } // color
 };
 
@@ -40,9 +39,25 @@ canon::cslot coloring;
 const field<double>::definition<canon, canon::base::cells> cell_field;
 auto pressure = cell_field(canonical);
 
+const int mine = 35;
+const double p0 = 3.5;
+
 int
-check() {
-  UNIT { flog(info) << "check" << std::endl; };
+init(canon::accessor<wo> t, field<double>::accessor<wo> c) {
+  UNIT {
+    t.mine(0) = mine;
+    c(0) = p0;
+  };
+} // init
+
+int
+check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
+  UNIT {
+    auto & r = t.mine(0);
+    static_assert(std::is_same_v<decltype(r), const int &>);
+    EXPECT_EQ(r, mine);
+    EXPECT_EQ(c(0), p0);
+  };
 } // check
 
 int
@@ -52,7 +67,8 @@ canonical_driver() {
     coloring.allocate(filename);
     canonical.allocate(coloring.get());
 
-    EXPECT_EQ(test<check>(), 0);
+    EXPECT_EQ(test<init>(canonical, pressure), 0);
+    EXPECT_EQ(test<check>(canonical, pressure), 0);
   };
 } // index
 

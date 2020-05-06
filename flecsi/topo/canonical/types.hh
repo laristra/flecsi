@@ -31,14 +31,7 @@ struct canonical_base {
   static constexpr std::size_t index_spaces = 2;
 
   struct coloring {
-
-    struct local_coloring {};
-
-    struct coloring_metadata {};
-
-    local_coloring local_coloring_;
-    coloring_metadata coloring_metadata_;
-
+    std::size_t size, parts;
   }; // struct coloring
 
 }; // struct canonical_base

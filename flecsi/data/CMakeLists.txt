@@ -89,13 +89,13 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 add_unit(canonical
   SOURCES
     test/canonical.cc
   THREADS 2
 )
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 add_unit(global
   SOURCES
     test/global.cc
