@@ -15,10 +15,6 @@
 
 /*! @file */
 
-#if defined(_MSC_VER)
-#include "uint128.h"
-#endif
-
 #include <cassert>
 #include <climits>
 #include <cstdint>
