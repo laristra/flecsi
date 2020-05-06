@@ -56,21 +56,21 @@ task_A(mesh<ro> mesh, field<rw, rw, na> h) {
   auto rank = context.color();
 
   for(auto c : mesh.cells(exclusive)) {
-    CINCH_CAPTURE() << "task A before exclusive cell " << rank << " " << c->id() << " "
-                    << c->gid() << " " << c->index()[0] << " " << c->index()[1]
-                    << " " << h(c) << std::endl;
+    CINCH_CAPTURE() << "task A before exclusive cell " << rank << " " << c->id()
+                    << " " << c->gid() << " " << c->index()[0] << " "
+                    << c->index()[1] << " " << h(c) << std::endl;
   }
 
   for(auto c : mesh.cells(shared)) {
-    CINCH_CAPTURE() << "task A before shared cell " << rank << " " << c->id() << " "
-                    << c->gid() << " " << c->index()[0] << " " << c->index()[1]
-                    << " " << h(c) << std::endl;
+    CINCH_CAPTURE() << "task A before shared cell " << rank << " " << c->id()
+                    << " " << c->gid() << " " << c->index()[0] << " "
+                    << c->index()[1] << " " << h(c) << std::endl;
   }
 
   for(auto c : mesh.cells(ghost)) {
-    CINCH_CAPTURE() << "task A before ghost cell " << rank << " " << c->id() << " "
-                    << c->gid() << " " << c->index()[0] << " " << c->index()[1]
-                    << " " << h(c) << std::endl;
+    CINCH_CAPTURE() << "task A before ghost cell " << rank << " " << c->id()
+                    << " " << c->gid() << " " << c->index()[0] << " "
+                    << c->index()[1] << " " << h(c) << std::endl;
   }
 
   for(auto c : mesh.cells(owned)) {
@@ -272,7 +272,7 @@ task_F(mesh<ro> mesh, field<rw, rw, ro> h) {
 flecsi_register_task(task_F, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
-// Task G: 
+// Task G:
 //----------------------------------------------------------------------------//
 void
 task_G(mesh<ro> mesh, field<rw, ro, na> h) {

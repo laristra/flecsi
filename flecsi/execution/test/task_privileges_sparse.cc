@@ -329,7 +329,7 @@ task_F(mesh<ro> mesh, field<rw, rw, ro> h) {
 flecsi_register_task(task_F, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
-// Task G: 
+// Task G:
 //----------------------------------------------------------------------------//
 void
 task_G(mesh<ro> mesh, field<rw, ro, na> h) {
@@ -378,17 +378,17 @@ task_H(mesh<ro> mesh, field<rw, rw, na> h) {
 
   for(auto c : mesh.cells(exclusive)) {
     for(auto entry : h.entries(c)) {
-      CINCH_CAPTURE() << "task H before exclusive cell " << rank << " " << c->id()
-                      << " " << c->gid() << " " << c->index()[0] << " "
-                      << c->index()[1] << " " << entry << " " << h(c, entry)
-                      << std::endl;
+      CINCH_CAPTURE() << "task H before exclusive cell " << rank << " "
+                      << c->id() << " " << c->gid() << " " << c->index()[0]
+                      << " " << c->index()[1] << " " << entry << " "
+                      << h(c, entry) << std::endl;
     }
   }
 
   for(auto c : mesh.cells(shared)) {
     for(auto entry : h.entries(c)) {
-      CINCH_CAPTURE() << "task H before shared cell " << rank << " " << c->id() << " "
-                      << c->gid() << " " << c->index()[0] << " "
+      CINCH_CAPTURE() << "task H before shared cell " << rank << " " << c->id()
+                      << " " << c->gid() << " " << c->index()[0] << " "
                       << c->index()[1] << " " << entry << " " << h(c, entry)
                       << std::endl;
     }
@@ -396,8 +396,8 @@ task_H(mesh<ro> mesh, field<rw, rw, na> h) {
 
   for(auto c : mesh.cells(ghost)) {
     for(auto entry : h.entries(c)) {
-      CINCH_CAPTURE() << "task H before ghost cell " << rank << " " << c->id() << " "
-                      << c->gid() << " " << c->index()[0] << " "
+      CINCH_CAPTURE() << "task H before ghost cell " << rank << " " << c->id()
+                      << " " << c->gid() << " " << c->index()[0] << " "
                       << c->index()[1] << " " << entry << " " << h(c, entry)
                       << std::endl;
     }
