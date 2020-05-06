@@ -85,7 +85,16 @@ public:
   struct execute_task_init : execute_task<execute_task_init> {
     static const std::string tag;
   };
+  struct execute_task_initargs : execute_task<execute_task_initargs> {
+    static const std::string tag;
+  };
+  struct execute_task_prolog : execute_task<execute_task_prolog> {
+    static const std::string tag;
+  };
   struct execute_task_user : execute_task<execute_task_user> {
+    static const std::string tag;
+  };
+  struct execute_task_epilog : execute_task<execute_task_epilog> {
     static const std::string tag;
   };
   struct execute_task_finalize : execute_task<execute_task_finalize> {

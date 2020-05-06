@@ -13,5 +13,8 @@ const std::string annotation::runtime_finish::name{"driver"};
 const std::string annotation::execute_task_init::tag{"init-handles"};
 const std::string annotation::execute_task_user::tag{"user"};
 const std::string annotation::execute_task_finalize::tag{"finalize-handles"};
+const std::string annotation::execute_task_initargs::tag{"init-args"};
+const std::string annotation::execute_task_prolog::tag{"prolog"};
+const std::string annotation::execute_task_epilog::tag{"epilog"};
 
 }}
