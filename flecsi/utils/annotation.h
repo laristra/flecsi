@@ -52,10 +52,10 @@ public:
   template<class CTX>
   struct region {
     using outer_context = CTX;
+    static constexpr detail detail_level = detail::medium;
   };
   struct runtime_setup : region<execution> {
     static const std::string name;
-    static constexpr detail detail_level = detail::medium;
   };
   struct spl_tlt_init : region<execution> {
     static const std::string name;
@@ -63,11 +63,9 @@ public:
   };
   struct create_regions : region<execution> {
     static const std::string name;
-    static constexpr detail detail_level = detail::medium;
   };
   struct spl_spmd_init : region<execution> {
     static const std::string name;
-    static constexpr detail detail_level = detail::medium;
   };
   struct driver : region<execution> {
     static const std::string name;
@@ -75,30 +73,33 @@ public:
   };
   struct runtime_finish : region<execution> {
     static const std::string name;
-    static constexpr detail detail_level = detail::medium;
   };
   template<class T>
   struct execute_task : region<execution> {
     static const std::string name;
-    static constexpr detail detail_level = detail::medium;
   };
   struct execute_task_init : execute_task<execute_task_init> {
     static const std::string tag;
+    static constexpr detail detail_level = detail::high;
   };
   struct execute_task_initargs : execute_task<execute_task_initargs> {
     static const std::string tag;
+    static constexpr detail detail_level = detail::high;
   };
   struct execute_task_prolog : execute_task<execute_task_prolog> {
     static const std::string tag;
+    static constexpr detail detail_level = detail::high;
   };
   struct execute_task_user : execute_task<execute_task_user> {
     static const std::string tag;
   };
   struct execute_task_epilog : execute_task<execute_task_epilog> {
     static const std::string tag;
+    static constexpr detail detail_level = detail::high;
   };
   struct execute_task_finalize : execute_task<execute_task_finalize> {
     static const std::string tag;
+    static constexpr detail detail_level = detail::high;
   };
 
 
