@@ -60,23 +60,17 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12:')
 
-    depends_on('mpi', when='backend=legion')
+    depends_on("legion@ctrl-rep-5",when="backend=legion")
+    depends_on("hpx@1.3.0 cxxstd=14 malloc=system",when="backend=hpx")
+
+    for back in "legion","hpx":
+        depends_on('mpi', when='backend='+back)
+        for debug,bt in ("+","Debug"),("~","Release"):
+            depends_on(back+' build_type='+bt,
+                       when='backend=%s %sdebug_backend'%(back,debug))
     depends_on('mpi', when='backend=mpi')
-    depends_on('mpi', when='backend=hpx')
-
-    depends_on('legion@ctrl-rep-5+shared+mpi+hdf5 build_type=Debug',
-        when='backend=legion +debug_backend +hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi build_type=Debug',
-        when='backend=legion +debug_backend ~hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi+hdf5 build_type=Release',
-        when='backend=legion ~debug_backend +hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi build_type=Release',
-        when='backend=legion ~debug_backend ~hdf5')
-
-    depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Debug',
-        when='backend=hpx +debug_backend')
-    depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Release',
-        when='backend=hpx ~debug_backend')
+    depends_on('legion+hdf5',when='backend=legion +hdf5')
+    del back,debug,bt
 
     depends_on('boost@1.70.0: cxxstd=14 +program_options')
     depends_on('metis@5.1.0:')
