@@ -52,7 +52,6 @@ set(utils_HEADERS
   tuple_wrapper.h
   type_traits.h
   typeify.h
-  uint128.h
   utility.h
 )
 
