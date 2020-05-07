@@ -72,16 +72,16 @@ check_task(const Legion::Task * task,
   size_t * combined_data;
 
   Legion::Domain ex_dom = runtime->get_index_space_domain(context, ex_is);
-  Legion::Domain sh_dom = runtime->get_index_space_domain(context, 
-    task->regions[1].region.get_index_space());
-  Legion::Domain gh_dom = runtime->get_index_space_domain(context,
-    task->regions[2].region.get_index_space());
+  Legion::Domain sh_dom = runtime->get_index_space_domain(
+    context, task->regions[1].region.get_index_space());
+  Legion::Domain gh_dom = runtime->get_index_space_domain(
+    context, task->regions[2].region.get_index_space());
 
   Legion::Domain::DomainPointIterator ex_itr(ex_dom);
 
   const Legion::UnsafeFieldAccessor<size_t, 2, Legion::coord_t,
-          Realm::AffineAccessor<size_t, 2, Legion::coord_t>>
-          ac(regions[0], fid, sizeof(size_t));
+    Realm::AffineAccessor<size_t, 2, Legion::coord_t>>
+    ac(regions[0], fid, sizeof(size_t));
 
   std::vector<PhysicalRegion> comb_regions;
   comb_regions.push_back(regions[0]);
@@ -89,50 +89,49 @@ check_task(const Legion::Task * task,
   comb_regions.push_back(regions[2]);
 
   std::vector<PrivilegeMode> privileges;
-  privileges.push_back (task->regions[0].privilege);
-  privileges.push_back (task->regions[1].privilege);
-  privileges.push_back (task->regions[2].privilege);
+  privileges.push_back(task->regions[0].privilege);
+  privileges.push_back(task->regions[1].privilege);
+  privileges.push_back(task->regions[2].privilege);
 
   const Legion::MultiRegionAccessor<size_t, 2, Legion::coord_t,
-      Realm::AffineAccessor<size_t, 2, Legion::coord_t>>
-      mrac(comb_regions, privileges, fid, sizeof(size_t));
-  
-  combined_data= (size_t*)(ac.ptr(ex_itr.p));
+    Realm::AffineAccessor<size_t, 2, Legion::coord_t>>
+    mrac(comb_regions, privileges, fid, sizeof(size_t));
+
+  combined_data = (size_t *)(ac.ptr(ex_itr.p));
 
   size_t check_array[24] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
     16, 17, 18, 19, 20, 17, 18, 19, 20};
 
   for(size_t i = 0; i < 24; i++) {
-    size_t &tmp = *(combined_data + i);
+    size_t & tmp = *(combined_data + i);
     assert(tmp == check_array[i]);
-    //check if we can modify value when using pointers
-    tmp = tmp+1;
+    // check if we can modify value when using pointers
+    tmp = tmp + 1;
   }
 
-  size_t i=0;
-  for (PointInDomainIterator<2,coord_t> itr(ex_dom); itr(); itr++, i++){
+  size_t i = 0;
+  for(PointInDomainIterator<2, coord_t> itr(ex_dom); itr(); itr++, i++) {
     size_t tmp2 = mrac[*itr];
-    assert(tmp2 == (check_array[i]+1));
-    //writing to exclusive:
-    mrac[*itr]=tmp2+2;
+    assert(tmp2 == (check_array[i] + 1));
+    // writing to exclusive:
+    mrac[*itr] = tmp2 + 2;
   }
- 
-  for (PointInDomainIterator<2,coord_t> itr(sh_dom); itr(); itr++, i++){
+
+  for(PointInDomainIterator<2, coord_t> itr(sh_dom); itr(); itr++, i++) {
     size_t tmp2 = mrac[*itr];
-    assert(tmp2 == (check_array[i]+1));
-    //writing to shared 
-    mrac[*itr]=tmp2+2;
+    assert(tmp2 == (check_array[i] + 1));
+    // writing to shared
+    mrac[*itr] = tmp2 + 2;
   }
 
-  for (PointInDomainIterator<2,coord_t> itr(gh_dom); itr(); itr++, i++){
-    size_t tmp2 = ac.read(*itr);// using operator[] in this case wouldn't work
-            // due to compexity of implementing safe logic for read-oonly cse
-            // ac[*itr];
-    assert(tmp2 == (check_array[i]+1));
-    //writing to ghost is not allowed since it has READ_ONLY privileges:
-   // ac[*itr]=tmp2+2;
+  for(PointInDomainIterator<2, coord_t> itr(gh_dom); itr(); itr++, i++) {
+    size_t tmp2 = ac.read(*itr); // using operator[] in this case wouldn't work
+                                 // due to compexity of implementing safe logic
+                                 // for read-oonly cse ac[*itr];
+    assert(tmp2 == (check_array[i] + 1));
+    // writing to ghost is not allowed since it has READ_ONLY privileges:
+    // ac[*itr]=tmp2+2;
   }
-
 
   return 0;
 } // internal_task_example
