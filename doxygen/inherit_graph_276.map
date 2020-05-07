@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1utils_1_1tuple__walker.html" title="flecsi::utils::tuple\l_walker\&lt; CRTP_TYPE \&gt;" alt="" coords="5,5,176,47"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1util_1_1tuple__walker.html" title="flecsi::util::tuple\l_walker\&lt; point_walker\l\&lt; ControlPolicy \&gt; \&gt;" alt="" coords="6,5,178,61"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1ctrl__impl_1_1point__walker.html" title="flecsi::ctrl_impl::\lpoint_walker\&lt; ControlPolicy \&gt;" alt="" coords="227,13,450,54"/>
 </map>

@@ -346,7 +346,7 @@ __ https://en.cppreference.com/w/cpp/io/clog
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 88-92
+  :lines: 92-96
 
 The arguments to add_output_stream are:
 
@@ -366,7 +366,7 @@ To add an output stream to a file, we can do the following:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
-  :lines: 94-99
+  :lines: 98-103
 
 That's it! For this example, FLOG is now configured to write output to
 std::clog, and to *output.txt*. Next, we will see how to actually write

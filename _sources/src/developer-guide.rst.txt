@@ -204,6 +204,20 @@ everything from scratch. To do this, you can pass the *--no-cache* flag:
 
 This is particularly useful if a repository has changed.
 
+The default repository and branch for the container are
+*https://gitlab.lanl.gov/laristra/flecsi.git* and *devel*, respectively.
+If you are in the process of updating the container, and would like to
+use a different repository and branch, you can specifiy them like:
+
+.. code-block:: console
+
+  $ docker build --build-arg REPO=https://github.com/tuxfan/flecsi.git \
+    --build-arg BRANCH=tutorial-update --no-cache \
+    -t laristra/flecsi-tutorial:TAG -f RUNTIME .
+
+where *REPO* is the git repo to use, and *BRANCH* is the branch name to
+use.
+
 Once you have successfully built the imager, you can test it using the
 *run* command:
 
@@ -267,17 +281,17 @@ To keep temporary staging files in /tmp/*$USER*:
 Git Cheat Sheet
 ***************
 
-Show tag information (including annotation):
+To lookup the hash referenced by a tag:
 
 .. code-block:: console
 
-  $ git show tag
+  $ git rev-list -n 1 $TAG
 
-To lookup only the hash referenced by a tag:
+To get the message for an annotated tag:
 
 .. code-block:: console
 
-  $ git rev-parse tag^{}
+  $ git tag -nX (X specifies lines of annotation)
 
 To sync tags:
 
@@ -352,6 +366,23 @@ Configure and build flecsi:
   $ cd flecsi && mkdir -p build/legion && cd build/legion
   $ ../../tools/configure clang legion
   $ make -j 16
+
+Graphviz Notes
+**************
+
+FleCSI uses the `libcgraph`__ interface to `Graphviz`__ to create
+control model visualizations. The *libcgraph* interface is fairly
+counterintuitive. One particular gotcha is that graph, node, and edge
+attributes can only be set on attributes that have been defined for the
+graph. If an attribute type has not been defined, the graph will ignore
+it. There is not easy to remedy to this problem: attributes that are
+added after initialization will reset all previously added elements to
+whatever the default of the new attribute is. If you need to add an
+attribute, the best thing to do is to look at the *graphviz.hh* file in
+'flecsi/utils', and add it there with a reasonable default.
+
+__ https://graphviz.gitlab.io/_pages/pdf/libguide.pdf
+__ https://www.graphviz.org
 
 Advanced
 ********

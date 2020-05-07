@@ -25,10 +25,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -119,6 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#spack-cheat-sheet">Spack Cheat Sheet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#git-cheat-sheet">Git Cheat Sheet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-for-darwin">Building for Darwin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#graphviz-notes">Graphviz Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced">Advanced</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="build/options.html">CMake Configuration Options</a></li>
 </ul>
@@ -313,12 +314,12 @@ branch type of the tag during CMake configuration.</p>
 <div class="section" id="workflow">
 <h3>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h3>
 <p>FleCSI development uses a <em>devel -&gt; feature -&gt; release</em> forking workflow
-that can be visualized as in <a class="reference internal" href="#branch"><span class="std std-numref">Fig. 2</span></a>. Bugfixes and features can
+that can be visualized as in <a class="reference internal" href="#branch"><span class="std std-numref">Fig. 8</span></a>. Bugfixes and features can
 be back-merged into <em>feature</em> or <em>devel</em>, as appropriate.</p>
-<div class="figure align-default" id="id7">
+<div class="figure align-default" id="id9">
 <span id="branch"></span><img alt="src/../../_static/images/branch.png" src="src/../../_static/images/branch.png" />
-<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Workflow diagram illustrating basic workflow using the three branch
-types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 8 </span><span class="caption-text">Workflow diagram illustrating basic workflow using the three branch
+types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>
@@ -363,6 +364,17 @@ everything from scratch. To do this, you can pass the <em>–no-cache</em> flag:
 </pre></div>
 </div>
 <p>This is particularly useful if a repository has changed.</p>
+<p>The default repository and branch for the container are
+<em>https://gitlab.lanl.gov/laristra/flecsi.git</em> and <em>devel</em>, respectively.
+If you are in the process of updating the container, and would like to
+use a different repository and branch, you can specifiy them like:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker build --build-arg <span class="nv">REPO</span><span class="o">=</span>https://github.com/tuxfan/flecsi.git <span class="se">\</span>
+  --build-arg <span class="nv">BRANCH</span><span class="o">=</span>tutorial-update --no-cache <span class="se">\</span>
+  -t laristra/flecsi-tutorial:TAG -f RUNTIME .
+</pre></div>
+</div>
+<p>where <em>REPO</em> is the git repo to use, and <em>BRANCH</em> is the branch name to
+use.</p>
 <p>Once you have successfully built the imager, you can test it using the
 <em>run</em> command:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>docker run -it --shm-size<span class="o">=</span>512m -u flecsi laristra/flecsi-tutorial:TAG /bin/bash
@@ -410,12 +422,12 @@ automatically be rebuilt when the docker file is updated on GitHub.</p>
 </div>
 <div class="section" id="git-cheat-sheet">
 <h2>Git Cheat Sheet<a class="headerlink" href="#git-cheat-sheet" title="Permalink to this headline">¶</a></h2>
-<p>Show tag information (including annotation):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git show tag
+<p>To lookup the hash referenced by a tag:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git rev-list -n <span class="m">1</span> <span class="nv">$TAG</span>
 </pre></div>
 </div>
-<p>To lookup only the hash referenced by a tag:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git rev-parse tag^<span class="o">{}</span>
+<p>To get the message for an annotated tag:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git tag -nX <span class="o">(</span>X specifies lines of annotation<span class="o">)</span>
 </pre></div>
 </div>
 <p>To sync tags:</p>
@@ -473,6 +485,19 @@ the dependencies in the environment:</p>
 <span class="gp">$</span> make -j <span class="m">16</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="graphviz-notes">
+<h2>Graphviz Notes<a class="headerlink" href="#graphviz-notes" title="Permalink to this headline">¶</a></h2>
+<p>FleCSI uses the <a class="reference external" href="https://graphviz.gitlab.io/_pages/pdf/libguide.pdf">libcgraph</a> interface to <a class="reference external" href="https://www.graphviz.org">Graphviz</a> to create
+control model visualizations. The <em>libcgraph</em> interface is fairly
+counterintuitive. One particular gotcha is that graph, node, and edge
+attributes can only be set on attributes that have been defined for the
+graph. If an attribute type has not been defined, the graph will ignore
+it. There is not easy to remedy to this problem: attributes that are
+added after initialization will reset all previously added elements to
+whatever the default of the new attribute is. If you need to add an
+attribute, the best thing to do is to look at the <em>graphviz.hh</em> file in
+‘flecsi/utils’, and add it there with a reasonable default.</p>
 </div>
 <div class="section" id="advanced">
 <h2>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h2>

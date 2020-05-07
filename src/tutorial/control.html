@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Control Model &mdash; FleCSI 2.-1 (devel) documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/tutorial/control.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="User Guide" href="../user-guide.html" />
+    <link rel="prev" title="Runtime" href="runtime.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: 2.-1 (devel)
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Build &amp; Install</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#building-the-examples">Building the Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tutorial.html#tutorial-examples">Tutorial Examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="runtime.html">Runtime</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Control Model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#control-flow-graphs-directed-acyclic-graphs">Control-Flow Graphs &amp; Directed Acyclic Graphs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flecsibility">FleCSIbility</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tutorial">Tutorial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#defining-control-points">Defining Control Points</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-the-control-interface">Using the Control Interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Contributors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+        
+      <li>Control Model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/tutorial/control.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="control-model">
+<h1>Control Model<a class="headerlink" href="#control-model" title="Permalink to this headline">¶</a></h1>
+<p>The FleCSI control model allows users to define the high-level structure
+of an application using a control-flow graph (CFG) of <em>control points</em>,
+under each of which, a directed acyclic graph (DAG) of <em>actions</em> can be
+difined.</p>
+<div class="sidebar">
+<p class="sidebar-title">Control Points &amp; Actions</p>
+<p><strong>Control Points</strong> are the logical steps in a control-flow graph.
+These are not actual execution units. However, they define named
+anchors where actions can be registered that will be executed when
+the control-flow graph reaches that control point.</p>
+<p><strong>Actions</strong> are the C/C++ functions that are executed under a control
+point.</p>
+</div>
+<p>For FleCSI developers, the control model replaces the normal hard-coded
+execution structure of an application, instead providing a well-defined,
+extensible mechanism, which can easily be verified, and visualized.</p>
+<p>Consider the following example of a traditional <em>implicit</em> control
+model:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">step</span><span class="p">{</span><span class="mi">0</span><span class="p">},</span> <span class="n">steps</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+
+  <span class="c1">// initialization stage</span>
+  <span class="n">initialize</span><span class="p">(</span><span class="n">steps</span><span class="p">);</span>
+
+  <span class="k">while</span><span class="p">(</span><span class="n">step</span><span class="o">&lt;</span><span class="n">steps</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// simulation stages</span>
+    <span class="n">advanceA</span><span class="p">();</span>
+    <span class="n">advanceB</span><span class="p">();</span>
+    <span class="n">advanceC</span><span class="p">();</span>
+
+    <span class="c1">// analysis stages</span>
+    <span class="n">analyzeA</span><span class="p">();</span>
+    <span class="n">analyzeB</span><span class="p">();</span>
+    <span class="n">analyzeC</span><span class="p">();</span>
+  <span class="p">}</span> <span class="c1">// while</span>
+
+  <span class="c1">// finalization stage</span>
+  <span class="n">finalize</span><span class="p">();</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
+<p>While this example is straightforward, it is also restrictive because it
+defines a single point in the application where all stages must be
+known.
+Suppose that an advanced user would like to add an <em>advance</em> or
+<em>analysis</em> stage to the simulation, e.g, to test a new algorithm, or to
+customize their metrics?
+With the traditional model above, she would need to have access to the
+code base, and would have to rewrite the main simulation loop with the
+new execution logic.
+This is error prone, and worse, it necessarily forces the code to
+diverge (unless every alteration to the application is vetted and
+merged).</p>
+<p>FleCSI’s control model offers a much cleaner solution, which is both
+easier for the user, and safer for the core application developers.
+There are other advantages for advanced users and core application
+developers that should become apparent from the tutorial examples.</p>
+<div class="section" id="control-flow-graphs-directed-acyclic-graphs">
+<h2>Control-Flow Graphs &amp; Directed Acyclic Graphs<a class="headerlink" href="#control-flow-graphs-directed-acyclic-graphs" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#cfg"><span class="std std-numref">Fig. 2</span></a> shows a complete representation of a FleCSI control model.
+This figure was actually generated by a FleCSI example application using
+the <code class="docutils literal notranslate"><span class="pre">--control-model</span></code> flag, which outputs a dot file of the control
+model.
+The white control-point nodes in the figure (labeled: <em>Control Point X</em>)
+define a control-flow graph. Notice that the control points do not form
+a DAG, i.e., they cycle (indicated by the dashed line from <em>Control
+Point 3</em> to <em>Control Point 2</em>).
+This is true, in general, and allows users to create complex looping
+structures within their applications.</p>
+<p>At each control point in the CFG, there are one or more actions defined,
+e.g., under <em>Control Point 2</em> are the actions <em>A</em> through <em>E</em>.
+The actions are where the actual work of the simulation is executed.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The actions in a FleCSI control model are not tasks! The control
+model capability in FleCSI is orthogonal to Legion’s tasking model,
+i.e., they are complementary. <strong>FleCSI actions are functions that
+execute tasks!</strong> When the Legion backend to FleCSI is in use, the
+control model exposes a sequential program order to the Legion
+runtime that can be analyzed for data dependencies to increase
+concurrency, and allow load balancing during execution.</p>
+</div>
+<div class="figure align-center" id="id2">
+<span id="cfg"></span><img alt="../../_images/overview.png" src="../../_images/overview.png" />
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Example FleCSI Control Model.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="sidebar">
+<p class="sidebar-title">Sequential Ordering</p>
+<div class="figure align-center" id="id3">
+<span id="sequential"></span><a class="reference internal image-reference" href="../../_images/sequential.png"><img alt="../../_images/sequential.png" src="../../_images/sequential.png" style="width: 70%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 3 </span><span class="caption-text">A valid ordering of <a class="reference internal" href="#cfg"><span class="std std-numref">Fig. 2</span></a>.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<p>It is important to notice that actions have dependencies, and that they
+are DAGs.
+This allows the FleCSI runtime to topologically sort the actions into a
+single valid sequential ordering.
+This ordering uses the fact that the control point order is defined by a
+specialization of the core FleCSI control type.
+FleCSI then sorts each DAG of actions to create the overall sequential
+ordering (<a class="reference internal" href="#sequential"><span class="std std-numref">Fig. 3</span></a>).
+This ordering is non-unique, but is deterministic for a given FleCSI
+control model, i.e., the same code and compiler version will generate
+the same ordering every time.
+<a class="reference internal" href="#sequential"><span class="std std-numref">Fig. 3</span></a> was also generated by a FleCSI example program by
+passing the <code class="docutils literal notranslate"><span class="pre">--control-model-sorted</span></code> flag.</p>
+</div>
+<div class="section" id="flecsibility">
+<h2>FleCSIbility<a class="headerlink" href="#flecsibility" title="Permalink to this headline">¶</a></h2>
+<p>Another important attribute of the FleCSI control model is that actions
+and dependencies do not need to be defined in a centralized location in
+the code.
+This adds significant flexibility in extending the actions that a
+simulation executes.</p>
+<p>Let’s consider our advanced user who would like to add a new action:
+Because FleCSI does not force her to add actions to a static loop, she
+can instead put it in a source file that only needs to link to the
+control points definition of the application.
+She still has to build an application driver. However, if the
+application packages are primarily developed as libraries, this is easy
+to do.</p>
+<p>Without going into the specific details yet, inserting a new action <em>N</em>
+under <em>Control Point 2</em> would look something like this:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">control</span><span class="o">::</span><span class="n">action</span><span class="o">&lt;</span><span class="n">actionN</span><span class="p">,</span> <span class="n">cp</span><span class="o">::</span><span class="n">two</span><span class="o">&gt;</span> <span class="n">action_n</span><span class="p">;</span>
+<span class="k">const</span> <span class="k">auto</span> <span class="n">dep_na</span> <span class="o">=</span> <span class="n">action_n</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">action_a</span><span class="p">);</span>
+<span class="k">const</span> <span class="k">auto</span> <span class="n">dep_bn</span> <span class="o">=</span> <span class="n">action_b</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">action_n</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>That’s it!
+This will insert a new action that depends on action <em>A</em>, and which is
+depended upon by action <em>B</em> (<a class="reference internal" href="#extension"><span class="std std-numref">Fig. 4</span></a>).
+Because of FleCSI’s data model, any data dependencies will automatically
+be honored by the runtime.
+For example, if action <em>N</em> modifies a pressure field that is used by
+action <em>B</em>, the underlying runtime will recognize this dependency, and
+the data will be consistent.
+This code can also be in its own source file, which means that the
+original package does not need to be modified.
+Of course, the core application developers need to document the control
+point identifiers, and actions, so that our advanced user knows the
+correct names to use.
+However, this is a small cost to allow easy experimentation and
+extension of the application.</p>
+<div class="figure align-center" id="id4">
+<span id="extension"></span><img alt="../../_images/extension.png" src="../../_images/extension.png" />
+<p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">Control Model After Extension.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="tutorial">
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
+<p>The rest of this tutorial demonstrates how application developers can
+use the FleCSI control model to create extensible applications.
+We begin with an extremely simple control model, but quickly build to a
+more realistic example.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This tutorial breaks our convention of avoiding details of the FleCSI
+specializaton layer (We lied to you in the tutorial introduction!).
+This is necessary to demonstrate how the code for this example works.
+In general, the control model for an application will be defined by
+the specialization developer, with a fixed set of documented control
+points that are not modifiable by the application developer. Users of
+the specialization (application developers) will add actions that
+define the substance of the simulation.</p>
+</div>
+<div class="section" id="example-1-simple">
+<h3>Example 1: Simple<a class="headerlink" href="#example-1-simple" title="Permalink to this headline">¶</a></h3>
+<p>This example will show you how to construct the simplest non-trivial
+control model that might make sense for an application. <a class="reference internal" href="#simple"><span class="std std-numref">Fig. 5</span></a>
+shows the control model, which has three control points (<em>initialize</em>,
+<em>advance</em>, and <em>finalize</em>) with one action under each. This is still not
+a very useful example because it lacks cycles (introduced in the next
+example). However, it will serve to introduce the definition of a
+control model from the core FleCSI type.</p>
+<div class="figure align-center" id="id5">
+<span id="simple"></span><a class="reference internal image-reference" href="../../_images/simple.png"><img alt="../../_images/simple.png" src="../../_images/simple.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 5 </span><span class="caption-text">Control Model for Example 1.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This example introduces the notion of a policy type. Policies are C++
+types (structs or classes) that can be used to define the behvior of
+another templated C++ type. This design pattern was introduced by
+Andrei Alexandrescu in <a class="reference external" href="https://en.wikipedia.org/wiki/Modern_C%2B%2B_Design">Modern C++ Design</a>. The details of the
+design pattern are not important to this example, but may make
+interesting reading. For our purposes, a policy is simply a C++ struct
+that we pass to the core control type.</p>
+</div>
+</div>
+</div>
+<div class="section" id="defining-control-points">
+<h2>Defining Control Points<a class="headerlink" href="#defining-control-points" title="Permalink to this headline">¶</a></h2>
+<p>The first thing about a control model is the control points. To define
+these, we use an enumeration. Consider the following from
+<em>tutorial/2-control/1-simple.hh</em>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Enumeration defining the control point identifiers. This will be used to</span>
+<span class="cm">  specialize the core control type.</span>
+<span class="cm"> */</span>
+
+<span class="k">enum</span> <span class="k">class</span> <span class="nc">cp</span> <span class="p">{</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">advance</span><span class="p">,</span> <span class="n">finalize</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>The name of the enumeration (<em>cp</em>) is arbitrary.
+However, it is useful to make it concise because it will be used in the application code (This is not precisely true because the specialization developer may choose to define helper types for registering actions, but it is true for this example.)
+At any rate, the name is not important because it will be used as a type
+definition in our control policy.</p>
+<p>In addition to the enumeration itself, we also define an operator
+overload of the <em>*</em> operator (function call operator overloading):</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Define labels for the control points. Here we use function call operator</span>
+<span class="cm">  overloading of the &#39;*&#39; operator. This approach is safer than defining a satic</span>
+<span class="cm">  array of string literals because it is type-safe, and it allows error</span>
+<span class="cm">  checking.</span>
+<span class="cm"> */</span>
+
+<span class="kr">inline</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span>
+<span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="n">cp</span> <span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">switch</span><span class="p">(</span><span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">initialize</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s">&quot;initialize&quot;</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">advance</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s">&quot;advance&quot;</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">finalize</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s">&quot;finalize&quot;</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">flog_fatal</span><span class="p">(</span><span class="s">&quot;invalied control point&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Perhaps this looks complicated, but really all it does is to return a
+string literal given one of the control point enumeration values defined
+in <em>cp</em>.
+This approach is used by FleCSI because it is safer than defining a
+static array of string literals.
+The labels are used to create visualizations of the control model.</p>
+<p>The following defines the actual control policy (We will discuss the
+individual parts.):</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Control policy for this example. The control policy primarily defines types</span>
+<span class="cm">  that are used by the core control type to define the control-flow model for</span>
+<span class="cm">  the program. For this simple example, the policy captures the user-defined</span>
+<span class="cm">  enumeration of control-points identifiers, defines an empty node policy, and</span>
+<span class="cm">  defines the order of control point execution using std::tuple.</span>
+<span class="cm"> */</span>
+
+<span class="k">struct</span> <span class="n">control_policy</span> <span class="p">{</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Capture the control points enumeration type. This type is used in the</span>
+<span class="cm">    control policy interface whenever a control point is required.</span>
+<span class="cm">   */</span>
+
+  <span class="k">using</span> <span class="n">control_points_enum</span> <span class="o">=</span> <span class="n">cp</span><span class="p">;</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    The actions that are added under each control point are used to form a</span>
+<span class="cm">    directed acyclic graph (DAG). The node_policy type allows the user to add</span>
+<span class="cm">    interfaces and data that are available from, and are carried with the</span>
+<span class="cm">    action. A more complex example will demonstrate this capability.</span>
+<span class="cm">   */</span>
+
+  <span class="k">struct</span> <span class="n">node_policy</span> <span class="p">{};</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    This is a convenience type definition that provides typeification of an</span>
+<span class="cm">    integer value.</span>
+<span class="cm">   */</span>
+
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">auto</span> <span class="n">CP</span><span class="o">&gt;</span>
+  <span class="k">using</span> <span class="n">control_point</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">CP</span><span class="o">&gt;</span><span class="p">;</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    The control_points tuple defines the actual control points as typeified</span>
+<span class="cm">    integers derived from the control point identifiers from the user-defined</span>
+<span class="cm">    enumeration.</span>
+<span class="cm">   */</span>
+
+  <span class="k">using</span> <span class="n">control_points</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">initialize</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">advance</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">finalize</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>The first type definition in the policy captures the control points
+enumeration type. This type is used in the control interface for
+declaring actions:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    Capture the control points enumeration type. This type is used in the</span>
+<span class="cm">    control policy interface whenever a control point is required.</span>
+<span class="cm">   */</span>
+
+  <span class="k">using</span> <span class="n">control_points_enum</span> <span class="o">=</span> <span class="n">cp</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The next type is the <em>node_policy</em>. Each set of actions under a control
+point forms a DAG. Specifying a non-trivial node policy allows the user
+to add additional interfaces and data to an action. In this simple
+example, the node type is empty:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    The actions that are added under each control point are used to form a</span>
+<span class="cm">    directed acyclic graph (DAG). The node_policy type allows the user to add</span>
+<span class="cm">    interfaces and data that are available from, and are carried with the</span>
+<span class="cm">    action. A more complex example will demonstrate this capability.</span>
+<span class="cm">   */</span>
+
+  <span class="k">struct</span> <span class="n">node_policy</span> <span class="p">{};</span>
+</pre></div>
+</div>
+<p>The actual control points are defined as a std::tuple of the typeified
+integer-valued control points enumeration. The templated <em>control_point</em>
+definition is a convenience interface for typeifying the control points:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    This is a convenience type definition that provides typeification of an</span>
+<span class="cm">    integer value.</span>
+<span class="cm">   */</span>
+
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">auto</span> <span class="n">CP</span><span class="o">&gt;</span>
+  <span class="k">using</span> <span class="n">control_point</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">CP</span><span class="o">&gt;</span><span class="p">;</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    The control_points tuple defines the actual control points as typeified</span>
+<span class="cm">    integers derived from the control point identifiers from the user-defined</span>
+<span class="cm">    enumeration.</span>
+<span class="cm">   */</span>
+
+  <span class="k">using</span> <span class="n">control_points</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">initialize</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">advance</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">finalize</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In the above <em>control_points</em> tuple definition, the order is important,
+as it is the order in which the control points will be sorted, and thus
+executed.</p>
+<p>Finally, after the control policy, we define a fully-qualified control
+type. This is the control type that we will use in our example application.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Define a fully-qualified control type for the end user.</span>
+<span class="cm"> */</span>
+
+<span class="k">using</span> <span class="n">control</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">control</span><span class="o">&lt;</span><span class="n">control_policy</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Thats the entire control policy for this example. Without comments, it
+is about 20 lines of code. Let’s see how we use it!</p>
+</div>
+<div class="section" id="using-the-control-interface">
+<h2>Using the Control Interface<a class="headerlink" href="#using-the-control-interface" title="Permalink to this headline">¶</a></h2>
+<p>The source for this example is in <em>tutorial/2-control/1-simple.cc</em>. Much
+of the actual main function is the same as in the previous examples.
+Let’s first consider the parts that are different.</p>
+<p>As referenced earlier, the control type adds some command-line options to
+the program.
+These options allow the user to output dot files for visualizing the
+control model and resulting sequential ordering of the registered
+actions, <code class="docutils literal notranslate"><span class="pre">--control-model</span></code>, and <code class="docutils literal notranslate"><span class="pre">--control-model-sorted</span></code>,
+respectively.
+To enable these options, we must call a the method that checks for them,
+and exit the program if they have been invoked.
+Although it is not strictly necessary to end execution after invocation
+of the control model outputs, it is generally desireable to do so for a
+real simulation program, which may run for many minutes or hours
+otherwise:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    The check_options() method checks to see if any control-model options were</span>
+<span class="cm">    specified on the command line, and handles them appropriately.</span>
+<span class="cm">   */</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">control</span><span class="o">::</span><span class="n">check_options</span><span class="p">();</span>
+
+  <span class="cm">/*</span>
+<span class="cm">    Check the return after control-model checks. Because this is after</span>
+<span class="cm">    initialization, we need to call finalize if the program is exiting.</span>
+<span class="cm">   */</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">control</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+</pre></div>
+</div>
+<p>The last part of the main function is not really differnt from previous
+examples, we just have a better understanding of it now.
+Passing the <em>execute</em> method of our control model to FleCSI’s <em>start</em>
+function tells FleCSI to run the control model, which will execute all
+of the cycles, and actions registered on the control model:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    Pass the control model&#39;s &#39;execute&#39; method to start. FleCSI will invoke</span>
+<span class="cm">    the execute function after runtime initialization. This will, in turn,</span>
+<span class="cm">    execute all of the cycles, and actions of the control model.</span>
+<span class="cm">   */</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">control</span><span class="o">::</span><span class="n">execute</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Now that we have defined the control model, and added it to our runtime
+setup, the only thing that remains is to add some actions under the
+control points.</p>
+<p>As stated, actions are nothing more than C/C++ functions. For this
+example, there are three actions, which all have the same form. We list
+only the <em>initialize</em> function here:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Function definition of an initialize action.</span>
+<span class="cm"> */</span>
+
+<span class="kt">int</span>
+<span class="nf">initialize</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">flog</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;initialize&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To register an action with the control model, we declare a control
+action:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Register the initialize action under the &#39;initialize&#39; control point.</span>
+<span class="cm"> */</span>
+
+<span class="n">control</span><span class="o">::</span><span class="n">action</span><span class="o">&lt;</span><span class="n">initialize</span><span class="p">,</span> <span class="n">cp</span><span class="o">::</span><span class="n">initialize</span><span class="o">&gt;</span> <span class="n">initialize_action</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The template parameters to <em>control::action</em> are the function pointer
+<em>initialize</em>, and the control point <em>cp::initialize</em> (This is why it can
+be expedient to use a concise enumeration type name.)</p>
+<p>Running this example prints the output of each of the three functions.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[info all p0] initialize</span>
+<span class="go">[info all p0] advance</span>
+<span class="go">[info all p0] finalize</span>
+</pre></div>
+</div>
+<p>Not very interesting, but you should begin to see the simplicity of
+defining and using a FleCSI control model.</p>
+<div class="section" id="example-2-cycles">
+<h3>Example 2: Cycles<a class="headerlink" href="#example-2-cycles" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="#cycle"><span class="std std-numref">Fig. 6</span></a> shows a slightly more realistic control model that
+cycles over <em>advance</em> and <em>analyze</em> control points. This example
+demonstrates how to add a cycle.</p>
+<div class="figure align-center" id="id6">
+<span id="cycle"></span><a class="reference internal image-reference" href="../../_images/cycle.png"><img alt="../../_images/cycle.png" src="../../_images/cycle.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 6 </span><span class="caption-text">Example FleCSI Control Model with Cycle.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p>Starting from the previous example, we add the analyze control point:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">cp</span> <span class="p">{</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">advance</span><span class="p">,</span> <span class="n">analyze</span><span class="p">,</span> <span class="n">finalize</span> <span class="p">};</span>
+
+<span class="kr">inline</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span>
+<span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="n">cp</span> <span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">switch</span><span class="p">(</span><span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">initialize</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s">&quot;initialize&quot;</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">advance</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s">&quot;advance&quot;</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">analyze</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s">&quot;analyze&quot;</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">finalize</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s">&quot;finalize&quot;</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">flog_fatal</span><span class="p">(</span><span class="s">&quot;invalied control point&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We will use <em>cp::advance</em> and <em>cp::analyze</em> to define the cycle from the
+core FleCSI cycle type:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    The cycle type. Cycles are similar to the control_points tuple, with the</span>
+<span class="cm">    addition of a predicate function that controls termination of the cycle.</span>
+<span class="cm">   */</span>
+
+  <span class="k">using</span> <span class="n">cycle</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">cycle</span><span class="o">&lt;</span><span class="n">cycle_control</span><span class="p">,</span>
+    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">advance</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">analyze</span><span class="o">&gt;</span>
+  <span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Cycles are similar to the <em>control_points</em> tuple, with the addition of a
+predicate function that controls termination of the cycle:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    The core FleCSI control model inherits from the control policy, so that</span>
+<span class="cm">    any data members defined in your policy are carried with the control</span>
+<span class="cm">    policy instance, and can be accessed through a static interface.</span>
+<span class="cm">   */</span>
+
+  <span class="k">static</span> <span class="kt">bool</span> <span class="nf">cycle_control</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">control</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">step</span><span class="p">()</span><span class="o">++</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>For this example, the control function simply iterates for five cycles.
+In a real application, the control function could be arbitrarily
+complex, e.g., invoking a reduction to compute a variable time step.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>As stated above, the core control type uses a policy design pattern.
+One important aspect of this pattern is that the <em>host</em> type (in this
+case the core control type) inherits from the <em>policy</em> type (the
+<em>control_policy</em> type). This allows the specialization to add data
+members that will be carried with the control instance.</p>
+</div>
+<p>Notice that the <em>cycle_control</em> function is static, and uses the
+<em>instance</em> method to access the single instance of the control object.
+The singleton instance can access any data members that have been added
+to the policy. In this case, we use it to access the <em>step_</em> data member
+that keeps track of which simulation step we are on:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    The core FleCSI control model inherits from the control policy, so that</span>
+<span class="cm">    any data members defined in your policy are carried with the control</span>
+<span class="cm">    policy instance, and can be accessed through a static interface.</span>
+<span class="cm">   */</span>
+
+  <span class="k">static</span> <span class="kt">bool</span> <span class="nf">cycle_control</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">control</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">step</span><span class="p">()</span><span class="o">++</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>Although this example is simple, in general, we can use this design
+pattern to access simulation control state variables.</p>
+<p>The last piece needed to add the cycle is the actual definition of the
+<em>control_points</em> tuple type:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
+<span class="cm">    The control_points tuple type takes the cycle as one of its</span>
+<span class="cm">    elements. Valid types for the control_points tuple are, therefore,</span>
+<span class="cm">    either typeified enumeration values, or cycles.</span>
+<span class="cm">   */</span>
+
+  <span class="k">using</span> <span class="n">control_points</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">initialize</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="n">cycle</span><span class="p">,</span>
+    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">finalize</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Other than adding an action under the new analyze control point, the
+main function for this example is the same.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The core cycle type itself can contain a mixture of typiefied
+enumeration values and cycles, such that cycles can be nested. It
+seems unlikely that most HPC simulations would need more than a couple
+of levels of cycling. However, FleCSI supports arbitrary cycle depths.
+<a class="reference internal" href="#subcycle"><span class="std std-numref">Fig. 7</span></a> shows a subcycling control model. The details of
+the program to generate this figure are not discussed here. However,
+you can view the source in <em>tutorial/2-control/2-subcycle.hh</em>.</p>
+</div>
+<div class="figure align-center" id="id7">
+<span id="subcycle"></span><a class="reference internal image-reference" href="../../_images/subcycle.png"><img alt="../../_images/subcycle.png" src="../../_images/subcycle.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 7 </span><span class="caption-text">Example FleCSI Control Model with Subcycles.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../user-guide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="runtime.html" class="btn btn-neutral float-left" title="Runtime" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Contents caption */
+    .wy-menu-vertical>p.caption {
+      color: #ffffff;
+    }
+
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+
+    /* Sidebar */
+    .wy-nav-side {
+      background: #216897;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

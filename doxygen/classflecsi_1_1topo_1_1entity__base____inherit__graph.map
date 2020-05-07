@@ -1,7 +1,7 @@
 <map id="flecsi::topo::entity_base_" name="flecsi::topo::entity_base_">
-<area shape="rect" id="node2" href="$classflecsi_1_1topo_1_1entity__base.html" title="entity_base defines a base class that stores the raw info that a topology needs, i.e: id and rank data " alt="" coords="180,104,363,145"/>
-<area shape="rect" id="node3" href="$classflecsi_1_1topo_1_1mesh__entity.html" title="mesh_entity parameterizes a mesh entity base with its dimension and number of domains ..." alt="" coords="411,5,597,47"/>
-<area shape="rect" id="node4" href="$classflecsi_1_1topo_1_1ntree__entity.html" title="flecsi::topo::ntree\l_entity\&lt; 0 \&gt;" alt="" coords="443,71,565,112"/>
-<area shape="rect" id="node5" href="$classflecsi_1_1topo_1_1ntree__entity__holder.html" title="flecsi::topo::ntree\l_entity_holder\&lt; 0 \&gt;" alt="" coords="437,136,571,177"/>
-<area shape="rect" id="node6" href="$classflecsi_1_1topo_1_1ntree__node.html" title="flecsi::topo::ntree\l_node\&lt; 0 \&gt;" alt="" coords="443,201,565,243"/>
+<area shape="rect" id="node2" href="$classflecsi_1_1topo_1_1entity__base.html" title="entity_base defines a base class that stores the raw info that a topology needs, i.e: id and rank data " alt="" coords="193,103,383,145"/>
+<area shape="rect" id="node3" href="$classflecsi_1_1topo_1_1mesh__entity.html" title="mesh_entity parameterizes a mesh entity base with its dimension and number of domains ..." alt="" coords="432,5,629,46"/>
+<area shape="rect" id="node4" href="$classflecsi_1_1topo_1_1ntree__entity.html" title="flecsi::topo::ntree\l_entity\&lt; 0 \&gt;" alt="" coords="463,70,598,111"/>
+<area shape="rect" id="node5" href="$classflecsi_1_1topo_1_1ntree__entity__holder.html" title="flecsi::topo::ntree\l_entity_holder\&lt; 0 \&gt;" alt="" coords="454,135,607,177"/>
+<area shape="rect" id="node6" href="$classflecsi_1_1topo_1_1ntree__node.html" title="flecsi::topo::ntree\l_node\&lt; 0 \&gt;" alt="" coords="463,201,598,242"/>
 </map>

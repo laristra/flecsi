@@ -1,4 +1,4 @@
-<map id="flecsi::topo::mesh_entity&lt; DIM, NUM_DOMAINS &gt;" name="flecsi::topo::mesh_entity&lt; DIM, NUM_DOMAINS &gt;">
-<area shape="rect" id="node2" href="$classflecsi_1_1topo_1_1entity__base.html" title="entity_base defines a base class that stores the raw info that a topology needs, i.e: id and rank data " alt="" coords="23,95,206,136"/>
-<area shape="rect" id="node3" href="$classflecsi_1_1topo_1_1entity__base__.html" title="flecsi::topo::entity\l_base_" alt="" coords="51,5,178,47"/>
+<map id="flecsi::topo::mesh_entity&lt; size_t, size_t &gt;" name="flecsi::topo::mesh_entity&lt; size_t, size_t &gt;">
+<area shape="rect" id="node2" href="$classflecsi_1_1topo_1_1entity__base.html" title="entity_base defines a base class that stores the raw info that a topology needs, i.e: id and rank data " alt="" coords="5,97,195,138"/>
+<area shape="rect" id="node3" href="$classflecsi_1_1topo_1_1entity__base__.html" title="flecsi::topo::entity\l_base_" alt="" coords="31,6,169,47"/>
 </map>

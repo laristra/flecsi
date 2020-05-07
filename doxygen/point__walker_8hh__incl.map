@@ -1,7 +1,12 @@
-<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/control/point_walker.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/control/point_walker.hh">
-<area shape="rect" id="node3" href="$const__string_8hh.html" title="flecsi/utils/const\l_string.hh" alt="" coords="351,109,469,151"/>
-<area shape="rect" id="node11" href="$tuple__walker_8hh.html" title="flecsi/utils/tuple\l_walker.hh" alt="" coords="493,109,607,151"/>
-<area shape="rect" id="node13" href="$typeify_8hh.html" title="flecsi/utils/typeify.hh" alt="" coords="631,117,773,143"/>
-<area shape="rect" id="node4" href="$hash_8hh.html" title="flecsi/utils/hash.hh" alt="" coords="14,199,145,225"/>
-<area shape="rect" id="node7" href="$macros_8hh.html" title="flecsi/utils/macros.hh" alt="" coords="169,199,315,225"/>
+<map id="/home/bergen/devel/tuxfan/flecsi/flecsi/ctrl/point_walker.hh" name="/home/bergen/devel/tuxfan/flecsi/flecsi/ctrl/point_walker.hh">
+<area shape="rect" id="node3" href="$flog_8hh.html" title="flecsi/flog.hh" alt="" coords="760,184,864,211"/>
+<area shape="rect" id="node26" href="$dag_8hh.html" title="flecsi/util/dag.hh" alt="" coords="1299,109,1428,136"/>
+<area shape="rect" id="node30" href="$tuple__walker_8hh.html" title="flecsi/util/tuple_walker.hh" alt="" coords="1707,109,1895,136"/>
+<area shape="rect" id="node32" href="$constant_8hh.html" title="flecsi/util/constant.hh" alt="" coords="1919,109,2080,136"/>
+<area shape="rect" id="node4" href="$log_2utils_8hh_source.html" title="flecsi/log/utils.hh" alt="" coords="297,483,428,509"/>
+<area shape="rect" id="node6" href="$message_8hh.html" title="flecsi/log/message.hh" alt="" coords="573,259,736,285"/>
+<area shape="rect" id="node24" href="$tag__scope_8hh.html" title="flecsi/log/tag_scope.hh" alt="" coords="144,259,315,285"/>
+<area shape="rect" id="node7" href="$state_8hh.html" title="flecsi/log/state.hh" alt="" coords="479,333,616,360"/>
+<area shape="rect" id="node20" href="$log_2types_8hh.html" title="flecsi/log/types.hh" alt="" coords="582,408,721,435"/>
+<area shape="rect" id="node8" href="$packet_8hh_source.html" title="flecsi/log/packet.hh" alt="" coords="798,483,945,509"/>
 </map>

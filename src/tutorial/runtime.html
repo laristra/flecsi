@@ -25,10 +25,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="User Guide" href="../user-guide.html" />
+    <link rel="next" title="Control Model" href="control.html" />
     <link rel="prev" title="Tutorial" href="../tutorial.html" /> 
 </head>
 
@@ -106,6 +106,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#example-3-flog-flecsi-logging-utility">Example 3: FLOG (FleCSI Logging Utility)</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="control.html">Control Model</a></li>
 </ul>
 </li>
 </ul>
@@ -237,7 +238,7 @@ action to print out <em>Hello World</em>. Code for this example can be found in
 <span class="cm"> */</span>
 
 <span class="kt">int</span>
-<span class="nf">top_level_action</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="p">)</span> <span class="p">{</span>
+<span class="nf">top_level_action</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Hello World&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span> <span class="c1">// top_level_action</span>
@@ -259,8 +260,8 @@ action to print out <em>Hello World</em>. Code for this example can be found in
 <span class="cm">    documented in the next example.</span>
 <span class="cm">   */</span>
 
-  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
   <span class="p">}</span> <span class="c1">// if</span>
 
   <span class="cm">/*</span>
@@ -716,7 +717,7 @@ is required), and can be accessed using the <em>value()</em> method:</p>
 <span class="cm"> */</span>
 
 <span class="kt">int</span>
-<span class="nf">top_level_action</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="p">)</span> <span class="p">{</span>
+<span class="nf">top_level_action</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">double</span> <span class="n">price</span><span class="p">{</span><span class="mf">0.0</span><span class="p">};</span>
 
   <span class="cm">/*</span>
@@ -781,8 +782,8 @@ is required), and can be accessed using the <em>value()</em> method:</p>
 
   <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
 
-  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
   <span class="p">}</span> <span class="c1">// if</span>
 
   <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">top_level_action</span><span class="p">);</span>
@@ -838,9 +839,13 @@ example:</p>
 
   <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
 
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+
   <span class="cm">/*</span>
 <span class="cm">    In order to see or capture any output from FLOG, the user must add at least</span>
-<span class="cm">    one output stream. The function flog::add_output_stream provides an</span>
+<span class="cm">    one output stream. The function log::add_output_stream provides an</span>
 <span class="cm">    interface for adding output streams to FLOG. The FleCSI runtime must have</span>
 <span class="cm">    been initialized before this function can be invoked.</span>
 <span class="cm">   */</span>
@@ -849,18 +854,14 @@ example:</p>
 <span class="cm">    Add the standard log descriptor to FLOG&#39;s buffers.</span>
 <span class="cm">   */</span>
 
-  <span class="n">flog</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;clog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+  <span class="n">log</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;clog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
 
   <span class="cm">/*</span>
 <span class="cm">    Add an output file to FLOG&#39;s buffers.</span>
 <span class="cm">   */</span>
 
   <span class="n">std</span><span class="o">::</span><span class="n">ofstream</span> <span class="n">log_file</span><span class="p">(</span><span class="s">&quot;output.txt&quot;</span><span class="p">);</span>
-  <span class="n">flog</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;log file&quot;</span><span class="p">,</span> <span class="n">log_file</span><span class="p">);</span>
-
-  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">runtime</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
-  <span class="p">}</span> <span class="c1">// if</span>
+  <span class="n">log</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;log file&quot;</span><span class="p">,</span> <span class="n">log_file</span><span class="p">);</span>
 
   <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">top_level_action</span><span class="p">);</span>
 
@@ -875,7 +876,7 @@ example:</p>
 <span class="cm">    Add the standard log descriptor to FLOG&#39;s buffers.</span>
 <span class="cm">   */</span>
 
-  <span class="n">flog</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;clog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+  <span class="n">log</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;clog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The arguments to add_output_stream are:</p>
@@ -896,7 +897,7 @@ non-interactive output. The default is <em>false</em>.</p></li>
 <span class="cm">   */</span>
 
   <span class="n">std</span><span class="o">::</span><span class="n">ofstream</span> <span class="n">log_file</span><span class="p">(</span><span class="s">&quot;output.txt&quot;</span><span class="p">);</span>
-  <span class="n">flog</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;log file&quot;</span><span class="p">,</span> <span class="n">log_file</span><span class="p">);</span>
+  <span class="n">log</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;log file&quot;</span><span class="p">,</span> <span class="n">log_file</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>That’s it! For this example, FLOG is now configured to write output to
@@ -968,8 +969,8 @@ development focus.</p>
 <span class="cm">  Create some tags to control output.</span>
 <span class="cm"> */</span>
 
-<span class="n">flog</span><span class="o">::</span><span class="n">tag</span> <span class="n">tag1</span><span class="p">(</span><span class="s">&quot;tag1&quot;</span><span class="p">);</span>
-<span class="n">flog</span><span class="o">::</span><span class="n">tag</span> <span class="n">tag2</span><span class="p">(</span><span class="s">&quot;tag2&quot;</span><span class="p">);</span>
+<span class="n">log</span><span class="o">::</span><span class="n">tag</span> <span class="n">tag1</span><span class="p">(</span><span class="s">&quot;tag1&quot;</span><span class="p">);</span>
+<span class="n">log</span><span class="o">::</span><span class="n">tag</span> <span class="n">tag2</span><span class="p">(</span><span class="s">&quot;tag2&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Tags take a single std::string argument that is used in the help message
@@ -988,7 +989,7 @@ the <code class="docutils literal notranslate"><span class="pre">--flog-tags</sp
 <span class="cm">   */</span>
 
   <span class="p">{</span>
-    <span class="n">flog</span><span class="o">::</span><span class="n">guard</span> <span class="n">guard</span><span class="p">(</span><span class="n">tag1</span><span class="p">);</span>
+    <span class="n">log</span><span class="o">::</span><span class="n">guard</span> <span class="n">guard</span><span class="p">(</span><span class="n">tag1</span><span class="p">);</span>
     <span class="n">flog</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Trace level output (in tag1 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
     <span class="n">flog</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Info level output (in tag1 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
     <span class="n">flog</span><span class="p">(</span><span class="n">warn</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Warn level output (in tag1 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
@@ -1003,7 +1004,7 @@ the <code class="docutils literal notranslate"><span class="pre">--flog-tags</sp
 <span class="cm">   */</span>
 
   <span class="p">{</span>
-    <span class="n">flog</span><span class="o">::</span><span class="n">guard</span> <span class="n">guard</span><span class="p">(</span><span class="n">tag2</span><span class="p">);</span>
+    <span class="n">log</span><span class="o">::</span><span class="n">guard</span> <span class="n">guard</span><span class="p">(</span><span class="n">tag2</span><span class="p">);</span>
     <span class="n">flog</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Trace level output (in tag2 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
     <span class="n">flog</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Info level output (in tag2 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
     <span class="n">flog</span><span class="p">(</span><span class="n">warn</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Warn level output (in tag2 guard)&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
@@ -1061,7 +1062,7 @@ unguarded sections, and for output guarded with the <em>tag1</em> tag:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../user-guide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="control.html" class="btn btn-neutral float-right" title="Control Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../tutorial.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
