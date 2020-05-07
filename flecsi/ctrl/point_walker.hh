@@ -20,7 +20,7 @@
 #include "flecsi/flog.hh"
 #include "flecsi/util/dag.hh"
 #include "flecsi/util/tuple_walker.hh"
-#include "flecsi/util/typeify.hh"
+#include "flecsi/util/constant.hh"
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 #include "flecsi/util/graphviz.hh"
@@ -46,13 +46,26 @@ template<bool (*Predicate)(), typename... ControlPoints>
 struct cycle {
 
   using type = std::tuple<ControlPoints...>;
+  static constexpr size_t last = std::tuple_size<type>::value - 1;
 
-  using begin_type = typename std::tuple_element<0, type>::type;
-  using end_type =
-    typename std::tuple_element<std::tuple_size<type>::value - 1, type>::type;
+  template<size_t E, typename T> struct recurse;
 
-  static constexpr auto begin = begin_type::value;
-  static constexpr auto end = end_type::value;
+  template<size_t E, bool (*P)(), typename ... CPs>
+  struct recurse<E, cycle<P,CPs...>> {
+    using type = std::tuple<CPs...>;
+    static constexpr const auto & value =
+      recurse<E, typename std::tuple_element<E, type>::type>::value;
+  };
+
+  template<size_t E, auto Value>
+  struct recurse<E, util::constant<Value>> {
+    static constexpr const auto & value = Value;
+  };
+
+  static constexpr auto & begin =
+    recurse<0, typename std::tuple_element<0, type>::type>::value;
+  static constexpr auto & end =
+    recurse<last, typename std::tuple_element<last, type>::type>::value;
 
   static bool predicate() {
     return Predicate();
@@ -159,8 +172,8 @@ struct point_writer
     "#4eb2e0",
     "#9dd9f3"};
 
-  point_writer(std::map<control_points_enum, dag> registry, graphviz & gv)
-    : registry_(registry), gv_(gv) {}
+  point_writer(std::map<control_points_enum, dag> registry, graphviz & gv, int depth = 0)
+    : registry_(registry), gv_(gv), depth_(depth) {}
 
   template<typename ElementType>
   void visit_type() {
@@ -192,22 +205,32 @@ struct point_writer
       } // for
     }
     else {
-      point_writer(registry_, gv_)
+      point_writer(registry_, gv_, depth_-1)
         .template walk_types<typename ElementType::type>();
 
       auto & begin = registry_[ElementType::begin];
       auto & end = registry_[ElementType::end];
+
       auto * edge = gv_.add_edge(
         gv_.node(end.label().c_str()), gv_.node(begin.label().c_str()));
+
+      gv_.set_edge_attribute(edge, "label", " cycle");
       gv_.set_edge_attribute(edge, "color", "#1d76db");
       gv_.set_edge_attribute(edge, "fillcolor", "#1d76db");
       gv_.set_edge_attribute(edge, "style", "dashed,bold");
-      if(ElementType::begin == ElementType::end) {
+
+      if constexpr(ElementType::begin == ElementType::end) {
         gv_.set_edge_attribute(edge, "dir", "back");
       }
       else {
-        gv_.set_edge_attribute(edge, "tailport", "e");
-        gv_.set_edge_attribute(edge, "headport", "e");
+        if(depth_ < 0) {
+          gv_.set_edge_attribute(edge, "tailport", "ne");
+          gv_.set_edge_attribute(edge, "headport", "se");
+        }
+        else {
+          gv_.set_edge_attribute(edge, "tailport", "e");
+          gv_.set_edge_attribute(edge, "headport", "e");
+        }
       } // if
     } // if
   } // visit_type
@@ -238,6 +261,7 @@ struct point_writer
 private:
   std::map<control_points_enum, dag> registry_;
   graphviz & gv_;
+  int depth_;
 
 }; // struct point_writer
 

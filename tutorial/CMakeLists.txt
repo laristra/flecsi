@@ -30,6 +30,21 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
 #------------------------------------------------------------------------------#
+# Auxiliary Tools
+#------------------------------------------------------------------------------#
+
+option(ENABLE_DEVELOPER_MODE "Enable devel targets" OFF)
+
+if(ENABLE_DEVELOPER_MODE)
+  find_program(DOT_EXECUTABLE dot)
+  if(DOT_EXECUTABLE-NOTFOUND)
+    message(FATAL_ERROR "Failed to find dot executable")
+  endif()
+
+  find_package(ImageMagick COMPONENTS convert REQUIRED)
+endif()
+
+#------------------------------------------------------------------------------#
 # FleCSI
 #------------------------------------------------------------------------------#
 
@@ -78,8 +93,30 @@ add_executable(cycle
 target_link_libraries(cycle ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
 
+add_executable(subcycle
+  2-control/2-cycle.cc
+  2-control/2-subcycle.hh
+)
+target_compile_definitions(subcycle PUBLIC SUBCYCLE)
+target_link_libraries(subcycle ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+
+if(ENABLE_DEVELOPER_MODE)
+  add_custom_target(pngs
+    ${CMAKE_BINARY_DIR}/simple --control-model &&
+    ${DOT_EXECUTABLE} -Tpdf simple-control-model.dot > simple.pdf &&
+    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 simple.pdf simple.png &&
+    ${CMAKE_BINARY_DIR}/cycle --control-model &&
+    ${DOT_EXECUTABLE} -Tpdf cycle-control-model.dot > cycle.pdf &&
+    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 cycle.pdf cycle.png &&
+    ${CMAKE_BINARY_DIR}/subcycle --control-model &&
+    ${DOT_EXECUTABLE} -Tpdf subcycle-control-model.dot > subcycle.pdf
+    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 subcycle.pdf subcycle.png
+  )
+endif()
+
 #------------------------------------------------------------------------------#
-# 3-control
+# 3-tasks
 #------------------------------------------------------------------------------#
 
 #add_executable(trivial 2-tasks/1-trivial.cc)
