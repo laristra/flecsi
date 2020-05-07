@@ -248,6 +248,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   if(ENABLE_PARMETIS)
 
+  if((FLECSI_RUNTIME_MODEL STREQUAL "legion") OR ((FLECSI_RUNTIME_MODEL STREQUAL "mpi") AND (FLECSI_USE_AGGCOMM)))
     cinch_add_unit(task_privileges_dense
       SOURCES
         test/task_privileges_dense.cc
@@ -291,6 +292,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
     )
+    endif()
 
     cinch_add_devel_target(execution_structure
       SOURCES

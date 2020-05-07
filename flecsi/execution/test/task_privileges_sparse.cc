@@ -329,6 +329,123 @@ task_F(mesh<ro> mesh, field<rw, rw, ro> h) {
 flecsi_register_task(task_F, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
+// Task G:
+//----------------------------------------------------------------------------//
+void
+task_G(mesh<ro> mesh, field<rw, ro, na> h) {
+  auto & context = execution::context_t::instance();
+  auto rank = context.color();
+
+  for(auto c : mesh.cells(exclusive)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task G exclusive cell " << rank << " " << c->id()
+                      << " " << c->gid() << " " << c->index()[0] << " "
+                      << c->index()[1] << " " << entry << " " << h(c, entry)
+                      << std::endl;
+    }
+  }
+
+  for(auto c : mesh.cells(shared)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task G shared cell " << rank << " " << c->id() << " "
+                      << c->gid() << " " << c->index()[0] << " "
+                      << c->index()[1] << " " << entry << " " << h(c, entry)
+                      << std::endl;
+    }
+  }
+
+  for(auto c : mesh.cells(ghost)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task G ghost cell " << rank << " " << c->id() << " "
+                      << c->gid() << " " << c->index()[0] << " "
+                      << c->index()[1] << " " << entry << " " << h(c, entry)
+                      << std::endl;
+    }
+  }
+
+} // modify
+
+flecsi_register_task(task_G, flecsi::execution, loc, index);
+
+//----------------------------------------------------------------------------//
+// Task H : Init field
+//----------------------------------------------------------------------------//
+
+void
+task_H(mesh<ro> mesh, field<rw, rw, na> h) {
+  auto & context = execution::context_t::instance();
+  auto rank = context.color();
+
+  for(auto c : mesh.cells(exclusive)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task H before exclusive cell " << rank << " "
+                      << c->id() << " " << c->gid() << " " << c->index()[0]
+                      << " " << c->index()[1] << " " << entry << " "
+                      << h(c, entry) << std::endl;
+    }
+  }
+
+  for(auto c : mesh.cells(shared)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task H before shared cell " << rank << " " << c->id()
+                      << " " << c->gid() << " " << c->index()[0] << " "
+                      << c->index()[1] << " " << entry << " " << h(c, entry)
+                      << std::endl;
+    }
+  }
+
+  for(auto c : mesh.cells(ghost)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task H before ghost cell " << rank << " " << c->id()
+                      << " " << c->gid() << " " << c->index()[0] << " "
+                      << c->index()[1] << " " << entry << " " << h(c, entry)
+                      << std::endl;
+    }
+  }
+
+  for(auto c : mesh.cells(owned)) {
+    for(auto entry : h.entries(c)) {
+      size_t val = c->index()[1] + 100 * (c->index()[0] + 100 * rank);
+      h(c, entry) = 1000000000 + val * 100;
+    }
+  }
+  for(auto c : mesh.cells(shared)) {
+    for(auto entry : h.entries(c)) {
+      h(c, entry) += 5;
+    }
+  }
+
+  for(auto c : mesh.cells(exclusive)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task H exclusive cell " << rank << " " << c->id()
+                      << " " << c->gid() << " " << c->index()[0] << " "
+                      << c->index()[1] << " " << entry << " " << h(c, entry)
+                      << std::endl;
+    }
+  }
+
+  for(auto c : mesh.cells(shared)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task H shared cell " << rank << " " << c->id() << " "
+                      << c->gid() << " " << c->index()[0] << " "
+                      << c->index()[1] << " " << entry << " " << h(c, entry)
+                      << std::endl;
+    }
+  }
+
+  for(auto c : mesh.cells(ghost)) {
+    for(auto entry : h.entries(c)) {
+      CINCH_CAPTURE() << "task H ghost cell " << rank << " " << c->id() << " "
+                      << c->gid() << " " << c->index()[0] << " "
+                      << c->index()[1] << " " << entry << " " << h(c, entry)
+                      << std::endl;
+    }
+  }
+} // task a
+
+flecsi_register_task(task_H, flecsi::execution, loc, index);
+
+//----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
 //----------------------------------------------------------------------------//
 
@@ -370,6 +487,8 @@ driver(int argc, char ** argv) {
   flecsi_execute_task(task_D, flecsi::execution, index, ch, ph);
   flecsi_execute_task(task_E, flecsi::execution, index, ch, ph);
   flecsi_execute_task(task_F, flecsi::execution, index, ch, ph);
+  flecsi_execute_task(task_G, flecsi::execution, index, ch, ph);
+  flecsi_execute_task(task_H, flecsi::execution, index, ch, ph);
   auto future = flecsi_execute_task(task_E, flecsi::execution, index, ch, ph);
   future.wait(); // wait before comparing results
 

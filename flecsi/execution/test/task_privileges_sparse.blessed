@@ -680,120 +680,471 @@ task F ghost cell 0 38 38 4 6 3 1001040645
 task F ghost cell 0 39 39 4 7 0 1001040745
 task F ghost cell 0 39 39 4 7 2 1001040745
 task F ghost cell 0 39 39 4 7 4 1001040745
-task E exclusive cell 0 0 0 0 0 1 1000000060
-task E exclusive cell 0 0 0 0 0 3 1000000060
-task E exclusive cell 0 1 1 0 1 0 1000000160
-task E exclusive cell 0 1 1 0 1 2 1000000160
-task E exclusive cell 0 1 1 0 1 4 1000000160
-task E exclusive cell 0 2 2 0 2 1 1000000260
-task E exclusive cell 0 2 2 0 2 3 1000000260
-task E exclusive cell 0 3 3 0 3 0 1000000360
-task E exclusive cell 0 3 3 0 3 2 1000000360
-task E exclusive cell 0 3 3 0 3 4 1000000360
-task E exclusive cell 0 4 4 0 4 1 1000000460
-task E exclusive cell 0 4 4 0 4 3 1000000460
-task E exclusive cell 0 5 5 0 5 0 1000000560
-task E exclusive cell 0 5 5 0 5 2 1000000560
-task E exclusive cell 0 5 5 0 5 4 1000000560
-task E exclusive cell 0 6 6 0 6 1 1000000660
-task E exclusive cell 0 6 6 0 6 3 1000000660
-task E exclusive cell 0 7 7 0 7 0 1000000760
-task E exclusive cell 0 7 7 0 7 2 1000000760
-task E exclusive cell 0 7 7 0 7 4 1000000760
-task E exclusive cell 0 8 8 1 0 0 1000010060
-task E exclusive cell 0 8 8 1 0 2 1000010060
-task E exclusive cell 0 8 8 1 0 4 1000010060
-task E exclusive cell 0 9 9 1 1 1 1000010160
-task E exclusive cell 0 9 9 1 1 3 1000010160
-task E exclusive cell 0 10 10 1 2 0 1000010260
-task E exclusive cell 0 10 10 1 2 2 1000010260
-task E exclusive cell 0 10 10 1 2 4 1000010260
-task E exclusive cell 0 11 11 1 3 1 1000010360
-task E exclusive cell 0 11 11 1 3 3 1000010360
-task E exclusive cell 0 11 11 1 3 5 1000010360
-task E exclusive cell 0 11 11 1 3 7 1000010360
-task E exclusive cell 0 11 11 1 3 9 1000010360
-task E exclusive cell 0 11 11 1 3 11 1000010360
-task E exclusive cell 0 11 11 1 3 13 1000010360
-task E exclusive cell 0 11 11 1 3 15 1000010360
-task E exclusive cell 0 12 12 1 4 0 1000010460
-task E exclusive cell 0 12 12 1 4 2 1000010460
-task E exclusive cell 0 12 12 1 4 4 1000010460
-task E exclusive cell 0 12 12 1 4 6 1000010460
-task E exclusive cell 0 12 12 1 4 8 1000010460
-task E exclusive cell 0 12 12 1 4 10 1000010460
-task E exclusive cell 0 12 12 1 4 12 1000010460
-task E exclusive cell 0 12 12 1 4 14 1000010460
-task E exclusive cell 0 13 13 1 5 1 1000010560
-task E exclusive cell 0 13 13 1 5 3 1000010560
-task E exclusive cell 0 13 13 1 5 5 1000010560
-task E exclusive cell 0 13 13 1 5 7 1000010560
-task E exclusive cell 0 13 13 1 5 9 1000010560
-task E exclusive cell 0 13 13 1 5 11 1000010560
-task E exclusive cell 0 13 13 1 5 13 1000010560
-task E exclusive cell 0 13 13 1 5 15 1000010560
-task E exclusive cell 0 14 14 1 6 0 1000010660
-task E exclusive cell 0 14 14 1 6 2 1000010660
-task E exclusive cell 0 14 14 1 6 4 1000010660
-task E exclusive cell 0 15 15 1 7 1 1000010760
-task E exclusive cell 0 15 15 1 7 3 1000010760
-task E exclusive cell 0 16 16 2 0 1 1000020060
-task E exclusive cell 0 16 16 2 0 3 1000020060
-task E exclusive cell 0 17 17 2 1 0 1000020160
-task E exclusive cell 0 17 17 2 1 2 1000020160
-task E exclusive cell 0 17 17 2 1 4 1000020160
-task E exclusive cell 0 18 18 2 2 1 1000020260
-task E exclusive cell 0 18 18 2 2 3 1000020260
-task E exclusive cell 0 19 19 2 3 0 1000020360
-task E exclusive cell 0 19 19 2 3 2 1000020360
-task E exclusive cell 0 19 19 2 3 4 1000020360
-task E exclusive cell 0 20 20 2 4 1 1000020460
-task E exclusive cell 0 20 20 2 4 3 1000020460
-task E exclusive cell 0 21 21 2 5 0 1000020560
-task E exclusive cell 0 21 21 2 5 2 1000020560
-task E exclusive cell 0 21 21 2 5 4 1000020560
-task E exclusive cell 0 22 22 2 6 1 1000020660
-task E exclusive cell 0 22 22 2 6 3 1000020660
-task E exclusive cell 0 23 23 2 7 0 1000020760
-task E exclusive cell 0 23 23 2 7 2 1000020760
-task E exclusive cell 0 23 23 2 7 4 1000020760
-task E shared cell 0 24 24 3 0 0 1000030065
-task E shared cell 0 24 24 3 0 2 1000030065
-task E shared cell 0 24 24 3 0 4 1000030065
-task E shared cell 0 25 25 3 1 1 1000030165
-task E shared cell 0 25 25 3 1 3 1000030165
-task E shared cell 0 26 26 3 2 0 1000030265
-task E shared cell 0 26 26 3 2 2 1000030265
-task E shared cell 0 26 26 3 2 4 1000030265
-task E shared cell 0 27 27 3 3 1 1000030365
-task E shared cell 0 27 27 3 3 3 1000030365
-task E shared cell 0 28 28 3 4 0 1000030465
-task E shared cell 0 28 28 3 4 2 1000030465
-task E shared cell 0 28 28 3 4 4 1000030465
-task E shared cell 0 29 29 3 5 1 1000030565
-task E shared cell 0 29 29 3 5 3 1000030565
-task E shared cell 0 30 30 3 6 0 1000030665
-task E shared cell 0 30 30 3 6 2 1000030665
-task E shared cell 0 30 30 3 6 4 1000030665
-task E shared cell 0 31 31 3 7 1 1000030765
-task E shared cell 0 31 31 3 7 3 1000030765
-task E ghost cell 0 32 32 4 0 1 1001040085
-task E ghost cell 0 32 32 4 0 3 1001040085
-task E ghost cell 0 33 33 4 1 0 1001040185
-task E ghost cell 0 33 33 4 1 2 1001040185
-task E ghost cell 0 33 33 4 1 4 1001040185
-task E ghost cell 0 34 34 4 2 1 1001040285
-task E ghost cell 0 34 34 4 2 3 1001040285
-task E ghost cell 0 35 35 4 3 0 1001040385
-task E ghost cell 0 35 35 4 3 2 1001040385
-task E ghost cell 0 35 35 4 3 4 1001040385
-task E ghost cell 0 36 36 4 4 1 1001040485
-task E ghost cell 0 36 36 4 4 3 1001040485
-task E ghost cell 0 37 37 4 5 0 1001040585
-task E ghost cell 0 37 37 4 5 2 1001040585
-task E ghost cell 0 37 37 4 5 4 1001040585
-task E ghost cell 0 38 38 4 6 1 1001040685
-task E ghost cell 0 38 38 4 6 3 1001040685
-task E ghost cell 0 39 39 4 7 0 1001040785
-task E ghost cell 0 39 39 4 7 2 1001040785
-task E ghost cell 0 39 39 4 7 4 1001040785
+task G exclusive cell 0 0 0 0 0 1 1000000060
+task G exclusive cell 0 0 0 0 0 3 1000000060
+task G exclusive cell 0 1 1 0 1 0 1000000160
+task G exclusive cell 0 1 1 0 1 2 1000000160
+task G exclusive cell 0 1 1 0 1 4 1000000160
+task G exclusive cell 0 2 2 0 2 1 1000000260
+task G exclusive cell 0 2 2 0 2 3 1000000260
+task G exclusive cell 0 3 3 0 3 0 1000000360
+task G exclusive cell 0 3 3 0 3 2 1000000360
+task G exclusive cell 0 3 3 0 3 4 1000000360
+task G exclusive cell 0 4 4 0 4 1 1000000460
+task G exclusive cell 0 4 4 0 4 3 1000000460
+task G exclusive cell 0 5 5 0 5 0 1000000560
+task G exclusive cell 0 5 5 0 5 2 1000000560
+task G exclusive cell 0 5 5 0 5 4 1000000560
+task G exclusive cell 0 6 6 0 6 1 1000000660
+task G exclusive cell 0 6 6 0 6 3 1000000660
+task G exclusive cell 0 7 7 0 7 0 1000000760
+task G exclusive cell 0 7 7 0 7 2 1000000760
+task G exclusive cell 0 7 7 0 7 4 1000000760
+task G exclusive cell 0 8 8 1 0 0 1000010060
+task G exclusive cell 0 8 8 1 0 2 1000010060
+task G exclusive cell 0 8 8 1 0 4 1000010060
+task G exclusive cell 0 9 9 1 1 1 1000010160
+task G exclusive cell 0 9 9 1 1 3 1000010160
+task G exclusive cell 0 10 10 1 2 0 1000010260
+task G exclusive cell 0 10 10 1 2 2 1000010260
+task G exclusive cell 0 10 10 1 2 4 1000010260
+task G exclusive cell 0 11 11 1 3 1 1000010360
+task G exclusive cell 0 11 11 1 3 3 1000010360
+task G exclusive cell 0 11 11 1 3 5 1000010360
+task G exclusive cell 0 11 11 1 3 7 1000010360
+task G exclusive cell 0 11 11 1 3 9 1000010360
+task G exclusive cell 0 11 11 1 3 11 1000010360
+task G exclusive cell 0 11 11 1 3 13 1000010360
+task G exclusive cell 0 11 11 1 3 15 1000010360
+task G exclusive cell 0 12 12 1 4 0 1000010460
+task G exclusive cell 0 12 12 1 4 2 1000010460
+task G exclusive cell 0 12 12 1 4 4 1000010460
+task G exclusive cell 0 12 12 1 4 6 1000010460
+task G exclusive cell 0 12 12 1 4 8 1000010460
+task G exclusive cell 0 12 12 1 4 10 1000010460
+task G exclusive cell 0 12 12 1 4 12 1000010460
+task G exclusive cell 0 12 12 1 4 14 1000010460
+task G exclusive cell 0 13 13 1 5 1 1000010560
+task G exclusive cell 0 13 13 1 5 3 1000010560
+task G exclusive cell 0 13 13 1 5 5 1000010560
+task G exclusive cell 0 13 13 1 5 7 1000010560
+task G exclusive cell 0 13 13 1 5 9 1000010560
+task G exclusive cell 0 13 13 1 5 11 1000010560
+task G exclusive cell 0 13 13 1 5 13 1000010560
+task G exclusive cell 0 13 13 1 5 15 1000010560
+task G exclusive cell 0 14 14 1 6 0 1000010660
+task G exclusive cell 0 14 14 1 6 2 1000010660
+task G exclusive cell 0 14 14 1 6 4 1000010660
+task G exclusive cell 0 15 15 1 7 1 1000010760
+task G exclusive cell 0 15 15 1 7 3 1000010760
+task G exclusive cell 0 16 16 2 0 1 1000020060
+task G exclusive cell 0 16 16 2 0 3 1000020060
+task G exclusive cell 0 17 17 2 1 0 1000020160
+task G exclusive cell 0 17 17 2 1 2 1000020160
+task G exclusive cell 0 17 17 2 1 4 1000020160
+task G exclusive cell 0 18 18 2 2 1 1000020260
+task G exclusive cell 0 18 18 2 2 3 1000020260
+task G exclusive cell 0 19 19 2 3 0 1000020360
+task G exclusive cell 0 19 19 2 3 2 1000020360
+task G exclusive cell 0 19 19 2 3 4 1000020360
+task G exclusive cell 0 20 20 2 4 1 1000020460
+task G exclusive cell 0 20 20 2 4 3 1000020460
+task G exclusive cell 0 21 21 2 5 0 1000020560
+task G exclusive cell 0 21 21 2 5 2 1000020560
+task G exclusive cell 0 21 21 2 5 4 1000020560
+task G exclusive cell 0 22 22 2 6 1 1000020660
+task G exclusive cell 0 22 22 2 6 3 1000020660
+task G exclusive cell 0 23 23 2 7 0 1000020760
+task G exclusive cell 0 23 23 2 7 2 1000020760
+task G exclusive cell 0 23 23 2 7 4 1000020760
+task G shared cell 0 24 24 3 0 0 1000030065
+task G shared cell 0 24 24 3 0 2 1000030065
+task G shared cell 0 24 24 3 0 4 1000030065
+task G shared cell 0 25 25 3 1 1 1000030165
+task G shared cell 0 25 25 3 1 3 1000030165
+task G shared cell 0 26 26 3 2 0 1000030265
+task G shared cell 0 26 26 3 2 2 1000030265
+task G shared cell 0 26 26 3 2 4 1000030265
+task G shared cell 0 27 27 3 3 1 1000030365
+task G shared cell 0 27 27 3 3 3 1000030365
+task G shared cell 0 28 28 3 4 0 1000030465
+task G shared cell 0 28 28 3 4 2 1000030465
+task G shared cell 0 28 28 3 4 4 1000030465
+task G shared cell 0 29 29 3 5 1 1000030565
+task G shared cell 0 29 29 3 5 3 1000030565
+task G shared cell 0 30 30 3 6 0 1000030665
+task G shared cell 0 30 30 3 6 2 1000030665
+task G shared cell 0 30 30 3 6 4 1000030665
+task G shared cell 0 31 31 3 7 1 1000030765
+task G shared cell 0 31 31 3 7 3 1000030765
+task G ghost cell 0 32 32 4 0 1 1001040045
+task G ghost cell 0 32 32 4 0 3 1001040045
+task G ghost cell 0 33 33 4 1 0 1001040145
+task G ghost cell 0 33 33 4 1 2 1001040145
+task G ghost cell 0 33 33 4 1 4 1001040145
+task G ghost cell 0 34 34 4 2 1 1001040245
+task G ghost cell 0 34 34 4 2 3 1001040245
+task G ghost cell 0 35 35 4 3 0 1001040345
+task G ghost cell 0 35 35 4 3 2 1001040345
+task G ghost cell 0 35 35 4 3 4 1001040345
+task G ghost cell 0 36 36 4 4 1 1001040445
+task G ghost cell 0 36 36 4 4 3 1001040445
+task G ghost cell 0 37 37 4 5 0 1001040545
+task G ghost cell 0 37 37 4 5 2 1001040545
+task G ghost cell 0 37 37 4 5 4 1001040545
+task G ghost cell 0 38 38 4 6 1 1001040645
+task G ghost cell 0 38 38 4 6 3 1001040645
+task G ghost cell 0 39 39 4 7 0 1001040745
+task G ghost cell 0 39 39 4 7 2 1001040745
+task G ghost cell 0 39 39 4 7 4 1001040745
+task H before exclusive cell 0 0 0 0 0 1 1000000060
+task H before exclusive cell 0 0 0 0 0 3 1000000060
+task H before exclusive cell 0 1 1 0 1 0 1000000160
+task H before exclusive cell 0 1 1 0 1 2 1000000160
+task H before exclusive cell 0 1 1 0 1 4 1000000160
+task H before exclusive cell 0 2 2 0 2 1 1000000260
+task H before exclusive cell 0 2 2 0 2 3 1000000260
+task H before exclusive cell 0 3 3 0 3 0 1000000360
+task H before exclusive cell 0 3 3 0 3 2 1000000360
+task H before exclusive cell 0 3 3 0 3 4 1000000360
+task H before exclusive cell 0 4 4 0 4 1 1000000460
+task H before exclusive cell 0 4 4 0 4 3 1000000460
+task H before exclusive cell 0 5 5 0 5 0 1000000560
+task H before exclusive cell 0 5 5 0 5 2 1000000560
+task H before exclusive cell 0 5 5 0 5 4 1000000560
+task H before exclusive cell 0 6 6 0 6 1 1000000660
+task H before exclusive cell 0 6 6 0 6 3 1000000660
+task H before exclusive cell 0 7 7 0 7 0 1000000760
+task H before exclusive cell 0 7 7 0 7 2 1000000760
+task H before exclusive cell 0 7 7 0 7 4 1000000760
+task H before exclusive cell 0 8 8 1 0 0 1000010060
+task H before exclusive cell 0 8 8 1 0 2 1000010060
+task H before exclusive cell 0 8 8 1 0 4 1000010060
+task H before exclusive cell 0 9 9 1 1 1 1000010160
+task H before exclusive cell 0 9 9 1 1 3 1000010160
+task H before exclusive cell 0 10 10 1 2 0 1000010260
+task H before exclusive cell 0 10 10 1 2 2 1000010260
+task H before exclusive cell 0 10 10 1 2 4 1000010260
+task H before exclusive cell 0 11 11 1 3 1 1000010360
+task H before exclusive cell 0 11 11 1 3 3 1000010360
+task H before exclusive cell 0 11 11 1 3 5 1000010360
+task H before exclusive cell 0 11 11 1 3 7 1000010360
+task H before exclusive cell 0 11 11 1 3 9 1000010360
+task H before exclusive cell 0 11 11 1 3 11 1000010360
+task H before exclusive cell 0 11 11 1 3 13 1000010360
+task H before exclusive cell 0 11 11 1 3 15 1000010360
+task H before exclusive cell 0 12 12 1 4 0 1000010460
+task H before exclusive cell 0 12 12 1 4 2 1000010460
+task H before exclusive cell 0 12 12 1 4 4 1000010460
+task H before exclusive cell 0 12 12 1 4 6 1000010460
+task H before exclusive cell 0 12 12 1 4 8 1000010460
+task H before exclusive cell 0 12 12 1 4 10 1000010460
+task H before exclusive cell 0 12 12 1 4 12 1000010460
+task H before exclusive cell 0 12 12 1 4 14 1000010460
+task H before exclusive cell 0 13 13 1 5 1 1000010560
+task H before exclusive cell 0 13 13 1 5 3 1000010560
+task H before exclusive cell 0 13 13 1 5 5 1000010560
+task H before exclusive cell 0 13 13 1 5 7 1000010560
+task H before exclusive cell 0 13 13 1 5 9 1000010560
+task H before exclusive cell 0 13 13 1 5 11 1000010560
+task H before exclusive cell 0 13 13 1 5 13 1000010560
+task H before exclusive cell 0 13 13 1 5 15 1000010560
+task H before exclusive cell 0 14 14 1 6 0 1000010660
+task H before exclusive cell 0 14 14 1 6 2 1000010660
+task H before exclusive cell 0 14 14 1 6 4 1000010660
+task H before exclusive cell 0 15 15 1 7 1 1000010760
+task H before exclusive cell 0 15 15 1 7 3 1000010760
+task H before exclusive cell 0 16 16 2 0 1 1000020060
+task H before exclusive cell 0 16 16 2 0 3 1000020060
+task H before exclusive cell 0 17 17 2 1 0 1000020160
+task H before exclusive cell 0 17 17 2 1 2 1000020160
+task H before exclusive cell 0 17 17 2 1 4 1000020160
+task H before exclusive cell 0 18 18 2 2 1 1000020260
+task H before exclusive cell 0 18 18 2 2 3 1000020260
+task H before exclusive cell 0 19 19 2 3 0 1000020360
+task H before exclusive cell 0 19 19 2 3 2 1000020360
+task H before exclusive cell 0 19 19 2 3 4 1000020360
+task H before exclusive cell 0 20 20 2 4 1 1000020460
+task H before exclusive cell 0 20 20 2 4 3 1000020460
+task H before exclusive cell 0 21 21 2 5 0 1000020560
+task H before exclusive cell 0 21 21 2 5 2 1000020560
+task H before exclusive cell 0 21 21 2 5 4 1000020560
+task H before exclusive cell 0 22 22 2 6 1 1000020660
+task H before exclusive cell 0 22 22 2 6 3 1000020660
+task H before exclusive cell 0 23 23 2 7 0 1000020760
+task H before exclusive cell 0 23 23 2 7 2 1000020760
+task H before exclusive cell 0 23 23 2 7 4 1000020760
+task H before shared cell 0 24 24 3 0 0 1000030065
+task H before shared cell 0 24 24 3 0 2 1000030065
+task H before shared cell 0 24 24 3 0 4 1000030065
+task H before shared cell 0 25 25 3 1 1 1000030165
+task H before shared cell 0 25 25 3 1 3 1000030165
+task H before shared cell 0 26 26 3 2 0 1000030265
+task H before shared cell 0 26 26 3 2 2 1000030265
+task H before shared cell 0 26 26 3 2 4 1000030265
+task H before shared cell 0 27 27 3 3 1 1000030365
+task H before shared cell 0 27 27 3 3 3 1000030365
+task H before shared cell 0 28 28 3 4 0 1000030465
+task H before shared cell 0 28 28 3 4 2 1000030465
+task H before shared cell 0 28 28 3 4 4 1000030465
+task H before shared cell 0 29 29 3 5 1 1000030565
+task H before shared cell 0 29 29 3 5 3 1000030565
+task H before shared cell 0 30 30 3 6 0 1000030665
+task H before shared cell 0 30 30 3 6 2 1000030665
+task H before shared cell 0 30 30 3 6 4 1000030665
+task H before shared cell 0 31 31 3 7 1 1000030765
+task H before shared cell 0 31 31 3 7 3 1000030765
+task H before ghost cell 0 32 32 4 0 1 1001040045
+task H before ghost cell 0 32 32 4 0 3 1001040045
+task H before ghost cell 0 33 33 4 1 0 1001040145
+task H before ghost cell 0 33 33 4 1 2 1001040145
+task H before ghost cell 0 33 33 4 1 4 1001040145
+task H before ghost cell 0 34 34 4 2 1 1001040245
+task H before ghost cell 0 34 34 4 2 3 1001040245
+task H before ghost cell 0 35 35 4 3 0 1001040345
+task H before ghost cell 0 35 35 4 3 2 1001040345
+task H before ghost cell 0 35 35 4 3 4 1001040345
+task H before ghost cell 0 36 36 4 4 1 1001040445
+task H before ghost cell 0 36 36 4 4 3 1001040445
+task H before ghost cell 0 37 37 4 5 0 1001040545
+task H before ghost cell 0 37 37 4 5 2 1001040545
+task H before ghost cell 0 37 37 4 5 4 1001040545
+task H before ghost cell 0 38 38 4 6 1 1001040645
+task H before ghost cell 0 38 38 4 6 3 1001040645
+task H before ghost cell 0 39 39 4 7 0 1001040745
+task H before ghost cell 0 39 39 4 7 2 1001040745
+task H before ghost cell 0 39 39 4 7 4 1001040745
+task H exclusive cell 0 0 0 0 0 1 1000000000
+task H exclusive cell 0 0 0 0 0 3 1000000000
+task H exclusive cell 0 1 1 0 1 0 1000000100
+task H exclusive cell 0 1 1 0 1 2 1000000100
+task H exclusive cell 0 1 1 0 1 4 1000000100
+task H exclusive cell 0 2 2 0 2 1 1000000200
+task H exclusive cell 0 2 2 0 2 3 1000000200
+task H exclusive cell 0 3 3 0 3 0 1000000300
+task H exclusive cell 0 3 3 0 3 2 1000000300
+task H exclusive cell 0 3 3 0 3 4 1000000300
+task H exclusive cell 0 4 4 0 4 1 1000000400
+task H exclusive cell 0 4 4 0 4 3 1000000400
+task H exclusive cell 0 5 5 0 5 0 1000000500
+task H exclusive cell 0 5 5 0 5 2 1000000500
+task H exclusive cell 0 5 5 0 5 4 1000000500
+task H exclusive cell 0 6 6 0 6 1 1000000600
+task H exclusive cell 0 6 6 0 6 3 1000000600
+task H exclusive cell 0 7 7 0 7 0 1000000700
+task H exclusive cell 0 7 7 0 7 2 1000000700
+task H exclusive cell 0 7 7 0 7 4 1000000700
+task H exclusive cell 0 8 8 1 0 0 1000010000
+task H exclusive cell 0 8 8 1 0 2 1000010000
+task H exclusive cell 0 8 8 1 0 4 1000010000
+task H exclusive cell 0 9 9 1 1 1 1000010100
+task H exclusive cell 0 9 9 1 1 3 1000010100
+task H exclusive cell 0 10 10 1 2 0 1000010200
+task H exclusive cell 0 10 10 1 2 2 1000010200
+task H exclusive cell 0 10 10 1 2 4 1000010200
+task H exclusive cell 0 11 11 1 3 1 1000010300
+task H exclusive cell 0 11 11 1 3 3 1000010300
+task H exclusive cell 0 11 11 1 3 5 1000010300
+task H exclusive cell 0 11 11 1 3 7 1000010300
+task H exclusive cell 0 11 11 1 3 9 1000010300
+task H exclusive cell 0 11 11 1 3 11 1000010300
+task H exclusive cell 0 11 11 1 3 13 1000010300
+task H exclusive cell 0 11 11 1 3 15 1000010300
+task H exclusive cell 0 12 12 1 4 0 1000010400
+task H exclusive cell 0 12 12 1 4 2 1000010400
+task H exclusive cell 0 12 12 1 4 4 1000010400
+task H exclusive cell 0 12 12 1 4 6 1000010400
+task H exclusive cell 0 12 12 1 4 8 1000010400
+task H exclusive cell 0 12 12 1 4 10 1000010400
+task H exclusive cell 0 12 12 1 4 12 1000010400
+task H exclusive cell 0 12 12 1 4 14 1000010400
+task H exclusive cell 0 13 13 1 5 1 1000010500
+task H exclusive cell 0 13 13 1 5 3 1000010500
+task H exclusive cell 0 13 13 1 5 5 1000010500
+task H exclusive cell 0 13 13 1 5 7 1000010500
+task H exclusive cell 0 13 13 1 5 9 1000010500
+task H exclusive cell 0 13 13 1 5 11 1000010500
+task H exclusive cell 0 13 13 1 5 13 1000010500
+task H exclusive cell 0 13 13 1 5 15 1000010500
+task H exclusive cell 0 14 14 1 6 0 1000010600
+task H exclusive cell 0 14 14 1 6 2 1000010600
+task H exclusive cell 0 14 14 1 6 4 1000010600
+task H exclusive cell 0 15 15 1 7 1 1000010700
+task H exclusive cell 0 15 15 1 7 3 1000010700
+task H exclusive cell 0 16 16 2 0 1 1000020000
+task H exclusive cell 0 16 16 2 0 3 1000020000
+task H exclusive cell 0 17 17 2 1 0 1000020100
+task H exclusive cell 0 17 17 2 1 2 1000020100
+task H exclusive cell 0 17 17 2 1 4 1000020100
+task H exclusive cell 0 18 18 2 2 1 1000020200
+task H exclusive cell 0 18 18 2 2 3 1000020200
+task H exclusive cell 0 19 19 2 3 0 1000020300
+task H exclusive cell 0 19 19 2 3 2 1000020300
+task H exclusive cell 0 19 19 2 3 4 1000020300
+task H exclusive cell 0 20 20 2 4 1 1000020400
+task H exclusive cell 0 20 20 2 4 3 1000020400
+task H exclusive cell 0 21 21 2 5 0 1000020500
+task H exclusive cell 0 21 21 2 5 2 1000020500
+task H exclusive cell 0 21 21 2 5 4 1000020500
+task H exclusive cell 0 22 22 2 6 1 1000020600
+task H exclusive cell 0 22 22 2 6 3 1000020600
+task H exclusive cell 0 23 23 2 7 0 1000020700
+task H exclusive cell 0 23 23 2 7 2 1000020700
+task H exclusive cell 0 23 23 2 7 4 1000020700
+task H shared cell 0 24 24 3 0 0 1000030005
+task H shared cell 0 24 24 3 0 2 1000030005
+task H shared cell 0 24 24 3 0 4 1000030005
+task H shared cell 0 25 25 3 1 1 1000030105
+task H shared cell 0 25 25 3 1 3 1000030105
+task H shared cell 0 26 26 3 2 0 1000030205
+task H shared cell 0 26 26 3 2 2 1000030205
+task H shared cell 0 26 26 3 2 4 1000030205
+task H shared cell 0 27 27 3 3 1 1000030305
+task H shared cell 0 27 27 3 3 3 1000030305
+task H shared cell 0 28 28 3 4 0 1000030405
+task H shared cell 0 28 28 3 4 2 1000030405
+task H shared cell 0 28 28 3 4 4 1000030405
+task H shared cell 0 29 29 3 5 1 1000030505
+task H shared cell 0 29 29 3 5 3 1000030505
+task H shared cell 0 30 30 3 6 0 1000030605
+task H shared cell 0 30 30 3 6 2 1000030605
+task H shared cell 0 30 30 3 6 4 1000030605
+task H shared cell 0 31 31 3 7 1 1000030705
+task H shared cell 0 31 31 3 7 3 1000030705
+task H ghost cell 0 32 32 4 0 1 1001040045
+task H ghost cell 0 32 32 4 0 3 1001040045
+task H ghost cell 0 33 33 4 1 0 1001040145
+task H ghost cell 0 33 33 4 1 2 1001040145
+task H ghost cell 0 33 33 4 1 4 1001040145
+task H ghost cell 0 34 34 4 2 1 1001040245
+task H ghost cell 0 34 34 4 2 3 1001040245
+task H ghost cell 0 35 35 4 3 0 1001040345
+task H ghost cell 0 35 35 4 3 2 1001040345
+task H ghost cell 0 35 35 4 3 4 1001040345
+task H ghost cell 0 36 36 4 4 1 1001040445
+task H ghost cell 0 36 36 4 4 3 1001040445
+task H ghost cell 0 37 37 4 5 0 1001040545
+task H ghost cell 0 37 37 4 5 2 1001040545
+task H ghost cell 0 37 37 4 5 4 1001040545
+task H ghost cell 0 38 38 4 6 1 1001040645
+task H ghost cell 0 38 38 4 6 3 1001040645
+task H ghost cell 0 39 39 4 7 0 1001040745
+task H ghost cell 0 39 39 4 7 2 1001040745
+task H ghost cell 0 39 39 4 7 4 1001040745
+task E exclusive cell 0 0 0 0 0 1 1000000000
+task E exclusive cell 0 0 0 0 0 3 1000000000
+task E exclusive cell 0 1 1 0 1 0 1000000100
+task E exclusive cell 0 1 1 0 1 2 1000000100
+task E exclusive cell 0 1 1 0 1 4 1000000100
+task E exclusive cell 0 2 2 0 2 1 1000000200
+task E exclusive cell 0 2 2 0 2 3 1000000200
+task E exclusive cell 0 3 3 0 3 0 1000000300
+task E exclusive cell 0 3 3 0 3 2 1000000300
+task E exclusive cell 0 3 3 0 3 4 1000000300
+task E exclusive cell 0 4 4 0 4 1 1000000400
+task E exclusive cell 0 4 4 0 4 3 1000000400
+task E exclusive cell 0 5 5 0 5 0 1000000500
+task E exclusive cell 0 5 5 0 5 2 1000000500
+task E exclusive cell 0 5 5 0 5 4 1000000500
+task E exclusive cell 0 6 6 0 6 1 1000000600
+task E exclusive cell 0 6 6 0 6 3 1000000600
+task E exclusive cell 0 7 7 0 7 0 1000000700
+task E exclusive cell 0 7 7 0 7 2 1000000700
+task E exclusive cell 0 7 7 0 7 4 1000000700
+task E exclusive cell 0 8 8 1 0 0 1000010000
+task E exclusive cell 0 8 8 1 0 2 1000010000
+task E exclusive cell 0 8 8 1 0 4 1000010000
+task E exclusive cell 0 9 9 1 1 1 1000010100
+task E exclusive cell 0 9 9 1 1 3 1000010100
+task E exclusive cell 0 10 10 1 2 0 1000010200
+task E exclusive cell 0 10 10 1 2 2 1000010200
+task E exclusive cell 0 10 10 1 2 4 1000010200
+task E exclusive cell 0 11 11 1 3 1 1000010300
+task E exclusive cell 0 11 11 1 3 3 1000010300
+task E exclusive cell 0 11 11 1 3 5 1000010300
+task E exclusive cell 0 11 11 1 3 7 1000010300
+task E exclusive cell 0 11 11 1 3 9 1000010300
+task E exclusive cell 0 11 11 1 3 11 1000010300
+task E exclusive cell 0 11 11 1 3 13 1000010300
+task E exclusive cell 0 11 11 1 3 15 1000010300
+task E exclusive cell 0 12 12 1 4 0 1000010400
+task E exclusive cell 0 12 12 1 4 2 1000010400
+task E exclusive cell 0 12 12 1 4 4 1000010400
+task E exclusive cell 0 12 12 1 4 6 1000010400
+task E exclusive cell 0 12 12 1 4 8 1000010400
+task E exclusive cell 0 12 12 1 4 10 1000010400
+task E exclusive cell 0 12 12 1 4 12 1000010400
+task E exclusive cell 0 12 12 1 4 14 1000010400
+task E exclusive cell 0 13 13 1 5 1 1000010500
+task E exclusive cell 0 13 13 1 5 3 1000010500
+task E exclusive cell 0 13 13 1 5 5 1000010500
+task E exclusive cell 0 13 13 1 5 7 1000010500
+task E exclusive cell 0 13 13 1 5 9 1000010500
+task E exclusive cell 0 13 13 1 5 11 1000010500
+task E exclusive cell 0 13 13 1 5 13 1000010500
+task E exclusive cell 0 13 13 1 5 15 1000010500
+task E exclusive cell 0 14 14 1 6 0 1000010600
+task E exclusive cell 0 14 14 1 6 2 1000010600
+task E exclusive cell 0 14 14 1 6 4 1000010600
+task E exclusive cell 0 15 15 1 7 1 1000010700
+task E exclusive cell 0 15 15 1 7 3 1000010700
+task E exclusive cell 0 16 16 2 0 1 1000020000
+task E exclusive cell 0 16 16 2 0 3 1000020000
+task E exclusive cell 0 17 17 2 1 0 1000020100
+task E exclusive cell 0 17 17 2 1 2 1000020100
+task E exclusive cell 0 17 17 2 1 4 1000020100
+task E exclusive cell 0 18 18 2 2 1 1000020200
+task E exclusive cell 0 18 18 2 2 3 1000020200
+task E exclusive cell 0 19 19 2 3 0 1000020300
+task E exclusive cell 0 19 19 2 3 2 1000020300
+task E exclusive cell 0 19 19 2 3 4 1000020300
+task E exclusive cell 0 20 20 2 4 1 1000020400
+task E exclusive cell 0 20 20 2 4 3 1000020400
+task E exclusive cell 0 21 21 2 5 0 1000020500
+task E exclusive cell 0 21 21 2 5 2 1000020500
+task E exclusive cell 0 21 21 2 5 4 1000020500
+task E exclusive cell 0 22 22 2 6 1 1000020600
+task E exclusive cell 0 22 22 2 6 3 1000020600
+task E exclusive cell 0 23 23 2 7 0 1000020700
+task E exclusive cell 0 23 23 2 7 2 1000020700
+task E exclusive cell 0 23 23 2 7 4 1000020700
+task E shared cell 0 24 24 3 0 0 1000030005
+task E shared cell 0 24 24 3 0 2 1000030005
+task E shared cell 0 24 24 3 0 4 1000030005
+task E shared cell 0 25 25 3 1 1 1000030105
+task E shared cell 0 25 25 3 1 3 1000030105
+task E shared cell 0 26 26 3 2 0 1000030205
+task E shared cell 0 26 26 3 2 2 1000030205
+task E shared cell 0 26 26 3 2 4 1000030205
+task E shared cell 0 27 27 3 3 1 1000030305
+task E shared cell 0 27 27 3 3 3 1000030305
+task E shared cell 0 28 28 3 4 0 1000030405
+task E shared cell 0 28 28 3 4 2 1000030405
+task E shared cell 0 28 28 3 4 4 1000030405
+task E shared cell 0 29 29 3 5 1 1000030505
+task E shared cell 0 29 29 3 5 3 1000030505
+task E shared cell 0 30 30 3 6 0 1000030605
+task E shared cell 0 30 30 3 6 2 1000030605
+task E shared cell 0 30 30 3 6 4 1000030605
+task E shared cell 0 31 31 3 7 1 1000030705
+task E shared cell 0 31 31 3 7 3 1000030705
+task E ghost cell 0 32 32 4 0 1 1001040005
+task E ghost cell 0 32 32 4 0 3 1001040005
+task E ghost cell 0 33 33 4 1 0 1001040105
+task E ghost cell 0 33 33 4 1 2 1001040105
+task E ghost cell 0 33 33 4 1 4 1001040105
+task E ghost cell 0 34 34 4 2 1 1001040205
+task E ghost cell 0 34 34 4 2 3 1001040205
+task E ghost cell 0 35 35 4 3 0 1001040305
+task E ghost cell 0 35 35 4 3 2 1001040305
+task E ghost cell 0 35 35 4 3 4 1001040305
+task E ghost cell 0 36 36 4 4 1 1001040405
+task E ghost cell 0 36 36 4 4 3 1001040405
+task E ghost cell 0 37 37 4 5 0 1001040505
+task E ghost cell 0 37 37 4 5 2 1001040505
+task E ghost cell 0 37 37 4 5 4 1001040505
+task E ghost cell 0 38 38 4 6 1 1001040605
+task E ghost cell 0 38 38 4 6 3 1001040605
+task E ghost cell 0 39 39 4 7 0 1001040705
+task E ghost cell 0 39 39 4 7 2 1001040705
+task E ghost cell 0 39 39 4 7 4 1001040705
