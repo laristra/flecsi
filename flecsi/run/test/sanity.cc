@@ -18,9 +18,7 @@
 
 int
 runtime_sanity() {
-  UNIT {
-    std::cerr << "Hello World" << std::endl;
-  };
+  UNIT { std::cerr << "Hello World" << std::endl; };
 }
 
 flecsi::unit::driver<runtime_sanity> driver;

@@ -45,9 +45,7 @@ auto pressure = cell_field(structured);
 
 int
 check() {
-  UNIT {
-    flog(info) << "check" << std::endl;
-  };
+  UNIT { flog(info) << "check" << std::endl; };
 } // check
 
 int

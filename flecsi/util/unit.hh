@@ -41,8 +41,7 @@ enum class test_control_points {
   finalization
 }; // enum test_control_points
 
-inline const char *
-operator*(test_control_points cp) {
+inline const char * operator*(test_control_points cp) {
   switch(cp) {
     case test_control_points::initialization:
       return "initialization";

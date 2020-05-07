@@ -18,9 +18,9 @@
 #include <flecsi-config.h>
 
 #include "flecsi/flog.hh"
+#include "flecsi/util/constant.hh"
 #include "flecsi/util/dag.hh"
 #include "flecsi/util/tuple_walker.hh"
-#include "flecsi/util/constant.hh"
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
 #include "flecsi/util/graphviz.hh"
@@ -48,10 +48,11 @@ struct cycle {
   using type = std::tuple<ControlPoints...>;
   static constexpr size_t last = std::tuple_size<type>::value - 1;
 
-  template<size_t E, typename T> struct recurse;
+  template<size_t E, typename T>
+  struct recurse;
 
-  template<size_t E, bool (*P)(), typename ... CPs>
-  struct recurse<E, cycle<P,CPs...>> {
+  template<size_t E, bool (*P)(), typename... CPs>
+  struct recurse<E, cycle<P, CPs...>> {
     using type = std::tuple<CPs...>;
     static constexpr const auto & value =
       recurse<E, typename std::tuple_element<E, type>::type>::value;
@@ -172,7 +173,9 @@ struct point_writer
     "#4eb2e0",
     "#9dd9f3"};
 
-  point_writer(std::map<control_points_enum, dag> registry, graphviz & gv, int depth = 0)
+  point_writer(std::map<control_points_enum, dag> registry,
+    graphviz & gv,
+    int depth = 0)
     : registry_(registry), gv_(gv), depth_(depth) {}
 
   template<typename ElementType>
@@ -205,7 +208,7 @@ struct point_writer
       } // for
     }
     else {
-      point_writer(registry_, gv_, depth_-1)
+      point_writer(registry_, gv_, depth_ - 1)
         .template walk_types<typename ElementType::type>();
 
       auto & begin = registry_[ElementType::begin];

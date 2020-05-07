@@ -32,7 +32,7 @@ using namespace flecsi;
 
 int
 check() {
-  UNIT{};
+  UNIT {};
 } // check
 
 enum FieldIDs {

@@ -266,7 +266,7 @@ flecsi::unit::driver<simple_context> simple_context_driver;
 
 int
 flecsi_context() {
-  UNIT{};
+  UNIT {};
 } // simple_context
 
 flecsi::unit::driver<flecsi_context> flecsi_context_driver;

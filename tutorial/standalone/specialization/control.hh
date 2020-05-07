@@ -20,8 +20,7 @@ namespace standalone {
 
 enum class cp { initialize, advance, analyze, finalize };
 
-inline const char *
-operator*(cp control_point) {
+inline const char * operator*(cp control_point) {
   switch(control_point) {
     case cp::initialize:
       return "initialize";
@@ -42,26 +41,26 @@ struct control_policy {
 
   using control = flecsi::control<control_policy>;
 
-  size_t & steps() { return steps_; }
-  size_t & step() { return step_; }
+  size_t & steps() {
+    return steps_;
+  }
+  size_t & step() {
+    return step_;
+  }
 
   static bool cycle_control() {
     return control::instance().step()++ < 5;
   }
 
   template<auto CP>
-  using control_point = flecsi::control_point<CP>;  
+  using control_point = flecsi::control_point<CP>;
 
   using cycle = flecsi::cycle<cycle_control,
     control_point<cp::advance>,
-    control_point<cp::analyze>
-  >;
+    control_point<cp::analyze>>;
 
-  using control_points = std::tuple<
-    control_point<cp::initialize>,
-    cycle,
-    control_point<cp::finalize>
-  >;
+  using control_points = std::
+    tuple<control_point<cp::initialize>, cycle, control_point<cp::finalize>>;
 
 private:
   size_t steps_{0};
@@ -69,5 +68,5 @@ private:
 }; // struct control_policy
 
 using control = flecsi::control<control_policy>;
-  
+
 } // namespace standalone

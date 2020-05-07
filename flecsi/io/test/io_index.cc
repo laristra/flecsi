@@ -44,9 +44,7 @@ reset_zero(double1::accessor<rw> ia) {
 
 int
 check(double1::accessor<ro> ia) {
-  UNIT {
-    ASSERT_EQ(ia, color());
-  };
+  UNIT { ASSERT_EQ(ia, color()); };
 } // print
 
 int

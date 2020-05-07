@@ -18,7 +18,7 @@
 
 int
 crs() {
-  UNIT{};
+  UNIT {};
 } // crs
 
 flecsi::unit::driver<crs> driver;
