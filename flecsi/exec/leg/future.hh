@@ -56,11 +56,6 @@ struct future<Return> {
 
 template<typename Return>
 struct future<Return, exec::launch_type_t::index> {
-
-  explicit operator future<Return>() const {
-    return {};
-  }
-
   /*!
     Wait on a task result.
   */

@@ -21,9 +21,40 @@
 
 #include <cstddef>
 #include <type_traits>
+#include <utility>
 
 namespace flecsi {
 namespace exec {
+
+namespace detail {
+// We care about value category, so we want to use perfect forwarding.
+// However, such a template is a better match for some arguments than any
+// single non-template overload, so we use SFINAE to detect that we have
+// no replacement defined for an argument.
+template<class = void>
+struct task_param {};
+template<class P, class A, class = void> // A is a reference type
+struct replace_argument {
+  static A replace(A a) {
+    return static_cast<A>(a);
+  }
+};
+template<class P, class A>
+struct replace_argument<P,
+  A,
+  decltype(void(task_param<P>::replace(std::declval<A>())))> {
+  static decltype(auto) replace(A a) {
+    return task_param<P>::replace(static_cast<A>(a));
+  }
+};
+} // namespace detail
+// Replaces certain task arguments before conversion to the parameter type.
+template<class P, class T>
+decltype(auto)
+replace_argument(T && t) {
+  return detail::replace_argument<std::decay_t<P>, T &&>::replace(
+    std::forward<T>(t));
+}
 
 enum class launch_type_t : size_t { single, index };
 
@@ -65,7 +96,7 @@ struct future;
 
 #ifdef DOXYGEN // implemented per-backend
 template<typename Return>
-struct future<Return, exec::launch_type_t::single> {
+struct future<Return> {
   /// Wait on the task to finish.
   void wait() const;
   /// Get the task's result.
@@ -82,6 +113,13 @@ struct future<Return, exec::launch_type_t::index> {
 #endif
 
 namespace exec {
+template<class R>
+struct detail::task_param<future<R>> {
+  static future<R> replace(const future<R, launch_type_t::index> &) {
+    return {};
+  }
+};
+
 template<class>
 inline constexpr bool is_index_future = false;
 template<class R>

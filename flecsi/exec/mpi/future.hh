@@ -39,8 +39,6 @@ template<typename R>
 struct future<R, exec::launch_type_t::index> {
   void wait(bool = false) const {}
   R get(std::size_t index = 0, bool = false) const;
-
-  explicit operator future<R>() const;
 };
 
 } // namespace flecsi

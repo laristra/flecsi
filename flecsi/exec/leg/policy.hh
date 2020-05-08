@@ -71,10 +71,11 @@ auto
 serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
   static_assert((std::is_const_v<std::remove_reference_t<const PP>> && ...),
     "Tasks cannot accept non-const references");
-  return util::serial_put(std::tuple<std::conditional_t<
-      std::is_constructible_v<nonconst_ref_t<PP> &, nonconst_ref_t<AA>>,
-      const PP &,
-      std::decay_t<PP>>...>(std::forward<AA>(aa)...));
+  return util::serial_put<std::tuple<std::conditional_t<
+    std::is_constructible_v<nonconst_ref_t<PP> &, nonconst_ref_t<AA>>,
+    const PP &,
+    std::decay_t<PP>>...>>(
+    {exec::replace_argument<PP>(std::forward<AA>(aa))...});
 }
 
 } // namespace detail

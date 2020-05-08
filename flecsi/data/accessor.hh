@@ -24,6 +24,7 @@
 #endif
 
 #include "flecsi/data/reference.hh"
+#include "flecsi/exec/launch.hh"
 #include <flecsi/data/field.hh>
 
 namespace flecsi {
@@ -35,9 +36,6 @@ struct accessor<singular, DATA_TYPE, PRIVILEGES> {
   using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;
   using element_type = typename base_type::element_type;
 
-  template<class Topo, topo::index_space_t<Topo> Space>
-  accessor(field_reference<DATA_TYPE, singular, Topo, Space> const & ref)
-    : base(ref.template cast<dense>()) {}
   accessor(const base_type & b) : base(b) {}
 
   element_type & get() const {
@@ -75,9 +73,6 @@ struct accessor<dense, DATA_TYPE, PRIVILEGES> : reference_base {
   using element_type = std::
     conditional_t<privilege_write(PRIVILEGES), value_type, const value_type>;
 
-  template<class Topo, topo::index_space_t<Topo> Space>
-  accessor(field_reference<DATA_TYPE, dense, Topo, Space> const & ref)
-    : accessor(ref.fid()) {}
   explicit accessor(std::size_t f) : reference_base(f) {}
 
   /*!
@@ -109,4 +104,24 @@ private:
 }; // struct accessor
 
 } // namespace data
+
+template<class T, std::size_t S>
+struct exec::detail::task_param<data::accessor<data::dense, T, S>> {
+  template<class Topo, topo::index_space_t<Topo> Space>
+  static auto replace(
+    const data::field_reference<T, data::dense, Topo, Space> & r) {
+    return data::accessor<data::dense, T, S>(r.fid());
+  }
+};
+template<class T, std::size_t S>
+struct exec::detail::task_param<data::accessor<data::singular, T, S>> {
+  using type = data::accessor<data::singular, T, S>;
+  template<class Topo, topo::index_space_t<Topo> Space>
+  static type replace(
+    const data::field_reference<T, data::singular, Topo, Space> & r) {
+    return exec::replace_argument<typename type::base_type>(
+      r.template cast<data::dense>());
+  }
+};
+
 } // namespace flecsi
