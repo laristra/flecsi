@@ -5,7 +5,7 @@
 
 
 from spack import *
-
+import os
 
 class Flecsi(CMakePackage):
     '''FleCSI is a compile-time configurable framework designed to support
