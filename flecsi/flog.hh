@@ -270,9 +270,7 @@ struct devel_guard {
 };
 
 inline void
-add_output_stream(std::string const & label,
-  std::ostream & stream,
-  bool colorize = false) {}
+add_output_stream(std::string const &, std::ostream &, bool = false) {}
 
 } // namespace log
 } // namespace flecsi
