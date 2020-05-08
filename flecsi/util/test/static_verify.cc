@@ -27,19 +27,19 @@ struct first {
 };
 
 struct second {
-  void bar(void) {}
+  void bar() {}
 };
 
 struct both {
   int foo;
-  void bar(void) {}
+  void bar() {}
 };
 
 struct neither {};
 
 // make sure two bars aren't counted as a foo and a bar
 struct bars {
-  void bar(void) {}
+  void bar() {}
   void bar(int) {}
 };
 
