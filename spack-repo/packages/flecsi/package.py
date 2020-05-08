@@ -159,7 +159,11 @@ class Flecsi(CMakePackage):
 
         return options
 
-    # Dummy install for now,  will be removed when metapackage is available
+    # Dummy build for now,  remove when flecsi@devel can actually be built and installed through spack
+    def build(self, spec, prefix):
+        print("In build stage...")
+
+    # Dummy install for now,  remove when flecsi@devel can actually be built and installed through spack
     def install(self, spec, prefix):
         with open(os.path.join(spec.prefix, 'package-list.txt'), 'w') as out:
             for dep in spec.dependencies(deptype='build'):
@@ -167,4 +171,3 @@ class Flecsi(CMakePackage):
                     format_string='${PACKAGE} ${VERSION}'))
                 os.symlink(dep.prefix, os.path.join(spec.prefix, dep.name))
             out.close()
-
