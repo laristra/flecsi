@@ -60,7 +60,7 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12:')
 
-    depends_on("legion@ctrl-rep-5",when="backend=legion")
+    depends_on("legion@ctrl-rep-6:ctrl-rep-99",when="backend=legion")
     depends_on("hpx@1.3.0 cxxstd=14 malloc=system",when="backend=hpx")
 
     for back in "legion","hpx":
