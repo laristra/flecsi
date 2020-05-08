@@ -125,9 +125,7 @@ check_task(const Legion::Task * task,
   }
 
   for(PointInDomainIterator<2, coord_t> itr(gh_dom); itr(); itr++, i++) {
-    size_t tmp2 = ac.read(*itr); // using operator[] in this case wouldn't work
-                                 // due to compexity of implementing safe logic
-                                 // for read-oonly cse ac[*itr];
+    size_t tmp2 = mrac[*itr];
     assert(tmp2 == (check_array[i] + 1));
     // writing to ghost is not allowed since it has READ_ONLY privileges:
     // ac[*itr]=tmp2+2;
