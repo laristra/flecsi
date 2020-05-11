@@ -1,5 +1,5 @@
 Index Spaces
-============
+************
 
 In FleCSI, index spaces are used to define field arrays that represent
 the user's data. In simple terms, you can think of an index space as
@@ -38,7 +38,7 @@ parallelism, and free us from many of the computer science details that
 obfuscate our algorithms.
 
 Topologies
-==========
+**********
 
 The primary capability that FleCSI provides is the definition and
 implementation of several distributed-memory topology types. In very
@@ -134,8 +134,10 @@ However, we may do so in future versions.
   answer is *no!* FleCSI will only allocate memory for a field instance
   if it is actually accessed.
 
+----
+
 Colorings
-*********
++++++++++
 
 Let's continue discussing the index topology so that we can add some
 more details about its index space and define what *coloring* means in

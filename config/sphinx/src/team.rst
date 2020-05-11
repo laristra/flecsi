@@ -7,10 +7,10 @@
    <hr style="clear:both;">
 
 Contributors
-============
+************
 
 Ben Bergen
-**********
+++++++++++
 
 .. container:: twocol
 
@@ -37,7 +37,7 @@ Ben Bergen
 |clearboth|
 
 Christoph Junghans
-******************
+++++++++++++++++++
 
 .. container:: twocol
 
@@ -60,7 +60,7 @@ Christoph Junghans
 |clearboth|
 
 David Daniel
-************
+++++++++++++
 
 .. container:: twocol
 
@@ -84,7 +84,7 @@ David Daniel
 |clearboth|
 
 Irina Demeshko
-**************
+++++++++++++++
 
 .. container:: twocol
 
@@ -108,7 +108,7 @@ Irina Demeshko
 |clearboth|
 
 Jonas Lippuner
-**************
+++++++++++++++
 
 .. container:: twocol
 
@@ -136,7 +136,7 @@ Jonas Lippuner
 |clearboth|
 
 Jonathan Graham
-***************
++++++++++++++++
 
 .. container:: twocol
 
@@ -167,7 +167,7 @@ Jonathan Graham
 |clearboth|
 
 Nick Moss
-*********
++++++++++
 
 .. container:: twocol
 
@@ -196,7 +196,7 @@ Nick Moss
 |clearboth|
 
 Oleg Korobkin
-*************
++++++++++++++
 
 .. container:: twocol
 
@@ -223,7 +223,7 @@ Oleg Korobkin
 |clearboth|
 
 Li-Ta (Ollie) Lo
-****************
+++++++++++++++++
 
 .. container:: twocol
 
@@ -247,7 +247,7 @@ Li-Ta (Ollie) Lo
 |clearboth|
 
 Karen Tsai
-**********
+++++++++++
 
 .. container:: twocol
 
@@ -274,7 +274,7 @@ Karen Tsai
 |clearboth|
 
 Wei Wu
-******
+++++++
 
 .. container:: twocol
 

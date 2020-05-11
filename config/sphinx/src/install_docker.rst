@@ -1,5 +1,5 @@
 Installing Docker
-+++++++++++++++++
+^^^^^^^^^^^^^^^^^
 
 The Docker daemon is available for a variety of platforms from the
 `docker`__ website.

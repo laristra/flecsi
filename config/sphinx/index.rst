@@ -1,11 +1,11 @@
 Introduction
-============
+************
 
 .. container:: twocol
 
    .. container:: leftside
 
-      .. figure:: _static/images/anvil.jpg
+      .. figure:: images/anvil.jpg
          :align: left
 
          Taylor Anvil Impact
@@ -52,7 +52,7 @@ Introduction
 .. Not sure exactly why, but this seems to do what I want at the
    bottom of the page...
 
-.. image:: _static/images/lanl.png
+.. image:: images/lanl.png
    :align: center
    :scale: 75%
    :target: https://www.lanl.gov
@@ -61,14 +61,14 @@ Introduction
 
    .. container:: leftside
 
-      .. image:: _static/images/nnsa.png
+      .. image:: images/nnsa.png
          :align: left
          :scale: 75%
          :target: https://www.energy.gov/nnsa/national-nuclear-security-administration
 
    .. container:: rightside
 
-      .. image:: _static/images/ecp.png
+      .. image:: images/ecp.png
          :align: right
          :scale: 75%
          :target: https://www.exascaleproject.org

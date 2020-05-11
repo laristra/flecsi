@@ -3,14 +3,16 @@
    <br />
 
 Runtime
-=======
+*******
 
 Using FleCSI requires proper initialization and configuration of the
 FleCSI runtime. These examples illustrate some of the basic steps and
 options that are available.
 
+----
+
 Example 1: Minimal
-******************
+++++++++++++++++++
 
 The core FleCSI runtime has three control points: *initialize*, *start*, and
 *finalize*. These must be invoked by the user's application code in that
@@ -43,12 +45,12 @@ action to print out *Hello World*. Code for this example can be found in
 
 .. note::
 
-  - The top-level action can be any C/C++ function that takes (int,
-    char**) and returns an int.  In this simple example, we only print a
-    message to indicate that the top-level action was actually executed
-    by FleCSI. However, in a real application, the top-level action
-    would execute FleCSI tasks and other functions to implement the
-    simulation.  
+  - The top-level action can be any C/C++ function that takes no
+    arguments and returns an int.  In this simple example, we only print
+    a message to indicate that the top-level action was actually
+    executed by FleCSI. However, in a real application, the top-level
+    action would execute FleCSI tasks and other functions to implement
+    the simulation.  
 
   - The main function must invoke initialize, start, and finalize on the
     FleCSI runtime. Otherwise, the implementation of main is left to the
@@ -59,8 +61,10 @@ action to print out *Hello World*. Code for this example can be found in
     line. FleCSI has built-in command-line support using Boost Program
     Options. This is documented in the next example.
 
+----
+
 Example 2: Program Options
-**************************
+++++++++++++++++++++++++++
 
 FleCSI supports a program options capability based on `Boost Program
 Options`__ to simplify the creation and management of user-defined
@@ -84,7 +88,7 @@ program option capability.
 __ https://www.boost.org/doc/libs/1_63_0/doc/html/program_options.html
 
 Example Program
-+++++++++++++++
+^^^^^^^^^^^^^^^
 
 In this example, imagine that you have a program that takes information
 about a taxi service (The options are silly and synthetic. However they
@@ -145,14 +149,14 @@ next section of this tutorial). The FLOG options will only appear if
 *ENABLE_FLOG=ON* was set in your FleCSI build.
 
 Declaring Options
-+++++++++++++++++
+^^^^^^^^^^^^^^^^^
 
 .. note::
 
   FleCSI program options must be declared at namespace scope, i.e.,
   outside of any function, class, or enum class. This is not a problem! It
   is often convenient to declare them in a header file (in which case,
-  they must alos be declared *inline*), or directly before the *main*
+  they must also be declared *inline*), or directly before the *main*
   function.  We use the latter for this example simply for conciseness.
 
 Let's consider the first *Car Options* option: ``--level``. To declare
@@ -226,7 +230,7 @@ value, e.g., ``--child-seat`` vs. ``--child-seat=1``. The value is
   directly before a positional option (gets confused about separation).
   We break that convention here for the sake of completeness. If you
   need an option that simply acts as a switch, i.e., it is either *on*
-  or *off*, consider usint the ``--lightspeed`` style option below, as
+  or *off*, consider using the ``--lightspeed`` style option below, as
   this type of option is safe to use with positional options.
 
 The first option in the *Ride Options* section ``--purpose`` takes an
@@ -258,11 +262,11 @@ argument to the program itself:
   :language: cpp
   :lines: 87-99
 
-Postional options are required, i.e., the program will error and print
+Positional options are required, i.e., the program will error and print
 the usage message if a value is not passed.
 
 Checking & Using Options
-++++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 FleCSI option variables are implemented using an *optional* C++ type.
 The utility of this implementation is that *optional* already captures
@@ -299,19 +303,21 @@ Here is the full source for this tutorial example:
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
 
+----
+
 Example 3: FLOG (FleCSI Logging Utility)
-****************************************
+++++++++++++++++++++++++++++++++++++++++
 
 FLOG provides users with a mechanism to print logging information to
 various stream buffers, similar to the C++ objects std::cout, std::cerr,
-and std::clog.  Multiple streams can be used simaltaneously, so that
+and std::clog.  Multiple streams can be used simultaneously, so that
 information about the running state of a program can be captured and
 displayed at the same time.  In this example, we show how FLOG can be
 configured to stream output to a file buffer, and the std::clog stream
 buffer.
 
 Before attempting this example, you should make sure that you have
-configured and built FleCSI with ENABLE_FLOG=ON. Additonal options
+configured and built FleCSI with ENABLE_FLOG=ON. Additional options
 that are useful are:
 
 * FLOG_ENABLE_COLOR_OUTPUT=ON
@@ -328,7 +334,7 @@ that are useful are:
   FLOG.
 
 Buffer Configuration
-++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^
 
 By default, FLOG does not produce any output (even when enabled). In
 order to see or capture output, your application must add at least one
@@ -373,7 +379,7 @@ std::clog, and to *output.txt*. Next, we will see how to actually write
 output to these stream buffers.
 
 Writing to Buffers
-++++++++++++++++++
+^^^^^^^^^^^^^^^^^^
 
 Output with FLOG is similar to std::cout. Consider the FLOG *info*
 object:
@@ -396,7 +402,7 @@ the basic output objects:
   :lines: 32-40
 
 Controlling Output - Strip Levels
-+++++++++++++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. important::
 
@@ -425,7 +431,7 @@ the strip level, FLOG limits the type of messages that are output.
   than 4.
 
 Controlling Output - Tag Groups
-+++++++++++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Tag groups provide a mechanism to control the runtime output generated
 by FLOG. The main idea is here is that developers can use FLOG to output
@@ -434,7 +440,7 @@ leave it in the code. Then, specific groups of messages can be enabled
 or disabled to only output useful information for the current
 development focus.
 
-To create a new tag, we use the flog::tag type:
+To create a new tag, we use the log::tag type:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp

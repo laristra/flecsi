@@ -3,7 +3,7 @@
    <br />
 
 Runtime Model
-=============
+*************
 
 With the following CMake options enabled:
 
@@ -31,8 +31,10 @@ control model. The FleCSI :ref:`control-model` allows users to define
 the structure of execution of a program. Additional options may be added
 in the future, and will be documented in this guide.  
 
+----
+
 Custom Handlers
-***************
++++++++++++++++
 
 Because the FleCSI programming system requires, in most cases, that the
 user relinquish direct control of the *main* function, we have provided

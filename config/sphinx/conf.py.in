@@ -9,7 +9,8 @@ import sys
 # Sphinx extensions as list of strings
 extensions = [
     'sphinx.ext.mathjax',
-    'sphinx.ext.githubpages'
+    'sphinx.ext.githubpages',
+    'sphinx.ext.autosectionlabel'
 ]
 
 # Add any paths that contain templates
@@ -84,8 +85,8 @@ html_theme_options = {
 # Add any paths that contain custom static files, e.g., css.
 html_static_path = [ '_static' ]
 
-html_logo = '_static/images/flecsi.png'
-html_favicon = '_static/images/favicon.ico'
+html_logo = '_static/flecsi.png'
+html_favicon = '_static/favicon.ico'
 
 html_sidebars = {
     '**': [

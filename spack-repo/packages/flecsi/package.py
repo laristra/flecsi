@@ -30,7 +30,7 @@ class Flecsi(CMakePackage):
             description='The build type to build', multi=False)
 
     variant('flog', default=False,
-            description='Enable flog testing')
+            description='Enable FLOG logging utility')
 
     variant('graphviz', default=False,
             description='Enable GraphViz Support')
@@ -114,6 +114,9 @@ class Flecsi(CMakePackage):
             options.append('-DBUILD_SHARED_LIBS=ON')
         else:
             options.append('-DBUILD_SHARED_LIBS=OFF')
+
+        if '+flog' in spec:
+            options.append('-DENABLE_FLOG=ON')
 
         if '+hdf5' in spec and spec.variants['backend'].value != 'hpx':
             options.append('-DENABLE_HDF5=ON')

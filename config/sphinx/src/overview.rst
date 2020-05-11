@@ -51,7 +51,7 @@ developers will use the core and specialization interfaces to write
 their applications.
 
 Documentation
-=============
++++++++++++++
 
 FleCSI documentation is primarily directed at *Application* and
 *Specialization* developers, and is structured so that these users can
@@ -79,7 +79,7 @@ read the *Core Guide*.
   directly contributing code to the core library.
 
 Namespaces
-==========
+++++++++++
 
 FlecSI uses C++ namespaces to identify interfaces that are intended for
 different user types:

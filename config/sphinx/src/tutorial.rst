@@ -3,7 +3,7 @@
    <br />
 
 Tutorial
-========
+********
 
 This tutorial attempts to give a basic introduction to the design
 philosophy and structure of the FleCSI programming system. Each
@@ -26,8 +26,10 @@ Details on how to build the tutorials are given below.
   code is in the *tutorial/specialization* subdirectory of the main
   project.)
 
+----
+
 Requirements
-************
+++++++++++++
 
 The tutorial assumes that you have successfully installed FleCSI
 somewhere on your system. Instructions for different install methods are
@@ -40,8 +42,10 @@ installation to your *CMAKE_PREFIX_PATH*:
 
   $ export CMAKE_PREFIX_PATH=/path/to/flecsi/install/dir:$CMAKE_PREFIX_PATH
 
+----
+
 Building the Examples
-*********************
++++++++++++++++++++++
 
 The tutorial uses a standard CMake build system. To configure and build
 the examples, execute the following steps from the *tutorial*
@@ -53,8 +57,10 @@ subdirectory of the FleCSI source:
   $ cmake ..
   $ make
 
+----
+
 Using the Docker Container
-**************************
+++++++++++++++++++++++++++
 
 The tutorial is also available as a Docker container. This simplifies
 getting and installing FleCSI and its dependencies.
@@ -62,7 +68,7 @@ getting and installing FleCSI and its dependencies.
 .. include:: install_docker.rst
 
 Pulling the Image
-+++++++++++++++++
+^^^^^^^^^^^^^^^^^
 
 To pull the tutorial image, do:
 
@@ -89,8 +95,10 @@ backend. To pull the MPI backend image do:
 
   $ docker pull laristra/flecsi-tutorial:mpi
 
+----
+
 Tutorial Examples
-*****************
++++++++++++++++++
 
 The tutorial examples are designed to guide the reader through basic to
 more advanced FleCSI concepts. 
@@ -99,5 +107,6 @@ more advanced FleCSI concepts.
 
   tutorial/runtime
   tutorial/control
+  tutorial/standalone
 
 .. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :
