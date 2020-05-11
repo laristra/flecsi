@@ -155,18 +155,6 @@ struct mpi_execution_policy_t {
 
     auto function = context_.function(TASK);
 
-    // Make a tuple from the task arguments.
-    utils::convert_tuple_t<ARG_TUPLE, std::decay_t> task_args =
-      std::make_tuple(std::forward<ARGS>(args)...);
-
-    // run task_prolog to copy ghost cells.
-    task_prolog_t task_prolog;
-    task_prolog.walk(task_args);
-#if defined(FLECSI_USE_AGGCOMM)
-    task_prolog.launch_copies();
-    task_prolog.launch_sparse_copies();
-#endif
-
     using annotation = flecsi::utils::annotation;
 #if defined(ENABLE_CALIPER)
     auto tname = context_.function_name(TASK);
@@ -175,12 +163,29 @@ struct mpi_execution_policy_t {
        when annotations are disabled. */
     std::string tname{""};
 #endif
+
+    // Make a tuple from the task arguments.
+    utils::convert_tuple_t<ARG_TUPLE, std::decay_t> task_args =
+      std::make_tuple(std::forward<ARGS>(args)...);
+
+    annotation::begin<annotation::execute_task_prolog>(tname);
+    // run task_prolog to copy ghost cells.
+    task_prolog_t task_prolog;
+    task_prolog.walk(task_args);
+#if defined(FLECSI_USE_AGGCOMM)
+    task_prolog.launch_copies();
+    task_prolog.launch_sparse_copies();
+#endif
+    annotation::end<annotation::execute_task_prolog>();
+
     annotation::begin<annotation::execute_task_user>(tname);
     auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
     annotation::end<annotation::execute_task_user>();
 
+    annotation::begin<annotation::execute_task_epilog>(tname);
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
+    annotation::end<annotation::execute_task_epilog>();
 
     annotation::begin<annotation::execute_task_finalize>(tname);
     finalize_handles_t finalize_handles;
