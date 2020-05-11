@@ -1,909 +1,182 @@
-###################
-# Global Settings #
-###################
+#------------------------------------------------------------------------------#
+# FleCSI Gitlab CI: Main
+#------------------------------------------------------------------------------#
 
 stages:
-  - Env
   - Canary
-  - Build_n_Test
-  - Test
-  - Tutorials
-  - Apps
+  - Environment
+  - Build + Unit Tests
+  - Tutorial
+  - Final
 
 variables:
-  #CI_DEBUG_TRACE: "true"
-  GET_SOURCES_ATTEMPTS: 10
-  ARTIFACT_DOWNLOAD_ATTEMPTS: 10
-  RESTORE_CACHE_ATTEMPTS: 10
-  GIT_STRATEGY: fetch
-  GLOBAL_CI_VARIABLE: "global_ci_value"
-  http_proxy: "http://proxyout.lanl.gov:8080"
-  https_proxy: "http://proxyout.lanl.gov:8080"
-  ftp_proxy: "http://proxyout.lanl.gov:8080"
-  no_proxy: "lanl.gov"
-  GIT_SUBMODULE_STRATEGY: recursive
-  CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
-  CCACHE_UMASK: 000
-  DISTRO: "centOS"
-  RUNTIME: "legion"
-  BUILD_TYPE: "Debug"
-  CC: "gcc"
-  CXX: "g++"
-  CXXFLAGS: "-Wall -W -Werror -Wno-parentheses"
-  IGNORE_NOCI: "FALSE"
-  GASNET_BACKTRACE: 1
-  SPACK_ROOT: /home/gitlab-runner/ci-spack/spack
-  DEPS_LOCK: /home/gitlab-runner/ci-spack/deps.pid
-  #lock_fd: 314
-  FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
-  FLECSI_MPI_PACKAGE: "mpich"
-  FLECSI_MPICH_VERSION: "3.2.1"
-  FLECSI_OPENMPI_VERSION: "3.1.4"
-  FLECSI_INTEL_VERSION: "19.0.2"
-  FLECSI_CLANG_VERSION: "8.0.1"
-  FLECSI_GCC_VERSION: "9.3.0"
-  FLECSI_PYTHON_VERSION: "3.5.1"
-  FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/build/flecsi-deps-${RUNTIME}-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
-  FLECSI_SPACK_SCOPE: "lanl_ristra_flecsi"
-  FLECSI_SPACK_BASE_SPEC: "flecsi@devel%gcc@${FLECSI_GCC_VERSION} backend=${RUNTIME}"
-before_script:
-  - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
-  - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.lanl.gov/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
-  #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
-  - export HOME=${CI_PROJECT_DIR}
-  - mkdir -p ${CI_PROJECT_DIR}/build
-  - module load python/${FLECSI_PYTHON_VERSION}
-  - module load clang/7.0.0 # for formatting purpose
-  - module unload gcc
-  - module load gcc/${FLECSI_GCC_VERSION}
-  - echo ${FLECSI_ENV_SOURCE_FILE}
-  - export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_BASE_SPEC} ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} == 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}"
-  - rm ${FLECSI_ENV_SOURCE_FILE} || /bin/true
-  - . ${SPACK_ROOT}/share/spack/setup-env.sh
-  - |
-    ( flock -e 200
-    source ${SPACK_ROOT}/share/spack/setup-env.sh;
-    # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true;
-    spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
-    spack repo add ${CI_PROJECT_DIR}/spack-repo;
-    spack repo list;
-    echo ${FLECSI_SPACK_FULL_SPEC};
-    spack module tcl loads --dependencies ${FLECSI_SPACK_FULL_SPEC} | tee ${FLECSI_ENV_SOURCE_FILE} || /bin/true;
-    spack repo rm ${FLECSI_SPACK_SCOPE};
-    ) 200>${DEPS_LOCK}
-  - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
-  - echo $CMAKE_PREFIX_PATH
-  - |
-    if [[ ${CI_JOB_NAME} =~ "clang" ]];
-    then
-      module unload clang;
-      module load clang/${FLECSI_CLANG_VERSION};
-    elif [[ ${CI_JOB_NAME} =~ "intel" ]];
-    then
-      module load intel/${FLECSI_INTEL_VERSION};
-    fi
-  - module list
-  - echo $CC
-  - echo $CXX
-  - echo $CMAKE_PREFIX_PATH
+  COLOR_BLUE: '\033[1;34m'
+  COLOR_GREEN: '\033[0;32m'
+  COLOR_MAGENTA: '\033[1;35m'
+  COLOR_PLAIN: '\033[0m'
+  WARN: "-Wall -W -Werror"
 
-##########################
-# Build Matrix Variables #
-##########################
+include: .gitlab/environments.yml
 
-.runtime_mpi: &runtime_mpi
-  RUNTIME: "mpi"
+#------------------------------------------------------------------------------#
+# Formatting target.
+#
+# The selected image must have the required clang-format version
+# installed during image creation in the 'gitlab-ci' branch.
+#------------------------------------------------------------------------------#
 
-.runtime_legion: &runtime_legion
-  RUNTIME: "legion"
-
-.runtime_hpx: &runtime_hpx
-  RUNTIME: "hpx"
-
-.compiler_gcc: &compiler_gcc
-  CC: "gcc"
-  CXX: "g++"
-
-.compiler_clang: &compiler_clang
-  CC: "clang"
-  CXX: "clang++"
-
-.compiler_intel: &compiler_intel
-  CC: "icc"
-  CXX: "icpc"
-
-.buildtype_debug: &buildtype_debug
-  BUILD_TYPE: "Debug"
-
-.buildtype_release: &buildtype_release
-  BUILD_TYPE: "Release"
-
-.openmpi: &openmpi
-  FLECSI_MPI_PACKAGE: "openmpi"
-
-.mpich: &mpich
-  FLECSI_MPI_PACKAGE: "mpich"
-
-.ignore_noci: &ignore_noci
-  IGNORE_NOCI: "TRUE"
-
-#######################
-# Templates & Anchors #
-#######################
-
-.general_template: &general_def
-  retry: 1
-  only:
-    refs:
-      - merge_requests
-      - "1"
-      - "1.4"
-      - devel
-  except:
-    variables:
-      - $RUNTIME == "hpx"
-      - $CI_JOB_STAGE == "Tutorials"
-      - $CI_JOB_STAGE == "Apps"
-      #- $CI_JOB_NAME =~ /intel/
-      #- $CI_COMMIT_MESSAGE =~ /skip-end-to-end-tests/
-
-.cache_template: &cache_def
-  cache:
-    #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
-    #key: ${CI_COMMIT_REF_SLUG}
-    key: ${DISTRO}-${RUNTIME}-${CC}
-    paths:
-      - ccache/
-
-.artifacts_template: &artifacts_def
-  artifacts:
-    name: "${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}"
-    paths:
-      - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsi/build
-    when: always
-    expire_in: 2 weeks
+format:diff:
+  extends: .diff_format_template
   dependencies: []
+  variables:
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "util-fedora-30"
+    FORMAT_VERSION: "8.0.0"
+  allow_failure: true
 
-.shell_template: &shell_def
-  tags: &shell_tags
-    - shell
-
-.batch_template: &batch_def
-  tags: &batch_tags
-    - darwin-slurm
-
-.job_template: &job_def
-  <<: *general_def
-  <<: *cache_def
-
-#############
-# Env Stage #
-#############
-
-.env_template: &env_def
-  <<: *job_def
-  stage: Env
-  script: &env_script
-    - |
-      if [[ ${I_WANT_TO_CLEAN_UP} ]];
-      then
-        rm -rf ${SPACK_ROOT}/*;
-      fi
-    - |
-      ( flock -e 200
-      if [[ ! -d ${SPACK_ROOT} ]];
-      then
-        git init --shared=group ${SPACK_ROOT};
-        git -c ${SPACK_ROOT} pull https://github.com/spack/spack develop;
-      fi;
-      source ${SPACK_ROOT}/share/spack/setup-env.sh;
-      spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
-      spack repo add ${CI_PROJECT_DIR}/spack-repo;
-      spack repo list;
-      spack install --show-log-on-error ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
-      spack install --show-log-on-error ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
-      spack repo rm ${FLECSI_SPACK_SCOPE};
-      ) 200>${DEPS_LOCK}
-    - $([ "$(grep -c "Errno " spack_tmp.out)" = "0" ] && exit 0 || exit 1)
-
-###############
-# Build Stage #
-###############
-
-.build: &build_def
-  <<: *job_def
-  <<: *artifacts_def
-  stage: Build_n_Test
-  script: &build_script |-
-    echo 'Start building'
-    ccache -z
-    nproc
-    # git submodule init
-    # git config submodule.cinch.url https://github.com/laristra/cinch.git
-    # git submodule update --init --recursive
-    mkdir -p ${CI_PROJECT_DIR}/build
-    mkdir -p ${CI_PROJECT_DIR}/build/install
-    cd ${CI_PROJECT_DIR}/build/
-    cmake -DCMAKE_INSTALL_PREFIX=${CI_PROJECT_DIR}/build/install \
-        -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-        -DFLECSI_RUNTIME_MODEL=$RUNTIME \
-        -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
-        -DENABLE_FLECSI_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
-        -DENABLE_FLOG=ON \
-        -DENABLE_HDF5=$([ "$RUNTIME" = "legion" ] && echo ON || echo OFF) \
-        -DENABLE_DOXYGEN=ON \
-        -DENABLE_DOCUMENTATION=OFF \
-        -DENABLE_COVERAGE_BUILD=ON \
-        ..
-    make -k VERBOSE=1 -j2 -l40
-    make install DESTDIR=${CI_PROJECT_DIR}/build/install
-    make install
-    ccache -s
-
-##############
-# Test Stage #
-##############
-
-.test: &test_def
-  <<: *job_def
-  stage: Test
+format:check:
+  extends: .check_format_template
   dependencies:
-    #- "build:${CI_JOB_NAME#*:}"
-    - .build_template
-  script: &test_script |-
-    echo 'Start testing'
-    cd ${CI_PROJECT_DIR}/build/
-    make test || make test ARGS="-V"
-    gcovr .
+    - format:diff
+  variables:
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "util-fedora-30"
+    FORMAT_VERSION: "8.0.0"
 
-################
-# Format Stage #
-################
+#------------------------------------------------------------------------------#
+# Build and unit tests for default settings.
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
 
-.format: &format_def
-  <<: *job_def
-  stage: Format
+mpich-defaults:
+  extends: .defaults_build_template
   dependencies:
-    #- "build:${CI_JOB_NAME#*:}"
-    - .build_template
-  script: &format_script |-
-    echo 'Start format checking'
-    cd ${CI_PROJECT_DIR}/build/
-    clang-format -version
-    make format && git diff --exit-code --ignore-submodules
+    - mpich
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "mpich"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
 
-###################
-# Tutorials Stage #
-###################
+#------------------------------------------------------------------------------#
+# Build and unit tests for Legion runtime with MPICH provider,
+# and GNU compiler toolchain.
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
 
-.tutorials: &tutorials_def
-  <<: *job_def
-  stage: Tutorials
+mpich-legion-gnu:
+  extends: .build_template
   dependencies:
-    #- "build:${CI_JOB_NAME#*:}"
-    - .build_template
-  script: &tutorials_script
-    - echo 'Start tutorials checking'
-    - cd ${CI_PROJECT_DIR}
-    - source ${CI_PROJECT_DIR}/build/install/bin/flecsi-tutorial.sh
-    - cd flecsi-tutorial
+    - mpich
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "mpich"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    BUILD_TYPE: "debug"
+    RUNTIME: "legion"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
 
-    # Tutorial 00-driver
-    - cd 00-driver
-    - flecsit compile driver.cc
-    - ./driver
-
-    # Tutorial 01-tasks
-    - cd ../01-tasks
-    - flecsit compile tasks.cc
-    - ./tasks
-
-##############
-# Apps Stage #
-##############
-
-.apps: &apps_def
-  <<: *job_def
-  stage: Apps
+mpich-legion-gnu:release:
+  extends: .build_template
   dependencies:
-    #- "build:${CI_JOB_NAME#*:}"
-    - .build_template
-  script: &apps_script
-    - echo 'Start apps checking'
-    - cd ${CI_PROJECT_DIR}
-    - git clone --recursive https://github.com/laristra/flecsale.git
-    - cd flecsale/flecsi
-    - git fetch
-    - git checkout ${CI_COMMIT_REF_NAME}
-    - git submodule update --init --recursive
-    - cd ../
-    - mkdir -p build
-    - cd build
-    - pwd
-    - |-
-      cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-        -DFLECSI_RUNTIME_MODEL=${RUNTIME} \
-        -DENABLE_UNIT_TESTS=ON \
-        ..
-    - make -j2 || make VERBOSE=1
-    - make test ARGS="CTEST_OUTPUT_ON_FAILURE=1"
-
-################
-# Canary Stage #
-################
-
-.canary: &canary_def
-  <<: *job_def
-  <<: *artifacts_def
-  stage: Canary
-  script:
-    - *build_script
-    - *test_script
-    - *format_script
-
-############
-# Env Jobs #
-############
-
-env_mpi:
-  extends: .env_template
-  <<: *shell_def
+    - mpich:release
   variables:
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "mpich"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    BUILD_TYPE: "release"
+    RUNTIME: "legion"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
 
-env_legion:
-  extends: .env_template
-  <<: *shell_def
-  variables:
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-
-###############
-# Canary Jobs #
-###############
-
-canary:centOS_mpich_mpi:
-  extends: .canary
-  <<: *shell_def
-  variables:
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *mpich
-
-canary:centOS_mpich_legion:
-  extends: .canary
-  <<: *shell_def
-  variables:
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *mpich
-
-canary:centOS_mpich_hpx:
-  extends: .canary
-  <<: *shell_def
-  variables:
-    <<: *runtime_hpx
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *mpich
-  allow_failure: true 
-
-##############
-# Build Jobs #
-##############
-
-build:centOS_mpi:
-  extends: .build
-  <<: *shell_def
-  variables:
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  script:
-    - *build_script
-    - *test_script
-
-build:centOS_mpi_release:
-  extends: build:centOS_mpi
-  variables:
-    <<: *buildtype_release
-  allow_failure: true
-
-build:centOS_mpi_clang:
-  extends: build:centOS_mpi
-  variables:
-    <<: *compiler_clang
-
-build:centOS_mpi_clang_release:
-  extends: build:centOS_mpi_clang
-  variables:
-    <<: *buildtype_release
-
-build:centOS_mpi_intel:
-  extends: build:centOS_mpi
-  variables:
-    <<: *compiler_intel
-  allow_failure: true
-
-build:centOS_mpi_intel_release:
-  extends: build:centOS_mpi_intel
-  variables:
-    <<: *buildtype_release
-
-build:centOS_mpich_mpi:
-  extends: .build
-  <<: *shell_def
-  variables:
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *mpich
-  script:
-    - *build_script
-    - *test_script
-
-build:centOS_mpich_mpi_release:
-  extends: build:centOS_mpich_mpi
-  variables:
-    <<: *buildtype_release
-  allow_failure: true
-
-build:centOS_mpich_mpi_clang:
-  extends: build:centOS_mpich_mpi
-  variables:
-    <<: *compiler_clang
-
-build:centOS_mpich_mpi_clang_release:
-  extends: build:centOS_mpich_mpi_clang
-  variables:
-    <<: *buildtype_release
-
-build:centOS_mpich_mpi_intel:
-  extends: build:centOS_mpich_mpi
-  variables:
-    <<: *compiler_intel
-  allow_failure: true
-
-build:centOS_mpich_mpi_intel_release:
-  extends: build:centOS_mpich_mpi_intel
-  variables:
-    <<: *buildtype_release
-
-build:centOS_legion:
-  extends: .build
-  <<: *shell_def
-  variables:
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  script:
-    - *build_script
-    - *test_script
-
-build:centOS_legion_release:
-  extends: build:centOS_legion
-  variables:
-    <<: *buildtype_release
-
-build:centOS_legion_clang:
-  extends: build:centOS_legion
-  variables:
-    <<: *compiler_clang
-
-build:centOS_legion_clang_release:
-  extends: build:centOS_legion_clang
-  variables:
-    <<: *buildtype_release
-
-build:centOS_legion_intel:
-  extends: build:centOS_legion
-  variables:
-    <<: *compiler_intel
-  allow_failure: true
-
-build:centOS_legion_intel_release:
-  extends: build:centOS_legion_intel
-  variables:
-    <<: *buildtype_release
-
-build:centOS_mpich_legion:
-  extends: .build
-  <<: *shell_def
-  variables:
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *mpich
-  script:
-    - *build_script
-    - *test_script
-
-build:centOS_mpich_legion_release:
-  extends: build:centOS_mpich_legion
-  variables:
-    <<: *buildtype_release
-
-build:centOS_mpich_legion_clang:
-  extends: build:centOS_mpich_legion
-  variables:
-    <<: *compiler_clang
-
-build:centOS_mpich_legion_clang_release:
-  extends: build:centOS_mpich_legion_clang
-  variables:
-    <<: *buildtype_release
-
-build:centOS_mpich_legion_intel:
-  extends: build:centOS_mpich_legion
-  variables:
-    <<: *compiler_intel
-  allow_failure: true
-
-build:centOS_mpich_legion_intel_release:
-  extends: build:centOS_mpich_legion_intel
-  variables:
-    <<: *buildtype_release
-
-build:centOS_hpx:
-  extends: .build
-  <<: *shell_def
-  variables:
-    <<: *runtime_hpx
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  script:
-    - *build_script
-    - *test_script
-  allow_failure: true
-
-build:centOS_mpich_hpx_clang:
-  extends: build:centOS_hpx
-  variables:
-    <<: *compiler_clang
-    <<: *mpich
-
-build:centOS_hpx_intel_release:
-  extends: build:centOS_hpx
-  variables:
-    <<: *buildtype_release
-    <<: *compiler_intel
-
-build:centOS_mpi.ignoreNoCI:
-  extends: build:centOS_mpi
-  variables:
-    <<: *ignore_noci
-  allow_failure: true
-
-build:centOS_legion.ignoreNoCI:
-  extends: build:centOS_legion
-  variables:
-    <<: *ignore_noci
-  allow_failure: true
-
-build:centOS_hpx.ignoreNoCI:
-  extends: build:centOS_hpx
-  variables:
-    <<: *ignore_noci
-  allow_failure: true
-
-#############
-# Test Jobs #
-#############
-
-#test:centOS_mpi:
-#  extends: .test
-#  <<: *shell_def
-#  variables:
-#    <<: *runtime_mpi
-#    <<: *buildtype_debug
-#    <<: *compiler_gcc
-#    <<: *openmpi
-#  script:
-#    - *test_script
-#  dependencies:
-#    - build:centOS_mpi
+#------------------------------------------------------------------------------#
+# Tutorial tests for Legion runtime with MPICH provider,
+# and GNU compiler toolchain.
 #
-#test:centOS_mpi_release:
-#  extends: test:centOS_mpi
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpi_release
-#
-#test:centOS_mpi_clang:
-#  extends: test:centOS_mpi
-#  variables:
-#    <<: *compiler_clang
-#  dependencies:
-#    - build:centOS_mpi_clang
-#
-#test:centOS_mpi_clang_release:
-#  extends: test:centOS_mpi_clang
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpi_clang_release
-#
-#test:centOS_mpi_intel:
-#  extends: test:centOS_mpi
-#  variables:
-#    <<: *compiler_intel
-#  dependencies:
-#    - build:centOS_mpi_intel
-#
-#test:centOS_mpi_intel_release:
-#  extends: test:centOS_mpi_intel
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpi_intel_release
-#
-#test:centOS_mpich_mpi:
-#  extends: .test
-#  <<: *shell_def
-#  variables:
-#    <<: *runtime_mpi
-#    <<: *buildtype_debug
-#    <<: *compiler_gcc
-#    <<: *mpich
-#  script:
-#    - *test_script
-#  dependencies:
-#    - build:centOS_mpich_mpi
-#
-#test:centOS_mpich_mpi_release:
-#  extends: test:centOS_mpich_mpi
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpich_mpi_release
-#
-#test:centOS_mpich_mpi_clang:
-#  extends: test:centOS_mpich_mpi
-#  variables:
-#    <<: *compiler_clang
-#  dependencies:
-#    - build:centOS_mpich_mpi_clang
-#
-#test:centOS_mpich_mpi_clang_release:
-#  extends: test:centOS_mpich_mpi_clang
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpich_mpi_clang_release
-#
-#test:centOS_mpich_mpi_intel:
-#  extends: test:centOS_mpich_mpi
-#  variables:
-#    <<: *compiler_intel
-#  dependencies:
-#    - build:centOS_mpich_mpi_intel
-#
-#test:centOS_mpich_mpi_intel_release:
-#  extends: test:centOS_mpich_mpi_intel
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpich_mpi_intel_release
-#
-#test:centOS_legion:
-#  extends: .test
-#  <<: *shell_def
-#  variables:
-#    <<: *runtime_legion
-#    <<: *buildtype_debug
-#    <<: *compiler_gcc
-#    <<: *openmpi
-#  allow_failure: true 
-#  script:
-#    - *test_script
-#  dependencies:
-#    - build:centOS_legion
-#
-#test:centOS_legion_release:
-#  extends: test:centOS_legion
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_legion_release
-#
-#test:centOS_legion_clang:
-#  extends: test:centOS_legion
-#  variables:
-#    <<: *compiler_clang
-#  dependencies:
-#    - build:centOS_legion_clang
-#
-#test:centOS_legion_clang_release:
-#  extends: test:centOS_legion_clang
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_legion_clang_release
-#
-#test:centOS_legion_intel:
-#  extends: test:centOS_legion
-#  variables:
-#    <<: *compiler_intel
-#  dependencies:
-#    - build:centOS_legion_intel
-#
-#test:centOS_legion_intel_release:
-#  extends: test:centOS_legion_intel
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_legion_intel_release
-#
-#test:centOS_mpich_legion:
-#  extends: .test
-#  <<: *shell_def
-#  variables:
-#    <<: *runtime_legion
-#    <<: *buildtype_debug
-#    <<: *compiler_gcc
-#    <<: *mpich
-#  allow_failure: true 
-#  script:
-#    - *test_script
-#  dependencies:
-#    - build:centOS_mpich_legion
-#
-#test:centOS_mpich_legion_release:
-#  extends: test:centOS_mpich_legion
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpich_legion_release
-#
-#test:centOS_mpich_legion_clang:
-#  extends: test:centOS_mpich_legion
-#  variables:
-#    <<: *compiler_clang
-#  dependencies:
-#    - build:centOS_mpich_legion_clang
-#
-#test:centOS_mpich_legion_clang_release:
-#  extends: test:centOS_mpich_legion_clang
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpich_legion_clang_release
-#
-#test:centOS_mpich_legion_intel:
-#  extends: test:centOS_mpich_legion
-#  variables:
-#    <<: *compiler_intel
-#  dependencies:
-#    - build:centOS_mpich_legion_intel
-#
-#test:centOS_mpich_legion_intel_release:
-#  extends: test:centOS_mpich_legion_intel
-#  variables:
-#    <<: *buildtype_release
-#  dependencies:
-#    - build:centOS_mpich_legion_intel_release
-#
-#test:centOS_hpx:
-#  extends: .test
-#  <<: *shell_def
-#  variables:
-#    <<: *runtime_hpx
-#    <<: *buildtype_debug
-#    <<: *compiler_gcc
-#    <<: *openmpi
-#  script:
-#    - *test_script
-#  dependencies:
-#    - build:centOS_hpx
-#  allow_failure: true
-#
-#test:centOS_mpich_hpx_clang:
-#  extends: test:centOS_hpx
-#  variables:
-#    <<: *compiler_clang
-#    <<: *mpich
-#  dependencies:
-#    - build:centOS_mpich_hpx_clang
-#
-#test:centOS_hpx_intel_release:
-#  extends: test:centOS_hpx
-#  variables:
-#    <<: *buildtype_release
-#    <<: *compiler_intel
-#  dependencies:
-#    - build:centOS_hpx_intel_release
-#
-#test:centOS_mpi.ignoreNoCI:
-#  extends: test:centOS_mpi
-#  variables:
-#    <<: *ignore_noci
-#  dependencies:
-#    - build:centOS_mpi
-#  allow_failure: true
-#
-#test:centOS_legion.ignoreNoCI:
-#  extends: test:centOS_legion
-#  variables:
-#    <<: *ignore_noci
-#  dependencies:
-#    - build:centOS_legion
-#  allow_failure: true
-#
-#test:centOS_hpx.ignoreNoCI:
-#  extends: test:centOS_hpx
-#  variables:
-#    <<: *ignore_noci
-#  dependencies:
-#    - build:centOS_hpx
-#  allow_failure: true
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
 
-##################
-# Tutorials Jobs #
-##################
-
-tutorials:centOS_mpi:
-  extends: .tutorials
-  <<: *shell_def
-  variables:
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  allow_failure: true 
+tutorial:legion:
+  extends: .tutorial_template
   dependencies:
-    - build:centOS_mpi
-
-tutorials:centOS_legion:
-  extends: .tutorials
-  <<: *shell_def
+    - mpich-legion-gnu:release
   variables:
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  allow_failure: true 
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "mpich"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
+
+#------------------------------------------------------------------------------#
+# Build and unit tests for Legion runtime with OpenMPI provider,
+# and GNU compiler toolchain.
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
+
+openmpi-legion-gnu:
+  extends: .build_template
   dependencies:
-    - build:centOS_legion
-
-#############
-# Apps Jobs #
-#############
-
-apps:centOS_mpi:
-  extends: .apps
-  <<: *shell_def
+    - openmpi
   variables:
-    <<: *runtime_mpi
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  allow_failure: true 
-  dependencies:
-    - build:centOS_mpi
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "openmpi"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    BUILD_TYPE: "debug"
+    RUNTIME: "legion"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
 
-apps:centOS_legion:
-  extends: .apps
-  <<: *shell_def
+openmpi-legion-gnu:release:
+  extends: .build_template
+  dependencies:
+    - openmpi:release
   variables:
-    <<: *runtime_legion
-    <<: *buildtype_debug
-    <<: *compiler_gcc
-    <<: *openmpi
-  allow_failure: true 
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "openmpi"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    BUILD_TYPE: "release"
+    RUNTIME: "legion"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
+
+#------------------------------------------------------------------------------#
+# Build and unit tests for Legion runtime with MPICH provider,
+# and Clang compiler toolchain.
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
+
+mpich-legion-clang:
+  extends: .build_template
   dependencies:
-    - build:centOS_legion
-
-#######################################################################################
-#######################################################################################
-#######################################################################################
-
-
+    - mpich-clang
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "mpich"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "clearlinux"
+    BUILD_TYPE: "debug"
+    RUNTIME: "legion"
+    CXX_COMPILER: "clang++"
+    CXX_FLAGS: "-fcolor-diagnostics -ferror-limit=5 ${WARN} -Wno-parentheses"
+    C_COMPILER: "clang"
+    C_FLAGS: ${CXX_FLAGS}

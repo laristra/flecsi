@@ -1,0 +1,298 @@
+#------------------------------------------------------------------------------#
+# FleCSI Gitlab CI: Templates
+#------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
+# env_permissions
+#
+# Change ownership of the CI_PROJECT_DIR. This is a work-around for
+# Gitlab CI issue 2750:
+#   https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2750
+#
+# This should be updated when the issue is resolved: The fix should allow
+# a user to be specified for an image.
+#------------------------------------------------------------------------------#
+
+.env_permissions:
+  script: &env_permissions
+    - sudo chown -R flecsi.flecsi ${CI_PROJECT_DIR}
+
+#------------------------------------------------------------------------------#
+# env_shell
+#
+# Convenience function to setup shell environment.
+#------------------------------------------------------------------------------#
+
+.env_shell:
+  script: &env_shell
+    - export PATH=$HOME/.local/bin:$PATH
+    - source $HOME/spack/share/spack/setup-env.sh
+
+#------------------------------------------------------------------------------#
+# env_spack_archive
+#
+# Archive the current spack state.
+#------------------------------------------------------------------------------#
+
+.env_spack_archive:
+  script: &env_spack_archive
+    - mkdir -p ${CI_PROJECT_DIR}/state
+    - rsync -apz /home/flecsi/.spack ${CI_PROJECT_DIR}/state
+    - rsync -apz
+        --exclude="spack/var/spack/cache"
+        --exclude="spack/opt/spack/*/*/autoconf-*"
+        --exclude="spack/opt/spack/*/*/automake-*"
+        --exclude="spack/opt/spack/*/*/bison-*"
+        --exclude="spack/opt/spack/*/*/boost-*"
+        --exclude="spack/opt/spack/*/*/bzip2-*"
+        --exclude="spack/opt/spack/*/*/cmake-*"
+        --exclude="spack/opt/spack/*/*/diffutils-*"
+        --exclude="spack/opt/spack/*/*/findutils-*"
+        --exclude="spack/opt/spack/*/*/flex-*"
+        --exclude="spack/opt/spack/*/*/gasnet-*"
+        --exclude="spack/opt/spack/*/*/gdbm-*"
+        --exclude="spack/opt/spack/*/*/gettext-*"
+        --exclude="spack/opt/spack/*/*/graphviz-*"
+        --exclude="spack/opt/spack/*/*/help2man-*"
+        --exclude="spack/opt/spack/*/*/hwloc-*"
+        --exclude="spack/opt/spack/*/*/libiconv-*"
+        --exclude="spack/opt/spack/*/*/libpciaccess-*"
+        --exclude="spack/opt/spack/*/*/libsigsegv-*"
+        --exclude="spack/opt/spack/*/*/libtool-*"
+        --exclude="spack/opt/spack/*/*/libxml2-*"
+        --exclude="spack/opt/spack/*/*/m4-*"
+        --exclude="spack/opt/spack/*/*/metis-*"
+        --exclude="spack/opt/spack/*/*/mpich-*"
+        --exclude="spack/opt/spack/*/*/numactl-*"
+        --exclude="spack/opt/spack/*/*/openmpi-*"
+        --exclude="spack/opt/spack/*/*/openssl-*"
+        --exclude="spack/opt/spack/*/*/parmetis-*"
+        --exclude="spack/opt/spack/*/*/perl-*"
+        --exclude="spack/opt/spack/*/*/pkgconf-*"
+        --exclude="spack/opt/spack/*/*/readline-*"
+        --exclude="spack/opt/spack/*/*/tar-*"
+        --exclude="spack/opt/spack/*/*/texinfo-*"
+        --exclude="spack/opt/spack/*/*/utils-macros-*"
+        --exclude="spack/opt/spack/*/*/xz-*"
+        --exclude="spack/opt/spack/*/*/zlib-*"
+        /home/flecsi/spack ${CI_PROJECT_DIR}/state
+
+#------------------------------------------------------------------------------#
+# env_spack_restore
+#
+# Restore an archived spack state.
+#------------------------------------------------------------------------------#
+
+.env_spack_restore:
+  script: &env_spack_restore
+    - rsync -apz ${CI_PROJECT_DIR}/state/spack /home/flecsi
+    - rsync -apz ${CI_PROJECT_DIR}/state/.spack /home/flecsi
+
+#------------------------------------------------------------------------------#
+# env_template
+#
+# This template completes construction of the build environment, overriding
+# spack builtins with the spackage definitions in the target commit.
+#
+# Variables:
+#   REGISTRY:       The container registry from which to pull images.
+#   IMAGE:          The container image to use, e.g., centos-7.8.
+#   ENVIRONMENT:    The target environment from the flecsi gitlab-ci project,
+#                   e.g., one of the primary branches, such as 'devel',
+#                   or '1.4'.
+#   MPI_PROVIDER:   The MPI provider. Generally this will be mpich, or openmpi.
+#   VERSION:  The version of FleCSI to use for spack build.
+#   VARIANTS: Spack variants not including the runtime.
+#------------------------------------------------------------------------------#
+
+.aux_print_env_info:
+  stage: Environment
+  script: &print_env_info
+    - >
+      echo -e "${COLOR_MAGENTA}Creating Build Environment\n\t${COLOR_BLUE}Environment: ${ENVIRONMENT}${COLOR_PLAIN}\n\t${COLOR_BLUE}Registry: ${REGISTRY}${COLOR_PLAIN}\n\t${COLOR_BLUE}Image: ${IMAGE}${COLOR_PLAIN}\n\t${COLOR_BLUE}MPI Provider: ${MPI_PROVIDER}${COLOR_PLAIN}\n\t${COLOR_BLUE}Version: ${VERSION}${COLOR_PLAIN}\n\t${COLOR_BLUE}Variants: ${VARIANTS}${COLOR_PLAIN}\n"
+
+.env_template:
+  stage: Environment
+  image: ${REGISTRY}:${ENVIRONMENT}-${IMAGE}
+  script:
+    - *env_permissions
+    - *print_env_info
+    - *env_shell
+    - spack repo add spack-repo
+    - spack env activate ${ENVIRONMENT}-${MPI_PROVIDER}
+    - spack install --only dependencies ${VERSION}
+        backend=legion ${VARIANTS} ^${MPI_PROVIDER}
+    - *env_spack_archive
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/state
+
+#------------------------------------------------------------------------------#
+# build_template
+#
+# This template builds flecsi.
+#
+# Variables:
+#   REGISTRY:     The container registry from which to pull images.
+#   IMAGE:        The container image to use, e.g., centos-7.8.
+#   ENVIRONMENT:  The target environment from the flecsi gitlab-ci project,
+#                 e.g., one of the primary branches, such as 'devel', or '1.4'.
+#   MPI_PROVIDER: The MPI provider. Generally this will be mpich, or openmpi.
+#   BUILD_TYPE:   CMake build type, e.g., debug.
+#   RUNTIME:      FleCSI backend runtime.
+#------------------------------------------------------------------------------#
+
+.aux_print_build_info:
+  script: &print_build_info
+    - >
+      echo -e "${COLOR_MAGENTA}Creating Build Environment\n\t${COLOR_BLUE}Environment: ${ENVIRONMENT}${COLOR_PLAIN}\n\t${COLOR_BLUE}Registry: ${REGISTRY}${COLOR_PLAIN}\n\t${COLOR_BLUE}Image: ${IMAGE}${COLOR_PLAIN}\n\t${COLOR_BLUE}MPI Provider: ${MPI_PROVIDER}${COLOR_PLAIN}\n\t${COLOR_BLUE}Runtime: ${RUNTIME}${COLOR_PLAIN}\n\t${COLOR_BLUE}C++ Compiler: ${CXX_COMPILER}${COLOR_PLAIN}\n\t${COLOR_BLUE}C++ Flags: ${CXX_FLAGS}${COLOR_PLAIN}\n\t${COLOR_BLUE}C Compiler: ${C_COMPILER}${COLOR_PLAIN}\n\t${COLOR_BLUE}C Flags: ${C_FLAGS}${COLOR_PLAIN}\n"
+
+.build_template:
+  stage: Build + Unit Tests
+  image: ${REGISTRY}:${ENVIRONMENT}-${IMAGE}
+  script:
+    - *env_permissions
+    - *env_spack_restore
+    - *env_shell
+    - spack env activate ${ENVIRONMENT}-${MPI_PROVIDER}
+    - mkdir -p ${CI_PROJECT_DIR}/state/build
+    - cd ${CI_PROJECT_DIR}/state/build
+    - *print_build_info
+    - |-
+      cmake -DCMAKE_INSTALL_PREFIX=${CI_PROJECT_DIR}/state/install \
+        -DBUILD_TYPE=${BUILD_TYPE} \
+        -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+        -DCMAKE_CXX_FLAGS=${CXX_FLAGS} \
+        -DCMAKE_C_COMPILER=${C_COMPILER} \
+        -DCMAKE_C_FLAGS=${C_FLAGS} \
+        -DFLECSI_RUNTIME_MODEL=${RUNTIME} \
+        -DENABLE_FLOG=ON \
+        ../..
+    - make
+    - make test
+    - make install
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/state
+
+#------------------------------------------------------------------------------#
+# default_build_template
+#
+# This template builds flecsi with no options passed to cmake to test
+# the default settings.
+#
+# Variables:
+#   REGISTRY:     The container registry from which to pull images.
+#   IMAGE:        The container image to use, e.g., centos-7.8.
+#   ENVIRONMENT:  The target environment from the flecsi gitlab-ci project,
+#                 e.g., one of the primary branches, such as 'devel', or '1.4'.
+#   MPI_PROVIDER: The MPI provider. Generally this will be mpich, or openmpi.
+#------------------------------------------------------------------------------#
+
+.aux_print_defaults_build_info:
+  script: &print_defaults_build_info
+    - >
+      echo -e "${COLOR_MAGENTA}Creating Build Environment with Defaults\n\t${COLOR_BLUE}Environment: ${ENVIRONMENT}${COLOR_PLAIN}\n\t${COLOR_BLUE}Registry: ${REGISTRY}${COLOR_PLAIN}\n\t${COLOR_BLUE}Image: ${IMAGE}${COLOR_PLAIN}\n\t${COLOR_BLUE}MPI Provider: ${MPI_PROVIDER}${COLOR_PLAIN}\n"
+
+.defaults_build_template:
+  stage: Build + Unit Tests
+  image: ${REGISTRY}:${ENVIRONMENT}-${IMAGE}
+  script:
+    - *env_permissions
+    - *env_spack_restore
+    - *env_shell
+    - spack env activate ${ENVIRONMENT}-${MPI_PROVIDER}
+    - mkdir -p ${CI_PROJECT_DIR}/state/build
+    - cd ${CI_PROJECT_DIR}/state/build
+    - *print_defaults_build_info
+    - |-
+      cmake -DCMAKE_INSTALL_PREFIX=${CI_PROJECT_DIR}/state/install ../..
+    - make
+    - make install
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/state
+
+#------------------------------------------------------------------------------#
+# tutorial_template
+#
+# This template builds the flecsi tutorial examples.
+#
+# Variables:
+#   REGISTRY:     The container registry from which to pull images.
+#   IMAGE:        The container image to use, e.g., centos-7.8.
+#   ENVIRONMENT:  The target environment from the flecsi gitlab-ci project,
+#                 e.g., one of the primary branches, such as 'devel', or '1.4'.
+#   MPI_PROVIDER: The MPI provider. Generally this will be mpich, or openmpi.
+#------------------------------------------------------------------------------#
+
+.aux_print_build_tutorial_info:
+  script: &print_build_tutorial_info
+    - >
+      echo -e "${COLOR_MAGENTA}Creating Build Environment\n\t${COLOR_BLUE}Environment: ${ENVIRONMENT}${COLOR_PLAIN}\n\t${COLOR_BLUE}Registry: ${REGISTRY}${COLOR_PLAIN}\n\t${COLOR_BLUE}Image: ${IMAGE}${COLOR_PLAIN}\n\t${COLOR_BLUE}MPI Provider: ${MPI_PROVIDER}${COLOR_PLAIN}\n\t${COLOR_BLUE}C++ Compiler: ${CXX_COMPILER}${COLOR_PLAIN}\n\t${COLOR_BLUE}C++ Flags: ${CXX_FLAGS}${COLOR_PLAIN}\n\t${COLOR_BLUE}C Compiler: ${C_COMPILER}${COLOR_PLAIN}\n\t${COLOR_BLUE}C Flags: ${C_FLAGS}${COLOR_PLAIN}\n"
+
+.tutorial_template:
+  stage: Tutorial
+  image: ${REGISTRY}:${ENVIRONMENT}-${IMAGE}
+  script:
+    - *env_permissions
+    - *env_spack_restore
+    - *env_shell
+    - export CMAKE_PREFIX_PATH=${CI_PROJECT_DIR}/state/install
+    - spack env activate ${ENVIRONMENT}-${MPI_PROVIDER}
+    - mkdir -p ${CI_PROJECT_DIR}/state/build-tutorial
+    - cd ${CI_PROJECT_DIR}/state/build-tutorial
+    - *print_build_tutorial_info
+    - |-
+      cmake -DENABLE_UNIT_TESTS=ON \
+        -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+        -DCMAKE_CXX_FLAGS=${CXX_FLAGS} \
+        -DCMAKE_C_COMPILER=${C_COMPILER} \
+        -DCMAKE_C_FLAGS=${C_FLAGS} \
+        ../../tutorial
+    - make
+    - make test
+
+#------------------------------------------------------------------------------#
+# diff_format_template, check_format_template
+#
+# Variables:
+#   REGISTRY:       The container registry from which to pull images.
+#   IMAGE:          The container image to use, e.g., centos-7.8.
+#   FORMAT_VERSION: The required version of clang-format
+#                   (diff_format_template only).
+#------------------------------------------------------------------------------#
+
+.aux_print_diff_format_info:
+  script: &print_diff_format_info
+    - >
+      echo -e "${COLOR_MAGENTA}Checking Formatting\n\t${COLOR_BLUE}Registry: ${REGISTRY}${COLOR_PLAIN}\n\t${COLOR_BLUE}Image: ${IMAGE}${COLOR_PLAIN}\n\t${COLOR_BLUE}Version (clang-format): ${FORMAT_VERSION}${COLOR_PLAIN}\n"
+
+.diff_format_template:
+  stage: Canary
+  image: ${REGISTRY}:${IMAGE}
+  script:
+    - *env_shell
+    - spack env activate format
+    - mkdir -p ${CI_PROJECT_DIR}/state/build
+    - cd ${CI_PROJECT_DIR}/state/build
+    - cmake -DFORMAT_ONLY=ON -DCLANG_FORMAT_VERSION=${FORMAT_VERSION} ../..
+    - *print_diff_format_info
+    - set -o errexit
+    - make format && git diff --exit-code --compact-summary
+    - result=$?
+    - >
+      if [ $result -eq 0 ]; then
+        touch ${CI_PROJECT_DIR}/state/format-passed;
+      fi
+    - exit $result
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/state
+
+.check_format_template:
+  stage: Final
+  image: ${REGISTRY}:${IMAGE}
+  script:
+    - if [ -e ${CI_PROJECT_DIR}/state/format-passed ]; then exit 0; fi
+    - exit 1
