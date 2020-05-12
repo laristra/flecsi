@@ -109,6 +109,8 @@ struct future<Return, exec::launch_type_t::index> {
   void wait(bool silence_warnings = false) const;
   /// Get the result of one of the tasks.
   Return get(std::size_t index = 0, bool silence_warnings = false) const;
+  /// Get the number of tasks.
+  std::size_t size() const;
 };
 #endif
 
