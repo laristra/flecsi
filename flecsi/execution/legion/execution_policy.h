@@ -28,8 +28,8 @@
 
 #include <legion.h>
 
-#include <flecsi/utils/const_string.h>
 #include <flecsi/utils/annotation.h>
+#include <flecsi/utils/const_string.h>
 
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
@@ -41,7 +41,6 @@
 #include <flecsi/execution/legion/task_epilog.h>
 #include <flecsi/execution/legion/task_prolog.h>
 #include <flecsi/execution/legion/task_wrapper.h>
-
 
 namespace flecsi {
 namespace execution {
@@ -237,7 +236,6 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
-
 
           {
             task_prolog_t task_prolog(

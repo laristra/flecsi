@@ -17,4 +17,5 @@ const std::string annotation::execute_task_initargs::tag{"init-args"};
 const std::string annotation::execute_task_prolog::tag{"prolog"};
 const std::string annotation::execute_task_epilog::tag{"epilog"};
 
-}}
+} // namespace utils
+} // namespace flecsi

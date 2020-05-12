@@ -22,7 +22,6 @@
 #include <type_traits>
 
 #include "flecsi/utils/tuple_type_converter.h"
-#include <flecsi/utils/annotation.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/mpi/finalize_handles.h>
@@ -30,7 +29,7 @@
 #include <flecsi/execution/mpi/reduction_wrapper.h>
 #include <flecsi/execution/mpi/task_epilog.h>
 #include <flecsi/execution/mpi/task_prolog.h>
-
+#include <flecsi/utils/annotation.h>
 
 namespace flecsi {
 namespace execution {

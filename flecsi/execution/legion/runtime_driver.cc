@@ -28,9 +28,8 @@
 #include <flecsi/execution/legion/mapper.h>
 #include <flecsi/execution/remap_shared.h>
 #include <flecsi/runtime/types.h>
-#include <flecsi/utils/common.h>
 #include <flecsi/utils/annotation.h>
-
+#include <flecsi/utils/common.h>
 
 clog_register_tag(runtime_driver);
 

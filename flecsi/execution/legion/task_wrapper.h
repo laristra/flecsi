@@ -31,9 +31,9 @@
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/legion/finalize_handles.h>
 #include <flecsi/execution/legion/init_handles.h>
+#include <flecsi/utils/annotation.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/tuple_type_converter.h>
-#include <flecsi/utils/annotation.h>
 
 clog_register_tag(task_wrapper);
 

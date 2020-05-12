@@ -14,8 +14,8 @@
 #pragma once
 
 /*! @file */
-#include <type_traits>
 #include <string>
+#include <type_traits>
 #if defined(ENABLE_CALIPER)
 #include <caliper/Annotation.h>
 #endif
@@ -31,7 +31,6 @@ public:
   /// used for specifying what detail of annotations to collect.
   enum class detail { low, medium, high };
 
-
   /// base for annotation contexts.
   template<class T>
   struct context {
@@ -39,15 +38,15 @@ public:
     static cali::Annotation ann;
 #endif
   };
-  struct execution : context<execution>{
+  struct execution : context<execution> {
     static constexpr char name[] = "FleCSI-Execution";
   };
-
 
   /**
    *  base for code region annotations.
    *
-   *   \tparam CTX annotation context for code region (must inherit from annotation::context).
+   *   \tparam CTX annotation context for code region (must inherit from
+   * annotation::context).
    */
   template<class CTX>
   struct region {
@@ -102,7 +101,6 @@ public:
     static constexpr detail detail_level = detail::high;
   };
 
-
   /**
    * Tag beginning of code region with caliper annotation.
    *
@@ -112,8 +110,8 @@ public:
    * \tparam reg code region to tag (type inherits from annotation::region).
    */
   template<class reg>
-  static std::enable_if_t<
-    std::is_base_of<context<typename reg::outer_context>, typename reg::outer_context>::value>
+  static std::enable_if_t<std::is_base_of<context<typename reg::outer_context>,
+    typename reg::outer_context>::value>
   begin() {
 #if defined(ENABLE_CALIPER)
     if constexpr(reg::detail_level <= detail_level) {
@@ -122,19 +120,20 @@ public:
 #endif
   }
 
-
   /**
    * Tag beginning of an execute_task region.
    *
-   * The execute_task region has multiple phases and is associated with a named task.
+   * The execute_task region has multiple phases and is associated with a named
+   * task.
    *
-   * \tparam reg code region to tag (must inherit from annotation::execute_task).
-   * \param std::string task_name name of task to tag.
+   * \tparam reg code region to tag (must inherit from
+   * annotation::execute_task). \param std::string task_name name of task to
+   * tag.
    */
   template<class reg>
-  static std::enable_if_t<
-    std::is_base_of<context<typename reg::outer_context>, typename reg::outer_context>::value &&
-    std::is_base_of<execute_task<reg>, reg>::value>
+  static std::enable_if_t<std::is_base_of<context<typename reg::outer_context>,
+                            typename reg::outer_context>::value &&
+                          std::is_base_of<execute_task<reg>, reg>::value>
   begin(std::string task_name) {
 #if defined(ENABLE_CALIPER)
     if constexpr(reg::detail_level <= detail_level) {
@@ -143,7 +142,6 @@ public:
     }
 #endif
   }
-
 
   /**
    * Tag beginning of a custom named code region.
@@ -155,17 +153,14 @@ public:
    * \tparam detail severity detail level to use for code region.
    */
   template<class ctx, detail severity>
-  static std::enable_if_t<
-    std::is_base_of<context<ctx>, ctx>::value>
-  begin(std::string region_name)
-  {
+  static std::enable_if_t<std::is_base_of<context<ctx>, ctx>::value> begin(
+    std::string region_name) {
 #if defined(ENABLE_CALIPER)
     if constexpr(severity <= detail_level) {
       ctx::ann.begin(region_name.c_str());
     }
 #endif
   }
-
 
   /**
    * Tag end of code region with caliper annotation.
@@ -176,8 +171,8 @@ public:
    * \tparam reg code region to tag (type inherits from annotation::region).
    */
   template<class reg>
-  static std::enable_if_t<
-    std::is_base_of<context<typename reg::outer_context>, typename reg::outer_context>::value>
+  static std::enable_if_t<std::is_base_of<context<typename reg::outer_context>,
+    typename reg::outer_context>::value>
   end() {
 #if defined(ENABLE_CALIPER)
     if constexpr(reg::detail_level <= detail_level) {
@@ -185,7 +180,6 @@ public:
     }
 #endif
   }
-
 
   /**
    * Tag end of a custom named code region.
@@ -197,9 +191,7 @@ public:
    * \tparam detail severity detail level to use for code region.
    */
   template<class ctx, detail severity>
-  static std::enable_if_t<
-    std::is_base_of<context<ctx>, ctx>::value>
-  end() {
+  static std::enable_if_t<std::is_base_of<context<ctx>, ctx>::value> end() {
 #if defined(ENABLE_CALIPER)
     if constexpr(severity <= detail_level) {
       ctx::ann.end();
@@ -216,13 +208,16 @@ public:
 #endif
 };
 
-
 /// Initialize caliper annotation objects from the context name.
 #if defined(ENABLE_CALIPER)
-template<class T> cali::Annotation annotation::context<T>::ann{T::name};
+template<class T>
+cali::Annotation annotation::context<T>::ann{T::name};
 #endif
 
-/// Set code region name for regions inheriting from execute_task with the following prefix.
-template<class T> const std::string annotation::execute_task<T>::name{"execute_task->" + T::tag};
+/// Set code region name for regions inheriting from execute_task with the
+/// following prefix.
+template<class T>
+const std::string annotation::execute_task<T>::name{"execute_task->" + T::tag};
 
-}}
+} // namespace utils
+} // namespace flecsi
