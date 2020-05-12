@@ -64,7 +64,6 @@ set(utils_HEADERS
 set(utils_SOURCES
   debruijn.cc
   demangle.cc
-  annotation.cc
 )
 
 #------------------------------------------------------------------------------#

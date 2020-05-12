@@ -54,50 +54,52 @@ public:
     static constexpr detail detail_level = detail::medium;
   };
   struct runtime_setup : region<execution> {
-    static const std::string name;
+    inline static const std::string name{"set-up"};
   };
   struct spl_tlt_init : region<execution> {
-    static const std::string name;
+    inline static const std::string name{"spl-tlt-init"};
     static constexpr detail detail_level = detail::low;
   };
   struct create_regions : region<execution> {
-    static const std::string name;
+    inline static const std::string name{"create-regions"};
   };
   struct spl_spmd_init : region<execution> {
-    static const std::string name;
+    inline static const std::string name{"spl-spmd-init"};
   };
   struct driver : region<execution> {
-    static const std::string name;
+    inline static const std::string name{"driver"};
     static constexpr detail detail_level = detail::low;
   };
   struct runtime_finish : region<execution> {
-    static const std::string name;
+    inline static const std::string name{"finish"};
   };
   template<class T>
   struct execute_task : region<execution> {
-    static const std::string name;
+    /// Set code region name for regions inheriting from execute_task with the
+    /// following prefix.
+    inline static const std::string name{"execute_task->" + T::tag};
   };
   struct execute_task_init : execute_task<execute_task_init> {
-    static const std::string tag;
+    inline static const std::string tag{"init-handles"};
     static constexpr detail detail_level = detail::high;
   };
   struct execute_task_initargs : execute_task<execute_task_initargs> {
-    static const std::string tag;
+    inline static const std::string tag{"init-args"};
     static constexpr detail detail_level = detail::high;
   };
   struct execute_task_prolog : execute_task<execute_task_prolog> {
-    static const std::string tag;
+    inline static const std::string tag{"prolog"};
     static constexpr detail detail_level = detail::high;
   };
   struct execute_task_user : execute_task<execute_task_user> {
-    static const std::string tag;
+    inline static const std::string tag{"user"};
   };
   struct execute_task_epilog : execute_task<execute_task_epilog> {
-    static const std::string tag;
+    inline static const std::string tag{"epilog"};
     static constexpr detail detail_level = detail::high;
   };
   struct execute_task_finalize : execute_task<execute_task_finalize> {
-    static const std::string tag;
+    inline static const std::string tag{"finalize-handles"};
     static constexpr detail detail_level = detail::high;
   };
 
@@ -213,11 +215,6 @@ public:
 template<class T>
 cali::Annotation annotation::context<T>::ann{T::name};
 #endif
-
-/// Set code region name for regions inheriting from execute_task with the
-/// following prefix.
-template<class T>
-const std::string annotation::execute_task<T>::name{"execute_task->" + T::tag};
 
 } // namespace utils
 } // namespace flecsi
