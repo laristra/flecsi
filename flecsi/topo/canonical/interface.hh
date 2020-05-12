@@ -61,6 +61,10 @@ struct canonical : canonical_base {
 
   data::partitioned vert, cell;
 
+  std::size_t colors() const {
+    return cell.colors();
+  }
+
   template<index_space S>
   auto & get_partition() const {
     return S == cells ? cell : vert;
