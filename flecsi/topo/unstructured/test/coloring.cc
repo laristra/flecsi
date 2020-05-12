@@ -18,7 +18,7 @@
 
 int
 sanity() {
-  UNIT{};
+  UNIT {};
 }
 
 flecsi::unit::driver<sanity> driver;

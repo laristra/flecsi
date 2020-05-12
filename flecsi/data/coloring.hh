@@ -19,11 +19,8 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/run/types.hh"
-#include <flecsi/data/backend.hh>
 #include <flecsi/execution.hh>
 
-#include <mpi.h>
 #include <optional>
 
 namespace flecsi {

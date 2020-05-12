@@ -56,7 +56,7 @@ struct field_register<T, singular, Topo, Space>
 template<class Topo>
 struct field_reference_t : convert_tag {
   // The use of the slot allows creating field references statically, before
-  // the topology_data has been allocated.
+  // the topology object has been created.
   using topology_t = topology_slot<Topo>;
 
   field_reference_t(const field_info_t & info, const topology_t & topology)
@@ -101,10 +101,12 @@ struct field_reference : field_reference_t<Topo> {
 /// \tparam L data layout
 template<class T, data::layout L = data::dense>
 struct field {
+  template<std::size_t Priv>
+  using accessor1 = data::accessor<L, T, Priv>;
   /// The accessor to use as a parameter to receive this sort of field.
   /// \tparam PP the appropriate number of privilege values
   template<partition_privilege_t... PP>
-  using accessor = data::accessor<L, T, privilege_pack<PP...>>;
+  using accessor = accessor1<privilege_pack<PP...>>;
 
   /// A field registration.
   /// \tparam Topo (specialized) topology type
@@ -112,6 +114,8 @@ struct field {
   template<class Topo,
     topo::index_space_t<Topo> Space = topo::default_space<Topo>>
   struct definition : data::field_register<T, L, Topo, Space> {
+    using Field = field;
+
     /// Return a reference to a field instance.
     /// \tparam t topology instance (need not be allocated yet)
     data::field_reference<T, L, Topo, Space> operator()(
@@ -121,4 +125,14 @@ struct field {
   };
 };
 
+namespace data {
+template<class F, std::size_t Priv>
+using field_accessor =
+  typename std::remove_reference_t<F>::Field::template accessor1<Priv>;
+template<const auto & F, std::size_t Priv>
+struct accessor_member : field_accessor<decltype(F), Priv> {
+  accessor_member() : accessor_member::accessor(F.fid) {}
+};
+
+} // namespace data
 } // namespace flecsi

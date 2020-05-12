@@ -29,7 +29,7 @@ variables:
   BUILD_TYPE: "Debug"
   CC: "gcc"
   CXX: "g++"
-  CXXFLAGS: "-Wall -W -Werror"
+  CXXFLAGS: "-Wall -W -Werror -Wno-parentheses"
   IGNORE_NOCI: "FALSE"
   GASNET_BACKTRACE: 1
   SPACK_ROOT: /home/gitlab-runner/ci-spack/spack

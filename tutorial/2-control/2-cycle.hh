@@ -20,8 +20,7 @@ namespace cycle {
 
 enum class cp { initialize, advance, analyze, finalize };
 
-inline const char *
-operator*(cp control_point) {
+inline const char * operator*(cp control_point) {
   switch(control_point) {
     case cp::initialize:
       return "initialize";
@@ -46,7 +45,9 @@ struct control_policy {
     Define a function to access the step_ data member.
    */
 
-  size_t & step() { return step_; }
+  size_t & step() {
+    return step_;
+  }
 
   /*
     The core FleCSI control model inherits from the control policy, so that
@@ -68,8 +69,7 @@ struct control_policy {
 
   using cycle = flecsi::cycle<cycle_control,
     control_point<cp::advance>,
-    control_point<cp::analyze>
-  >;
+    control_point<cp::analyze>>;
 
   /*
     The control_points tuple type takes the cycle as one of its
@@ -77,9 +77,8 @@ struct control_policy {
     either typeified enumeration values, or cycles.
    */
 
-  using control_points = std::tuple<control_point<cp::initialize>,
-    cycle,
-    control_point<cp::finalize>>;
+  using control_points = std::
+    tuple<control_point<cp::initialize>, cycle, control_point<cp::finalize>>;
 
 private:
   size_t step_{0};

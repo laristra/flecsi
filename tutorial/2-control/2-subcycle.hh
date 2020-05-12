@@ -20,8 +20,7 @@ namespace cycle {
 
 enum class cp { initialize, advance, advance2, analyze, finalize };
 
-inline const char *
-operator*(cp control_point) {
+inline const char * operator*(cp control_point) {
   switch(control_point) {
     case cp::initialize:
       return "initialize";
@@ -48,9 +47,13 @@ struct control_policy {
     Define a function to access the substep_ data member;
    */
 
-  size_t & substep() { return substep_; }
+  size_t & substep() {
+    return substep_;
+  }
 
-  size_t & step() { return step_; }
+  size_t & step() {
+    return step_;
+  }
 
   /*
     Define a subcycle control function.
@@ -73,18 +76,13 @@ struct control_policy {
 
   using subcycle = flecsi::cycle<subcycle_control,
     control_point<cp::advance>,
-    control_point<cp::advance2>
-  >;
+    control_point<cp::advance2>>;
 
-  using cycle = flecsi::cycle<cycle_control,
-    subcycle,
-    control_point<cp::analyze>
-  >;
+  using cycle =
+    flecsi::cycle<cycle_control, subcycle, control_point<cp::analyze>>;
 
-  using control_points = std::tuple<
-    control_point<cp::initialize>,
-    cycle,
-    control_point<cp::finalize>>;
+  using control_points = std::
+    tuple<control_point<cp::initialize>, cycle, control_point<cp::finalize>>;
 
 private:
   size_t substep_{0};

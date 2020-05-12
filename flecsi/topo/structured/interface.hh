@@ -19,7 +19,7 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/reference.hh"
+#include "flecsi/topo/core.hh" // base
 #include "flecsi/topo/structured/types.hh"
 
 namespace flecsi {
@@ -31,17 +31,13 @@ namespace topo {
 
 template<typename Policy>
 struct structured : structured_base {
-
-  using coloring = structured_base::coloring;
-
-  structured() = delete;
-
-  template<typename... ARGS>
-  static coloring color(ARGS &&... args) {
-    return Policy::color(std::forward<ARGS>(args)...);
-  } // color
-
+  structured(const coloring &);
 }; // struct structured
+
+template<>
+struct detail::base<structured> {
+  using type = structured_base;
+};
 
 } // namespace topo
 } // namespace flecsi

@@ -56,9 +56,9 @@ done
 
 SCRIPT_BUILD_TYPE=release
 SCRIPT_CXX_COMPILER=icpc
-SCRIPT_CXX_FLAGS="-diag-error-limit=5 -Wall -W -Werror"
+SCRIPT_CXX_FLAGS="-diag-error-limit=5 -Wall -W -Werror -Wno-parentheses"
 SCRIPT_C_COMPILER=icc
-SCRIPT_C_FLAGS="-diag-error-limit=5 -Wall -W -Werror"
+SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
 
 echo "Executing:"
 echo "$cmake_mode" \

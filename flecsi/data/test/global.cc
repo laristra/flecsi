@@ -21,23 +21,6 @@ using namespace flecsi;
 using namespace flecsi::data;
 using namespace flecsi::topo;
 
-namespace {
-static_assert(std::is_same_v<core_t<global>, global>);
-struct test_g : global {};
-static_assert(std::is_same_v<core_t<test_g>, global>);
-
-struct test_policy {
-  static constexpr std::size_t num_dimensions = 1, num_domains = 1;
-  typedef std::tuple<> entity_types, connectivities, bindings;
-  static void create_entity();
-};
-
-using u_base = unstructured<test_policy>;
-static_assert(std::is_same_v<core_t<u_base>, u_base>);
-struct test_u : u_base {};
-static_assert(std::is_same_v<core_t<test_u>, u_base>);
-} // namespace
-
 using double1 = field<double, singular>;
 const double1::definition<global> energy_field;
 
@@ -52,6 +35,7 @@ assign(double1::accessor<wo> ga) {
 int
 check(double1::accessor<ro> ga) {
   UNIT {
+    static_assert(std::is_same_v<decltype(ga.get()), const double &>);
     flog(info) << "check on " << color() << std::endl;
     ASSERT_EQ(ga, 0);
   };

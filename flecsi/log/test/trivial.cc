@@ -17,5 +17,5 @@
 
 int
 trivial_driver(int, char **) {
-  UNIT{};
+  UNIT {};
 } // trivial_driver

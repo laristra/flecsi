@@ -18,7 +18,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #endif
-#include "flecsi/data/reference.hh"
+#include "flecsi/data/privilege.hh"
+#include "flecsi/topo/core.hh" // base
 #include "flecsi/topo/ntree/coloring.hh"
 #include "flecsi/topo/ntree/geometry.hh"
 #include "flecsi/topo/ntree/storage.hh"
@@ -27,6 +28,7 @@
 #include <fstream>
 #include <iostream>
 #include <stack>
+#include <type_traits>
 #include <unordered_map>
 
 namespace flecsi {
@@ -46,14 +48,16 @@ namespace topo {
 //-----------------------------------------------------------------//
 template<typename POLICY_TYPE>
 struct ntree : ntree_base {
+  template<std::size_t>
+  struct access;
 
-public:
-  using Policy = POLICY_TYPE;
+  ntree(const coloring &) {}
+};
 
-  template<typename... ARGS>
-  static coloring color(ARGS &&... args) {
-    return POLICY_TYPE::color(std::forward<ARGS>(args)...);
-  } // color
+template<class Policy>
+template<std::size_t Priv>
+struct ntree<Policy>::access {
+  static constexpr bool Write = privilege_write(Priv);
 
   // tree storage type definition
   using storage_t = ntree_storage<Policy>;
@@ -78,12 +82,11 @@ public:
 
   storage_t nts_;
 
-public:
   /*!
     Constuct a tree topology with unit coordinates, i.e. each coordinate
     dimension is in range [0, 1].
    */
-  ntree() {
+  access() {
     max_depth_ = 0;
     // Init the new storage, for now without handler
     // Add the root in the node_map_
@@ -105,7 +108,7 @@ public:
    * @brief Construct a new entity. The entity's constructor should not be
    * called directly.
    */
-  template<class... S>
+  template<class... S, class = std::enable_if_t<Write>>
   entity_t * make_entity(S &&... args) {
     return nts_.template make_entity(std::forward<S>(args)...);
   }
@@ -138,17 +141,10 @@ public:
    * @brief Construct a new tree entity. The tree entity's constructor should
    * not be called directly.
    */
-  template<class... S>
+  template<class... S, class = std::enable_if_t<Write>>
   entity_t * make_tree_entity(S &&... args) {
     return nts_.template make_tree_entity(std::forward<S>(args)...);
   }
-
-  /**
-   * @brief Output the current state of the tree
-   */
-  template<class TREE_POLICY>
-  friend std::ostream & operator<<(std::ostream & os,
-    const ntree<TREE_POLICY> & t);
 
   /**
    * @brief Build the tree topology in the node_map_, insert all the local
@@ -505,14 +501,16 @@ private:
   typename std::unordered_map<key_t, node_t, node_key_hasher__<key_t>>::iterator
     root_;
 
-}; // ntree_topology
+  friend std::ostream & operator<<(std::ostream & os, const access & t) {
+    os << "Tree: range: " << t.range_[0] << "-" << t.range_[1];
+    return os;
+  }
+};
 
-template<class TREE_TYPE>
-std::ostream &
-operator<<(std::ostream & os, const ntree<TREE_TYPE> & t) {
-  os << "Tree: range: " << t.range_[0] << "-" << t.range_[1];
-  return os;
-}
+template<>
+struct detail::base<ntree> {
+  using type = ntree_base;
+};
 
 } // namespace topo
 } // namespace flecsi

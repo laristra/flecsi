@@ -22,9 +22,10 @@ cmake_mode=cmake
 runtime=legion
 cmake_args=""
 
+warn="-Wall -W -Werror -Wno-parentheses"
 SCRIPT_BUILD_TYPE=debug
 SCRIPT_CXX_COMPILER=clang++
-SCRIPT_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+SCRIPT_CXX_FLAGS="-fcolor-diagnostics $warn"
 SCRIPT_C_COMPILER=clang
 SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
 SCRIPT_ENABLE_FLOG="ON"
@@ -68,20 +69,20 @@ do
     ;;
     clang)
       SCRIPT_CXX_COMPILER=clang++
-      SCRIPT_CXX_FLAGS="-fcolor-diagnostics -ferror-limit=5 -Wall -W -Werror"
+      SCRIPT_CXX_FLAGS="-fcolor-diagnostics -ferror-limit=5 $warn"
       SCRIPT_C_COMPILER=clang
       SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
     ;;
     gnu)
       SCRIPT_CXX_COMPILER=g++
       SCRIPT_CXX_FLAGS="-fmax-errors=5 -fdiagnostics-color=always\
-        -Wall -W -Werror"
+        $warn"
       SCRIPT_C_COMPILER=gcc
       SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
     ;;
     intel)
       SCRIPT_CXX_COMPILER=icpc
-      SCRIPT_CXX_FLAGS="-diag-error-limit=5 -Wall -W -Werror"
+      SCRIPT_CXX_FLAGS="-diag-error-limit=5 $warn"
       SCRIPT_C_COMPILER=icc
       SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
     ;;

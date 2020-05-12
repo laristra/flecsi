@@ -23,7 +23,7 @@
 
 using namespace flecsi;
 
-struct sph_tree_policy {
+struct sph_tree : topo::specialization<topo::ntree, sph_tree> {
   static constexpr size_t dimension = 3;
   using element_t = double;
   using point_t = util::point<element_t, dimension>;
@@ -34,17 +34,13 @@ struct sph_tree_policy {
   using entity_t = topo::ntree_entity<dimension, key_t>;
   using node_t = topo::ntree_node<dimension, tree_entity_t, key_t>;
 
-  using coloring = topo::ntree_base::coloring;
-
   static coloring color() {
     return {};
   } // color
+};
 
-}; // sph_tree_policy
-
-using sph_ntree_topology = topo::ntree<sph_tree_policy>;
-data::topology_slot<sph_ntree_topology> sph_ntree;
-data::coloring_slot<sph_ntree_topology> coloring;
+sph_tree::slot sph_ntree;
+sph_tree::cslot coloring;
 
 int
 ntree_driver() {

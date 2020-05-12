@@ -17,28 +17,32 @@
 
 namespace standalone {
 
-int initialize() {
+int
+initialize() {
   flog(info) << __func__ << std::endl;
   return 0;
 }
 
 control::action<initialize, cp::initialize> initialize_action;
 
-int advance() {
+int
+advance() {
   flog(info) << __func__ << std::endl;
   return 0;
 }
 
 control::action<advance, cp::advance> advance_action;
 
-int analyze() {
+int
+analyze() {
   flog(info) << __func__ << std::endl;
   return 0;
 }
 
 control::action<analyze, cp::analyze> analyze_action;
 
-int finalize() {
+int
+finalize() {
   flog(info) << __func__ << std::endl;
   return 0;
 }

@@ -20,13 +20,13 @@
 set(data_HEADERS
   accessor.hh
   backend.hh
+  coloring.hh
   reference.hh
   field.hh
   field_info.hh
   layout.hh
   privilege.hh
   topology_accessor.hh
-  topology_registration.hh
   topology_slot.hh
   topology.hh
 )
@@ -38,7 +38,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
     leg/policy.hh
-    leg/types.hh
     ${data_HEADERS}
   )
 
@@ -90,13 +89,13 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 add_unit(canonical
   SOURCES
     test/canonical.cc
   THREADS 2
 )
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 add_unit(global
   SOURCES
     test/global.cc

@@ -18,8 +18,8 @@
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
 #endif
-#include "flecsi/data/reference.hh"
 //#include "flecsi/run/backend.hh"
+#include "flecsi/topo/core.hh" // base
 //#include "flecsi/topo/unstructured/partition.hh"
 #include "flecsi/topo/unstructured/storage.hh"
 #include "flecsi/topo/unstructured/types.hh"
@@ -109,7 +109,7 @@ FLECSI_MEMBER_CHECKER(create_entity);
  */
 
 template<typename POLICY_TYPE>
-struct unstructured : unstructured_base, data::reference_base {
+struct unstructured : unstructured_base {
 
   //--------------------------------------------------------------------------//
   // static verification of mesh policy
@@ -150,13 +150,35 @@ struct unstructured : unstructured_base, data::reference_base {
   static_assert(verify_mesh::has_member_create_entity<POLICY_TYPE>::value,
     "mesh policy missing create_entity()");
 
+  template<std::size_t>
+  struct access;
+
+  unstructured(const coloring &);
+
+#if 0
+  std::vector<base_data_t> entities;
+  std::vector<base_data_t> adjacencies;
+  std::vector<data::partition> exclusive;
+  std::vector<data::partition> shared;
+  std::vector<data::partition> ghost;
+  std::vector<data::partition> ghost_owners;
+#endif
+};
+
+template<class POLICY_TYPE>
+template<std::size_t Priv>
+struct unstructured<POLICY_TYPE>::access {
 private:
   mesh_storage<POLICY_TYPE::num_dimensions,
     POLICY_TYPE::num_domains,
     num_index_subspaces<POLICY_TYPE>::value>
     ms_;
+};
 
-}; // struct unstructured
+template<>
+struct detail::base<unstructured> {
+  using type = unstructured_base;
+};
 
 #if 0
 template<class POLICY_TYPE>

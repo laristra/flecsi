@@ -56,9 +56,9 @@ done
 
 SCRIPT_BUILD_TYPE=release
 SCRIPT_CXX_COMPILER=g++
-SCRIPT_CXX_FLAGS="-fmax-errors=5 -fdiagnostics-color=always -Wall -W -Werror"
+SCRIPT_CXX_FLAGS="-fmax-errors=5 -fdiagnostics-color=always -Wall -W -Werror -Wno-parentheses"
 SCRIPT_C_COMPILER=gcc
-SCRIPT_C_FLAGS="-fmax-errors=5 -fdiagnostics-color=always -Wall -W -Werror"
+SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
 
 echo "Executing:"
 echo "$cmake_mode" \

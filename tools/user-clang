@@ -56,9 +56,9 @@ done
 
 SCRIPT_BUILD_TYPE=release
 SCRIPT_CXX_COMPILER=clang++
-SCRIPT_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+SCRIPT_CXX_FLAGS="-fcolor-diagnostics -Wall -W -Werror -Wno-parentheses"
 SCRIPT_C_COMPILER=clang
-SCRIPT_C_FLAGS="-fcolor-diagnostics -Wall -W -Werror"
+SCRIPT_C_FLAGS=$SCRIPT_CXX_FLAGS
 
 echo "Executing:"
 echo "$cmake_mode" \

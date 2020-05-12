@@ -20,34 +20,24 @@
 
 using namespace flecsi;
 
-struct policy {
-
-  using coloring = topo::structured_base::coloring;
-
+struct block : topo::specialization<topo::structured, block> {
   static coloring color() {
     coloring c = 10;
     return c;
   } // color
+};
 
-}; // struct policy
-
-using topology_type = topo::structured<policy>;
-
-using structured_topology = data::topology_slot<topology_type>;
-structured_topology structured;
-
-data::coloring_slot<topology_type> coloring;
+block::slot structured;
+block::cslot coloring;
 
 #if 0
-const field<double>::definition<topology_type, policy::cells> cell_field;
+const field<double>::definition<block, block::cells> cell_field;
 auto pressure = cell_field(structured);
 #endif
 
 int
 check() {
-  UNIT {
-    flog(info) << "check" << std::endl;
-  };
+  UNIT { flog(info) << "check" << std::endl; };
 } // check
 
 int

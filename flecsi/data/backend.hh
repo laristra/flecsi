@@ -17,11 +17,11 @@
 
 #include <flecsi-config.h>
 
-namespace flecsi::data::detail {
+namespace flecsi::data {
 // Use {} if unknown:
 enum disjointness { aliased = -1, disjoint = 1 };
 enum completeness { incomplete = -1, complete = 1 };
-} // namespace flecsi::data::detail
+} // namespace flecsi::data
 
 /*----------------------------------------------------------------------------*
   This section works with the build system to select the correct runtime

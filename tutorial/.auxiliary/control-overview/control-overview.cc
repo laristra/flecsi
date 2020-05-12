@@ -7,7 +7,8 @@ using namespace example;
 
 // Control Point 1
 
-int actionX() {
+int
+actionX() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
@@ -16,42 +17,48 @@ control::action<actionX, cp::one> action_x;
 
 // Control Point 2
 
-int actionA() {
+int
+actionA() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
 
 control::action<actionA, cp::two> action_a;
 
-int actionB() {
+int
+actionB() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
 
 control::action<actionB, cp::two> action_b;
 
-int actionC() {
+int
+actionC() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
 
 control::action<actionC, cp::two> action_c;
 
-int actionD() {
+int
+actionD() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
 
 control::action<actionD, cp::two> action_d;
 
-int actionE() {
+int
+actionE() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
 
 control::action<actionE, cp::two> action_e;
 
-int actionF() {
+int
+actionF() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
@@ -66,21 +73,24 @@ const auto dep_ed = action_e.add(action_d);
 
 // Control Point 3
 
-int actionG() {
+int
+actionG() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
 
 control::action<actionG, cp::three> action_g;
 
-int actionH() {
+int
+actionH() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
 
 control::action<actionH, cp::three> action_h;
 
-int actionI() {
+int
+actionI() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
@@ -94,7 +104,8 @@ const auto dep_ih = action_i.add(action_h);
 
 // Control Point 3
 
-int actionY() {
+int
+actionY() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
@@ -102,7 +113,8 @@ int actionY() {
 control::action<actionY, cp::four> action_y;
 
 #if 1
-int actionN() {
+int
+actionN() {
   flog(info) << __FUNCTION__ << std::endl;
   return 0;
 }
@@ -114,7 +126,8 @@ const auto dep_bn = action_b.add(action_n);
 
 // Main
 
-int main(int argc, char ** argv) {
+int
+main(int argc, char ** argv) {
   auto status = flecsi::initialize(argc, argv);
 
   if(status != flecsi::run::status::success) {
