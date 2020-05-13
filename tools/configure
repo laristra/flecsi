@@ -44,6 +44,7 @@ do
 			echo "  -h, --help     Show this message and exit."
 			echo "  -c, --ccmake   Enable curses mode."
 			echo "  -u, --user     Enable user mode."
+			echo "  -t, --tutroial Disable FLOG Developer Mode."
 			echo ""
 			echo "Compilers: clang, gnu, intel."
 			echo "(default compiler is clang)."
@@ -64,6 +65,9 @@ do
       SCRIPT_ENABLE_UNIT_TESTS="OFF"
       SCRIPT_ENABLE_DOCUMENTATION="OFF"
 		;;
+    --tutorial|-t)
+      SCRIPT_FLOG_ENABLE_DEVELOPER_MODE="OFF"
+    ;;
     legion|mpi|hpx)
       runtime=$1
     ;;
