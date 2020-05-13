@@ -21,6 +21,9 @@
 
 #include "flecsi/data/backend.hh"
 
+#include <cstddef>
+#include <utility>
+
 namespace flecsi::data {
 #ifdef DOXYGEN // implemented per-backend
 struct region {
@@ -49,10 +52,10 @@ make_region(std::size_t n) {
   return {n, run::context::instance().get_field_info_store<Topo, Index>()};
 }
 
-template<class Topo>
-struct simple : region {
-  using type = Topo;
-  simple(std::size_t n = 1) : region(make_region<type>(n)) {}
+struct partitioned : region, partition {
+  template<class... TT>
+  partitioned(region && r, TT &&... tt)
+    : region(std::move(r)), partition(*this, std::forward<TT>(tt)...) {}
 };
 
 } // namespace flecsi::data

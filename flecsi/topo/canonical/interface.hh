@@ -46,14 +46,12 @@ struct canonical : canonical_base {
   }
 
   canonical(const coloring & c)
-    : vert(data::make_region<Policy, vertices>(c.size + 1)),
-      cell(data::make_region<Policy, cells>(c.size)),
-      vpart(vert,
+    : vert(data::make_region<Policy, vertices>(c.size + 1),
         c.parts,
         split(c.size + 1, c.parts),
         data::disjoint,
         data::complete),
-      cpart(cell,
+      cell(data::make_region<Policy, cells>(c.size),
         c.parts,
         split(c.size, c.parts),
         data::disjoint,
@@ -61,12 +59,11 @@ struct canonical : canonical_base {
 
   static inline const field<int>::definition<Policy, cells> mine;
 
-  data::region vert, cell;
-  data::partition vpart, cpart;
+  data::partitioned vert, cell;
 
   template<index_space S>
   auto & get_partition() const {
-    return S == cells ? cpart : vpart;
+    return S == cells ? cell : vert;
   }
 
 private:

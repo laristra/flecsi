@@ -39,16 +39,16 @@ struct index_base {
 };
 
 template<class P>
-struct index_category : index_base, data::simple<P>, data::partition {
+struct index_category : index_base, data::partitioned {
   index_category(const coloring & c)
-    : index_category::simple(c.size()), partition(
-                                          *this,
-                                          c.size(),
-                                          [](std::size_t i) {
-                                            return std::pair{i, i + 1};
-                                          },
-                                          data::disjoint,
-                                          data::complete) {}
+    : partitioned(
+        data::make_region<P>(c.size()),
+        c.size(),
+        [](std::size_t i) {
+          return std::pair{i, i + 1};
+        },
+        data::disjoint,
+        data::complete) {}
 };
 template<>
 struct detail::base<index_category> {
