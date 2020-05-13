@@ -72,23 +72,63 @@ check_task(const Legion::Task * task,
   size_t * combined_data;
 
   Legion::Domain ex_dom = runtime->get_index_space_domain(context, ex_is);
-  LegionRuntime::Arrays::Rect<2> ex_rect = ex_dom.get_rect<2>();
+  Legion::Domain sh_dom = runtime->get_index_space_domain(
+    context, task->regions[1].region.get_index_space());
+  Legion::Domain gh_dom = runtime->get_index_space_domain(
+    context, task->regions[2].region.get_index_space());
 
-  LegionRuntime::Arrays::Rect<2> sr;
-  LegionRuntime::Accessor::ByteOffset bo[2];
+  Legion::Domain::DomainPointIterator ex_itr(ex_dom);
 
-  // get an accessor to the first element in exclusive LR:
-  auto ac = regions[0].get_field_accessor(fid).template typeify<size_t>();
-  combined_data = ac.template raw_rect_ptr<2>(ex_rect, sr, bo);
+  const Legion::UnsafeFieldAccessor<size_t, 2, Legion::coord_t,
+    Realm::AffineAccessor<size_t, 2, Legion::coord_t>>
+    ac(regions[0], fid, sizeof(size_t));
+
+  std::vector<PhysicalRegion> comb_regions;
+  comb_regions.push_back(regions[0]);
+  comb_regions.push_back(regions[1]);
+  comb_regions.push_back(regions[2]);
+
+  std::vector<PrivilegeMode> privileges;
+  privileges.push_back(task->regions[0].privilege);
+  privileges.push_back(task->regions[1].privilege);
+  privileges.push_back(task->regions[2].privilege);
+
+  const Legion::MultiRegionAccessor<size_t, 2, Legion::coord_t,
+    Realm::AffineAccessor<size_t, 2, Legion::coord_t>>
+    mrac(comb_regions, privileges, fid, sizeof(size_t));
+
+  combined_data = (size_t *)(ac.ptr(ex_itr.p));
 
   size_t check_array[24] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
     16, 17, 18, 19, 20, 17, 18, 19, 20};
 
   for(size_t i = 0; i < 24; i++) {
-    size_t tmp = *(combined_data + i);
+    size_t & tmp = *(combined_data + i);
     assert(tmp == check_array[i]);
-    std::cout << "combined_array [" << i << "] = " << *(combined_data + i)
-              << std::endl;
+    // check if we can modify value when using pointers
+    tmp = tmp + 1;
+  }
+
+  size_t i = 0;
+  for(PointInDomainIterator<2, coord_t> itr(ex_dom); itr(); itr++, i++) {
+    size_t tmp2 = mrac[*itr];
+    assert(tmp2 == (check_array[i] + 1));
+    // writing to exclusive:
+    mrac[*itr] = tmp2 + 2;
+  }
+
+  for(PointInDomainIterator<2, coord_t> itr(sh_dom); itr(); itr++, i++) {
+    size_t tmp2 = mrac[*itr];
+    assert(tmp2 == (check_array[i] + 1));
+    // writing to shared
+    mrac[*itr] = tmp2 + 2;
+  }
+
+  for(PointInDomainIterator<2, coord_t> itr(gh_dom); itr(); itr++, i++) {
+    size_t tmp2 = mrac[*itr];
+    assert(tmp2 == (check_array[i] + 1));
+    // writing to ghost is not allowed since it has READ_ONLY privileges:
+    // ac[*itr]=tmp2+2;
   }
 
   return 0;
@@ -296,7 +336,7 @@ driver(int argc, char ** argv) {
     .add_field(FID_VAL);
   check_launcher
     .add_region_requirement(
-      RegionRequirement(gh_lp, 0 /*projection ID*/, READ_WRITE, EXCLUSIVE, lr))
+      RegionRequirement(gh_lp, 0 /*projection ID*/, READ_ONLY, EXCLUSIVE, lr))
     .add_field(FID_VAL);
 
   check_launcher.tag = MAPPER_COMPACTED_STORAGE;
