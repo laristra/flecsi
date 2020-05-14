@@ -478,15 +478,7 @@ compilers:
   $ module load clang/8.0.1 gcc/9.3.0
   $ spack compilers
 
-Install the flecsi dependencies:
-
-.. code-block:: console
-
-  $ spack install --only dependencies flecsi@devel backend=legion +hdf5 +graphviz +flog ^mpich
-
-Create a spack environment and install the flecsi dependencies. This is
-not redundant, spack will not rebuild anything, but it needs to install
-the dependencies in the environment:
+Create a spack environment and install the flecsi dependencies.
 
 .. code-block:: console
 
