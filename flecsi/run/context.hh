@@ -172,6 +172,11 @@ struct context {
       descriptions_map_.count("FleCSI Options")
         ? descriptions_map_["FleCSI Options"]
         : boost::program_options::options_description("FleCSI Options");
+
+    flecsi_desc.add_options()("backend-args",
+      boost::program_options::value(&backend_)->default_value(""),
+      "Pass arguments to the runtime backend. The single argument is a quoted "
+      "string of backend-specific options.");
 #if defined(FLECSI_ENABLE_FLOG)
     // Add FleCSI options
     flecsi_desc.add_options() // clang-format off
@@ -597,6 +602,7 @@ protected:
 
   std::string program_;
   std::vector<char *> argv_;
+  std::string backend_;
 
   std::string flog_tags_;
   int flog_verbose_;

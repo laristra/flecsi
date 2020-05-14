@@ -458,7 +458,8 @@ inline uint128
 operator-(const uint128 & a, const uint128 & b) noexcept {
   return uint128(a) -= b;
 };
-inline uint128 operator*(const uint128 & a, const uint128 & b) noexcept {
+inline uint128
+operator*(const uint128 & a, const uint128 & b) noexcept {
   return uint128(a) *= b;
 };
 inline uint128
@@ -479,7 +480,8 @@ operator<<(const uint128 & a, unsigned int n) noexcept {
   return uint128(a) <<= n;
 };
 
-inline uint128 operator&(const uint128 & a, const uint128 & b) noexcept {
+inline uint128
+operator&(const uint128 & a, const uint128 & b) noexcept {
   return uint128(a) &= b;
 };
 inline uint128

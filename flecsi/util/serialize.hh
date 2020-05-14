@@ -63,7 +63,8 @@ serial_get(const std::byte *& p) {
 }
 
 template<class T>
-auto serial_put(const T & t) { // for a single object
+auto
+serial_put(const T & t) { // for a single object
   std::vector<std::byte> ret(serial_size(t));
   auto *const p0 = ret.data(), *p = p0;
   serial_put(p, t);
@@ -71,7 +72,8 @@ auto serial_put(const T & t) { // for a single object
   return ret;
 }
 template<class T>
-T serial_get1(const std::byte * p) { // for a single object
+T
+serial_get1(const std::byte * p) { // for a single object
   return serial_get<T>(p);
 }
 

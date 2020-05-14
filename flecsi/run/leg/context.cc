@@ -179,30 +179,22 @@ context_t::start(const std::function<int()> & action) {
   context::start();
 
   /*
-    Handle command-line arguments.
+    Legion command-line arguments.
    */
 
   std::vector<char *> largv;
   largv.push_back(argv_[0]);
-  context::threads_per_process_ = 1;
 
-  for(auto opt = unrecognized_options_.begin();
-      opt != unrecognized_options_.end();
-      ++opt) {
+  auto iss = std::istringstream{backend_};
+  std::vector<std::string> lsargv(std::istream_iterator<std::string>{iss},
+    std::istream_iterator<std::string>());
 
-    // FIXME: This case is a temporary fix until we decide
-    // what to do about Issue #8: Default Launch Domain Size.
-    if(opt->find("-ll:cpu") != std::string::npos) {
-      largv.push_back(opt->data());
-      largv.push_back((++opt)->data());
-      std::stringstream sstream(largv.back());
-      sstream >> context::threads_per_process_;
-    }
-    else {
-      largv.push_back(opt->data());
-    } // if
+  for(auto & arg : lsargv) {
+    largv.push_back(&arg[0]);
   } // for
 
+  // FIXME: This needs to be gotten from Legion
+  context::threads_per_process_ = 1;
   context::threads_ = context::processes_ * context::threads_per_process_;
 
   /*
