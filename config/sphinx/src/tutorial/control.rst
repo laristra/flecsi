@@ -381,6 +381,38 @@ Running this example prints the output of each of the three functions.
 Not very interesting, but you should begin to see the simplicity of
 defining and using a FleCSI control model.
 
+.. important::
+
+  To generate an image of the control model for this example, try:
+
+  .. code-block:: console
+
+    $ ./simple --control-model
+
+  This will output a graphviz file *simple-control-model.dot* that can
+  be rendered into various image formats:
+
+  .. code-block:: console
+
+    $ dot -Tjpg simple-control-model.dot > simple-control-model.jpg
+    $ dot -Tpng simple-control-model.dot > simple-control-model.png
+    $ dot -Teps simple-control-model.dot > simple-control-model.eps
+
+  For a list of supported output formats, try:
+
+  .. code-block:: console
+
+    $ dot -T?
+
+  If you used spack to build the dependencies for FleCSI, the version of
+  dot that it installs **does not support the PDF format**. To generate
+  a nice looking PDF of the graph, try:
+
+  .. code-block:: console
+
+    $ dot -Teps simple-control-model.dot > simple-control-model.eps
+    $ ps2pdf14 -dPDFSETTINGS=/prepress -dEPSCrop simple-control-model.eps
+
 ----
 
 Example 2: Cycles
