@@ -104,9 +104,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Control Model</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#control-flow-graphs-directed-acyclic-graphs">Control-Flow Graphs &amp; Directed Acyclic Graphs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#flecsibility">FleCSIbility</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#tutorial">Tutorial</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tutorial">Tutorial</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#example-1-simple">Example 1: Simple</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#example-2-cycles">Example 2: Cycles</a></li>
 </ul>
@@ -338,10 +336,9 @@ extension of the application.</p>
 <p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">Control Model After Extension.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
 </div>
-</div>
 <hr class="docutils" />
 <div class="section" id="tutorial">
-<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
 <p>The rest of this tutorial demonstrates how application developers can
 use the FleCSI control model to create extensible applications.
 We begin with an extremely simple control model, but quickly build to a
@@ -356,6 +353,7 @@ the specialization developer, with a fixed set of documented control
 points that are not modifiable by the application developer. Users of
 the specialization (application developers) will add actions that
 define the substance of the simulation.</p>
+</div>
 </div>
 <hr class="docutils" />
 <div class="section" id="example-1-simple">
@@ -743,7 +741,7 @@ main function for this example is the same.</p>
 enumeration values and cycles, such that cycles can be nested. It
 seems unlikely that most HPC simulations would need more than a couple
 of levels of cycling. However, FleCSI supports arbitrary cycle depths.
-<a class="reference internal" href="standalone.html#subcycle"><span class="std std-numref">Fig. 8</span></a> shows a sub-cycling control model. The details of
+<a class="reference internal" href="#subcycle"><span class="std std-numref">Fig. 7</span></a> shows a sub-cycling control model. The details of
 the program to generate this figure are not discussed here. However,
 you can view the source in <em>tutorial/2-control/2-subcycle.hh</em>.</p>
 </div>
