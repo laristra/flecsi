@@ -1,7 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1data_1_1convert__tag.html" title="flecsi::data::convert_tag" alt="" coords="31,20,209,47"/>
-<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1field__reference__t.html" title="flecsi::data::field\l_reference_t\&lt; Topo \&gt;" alt="" coords="297,13,460,54"/>
-<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1topology__slot.html" title="flecsi::data::topology\l_slot\&lt; TOPOLOGY_TYPE \&gt;" alt="" coords="283,78,475,119"/>
-<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1field__reference.html" title="flecsi::data::field\l_reference\&lt; T, L, Topo,\l Space \&gt;" alt="" coords="523,5,693,61"/>
-<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1topology__id.html" title="flecsi::data::topology\l_id\&lt; topology_slot\&lt; TOPOLOGY\l_TYPE \&gt; \&gt;" alt="" coords="5,71,235,127"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1detail_1_1data__guard_1_1process__guard.html" title="flecsi::detail::data\l_guard::process_guard" alt="" coords="5,5,160,47"/>
 </map>

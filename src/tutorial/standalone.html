@@ -1,0 +1,422 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Standalone &mdash; FleCSI invalid documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+    <link rel="canonical" href="https://flecsi.orgsrc/tutorial/standalone.html"/>
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="User Guide" href="../user-guide.html" />
+    <link rel="prev" title="Control Model" href="control.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/flecsi.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                Version: invalid
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build.html">Build &amp; Install</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#building-the-examples">Building the Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial.html#using-the-docker-container">Using the Docker Container</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tutorial.html#tutorial-examples">Tutorial Examples</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="runtime.html">Runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control.html">Control Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control.html#tutorial">Tutorial</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Standalone</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#build-system">Build System</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#control-model">Control Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#main-function">Main Function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#building-the-stand-alone-example">Building the Stand-Alone Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://laristra.github.io/flecsi/doxygen">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Contributors</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FleCSI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+        
+      <li>Standalone</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/tutorial/standalone.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="standalone">
+<h1>Standalone<a class="headerlink" href="#standalone" title="Permalink to this headline">¶</a></h1>
+<p>This example is designed to be used as a template for creating
+FleCSI-based application codes, and is intended as the last example in
+the tutorial. As such, this example provides the following components:</p>
+<ul class="simple">
+<li><p>A basic CMake build system.</p></li>
+<li><p>A simple control model.</p></li>
+<li><p>A standard FleCSI-based <em>main</em> function.</p></li>
+</ul>
+<p>We discuss each of these individually. However, in general, to use this
+example as a template for a real application, you should just change all
+occurrances of <em>standalone</em> to whatever namespace name you would like to
+use for your project.</p>
+<div class="section" id="build-system">
+<h2>Build System<a class="headerlink" href="#build-system" title="Permalink to this headline">¶</a></h2>
+<p>The build system uses standard CMake, and is entirely defined in
+CMakeLists.txt:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="c">#------------------------------------------------------------------------------#</span>
+<span class="c">#  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@</span>
+<span class="c"># /@@/////  /@@          @@////@@ @@////// /@@</span>
+<span class="c"># /@@       /@@  @@@@@  @@    // /@@       /@@</span>
+<span class="c"># /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@</span>
+<span class="c"># /@@////   /@@/@@@@@@@/@@       ////////@@/@@</span>
+<span class="c"># /@@       /@@/@@//// //@@    @@       /@@/@@</span>
+<span class="c"># /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@</span>
+<span class="c"># //       ///  //////   //////  ////////  //</span>
+<span class="c">#</span>
+<span class="c"># Copyright (c) 2016, Triad National Security, LLC</span>
+<span class="c"># All rights reserved</span>
+<span class="c">#------------------------------------------------------------------------------#</span>
+
+<span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.12</span><span class="p">)</span>
+
+<span class="c">#------------------------------------------------------------------------------#</span>
+<span class="c"># Set the project name.</span>
+<span class="c">#------------------------------------------------------------------------------#</span>
+
+<span class="nb">project</span><span class="p">(</span><span class="s">standalone</span> <span class="s">LANGUAGES</span> <span class="s">CXX</span> <span class="s">C</span><span class="p">)</span>
+
+<span class="c">#------------------------------------------------------------------------------#</span>
+<span class="c"># FleCSI currently depends on C++17.</span>
+<span class="c">#------------------------------------------------------------------------------#</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">CXX_STANDARD_REQUIRED</span> <span class="s">ON</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_STANDARD</span> <span class="s">17</span><span class="p">)</span>
+
+<span class="c">#------------------------------------------------------------------------------#</span>
+<span class="c"># Find the FleCSI installation.</span>
+<span class="c">#</span>
+<span class="c"># The easiest way to help CMake find FleCSI is to install it,</span>
+<span class="c"># and add the location to the CMAKE_PREFIX_PATH environment variable.</span>
+<span class="c">#------------------------------------------------------------------------------#</span>
+
+<span class="nb">find_package</span><span class="p">(</span><span class="s">FleCSI</span> <span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">include_directories</span><span class="p">(</span><span class="o">${</span><span class="nv">FleCSI_INCLUDE_DIRS</span><span class="o">}</span><span class="p">)</span>
+
+<span class="c">#------------------------------------------------------------------------------#</span>
+<span class="c"># Add an executable.</span>
+<span class="c">#------------------------------------------------------------------------------#</span>
+
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">standalone</span>
+  <span class="s">standalone.cc</span>
+  <span class="s">specialization/control.hh</span>
+<span class="p">)</span>
+
+<span class="c">#------------------------------------------------------------------------------#</span>
+<span class="c"># Add the FleCSI libraries and dependencies.</span>
+<span class="c">#------------------------------------------------------------------------------#</span>
+
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">standalone</span>
+  <span class="o">${</span><span class="nv">FleCSI_LIBRARIES</span><span class="o">}</span>
+  <span class="o">${</span><span class="nv">FleCSI_LIBRARY_DEPENDENCIES</span><span class="o">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>To prepare this file for your project, you should do the following:</p>
+<ul class="simple">
+<li><p>Change <em>standalone</em> to the name of your project wherever it occurs.</p></li>
+<li><p>Update and add source files to the project.</p></li>
+<li><p>Add any dependencies.</p></li>
+</ul>
+<p>For the most part, if you wish to extend this tutorial in any way, you
+will need a working knowledge of CMake. Documentation for CMake is
+<a class="reference external" href="https://cmake.org/documentation">here</a>.</p>
+</div>
+<div class="section" id="control-model">
+<h2>Control Model<a class="headerlink" href="#control-model" title="Permalink to this headline">¶</a></h2>
+<p>The control  model for this exmample is located in
+<em>specialization/control.hh</em>. This implementation is consistent with the
+examples in <a class="reference internal" href="control.html#tut-cm"><span class="std std-ref">Control Model</span></a> Tutorial.</p>
+<div class="figure align-center" id="id2">
+<span id="subcycle"></span><img alt="../../_images/standalone.png" src="../../_images/standalone.png" />
+<p class="caption"><span class="caption-number">Fig. 8 </span><span class="caption-text">Control Model for Stand-Alone Application.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="main-function">
+<h2>Main Function<a class="headerlink" href="#main-function" title="Permalink to this headline">¶</a></h2>
+<p>The <em>main</em> function for this example is located in <em>standalone.cc</em>.
+Unless you need to initialize additional runtimes that are not handled
+internally by FleCSI, you can likely use this file as-is (except for
+renaming occurances of <em>standalone</em> to something sensible).</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@</span>
+<span class="cm">   /@@/////  /@@          @@////@@ @@////// /@@</span>
+<span class="cm">   /@@       /@@  @@@@@  @@    // /@@       /@@</span>
+<span class="cm">   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@</span>
+<span class="cm">   /@@////   /@@/@@@@@@@/@@       ////////@@/@@</span>
+<span class="cm">   /@@       /@@/@@//// //@@    @@       /@@/@@</span>
+<span class="cm">   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@</span>
+<span class="cm">   //       ///  //////   //////  ////////  //</span>
+
+<span class="cm">   Copyright (c) 2016, Triad National Security, LLC</span>
+<span class="cm">   All rights reserved.</span>
+<span class="cm">                                                                              */</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;actions.hh&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;specialization/control.hh&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;flecsi/execution.hh&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;flecsi/flog.hh&quot;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">standalone</span><span class="p">;</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">control</span><span class="o">::</span><span class="n">check_options</span><span class="p">();</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">control</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">log</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;clog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">control</span><span class="o">::</span><span class="n">execute</span><span class="p">);</span>
+
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="n">status</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-the-stand-alone-example">
+<h2>Building the Stand-Alone Example<a class="headerlink" href="#building-the-stand-alone-example" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../build.html#build-install"><span class="std std-ref">Build &amp; Install</span></a> FleCSI somewhere on your system, and make sure
+that the location is set in your <em>CMAKE_PREFIX_PATH</em> environement
+variable. Then, you can build this example like:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> mkdir build
+<span class="gp">$</span> <span class="nb">cd</span> build
+<span class="gp">$</span> cmake ..
+<span class="gp">$</span> make
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../user-guide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="control.html" class="btn btn-neutral float-left" title="Control Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Contents caption */
+    .wy-menu-vertical>p.caption {
+      color: #ffffff;
+    }
+
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #e3e2db;
+    }
+    .wy-side-nav-search>div.version, .wy-nav-top>div.version {
+      color: #5f5d5f;
+    }
+
+    /* Sidebar */
+    .wy-nav-side {
+      background: #216897;
+      color: #ffffff;
+    }
+  </style>
+
+
+</body>
+</html>

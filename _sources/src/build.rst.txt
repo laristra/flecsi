@@ -5,7 +5,7 @@
 .. _build:
 
 Build & Install
-===============
+***************
 
 FleCSI can be configured to run with different distributed-memory
 runtimes, including Legion, and MPI. FleCSI also has support for various
@@ -15,8 +15,10 @@ requires both Sphinx and Doxygen. These configuration options are listed
 to convey to the reader that the FleCSI build system has several paths
 that can be taken to tailor FleCSI to a given system and architecture.
 
+----
+
 Requirements & Prerequisites
-****************************
+++++++++++++++++++++++++++++
 
 The following list of requirements provides a complete set of build
 options, but is not necessary for a particular build:
@@ -68,8 +70,10 @@ options, but is not necessary for a particular build:
 * **Python** |br|
   We currently require Python 3.0 or greater.
 
+----
+
 Getting The Code
-****************
+++++++++++++++++
 
 .. note::
 
@@ -86,8 +90,10 @@ Clone the FleCSI git repository, and create an out-of-source build area
   $ mkdir build
   $ cd build
 
+----
+
 Spack
-*****
++++++
 
 The preferred method for installing FleCSI and its dependencies is to
 use `Spack <https://github.com/spack/spack>`_. Spack is easy
@@ -119,8 +125,10 @@ For a complete list of versions and variants, type:
 More documentation and information on Spack is available `here
 <https://spack.readthedocs.io/en/latest>`_.
 
+----
+
 FleCSI Developers
-*****************
++++++++++++++++++
 
 If you are a developer, and would like to install only the dependencies of
 FleCSI (assuming that you will build FleCSI from source), you can use
@@ -143,8 +151,10 @@ such that the specific branch of FleCSI can override the normal builtin
 spack dependencies to provide whatever features are required for a
 successful build.
 
+----
+
 Configuration & Build
-*********************
++++++++++++++++++++++
 
 Example configuration: **MPI**
 
@@ -177,8 +187,10 @@ the directory specified by CMAKE_INSTALL_PREFIX:
 
   $ make install
 
+----
+
 Building the Unit Tests
-***********************
++++++++++++++++++++++++
 
 To build FleCSI unit test suite, enable the option for the FleCSI
 logging utility (flog). **By default, this will also enable the unit
@@ -194,8 +206,10 @@ After building FleCSI, you can run the unit tests like:
 
   $ make test
 
+----
+
 Building the Documentation (Developers)
-***************************************
++++++++++++++++++++++++++++++++++++++++
 
 FleCSI uses Doxygen for its API reference, and Sphinx for user and
 developer documentation.

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Runtime &mdash; FleCSI 2.-1 (devel) documentation</title>
+  <title>Runtime &mdash; FleCSI invalid documentation</title>
   
 
   
@@ -25,10 +25,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.-1 (devel)
+                Version: invalid
               </div>
             
           
@@ -107,6 +107,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="control.html">Control Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="control.html#tutorial">Tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="standalone.html">Standalone</a></li>
 </ul>
 </li>
 </ul>
@@ -186,6 +188,7 @@
 <p>Using FleCSI requires proper initialization and configuration of the
 FleCSI runtime. These examples illustrate some of the basic steps and
 options that are available.</p>
+<hr class="docutils" />
 <div class="section" id="example-1-minimal">
 <h2>Example 1: Minimal<a class="headerlink" href="#example-1-minimal" title="Permalink to this headline">¶</a></h2>
 <p>The core FleCSI runtime has three control points: <em>initialize</em>, <em>start</em>, and
@@ -280,12 +283,12 @@ action to print out <em>Hello World</em>. Code for this example can be found in
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>The top-level action can be any C/C++ function that takes (int,
-char**) and returns an int.  In this simple example, we only print a
-message to indicate that the top-level action was actually executed
-by FleCSI. However, in a real application, the top-level action
-would execute FleCSI tasks and other functions to implement the
-simulation.</p></li>
+<li><p>The top-level action can be any C/C++ function that takes no
+arguments and returns an int.  In this simple example, we only print
+a message to indicate that the top-level action was actually
+executed by FleCSI. However, in a real application, the top-level
+action would execute FleCSI tasks and other functions to implement
+the simulation.</p></li>
 <li><p>The main function must invoke initialize, start, and finalize on the
 FleCSI runtime. Otherwise, the implementation of main is left to the
 user.</p></li>
@@ -296,6 +299,7 @@ Options. This is documented in the next example.</p></li>
 </ul>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="example-2-program-options">
 <h2>Example 2: Program Options<a class="headerlink" href="#example-2-program-options" title="Permalink to this headline">¶</a></h2>
 <p>FleCSI supports a program options capability based on <a class="reference external" href="https://www.boost.org/doc/libs/1_63_0/doc/html/program_options.html">Boost Program
@@ -379,7 +383,7 @@ next section of this tutorial). The FLOG options will only appear if
 <p>FleCSI program options must be declared at namespace scope, i.e.,
 outside of any function, class, or enum class. This is not a problem! It
 is often convenient to declare them in a header file (in which case,
-they must alos be declared <em>inline</em>), or directly before the <em>main</em>
+they must also be declared <em>inline</em>), or directly before the <em>main</em>
 function.  We use the latter for this example simply for conciseness.</p>
 </div>
 <p>Let’s consider the first <em>Car Options</em> option: <code class="docutils literal notranslate"><span class="pre">--level</span></code>. To declare
@@ -478,7 +482,7 @@ because Boost appears to have a bug when such options are invoked
 directly before a positional option (gets confused about separation).
 We break that convention here for the sake of completeness. If you
 need an option that simply acts as a switch, i.e., it is either <em>on</em>
-or <em>off</em>, consider usint the <code class="docutils literal notranslate"><span class="pre">--lightspeed</span></code> style option below, as
+or <em>off</em>, consider using the <code class="docutils literal notranslate"><span class="pre">--lightspeed</span></code> style option below, as
 this type of option is safe to use with positional options.</p>
 </div>
 <p>The first option in the <em>Ride Options</em> section <code class="docutils literal notranslate"><span class="pre">--purpose</span></code> takes an
@@ -537,7 +541,7 @@ argument to the program itself:</p>
   <span class="p">});</span>
 </pre></div>
 </div>
-<p>Postional options are required, i.e., the program will error and print
+<p>Positional options are required, i.e., the program will error and print
 the usage message if a value is not passed.</p>
 </div>
 <div class="section" id="checking-using-options">
@@ -796,17 +800,18 @@ is required), and can be accessed using the <em>value()</em> method:</p>
 </div>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="example-3-flog-flecsi-logging-utility">
 <h2>Example 3: FLOG (FleCSI Logging Utility)<a class="headerlink" href="#example-3-flog-flecsi-logging-utility" title="Permalink to this headline">¶</a></h2>
 <p>FLOG provides users with a mechanism to print logging information to
 various stream buffers, similar to the C++ objects std::cout, std::cerr,
-and std::clog.  Multiple streams can be used simaltaneously, so that
+and std::clog.  Multiple streams can be used simultaneously, so that
 information about the running state of a program can be captured and
 displayed at the same time.  In this example, we show how FLOG can be
 configured to stream output to a file buffer, and the std::clog stream
 buffer.</p>
 <p>Before attempting this example, you should make sure that you have
-configured and built FleCSI with ENABLE_FLOG=ON. Additonal options
+configured and built FleCSI with ENABLE_FLOG=ON. Additional options
 that are useful are:</p>
 <ul class="simple">
 <li><p>FLOG_ENABLE_COLOR_OUTPUT=ON</p></li>
@@ -964,7 +969,7 @@ information that is useful in developing or debugging a program, and
 leave it in the code. Then, specific groups of messages can be enabled
 or disabled to only output useful information for the current
 development focus.</p>
-<p>To create a new tag, we use the flog::tag type:</p>
+<p>To create a new tag, we use the log::tag type:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm">  Create some tags to control output.</span>
 <span class="cm"> */</span>

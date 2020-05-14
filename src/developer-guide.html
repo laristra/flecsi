@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer Guide &mdash; FleCSI 2.-1 (devel) documentation</title>
+  <title>Developer Guide &mdash; FleCSI invalid documentation</title>
   
 
   
@@ -25,10 +25,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CMake Configuration Options" href="build/options.html" />
+    <link rel="next" title="Contributors" href="team.html" />
     <link rel="prev" title="Logging Utility" href="user-guide/flog.html" /> 
 </head>
 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.-1 (devel)
+                Version: invalid
               </div>
             
           
@@ -120,8 +120,15 @@
 <li class="toctree-l2"><a class="reference internal" href="#git-cheat-sheet">Git Cheat Sheet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-for-darwin">Building for Darwin</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#graphviz-notes">Graphviz Notes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#advanced">Advanced</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="build/options.html">CMake Configuration Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sphinx">Sphinx</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#links">Links</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#figures">Figures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-blocks">Code Blocks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#console">Console</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c">C++</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#literal-includes">Literal Includes</a></li>
 </ul>
 </li>
 </ul>
@@ -196,6 +203,7 @@
 <h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
 <p>This documentation is intended for developers of the core FleCSI
 library.</p>
+<hr class="docutils" />
 <div class="section" id="style-guide">
 <h2>Style Guide<a class="headerlink" href="#style-guide" title="Permalink to this headline">¶</a></h2>
 <p>Unless otherwise specified, follow the <a class="reference external" href="https://www.boost.org/development/requirements.html#Design_and_Programming">Boost “Design and Programming”
@@ -252,6 +260,7 @@ namespace subdirectory. By convention, developers should not create
 subdirectories within the test subdirectory.</p>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="versioning">
 <h2>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
 <p>FleCSI’s versioning system uses three branch types (descibed below) that
@@ -314,15 +323,16 @@ branch type of the tag during CMake configuration.</p>
 <div class="section" id="workflow">
 <h3>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h3>
 <p>FleCSI development uses a <em>devel -&gt; feature -&gt; release</em> forking workflow
-that can be visualized as in <a class="reference internal" href="#branch"><span class="std std-numref">Fig. 8</span></a>. Bugfixes and features can
+that can be visualized as in <a class="reference internal" href="#branch"><span class="std std-numref">Fig. 9</span></a>. Bugfixes and features can
 be back-merged into <em>feature</em> or <em>devel</em>, as appropriate.</p>
-<div class="figure align-default" id="id9">
-<span id="branch"></span><img alt="src/../../_static/images/branch.png" src="src/../../_static/images/branch.png" />
-<p class="caption"><span class="caption-number">Fig. 8 </span><span class="caption-text">Workflow diagram illustrating basic workflow using the three branch
-types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+<div class="figure align-default" id="id12">
+<span id="branch"></span><img alt="../_images/branch.png" src="../_images/branch.png" />
+<p class="caption"><span class="caption-number">Fig. 9 </span><span class="caption-text">Workflow diagram illustrating basic workflow using the three branch
+types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="tutorial-docker-image">
 <h2>Tutorial Docker Image<a class="headerlink" href="#tutorial-docker-image" title="Permalink to this headline">¶</a></h2>
 <p>This section details the steps to modify and update the docker image for
@@ -401,6 +411,7 @@ with:</p>
 automatically be rebuilt when the docker file is updated on GitHub.</p>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="spack-cheat-sheet">
 <h2>Spack Cheat Sheet<a class="headerlink" href="#spack-cheat-sheet" title="Permalink to this headline">¶</a></h2>
 <p>To remove all cached sources:</p>
@@ -420,6 +431,7 @@ automatically be rebuilt when the docker file is updated on GitHub.</p>
 </pre></div>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="git-cheat-sheet">
 <h2>Git Cheat Sheet<a class="headerlink" href="#git-cheat-sheet" title="Permalink to this headline">¶</a></h2>
 <p>To lookup the hash referenced by a tag:</p>
@@ -435,6 +447,7 @@ automatically be rebuilt when the docker file is updated on GitHub.</p>
 </pre></div>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="building-for-darwin">
 <h2>Building for Darwin<a class="headerlink" href="#building-for-darwin" title="Permalink to this headline">¶</a></h2>
 <p>This is a recipe for building the current development version of FleCSI
@@ -486,6 +499,7 @@ the dependencies in the environment:</p>
 </pre></div>
 </div>
 </div>
+<hr class="docutils" />
 <div class="section" id="graphviz-notes">
 <h2>Graphviz Notes<a class="headerlink" href="#graphviz-notes" title="Permalink to this headline">¶</a></h2>
 <p>FleCSI uses the <a class="reference external" href="https://graphviz.gitlab.io/_pages/pdf/libguide.pdf">libcgraph</a> interface to <a class="reference external" href="https://www.graphviz.org">Graphviz</a> to create
@@ -495,16 +509,118 @@ attributes can only be set on attributes that have been defined for the
 graph. If an attribute type has not been defined, the graph will ignore
 it. There is not easy to remedy to this problem: attributes that are
 added after initialization will reset all previously added elements to
-whatever the default of the new attribute is. If you need to add an
-attribute, the best thing to do is to look at the <em>graphviz.hh</em> file in
-‘flecsi/utils’, and add it there with a reasonable default.</p>
+whatever the default of the new attribute is. Therefore, if you need to
+add an attribute, the best thing to do is to look at the <em>graphviz.hh</em>
+file in ‘flecsi/utils’, and add it there with a reasonable default.</p>
 </div>
-<div class="section" id="advanced">
-<h2>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="build/options.html">CMake Configuration Options</a></li>
-</ul>
+<hr class="docutils" />
+<div class="section" id="sphinx">
+<h2>Sphinx<a class="headerlink" href="#sphinx" title="Permalink to this headline">¶</a></h2>
+<p>Sphinx documentation is <a class="reference external" href="https://www.sphinx-doc.org/en/master">here</a>.
+The following are some examples of frequently-used elements.
+However, a good practice is to just look at the existing documentation
+to figure out how something was done.</p>
+<div class="section" id="links">
+<h3>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>For more information look at `sphinx`__.
+
+__ https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html
+</pre></div>
+</div>
+<p>This will be rendered like:</p>
+<p>For more information look at <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">sphinx</a>.</p>
+</div>
+<div class="section" id="figures">
+<h3>Figures<a class="headerlink" href="#figures" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">_undersea</span><span class="p">:</span>
+<span class="o">..</span> <span class="n">figure</span><span class="p">::</span> <span class="n">images</span><span class="o">/</span><span class="n">undersea</span><span class="o">.</span><span class="n">png</span>
+  <span class="p">:</span><span class="n">align</span><span class="p">:</span> <span class="n">center</span>
+  <span class="p">:</span><span class="n">width</span><span class="p">:</span> <span class="mi">70</span><span class="o">%</span>
+
+  <span class="n">A</span> <span class="n">colorful</span> <span class="n">image</span> <span class="n">resembling</span> <span class="n">a</span> <span class="n">cosmic</span> <span class="n">version</span> <span class="n">of</span> <span class="n">an</span> <span class="n">undersea</span> <span class="n">world</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This will be rendered like:</p>
+<div class="figure align-center" id="id13">
+<span id="undersea"></span><a class="reference internal image-reference" href="../_images/undersea.png"><img alt="../_images/undersea.png" src="../_images/undersea.png" style="width: 70%;" /></a>
+<p class="caption"><span class="caption-number">Fig. 10 </span><span class="caption-text">A colorful image resembling a cosmic version of an undersea world.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+<p>You can reference the figure using its label <em>undersea</em> like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>As can be seen in :numref:`undersea`...
+</pre></div>
+</div>
+<p>This will be rendered like:</p>
+<p>As can be seen in <a class="reference internal" href="#undersea"><span class="std std-numref">Fig. 10</span></a>…</p>
+</div>
+<div class="section" id="code-blocks">
+<h3>Code Blocks<a class="headerlink" href="#code-blocks" title="Permalink to this headline">¶</a></h3>
+<p>Syntax highlighting for codes blocks uses <a class="reference external" href="https://pygments.org">pygments</a>, which supports
+many programming and markup languages.</p>
+<p>Here are two examples:</p>
+<div class="section" id="console">
+<h4>Console<a class="headerlink" href="#console" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.. code-block:: console
+
+  $ xterm -hold -fs 10 -bg black -fg white -geometry 128x40 -e curl wttr.in
+</pre></div>
+</div>
+<p>This will be rendered like:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> xterm -hold -fs <span class="m">10</span> -bg black -fg white -geometry 128x40 -e curl wttr.in
+</pre></div>
+</div>
+</div>
+<div class="section" id="c">
+<h4>C++<a class="headerlink" href="#c" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="p">::</span> <span class="n">cpp</span>
+
+  <span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">Bar</span><span class="o">&gt;</span>
+  <span class="n">using</span> <span class="n">Baz</span> <span class="o">=</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">Bar</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This will be rendered like:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">Bar</span><span class="o">&gt;</span>
+<span class="k">using</span> <span class="n">Baz</span> <span class="o">=</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">Bar</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="literal-includes">
+<h3>Literal Includes<a class="headerlink" href="#literal-includes" title="Permalink to this headline">¶</a></h3>
+<p>Literal includes allow you to directly include source code or other
+inputs from the actual file you are referencing. This is useful because
+any changes to the file will automatically be captured in the
+documentation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">literalinclude</span><span class="p">::</span> <span class="o">../../../</span><span class="n">tutorial</span><span class="o">/</span><span class="n">standalone</span><span class="o">/</span><span class="n">standalone</span><span class="o">.</span><span class="n">cc</span>
+  <span class="p">:</span><span class="n">language</span><span class="p">:</span> <span class="n">cpp</span>
+  <span class="p">:</span><span class="n">lines</span><span class="p">:</span> <span class="mi">23</span><span class="o">-</span><span class="mi">45</span>
+</pre></div>
+</div>
+<p>This will be rendered like:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">initialize</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">help</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">control</span><span class="o">::</span><span class="n">check_options</span><span class="p">();</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">status</span> <span class="o">==</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">run</span><span class="o">::</span><span class="n">status</span><span class="o">::</span><span class="n">control</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">status</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// if</span>
+
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">log</span><span class="o">::</span><span class="n">add_output_stream</span><span class="p">(</span><span class="s">&quot;clog&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">clog</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+  <span class="n">status</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">start</span><span class="p">(</span><span class="n">control</span><span class="o">::</span><span class="n">execute</span><span class="p">);</span>
+
+  <span class="n">flecsi</span><span class="o">::</span><span class="n">finalize</span><span class="p">();</span>
+
+  <span class="k">return</span> <span class="n">status</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// main</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -517,7 +633,7 @@ attribute, the best thing to do is to look at the <em>graphviz.hh</em> file in
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="build/options.html" class="btn btn-neutral float-right" title="CMake Configuration Options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="team.html" class="btn btn-neutral float-right" title="Contributors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="user-guide/flog.html" class="btn btn-neutral float-left" title="Logging Utility" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

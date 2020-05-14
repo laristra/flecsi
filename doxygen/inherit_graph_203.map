@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1util_1_1base__convert__tuple__type__.html" title="flecsi::util::base\l_convert_tuple_type\l_\&lt; T, TO, E \&gt;" alt="" coords="5,5,160,61"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1util_1_1crs.html" title="flecsi::util::crs" alt="" coords="5,5,109,32"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1util_1_1dcrs.html" title="flecsi::util::dcrs" alt="" coords="157,5,268,32"/>
 </map>

@@ -5,7 +5,6 @@ var searchData=
   ['dcrs_5futils_2ehh',['dcrs_utils.hh',['../dcrs__utils_8hh.html',1,'']]],
   ['debruijn_2ecc',['debruijn.cc',['../debruijn_8cc.html',1,'']]],
   ['debruijn_2ehh',['debruijn.hh',['../debruijn_8hh.html',1,'']]],
-  ['default_5fnode_2ehh',['default_node.hh',['../default__node_8hh.html',1,'']]],
   ['definition_2ehh',['definition.hh',['../definition_8hh.html',1,'']]],
   ['demangle_2ecc',['demangle.cc',['../demangle_8cc.html',1,'']]],
   ['demangle_2ehh',['demangle.hh',['../demangle_8hh.html',1,'']]],

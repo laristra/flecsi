@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classflecsi_1_1topo_1_1index__space.html" title="flecsi::topo::index\l_space\&lt; flecsi::topo\l::entity_base_ *, false,\l true, false, void, flecsi\l::topo::array_buffer \&gt;" alt="" coords="5,5,176,91"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1topo_1_1ntree__base.html" title="flecsi::topo::ntree_base" alt="" coords="5,13,164,39"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1topo_1_1ntree.html" title="flecsi::topo::ntree\l\&lt; POLICY_TYPE \&gt;" alt="" coords="212,5,349,47"/>
 </map>

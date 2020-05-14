@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1topo_1_1mesh__storage.html" title="flecsi::topo::mesh\l_storage\&lt; POLICY_TYPE\l::num_dimensions, POLICY\l_TYPE::num_domains, flecsi\l::topo::num_index_subspaces\l\&lt; POLICY_TYPE \&gt;::value \&gt;" alt="" coords="6,5,221,105"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1topo_1_1specialization.html" title="flecsi::topo::specialization\l\&lt; global_category, global \&gt;" alt="" coords="5,5,184,47"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1topo_1_1global.html" title="flecsi::topo::global" alt="" coords="232,13,360,39"/>
 </map>
