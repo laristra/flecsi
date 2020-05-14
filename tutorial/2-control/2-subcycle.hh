@@ -20,7 +20,8 @@ namespace cycle {
 
 enum class cp { initialize, advance, advance2, analyze, finalize };
 
-inline const char * operator*(cp control_point) {
+inline const char *
+operator*(cp control_point) {
   switch(control_point) {
     case cp::initialize:
       return "initialize";
