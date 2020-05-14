@@ -470,11 +470,12 @@ Add the flecsi spack repo:
 
   $ spack repo add flecsi/spack-repo
 
-Load gcc module and update spack compilers:
+Load compiler modules (both work if loaded in this order) and update spack
+compilers:
 
 .. code-block:: console
 
-  $ module load gcc/9.3.0
+  $ module load clang/8.0.1 gcc/9.3.0
   $ spack compilers
 
 Install the flecsi dependencies:
@@ -494,11 +495,10 @@ the dependencies in the environment:
   $ spack install --only dependencies flecsi@devel backend=legion +hdf5 +graphviz +flog ^mpich
   $ spack install cmake
   
-Load clang and doxygen, install sphinx, and update your path:
+Load doxygen, install sphinx, and update your path:
 
 .. code-block:: console
 
-  $ module load clang/8.0.1
   $ module load doxygen
   $ pip3 install --user Sphinx
   $ pip3 install --user recommonmark
