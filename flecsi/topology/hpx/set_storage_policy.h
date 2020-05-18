@@ -37,13 +37,8 @@ struct hpx_set_topology_storage_policy_u {
   static const std::size_t num_index_spaces =
     std::tuple_size<entity_types_t>::value;
 
-  using index_spaces_t = std::array<index_space_u<set_entity_t *,
-                                      true,
-                                      true,
-                                      true,
-                                      void,
-                                      identity_storage_u,
-                                      topology_storage_u>,
+  using index_spaces_t = std::array<
+    index_space_u<set_entity_t, identity_storage_u, entity_storage_t>,
     num_index_spaces>;
 
   index_spaces_t index_spaces;
