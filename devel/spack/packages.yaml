@@ -1,0 +1,21 @@
+packages:
+  cmake:
+    version: [3.17.1]
+  mpich:
+    version: [3.2.1]
+  openmpi:
+    version: [3.1.4]
+  gasnet:
+    version: [2020.3.0]
+    variants: ~aligned-segments~ibv+mpi~pshm~udp segment-mmap-max=16GB
+  hdf5:
+    version: [1.10.6]
+  graphviz:
+    version: [2.42.2]
+    variants: +libgd
+  metis:
+    version: [5.1.0]
+  parmetis:
+    version: [4.0.3]
+  boost:
+    version: [1.73.0]

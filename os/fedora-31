@@ -1,0 +1,60 @@
+#-----------------------------------------------------------------------------#
+# FleCSI CI Configuration for CentOS 8
+#------------------------------------------------------------------------------#
+
+FROM fedora:31
+
+#------------------------------------------------------------------------------#
+# Install basic linux requirements
+#------------------------------------------------------------------------------#
+
+RUN dnf update -y
+
+RUN dnf install -y \
+  clang \
+  curl \
+  emacs-color-theme \
+  file \
+  flex \
+  gcc \
+  gcc-c++ \
+  gcc-gfortran \
+  git \
+  graphviz \
+  lbzip2 \
+  make \
+  passwd \
+  patch \
+  vim-enhanced \
+  wget \
+  which \
+  xz
+
+#------------------------------------------------------------------------------#
+# Enable root for debugging
+#------------------------------------------------------------------------------#
+
+RUN echo 'flecsi' | passwd --stdin root
+
+#------------------------------------------------------------------------------#
+# Add flecsi user
+#------------------------------------------------------------------------------#
+
+RUN groupadd -r flecsi
+RUN useradd -r -m -g flecsi flecsi
+
+USER flecsi
+WORKDIR /home/flecsi
+
+RUN \
+  echo "syntax on" > .vimrc && \
+  echo "set background=dark" >> .vimrc && \
+  echo "highlight Comment cterm=italic" >> .vimrc
+
+#------------------------------------------------------------------------------#
+# Set default shell for interactive
+#------------------------------------------------------------------------------#
+
+CMD /bin/bash
+
+# vim: syntax=dockerfile

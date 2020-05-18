@@ -1,1 +1,1 @@
-# FlecSI CI
+# FleCSI CI Configuration
