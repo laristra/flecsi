@@ -1,0 +1,76 @@
+#------------------------------------------------------------------------------#
+# FleCSI CI Configuration for CentOS 8
+#------------------------------------------------------------------------------#
+
+FROM centos:8
+
+#------------------------------------------------------------------------------#
+# Install and configure Extra Packages for Enterprise Linux
+#------------------------------------------------------------------------------#
+
+RUN dnf install -y epel-release 'dnf-command(config-manager)'
+
+RUN dnf config-manager --set-enabled PowerTools
+
+#------------------------------------------------------------------------------#
+# Install basic linux requirements
+#------------------------------------------------------------------------------#
+
+RUN dnf update -y
+
+RUN dnf install -y \
+  clang \
+  flex \
+  gcc-toolset-9 \
+  git \
+  make \
+  passwd \
+  patch \
+  python3 \
+  vim-enhanced \
+  wget \
+  which
+
+#------------------------------------------------------------------------------#
+# Install lbzip2
+# Note: This can move to the basic install once lbzip2 has been added.
+#------------------------------------------------------------------------------#
+
+RUN wget https://download-ib01.fedoraproject.org/pub/epel/testing/8/Everything/x86_64/Packages/l/lbzip2-2.5-15.20171011gitb6dc48a.el8.x86_64.rpm
+
+RUN rpm -Uvh lbzip2-2.5-15.20171011gitb6dc48a.el8.x86_64.rpm
+
+#------------------------------------------------------------------------------#
+# Enable root for debugging
+#------------------------------------------------------------------------------#
+
+RUN echo 'flecsi' | passwd --stdin root
+
+#------------------------------------------------------------------------------#
+# Add flecsi user
+#------------------------------------------------------------------------------#
+
+RUN groupadd -r flecsi
+RUN useradd -r -m -g flecsi flecsi
+
+USER flecsi
+WORKDIR /home/flecsi
+
+RUN \
+  echo "syntax on" > .vimrc && \
+  echo "set background=dark" >> .vimrc && \
+  echo "highlight Comment cterm=italic" >> .vimrc
+
+#------------------------------------------------------------------------------#
+# Setup path for gcc 9
+#------------------------------------------------------------------------------#
+
+ENV PATH /opt/rh/gcc-toolset-9/root/usr/bin:$PATH
+
+#------------------------------------------------------------------------------#
+# Set default shell for interactive
+#------------------------------------------------------------------------------#
+
+CMD /bin/bash
+
+# vim: syntax=dockerfile

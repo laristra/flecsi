@@ -1,0 +1,60 @@
+#------------------------------------------------------------------------------#
+# FleCSI CI Configuration for Environment
+#------------------------------------------------------------------------------#
+
+ARG OS
+FROM ${OS}
+
+#------------------------------------------------------------------------------#
+# Clone repositories
+#------------------------------------------------------------------------------#
+
+ARG REPO
+ARG BRANCH
+
+RUN git clone --single-branch --branch ${BRANCH} ${REPO}
+RUN git clone --single-branch \
+  --branch develop https://github.com/spack/spack.git
+
+#------------------------------------------------------------------------------#
+# Setup spack configuration
+#------------------------------------------------------------------------------#
+
+ARG VERSIONING
+
+RUN mkdir -p .spack/linux && cp flecsi/${VERSIONING}/spack/packages.yaml \
+  .spack/linux
+
+RUN source spack/share/spack/setup-env.sh && \
+  spack compiler find
+
+RUN echo "source spack/share/spack/setup-env.sh" > .bashrc
+
+#------------------------------------------------------------------------------#
+# Create MPICH environment
+#------------------------------------------------------------------------------#
+
+RUN source spack/share/spack/setup-env.sh && \
+  spack install mpich
+
+RUN source spack/share/spack/setup-env.sh && \
+  spack install gasnet^mpich
+
+RUN source spack/share/spack/setup-env.sh && \
+  spack install boost
+
+RUN source spack/share/spack/setup-env.sh && \
+  spack install graphviz
+
+RUN source spack/share/spack/setup-env.sh && \
+  spack env create ${VERSIONING}-mpich && \
+  spack env activate ${VERSIONING}-mpich && \
+  spack install mpich gasnet^mpich boost graphviz
+
+#------------------------------------------------------------------------------#
+# Set default shell for interactive
+#------------------------------------------------------------------------------#
+
+CMD /bin/bash
+
+# vim: syntax=dockerfile
