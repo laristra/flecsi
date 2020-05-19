@@ -22,3 +22,4 @@ packages:
     version: [4.0.3]
   boost:
     version: [1.73.0]
+    variants: cxxstd=14 +program_options
