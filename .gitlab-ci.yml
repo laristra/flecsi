@@ -236,6 +236,7 @@ before_script:
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_UNIT_TESTS=ON \
+        -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -Wno-deprecated" \
         -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_HDF5=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_DOXYGEN=ON \
