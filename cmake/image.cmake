@@ -26,7 +26,8 @@ function(add_image target tag dockerfile)
   endforeach()
 
   add_custom_target(${target}
-    ${ENGINE} build ${args} -t ${tag} -f ${CMAKE_SOURCE_DIR}/${dockerfile} .
+    ${ENGINE} build \${EXTRA} ${args} -t ${tag}
+      -f ${CMAKE_SOURCE_DIR}/${dockerfile} .
     DEPENDS ${dockerfile} ${image_DEPENDS})
 
 endfunction()

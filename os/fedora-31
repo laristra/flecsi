@@ -13,6 +13,7 @@ RUN dnf update -y
 RUN dnf install -y \
   clang \
   curl \
+  doxygen \
   emacs-color-theme \
   file \
   flex \

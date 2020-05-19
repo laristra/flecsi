@@ -12,7 +12,7 @@ FROM ${OS}
 ARG REPO
 ARG BRANCH
 
-RUN git clone --single-branch --branch ${BRANCH} ${REPO}
+RUN git clone --single-branch --branch ${BRANCH} ${REPO} ${BRANCH}
 RUN git clone --single-branch \
   --branch develop https://github.com/spack/spack.git
 
@@ -22,38 +22,51 @@ RUN git clone --single-branch \
 
 ARG VERSIONING
 
-RUN mkdir -p .spack/linux && cp flecsi/${VERSIONING}/spack/packages.yaml \
+RUN mkdir -p .spack/linux && cp ${BRANCH}/${VERSIONING}/spack/packages.yaml \
   .spack/linux
 
 RUN source spack/share/spack/setup-env.sh && \
   spack compiler find
-
-RUN echo "source spack/share/spack/setup-env.sh" > .bashrc
 
 #------------------------------------------------------------------------------#
 # Create MPICH environment
 #------------------------------------------------------------------------------#
 
 RUN source spack/share/spack/setup-env.sh && \
+  spack fetch --dependencies mpich && \
   spack install mpich
 
 RUN source spack/share/spack/setup-env.sh && \
+  spack fetch --dependencies gasnet^mpich && \
   spack install gasnet^mpich
 
 RUN source spack/share/spack/setup-env.sh && \
-  spack install boost
+  spack fetch --dependencies parmetis^mpich && \
+  spack install parmetis^mpich
 
 RUN source spack/share/spack/setup-env.sh && \
-  spack install graphviz
+  spack fetch --dependencies boost && \
+  spack install boost
 
 RUN source spack/share/spack/setup-env.sh && \
   spack env create ${VERSIONING}-mpich && \
   spack env activate ${VERSIONING}-mpich && \
-  spack install mpich gasnet^mpich boost graphviz
+  spack install cmake mpich gasnet^mpich parmetis^mpich boost
+
+#------------------------------------------------------------------------------#
+# Install Sphinx
+#------------------------------------------------------------------------------#
+
+RUN pip3 install --user Sphinx
+RUN pip3 install --user recommonmark
+RUN pip3 install --user sphinx_rtd_theme
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive
 #------------------------------------------------------------------------------#
+
+RUN echo "export PATH=$HOME/.local/bin:$PATH" > .bashrc
+RUN echo "source spack/share/spack/setup-env.sh" >> .bashrc
 
 CMD /bin/bash
 

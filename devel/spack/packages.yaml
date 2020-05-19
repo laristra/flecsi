@@ -1,4 +1,6 @@
 packages:
+  all:
+    target: [skylake]
   cmake:
     version: [3.17.1]
   mpich:
@@ -11,8 +13,9 @@ packages:
   hdf5:
     version: [1.10.6]
   graphviz:
-    version: [2.42.2]
-    variants: +libgd
+    buildable: False
+    paths:
+      graphviz@2.40.1: /usr
   metis:
     version: [5.1.0]
   parmetis:
