@@ -26,6 +26,8 @@ RUN dnf install -y \
   make \
   passwd \
   patch \
+  python3 \
+  python3-pip \
   vim-enhanced \
   wget \
   which \
@@ -41,18 +43,18 @@ RUN echo 'flecsi' | passwd --stdin root
 # Build gcc 9.3.0
 #------------------------------------------------------------------------------#
 
-RUN wget http://ftpmirror.gnu.org/gnu/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
-RUN tar xf gcc-9.3.0.tar.xz
-
-WORKDIR /gcc-9.3.0
-
-RUN contrib/download_prerequisites
-RUN ./configure --prefix=/opt/gcc/9.3.0 --disable-multilib \
-  --enable-languages=c,c++,fortran
-RUN make
-RUN make install
-
-ENV PATH /opt/gcc/9.3.0:$PATH
+#RUN wget http://ftpmirror.gnu.org/gnu/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
+#RUN tar xf gcc-9.3.0.tar.xz
+#
+#WORKDIR /gcc-9.3.0
+#
+#RUN contrib/download_prerequisites
+#RUN ./configure --prefix=/opt/gcc/9.3.0 --disable-multilib \
+#  --enable-languages=c,c++,fortran
+#RUN make
+#RUN make install
+#
+#ENV PATH /opt/gcc/9.3.0:$PATH
 
 #------------------------------------------------------------------------------#
 # Add flecsi user
@@ -68,6 +70,13 @@ RUN \
   echo "syntax on" > .vimrc && \
   echo "set background=dark" >> .vimrc && \
   echo "highlight Comment cterm=italic" >> .vimrc
+
+#------------------------------------------------------------------------------#
+# Capture graphviz version
+#------------------------------------------------------------------------------#
+
+RUN dnf info --installed graphviz | grep Version | \
+  awk '{ print $3 }' > .graphviz_version
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

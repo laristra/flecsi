@@ -22,8 +22,10 @@ RUN git clone --single-branch \
 
 ARG VERSIONING
 
-RUN mkdir -p .spack/linux && cp ${BRANCH}/${VERSIONING}/spack/packages.yaml \
-  .spack/linux
+RUN mkdir -p .spack/linux && \
+  export GRAPHVIZ_VERSION=`cat .graphviz_version` && \
+  cat ${BRANCH}/${VERSIONING}/spack/packages.yaml | \
+    sed "s,GRAPHVIZ_VERSION,${GRAPHVIZ_VERSION},g" > .spack/linux/packages.yaml
 
 RUN source spack/share/spack/setup-env.sh && \
   spack compiler find
@@ -49,9 +51,13 @@ RUN source spack/share/spack/setup-env.sh && \
   spack install boost
 
 RUN source spack/share/spack/setup-env.sh && \
+  spack fetch --dependencies boost && \
+  spack install boost
+
+RUN source spack/share/spack/setup-env.sh && \
   spack env create ${VERSIONING}-mpich && \
   spack env activate ${VERSIONING}-mpich && \
-  spack install cmake mpich gasnet^mpich parmetis^mpich boost
+  spack install cmake mpich gasnet^mpich parmetis^mpich boost graphviz
 
 #------------------------------------------------------------------------------#
 # Install Sphinx

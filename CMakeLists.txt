@@ -36,7 +36,7 @@ set(BRANCH "gitlab-ci" CACHE STRING
 
 add_image(centos-8 docker.io/laristra/flecsi-ci:centos-8 os/centos-8)
 add_image(fedora-31 docker.io/laristra/flecsi-ci:fedora-31 os/fedora-31)
-#add_image(fedora-32 docker.io/tuxfan/flecsi-ci:fedora-32 os/fedora-31)
+add_image(fedora-32 docker.io/laristra/flecsi-ci:fedora-32 os/fedora-32)
 
 #------------------------------------------------------------------------------#
 # Environment Images
@@ -60,4 +60,14 @@ add_image(devel-fedora-31 docker.io/laristra/flecsi-ci:devel-fedora-31
     VERSIONING=devel
     OS=docker.io/laristra/flecsi-ci:fedora-31
   DEPENDS fedora-31
+)
+
+add_image(devel-fedora-32 docker.io/laristra/flecsi-ci:devel-fedora-32
+  devel/environment
+  ARGS
+    REPO=${REPOSITORY}
+    BRANCH=${BRANCH}
+    VERSIONING=devel
+    OS=docker.io/laristra/flecsi-ci:fedora-32
+  DEPENDS fedora-32
 )

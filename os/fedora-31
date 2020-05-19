@@ -26,6 +26,8 @@ RUN dnf install -y \
   make \
   passwd \
   patch \
+  python3 \
+  python3-pip \
   vim-enhanced \
   wget \
   which \
@@ -51,6 +53,13 @@ RUN \
   echo "syntax on" > .vimrc && \
   echo "set background=dark" >> .vimrc && \
   echo "highlight Comment cterm=italic" >> .vimrc
+
+#------------------------------------------------------------------------------#
+# Capture graphviz version
+#------------------------------------------------------------------------------#
+
+RUN dnf info --installed graphviz | grep Version | \
+  awk '{ print $3 }' > .graphviz_version
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

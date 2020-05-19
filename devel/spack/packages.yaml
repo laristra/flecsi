@@ -15,7 +15,7 @@ packages:
   graphviz:
     buildable: False
     paths:
-      graphviz@2.40.1: /usr
+      graphviz@GRAPHVIZ_VERSION: /usr
   metis:
     version: [5.1.0]
   parmetis:
