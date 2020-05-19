@@ -84,6 +84,8 @@ struct mpi_topology_storage_policy_u {
     auto & s = is.data;
     s.set_buffer(entities, num_entities, read);
 
+    is.ids = full_array(ids, num_entities, read);
+
     for(auto & domain_connectivities : topology) {
       auto & domain_connectivity_u = domain_connectivities[domain];
       for(size_t d = 0; d <= NUM_DIMS; ++d) {
