@@ -20,25 +20,19 @@ RUN dnf update -y
 
 RUN dnf install -y \
   clang \
+  doxygen \
   flex \
   gcc-toolset-9 \
   git \
+  graphviz \
   make \
+  lbzip2 \
   passwd \
   patch \
   python3 \
   vim-enhanced \
   wget \
   which
-
-#------------------------------------------------------------------------------#
-# Install lbzip2
-# Note: This can move to the basic install once lbzip2 has been added.
-#------------------------------------------------------------------------------#
-
-RUN wget https://download-ib01.fedoraproject.org/pub/epel/testing/8/Everything/x86_64/Packages/l/lbzip2-2.5-15.20171011gitb6dc48a.el8.x86_64.rpm
-
-RUN rpm -Uvh lbzip2-2.5-15.20171011gitb6dc48a.el8.x86_64.rpm
 
 #------------------------------------------------------------------------------#
 # Enable root for debugging
