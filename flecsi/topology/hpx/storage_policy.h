@@ -81,13 +81,13 @@ struct hpx_topology_storage_policy_u {
     bool read) {
     auto & is = index_spaces[domain][dim];
 
-    auto &s=is.data;
-    s->set_buffer(entities, num_entities, read);
+    auto & s = is.data;
+    s.set_buffer(entities, num_entities, read);
 
     for(auto & domain_connectivities : topology) {
       auto & domain_connectivity_u = domain_connectivities[domain];
       for(size_t d = 0; d <= NUM_DIMS; ++d) {
-        domain_connectivity_u.get(d, dim).set_entity_storage(*s);
+        domain_connectivity_u.get(d, dim).set_entity_storage(s);
       } // for
     } // for
 
@@ -100,7 +100,7 @@ struct hpx_topology_storage_policy_u {
 
     for(size_t partition = 0; partition < num_partitions; ++partition) {
       auto & isp = partition_index_spaces[partition][domain][dim];
-      isp.data = *s;
+      isp.data = s;
 
       switch(partition_t(partition)) {
         case exclusive:
