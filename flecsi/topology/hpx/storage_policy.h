@@ -47,8 +47,6 @@ struct hpx_topology_storage_policy_u {
 
   using index_spaces_t = std::array<storage_t, NUM_DIMS + 1>;
 
-  using index_subspaces_t = std::array<storage_t, NUM_INDEX_SUBSPACES>;
-
   using partition_index_spaces_t =
     std::array<index_space_u<mesh_entity_base_, utils::span, entity_storage_t>,
       NUM_DIMS + 1>;
@@ -59,7 +57,7 @@ struct hpx_topology_storage_policy_u {
 
   std::array<index_spaces_t, NUM_DOMS> index_spaces;
 
-  index_subspaces_t index_subspaces;
+  std::array<storage_t, NUM_INDEX_SUBSPACES> index_subspaces;
 
   std::array<std::array<partition_index_spaces_t, NUM_DOMS>, num_partitions>
     partition_index_spaces;
@@ -83,11 +81,8 @@ struct hpx_topology_storage_policy_u {
     bool read) {
     auto & is = index_spaces[domain][dim];
 
-    const auto s = &is.data;
+    auto &s=is.data;
     s->set_buffer(entities, num_entities, read);
-
-    auto & id_storage = is.ids;
-    id_storage = full_array(ids, num_entities, read);
 
     for(auto & domain_connectivities : topology) {
       auto & domain_connectivity_u = domain_connectivities[domain];
@@ -149,9 +144,6 @@ struct hpx_topology_storage_policy_u {
     auto & id_storage = iss.ids;
     id_storage = {{ids, si.capacity}, si.size};
 
-    if(!read) {
-      return;
-    }
   } // init_index_subspaces
 
   void init_connectivity(size_t from_domain,
@@ -163,9 +155,6 @@ struct hpx_topology_storage_policy_u {
     utils::id_t * indices,
     size_t num_indices,
     bool read) {
-    // TODO - this is an initial implementation for testing purposes.
-    // We may wish to store the buffer pointers coming from Legion directly
-    // into the connectivity
     auto & conn = topology[from_domain][to_domain].get(from_dim, to_dim);
 
     auto & id_storage = conn.get_index_space().ids;
