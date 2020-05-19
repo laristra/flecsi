@@ -23,6 +23,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <array>
 
 namespace flecsi {
 namespace utils {
