@@ -27,34 +27,34 @@ RUN mkdir -p .spack/linux && \
   cat ${BRANCH}/${VERSIONING}/spack/packages.yaml | \
     sed "s,GRAPHVIZ_VERSION,${GRAPHVIZ_VERSION},g" > .spack/linux/packages.yaml
 
-RUN source spack/share/spack/setup-env.sh && \
+RUN . spack/share/spack/setup-env.sh && \
   spack compiler find
 
 #------------------------------------------------------------------------------#
 # Create MPICH environment
 #------------------------------------------------------------------------------#
 
-RUN source spack/share/spack/setup-env.sh && \
+RUN . spack/share/spack/setup-env.sh && \
   spack fetch --dependencies mpich && \
   spack install mpich
 
-RUN source spack/share/spack/setup-env.sh && \
+RUN . spack/share/spack/setup-env.sh && \
   spack fetch --dependencies gasnet^mpich && \
   spack install gasnet^mpich
 
-RUN source spack/share/spack/setup-env.sh && \
+RUN . spack/share/spack/setup-env.sh && \
   spack fetch --dependencies parmetis^mpich && \
   spack install parmetis^mpich
 
-RUN source spack/share/spack/setup-env.sh && \
+RUN . spack/share/spack/setup-env.sh && \
   spack fetch --dependencies boost && \
   spack install boost
 
-RUN source spack/share/spack/setup-env.sh && \
+RUN . spack/share/spack/setup-env.sh && \
   spack fetch --dependencies boost && \
   spack install boost
 
-RUN source spack/share/spack/setup-env.sh && \
+RUN . spack/share/spack/setup-env.sh && \
   spack env create ${VERSIONING}-mpich && \
   spack env activate ${VERSIONING}-mpich && \
   spack install cmake mpich gasnet^mpich parmetis^mpich boost graphviz

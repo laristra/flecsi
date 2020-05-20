@@ -25,9 +25,16 @@ function(add_image target tag dockerfile)
     list(APPEND args "--build-arg;${arg}")
   endforeach()
 
-  add_custom_target(${target}
+  add_custom_target(${target} ALL
     ${ENGINE} build \${EXTRA} ${args} -t ${tag}
       -f ${CMAKE_SOURCE_DIR}/${dockerfile} .
     DEPENDS ${dockerfile} ${image_DEPENDS})
+
+  add_custom_target(push-${target} ALL
+    ${ENGINE} push \${EXTRA} ${tag}
+    DEPENDS ${target})
+
+  add_custom_target(clean-${target}
+    ${ENGINE} rmi \${EXTRA} ${tag})
 
 endfunction()

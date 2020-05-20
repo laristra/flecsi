@@ -1,25 +1,27 @@
 packages:
   all:
     target: [skylake]
+  boost:
+    version: [1.73.0]
+    variants: cxxstd=14 +program_options
   cmake:
     version: [3.17.1]
-  mpich:
-    version: [3.2.1]
-  openmpi:
-    version: [3.1.4]
   gasnet:
     version: [2020.3.0]
     variants: ~aligned-segments~ibv+mpi~pshm~udp segment-mmap-max=16GB
-  hdf5:
-    version: [1.10.6]
   graphviz:
     buildable: False
     paths:
       graphviz@GRAPHVIZ_VERSION: /usr
+  hdf5:
+    version: [1.10.6]
   metis:
     version: [5.1.0]
+  mpich:
+    version: [3.2.1]
+  ncurses:
+    version: [6.1]
+  openmpi:
+    version: [3.1.4]
   parmetis:
     version: [4.0.3]
-  boost:
-    version: [1.73.0]
-    variants: cxxstd=14 +program_options

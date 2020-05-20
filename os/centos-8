@@ -16,9 +16,7 @@ RUN dnf config-manager --set-enabled PowerTools
 # Install basic linux requirements
 #------------------------------------------------------------------------------#
 
-RUN dnf update -y
-
-RUN dnf install -y \
+RUN dnf update -y && dnf install -y \
   clang \
   doxygen \
   flex \

@@ -1,35 +1,45 @@
 #------------------------------------------------------------------------------#
-# FleCSI CI Configuration for Fedora 32
+# FleCSI CI Configuration for CentOS 7.8
 #------------------------------------------------------------------------------#
 
-FROM fedora:32
+FROM centos:7.8.2003
 
 #------------------------------------------------------------------------------#
 # Install basic linux requirements
 #------------------------------------------------------------------------------#
 
-RUN dnf update -y && dnf install -y \
+RUN yum update -y && yum install -y \
+  bzip2 \
   clang \
-  curl \
   doxygen \
-  emacs-color-theme \
-  file \
   flex \
   gcc \
   gcc-c++ \
   gcc-gfortran \
   git \
   graphviz \
-  lbzip2 \
   make \
+  lbzip2 \
   passwd \
   patch \
   python3 \
-  python3-pip \
   vim-enhanced \
   wget \
-  which \
-  xz
+  which
+
+#------------------------------------------------------------------------------#
+# Build gcc 9
+#------------------------------------------------------------------------------#
+
+RUN wget http://ftpmirror.gnu.org/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
+RUN tar xf gcc-9.3.0.tar.xz
+
+WORKDIR gcc-9.3.0
+RUN contrib/download_prerequisites
+RUN ./configure --disable-multilib --enable-languages=c,c++,fortran \
+  --prefix=/opt/gnu/9.3.0
+RUN make
+RUN make install
 
 #------------------------------------------------------------------------------#
 # Enable root for debugging
@@ -53,10 +63,16 @@ RUN \
   echo "highlight Comment cterm=italic" >> .vimrc
 
 #------------------------------------------------------------------------------#
+# Setup path for gcc 9
+#------------------------------------------------------------------------------#
+
+ENV PATH /opt/gnu/9.3.0/bin:$PATH
+
+#------------------------------------------------------------------------------#
 # Capture graphviz version
 #------------------------------------------------------------------------------#
 
-RUN dnf info --installed graphviz | grep Version | \
+RUN yum info graphviz | grep -m 1 Version | \
   awk '{ print $3 }' > .graphviz_version
 
 #------------------------------------------------------------------------------#

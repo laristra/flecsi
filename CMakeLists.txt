@@ -34,9 +34,35 @@ set(BRANCH "gitlab-ci" CACHE STRING
 # OS Images
 #------------------------------------------------------------------------------#
 
-add_image(centos-8 docker.io/laristra/flecsi-ci:centos-8 os/centos-8)
-add_image(fedora-31 docker.io/laristra/flecsi-ci:fedora-31 os/fedora-31)
-add_image(fedora-32 docker.io/laristra/flecsi-ci:fedora-32 os/fedora-32)
+add_image(centos-7.8
+  docker.io/laristra/flecsi-ci:centos-7.8
+  os/centos-7.8
+)
+
+add_image(centos-8
+  docker.io/laristra/flecsi-ci:centos-8
+  os/centos-8
+)
+
+add_image(fedora-31
+  docker.io/laristra/flecsi-ci:fedora-31
+  os/fedora-31
+)
+
+add_image(fedora-32
+  docker.io/laristra/flecsi-ci:fedora-32
+  os/fedora-32
+)
+
+add_image(ubuntu-20.04
+  docker.io/laristra/flecsi-ci:ubuntu-20.04
+  os/ubuntu-20.04
+)
+
+add_image(clearlinux
+  docker.io/laristra/flecsi-ci:clearlinux
+  os/clearlinux
+)
 
 #------------------------------------------------------------------------------#
 # Environment Images
@@ -49,7 +75,17 @@ add_image(devel-centos-8 docker.io/laristra/flecsi-ci:devel-centos-8
     BRANCH=${BRANCH}
     VERSIONING=devel
     OS=docker.io/laristra/flecsi-ci:centos-8
-  DEPENDS centos-8
+  DEPENDS push-centos-8
+)
+
+add_image(devel-centos-7.8 docker.io/laristra/flecsi-ci:devel-centos-7.8
+  devel/environment
+  ARGS
+    REPO=${REPOSITORY}
+    BRANCH=${BRANCH}
+    VERSIONING=devel
+    OS=docker.io/laristra/flecsi-ci:centos-7.8
+  DEPENDS push-centos-7.8
 )
 
 add_image(devel-fedora-31 docker.io/laristra/flecsi-ci:devel-fedora-31
@@ -59,7 +95,7 @@ add_image(devel-fedora-31 docker.io/laristra/flecsi-ci:devel-fedora-31
     BRANCH=${BRANCH}
     VERSIONING=devel
     OS=docker.io/laristra/flecsi-ci:fedora-31
-  DEPENDS fedora-31
+  DEPENDS push-fedora-31
 )
 
 add_image(devel-fedora-32 docker.io/laristra/flecsi-ci:devel-fedora-32
@@ -69,5 +105,32 @@ add_image(devel-fedora-32 docker.io/laristra/flecsi-ci:devel-fedora-32
     BRANCH=${BRANCH}
     VERSIONING=devel
     OS=docker.io/laristra/flecsi-ci:fedora-32
-  DEPENDS fedora-32
+  DEPENDS push-fedora-32
 )
+
+add_image(devel-ubuntu-20.04 docker.io/laristra/flecsi-ci:devel-ubuntu-20.04
+  devel/environment
+  ARGS
+    REPO=${REPOSITORY}
+    BRANCH=${BRANCH}
+    VERSIONING=devel
+    OS=docker.io/laristra/flecsi-ci:ubuntu-20.04
+  DEPENDS push-ubuntu-20.04
+)
+
+add_image(devel-clearlinux docker.io/laristra/flecsi-ci:devel-clearlinux
+  devel/environment
+  ARGS
+    REPO=${REPOSITORY}
+    BRANCH=${BRANCH}
+    VERSIONING=devel
+    OS=docker.io/laristra/flecsi-ci:clearlinux
+  DEPENDS push-clearlinux
+)
+
+#------------------------------------------------------------------------------#
+# Add .dockerignore file to avoid including cmake files in context
+#------------------------------------------------------------------------------#
+
+configure_file(${CMAKE_SOURCE_DIR}/config/dockerignore
+  ${CMAKE_BINARY_DIR}/.dockerignore)
