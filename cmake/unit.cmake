@@ -164,7 +164,10 @@ function(add_unit name)
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${_OUTPUT_DIR})
 
   if(unit_policy_flags)
-    target_compile_options(${name} PRIVATE ${unit_policy_flags})
+    set( unit_policy_list ${unit_policy_flags} )
+    separate_arguments(unit_policy_list)
+
+    target_compile_options(${name} PRIVATE ${unit_policy_list})
   endif()
 
   #----------------------------------------------------------------------------#
