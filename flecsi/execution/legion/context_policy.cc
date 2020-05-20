@@ -88,10 +88,30 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
   Runtime::register_reduction_op<MaxReductionOp>(MaxReductionOp::redop_id);
   Runtime::register_reduction_op<MinReductionOp>(MinReductionOp::redop_id);
 
+  int leg_argc = argc + leg_args_.size();
+  char ** leg_argv = new char *[leg_argc];
+  {
+    // store unmodified command line args for the runtime driver
+    input_args_.argc = argc;
+    input_args_.argv = argv;
+
+    // add legion arguments to argv
+    for(int i = 0; i < argc; ++i) {
+      auto len = strlen(argv[i]) + 1;
+      leg_argv[i] = new char[len];
+      strcpy(leg_argv[i], argv[i]);
+    }
+    for(int i = argc; i < leg_argc; ++i) {
+      auto len = strlen(leg_args_[i - argc].c_str()) + 1;
+      leg_argv[i] = new char[len];
+      strcpy(leg_argv[i], leg_args_[i - argc].c_str());
+    }
+  }
+
   // find -ll:gsize
   bool has_gsize = false;
-  for(int i = 0; i < argc; ++i) {
-    if(strstr(argv[i], "ll:gsize") != NULL) {
+  for(int i = 0; i < leg_argc; ++i) {
+    if(strstr(leg_argv[i], "ll:gsize") != NULL) {
       has_gsize = true;
       break;
     }
@@ -100,7 +120,7 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
   // new argc, argv
   if(has_gsize) {
     // Start the Legion runtime
-    Runtime::start(argc, argv, true);
+    Runtime::start(leg_argc, leg_argv, true);
   }
   else {
     if(rank == 0) {
@@ -118,17 +138,17 @@ legion_context_policy_t::initialize(int argc, char ** argv) {
       std::cout << std::endl;
     }
     // add llgsize=0 by default
-    int new_argc = argc + 2;
+    int new_argc = leg_argc + 2;
     char ** new_argv = new char *[new_argc];
-    for(int i = 0; i < argc; ++i) {
-      auto len = strlen(argv[i]) + 1;
+    for(int i = 0; i < leg_argc; ++i) {
+      auto len = strlen(leg_argv[i]) + 1;
       new_argv[i] = new char[len];
-      strcpy(new_argv[i], argv[i]);
+      strcpy(new_argv[i], leg_argv[i]);
     }
-    new_argv[argc] = new char[12];
-    strcpy(new_argv[argc], "-ll:gsize");
-    new_argv[argc + 1] = new char[2];
-    strcpy(new_argv[argc + 1], "0");
+    new_argv[leg_argc] = new char[12];
+    strcpy(new_argv[leg_argc], "-ll:gsize");
+    new_argv[leg_argc + 1] = new char[2];
+    strcpy(new_argv[leg_argc + 1], "0");
 
     // Start the Legion runtime
     Runtime::start(new_argc, new_argv, true);
