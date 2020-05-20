@@ -20,40 +20,20 @@ mark_as_advanced(ENABLE_MPI_THREAD_MULITPLE)
 mark_as_advanced(ENABLE_MPI_CXX_BINDINGS)
 
 if(ENABLE_MPI)
-
-#------------------------------------------------------------------------------#
-# Skip C++ linkage of MPI
-#------------------------------------------------------------------------------#
-
-if(ENABLE_MPI_CXX_BINDINGS)
-    find_package(MPI REQUIRED COMPONENTS CXX)
+  if(ENABLE_MPI_CXX_BINDINGS)
+    # These are removed as of MPI-3 but are preserved for legacy cinch behavior
+    find_package(MPI COMPONENTS C MPICXX REQUIRED)
+    # Setting expected variable for rest of cinch
     set(MPI_LANGUAGE CXX)
-else()
-    find_package(MPI REQUIRED COMPONENTS C)
-    set(MPI_LANGUAGE C)
-    # Globally add these compile definitions for linking C++ applications
-    # with the C-version of MPI.  Might be a better way to do this.
+  else()
+    find_package(MPI COMPONENTS C CXX REQUIRED)
+    # These almost definitely don't need to be set but are preserved for legacy cinch behavior
+    #   Also, regardless, they should probably be added to a target and not used as a global
+    #   definition to avoid contaminating other build systems
     add_definitions(-DOMPI_SKIP_MPICXX -DMPICH_SKIP_MPICXX)
-endif(ENABLE_MPI_CXX_BINDINGS)
-
-if(MPI_${MPI_LANGUAGE}_FOUND)
-    include_directories(SYSTEM ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH})
-
-    # using mpich, there are extra spaces that cause some issues
-    separate_arguments(MPI_${MPI_LANGUAGE}_COMPILE_FLAGS)
-
-    list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${MPI_${MPI_LANGUAGE}_LIBRARIES})
-endif(MPI_${MPI_LANGUAGE}_FOUND)
-
-if(MSVC)
-    add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    add_definitions(-D_SCL_SECURE_NO_DEPRECATE)
-    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
-    add_definitions(-D_CRT_NONSTDC_NO_WARNINGS)
-    add_definitions(-D_HAS_AUTO_PTR_ETC=1)
-    add_definitions(-D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
-    add_definitions(-DGTEST_LANG_CXX11=1)
+    # Setting expected variable for rest of cinch
+    set(MPI_LANGUAGE C)
+  endif()
+  # And append libraries, along with required flags and preprocessor defs, to expected variable
+  list(APPEND FLECSI_RUNTIME_LIBRARIES MPI::MPI_CXX MPI::MPI_C)
 endif()
-
-endif(ENABLE_MPI)
