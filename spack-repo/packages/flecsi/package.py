@@ -5,7 +5,7 @@
 
 
 from spack import *
-
+import os
 
 class Flecsi(CMakePackage):
     '''FleCSI is a compile-time configurable framework designed to support
@@ -43,7 +43,7 @@ class Flecsi(CMakePackage):
             description='Enable documentation')
     variant('coverage', default=False,
             description='Enable coverage build')
-    variant('hdf5', default=False,
+    variant('hdf5', default=True,
             description='Enable HDF5 Support')
     variant('caliper', default=False,
             description='Enable Caliper Support')
@@ -53,21 +53,21 @@ class Flecsi(CMakePackage):
             description='Build FleCSI Tutorials')
     variant('flecstan', default=False,
             description='Build FleCSI Static Analyzer')
-    variant('cinch', default=False,
+    variant('cinch', default=True,
             description='Enable External Cinch')
 
-    depends_on('cmake@3.16:',  type='build')
+    depends_on('cmake@3.12:')
     # Requires cinch > 1.0 due to cinchlog installation issue
     depends_on('cinch@1.01:', type='build', when='+cinch')
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
     depends_on('mpi', when='backend=hpx')
-    depends_on('legion@ctrl-rep-5+shared+mpi+hdf5 build_type=Debug', when='backend=legion +debug_backend +hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi build_type=Debug', when='backend=legion +debug_backend ~hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi+hdf5 build_type=Release', when='backend=legion ~debug_backend +hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi build_type=Release', when='backend=legion ~debug_backend ~hdf5')
-    depends_on('hpx@1.4.1 cxxstd=14 malloc=system build_type=Debug max_cpu_count=128 ', when='backend=hpx +debug_backend')
-    depends_on('hpx@1.4.1 cxxstd=14 malloc=system build_type=Release max_cpu_count=128 ', when='backend=hpx ~debug_backend')
+    depends_on('legion@ctrl-rep-6+shared+mpi+hdf5 build_type=Debug', when='backend=legion +debug_backend +hdf5')
+    depends_on('legion@ctrl-rep-6+shared+mpi build_type=Debug', when='backend=legion +debug_backend ~hdf5')
+    depends_on('legion@ctrl-rep-6+shared+mpi+hdf5 build_type=Release', when='backend=legion ~debug_backend +hdf5')
+    depends_on('legion@ctrl-rep-6+shared+mpi build_type=Release', when='backend=legion ~debug_backend ~hdf5')
+    depends_on('hpx@1.4.1 cxxstd=14 malloc=system build_type=Debug max_cpu_count=128', when='backend=hpx +debug_backend')
+    depends_on('hpx@1.4.1 cxxstd=14 malloc=system build_type=Release max_cpu_count=128', when='backend=hpx ~debug_backend')
     depends_on('boost@1.70.0: cxxstd=14 +program_options')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
@@ -102,6 +102,9 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_MPI=ON')
         elif spec.variants['backend'].value == 'hpx':
             options.append('-DFLECSI_RUNTIME_MODEL=hpx')
+            options.append('-DENABLE_MPI=ON')
+        elif spec.variants['backend'].value == 'charmpp':
+            options.append('-DFLECSI_RUNTIME_MODEL=charmpp')
             options.append('-DENABLE_MPI=ON')
         else:
             options.append('-DFLECSI_RUNTIME_MODEL=serial')

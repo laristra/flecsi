@@ -38,38 +38,36 @@ variables:
   FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
   FLECSI_MPI_PACKAGE: ""
   FLECSI_MPICH_VERSION: "3.2.1"
-  FLECSI_MPICH_SPEC: ""
-  FLECSI_OPENMPI_VERSION: "3.1.3"
-  FLECSI_OPENMPI_SPEC: "+thread_multiple"
+  FLECSI_OPENMPI_VERSION: "3.1.4"
   FLECSI_INTEL_VERSION: "19.0.2"
   FLECSI_CLANG_VERSION: "8.0.1"
   FLECSI_GCC_VERSION: "8.3.0"
   FLECSI_PYTHON_VERSION: "3.5.1"
   FLECSI_ENV_SOURCE_FILE: "${CI_PROJECT_DIR}/build/flecsi-deps-${RUNTIME}-${FLECSI_MPI_PACKAGE}-${CI_COMMIT_REF_SLUG}-${CI_CONCURRENT_ID}.sh"
   FLECSI_SPACK_SCOPE: "lanl_ristra_flecsi"
-  FLECSI_SPACK_BASE_SPEC: "flecsi%gcc@${FLECSI_GCC_VERSION} ~graphviz +hdf5 backend=${RUNTIME}"
+  FLECSI_SPACK_BASE_SPEC: "flecsi@1.4%gcc@${FLECSI_GCC_VERSION} backend=${RUNTIME}"
 before_script:
   - echo ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
-  - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
+  - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.lanl.gov/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
   #- find . -name "`basename cinch`" | grep "cinch\$" | xargs rm -fr
   - export HOME=${CI_PROJECT_DIR}
+  - export TMPDIR=${CI_PROJECT_DIR}
   - mkdir -p ${CI_PROJECT_DIR}/build
   - module load python/${FLECSI_PYTHON_VERSION}
   - module load clang/7.0.0 # for formatting purpose
   - module unload gcc
   - module load gcc/${FLECSI_GCC_VERSION}
   - echo ${FLECSI_ENV_SOURCE_FILE}
-  - export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_BASE_SPEC} $([ ${BUILD_TYPE} == 'Debug' ] && echo +debug_backend || echo '' ) ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} == 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} ${FLECSI_OPENMPI_SPEC} || echo ${FLECSI_MPICH_VERSION} ${FLECSI_MPICH_SPEC} ) %gcc@${FLECSI_GCC_VERSION}"
+  - export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_BASE_SPEC} $([ ${BUILD_TYPE} == 'Debug' ] && echo +debug_backend || echo '' ) ^${FLECSI_MPI_PACKAGE}@$([ ${FLECSI_MPI_PACKAGE} == 'openmpi' ] && echo ${FLECSI_OPENMPI_VERSION} || echo ${FLECSI_MPICH_VERSION})%gcc@${FLECSI_GCC_VERSION}"
   - rm ${FLECSI_ENV_SOURCE_FILE} || /bin/true
+  - . ${SPACK_ROOT}/share/spack/setup-env.sh;
   - |
     ( flock -e 200
-    source ${SPACK_ROOT}/share/spack/setup-env.sh;
-    # spack load -r flecsi-deps%gcc@${FLECSI_GCC_COMPILER#*/} ~graphviz ^${FLECSI_MPI_PACKAGE} || /bin/true;
     spack repo rm ${FLECSI_SPACK_SCOPE} || /bin/true ;
     spack repo add ${CI_PROJECT_DIR}/spack-repo;
     spack repo list;
     echo ${FLECSI_SPACK_FULL_SPEC};
-    spack build-env --dump ${FLECSI_ENV_SOURCE_FILE} "${FLECSI_SPACK_FULL_SPEC}" || /bin/true;
+    spack module tcl loads --dependencies ${FLECSI_SPACK_FULL_SPEC} | tee ${FLECSI_ENV_SOURCE_FILE} || /bin/true;
     spack repo rm ${FLECSI_SPACK_SCOPE};
     ) 200>${DEPS_LOCK}
   - source ${FLECSI_ENV_SOURCE_FILE} || /bin/true
@@ -135,7 +133,7 @@ before_script:
   retry: 1
   only:
     - merge_requests
-    - "1"
+    - "1.4"
     - devel
 
 .cache_template: &cache_def
@@ -167,18 +165,6 @@ before_script:
   <<: *general_def
   <<: *cache_def
 
-.update_spackage: &update_spackage |-
-  echo 'Updating spackages...'
-  cd ${CI_PROJECT_DIR}
-  git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git
-  for f in $(find ./spack-repo/packages/ -type f); do diff -urN ${CI_PROJECT_DIR}/ristra_spackages/$f $f | tee $f.patch || /bin/true; done
-  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do patch -i $f ${CI_PROJECT_DIR}/ristra_spackages/${f%.*}; done
-  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do rm $f; done
-  cd ${CI_PROJECT_DIR}/ristra_spackages
-  git add spack-repo/packages/*
-  git commit -m "Gitlab CI Automatic Spackage Update - FleCSI" || /bin/true
-  git push -u origin master
-
 #############
 # Env Stage #
 #############
@@ -204,10 +190,10 @@ before_script:
       spack repo add ${CI_PROJECT_DIR}/spack-repo;
       spack repo list;
       spack clean --all;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION} ${FLECSI_OPENMPI_SPEC} %gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION} ${FLECSI_MPICH_SPEC} %gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^openmpi@${FLECSI_OPENMPI_VERSION} ${FLECSI_OPENMPI_SPEC} %gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
-      spack install --show-log-on-error --only dependencies ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^mpich@${FLECSI_MPICH_VERSION} ${FLECSI_MPICH_SPEC} %gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error ${FLECSI_SPACK_BASE_SPEC} ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error ${FLECSI_SPACK_BASE_SPEC} ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^openmpi@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
+      spack install --show-log-on-error ${FLECSI_SPACK_BASE_SPEC} +debug_backend ^mpich@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} | tee -a spack_tmp.out;
       spack repo rm ${FLECSI_SPACK_SCOPE};
       ) 200>${DEPS_LOCK}
     - $([ "$(grep -c "Errno " spack_tmp.out)" = "0" ] && exit 0 || exit 1)
@@ -236,8 +222,6 @@ before_script:
         ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
         -DFLECSI_ENABLE_TUTORIAL=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_UNIT_TESTS=ON \
-        -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -Wno-deprecated" \
-        -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_HDF5=$([ "$RUNTIME" = "hpx" ] && echo OFF || echo ON) \
         -DENABLE_DOXYGEN=ON \
         -DENABLE_DOCUMENTATION=OFF \
@@ -376,16 +360,7 @@ env_hpx:
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
-  allow_failure: true
-
-env_update:
-  extends: env_mpi
-  only:
-    refs:
-      - "1"
-  script:
-    - *update_spackage
-  allow_failure: true
+  allow_failure: false
 
 ###############
 # Canary Jobs #
@@ -417,7 +392,7 @@ canary:centOS_mpich_hpx:
     <<: *buildtype_debug
     <<: *compiler_gcc
     <<: *mpich
-  allow_failure: false 
+  allow_failure: false
 
 ##############
 # Build Jobs #
@@ -593,14 +568,12 @@ build:centOS_mpich_hpx_clang:
   variables:
     <<: *compiler_clang
     <<: *mpich
-  allow_failure: true
 
 build:centOS_hpx_intel_release:
   extends: build:centOS_hpx
   variables:
     <<: *buildtype_release
     <<: *compiler_intel
-  allow_failure: true
 
 build:centOS_mpi.ignoreNoCI:
   extends: build:centOS_mpi
