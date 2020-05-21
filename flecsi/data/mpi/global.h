@@ -157,7 +157,7 @@ struct storage_class_u<global> {
     size_t VERSION,
     size_t PERMISSIONS>
   static handle_t<DATA_TYPE, 0> get_handle(
-    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
+    const data_client_handle<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     handle_t<DATA_TYPE, 0> h;
     auto & context = execution::context_t::instance();
 

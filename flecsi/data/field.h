@@ -140,7 +140,7 @@ struct field_interface_u {
     size_t VERSION = 0,
     size_t PERMISSIONS>
   static decltype(auto) get_handle(
-    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
+    const data_client_handle<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 
@@ -177,7 +177,7 @@ struct field_interface_u {
     size_t VERSION = 0,
     size_t PERMISSIONS>
   static decltype(auto) get_mutator(
-    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle,
+    const data_client_handle<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle,
     size_t slots) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");

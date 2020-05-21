@@ -85,7 +85,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     auto & h = a.handle;
 #if !defined(FLECSI_USE_AGGCOMM)
     // Skip Read Only handles
-    if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
+    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
+                 (GHOST_PERMISSIONS == wo))
       return;
 
     auto & context = context_t::instance();
@@ -109,7 +110,8 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 #else
     auto & context = context_t::instance();
 
-    if(EXCLUSIVE_PERMISSIONS == ro && SHARED_PERMISSIONS == ro)
+    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
+                 (GHOST_PERMISSIONS == wo))
       *(h.ghost_is_readable) = true;
     else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
       *(h.ghost_is_readable) = false;
@@ -126,7 +128,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 
     auto & context = context_t::instance();
     const int my_color = context.color();
-    MPI_Bcast(&a.data(), 1, utils::mpi_type<T>(), 0, MPI_COMM_WORLD);
+    MPI_Bcast(&a.data(), sizeof(T), MPI_BYTE, 0, MPI_COMM_WORLD);
   } // handle
 
   template<typename T,
@@ -167,7 +169,9 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     }
 
     // Get entry_values
-    const MPI_Datatype shared_ghost_type = utils::mpi_type<value_t>();
+    MPI_Datatype shared_ghost_type;
+    MPI_Type_contiguous(sizeof(value_t), MPI_BYTE, &shared_ghost_type);
+    MPI_Type_commit(&shared_ghost_type);
 
     MPI_Win win;
     MPI_Win_create(shared_data,
@@ -191,6 +195,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
     MPI_Win_wait(win);
 
     MPI_Win_free(&win);
+    MPI_Type_free(&shared_ghost_type);
 
     for(int i = 0; i < h.num_ghost_ * h.max_entries_per_index; i++)
       clog_rank(warn, 0) << "ghost after: " << ghost_data[i] << std::endl;
@@ -272,7 +277,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   }
 
   template<size_t I, typename T, size_t PERMISSIONS>
-  void client_handler(data_client_handle_u<T, PERMISSIONS> & h) {
+  void client_handler(data_client_handle_u<T, PERMISSIONS> h) {
 
     using entity_types_t = typename T::types_t::entity_types;
 
@@ -391,7 +396,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
 
     // skip read only
     if(PERMISSIONS == ro)
