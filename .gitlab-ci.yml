@@ -134,6 +134,7 @@ before_script:
   only:
     - merge_requests
     - "1.4"
+    - "1"
     - devel
 
 .cache_template: &cache_def
@@ -360,7 +361,6 @@ env_hpx:
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
-  allow_failure: true
 
 ###############
 # Canary Jobs #
