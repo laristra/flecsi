@@ -185,8 +185,8 @@ extension of the application.
 
 ----
 
-Tutorial
-********
+Examples
+++++++++
 
 The rest of this tutorial demonstrates how application developers can
 use the FleCSI control model to create extensible applications.
