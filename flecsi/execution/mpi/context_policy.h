@@ -271,6 +271,12 @@ struct mpi_context_policy_t {
     std::map<int, MPI_Datatype> origin_types;
     std::map<int, MPI_Datatype> target_types;
 
+#if defined(FLECSI_USE_AGGCOMM)
+    std::map<int, std::vector<size_t>> shared_indices;
+    std::map<int, std::vector<size_t>> ghost_indices;
+    std::vector<uint32_t> ghost_row_sizes;
+#endif
+
     MPI_Win win = MPI_WIN_NULL;
 
     std::function<void(void)> deleter;
@@ -394,10 +400,28 @@ struct mpi_context_policy_t {
     const coloring_info_t & coloring_info,
     const index_coloring_t & index_coloring) {
     sparse_field_metadata_t metadata;
+#if !defined(FLECSI_USE_AGGCOMM)
 
     register_field_metadata_<T>(metadata, fid, coloring_info, index_coloring,
       metadata.compact_origin_lengs, metadata.compact_origin_disps,
       metadata.compact_target_lengs, metadata.compact_target_disps);
+
+#else
+    // compute ghost and shared indicies
+    size_t ghost_count = 0;
+    for(auto const & ghost : index_coloring.ghost) {
+      metadata.ghost_indices[ghost.rank].push_back(ghost_count);
+      ++ghost_count;
+    }
+    for(auto const & shared : index_coloring.shared) {
+      for(auto const & s : shared.shared) {
+        metadata.shared_indices[s].push_back(shared.offset);
+      }
+    }
+
+    // allocate ghost_row_sizes
+    metadata.ghost_row_sizes.resize(index_coloring.ghost.size());
+#endif
 
     auto it = sparse_field_data.find(fid);
     auto rows = &it->second.rows[0];
@@ -644,6 +668,7 @@ struct mpi_context_policy_t {
   } // reduction_types
 
   void finalize() {
+#if !defined(FLECSI_USE_AGGCOMM)
     for(auto & md : field_metadata) {
       for(auto & ty : md.second.origin_types)
         MPI_Type_free(&ty.second);
@@ -656,7 +681,9 @@ struct mpi_context_policy_t {
       if(md.second.win != MPI_WIN_NULL)
         MPI_Win_free(&md.second.win);
     }
+#endif
     for(auto & md : sparse_field_metadata) {
+#if !defined(FLECSI_USE_AGGCOMM)
       for(auto & ty : md.second.origin_types)
         MPI_Type_free(&ty.second);
       for(auto & ty : md.second.target_types)
@@ -666,6 +693,7 @@ struct mpi_context_policy_t {
       MPI_Group_free(&md.second.comm_grp);
       if(md.second.win != MPI_WIN_NULL)
         MPI_Win_free(&md.second.win);
+#endif
       md.second.deleter();
     }
   }

@@ -248,6 +248,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   if(ENABLE_PARMETIS)
 
+  if((FLECSI_RUNTIME_MODEL STREQUAL "legion") OR ((FLECSI_RUNTIME_MODEL STREQUAL "mpi") AND (FLECSI_USE_AGGCOMM)))
     cinch_add_unit(task_privileges_dense
       SOURCES
         test/task_privileges_dense.cc
@@ -269,6 +270,29 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
     )
+
+    cinch_add_unit(task_privileges_sparse
+      SOURCES
+        test/task_privileges_sparse.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/task_privileges_sparse.blessed
+      LIBRARIES
+        FleCSI
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+    )
+    endif()
 
     cinch_add_devel_target(execution_structure
       SOURCES

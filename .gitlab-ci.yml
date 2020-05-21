@@ -166,18 +166,6 @@ before_script:
   <<: *general_def
   <<: *cache_def
 
-.update_spackage: &update_spackage |-
-  echo 'Updating spackages...'
-  cd ${CI_PROJECT_DIR}
-  git clone git@gitlab.lanl.gov:laristra/ristra_spackages.git
-  for f in $(find ./spack-repo/packages/ -type f); do diff -urN ${CI_PROJECT_DIR}/ristra_spackages/$f $f | tee $f.patch || /bin/true; done
-  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do patch -i $f ${CI_PROJECT_DIR}/ristra_spackages/${f%.*}; done
-  for f in $(find ./spack-repo/packages/ -type f -name "*.patch"); do rm $f; done
-  cd ${CI_PROJECT_DIR}/ristra_spackages
-  git add spack-repo/packages/*
-  git commit -m "Gitlab CI Automatic Spackage Update - FleCSI" || /bin/true
-  git push -u origin master
-
 #############
 # Env Stage #
 #############
@@ -373,15 +361,6 @@ env_hpx:
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
-  allow_failure: true
-
-env_update:
-  extends: env_mpi
-  only:
-    refs:
-      - "1"
-  script:
-    - *update_spackage
   allow_failure: true
 
 ###############

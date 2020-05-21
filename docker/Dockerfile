@@ -3,7 +3,7 @@ FROM laristra/spack-buildenv:fedora30
 SHELL ["/bin/bash", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    HOME=/home/flecsi \
+    HOME=/home/laristra \
     BASH_ENV=~/.bashrc
 
 ARG DISTRO
@@ -33,11 +33,11 @@ RUN rm -rf $HOME/.ccache
 COPY flecsi $HOME/flecsi
 COPY ccache/ $HOME/.ccache
 USER root
-RUN chown -R flecsi:flecsi $HOME/flecsi $HOME/.ccache
-USER flecsi
+RUN chown -R laristra:laristra $HOME/flecsi $HOME/.ccache
+USER laristra
 
 WORKDIR $HOME
-RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE" && \
+RUN export SPACK_SPEC="flecsi@1%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE" && \
     spack repo add --scope site $HOME/flecsi/spack-repo && \
     spack find && \
     echo "spack install --show-log-on-error $SPACK_SPEC" && \
@@ -92,6 +92,6 @@ RUN source $HOME/load_deps.sh && \
 
 USER root
 RUN make install
-USER flecsi
+USER laristra
 WORKDIR $HOME
 

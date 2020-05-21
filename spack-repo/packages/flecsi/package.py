@@ -5,7 +5,7 @@
 
 
 from spack import *
-
+import os
 
 class Flecsi(CMakePackage):
     '''FleCSI is a compile-time configurable framework designed to support
@@ -62,10 +62,10 @@ class Flecsi(CMakePackage):
     depends_on('mpi', when='backend=mpi')
     depends_on('mpi', when='backend=legion')
     depends_on('mpi', when='backend=hpx')
-    depends_on('legion@ctrl-rep-5+shared+mpi+hdf5 build_type=Debug', when='backend=legion +debug_backend +hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi build_type=Debug', when='backend=legion +debug_backend ~hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi+hdf5 build_type=Release', when='backend=legion ~debug_backend +hdf5')
-    depends_on('legion@ctrl-rep-5+shared+mpi build_type=Release', when='backend=legion ~debug_backend ~hdf5')
+    depends_on('legion@ctrl-rep-6+shared+mpi+hdf5 build_type=Debug', when='backend=legion +debug_backend +hdf5')
+    depends_on('legion@ctrl-rep-6+shared+mpi build_type=Debug', when='backend=legion +debug_backend ~hdf5')
+    depends_on('legion@ctrl-rep-6+shared+mpi+hdf5 build_type=Release', when='backend=legion ~debug_backend +hdf5')
+    depends_on('legion@ctrl-rep-6+shared+mpi build_type=Release', when='backend=legion ~debug_backend ~hdf5')
     depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Debug', when='backend=hpx +debug_backend')
     depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Release', when='backend=hpx ~debug_backend')
     depends_on('boost@1.70.0: cxxstd=14 +program_options')
@@ -158,3 +158,16 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_COVERAGE_BUILD=OFF')
 
         return options
+
+    # Dummy build for now,  remove when flecsi@devel can actually be built and installed through spack
+    def build(self, spec, prefix):
+        print("In build stage...")
+
+    # Dummy install for now,  remove when flecsi@devel can actually be built and installed through spack
+    def install(self, spec, prefix):
+        with open(os.path.join(spec.prefix, 'package-list.txt'), 'w') as out:
+            for dep in spec.dependencies(deptype='build'):
+                out.write('%s\n' % dep.format(
+                    format_string='${PACKAGE} ${VERSION}'))
+                os.symlink(dep.prefix, os.path.join(spec.prefix, dep.name))
+            out.close()

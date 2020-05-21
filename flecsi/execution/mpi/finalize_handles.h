@@ -49,6 +49,7 @@ struct finalize_handles_t
 
     using value_t = T;
 
+#if !defined(FLECSI_USE_AGGCOMM)
     auto & context = context_t::instance();
     const int my_color = context.color();
     auto & my_coloring_info = context.coloring_info(h.index_space).at(my_color);
@@ -161,7 +162,9 @@ struct finalize_handles_t
 
     delete[] shared_data;
     delete[] ghost_data;
-
+#else
+    *(h.ghost_is_readable) = false;
+#endif
   } // handle
 
   template<typename T>

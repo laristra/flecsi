@@ -126,6 +126,11 @@ struct legion_context_policy_t {
     size_t max_entries_per_index;
   };
 
+  struct input_args_t {
+    int argc;
+    char ** argv;
+  };
+
   //--------------------------------------------------------------------------//
   // Runtime state.
   //--------------------------------------------------------------------------//
@@ -549,6 +554,14 @@ struct legion_context_policy_t {
     return size_t(internal_field::entity_data_start) + index_space;
   }
 
+  void add_backend_arg(std::string arg) {
+    leg_args_.push_back(arg);
+  }
+
+  const input_args_t & get_input_args() const {
+    return input_args_;
+  }
+
 private:
   size_t color_ = 0;
   size_t colors_ = 0;
@@ -593,6 +606,12 @@ private:
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
   sparse_metadata_t sparse_metadata_;
+
+  //--------------------------------------------------------------------------//
+  // Store command-line arguments
+  //--------------------------------------------------------------------------//
+  input_args_t input_args_;
+  std::vector<std::string> leg_args_;
 
 }; // class legion_context_policy_t
 
