@@ -18,6 +18,7 @@
 
 #include <flecsi/data/data.h>
 #include <flecsi/execution/remap_shared.h>
+#include <flecsi/utils/annotation.h>
 
 clog_register_tag(runtime_driver);
 
@@ -36,7 +37,9 @@ runtime_driver(int argc, char ** argv) {
   }
 
   auto & context_ = context_t::instance();
+  using annotation = flecsi::utils::annotation;
 
+  annotation::begin<annotation::runtime_setup>();
   //--------------------------------------------------------------------------//
   // Invoke callbacks for entries in the reduction operation registry.
   //--------------------------------------------------------------------------//
@@ -80,14 +83,18 @@ runtime_driver(int argc, char ** argv) {
     context_.put_field_info(fi);
   }
 
+  annotation::end<annotation::runtime_setup>();
+
 #if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
   {
     clog_tag_guard(runtime_driver);
     clog(info) << "Executing specialization tlt task" << std::endl;
   }
 
+  annotation::begin<annotation::spl_tlt_init>();
   // Execute the specialization driver.
   specialization_tlt_init(argc, argv);
+  annotation::end<annotation::spl_tlt_init>();
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   remap_shared_entities();
@@ -137,13 +144,17 @@ runtime_driver(int argc, char ** argv) {
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+  annotation::begin<annotation::spl_spmd_init>();
   specialization_spmd_init(argc, argv);
+  annotation::end<annotation::spl_spmd_init>();
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
 
+  annotation::begin<annotation::driver>();
   // Execute the user driver.
   driver(argc, argv);
+  annotation::end<annotation::driver>();
 
 #endif // FLECSI_ENABLE_DYNAMIC_CONTROL_MODEL
 
