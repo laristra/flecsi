@@ -23,12 +23,33 @@ RUN git clone --single-branch \
 ARG VERSIONING
 
 RUN mkdir -p .spack/linux && \
+  export GNU_VERSION=`cat .gnu_version` && \
   export GRAPHVIZ_VERSION=`cat .graphviz_version` && \
+  export NCURSES_VERSION=`cat .ncurses_version` && \
   cat ${BRANCH}/${VERSIONING}/spack/packages.yaml | \
-    sed "s,GRAPHVIZ_VERSION,${GRAPHVIZ_VERSION},g" > .spack/linux/packages.yaml
+    sed "s,GNU_VERSION,${GNU_VERSION},g" | \
+    sed "s,GRAPHVIZ_VERSION,${GRAPHVIZ_VERSION},g" | \
+    sed "s,NCURSES_VERSION,${NCURSES_VERSION},g" > .spack/linux/packages.yaml
 
 RUN . spack/share/spack/setup-env.sh && \
   spack compiler find
+
+#------------------------------------------------------------------------------#
+# Add gfortran to clang
+#------------------------------------------------------------------------------#
+
+RUN pip3 install --user pyyaml
+ADD clang_fortran.py ./clang_fortran.py
+RUN export GNU_VERSION=`cat .gnu_version` && \
+  /home/flecsi/clang_fortran.py '.spack/linux/compilers.yaml' '.spack/linux/compilers.yaml' "${GNU_VERSION}"
+
+#------------------------------------------------------------------------------#
+# Install generic packages
+#------------------------------------------------------------------------------#
+
+RUN . spack/share/spack/setup-env.sh && \
+  spack fetch --dependencies boost && \
+  spack install boost
 
 #------------------------------------------------------------------------------#
 # Create MPICH environment
@@ -47,17 +68,30 @@ RUN . spack/share/spack/setup-env.sh && \
   spack install parmetis^mpich
 
 RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies boost && \
-  spack install boost
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies boost && \
-  spack install boost
-
-RUN . spack/share/spack/setup-env.sh && \
   spack env create ${VERSIONING}-mpich && \
   spack env activate ${VERSIONING}-mpich && \
   spack install cmake mpich gasnet^mpich parmetis^mpich boost graphviz
+
+#------------------------------------------------------------------------------#
+# Create OpenMPI environment
+#------------------------------------------------------------------------------#
+
+RUN . spack/share/spack/setup-env.sh && \
+  spack fetch --dependencies openmpi && \
+  spack install openmpi
+
+RUN . spack/share/spack/setup-env.sh && \
+  spack fetch --dependencies gasnet^openmpi && \
+  spack install gasnet^openmpi
+
+RUN . spack/share/spack/setup-env.sh && \
+  spack fetch --dependencies parmetis^openmpi && \
+  spack install parmetis^openmpi
+
+RUN . spack/share/spack/setup-env.sh && \
+  spack env create ${VERSIONING}-openmpi && \
+  spack env activate ${VERSIONING}-openmpi && \
+  spack install cmake openmpi gasnet^openmpi parmetis^openmpi boost graphviz
 
 #------------------------------------------------------------------------------#
 # Install Sphinx

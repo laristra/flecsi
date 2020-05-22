@@ -18,7 +18,9 @@ RUN yum update -y && yum install -y \
   gcc-gfortran \
   git \
   graphviz \
+  graphviz-devel \
   make \
+  ncurses-devel \
   lbzip2 \
   passwd \
   patch \
@@ -40,6 +42,9 @@ RUN ./configure --disable-multilib --enable-languages=c,c++,fortran \
   --prefix=/opt/gnu/9.3.0
 RUN make
 RUN make install
+
+WORKDIR /
+RUN rm -rf gcc-9.3.0*
 
 #------------------------------------------------------------------------------#
 # Enable root for debugging
@@ -69,11 +74,14 @@ RUN \
 ENV PATH /opt/gnu/9.3.0/bin:$PATH
 
 #------------------------------------------------------------------------------#
-# Capture graphviz version
+# Capture version information
 #------------------------------------------------------------------------------#
 
 RUN yum info graphviz | grep -m 1 Version | \
   awk '{ print $3 }' > .graphviz_version
+RUN yum info ncurses | grep -m 1 Version | \
+  awk '{ print $3 }' > .ncurses_version
+RUN gcc -v 2>&1 | grep "gcc version" | awk '{ print $3 }' > .gnu_version
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

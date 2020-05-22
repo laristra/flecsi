@@ -53,11 +53,14 @@ RUN \
   echo "highlight Comment cterm=italic" >> .vimrc
 
 #------------------------------------------------------------------------------#
-# Capture graphviz version
+# Capture version information
 #------------------------------------------------------------------------------#
 
 RUN dnf info --installed graphviz | grep Version | \
   awk '{ print $3 }' > .graphviz_version
+RUN dnf info --installed ncurses | grep Version | \
+  awk '{ print $3 }' > .ncurses_version
+RUN gcc -v 2>&1 | grep "gcc version" | awk '{ print $3 }' > .gnu_version
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

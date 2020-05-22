@@ -23,10 +23,28 @@ set(CONTAINER_ENGINE "${CONTAINER_ENGINE}" CACHE STRING
 set_property(CACHE CONTAINER_ENGINE
   PROPERTY STRINGS ${CONTAINER_ENGINES})
 
-find_program(ENGINE ${CONTAINER_ENGINE})
+set(ENGINE_EXECUTABLE)
 
-if(ENGINE-NOTFOUND)
-  message(FATAL_ERROR "Failed to find ${CONTAINER_ENGINE}")
+if("${CONTAINER_ENGINE}" STREQUAL "docker")
+  find_program(DOCKER_EXECUTABLE docker)
+
+  if(DOCKER_EXECUTABLE-NOTFOUND)
+    message(FATAL_ERROR "Failed to find docker")
+  endif()
+
+  set(ENGINE_EXECUTABLE ${DOCKER_EXECUTABLE})
+elseif("${CONTAINER_ENGINE}" STREQUAL "podman")
+  find_program(PODMAN_EXECUTABLE podman)
+  
+  if(PODMAN_EXECUTABLE-NOTFOUND)
+    message(FATAL_ERROR "Failed to find podman")
+  endif()
+
+  set(ENGINE_EXECUTABLE ${PODMAN_EXECUTABLE})
 else()
-  message(STATUS "Container Engine (${CONTAINER_ENGINE}): found ${ENGINE}")
+  message(FATAL_ERROR "invalid container engine")
 endif()
+
+message(STATUS
+  "Container Engine (${CONTAINER_ENGINE}): found ${ENGINE_EXECUTABLE}")
+mark_as_advanced(PODMAN_EXECUTABLE DOCKER_EXECUTABLE)

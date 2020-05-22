@@ -75,7 +75,7 @@ add_image(devel-centos-8 docker.io/laristra/flecsi-ci:devel-centos-8
     BRANCH=${BRANCH}
     VERSIONING=devel
     OS=docker.io/laristra/flecsi-ci:centos-8
-  DEPENDS push-centos-8
+    DEPENDS push-centos-8
 )
 
 add_image(devel-centos-7.8 docker.io/laristra/flecsi-ci:devel-centos-7.8
@@ -85,7 +85,7 @@ add_image(devel-centos-7.8 docker.io/laristra/flecsi-ci:devel-centos-7.8
     BRANCH=${BRANCH}
     VERSIONING=devel
     OS=docker.io/laristra/flecsi-ci:centos-7.8
-  DEPENDS push-centos-7.8
+    DEPENDS push-centos-7.8
 )
 
 add_image(devel-fedora-31 docker.io/laristra/flecsi-ci:devel-fedora-31
@@ -134,3 +134,15 @@ add_image(devel-clearlinux docker.io/laristra/flecsi-ci:devel-clearlinux
 
 configure_file(${CMAKE_SOURCE_DIR}/config/dockerignore
   ${CMAKE_BINARY_DIR}/.dockerignore)
+
+file(COPY ${CMAKE_SOURCE_DIR}/config/clang_fortran.py
+  DESTINATION ${CMAKE_BINARY_DIR}
+  FILE_PERMISSIONS
+    OWNER_READ
+    OWNER_WRITE
+    OWNER_EXECUTE
+    GROUP_READ
+    GROUP_EXECUTE
+    WORLD_READ
+    WORLD_EXECUTE
+)
