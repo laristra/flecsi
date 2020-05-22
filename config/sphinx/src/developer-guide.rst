@@ -168,8 +168,22 @@ be back-merged into *feature* or *devel*, as appropriate.
 
 -----
 
-Tutorial Docker Image
-+++++++++++++++++++++
+Container Images
+++++++++++++++++
+
+.. important::
+
+  These sections assumes that you are familiar with container management
+  using a container engine like *Docker*. If you are not, there is
+  excellent documentation starting `here`__. Additionally, we include
+  instructions and links for installation and basic usage below.
+
+  __ https://docs.docker.com/get-started
+
+.. include:: install_docker.rst
+
+Tutorial Image
+^^^^^^^^^^^^^^
 
 This section details the steps to modify and update the docker image for
 the FleCSI tutorials.
@@ -182,10 +196,8 @@ the FleCSI tutorials.
   modified on GitHub.  These instructions are primarily intended for
   developers who are modifying the image scripts and need to test them.
 
-.. include:: install_docker.rst
-
 Building and Testing Locally
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+============================
 
 The tutorial docker files are located in *flecsi/tutorial/docker*. These
 instructions assume that you are in that directory.
@@ -234,7 +246,7 @@ Once you have successfully built the imager, you can test it using the
 This will open an interactive shell (/bin/bash) on the running image.
 
 Pushing to hub.docker.com
-^^^^^^^^^^^^^^^^^^^^^^^^^
+=========================
 
 If you want to push images to the docker hub repository, you will need
 to log in:
@@ -256,6 +268,121 @@ where TAG is the tag that you specified during the build.
 
 In general, pushing the image manually is unnecessary because it will
 automatically be rebuilt when the docker file is updated on GitHub.
+
+-----
+
+Gitlab CI
+^^^^^^^^^
+
+FleCSI has a special branch *gitlab-ci* that provides images and
+configuration files that are used for Gitlab's continuous integration
+(CI) services. The current set of utilties include:
+
+* **Images** |br|
+  Operating system, build environment, and FleCSI images. These use
+  dockerfile syntax, and can be built and run with docker and podman
+  engines, or potentially, with any engine that is compatible with
+  docker-generated images.
+
+  The images are modular, and are intended to be used to build up
+  capabilities:
+
+  * **OS Images** |br|
+    Located in the *os* directory, these are designed to provide a
+    standard base of functionality, i.e., a standard set of system
+    packages, which can be used interchangeably with downstream
+    environment images.
+
+  * **Environment** |br|
+    Located in a directory named for the corresponding branch, e.g., the
+    environment dockerfile file for *devel* is located in the *devel*
+    directory, these are designed to provide a standard spack
+    environment for building FleCSI.
+
+    It is intended that developers add new directories when necessary to
+    support custom configuration of a branch that they are testing.
+
+  * **Build** |br|
+    Also located in the *branch* directory, the build image provides a
+    pre-built FleCSI installation that can be used for debugging, or as
+    a building block for other project.
+
+* **Spack Configuration Files** |br|
+  Located in the *spack* subdirectory of an environment directory, these
+  allow customization of the spack install for a particular environment.
+  In particular, the *spack/packages.py* file should specify explicit
+  versions for as many packages as is feasible. Package versions should
+  only be elevated when necessary for new feature support. Following
+  this guideline will greatly increase stability.
+
+Build System
+============
+
+The *gitlab-ci* branch uses a standard CMake build system. There are
+three important configuration options that you need to be aware of:
+
+* **BRANCH** |br|
+  This is the branch name of the branch or fork of *gitlab-ci* that you
+  wish to use. The default is *gitlab-ci*. However, it is useful to be
+  able to set this to a personal branch name, so that you can test local
+  changes without doing a merge request to the central FleCSI Gitlab
+  project. Use this in conjunction with the *REPOSITORY* option.
+
+* **CONTAINER_ENGINE** |br|
+  This should be the name of the container engine that is installed on
+  your system. Currently, only *docker*, and *podman* are supported.
+  Additional engines may be added in the future.
+
+* **REPOSITORY** |br|
+  This is the url for the repository where the build system will look
+  for the *BRANCH* option that you specified. The default is the main
+  FleCSI Gitlab repository
+  *https://gitlab.lanl.gov/laristra/flecsi.git*. However, it is useful
+  to set this to your personal fork for testing new images.
+
+As an example configuration, consider the following:
+
+.. code-block:: console
+
+  $ mkdir build
+  $ cd build
+  $ cmake .. -DBRANCH=ci-environment -DREPOSITORY=https://github.com/tuxfan/flecsi.git -D ENGINE=podman
+
+This configuration will use the author's *ci-environment* branch on
+Github with the *podman* engine.
+
+To build an image, try:
+
+.. code-block:: console
+
+  $ make centos-8
+
+This will build the *OS* image defined in *os/centos-8*.
+
+.. warning::
+
+  A note of caution on building the images under the *gitlab-ci* branch.
+  Simply typing *make* after configuration will attempt to build **all
+  of the images in the project!** This can take several hours to complete!
+  If this is not your intention, you can list the build targets by
+  typing :code:`make help`. To build only a specific target, type
+  :code:`make TARGET`, where *TARGET* is the target that you would like
+  to build. Note also that building targets with dependencies will build
+  all of the dependencies of the target (This is unaviodable.)
+
+.. tip::
+
+  The build system also supports passing runtime options to the
+  container engine. These are of the form *STAGE*\_EXTRA, e.g.,
+  BUILD_EXTRA, PUSH_EXTRA, and CLEAN_EXTRA. For example, BUILD_EXTRA can
+  be used to force complete rebuild of an image like:
+
+  .. code-block:: console
+
+    $ make BUILD_EXTRA="--pull --no-cache" centos-8
+
+  This will force the engine to start from scratch, i.e., pulling the
+  base image from the registry, and ignoring cached stages.
 
 -----
 
