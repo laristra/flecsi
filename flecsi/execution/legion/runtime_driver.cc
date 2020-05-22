@@ -69,8 +69,8 @@ runtime_driver(const Legion::Task * task,
     clog(info) << "MPI num_colors is " << num_colors << std::endl;
   }
 
-  // Get the input arguments from the Legion runtime
-  const Legion::InputArgs & args = Legion::Runtime::get_input_args();
+  // Get the input arguments from the context
+  const auto & args = context_t::instance().get_input_args();
 
   // Initialize MPI Interoperability
   context_t & context_ = context_t::instance();

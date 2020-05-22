@@ -80,6 +80,8 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
         return WRITE_DISCARD;
       case size_t(rw):
         return READ_WRITE;
+      case size_t(na):
+        return WRITE_DISCARD;
       default:
         clog_fatal("invalid privilege mode");
     } // switch
@@ -152,7 +154,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
 
     std::unordered_map<size_t, size_t> region_map;
 
@@ -304,7 +306,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
 
     for(size_t i{0}; i < h.num_handle_entities; ++i) {
       data_client_handle_entity_t & ent = h.handle_entities[i];

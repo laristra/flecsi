@@ -103,10 +103,9 @@ public:
 
   /// Return a view of (a subset of) the data as selected by the IDs.
   auto ordered() {
-    return utils::transform_view(
-      ids, [&](const id_t & i) -> auto & {
-        return data[i.index_space_index()];
-      });
+    return utils::transform_view(ids, [&](const id_t & i) -> auto & {
+      return data[i.index_space_index()];
+    });
   }
 
   //-----------------------------------------------------------------//

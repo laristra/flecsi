@@ -164,7 +164,7 @@ struct storage_class_u<dense> {
     size_t VERSION,
     size_t PERMISSIONS>
   static handle_t<DATA_TYPE, 0, 0, 0> get_handle(
-    const data_client_handle_u<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
+    const data_client_handle<DATA_CLIENT_TYPE, PERMISSIONS> & client_handle) {
     static_assert(
       VERSION < utils::hash::field_max_versions, "max field version exceeded");
 

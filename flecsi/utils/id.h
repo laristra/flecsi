@@ -15,10 +15,6 @@
 
 /*! @file */
 
-#if defined(_MSC_VER)
-#include "uint128.h"
-#endif
-
 #include <cassert>
 #include <climits>
 #include <cstdint>
@@ -28,7 +24,7 @@
 namespace flecsi {
 namespace utils {
 
-using local_id_t = __uint128_t;
+using local_id_t = std::uint64_t;
 
 template<std::size_t PBITS,
   std::size_t EBITS,
@@ -180,10 +176,3 @@ private:
 
 } // namespace utils
 } // namespace flecsi
-
-// Defining operator<< out-of-namespace prevents an overload ambiguity problem
-// that the unit-test code uncovered when the definition was in flecsi::utils.
-inline std::ostream &
-operator<<(std::ostream & ostr, const flecsi::utils::local_id_t x) {
-  return ostr << uint64_t(x >> 64) << ":" << uint64_t(x);
-}
