@@ -12,7 +12,7 @@
 # All rights reserved
 #------------------------------------------------------------------------------#
 
-set(CONTAINER_ENGINES podman docker)
+set(CONTAINER_ENGINES docker podman)
 
 if(NOT CONTAINER_ENGINE)
   list(GET CONTAINER_ENGINES 0 CONTAINER_ENGINE)

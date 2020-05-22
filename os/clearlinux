@@ -1,41 +1,40 @@
-#------------------------------------------------------------------------------#
-# FleCSI CI Configuration for Fedora 32
+#-----------------------------------------------------------------------------#
+# FleCSI CI Configuration for ClearLinux
 #------------------------------------------------------------------------------#
 
-FROM fedora:32
+FROM clearlinux:latest
 
 #------------------------------------------------------------------------------#
 # Install basic linux requirements
 #------------------------------------------------------------------------------#
 
-RUN dnf update -y && dnf install -y \
-  clang \
+RUN swupd bundle-add \
+  c-basic \
   curl \
   doxygen \
-  emacs-color-theme \
+  emacs \
   file \
   flex \
-  gcc \
-  gcc-c++ \
-  gcc-gfortran \
   git \
   graphviz \
-  lbzip2 \
+  less \
+  llvm \
   make \
-  passwd \
+  man-pages \
+  os-core \
+  os-core-search \
   patch \
-  python3 \
-  python3-pip \
-  vim-enhanced \
+  python3-basic \
+  sysadmin-basic \
+  vim \
   wget \
-  which \
-  xz
+  which
 
 #------------------------------------------------------------------------------#
 # Enable root for debugging
 #------------------------------------------------------------------------------#
 
-RUN echo 'flecsi' | passwd --stdin root
+RUN echo -e 'flecsi\nflecsi' | passwd root
 
 #------------------------------------------------------------------------------#
 # Add flecsi user
@@ -56,8 +55,7 @@ RUN \
 # Capture graphviz version
 #------------------------------------------------------------------------------#
 
-RUN dnf info --installed graphviz | grep Version | \
-  awk '{ print $3 }' > .graphviz_version
+RUN dot -V 2>&1 | awk '{ print $5 }' > .graphviz_version
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

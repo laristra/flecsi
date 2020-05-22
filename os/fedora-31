@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------#
-# FleCSI CI Configuration for CentOS 8
+# FleCSI CI Configuration for Fedora 31
 #------------------------------------------------------------------------------#
 
 FROM fedora:31
@@ -8,9 +8,7 @@ FROM fedora:31
 # Install basic linux requirements
 #------------------------------------------------------------------------------#
 
-RUN dnf update -y
-
-RUN dnf install -y \
+RUN dnf update -y && dnf install -y \
   clang \
   curl \
   doxygen \

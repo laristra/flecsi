@@ -1,41 +1,49 @@
 #------------------------------------------------------------------------------#
-# FleCSI CI Configuration for Fedora 32
+# FleCSI CI Configuration for Ubuntu 20.04
 #------------------------------------------------------------------------------#
 
-FROM fedora:32
+FROM ubuntu:20.04
 
 #------------------------------------------------------------------------------#
 # Install basic linux requirements
 #------------------------------------------------------------------------------#
 
-RUN dnf update -y && dnf install -y \
+RUN apt-get update
+RUN apt-get install -y apt-utils
+
+RUN \
+  export DEBIAN_FRONTEND=noninteractive && \
+  apt-get install -y tzdata && \
+  ln -fs /usr/share/zoneinfo/America/Denver /etc/localtime && \
+  dpkg-reconfigure --frontend noninteractive tzdata
+  
+RUN apt-get upgrade -y && apt-get install -y \
   clang \
   curl \
   doxygen \
-  emacs-color-theme \
+  emacs \
   file \
   flex \
-  gcc \
-  gcc-c++ \
-  gcc-gfortran \
+  gcc-9 \
+  gfortran-9 \
   git \
   graphviz \
+  libgraphviz-dev \
   lbzip2 \
   make \
   passwd \
   patch \
   python3 \
   python3-pip \
-  vim-enhanced \
+  vim \
   wget \
-  which \
-  xz
+  xz-utils
 
 #------------------------------------------------------------------------------#
 # Enable root for debugging
 #------------------------------------------------------------------------------#
 
-RUN echo 'flecsi' | passwd --stdin root
+RUN echo 'root:flecsi' | chpasswd
 
 #------------------------------------------------------------------------------#
 # Add flecsi user
@@ -56,8 +64,8 @@ RUN \
 # Capture graphviz version
 #------------------------------------------------------------------------------#
 
-RUN dnf info --installed graphviz | grep Version | \
-  awk '{ print $3 }' > .graphviz_version
+RUN apt-cache policy graphviz | grep Installed | \
+  awk '{ print $2 }' | sed 's,\-.*,,g' > .graphviz_version
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive
