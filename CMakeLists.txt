@@ -34,8 +34,8 @@ set(CMAKE_CXX_STANDARD 17)
 #------------------------------------------------------------------------------#
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.3.0")
-    message(FATAL_ERROR "Version 9.3.0 of gnu compilers required!")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0")
+    message(FATAL_ERROR "Version 9.0 of gnu compilers required!")
   endif()
 endif()
 
