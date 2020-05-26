@@ -12,6 +12,7 @@
 /*! @file */
 
 #include <memory>
+#include <string>
 
 #if defined(__GNUG__)
 #include <cxxabi.h>

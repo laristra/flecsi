@@ -157,7 +157,7 @@ private:
 }; // forall_t
 
 #define reduceall(it, tmp, iterator, reducer, name)                            \
-  reduceall_t{iterator, reducer, name} + KOKKOS_LAMBDA(auto it, auto tmp)
+  reduceall_t{iterator, reducer, name} + KOKKOS_LAMBDA(auto it, auto & tmp)
 
 } // namespace flecsi
 #endif
