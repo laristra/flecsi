@@ -97,6 +97,12 @@ common() {
     EXPECT_NE(flecsi::util::unique_name(&f), "");
     EXPECT_NE(flecsi::util::unique_name(&f), "");
 
+    {
+      constexpr util::key_array<int, c31> m{};
+      static_assert(&m.get<3>() == &m[0]);
+      static_assert(&m.get<1>() == &m[1]);
+    }
+
     // ------------------------
     // Compare
     // ------------------------

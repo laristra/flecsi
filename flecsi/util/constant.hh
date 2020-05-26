@@ -15,6 +15,7 @@
 
 /*! @file */
 
+#include <array>
 #include <cstddef>
 #include <utility>
 
@@ -53,6 +54,21 @@ public:
   template<auto V>
   static constexpr std::size_t index = find<V>(
     std::make_index_sequence<size>());
+};
+
+// A std::array<T> indexed by the values in a constants<...>.
+template<class T, class C>
+struct key_array : std::array<T, C::size> {
+  using keys = C;
+
+  template<auto V>
+  constexpr T & get() {
+    return (*this)[C::template index<V>];
+  }
+  template<auto V>
+  constexpr const T & get() const {
+    return (*this)[C::template index<V>];
+  }
 };
 
 } // namespace util
