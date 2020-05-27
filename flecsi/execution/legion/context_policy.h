@@ -463,6 +463,7 @@ struct legion_context_policy_t {
   struct index_space_data_t {
     std::map<field_id_t, bool> ghost_is_readable;
     std::map<field_id_t, bool> write_phase_started;
+    std::map<field_id_t, bool> ghost_id_updated;
     Legion::IndexPartition ghost_owners_ip; // prevent Destructor call
     Legion::LogicalPartition ghost_owners_lp;
     Legion::LogicalRegion entire_region;

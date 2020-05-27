@@ -165,6 +165,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
           // As user
           // Phase READ
           *(ent.write_phase_started) = false;
+          *(ent.ghost_id_updated) = false;
         }
       } // for
 
