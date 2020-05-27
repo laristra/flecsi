@@ -471,6 +471,7 @@ runtime_driver(const Legion::Task * task,
     for(const field_info_t * field_info : fields_map[idx_space]) {
       ispace_dmap[idx_space].ghost_is_readable[field_info->fid] = true;
       ispace_dmap[idx_space].write_phase_started[field_info->fid] = false;
+      ispace_dmap[idx_space].ghost_id_updated[field_info->fid] = false;
     } // end field_info
   } // end for idx_space
 
