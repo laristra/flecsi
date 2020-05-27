@@ -28,6 +28,7 @@
 
 #include <legion.h>
 
+#include <flecsi/utils/annotation.h>
 #include <flecsi/utils/const_string.h>
 
 #include <flecsi/execution/common/processor.h>
@@ -40,11 +41,6 @@
 #include <flecsi/execution/legion/task_epilog.h>
 #include <flecsi/execution/legion/task_prolog.h>
 #include <flecsi/execution/legion/task_wrapper.h>
-
-#if defined(ENABLE_CALIPER)
-#include <caliper/Annotation.h>
-#include <caliper/cali.h>
-#endif
 
 namespace flecsi {
 namespace execution {
@@ -161,13 +157,8 @@ struct legion_execution_policy_t {
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
 
-#if defined(ENABLE_CALIPER)
-    cali::Annotation et("FleCSI-Execution");
-    std::string tname = "execute_task with TASK HASH " + std::to_string(TASK);
-    cali::Annotation::Guard g(et.begin(tname.c_str()));
-#endif
-
     using namespace Legion;
+    using annotation = flecsi::utils::annotation;
 
     // This will guard the entire method
     clog_tag_guard(execution);
@@ -188,6 +179,9 @@ struct legion_execution_policy_t {
 
     constexpr size_t ZERO =
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+
+    auto & task_info = context_.task_info<TASK>();
+    std::string tname = std::get<3>(task_info);
 
     // Execute a tuple walker that applies the task epilog operations
     // on the mapped handles
@@ -214,17 +208,11 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
-#if defined(ENABLE_CALIPER)
-          tname =
-            "TASK HASH " + std::to_string(TASK) + " single-launch init_args";
-          et.begin(tname.c_str());
-#endif
+          annotation::begin<annotation::execute_task_initargs>(tname);
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
+          annotation::end<annotation::execute_task_initargs>();
 
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
           // Add region requirements and future dependencies to the
           // task launcher
           for(auto & req : init_args.region_reqs) {
@@ -240,11 +228,7 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
-#if defined(ENABLE_CALIPER)
-          tname = "TASK HASH " + std::to_string(TASK) +
-                  " single-launch task_prolog sparse false";
-          et.begin(tname.c_str());
-#endif
+          annotation::begin<annotation::execute_task_prolog>(tname);
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -252,15 +236,7 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
 
-#if defined(ENABLE_CALIPER)
-          tname = "TASK HASH " + std::to_string(TASK) +
-                  " single-launch task_prolog sparse true";
-          et.begin(tname.c_str());
-#endif
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -268,9 +244,7 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
+          annotation::end<annotation::execute_task_prolog>();
 
           // Enqueue the task.
           clog(trace) << "Execute flecsi/legion task " << TASK << " on rank "
@@ -279,16 +253,10 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task epilog operations
           // on the mapped handles
-#if defined(ENABLE_CALIPER)
-          tname =
-            "TASK HASH " + std::to_string(TASK) + " single-launch task_epilog";
-          et.begin(tname.c_str());
-#endif
+          annotation::begin<annotation::execute_task_epilog>(tname);
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
+          annotation::end<annotation::execute_task_epilog>();
 
           static_assert(
             REDUCTION == ZERO, "reductions are not supported for single tasks");
@@ -320,16 +288,10 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
-#if defined(ENABLE_CALIPER)
-          tname =
-            "TASK HASH " + std::to_string(TASK) + " index-launch init_args";
-          et.begin(tname.c_str());
-#endif
+          annotation::begin<annotation::execute_task_initargs>(tname);
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
+          annotation::end<annotation::execute_task_initargs>();
 
           LegionRuntime::Arrays::Rect<1> launch_bounds(
             LegionRuntime::Arrays::Point<1>(0),
@@ -358,11 +320,7 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
-#if defined(ENABLE_CALIPER)
-          tname = "TASK HASH " + std::to_string(TASK) +
-                  " index-launch task_prolog sparse false";
-          et.begin(tname.c_str());
-#endif
+          annotation::begin<annotation::execute_task_prolog>(tname);
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -370,15 +328,7 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
 
-#if defined(ENABLE_CALIPER)
-          tname = "TASK HASH " + std::to_string(TASK) +
-                  " index-launch task_prolog sparse true";
-          et.begin(tname.c_str());
-#endif
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -386,9 +336,7 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
+          annotation::end<annotation::execute_task_prolog>();
 
           if constexpr(REDUCTION != ZERO) {
             clog(info) << "executing reduction logic for " << REDUCTION
@@ -405,16 +353,10 @@ struct legion_execution_policy_t {
               legion_context, launcher, reduction_id);
 
             // Enqueue the epilog.
-#if defined(ENABLE_CALIPER)
-            tname =
-              "TASK HASH " + std::to_string(TASK) + " index-launch task_epilog";
-            et.begin(tname.c_str());
-#endif
+            annotation::begin<annotation::execute_task_epilog>(tname);
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
-#if defined(ENABLE_CALIPER)
-            et.end();
-#endif
+            annotation::end<annotation::execute_task_epilog>();
 
             return legion_future_u<RETURN, launch_type_t::single>(future);
           }
@@ -425,16 +367,10 @@ struct legion_execution_policy_t {
 
             // Execute a tuple walker that applies the task epilog operations
             // on the mapped handles
-#if defined(ENABLE_CALIPER)
-            tname =
-              "TASK HASH " + std::to_string(TASK) + " index-launch task_epilog";
-            et.begin(tname.c_str());
-#endif
+            annotation::begin<annotation::execute_task_epilog>(tname);
             task_epilog_t task_epilog(legion_runtime, legion_context);
             task_epilog.walk(task_args);
-#if defined(ENABLE_CALIPER)
-            et.end();
-#endif
+            annotation::end<annotation::execute_task_epilog>();
 
             return legion_future_u<RETURN, launch_type_t::index>(future_map);
           } // else
@@ -445,15 +381,10 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that initializes the handle arguments
           // that are passed to the task
-#if defined(ENABLE_CALIPER)
-          tname = "TASK HASH " + std::to_string(TASK) + " mpi-launch init_args";
-          et.begin(tname.c_str());
-#endif
+          annotation::begin<annotation::execute_task_initargs>(tname);
           init_args_t init_args(legion_runtime, legion_context);
           init_args.walk(task_args);
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
+          annotation::end<annotation::execute_task_initargs>();
 
           // FIXME: This will need to change with the new control model
           //         if(context_.execution_state() == SPECIALIZATION_TLT_INIT) {
@@ -483,11 +414,7 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
-#if defined(ENABLE_CALIPER)
-          tname = "TASK HASH " + std::to_string(TASK) +
-                  " mpi-launch task_prolog sparse false";
-          et.begin(tname.c_str());
-#endif
+          annotation::begin<annotation::execute_task_prolog>(tname);
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -495,15 +422,7 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
 
-#if defined(ENABLE_CALIPER)
-          tname = "TASK HASH " + std::to_string(TASK) +
-                  " mpi-launch task_prolog sparse true";
-          et.begin(tname.c_str());
-#endif
           {
             task_prolog_t task_prolog(
               legion_runtime, legion_context, launch_domain);
@@ -511,9 +430,7 @@ struct legion_execution_policy_t {
             task_prolog.walk(task_args);
             task_prolog.launch_copies();
           } // scope
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
+          annotation::end<annotation::execute_task_prolog>();
 
           // Launch the MPI task
           auto future =
@@ -532,16 +449,10 @@ struct legion_execution_policy_t {
 
           // Execute a tuple walker that applies the task epilog operations
           // on the mapped handles
-#if defined(ENABLE_CALIPER)
-          tname =
-            "TASK HASH " + std::to_string(TASK) + " mpi-launch task_epilog";
-          et.begin(tname.c_str());
-#endif
+          annotation::begin<annotation::execute_task_epilog>(tname);
           task_epilog_t task_epilog(legion_runtime, legion_context);
           task_epilog.walk(task_args);
-#if defined(ENABLE_CALIPER)
-          et.end();
-#endif
+          annotation::end<annotation::execute_task_epilog>();
 
           if constexpr(REDUCTION != ZERO) {
             clog_fatal("there is no implementation for the mpi"

@@ -454,6 +454,18 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 endif()
 
 #------------------------------------------------------------------------------#
+# Add options for annotation detail
+#------------------------------------------------------------------------------#
+set(FLECSI_ANNOTATION_DETAILS low medium high)
+if(NOT FLECSI_ANNOTATION_DETAIL)
+  list(GET FLECSI_ANNOTATION_DETAILS 0 FLECSI_ANNOTATION_DETAIL)
+endif()
+set(FLECSI_ANNOTATION_DETAIL "${FLECSI_ANNOTATION_DETAIL}" CACHE STRING
+  "Select the annotation detail")
+set_property(CACHE FLECSI_ANNOTATION_DETAIL
+  PROPERTY STRINGS ${FLECSI_ANNOTATION_DETAILS})
+
+#------------------------------------------------------------------------------#
 # Process id bits
 #------------------------------------------------------------------------------#
 

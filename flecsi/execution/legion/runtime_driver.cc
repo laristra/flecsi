@@ -28,11 +28,8 @@
 #include <flecsi/execution/legion/mapper.h>
 #include <flecsi/execution/remap_shared.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/annotation.h>
 #include <flecsi/utils/common.h>
-
-#if defined(ENABLE_CALIPER)
-#include <caliper/Annotation.h>
-#endif // ENABLE_CALIPER
 
 clog_register_tag(runtime_driver);
 
@@ -51,10 +48,8 @@ runtime_driver(const Legion::Task * task,
   using namespace data;
   // using data::storage_label_type_t;
 
-#if defined(ENABLE_CALIPER)
-  cali::Annotation rd("FleCSI-Execution");
-  rd.begin("set-up");
-#endif // ENABLE_CALIPER
+  using annotation = flecsi::utils::annotation;
+  annotation::begin<annotation::runtime_setup>();
 
   {
     clog_tag_guard(runtime_driver);
@@ -69,8 +64,8 @@ runtime_driver(const Legion::Task * task,
     clog(info) << "MPI num_colors is " << num_colors << std::endl;
   }
 
-  // Get the input arguments from the Legion runtime
-  const Legion::InputArgs & args = Legion::Runtime::get_input_args();
+  // Get the input arguments from the context
+  const auto & args = context_t::instance().get_input_args();
 
   // Initialize MPI Interoperability
   context_t & context_ = context_t::instance();
@@ -147,10 +142,8 @@ runtime_driver(const Legion::Task * task,
     context_.set_sparse_metadata(md);
   } // if
 
-#if defined(ENABLE_CALIPER)
-  rd.end();
-  rd.begin("spl-tlt-init");
-#endif // ENABLE_CALIPER
+  annotation::end<annotation::runtime_setup>();
+  annotation::begin<annotation::spl_tlt_init>();
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
@@ -165,10 +158,8 @@ runtime_driver(const Legion::Task * task,
   context_.advance_state();
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
-#if defined(ENABLE_CALIPER)
-  rd.end();
-  rd.begin("create-regions");
-#endif // ENABLE_CALIPER
+  annotation::end<annotation::spl_tlt_init>();
+  annotation::begin<annotation::create_regions>();
 
   //--------------------------------------------------------------------------//
   //  Create Legion index spaces and logical regions
@@ -531,10 +522,8 @@ runtime_driver(const Legion::Task * task,
         ctx, color_ispace.logical_region, color_ispace.color_partition);
   } // if
 
-#if defined(ENABLE_CALIPER)
-  rd.end();
-  rd.begin("spl-spmd-init");
-#endif // ENABLE_CALIPER
+  annotation::end<annotation::create_regions>();
+  annotation::begin<annotation::spl_spmd_init>();
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
   {
@@ -549,18 +538,14 @@ runtime_driver(const Legion::Task * task,
 
   context_.advance_state();
 
-#if defined(ENABLE_CALIPER)
-  rd.end();
-  rd.begin("driver");
-#endif // ENABLE_CALIPER
+  annotation::end<annotation::spl_spmd_init>();
+  annotation::begin<annotation::driver>();
 
   // run default or user-defined driver
   driver(args.argc, args.argv);
 
-#if defined(ENABLE_CALIPER)
-  rd.end();
-  rd.begin("finish");
-#endif // ENABLE_CALIPER
+  annotation::end<annotation::driver>();
+  annotation::begin<annotation::runtime_finish>();
   //-----------------------------------------------------------------------//
   // Finish up Legion runtime and fall back out to MPI.
   // ----------------------------------------------------------------------//
@@ -568,9 +553,7 @@ runtime_driver(const Legion::Task * task,
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
 
-#if defined(ENABLE_CALIPER)
-  rd.end();
-#endif // ENABLE_CALIPER
+  annotation::end<annotation::runtime_finish>();
 } // runtime_driver
 
 void

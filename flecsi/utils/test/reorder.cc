@@ -96,10 +96,7 @@ TEST(reorder, both) {
       order[i] = i; // unique indices
     }
 
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(order.begin(), order.end(), g);
-
+    std::shuffle(order.begin(), order.end(), std::default_random_engine(1));
     // ------------------------
     // Inplace reorder:
     // order preserving
