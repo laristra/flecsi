@@ -133,6 +133,7 @@ test(client_handle_t<test_mesh_t, ro> mesh,
   color_accessor<int, ro> color) {
   //  sparse_accessor<double, rw, rw, rw> alpha) {
 
+  std::cout << "Starting..." << std::endl;
   flecsi::parallel_for(mesh.cells(),
     KOKKOS_LAMBDA(auto c) {
       assert(pressure(c) == 1.0);
@@ -155,6 +156,11 @@ test(client_handle_t<test_mesh_t, ro> mesh,
     KOKKOS_LAMBDA(auto c, int & up) { up += c; },
     flecsi::reducer::sum<int>(res), std::string("test"));
   assert(total_sum == res);
+  int res2 = 0;
+  reduceall(c, up, mesh.cells(), flecsi::reducer::sum<int>(res2), "test2") {
+    up += c;
+  };
+  assert(total_sum == res2);
 
   // Test reduction prod
   double total_prod = pow(1.2, total_cells);
@@ -171,6 +177,8 @@ test(client_handle_t<test_mesh_t, ro> mesh,
     c, tmp, mesh.cells(), flecsi::reducer::sum<double>(dres), "test") {
     tmp += pressure(c);
   };
+  assert(total_cells == dres);
+  std::cout << "Finished!" << std::endl;
 }
 
 #if defined(REALM_USE_CUDA)
