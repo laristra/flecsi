@@ -26,15 +26,15 @@ function(add_image target tag dockerfile)
   endforeach()
 
   add_custom_target(${target} ALL
-    ${ENGINE} build \${EXTRA} ${args} -t ${tag}
+    ${ENGINE_EXECUTABLE} build \${BUILD_EXTRA} ${args} -t ${tag}
       -f ${CMAKE_SOURCE_DIR}/${dockerfile} .
     DEPENDS ${dockerfile} ${image_DEPENDS})
 
   add_custom_target(push-${target} ALL
-    ${ENGINE} push \${EXTRA} ${tag}
+    ${ENGINE_EXECUTABLE} push \${PUSH_EXTRA} ${tag}
     DEPENDS ${target})
 
   add_custom_target(clean-${target}
-    ${ENGINE} rmi \${EXTRA} ${tag})
+    ${ENGINE_EXECUTABLE} rmi \${CLEAN_EXTRA} ${tag})
 
 endfunction()

@@ -23,8 +23,10 @@ RUN dnf update -y && dnf install -y \
   gcc-toolset-9 \
   git \
   graphviz \
-  make \
+  graphviz-devel \
   lbzip2 \
+  make \
+  ncurses-devel \
   passwd \
   patch \
   python3 \
@@ -60,11 +62,14 @@ RUN \
 ENV PATH /opt/rh/gcc-toolset-9/root/usr/bin:$PATH
 
 #------------------------------------------------------------------------------#
-# Capture graphviz version
+# Capture version information
 #------------------------------------------------------------------------------#
 
 RUN dnf info --installed graphviz | grep Version | \
   awk '{ print $3 }' > .graphviz_version
+RUN dnf info --installed ncurses | grep -m 1 Version | \
+  awk '{ print $3 }' > .ncurses_version
+RUN gcc -v 2>&1 | grep "gcc version" | awk '{ print $3 }' > .gnu_version
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

@@ -11,6 +11,8 @@ FROM clearlinux:latest
 RUN swupd bundle-add \
   c-basic \
   curl \
+  devpkg-graphviz \
+  devpkg-ncurses \
   doxygen \
   emacs \
   file \
@@ -21,7 +23,6 @@ RUN swupd bundle-add \
   llvm \
   make \
   man-pages \
-  os-core \
   os-core-search \
   patch \
   python3-basic \
@@ -29,6 +30,23 @@ RUN swupd bundle-add \
   vim \
   wget \
   which
+
+#------------------------------------------------------------------------------#
+# Build gcc 9
+#------------------------------------------------------------------------------#
+
+RUN wget http://ftpmirror.gnu.org/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
+RUN tar xf gcc-9.3.0.tar.xz
+
+WORKDIR gcc-9.3.0
+RUN contrib/download_prerequisites
+RUN ./configure --disable-multilib --enable-languages=c,c++,fortran \
+  --prefix=/opt/gnu/9.3.0
+RUN make
+RUN make install
+
+WORKDIR /
+RUN rm -rf gcc-9.3.0*
 
 #------------------------------------------------------------------------------#
 # Enable root for debugging
@@ -52,10 +70,18 @@ RUN \
   echo "highlight Comment cterm=italic" >> .vimrc
 
 #------------------------------------------------------------------------------#
-# Capture graphviz version
+# Setup path for gcc 9
+#------------------------------------------------------------------------------#
+
+ENV PATH /opt/gnu/9.3.0/bin:$PATH
+
+#------------------------------------------------------------------------------#
+# Capture version information
 #------------------------------------------------------------------------------#
 
 RUN dot -V 2>&1 | awk '{ print $5 }' > .graphviz_version
+RUN ncurses6-config --version | sed 's,\.\([^.]*\)$,,g' > .ncurses_version
+RUN gcc -v 2>&1 | grep version | awk '{ print $3 }' > .gnu_version
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

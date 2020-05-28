@@ -1,5 +1,7 @@
 packages:
   all:
+    compiler:
+      - gcc@GNU_VERSION
     target: [skylake]
   boost:
     version: [1.73.0]
@@ -20,8 +22,10 @@ packages:
   mpich:
     version: [3.2.1]
   ncurses:
-    version: [6.1]
+    buildable: False
+    paths:
+      ncurses@NCURSES_VERSION: /usr
   openmpi:
-    version: [3.1.4]
+    version: [3.1.6]
   parmetis:
     version: [4.0.3]
