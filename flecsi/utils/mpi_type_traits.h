@@ -136,6 +136,8 @@ private:
       MPI_Datatype data_type;
       MPI_Type_contiguous(sizeof(TYPE), MPI_BYTE, &data_type);
       MPI_Type_commit(&data_type);
+      std::cerr << "type not predefined" << std::endl;
+      MPI_Abort(MPI_COMM_WORLD, -1);
       return data_type;
     }();
     return ret;

@@ -173,7 +173,8 @@ struct legion_execution_policy_t {
     clog_tag_guard(execution);
 
     // Make a tuple from the arugments passed by the user
-    ARG_TUPLE task_args = std::make_tuple(std::forward<ARGS>(args)...);
+    using arguments = utils::convert_tuple_t<ARG_TUPLE, std::decay_t>;
+    arguments task_args = std::make_tuple(std::forward<ARGS>(args)...);
 
     // Get the FleCSI runtime context
     context_t & context_ = context_t::instance();
@@ -203,7 +204,7 @@ struct legion_execution_policy_t {
 
       // Creae single Legion Launcher
       TaskLauncher launcher(
-        context_.task_id<TASK>(), TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+        context_.task_id<TASK>(), TaskArgument(&task_args, sizeof(arguments)));
 
       switch(processor_type) {
         case processor_type_t::toc:
@@ -337,7 +338,7 @@ struct legion_execution_policy_t {
 
           Legion::ArgumentMap arg_map;
           Legion::IndexLauncher launcher(context_.task_id<TASK>(),
-            launch_domain, TaskArgument(&task_args, sizeof(ARG_TUPLE)),
+            launch_domain, TaskArgument(&task_args, sizeof(arguments)),
             arg_map);
 
           launcher.tag = MAPPER_FORCE_RANK_MATCH;
@@ -465,7 +466,7 @@ struct legion_execution_policy_t {
           ArgumentMap arg_map;
           IndexLauncher launcher(context_.task_id<TASK>(),
             Legion::Domain::from_rect<1>(context_.all_processes()),
-            TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
+            TaskArgument(&task_args, sizeof(arguments)), arg_map);
 
           launcher.tag = MAPPER_FORCE_RANK_MATCH;
           launcher.tag = MAPPER_COMPACTED_STORAGE;
@@ -555,7 +556,7 @@ struct legion_execution_policy_t {
 
             // Create a task launcher, passing the task arguments.
             TaskLauncher launcher(context_.task_id<TASK>(),
-              TaskArgument(&task_args, sizeof(ARG_TUPLE)));
+              TaskArgument(&task_args, sizeof(arguments)));
 
             // Add region requirements and future dependencies to the
             // task launcher

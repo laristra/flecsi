@@ -238,7 +238,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
   } // handle
 
   template<size_t I, typename T, size_t PERMISSIONS>
-  void client_handler(data_client_handle_u<T, PERMISSIONS> & h,
+  void client_handler(data_client_handle_u<T, PERMISSIONS> h,
     const std::map<int, topology::mesh_entity_base_ *> & ent_map,
     const std::map<int, utils::id_t *> & id_map) {
 
@@ -275,10 +275,9 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
 
-    auto storage = h.set_storage(new typename T::storage_t);
     //------------------------------------------------------------------------//
     // Mapping entity data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//
@@ -330,8 +329,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       ent.num_shared = coloring.shared.size();
       ent.num_ghost = coloring.ghost.size();
 
-      storage->init_entities(ent.domain, ent.dim, ents, ids, ent.size, num_ents,
-        ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
+      h.storage.init_entities(ent.domain, ent.dim, ents, ids, ent.size,
+        num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       ++region;
     } // for
@@ -380,7 +379,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       adj.num_indices = num_indices;
 
-      storage->init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
+      h.storage.init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
         adj.to_dim, offsets, num_offsets, indices, num_indices, _read);
 
       ++region;
@@ -404,7 +403,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       size_t num_indices = dr.hi[1] - dr.lo[1] + 1;
 
-      storage->init_index_subspace(iss.index_space, iss.index_subspace,
+      h.storage.init_index_subspace(iss.index_space, iss.index_subspace,
         iss.domain, iss.dim, ids, num_indices, _read);
 
       ++region;
@@ -421,10 +420,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::set_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
     auto & context_ = context_t::instance();
-
-    auto storage = h.set_storage(new typename T::storage_t);
 
     //------------------------------------------------------------------------//
     // Mapping entity data from Legion and initializing set storage.
@@ -451,7 +448,7 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       size_t num_ents = sr.hi[0] - sr.lo[0] + 1;
 
-      storage->init_entities(ent.index_space, ents, ent.size, num_ents, _read);
+      h.storage.init_entities(ent.index_space, ents, ent.size, num_ents, _read);
 
       ++region;
     } // for

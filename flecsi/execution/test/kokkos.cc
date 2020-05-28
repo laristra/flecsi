@@ -59,7 +59,7 @@ void
 set_global_int(global_accessor_u<int, rw> global, int value) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
-  std::cout << "[" << rank << "] setting value" << std::endl;
+  clog(info) << "[" << rank << "] setting value" << std::endl;
   global = value;
 }
 
@@ -138,10 +138,6 @@ test(client_handle_t<test_mesh_t, ro> mesh,
       assert(pressure(c) == 1.0);
       assert(global == 2042);
       assert(color == 2);
-      //      for(auto entry : alpha.entries(c)) {
-      //        std::cout << c->id() << ":" << entry << ": " << alpha(c, entry)
-      //                  << std::endl;
-      //      }
     },
     std::string("test"));
 
@@ -150,6 +146,31 @@ test(client_handle_t<test_mesh_t, ro> mesh,
     assert(global == 2042);
     assert(color == 2);
   }; // forall
+
+  // Test reduction sum
+  int total_cells = mesh.cells().size();
+  int total_sum = (total_cells - 1) * (total_cells) / 2;
+  int res = 0;
+  flecsi::parallel_reduce(mesh.cells(),
+    KOKKOS_LAMBDA(auto c, int & up) { up += c; },
+    flecsi::reducer::sum<int>(res), std::string("test"));
+  assert(total_sum == res);
+
+  // Test reduction prod
+  double total_prod = pow(1.2, total_cells);
+  double resd = 1;
+  flecsi::parallel_reduce(mesh.cells(),
+    KOKKOS_LAMBDA(auto c, double & up) { up *= 1.2; },
+    flecsi::reducer::prod<double>(resd), std::string("test"));
+  assert(fabs(total_prod - resd) < 1.0e-9);
+
+  double tmp = 0;
+  double dres = 0;
+  // Test reduceall
+  flecsi::reduceall(
+    c, tmp, mesh.cells(), flecsi::reducer::sum<double>(dres), "test") {
+    tmp += pressure(c);
+  };
 }
 
 #if defined(REALM_USE_CUDA)

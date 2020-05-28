@@ -48,11 +48,12 @@ TEST(index_space, index_space) {
 
   pseudo_random rng;
 
+  std::vector<std::unique_ptr<object>> ptrs;
   using index_space_t = index_space_u<object *>;
   index_space_t is;
 
   for(size_t i = 0; i < 10000; ++i) {
-    is.push_back(new object(i));
+    is.push_back(ptrs.emplace_back(std::make_unique<object>(i)).get());
     is.data[i]->mass = rng.uniform(0.0, 1.0);
   }
   // Test view instantiations:

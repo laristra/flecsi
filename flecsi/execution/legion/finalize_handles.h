@@ -82,7 +82,7 @@ struct finalize_handles_t
   template<typename T, size_t PERMISSIONS>
   typename std::enable_if_t<
     std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
+  handle(data_client_handle_u<T, PERMISSIONS> h) {
 
     if(PERMISSIONS == wo || PERMISSIONS == rw) {
       auto & context_ = context_t::instance();
@@ -99,14 +99,6 @@ struct finalize_handles_t
         si.size = h.get_index_subspace_size_(iss.index_subspace);
       }
     }
-    h.delete_storage();
-  } // handle
-
-  template<typename T, size_t PERMISSIONS>
-  typename std::enable_if_t<
-    !std::is_base_of<topology::mesh_topology_base_t, T>::value>
-  handle(data_client_handle_u<T, PERMISSIONS> & h) {
-    h.delete_storage();
   } // handle
 
   /*!
