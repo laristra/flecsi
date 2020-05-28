@@ -361,7 +361,6 @@ env_hpx:
     <<: *runtime_hpx
     <<: *buildtype_debug
     <<: *compiler_gcc
-  allow_failure: false
 
 ###############
 # Canary Jobs #
