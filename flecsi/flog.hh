@@ -260,7 +260,7 @@ struct tag {
   tag(const char *) {}
 };
 struct guard {
-  guard(const char *) {}
+  guard(tag const &) {}
 };
 struct devel_tag {
   devel_tag(const char *) {}
