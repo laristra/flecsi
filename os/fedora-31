@@ -19,7 +19,6 @@ RUN dnf update -y && dnf install -y \
   gcc-c++ \
   gcc-gfortran \
   git \
-  graphviz \
   lbzip2 \
   make \
   passwd \
@@ -32,17 +31,12 @@ RUN dnf update -y && dnf install -y \
   xz
 
 #------------------------------------------------------------------------------#
-# Enable root for debugging
-#------------------------------------------------------------------------------#
-
-RUN echo 'flecsi' | passwd --stdin root
-
-#------------------------------------------------------------------------------#
 # Add flecsi user
 #------------------------------------------------------------------------------#
 
 RUN groupadd -r flecsi
 RUN useradd -r -m -g flecsi flecsi
+RUN echo "flecsi ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/flecsi
 
 USER flecsi
 WORKDIR /home/flecsi
@@ -56,11 +50,18 @@ RUN \
 # Capture version information
 #------------------------------------------------------------------------------#
 
-RUN dnf info --installed graphviz | grep Version | \
-  awk '{ print $3 }' > .graphviz_version
 RUN dnf info --installed ncurses | grep Version | \
   awk '{ print $3 }' > .ncurses_version
 RUN gcc -v 2>&1 | grep "gcc version" | awk '{ print $3 }' > .gnu_version
+
+#------------------------------------------------------------------------------#
+# Install pip packages
+#------------------------------------------------------------------------------#
+
+RUN pip3 install --user pyyaml
+RUN pip3 install --user Sphinx
+RUN pip3 install --user recommonmark
+RUN pip3 install --user sphinx_rtd_theme
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

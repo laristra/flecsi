@@ -29,23 +29,16 @@ RUN \
   gcc-9 \
   gfortran-9 \
   git \
-  graphviz \
-  libgraphviz-dev \
   lbzip2 \
   make \
   passwd \
   patch \
   python3 \
   python3-pip \
+  sudo \
   vim \
   wget \
   xz-utils
-
-#------------------------------------------------------------------------------#
-# Enable root for debugging
-#------------------------------------------------------------------------------#
-
-RUN echo 'root:flecsi' | chpasswd
 
 #------------------------------------------------------------------------------#
 # Add flecsi user
@@ -53,6 +46,7 @@ RUN echo 'root:flecsi' | chpasswd
 
 RUN groupadd -r flecsi
 RUN useradd -r -m -g flecsi flecsi
+RUN echo "flecsi ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/flecsi
 
 USER flecsi
 WORKDIR /home/flecsi
@@ -63,14 +57,21 @@ RUN \
   echo "highlight Comment cterm=italic" >> .vimrc
 
 #------------------------------------------------------------------------------#
-# Capture graphviz version
+# Capture version information
 #------------------------------------------------------------------------------#
 
-RUN apt-cache policy graphviz | grep Installed | \
-  awk '{ print $2 }' | sed 's,\-.*,,g' > .graphviz_version
 RUN apt-cache policy libncurses-dev | grep Installed | \
   awk '{ print $2 }' | sed 's,\-.*,,g' > .ncurses_version
 RUN gcc -v 2>&1 | grep "gcc version" | awk '{ print $3 }' > .gnu_version
+
+#------------------------------------------------------------------------------#
+# Install pip packages
+#------------------------------------------------------------------------------#
+
+RUN pip3 install --user pyyaml
+RUN pip3 install --user Sphinx
+RUN pip3 install --user recommonmark
+RUN pip3 install --user sphinx_rtd_theme
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

@@ -18,7 +18,6 @@ RUN swupd bundle-add \
   file \
   flex \
   git \
-  graphviz \
   less \
   llvm \
   make \
@@ -49,17 +48,13 @@ WORKDIR /
 RUN rm -rf gcc-9.3.0*
 
 #------------------------------------------------------------------------------#
-# Enable root for debugging
-#------------------------------------------------------------------------------#
-
-RUN echo -e 'flecsi\nflecsi' | passwd root
-
-#------------------------------------------------------------------------------#
 # Add flecsi user
 #------------------------------------------------------------------------------#
 
 RUN groupadd -r flecsi
 RUN useradd -r -m -g flecsi flecsi
+RUN mkdir /etc/sudoers.d
+RUN echo "flecsi ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/flecsi
 
 USER flecsi
 WORKDIR /home/flecsi
@@ -79,9 +74,17 @@ ENV PATH /opt/gnu/9.3.0/bin:$PATH
 # Capture version information
 #------------------------------------------------------------------------------#
 
-RUN dot -V 2>&1 | awk '{ print $5 }' > .graphviz_version
 RUN ncurses6-config --version | sed 's,\.\([^.]*\)$,,g' > .ncurses_version
 RUN gcc -v 2>&1 | grep version | awk '{ print $3 }' > .gnu_version
+
+#------------------------------------------------------------------------------#
+# Install pip packages
+#------------------------------------------------------------------------------#
+
+RUN pip3 install --user pyyaml
+RUN pip3 install --user Sphinx
+RUN pip3 install --user recommonmark
+RUN pip3 install --user sphinx_rtd_theme
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive
