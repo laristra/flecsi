@@ -22,23 +22,16 @@ RUN dnf update -y && dnf install -y \
   flex \
   gcc-toolset-9 \
   git \
-  graphviz \
-  graphviz-devel \
   lbzip2 \
   make \
   ncurses-devel \
   passwd \
   patch \
   python3 \
+  sudo \
   vim-enhanced \
   wget \
   which
-
-#------------------------------------------------------------------------------#
-# Enable root for debugging
-#------------------------------------------------------------------------------#
-
-RUN echo 'flecsi' | passwd --stdin root
 
 #------------------------------------------------------------------------------#
 # Add flecsi user
@@ -46,6 +39,7 @@ RUN echo 'flecsi' | passwd --stdin root
 
 RUN groupadd -r flecsi
 RUN useradd -r -m -g flecsi flecsi
+RUN echo "flecsi ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/flecsi
 
 USER flecsi
 WORKDIR /home/flecsi
@@ -65,11 +59,18 @@ ENV PATH /opt/rh/gcc-toolset-9/root/usr/bin:$PATH
 # Capture version information
 #------------------------------------------------------------------------------#
 
-RUN dnf info --installed graphviz | grep Version | \
-  awk '{ print $3 }' > .graphviz_version
 RUN dnf info --installed ncurses | grep -m 1 Version | \
   awk '{ print $3 }' > .ncurses_version
 RUN gcc -v 2>&1 | grep "gcc version" | awk '{ print $3 }' > .gnu_version
+
+#------------------------------------------------------------------------------#
+# Install pip packages
+#------------------------------------------------------------------------------#
+
+RUN pip3 install --user pyyaml
+RUN pip3 install --user Sphinx
+RUN pip3 install --user recommonmark
+RUN pip3 install --user sphinx_rtd_theme
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive

@@ -11,10 +11,6 @@ packages:
   gasnet:
     version: [2020.3.0]
     variants: ~aligned-segments~ibv+mpi~pshm~udp segment-mmap-max=16GB
-  graphviz:
-    buildable: False
-    paths:
-      graphviz@GRAPHVIZ_VERSION: /usr
   hdf5:
     version: [1.10.6]
   metis:

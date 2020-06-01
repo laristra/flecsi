@@ -17,14 +17,13 @@ RUN yum update -y && yum install -y \
   gcc-c++ \
   gcc-gfortran \
   git \
-  graphviz \
-  graphviz-devel \
   make \
   ncurses-devel \
   lbzip2 \
   passwd \
   patch \
   python3 \
+  sudo \
   vim-enhanced \
   wget \
   which
@@ -47,17 +46,12 @@ WORKDIR /
 RUN rm -rf gcc-9.3.0*
 
 #------------------------------------------------------------------------------#
-# Enable root for debugging
-#------------------------------------------------------------------------------#
-
-RUN echo 'flecsi' | passwd --stdin root
-
-#------------------------------------------------------------------------------#
 # Add flecsi user
 #------------------------------------------------------------------------------#
 
 RUN groupadd -r flecsi
 RUN useradd -r -m -g flecsi flecsi
+RUN echo "flecsi ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/flecsi
 
 USER flecsi
 WORKDIR /home/flecsi
@@ -77,11 +71,18 @@ ENV PATH /opt/gnu/9.3.0/bin:$PATH
 # Capture version information
 #------------------------------------------------------------------------------#
 
-RUN yum info graphviz | grep -m 1 Version | \
-  awk '{ print $3 }' > .graphviz_version
 RUN yum info ncurses | grep -m 1 Version | \
   awk '{ print $3 }' > .ncurses_version
 RUN gcc -v 2>&1 | grep "gcc version" | awk '{ print $3 }' > .gnu_version
+
+#------------------------------------------------------------------------------#
+# Install pip packages
+#------------------------------------------------------------------------------#
+
+RUN pip3 install --user pyyaml
+RUN pip3 install --user Sphinx
+RUN pip3 install --user recommonmark
+RUN pip3 install --user sphinx_rtd_theme
 
 #------------------------------------------------------------------------------#
 # Set default shell for interactive
