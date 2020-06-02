@@ -1,0 +1,11 @@
+packages:
+  all:
+    compiler:
+      - gcc@GNU_VERSION
+    target: [skylake]
+  cmake:
+    version: [3.17.1]
+  ncurses:
+    buildable: False
+    paths:
+      ncurses@NCURSES_VERSION: /usr

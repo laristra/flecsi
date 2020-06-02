@@ -10,10 +10,12 @@ FROM fedora:31
 
 RUN dnf update -y && dnf install -y \
   clang \
+  cmake \
   curl \
   doxygen \
   emacs-color-theme \
   file \
+  findutils \
   flex \
   gcc \
   gcc-c++ \
@@ -21,6 +23,7 @@ RUN dnf update -y && dnf install -y \
   git \
   lbzip2 \
   make \
+  ncurses-devel \
   passwd \
   patch \
   python3 \

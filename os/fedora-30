@@ -1,50 +1,37 @@
-#------------------------------------------------------------------------------#
-# FleCSI CI Configuration for CentOS 7.8
+#-----------------------------------------------------------------------------#
+# FleCSI CI Configuration for Fedora 31
 #------------------------------------------------------------------------------#
 
-FROM centos:7.8.2003
+FROM fedora:30
 
 #------------------------------------------------------------------------------#
 # Install basic linux requirements
 #------------------------------------------------------------------------------#
 
-RUN yum update -y && yum install -y \
-  bzip2 \
+RUN dnf update -y && dnf install -y \
   clang \
   cmake \
+  curl \
   doxygen \
+  emacs-color-theme \
+  file \
+  findutils \
   flex \
   gcc \
   gcc-c++ \
   gcc-gfortran \
   git \
+  lbzip2 \
   make \
   ncurses-devel \
-  lbzip2 \
   passwd \
   patch \
   python3 \
-  sudo \
+  python3-pip \
   vim-enhanced \
   wget \
-  which
-
-#------------------------------------------------------------------------------#
-# Build gcc 9
-#------------------------------------------------------------------------------#
-
-RUN wget http://ftpmirror.gnu.org/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
-RUN tar xf gcc-9.3.0.tar.xz
-
-WORKDIR gcc-9.3.0
-RUN contrib/download_prerequisites
-RUN ./configure --disable-multilib --enable-languages=c,c++,fortran \
-  --prefix=/opt/gnu/9.3.0
-RUN make
-RUN make install
-
-WORKDIR /
-RUN rm -rf gcc-9.3.0*
+  which \
+  xz
 
 #------------------------------------------------------------------------------#
 # Add flecsi user
@@ -63,17 +50,10 @@ RUN \
   echo "highlight Comment cterm=italic" >> .vimrc
 
 #------------------------------------------------------------------------------#
-# Setup path for gcc 9
-#------------------------------------------------------------------------------#
-
-ENV PATH /opt/gnu/9.3.0/bin:$PATH
-ENV LD_LIBRARY_PATH /opt/gnu/9.3.0/lib:/opt/gnu/9.3.0/lib64:$LD_LIBRARY_PATH
-
-#------------------------------------------------------------------------------#
 # Capture version information
 #------------------------------------------------------------------------------#
 
-RUN yum info ncurses | grep -m 1 Version | \
+RUN dnf info --installed ncurses | grep Version | \
   awk '{ print $3 }' > .ncurses_version
 RUN gcc -v 2>&1 | grep "gcc version" | awk '{ print $3 }' > .gnu_version
 

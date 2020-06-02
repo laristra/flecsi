@@ -25,6 +25,7 @@ RUN swupd bundle-add \
   os-core-search \
   patch \
   python3-basic \
+  rsync \
   sysadmin-basic \
   vim \
   wget \
@@ -69,6 +70,7 @@ RUN \
 #------------------------------------------------------------------------------#
 
 ENV PATH /opt/gnu/9.3.0/bin:$PATH
+ENV LD_LIBRARY_PATH /opt/gnu/9.3.0/lib:/opt/gnu/9.3.0/lib64:$LD_LIBRARY_PATH
 
 #------------------------------------------------------------------------------#
 # Capture version information

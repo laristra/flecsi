@@ -20,6 +20,7 @@ RUN \
 RUN \
   export DEBIAN_FRONTEND=noninteractive && \
   apt-get upgrade -y && apt-get install -y \
+  cmake \
   clang \
   curl \
   doxygen \
