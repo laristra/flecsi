@@ -370,10 +370,12 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
 
       ent.ghost_is_readable = &(ritr->second.ghost_is_readable[ent.fid]);
       ent.write_phase_started = &(ritr->second.write_phase_started[ent.fid]);
+      ent.ghost_id_updated = &(ritr->second.ghost_id_updated[ent.fid]);
 
       if(init) {
         *ent.ghost_is_readable = true;
         *ent.write_phase_started = false;
+        *ent.ghost_id_updated = false;
       }
 #endif
 
