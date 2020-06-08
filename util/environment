@@ -46,54 +46,8 @@ RUN export GNU_VERSION=`cat .gnu_version` && \
 #------------------------------------------------------------------------------#
 
 RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies boost && \
-  spack install boost
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies graphviz && \
-  spack install graphviz
-
-#------------------------------------------------------------------------------#
-# Create MPICH environment
-#------------------------------------------------------------------------------#
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies mpich && \
-  spack install mpich
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies gasnet^mpich && \
-  spack install gasnet^mpich
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies parmetis^mpich && \
-  spack install parmetis^mpich
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack env create ${SUBDIR}-mpich && \
-  spack env activate ${SUBDIR}-mpich && \
-  spack install cmake mpich gasnet^mpich parmetis^mpich boost graphviz
-
-#------------------------------------------------------------------------------#
-# Create OpenMPI environment
-#------------------------------------------------------------------------------#
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies openmpi && \
-  spack install openmpi
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies gasnet^openmpi && \
-  spack install gasnet^openmpi
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies parmetis^openmpi && \
-  spack install parmetis^openmpi
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack env create ${SUBDIR}-openmpi && \
-  spack env activate ${SUBDIR}-openmpi && \
-  spack install cmake openmpi gasnet^openmpi parmetis^openmpi boost graphviz
+  spack fetch --dependencies cmake && \
+  spack install cmake
 
 #------------------------------------------------------------------------------#
 # Create format environment

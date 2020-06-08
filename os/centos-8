@@ -18,6 +18,7 @@ RUN dnf config-manager --set-enabled PowerTools
 
 RUN dnf update -y && dnf install -y \
   clang \
+  cmake \
   doxygen \
   flex \
   gcc-toolset-9 \
@@ -28,6 +29,7 @@ RUN dnf update -y && dnf install -y \
   passwd \
   patch \
   python3 \
+  rsync \
   sudo \
   vim-enhanced \
   wget \
