@@ -118,19 +118,3 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_HDF5=OFF')
 
         return options
-
-    # if you want to remove the following, please fix "spack install flecsi@devel%gcc@9.3.0 backend=legion ^mpich" 
-    # without any existing "flecsi@devel%gcc@9.3.0 backend=legion ^mpich" locally first
-    
-    # Dummy build for now,  remove when flecsi@devel can actually be built and installed through spack
-    def build(self, spec, prefix):
-        print("In build stage...")
-
-    # Dummy install for now,  remove when flecsi@devel can actually be built and installed through spack
-    def install(self, spec, prefix):
-        with open(os.path.join(spec.prefix, 'package-list.txt'), 'w') as out:
-            for dep in spec.dependencies(deptype='build'):
-                out.write('%s\n' % dep.format(
-                    format_string='${PACKAGE} ${VERSION}'))
-                os.symlink(dep.prefix, os.path.join(spec.prefix, dep.name))
-            out.close()

@@ -7,8 +7,7 @@ namespace example {
 
 enum class cp { one, two, three, four };
 
-inline const char *
-operator*(cp control_point) {
+inline const char * operator*(cp control_point) {
   switch(control_point) {
     case cp::one:
       return "Control Point 1";

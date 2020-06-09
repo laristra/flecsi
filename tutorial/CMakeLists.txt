@@ -55,6 +55,33 @@ if(ENABLE_DEVELOPER_MODE)
 endif()
 
 #------------------------------------------------------------------------------#
+# Unit tests
+#------------------------------------------------------------------------------#
+
+option(ENABLE_UNIT_TESTS "Enable unit tests" OFF)
+mark_as_advanced(ENABLE_UNIT_TESTS)
+
+if(ENABLE_UNIT_TESTS)
+  enable_testing()
+endif()
+
+function(add_unit name)
+  set(options)
+  set(one_value_args)
+  set(multi_value_args ARGUMENTS)
+
+  cmake_parse_arguments(unit "${options}" "${one_value_args}"
+    "${multi_value_args}" ${ARGN})
+
+  add_test(NAME ${name}
+    COMMAND
+      $<TARGET_FILE:${name}> ${unit_ARGUMENTS}
+    WORKING_DIRECTORY
+      ${CMAKE_BINARY_DIR}
+  )
+endfunction()
+
+#------------------------------------------------------------------------------#
 # FleCSI
 #------------------------------------------------------------------------------#
 
@@ -76,14 +103,21 @@ add_library(FleCSI-Tutorial
 add_executable(minimal 1-runtime/1-minimal.cc)
 target_link_libraries(minimal ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(minimal)
 
 add_executable(program_options 1-runtime/2-program_options.cc)
 target_link_libraries(program_options ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
+file(TOUCH ${CMAKE_BINARY_DIR}/input.txt)
+add_unit(program_options
+  ARGUMENTS
+    input.txt
+)
 
 add_executable(flog 1-runtime/3-flog.cc)
 target_link_libraries(flog ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(flog)
 
 #------------------------------------------------------------------------------#
 # 2-control
@@ -95,6 +129,7 @@ add_executable(simple
 )
 target_link_libraries(simple ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(simple)
 
 add_executable(cycle
   2-control/2-cycle.cc
@@ -102,6 +137,7 @@ add_executable(cycle
 )
 target_link_libraries(cycle ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(cycle)
 
 add_executable(subcycle
   2-control/2-cycle.cc
@@ -110,6 +146,7 @@ add_executable(subcycle
 target_compile_definitions(subcycle PUBLIC SUBCYCLE)
 target_link_libraries(subcycle ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(subcycle)
 
 if(ENABLE_DEVELOPER_MODE)
   add_custom_target(pngs

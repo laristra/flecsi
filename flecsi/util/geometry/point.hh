@@ -49,8 +49,8 @@ using point = dimensioned_array<TYPE, DIMENSION, 1>;
 //----------------------------------------------------------------------------//
 
 template<typename TYPE, size_t DIMENSION>
-constexpr point<TYPE, DIMENSION>
-operator*(TYPE const val, point<TYPE, DIMENSION> const & p) {
+constexpr point<TYPE, DIMENSION> operator*(TYPE const val,
+  point<TYPE, DIMENSION> const & p) {
   point<TYPE, DIMENSION> tmp(p);
   for(size_t d(0); d < DIMENSION; ++d) {
     tmp[d] *= val;
