@@ -22,7 +22,6 @@ set(util_HEADERS
   bit_buffer.hh
   bitutils.hh
   common.hh
-  const_string.hh
   constant.hh
   crs.hh
   dag.hh debruijn.hh
@@ -35,7 +34,6 @@ set(util_HEADERS
   graph/colorer.hh
   graph/parmetis_colorer.hh
   graphviz.hh
-  hash.hh
   id.hh
   macros.hh
   mpi_type_traits.hh
@@ -203,15 +201,6 @@ add_unit(id
   INPUTS
     test/id.blessed
     ${id_blessed_input}
-)
-
-#------------------------------------------------------------------------------#
-# hash
-#------------------------------------------------------------------------------#
-
-add_unit(hash
-  SOURCES
-    test/hash.cc
 )
 
 #------------------------------------------------------------------------------#

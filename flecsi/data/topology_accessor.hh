@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/exec/launch.hh"
 #include <cstddef> // size_t
 
 namespace flecsi {
@@ -41,9 +42,15 @@ struct topology_accessor
   static_assert(sizeof(typename T::template interface<core>) == sizeof(core),
     "topology interfaces may not add data members");
 
-  topology_accessor(const typename T::slot &) {}
   explicit topology_accessor() = default;
 }; // struct topology_accessor
 
 } // namespace data
+
+template<class T, std::size_t P>
+struct exec::detail::task_param<data::topology_accessor<T, P>> {
+  static auto replace(const typename T::slot &) {
+    return data::topology_accessor<T, P>();
+  }
+};
 } // namespace flecsi

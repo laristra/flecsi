@@ -71,8 +71,8 @@ struct util::serial_convert<data::accessor<data::singular, T, Priv>> {
 // NB: topology_accessor is trivially copyable.
 
 template<class T>
-struct util::serial_convert<exec::flecsi_future<T>> {
-  using type = exec::flecsi_future<T>;
+struct util::serial_convert<future<T>> {
+  using type = future<T>;
   struct Rep {};
   static Rep put(const type &) {
     return {};

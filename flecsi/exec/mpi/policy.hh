@@ -37,12 +37,12 @@ template<auto & F,
 decltype(auto)
 reduce(ARGS &&... args) {
   using R = typename util::function_traits<decltype(F)>::return_type;
-  exec::mpi_future<R> ret;
-  if constexpr(std::is_same_v<R, void>)
+  if constexpr(std::is_void_v<R>) {
     F(std::forward<ARGS>(args)...);
+    return future<void>{};
+  }
   else
-    ret.set(F(std::forward<ARGS>(args)...));
-  return ret;
+    return future<R>{F(std::forward<ARGS>(args)...)};
 }
 
 } // namespace flecsi

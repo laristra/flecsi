@@ -41,8 +41,8 @@ namespace flecsi {
   Perform FleCSI runtime initialization. If \em dependent is true, this call
   will also initialize any runtime on which FleCSI depends.
 
-  @param argc      The number of command-line arguments.
-  @param argv      The command-line arguments.
+  \param argc number of command-line arguments to process
+  \param argv command-line arguments to process
   @param dependent A boolean telling FleCSI whether or not to initialize
                    runtimes on which it depends.
 

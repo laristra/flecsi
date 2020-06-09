@@ -97,9 +97,8 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
    Futures
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
-  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> & future) {
-    future.legion_future_ = futures_[future_id];
-    future_id++;
+  void visit(future<DATA_TYPE> & f) {
+    f = {futures_[future_id++]};
   }
 
   /*--------------------------------------------------------------------------*

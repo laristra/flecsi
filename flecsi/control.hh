@@ -73,7 +73,7 @@ using cycle = ctrl_impl::cycle<Predicate, ControlPoints...>;
 template<typename ControlPolicy>
 struct control : ControlPolicy {
 
-  using target_type = int (*)(void);
+  using target_type = int (*)();
 
 private:
   friend ControlPolicy;

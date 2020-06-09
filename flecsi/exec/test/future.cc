@@ -19,9 +19,6 @@ using namespace flecsi;
 
 namespace future_test {
 
-template<typename T>
-using handle_t = flecsi::exec::flecsi_future<T>;
-
 double
 init(double a) {
   double x = a;
@@ -29,7 +26,7 @@ init(double a) {
 }
 
 int
-read(handle_t<double> x, handle_t<double> y) {
+read(future<double> x, future<double> y) {
   UNIT {
     auto x1 = x.get();
     auto y1 = 2 * y.get();
@@ -48,7 +45,7 @@ index_init(double a) {
 }
 
 int
-index_read(handle_t<double> x, handle_t<double> y) {
+index_read(future<double> x, future<double> y) {
   UNIT {
     auto x1 = x.get();
     auto y1 = 2 * y.get();
