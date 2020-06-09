@@ -289,6 +289,8 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
     bool _read{PERMISSIONS == ro || PERMISSIONS == rw};
 
+    bool ghost_id_updated = false;
+
     LegionRuntime::Arrays::Rect<2> dr;
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
@@ -331,6 +333,11 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       h.storage.init_entities(ent.domain, ent.dim, ents, ids, ent.size,
         num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
+
+      auto & ism = context_.index_space_data_map();
+      auto ritr = ism.find(ent.index_space);
+      ent.ghost_id_updated = &(ritr->second.ghost_id_updated[ent.fid]);
+      ghost_id_updated = *ent.ghost_id_updated;
 
       ++region;
     } // for
@@ -412,8 +419,12 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
     if(!_read) {
       h.initialize_storage();
     }
-    else {
+    else if(!ghost_id_updated) {
       client_handler<0>(h, entity_pointers, id_pointers);
+      for(size_t i{0}; i < h.num_handle_entities; ++i) {
+        data_client_handle_entity_t & ent = h.handle_entities[i];
+        *ent.ghost_id_updated = true;
+      }
     }
   }
 

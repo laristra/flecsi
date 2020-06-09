@@ -29,10 +29,7 @@
 #include <flecsi/execution/mpi/reduction_wrapper.h>
 #include <flecsi/execution/mpi/task_epilog.h>
 #include <flecsi/execution/mpi/task_prolog.h>
-
-#if defined(ENABLE_CALIPER)
-#include <caliper/Annotation.h>
-#endif
+#include <flecsi/utils/annotation.h>
 
 namespace flecsi {
 namespace execution {
@@ -157,10 +154,20 @@ struct mpi_execution_policy_t {
 
     auto function = context_.function(TASK);
 
+    using annotation = flecsi::utils::annotation;
+#if defined(ENABLE_CALIPER)
+    auto tname = context_.function_name(TASK);
+#else
+    /* using a placeholder so we do not have to maintain function_name_registry
+       when annotations are disabled. */
+    std::string tname{""};
+#endif
+
     // Make a tuple from the task arguments.
     utils::convert_tuple_t<ARG_TUPLE, std::decay_t> task_args =
       std::make_tuple(std::forward<ARGS>(args)...);
 
+    annotation::begin<annotation::execute_task_prolog>(tname);
     // run task_prolog to copy ghost cells.
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
@@ -168,30 +175,21 @@ struct mpi_execution_policy_t {
     task_prolog.launch_copies();
     task_prolog.launch_sparse_copies();
 #endif
+    annotation::end<annotation::execute_task_prolog>();
 
-#if defined(ENABLE_CALIPER)
-    cali::Annotation ep("FleCSI-Execution");
-    auto tname = context_.function_name(TASK);
-    std::string atag = "execute_task->user->" + tname;
-    ep.begin(atag.c_str());
-#endif
+    annotation::begin<annotation::execute_task_user>(tname);
     auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
-#if defined(ENABLE_CALIPER)
-    ep.end();
-#endif
+    annotation::end<annotation::execute_task_user>();
 
+    annotation::begin<annotation::execute_task_epilog>(tname);
     task_epilog_t task_epilog;
     task_epilog.walk(task_args);
+    annotation::end<annotation::execute_task_epilog>();
 
-#if defined(ENABLE_CALIPER)
-    atag = "execute_task->finalize-handles->" + tname;
-    ep.begin(atag.c_str());
-#endif
+    annotation::begin<annotation::execute_task_finalize>(tname);
     finalize_handles_t finalize_handles;
     finalize_handles.walk(task_args);
-#if defined(ENABLE_CALIPER)
-    ep.end();
-#endif
+    annotation::end<annotation::execute_task_finalize>();
 
     constexpr size_t ZERO =
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();

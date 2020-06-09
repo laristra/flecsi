@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <iterator>
 #include <memory>
