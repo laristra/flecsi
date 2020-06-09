@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Control Model &mdash; FleCSI invalid documentation</title>
+  <title>Control Model &mdash; FleCSI 2.-1 (devel) documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: invalid
+                Version: 2.-1 (devel)
               </div>
             
           
@@ -405,8 +405,7 @@ overload of the <em>*</em> operator (function call operator overloading):</p>
 <span class="cm">  checking.</span>
 <span class="cm"> */</span>
 
-<span class="kr">inline</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span>
-<span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="n">cp</span> <span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
+<span class="kr">inline</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="n">cp</span> <span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">switch</span><span class="p">(</span><span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">initialize</span><span class="p">:</span>
       <span class="k">return</span> <span class="s">&quot;initialize&quot;</span><span class="p">;</span>
@@ -427,97 +426,98 @@ static array of string literals.
 The labels are used to create visualizations of the control model.</p>
 <p>The following defines the actual control policy (We will discuss the
 individual parts.):</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
-<span class="cm">  Control policy for this example. The control policy primarily defines types</span>
-<span class="cm">  that are used by the core control type to define the control-flow model for</span>
-<span class="cm">  the program. For this simple example, the policy captures the user-defined</span>
-<span class="cm">  enumeration of control-points identifiers, defines an empty node policy, and</span>
-<span class="cm">  defines the order of control point execution using std::tuple.</span>
-<span class="cm"> */</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  Control policy for this example. The control policy primarily defines types
+  that are used by the core control type to define the control-flow model for
+  the program. For this simple example, the policy captures the user-defined
+  enumeration of control-points identifiers, defines an empty node policy, and
+  defines the order of control point execution using std::tuple.
+ */
 
-<span class="k">struct</span> <span class="n">control_policy</span> <span class="p">{</span>
+struct control_policy {
 
-  <span class="cm">/*</span>
-<span class="cm">    Capture the control points enumeration type. This type is used in the</span>
-<span class="cm">    control policy interface whenever a control point is required.</span>
-<span class="cm">   */</span>
+  /*
+    Capture the control points enumeration type. This type is used in the
+    control policy interface whenever a control point is required.
+   */
 
-  <span class="k">using</span> <span class="n">control_points_enum</span> <span class="o">=</span> <span class="n">cp</span><span class="p">;</span>
+  using control_points_enum = cp;
 
-  <span class="cm">/*</span>
-<span class="cm">    The actions that are added under each control point are used to form a</span>
-<span class="cm">    directed acyclic graph (DAG). The node_policy type allows the user to add</span>
-<span class="cm">    interfaces and data that are available from, and are carried with the</span>
-<span class="cm">    action. A more complex example will demonstrate this capability.</span>
-<span class="cm">   */</span>
+  /*
+    The actions that are added under each control point are used to form a
+    directed acyclic graph (DAG). The node_policy type allows the user to add
+    interfaces and data that are available from, and are carried with the
+    action. A more complex example will demonstrate this capability.
+   */
 
-  <span class="k">struct</span> <span class="n">node_policy</span> <span class="p">{};</span>
+  struct node_policy {};
 
-  <span class="cm">/*</span>
-<span class="cm">    This is a convenience type definition that provides typeification of an</span>
-<span class="cm">    integer value.</span>
-<span class="cm">   */</span>
+  /*
+    This is a convenience type definition that provides typeification of an
+    integer value.
+   */
 
-  <span class="k">template</span><span class="o">&lt;</span><span class="k">auto</span> <span class="n">CP</span><span class="o">&gt;</span>
-  <span class="k">using</span> <span class="n">control_point</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">CP</span><span class="o">&gt;</span><span class="p">;</span>
+  template&lt;auto CP&gt;
+  using control_point = flecsi::control_point&lt;CP&gt;;
 
-  <span class="cm">/*</span>
-<span class="cm">    The control_points tuple defines the actual control points as typeified</span>
-<span class="cm">    integers derived from the control point identifiers from the user-defined</span>
-<span class="cm">    enumeration.</span>
-<span class="cm">   */</span>
+  /*
+    The control_points tuple defines the actual control points as typeified
+    integers derived from the control point identifiers from the user-defined
+    enumeration.
+   */
 
-  <span class="k">using</span> <span class="n">control_points</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">initialize</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">advance</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">finalize</span><span class="o">&gt;&gt;</span><span class="p">;</span>
-<span class="p">};</span>
+  using control_points = std::tuple&lt;control_point&lt;cp::initialize&gt;,
+    control_point&lt;cp::advance&gt;,
+    control_point&lt;cp::finalize&gt;&gt;;
+};
+
+/*
 </pre></div>
 </div>
 <p>The first type definition in the policy captures the control points
 enumeration type. This type is used in the control interface for
 declaring actions:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
-<span class="cm">    Capture the control points enumeration type. This type is used in the</span>
-<span class="cm">    control policy interface whenever a control point is required.</span>
-<span class="cm">   */</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>    Capture the control points enumeration type. This type is used in the
+    control policy interface whenever a control point is required.
+   */
 
-  <span class="k">using</span> <span class="n">control_points_enum</span> <span class="o">=</span> <span class="n">cp</span><span class="p">;</span>
+  using control_points_enum = cp;
+
 </pre></div>
 </div>
 <p>The next type is the <em>node_policy</em>. Each set of actions under a control
 point forms a DAG. Specifying a non-trivial node policy allows the user
 to add additional interfaces and data to an action. In this simple
 example, the node type is empty:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
-<span class="cm">    The actions that are added under each control point are used to form a</span>
-<span class="cm">    directed acyclic graph (DAG). The node_policy type allows the user to add</span>
-<span class="cm">    interfaces and data that are available from, and are carried with the</span>
-<span class="cm">    action. A more complex example will demonstrate this capability.</span>
-<span class="cm">   */</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>    The actions that are added under each control point are used to form a
+    directed acyclic graph (DAG). The node_policy type allows the user to add
+    interfaces and data that are available from, and are carried with the
+    action. A more complex example will demonstrate this capability.
+   */
 
-  <span class="k">struct</span> <span class="n">node_policy</span> <span class="p">{};</span>
+  struct node_policy {};
+
 </pre></div>
 </div>
 <p>The actual control points are defined as a std::tuple of the typeified
 integer-valued control points enumeration. The templated <em>control_point</em>
 definition is a convenience interface for typeifying the control points:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
-<span class="cm">    This is a convenience type definition that provides typeification of an</span>
-<span class="cm">    integer value.</span>
-<span class="cm">   */</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>    This is a convenience type definition that provides typeification of an
+    integer value.
+   */
 
-  <span class="k">template</span><span class="o">&lt;</span><span class="k">auto</span> <span class="n">CP</span><span class="o">&gt;</span>
-  <span class="k">using</span> <span class="n">control_point</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">CP</span><span class="o">&gt;</span><span class="p">;</span>
+  template&lt;auto CP&gt;
+  using control_point = flecsi::control_point&lt;CP&gt;;
 
-  <span class="cm">/*</span>
-<span class="cm">    The control_points tuple defines the actual control points as typeified</span>
-<span class="cm">    integers derived from the control point identifiers from the user-defined</span>
-<span class="cm">    enumeration.</span>
-<span class="cm">   */</span>
+  /*
+    The control_points tuple defines the actual control points as typeified
+    integers derived from the control point identifiers from the user-defined
+    enumeration.
+   */
 
-  <span class="k">using</span> <span class="n">control_points</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">initialize</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">advance</span><span class="o">&gt;</span><span class="p">,</span>
-    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">finalize</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+  using control_points = std::tuple&lt;control_point&lt;cp::initialize&gt;,
+    control_point&lt;cp::advance&gt;,
+    control_point&lt;cp::finalize&gt;&gt;;
+};
 </pre></div>
 </div>
 <p>In the above <em>control_points</em> tuple definition, the order is important,
@@ -525,11 +525,11 @@ as it is the order in which the control points will be sorted, and thus
 executed.</p>
 <p>Finally, after the control policy, we define a fully-qualified control
 type. This is the control type that we will use in our example application.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
-<span class="cm">  Define a fully-qualified control type for the end user.</span>
-<span class="cm"> */</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  Define a fully-qualified control type for the end user.
+ */
 
-<span class="k">using</span> <span class="n">control</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">control</span><span class="o">&lt;</span><span class="n">control_policy</span><span class="o">&gt;</span><span class="p">;</span>
+using control = flecsi::control&lt;control_policy&gt;;
+
 </pre></div>
 </div>
 <p>That’s the entire control policy for this example. Without comments, it
@@ -661,8 +661,7 @@ demonstrates how to add a cycle.</p>
 <p>Starting from the previous example, we add the analyze control point:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">cp</span> <span class="p">{</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">advance</span><span class="p">,</span> <span class="n">analyze</span><span class="p">,</span> <span class="n">finalize</span> <span class="p">};</span>
 
-<span class="kr">inline</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span>
-<span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="n">cp</span> <span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
+<span class="kr">inline</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="n">cp</span> <span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">switch</span><span class="p">(</span><span class="n">control_point</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">case</span> <span class="n">cp</span><span class="o">::</span><span class="nl">initialize</span><span class="p">:</span>
       <span class="k">return</span> <span class="s">&quot;initialize&quot;</span><span class="p">;</span>
@@ -679,28 +678,26 @@ demonstrates how to add a cycle.</p>
 </div>
 <p>We will use <em>cp::advance</em> and <em>cp::analyze</em> to define the cycle from the
 core FleCSI cycle type:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="k">using</span> <span class="n">control_point</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">control_point</span><span class="o">&lt;</span><span class="n">CP</span><span class="o">&gt;</span><span class="p">;</span>
-
-  <span class="cm">/*</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
 <span class="cm">    The cycle type. Cycles are similar to the control_points tuple, with the</span>
 <span class="cm">    addition of a predicate function that controls termination of the cycle.</span>
 <span class="cm">   */</span>
 
   <span class="k">using</span> <span class="n">cycle</span> <span class="o">=</span> <span class="n">flecsi</span><span class="o">::</span><span class="n">cycle</span><span class="o">&lt;</span><span class="n">cycle_control</span><span class="p">,</span>
     <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">advance</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="n">control_point</span><span class="o">&lt;</span><span class="n">cp</span><span class="o">::</span><span class="n">analyze</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Cycles are similar to the <em>control_points</em> tuple, with the addition of a
 predicate function that controls termination of the cycle:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="p">}</span>
-
-  <span class="cm">/*</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="cm">/*</span>
 <span class="cm">    The core FleCSI control model inherits from the control policy, so that</span>
 <span class="cm">    any data members defined in your policy are carried with the control</span>
 <span class="cm">    policy instance, and can be accessed through a static interface.</span>
 <span class="cm">   */</span>
 
-  <span class="k">static</span> <span class="kt">bool</span> <span class="n">cycle_control</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">static</span> <span class="kt">bool</span> <span class="nf">cycle_control</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">control</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">step</span><span class="p">()</span><span class="o">++</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>For this example, the control function simply iterates for five cycles.
@@ -772,7 +769,7 @@ you can view the source in <em>tutorial/2-control/2-subcycle.hh</em>.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+        &copy; Copyright Copyright (c) 2016, Triad National Security, LLC
 
     </p>
   </div>

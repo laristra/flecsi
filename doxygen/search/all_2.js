@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['c_5fstr',['c_str',['../classflecsi_1_1util_1_1const__string__t.html#ab635f42965e772ce8f4999f9a5da970d',1,'flecsi::util::const_string_t']]],
   ['canonical',['canonical',['../structflecsi_1_1topo_1_1canonical.html',1,'flecsi::topo']]],
   ['canonical_5fbase',['canonical_base',['../structflecsi_1_1topo_1_1canonical__base.html',1,'flecsi::topo']]],
   ['cast',['cast',['../classflecsi_1_1topo_1_1index__space.html#a9c0e62b809a7497b76eb2763b988370e',1,'flecsi::topo::index_space::cast()'],['../classflecsi_1_1topo_1_1index__space.html#a0e54d0503ff915ed05f239d95abb5c8a',1,'flecsi::topo::index_space::cast() const']]],
@@ -36,10 +35,6 @@ var searchData=
   ['connectivity_2ehh',['connectivity.hh',['../connectivity_8hh.html',1,'']]],
   ['connectivity_5ft',['connectivity_t',['../classflecsi_1_1topo_1_1connectivity__t.html',1,'flecsi::topo::connectivity_t'],['../classflecsi_1_1topo_1_1connectivity__t.html#a37c2d7a8bf203c35f3e4392706d51c07',1,'flecsi::topo::connectivity_t::connectivity_t()']]],
   ['const_5fiterator',['const_iterator',['../classflecsi_1_1util_1_1crs_1_1const__iterator.html',1,'flecsi::util::crs::const_iterator'],['../classflecsi_1_1util_1_1array__ref.html#a2f502ea3a24d8fd8bb29e05493a96610',1,'flecsi::util::array_ref::const_iterator()']]],
-  ['const_5fstring',['const_string',['../classconst__string.html',1,'']]],
-  ['const_5fstring_2ehh',['const_string.hh',['../const__string_8hh.html',1,'']]],
-  ['const_5fstring_5fhasher_5ft',['const_string_hasher_t',['../structflecsi_1_1util_1_1const__string__hasher__t.html',1,'flecsi::util']]],
-  ['const_5fstring_5ft',['const_string_t',['../classflecsi_1_1util_1_1const__string__t.html',1,'flecsi::util::const_string_t'],['../classflecsi_1_1util_1_1const__string__t.html#a20cc85c8f4d52bd6f000a4d405011da5',1,'flecsi::util::const_string_t::const_string_t()']]],
   ['constant',['constant',['../structflecsi_1_1util_1_1constant.html',1,'flecsi::util']]],
   ['constant_2ehh',['constant.hh',['../constant_8hh.html',1,'']]],
   ['context',['context',['../structflecsi_1_1run_1_1context.html',1,'flecsi::run']]],

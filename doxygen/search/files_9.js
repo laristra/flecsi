@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['kernel_5finterface_2ehh',['kernel_interface.hh',['../kernel__interface_8hh.html',1,'']]]
+  ['launch_2ehh',['launch.hh',['../launch_8hh.html',1,'']]],
+  ['layout_2ehh',['layout.hh',['../layout_8hh.html',1,'']]]
 ];

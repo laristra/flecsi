@@ -8,8 +8,6 @@ var searchData=
   ['mesh_5fstorage_3c_20policy_5ftype_3a_3anum_5fdimensions_2c_20policy_5ftype_3a_3anum_5fdomains_2c_20flecsi_3a_3atopo_3a_3anum_5findex_5fsubspaces_3c_20policy_5ftype_20_3e_3a_3avalue_20_3e',['mesh_storage&lt; POLICY_TYPE::num_dimensions, POLICY_TYPE::num_domains, flecsi::topo::num_index_subspaces&lt; POLICY_TYPE &gt;::value &gt;',['../structflecsi_1_1topo_1_1mesh__storage.html',1,'flecsi::topo']]],
   ['min',['min',['../structflecsi_1_1exec_1_1fold_1_1min.html',1,'flecsi::exec::fold']]],
   ['morton_5fcurve',['morton_curve',['../classflecsi_1_1morton__curve.html',1,'flecsi']]],
-  ['mpi_5ffuture',['mpi_future',['../structflecsi_1_1exec_1_1mpi__future.html',1,'flecsi::exec']]],
-  ['mpi_5ffuture_3c_20void_2c_20launch_20_3e',['mpi_future&lt; void, launch &gt;',['../structflecsi_1_1exec_1_1mpi__future_3_01void_00_01launch_01_4.html',1,'flecsi::exec']]],
   ['mpi_5fmapper_5ft',['mpi_mapper_t',['../classflecsi_1_1run_1_1mpi__mapper__t.html',1,'flecsi::run']]],
   ['mpi_5ftypetraits',['mpi_typetraits',['../structflecsi_1_1util_1_1mpi__typetraits.html',1,'flecsi::util']]],
   ['mpi_5ftypetraits_3c_20char_20_3e',['mpi_typetraits&lt; char &gt;',['../structflecsi_1_1util_1_1mpi__typetraits_3_01char_01_4.html',1,'flecsi::util']]],

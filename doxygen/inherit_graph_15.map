@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1data_1_1accessor_3_01singular_00_01DATA__TYPE_00_01PRIVILEGES_01_4.html" title="flecsi::data::accessor\l\&lt; singular, DATA_TYPE,\l PRIVILEGES \&gt;" alt="" coords="5,5,175,61"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1data_1_1accessor__member.html" title="flecsi::data::accessor\l_member\&lt; canonical::mine \&gt;" alt="" coords="160,5,351,47"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1accessor__member.html" title="flecsi::data::accessor\l_member\&lt; F, Priv \&gt;" alt="" coords="182,71,329,112"/>
 </map>

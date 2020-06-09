@@ -32,7 +32,7 @@
   <td id="projectlogo"><a href="http://www.flecsi.org"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></a></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version: invalid</span>
+		<span id="projectnumber">Version: 2.-1 (devel)</span>
    </div>
   </td>
  </tr>
@@ -71,7 +71,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Utilities Interface</div>  </div>
@@ -86,16 +85,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1util_1_1typeify.html">flecsi::util::typeify&lt; T, M &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classconst__string.html">const_string</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classconst__string.html" title="const_string provides compile-time string constants and hashing... ">const_string</a> provides compile-time string constants and hashing...  <a href="classconst__string.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:gac96b31c3919e7cd7c2bcdc964ffdfb12"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12">flecsi_internal_string_hash</a>(name)&#160;&#160;&#160;::<a class="el" href="classflecsi_1_1util_1_1const__string__t.html">flecsi::util::const_string_t</a>{name}.hash()</td></tr>
-<tr class="separator:gac96b31c3919e7cd7c2bcdc964ffdfb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga41398506ffdcc9ef7ef1aae859a3c4f8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8">flecsi_internal_hash</a>(name)&#160;&#160;&#160;::<a class="el" href="classflecsi_1_1util_1_1const__string__t.html">flecsi::util::const_string_t</a>{flecsi_internal_stringify(name)}.hash()</td></tr>
-<tr class="separator:ga41398506ffdcc9ef7ef1aae859a3c4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -115,57 +104,6 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Define the utilities group. </p>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="ga41398506ffdcc9ef7ef1aae859a3c4f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga41398506ffdcc9ef7ef1aae859a3c4f8">&#9670;&nbsp;</a></span>flecsi_internal_hash</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flecsi_internal_hash</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">name</td><td>)</td>
-          <td>&#160;&#160;&#160;::<a class="el" href="classflecsi_1_1util_1_1const__string__t.html">flecsi::util::const_string_t</a>{flecsi_internal_stringify(name)}.hash()</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>This macro returns the hash of constant string version of the given name.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>The string to hash. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gac96b31c3919e7cd7c2bcdc964ffdfb12"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac96b31c3919e7cd7c2bcdc964ffdfb12">&#9670;&nbsp;</a></span>flecsi_internal_string_hash</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flecsi_internal_string_hash</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">name</td><td>)</td>
-          <td>&#160;&#160;&#160;::<a class="el" href="classflecsi_1_1util_1_1const__string__t.html">flecsi::util::const_string_t</a>{name}.hash()</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>This macro returns the hash of constant string version of the given name.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>The string to hash. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="gae5a9706d22037b6e748128689fb0b6ac"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gae5a9706d22037b6e748128689fb0b6ac">&#9670;&nbsp;</a></span>demangle()</h2>

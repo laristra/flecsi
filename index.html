@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction &mdash; FleCSI invalid documentation</title>
+  <title>Introduction &mdash; FleCSI 2.-1 (devel) documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                Version: invalid
+                Version: 2.-1 (devel)
               </div>
             
           
@@ -173,28 +173,31 @@
 </div>
 </div>
 <div class="rightside docutils container">
-<p>FleCSI is a compile-time configurable framework designed to support
-multi-physics application development. As such, FleCSI provides a very
-general set of infrastructure design patterns that can be specialized and
-extended to suit the needs of a broad variety of solver and data
-requirements. FleCSI currently supports multi-dimensional mesh topology,
-geometry, and adjacency information, as well as n-dimensional hashed-tree
-data structures, graph partitioning interfaces, and dependency closures.</p>
-<p>FleCSI introduces a functional programming model with control, execution,
-and data abstractions that are consistent both with MPI and with
-state-of-the-art, task-based runtimes such as Legion and Charm++. The
-abstraction layer insulates developers from the underlying runtime, while
-allowing support for multiple runtime systems including conventional
-models like asynchronous MPI.</p>
-<p>The intent is to provide developers with a concrete set of user-friendly
-programming tools that can be used now, while allowing flexibility in
-choosing runtime implementations and optimizations that can be applied to
-future architectures and runtimes.</p>
-<p>FleCSI’s control and execution models provide formal nomenclature for
-describing poorly understood concepts such as kernels and tasks. FleCSI’s
-data model provides a low-buy-in approach that makes it an attractive
-option for many application projects, as developers are not locked into
-particular layouts or data structure representations.</p>
+<p>FleCSI is a compile-time configurable framework designed to
+support multi-physics application development. As such, FleCSI
+provides a very general set of infrastructure design patterns that
+can be specialized and extended to suit the needs of a broad
+variety of solver and data requirements. FleCSI currently supports
+multi-dimensional mesh topology, geometry, and adjacency
+information, as well as n-dimensional hashed-tree data structures,
+graph partitioning interfaces, and dependency closures.</p>
+<p>FleCSI introduces a functional programming model with control,
+execution, and data abstractions that are consistent both with MPI
+and with state-of-the-art, task-based runtimes such as Legion and
+Charm++. The abstraction layer insulates developers from the
+underlying runtime, while allowing support for multiple runtime
+systems including conventional models like asynchronous MPI.</p>
+<p>The intent is to provide developers with a concrete set of
+user-friendly programming tools that can be used now, while
+allowing flexibility in choosing runtime implementations and
+optimizations that can be applied to future architectures and
+runtimes.</p>
+<p>FleCSI’s control and execution models provide formal nomenclature
+for describing poorly understood concepts such as kernels and
+tasks. FleCSI’s data model provides a low-buy-in approach that
+makes it an attractive option for many application projects, as
+developers are not locked into particular layouts or data
+structure representations.</p>
 </div>
 </div>
 <div class="toctree-wrapper compound">
@@ -219,7 +222,11 @@ particular layouts or data structure representations.</p>
 <li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#building-the-examples">Building the Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src/tutorial.html#using-the-docker-container">Using the Docker Container</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src/tutorial.html#installing-docker">Installing Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="src/tutorial.html#installing-a-container-engine">Installing a Container Engine</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/tutorial.html#docker">Docker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/tutorial.html#podman">Podman</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="src/tutorial.html#pulling-the-image">Pulling the Image</a></li>
 </ul>
 </li>
@@ -293,10 +300,21 @@ particular layouts or data structure representations.</p>
 <li class="toctree-l3"><a class="reference internal" href="src/developer-guide.html#workflow">Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="src/developer-guide.html#tutorial-docker-image">Tutorial Docker Image</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide.html#installing-docker">Installing Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide.html#building-and-testing-locally">Building and Testing Locally</a></li>
-<li class="toctree-l3"><a class="reference internal" href="src/developer-guide.html#pushing-to-hub-docker-com">Pushing to hub.docker.com</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src/developer-guide.html#container-images">Container Images</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide.html#installing-a-container-engine">Installing a Container Engine</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide.html#docker">Docker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide.html#podman">Podman</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide.html#tutorial-image">Tutorial Image</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide.html#building-and-testing-locally">Building and Testing Locally</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide.html#pushing-to-hub-docker-com">Pushing to hub.docker.com</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src/developer-guide.html#gitlab-ci">Gitlab CI</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src/developer-guide.html#build-system">Build System</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="src/developer-guide.html#spack-cheat-sheet">Spack Cheat Sheet</a></li>
@@ -362,7 +380,7 @@ particular layouts or data structure representations.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+        &copy; Copyright Copyright (c) 2016, Triad National Security, LLC
 
     </p>
   </div>

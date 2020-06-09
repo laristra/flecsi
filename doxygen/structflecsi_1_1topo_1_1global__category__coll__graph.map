@@ -1,8 +1,7 @@
 <map id="flecsi::topo::global_category&lt; P &gt;" name="flecsi::topo::global_category&lt; P &gt;">
-<area shape="rect" id="node2" href="$structflecsi_1_1topo_1_1global__base.html" title="flecsi::topo::global_base" alt="" coords="481,93,644,120"/>
-<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1simple.html" title="flecsi::data::simple\&lt; P \&gt;" alt="" coords="480,144,645,171"/>
-<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1leg_1_1region.html" title="flecsi::data::leg::\lregion" alt="" coords="312,137,431,178"/>
-<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::IndexSpace, &amp;Legion\l::Runtime::destroy_index\l_space \&gt;" alt="" coords="9,5,177,91"/>
-<area shape="rect" id="node6" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::FieldSpace, &amp;Legion\l::Runtime::destroy_field\l_space \&gt;" alt="" coords="12,115,173,200"/>
-<area shape="rect" id="node7" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::LogicalRegion, &amp;Legion\l::Runtime::destroy_logical\l_region \&gt;" alt="" coords="5,224,180,309"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1topo_1_1global__base.html" title="flecsi::topo::global_base" alt="" coords="312,85,475,112"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1leg_1_1region.html" title="flecsi::data::leg::\lregion" alt="" coords="334,137,453,178"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::IndexSpace, &amp;Legion\l::Runtime::destroy_index\l_space \&gt;" alt="" coords="9,5,177,91"/>
+<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::FieldSpace, &amp;Legion\l::Runtime::destroy_field\l_space \&gt;" alt="" coords="12,115,173,200"/>
+<area shape="rect" id="node6" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::LogicalRegion, &amp;Legion\l::Runtime::destroy_logical\l_region \&gt;" alt="" coords="5,224,180,309"/>
 </map>

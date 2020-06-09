@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer Guide &mdash; FleCSI invalid documentation</title>
+  <title>Developer Guide &mdash; FleCSI 2.-1 (devel) documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: invalid
+                Version: 2.-1 (devel)
               </div>
             
           
@@ -110,10 +110,21 @@
 <li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#tutorial-docker-image">Tutorial Docker Image</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#installing-docker">Installing Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#building-and-testing-locally">Building and Testing Locally</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pushing-to-hub-docker-com">Pushing to hub.docker.com</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#container-images">Container Images</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installing-a-container-engine">Installing a Container Engine</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#docker">Docker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podman">Podman</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tutorial-image">Tutorial Image</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#building-and-testing-locally">Building and Testing Locally</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pushing-to-hub-docker-com">Pushing to hub.docker.com</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gitlab-ci">Gitlab CI</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#build-system">Build System</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#spack-cheat-sheet">Spack Cheat Sheet</a></li>
@@ -325,16 +336,51 @@ branch type of the tag during CMake configuration.</p>
 <p>FleCSI development uses a <em>devel -&gt; feature -&gt; release</em> forking workflow
 that can be visualized as in <a class="reference internal" href="#branch"><span class="std std-numref">Fig. 9</span></a>. Bugfixes and features can
 be back-merged into <em>feature</em> or <em>devel</em>, as appropriate.</p>
-<div class="figure align-default" id="id12">
+<div class="figure align-default" id="id15">
 <span id="branch"></span><img alt="../_images/branch.png" src="../_images/branch.png" />
 <p class="caption"><span class="caption-number">Fig. 9 </span><span class="caption-text">Workflow diagram illustrating basic workflow using the three branch
-types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+types described above. (Figure due to Angela Herring.)</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>
 <hr class="docutils" />
-<div class="section" id="tutorial-docker-image">
-<h2>Tutorial Docker Image<a class="headerlink" href="#tutorial-docker-image" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="container-images">
+<h2>Container Images<a class="headerlink" href="#container-images" title="Permalink to this headline">¶</a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>These sections assumes that you are familiar with container management
+using a container engine like <em>Docker</em>. If you are not, there is
+excellent documentation starting <a class="reference external" href="https://docs.docker.com/get-started">here</a>. Additionally, we include
+instructions and links for installation and basic usage below.</p>
+</div>
+<div class="section" id="installing-a-container-engine">
+<h3>Installing a Container Engine<a class="headerlink" href="#installing-a-container-engine" title="Permalink to this headline">¶</a></h3>
+<p>Some FleCSI developer tasks require a container engine, e.g., <em>Docker</em>.
+This section provides links to installation and usage documentation for
+<em>Docker</em>, and <em>Podman</em>.</p>
+<div class="section" id="docker">
+<h4>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h4>
+<p>The Docker daemon is available for a variety of platforms from the
+<a class="reference external" href="https://www.docker.com">docker</a> website.</p>
+<p>For linux, the community engine is available for several distributions:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/fedora">Fedora</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/ubuntu">Ubuntu</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/centos">CentOS</a></p></li>
+</ul>
+</div>
+<div class="section" id="podman">
+<h4>Podman<a class="headerlink" href="#podman" title="Permalink to this headline">¶</a></h4>
+<p>An alternative, drop-in replacement for Docker is <a class="reference external" href="https://podman.io">Podman</a>. Podman has
+the advantage that it is daemonless, and does not require root
+privileges to run.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://podman.io/getting-started/installation">Install Podman</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="tutorial-image">
+<h3>Tutorial Image<a class="headerlink" href="#tutorial-image" title="Permalink to this headline">¶</a></h3>
 <p>This section details the steps to modify and update the docker image for
 the FleCSI tutorials.</p>
 <div class="admonition tip">
@@ -345,19 +391,8 @@ this directory are automatically built on Docker Hub, whenever they get
 modified on GitHub.  These instructions are primarily intended for
 developers who are modifying the image scripts and need to test them.</p>
 </div>
-<div class="section" id="installing-docker">
-<h3>Installing Docker<a class="headerlink" href="#installing-docker" title="Permalink to this headline">¶</a></h3>
-<p>The Docker daemon is available for a variety of platforms from the
-<a class="reference external" href="https://www.docker.com">docker</a> website.</p>
-<p>For linux, the community engine is available for several distributions:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/fedora">Fedora</a></p></li>
-<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/ubuntu">Ubuntu</a></p></li>
-<li><p><a class="reference external" href="https://docs.docker.com/install/linux/docker-ce/centos">CentOS</a></p></li>
-</ul>
-</div>
 <div class="section" id="building-and-testing-locally">
-<h3>Building and Testing Locally<a class="headerlink" href="#building-and-testing-locally" title="Permalink to this headline">¶</a></h3>
+<h4>Building and Testing Locally<a class="headerlink" href="#building-and-testing-locally" title="Permalink to this headline">¶</a></h4>
 <p>The tutorial docker files are located in <em>flecsi/tutorial/docker</em>. These
 instructions assume that you are in that directory.</p>
 <p>To build a new docker image, you can execute the following:</p>
@@ -393,7 +428,7 @@ use.</p>
 <p>This will open an interactive shell (/bin/bash) on the running image.</p>
 </div>
 <div class="section" id="pushing-to-hub-docker-com">
-<h3>Pushing to hub.docker.com<a class="headerlink" href="#pushing-to-hub-docker-com" title="Permalink to this headline">¶</a></h3>
+<h4>Pushing to hub.docker.com<a class="headerlink" href="#pushing-to-hub-docker-com" title="Permalink to this headline">¶</a></h4>
 <p>If you want to push images to the docker hub repository, you will need
 to log in:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker login
@@ -409,6 +444,109 @@ with:</p>
 <p>where TAG is the tag that you specified during the build.</p>
 <p>In general, pushing the image manually is unnecessary because it will
 automatically be rebuilt when the docker file is updated on GitHub.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="gitlab-ci">
+<h3>Gitlab CI<a class="headerlink" href="#gitlab-ci" title="Permalink to this headline">¶</a></h3>
+<p>FleCSI has a special branch <em>gitlab-ci</em> that provides images and
+configuration files that are used for Gitlab’s continuous integration
+(CI) services. The current set of utilties include:</p>
+<ul>
+<li><p><strong>Images</strong> <br />
+Operating system, build environment, and FleCSI images. These use
+dockerfile syntax, and can be built and run with docker and podman
+engines, or potentially, with any engine that is compatible with
+docker-generated images.</p>
+<p>The images are modular, and are intended to be used to build up
+capabilities:</p>
+<ul>
+<li><p><strong>OS Images</strong> <br />
+Located in the <em>os</em> directory, these are designed to provide a
+standard base of functionality, i.e., a standard set of system
+packages, which can be used interchangeably with downstream
+environment images.</p></li>
+<li><p><strong>Environment</strong> <br />
+Located in a directory named for the corresponding branch, e.g., the
+environment dockerfile file for <em>devel</em> is located in the <em>devel</em>
+directory, these are designed to provide a standard spack
+environment for building FleCSI.</p>
+<p>It is intended that developers add new directories when necessary to
+support custom configuration of a branch that they are testing.</p>
+</li>
+<li><p><strong>Build</strong> <br />
+Also located in the <em>branch</em> directory, the build image provides a
+pre-built FleCSI installation that can be used for debugging, or as
+a building block for other project.</p></li>
+</ul>
+</li>
+<li><p><strong>Spack Configuration Files</strong> <br />
+Located in the <em>spack</em> subdirectory of an environment directory, these
+allow customization of the spack install for a particular environment.
+In particular, the <em>spack/packages.py</em> file should specify explicit
+versions for as many packages as is feasible. Package versions should
+only be elevated when necessary for new feature support. Following
+this guideline will greatly increase stability.</p></li>
+</ul>
+<div class="section" id="build-system">
+<h4>Build System<a class="headerlink" href="#build-system" title="Permalink to this headline">¶</a></h4>
+<p>The <em>gitlab-ci</em> branch uses a standard CMake build system. There are
+three important configuration options that you need to be aware of:</p>
+<ul class="simple">
+<li><p><strong>BRANCH</strong> <br />
+This is the branch name of the branch or fork of <em>gitlab-ci</em> that you
+wish to use. The default is <em>gitlab-ci</em>. However, it is useful to be
+able to set this to a personal branch name, so that you can test local
+changes without doing a merge request to the central FleCSI Gitlab
+project. Use this in conjunction with the <em>REPOSITORY</em> option.</p></li>
+<li><p><strong>CONTAINER_ENGINE</strong> <br />
+This should be the name of the container engine that is installed on
+your system. Currently, only <em>docker</em>, and <em>podman</em> are supported.
+Additional engines may be added in the future.</p></li>
+<li><p><strong>REPOSITORY</strong> <br />
+This is the url for the repository where the build system will look
+for the <em>BRANCH</em> option that you specified. The default is the main
+FleCSI Gitlab repository
+<em>https://gitlab.lanl.gov/laristra/flecsi.git</em>. However, it is useful
+to set this to your personal fork for testing new images.</p></li>
+</ul>
+<p>As an example configuration, consider the following:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> mkdir build
+<span class="gp">$</span> <span class="nb">cd</span> build
+<span class="gp">$</span> cmake .. -DBRANCH<span class="o">=</span>ci-environment -DREPOSITORY<span class="o">=</span>https://github.com/tuxfan/flecsi.git -D <span class="nv">ENGINE</span><span class="o">=</span>podman
+</pre></div>
+</div>
+<p>This configuration will use the author’s <em>ci-environment</em> branch on
+Github with the <em>podman</em> engine.</p>
+<p>To build an image, try:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> make centos-8
+</pre></div>
+</div>
+<p>This will build the <em>OS</em> image defined in <em>os/centos-8</em>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A note of caution on building the images under the <em>gitlab-ci</em> branch.
+Simply typing <em>make</em> after configuration will attempt to build <strong>all
+of the images in the project!</strong> This can take several hours to complete!
+If this is not your intention, you can list the build targets by
+typing <code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">help</span></code>. To build only a specific target, type
+<code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">TARGET</span></code>, where <em>TARGET</em> is the target that you would like
+to build. Note also that building targets with dependencies will build
+all of the dependencies of the target (This is unaviodable.)</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The build system also supports passing runtime options to the
+container engine. These are of the form <em>STAGE</em>_EXTRA, e.g.,
+BUILD_EXTRA, PUSH_EXTRA, and CLEAN_EXTRA. For example, BUILD_EXTRA can
+be used to force complete rebuild of an image like:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> make <span class="nv">BUILD_EXTRA</span><span class="o">=</span><span class="s2">&quot;--pull --no-cache&quot;</span> centos-8
+</pre></div>
+</div>
+<p>This will force the engine to start from scratch, i.e., pulling the
+base image from the registry, and ignoring cached stages.</p>
+</div>
+</div>
 </div>
 </div>
 <hr class="docutils" />
@@ -541,9 +679,9 @@ __ https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html
 </pre></div>
 </div>
 <p>This will be rendered like:</p>
-<div class="figure align-center" id="id13">
+<div class="figure align-center" id="id16">
 <span id="undersea"></span><a class="reference internal image-reference" href="../_images/undersea.png"><img alt="../_images/undersea.png" src="../_images/undersea.png" style="width: 70%;" /></a>
-<p class="caption"><span class="caption-number">Fig. 10 </span><span class="caption-text">A colorful image resembling a cosmic version of an undersea world.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 10 </span><span class="caption-text">A colorful image resembling a cosmic version of an undersea world.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
 </div>
 <p>You can reference the figure using its label <em>undersea</em> like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>As can be seen in :numref:`undersea`...
@@ -645,7 +783,7 @@ documentation.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016 Los Alamos National Laboratory, LLC
+        &copy; Copyright Copyright (c) 2016, Triad National Security, LLC
 
     </p>
   </div>

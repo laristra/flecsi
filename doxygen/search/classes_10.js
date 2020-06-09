@@ -2,6 +2,11 @@ var searchData=
 [
   ['tag',['tag',['../structflecsi_1_1log_1_1tag.html',1,'flecsi::log']]],
   ['tag_5fscope_5ft',['tag_scope_t',['../structflecsi_1_1log_1_1tag__scope__t.html',1,'flecsi::log']]],
+  ['task_5fparam',['task_param',['../structflecsi_1_1exec_1_1detail_1_1task__param.html',1,'flecsi::exec::detail']]],
+  ['task_5fparam_3c_20data_3a_3aaccessor_3c_20data_3a_3adense_2c_20t_2c_20s_20_3e_20_3e',['task_param&lt; data::accessor&lt; data::dense, T, S &gt; &gt;',['../structflecsi_1_1exec_1_1detail_1_1task__param_3_01data_1_1accessor_3_01data_1_1dense_00_01T_00_01S_01_4_01_4.html',1,'flecsi::exec::detail']]],
+  ['task_5fparam_3c_20data_3a_3aaccessor_3c_20data_3a_3asingular_2c_20t_2c_20s_20_3e_20_3e',['task_param&lt; data::accessor&lt; data::singular, T, S &gt; &gt;',['../structflecsi_1_1exec_1_1detail_1_1task__param_3_01data_1_1accessor_3_01data_1_1singular_00_01T_00_01S_01_4_01_4.html',1,'flecsi::exec::detail']]],
+  ['task_5fparam_3c_20data_3a_3atopology_5faccessor_3c_20t_2c_20p_20_3e_20_3e',['task_param&lt; data::topology_accessor&lt; T, P &gt; &gt;',['../structflecsi_1_1exec_1_1detail_1_1task__param_3_01data_1_1topology__accessor_3_01T_00_01P_01_4_01_4.html',1,'flecsi::exec::detail']]],
+  ['task_5fparam_3c_20future_3c_20r_20_3e_20_3e',['task_param&lt; future&lt; R &gt; &gt;',['../structflecsi_1_1exec_1_1detail_1_1task__param_3_01future_3_01R_01_4_01_4.html',1,'flecsi::exec::detail']]],
   ['task_5fprologue_5ft',['task_prologue_t',['../structflecsi_1_1exec_1_1leg_1_1task__prologue__t.html',1,'flecsi::exec::leg']]],
   ['task_5fwrapper',['task_wrapper',['../structflecsi_1_1exec_1_1leg_1_1task__wrapper.html',1,'flecsi::exec::leg']]],
   ['task_5fwrapper_3c_20f_2c_20task_5fprocessor_5ftype_5ft_3a_3ampi_20_3e',['task_wrapper&lt; F, task_processor_type_t::mpi &gt;',['../structflecsi_1_1exec_1_1leg_1_1task__wrapper_3_01F_00_01task__processor__type__t_1_1mpi_01_4.html',1,'flecsi::exec::leg']]],

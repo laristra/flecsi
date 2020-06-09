@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1util_1_1detail_1_1hold.html" title="flecsi::util::detail\l::hold\&lt; Ts \&gt;" alt="" coords="5,5,123,47"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1util_1_1dag.html" title="flecsi::util::dag\&lt;\l control_node \&gt;" alt="" coords="5,29,120,71"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1util_1_1dag.html" title="flecsi::util::dag\&lt;\l NodePolicy \&gt;" alt="" coords="168,29,283,71"/>
 </map>

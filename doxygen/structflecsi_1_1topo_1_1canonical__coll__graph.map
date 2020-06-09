@@ -1,9 +1,10 @@
 <map id="flecsi::topo::canonical&lt; Policy &gt;" name="flecsi::topo::canonical&lt; Policy &gt;">
-<area shape="rect" id="node2" href="$structflecsi_1_1topo_1_1canonical__base.html" title="flecsi::topo::canonical_base" alt="" coords="312,5,496,32"/>
-<area shape="rect" id="node3" href="$structflecsi_1_1field.html" title="flecsi::field\&lt; int \&gt;" alt="" coords="343,56,465,83"/>
-<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1leg_1_1partition.html" title="flecsi::data::leg::\lpartition" alt="" coords="345,107,463,149"/>
-<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::IndexSpace, &amp;Legion\l::Runtime::destroy_index\l_space \&gt;" alt="" coords="9,60,177,145"/>
-<area shape="rect" id="node6" href="$structflecsi_1_1data_1_1leg_1_1region.html" title="flecsi::data::leg::\lregion" alt="" coords="345,179,463,221"/>
-<area shape="rect" id="node7" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::FieldSpace, &amp;Legion\l::Runtime::destroy_field\l_space \&gt;" alt="" coords="12,169,173,255"/>
-<area shape="rect" id="node8" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::LogicalRegion, &amp;Legion\l::Runtime::destroy_logical\l_region \&gt;" alt="" coords="5,279,180,364"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1topo_1_1canonical__base.html" title="flecsi::topo::canonical_base" alt="" coords="480,44,664,71"/>
+<area shape="rect" id="node3" href="$structflecsi_1_1data_1_1partitioned.html" title="flecsi::data::partitioned" alt="" coords="495,95,649,121"/>
+<area shape="rect" id="node4" href="$structflecsi_1_1data_1_1leg_1_1region.html" title="flecsi::data::leg::\lregion" alt="" coords="312,125,431,166"/>
+<area shape="rect" id="node5" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::IndexSpace, &amp;Legion\l::Runtime::destroy_index\l_space \&gt;" alt="" coords="9,5,177,91"/>
+<area shape="rect" id="node8" href="$structflecsi_1_1data_1_1leg_1_1partition.html" title="flecsi::data::leg::\lpartition" alt="" coords="312,53,431,94"/>
+<area shape="rect" id="node6" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::FieldSpace, &amp;Legion\l::Runtime::destroy_field\l_space \&gt;" alt="" coords="12,115,173,200"/>
+<area shape="rect" id="node7" href="$structflecsi_1_1data_1_1leg_1_1unique__handle.html" title="flecsi::data::leg::\lunique_handle\&lt; Legion\l::LogicalRegion, &amp;Legion\l::Runtime::destroy_logical\l_region \&gt;" alt="" coords="5,224,180,309"/>
+<area shape="rect" id="node9" href="$structflecsi_1_1field.html" title="flecsi::field\&lt; int \&gt;" alt="" coords="511,145,633,172"/>
 </map>

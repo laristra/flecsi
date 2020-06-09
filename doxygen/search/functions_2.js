@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['c_5fstr',['c_str',['../classflecsi_1_1util_1_1const__string__t.html#ab635f42965e772ce8f4999f9a5da970d',1,'flecsi::util::const_string_t']]],
   ['cast',['cast',['../classflecsi_1_1topo_1_1index__space.html#a9c0e62b809a7497b76eb2763b988370e',1,'flecsi::topo::index_space::cast()'],['../classflecsi_1_1topo_1_1index__space.html#a0e54d0503ff915ed05f239d95abb5c8a',1,'flecsi::topo::index_space::cast() const']]],
   ['centroid',['centroid',['../point_8hh.html#a3694fc6ccf3ff265622ee849c25a9af6',1,'flecsi::util::centroid(CONTAINER&lt; point&lt; TYPE, DIMENSION &gt;&gt; const &amp;points)'],['../point_8hh.html#aea761395dda299e292f17af9d1ae0fe3',1,'flecsi::util::centroid(std::initializer_list&lt; point&lt; TYPE, DIMENSION &gt;&gt; points)']]],
   ['check_5foptions',['check_options',['../structflecsi_1_1control.html#a33a798ecba9c2b5229d105642c77ff98',1,'flecsi::control']]],
@@ -13,7 +12,6 @@ var searchData=
   ['conflict_5fdepth',['conflict_depth',['../classflecsi_1_1filling__curve.html#afcde8c60489b975d5378e9b13c55e556',1,'flecsi::filling_curve']]],
   ['connect_5fwith_5fmpi',['connect_with_mpi',['../structflecsi_1_1run_1_1context__t.html#afc1f8aed5fee33a3ee8ed4dd7a9ccdf0',1,'flecsi::run::context_t']]],
   ['connectivity_5ft',['connectivity_t',['../classflecsi_1_1topo_1_1connectivity__t.html#a37c2d7a8bf203c35f3e4392706d51c07',1,'flecsi::topo::connectivity_t']]],
-  ['const_5fstring_5ft',['const_string_t',['../classflecsi_1_1util_1_1const__string__t.html#a20cc85c8f4d52bd6f000a4d405011da5',1,'flecsi::util::const_string_t']]],
   ['coordinates',['coordinates',['../classflecsi_1_1filling__curve.html#ae3c9225c0d9cd78fb6b074ef832f43b4',1,'flecsi::filling_curve::coordinates()'],['../classflecsi_1_1hilbert__curve.html#abf668fef9786ee28b7bd2afa44269e53',1,'flecsi::hilbert_curve::coordinates()'],['../classflecsi_1_1morton__curve.html#a8534b0bf769330a9e29e964c4a019579',1,'flecsi::morton_curve::coordinates()']]],
   ['count',['count',['../classflecsi_1_1util_1_1offset.html#abfb7ee5b3dbd8e895da3714cbf0e96c8',1,'flecsi::util::offset']]]
 ];

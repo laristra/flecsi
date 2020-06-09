@@ -26,8 +26,6 @@ var searchData=
   ['migrate',['migrate',['../dcrs__utils_8hh.html#ae8266329d20e8e3554e009a373a3056f',1,'flecsi::topo::unstructured_impl']]],
   ['min',['min',['../structflecsi_1_1exec_1_1fold_1_1min.html',1,'flecsi::exec::fold::min&lt; T &gt;'],['../classflecsi_1_1filling__curve.html#aca10f32148a525168d1575446f97a301',1,'flecsi::filling_curve::min()']]],
   ['morton_5fcurve',['morton_curve',['../classflecsi_1_1morton__curve.html',1,'flecsi::morton_curve&lt; DIM, T &gt;'],['../classflecsi_1_1morton__curve.html#a67774c3a37a7c60a3e28e0d03043d5af',1,'flecsi::morton_curve::morton_curve()']]],
-  ['mpi_5ffuture',['mpi_future',['../structflecsi_1_1exec_1_1mpi__future.html',1,'flecsi::exec']]],
-  ['mpi_5ffuture_3c_20void_2c_20launch_20_3e',['mpi_future&lt; void, launch &gt;',['../structflecsi_1_1exec_1_1mpi__future_3_01void_00_01launch_01_4.html',1,'flecsi::exec']]],
   ['mpi_5fmapper_5ft',['mpi_mapper_t',['../classflecsi_1_1run_1_1mpi__mapper__t.html',1,'flecsi::run::mpi_mapper_t'],['../classflecsi_1_1run_1_1mpi__mapper__t.html#a658c698e554139a0d35a0993bed3ad9d',1,'flecsi::run::mpi_mapper_t::mpi_mapper_t()']]],
   ['mpi_5ftype_5ftraits_2ehh',['mpi_type_traits.hh',['../mpi__type__traits_8hh.html',1,'']]],
   ['mpi_5ftypetraits',['mpi_typetraits',['../structflecsi_1_1util_1_1mpi__typetraits.html',1,'flecsi::util']]],

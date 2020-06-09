@@ -39,5 +39,11 @@ var searchData=
   ['function_5ftraits_3c_20t_20_26_20_3e',['function_traits&lt; T &amp; &gt;',['../structflecsi_1_1util_1_1function__traits_3_01T_01_6_01_4.html',1,'flecsi::util']]],
   ['function_5ftraits_3c_20t_20_26_26_20_3e',['function_traits&lt; T &amp;&amp; &gt;',['../structflecsi_1_1util_1_1function__traits_3_01T_01_6_6_01_4.html',1,'flecsi::util']]],
   ['function_5ftraits_3c_20volatile_20t_20_3e',['function_traits&lt; volatile T &gt;',['../structflecsi_1_1util_1_1function__traits_3_01volatile_01T_01_4.html',1,'flecsi::util']]],
-  ['functor',['functor',['../structflecsi_1_1exec_1_1forall_1_1functor.html',1,'flecsi::exec::forall']]]
+  ['functor',['functor',['../structflecsi_1_1exec_1_1forall_1_1functor.html',1,'flecsi::exec::forall']]],
+  ['future',['future',['../structflecsi_1_1future.html',1,'flecsi']]],
+  ['future_3c_20r_20_3e',['future&lt; R &gt;',['../structflecsi_1_1future_3_01R_01_4.html',1,'flecsi']]],
+  ['future_3c_20r_2c_20exec_3a_3alaunch_5ftype_5ft_3a_3aindex_20_3e',['future&lt; R, exec::launch_type_t::index &gt;',['../structflecsi_1_1future_3_01R_00_01exec_1_1launch__type__t_1_1index_01_4.html',1,'flecsi']]],
+  ['future_3c_20return_20_3e',['future&lt; Return &gt;',['../structflecsi_1_1future_3_01Return_01_4.html',1,'flecsi']]],
+  ['future_3c_20return_2c_20exec_3a_3alaunch_5ftype_5ft_3a_3aindex_20_3e',['future&lt; Return, exec::launch_type_t::index &gt;',['../structflecsi_1_1future_3_01Return_00_01exec_1_1launch__type__t_1_1index_01_4.html',1,'flecsi']]],
+  ['future_3c_20void_20_3e',['future&lt; void &gt;',['../structflecsi_1_1future_3_01void_01_4.html',1,'flecsi']]]
 ];

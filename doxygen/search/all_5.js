@@ -34,8 +34,6 @@ var searchData=
   ['find_5fparent',['find_parent',['../structflecsi_1_1topo_1_1ntree_1_1access.html#a328db214033a5ee36ed1a1eba8436e34',1,'flecsi::topo::ntree::access']]],
   ['fixme',['fixme',['../group__flog.html#gac4b562b7ae199e04d81aeb0c61553cc3',1,'flog.hh']]],
   ['flecsi',['flecsi',['../namespaceflecsi.html',1,'']]],
-  ['flecsi_5finternal_5fhash',['flecsi_internal_hash',['../group__utils.html#ga41398506ffdcc9ef7ef1aae859a3c4f8',1,'const_string.hh']]],
-  ['flecsi_5finternal_5fstring_5fhash',['flecsi_internal_string_hash',['../group__utils.html#gac96b31c3919e7cd7c2bcdc964ffdfb12',1,'const_string.hh']]],
   ['flecsi_5fmember_5fchecker',['FLECSI_MEMBER_CHECKER',['../static__verify_8hh.html#aecae600285017def088065e8c3730280',1,'static_verify.hh']]],
   ['flog',['flog',['../group__flog.html#gae999d9c2b014d2f1d5112e3ebe85a80b',1,'flog():&#160;flog.hh'],['../group__flog.html',1,'(Global Namespace)']]],
   ['flog_2ehh',['flog.hh',['../flog_8hh.html',1,'']]],
@@ -65,7 +63,13 @@ var searchData=
   ['function_5ftraits_3c_20t_20_26_26_20_3e',['function_traits&lt; T &amp;&amp; &gt;',['../structflecsi_1_1util_1_1function__traits_3_01T_01_6_6_01_4.html',1,'flecsi::util']]],
   ['function_5ftraits_3c_20volatile_20t_20_3e',['function_traits&lt; volatile T &gt;',['../structflecsi_1_1util_1_1function__traits_3_01volatile_01T_01_4.html',1,'flecsi::util']]],
   ['functor',['functor',['../structflecsi_1_1exec_1_1forall_1_1functor.html',1,'flecsi::exec::forall']]],
+  ['future',['future',['../structflecsi_1_1future.html',1,'flecsi']]],
   ['future_2ehh',['future.hh',['../leg_2future_8hh.html',1,'(Global Namespace)'],['../mpi_2future_8hh.html',1,'(Global Namespace)']]],
+  ['future_3c_20r_20_3e',['future&lt; R &gt;',['../structflecsi_1_1future_3_01R_01_4.html',1,'flecsi']]],
+  ['future_3c_20r_2c_20exec_3a_3alaunch_5ftype_5ft_3a_3aindex_20_3e',['future&lt; R, exec::launch_type_t::index &gt;',['../structflecsi_1_1future_3_01R_00_01exec_1_1launch__type__t_1_1index_01_4.html',1,'flecsi']]],
+  ['future_3c_20return_20_3e',['future&lt; Return &gt;',['../structflecsi_1_1future_3_01Return_01_4.html',1,'flecsi']]],
+  ['future_3c_20return_2c_20exec_3a_3alaunch_5ftype_5ft_3a_3aindex_20_3e',['future&lt; Return, exec::launch_type_t::index &gt;',['../structflecsi_1_1future_3_01Return_00_01exec_1_1launch__type__t_1_1index_01_4.html',1,'flecsi']]],
+  ['future_3c_20void_20_3e',['future&lt; void &gt;',['../structflecsi_1_1future_3_01void_01_4.html',1,'flecsi']]],
   ['flecsi_20doxygen_20mainpage',['FleCSI Doxygen Mainpage',['../index.html',1,'']]],
   ['flecsi_20tutorial_20examples',['FleCSI Tutorial Examples',['../group__tutorial.html',1,'']]]
 ];

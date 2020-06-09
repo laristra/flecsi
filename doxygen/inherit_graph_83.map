@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structflecsi_1_1topo_1_1array__buf__ref__type.html" title="flecsi::topo::array\l_buf_ref_type\&lt; T \&gt;" alt="" coords="5,5,139,47"/>
+<area shape="rect" id="node1" href="$structflecsi_1_1run_1_1context.html" title="flecsi::run::context" alt="" coords="5,5,136,32"/>
+<area shape="rect" id="node2" href="$structflecsi_1_1run_1_1context__t.html" title="flecsi::run::context_t" alt="" coords="184,5,325,32"/>
 </map>
