@@ -41,7 +41,6 @@ format:check:
   variables:
     REGISTRY: "laristra/flecsi-ci"
     IMAGE: "util-fedora-30"
-    FORMAT_VERSION: "8.0.0"
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for default settings.
