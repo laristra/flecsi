@@ -103,6 +103,7 @@ class Flecsi(CMakePackage):
         elif spec.variants['backend'].value == 'hpx':
             options.append('-DFLECSI_RUNTIME_MODEL=hpx')
             options.append('-DENABLE_MPI=ON')
+            options.append('-DHPX_IGNORE_CMAKE_BUILD_TYPE_COMPATIBILITY=OFF')
         elif spec.variants['backend'].value == 'charmpp':
             options.append('-DFLECSI_RUNTIME_MODEL=charmpp')
             options.append('-DENABLE_MPI=ON')
