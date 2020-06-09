@@ -29,11 +29,7 @@
 
 namespace flecsi {
 
-template<auto & F,
-  const exec::launch_domain & LAUNCH_DOMAIN,
-  class REDUCTION,
-  size_t ATTRIBUTES,
-  typename... ARGS>
+template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
 decltype(auto)
 reduce(ARGS &&... args) {
   using R = typename util::function_traits<decltype(F)>::return_type;

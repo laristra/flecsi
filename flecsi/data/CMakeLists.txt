@@ -95,12 +95,6 @@ add_unit(canonical
     test/canonical.cc
   THREADS 2
 )
-
-add_unit(global
-  SOURCES
-    test/global.cc
-  THREADS 2
-)
 endif()
 
 add_unit(identifiers

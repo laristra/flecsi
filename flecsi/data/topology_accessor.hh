@@ -53,4 +53,13 @@ struct exec::detail::task_param<data::topology_accessor<T, P>> {
     return data::topology_accessor<T, P>();
   }
 };
+// Defined here to avoid circularity; it matters only with a
+// topology_accessor parameter.  There are no global topology accessors,
+// thus no specialization for them.
+template<class P, class T>
+struct exec::detail::launch<P, data::topology_slot<T>> {
+  static std::size_t get(const data::topology_slot<T> & t) {
+    return t.get().colors();
+  }
+};
 } // namespace flecsi

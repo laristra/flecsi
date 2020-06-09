@@ -78,14 +78,17 @@ serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
     {exec::replace_argument<PP>(std::forward<AA>(aa))...});
 }
 
+template<class, class>
+struct tuple_prepend;
+template<class T, class... TT>
+struct tuple_prepend<T, std::tuple<TT...>> {
+  using type = std::tuple<T, TT...>;
+};
+
 } // namespace detail
 } // namespace exec
 
-template<auto & F,
-  const exec::launch_domain & LAUNCH_DOMAIN,
-  class REDUCTION,
-  size_t ATTRIBUTES,
-  typename... ARGS>
+template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
 decltype(auto)
 reduce(ARGS &&... args) {
   using namespace Legion;
@@ -158,12 +161,18 @@ reduce(ARGS &&... args) {
   } // if
 #endif // FLECSI_ENABLE_FLOG
 
-  size_t domain_size = LAUNCH_DOMAIN.size();
-  domain_size = domain_size == 0 ? flecsi_context.processes() : domain_size;
+  const auto domain_size = [&args..., &flecsi_context] {
+    if constexpr(processor_type == task_processor_type_t::mpi)
+      return launch_size<
+        typename detail::tuple_prepend<launch_domain, param_tuple>::type>(
+        launch_domain{flecsi_context.processes()}, args...);
+    else
+      return launch_size<param_tuple>(args...);
+  }();
 
   ++flecsi_context.tasks_executed();
 
-  leg::task_prologue_t pro(domain_size);
+  leg::task_prologue_t pro;
   pro.walk<param_tuple>(args...);
 
   std::optional<param_tuple> mpi_args;
@@ -190,11 +199,7 @@ reduce(ARGS &&... args) {
   const auto task = leg::task_id<wrap::execute,
     (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
 
-  if constexpr(LAUNCH_DOMAIN == single) {
-
-    static_assert(std::is_void_v<REDUCTION>,
-      "reductions are not supported for single tasks");
-
+  if constexpr(std::is_same_v<decltype(domain_size), const std::monostate>) {
     {
       log::devel_guard guard(execution_tag);
       flog_devel(info) << "Executing single task" << std::endl;
@@ -210,22 +215,11 @@ reduce(ARGS &&... args) {
     // adding futures to the launcher
     launcher.futures = std::move(pro).futures();
 
-    static_assert(!(is_index_future<std::decay_t<ARGS>> || ...),
-      "can't use index future with single task");
-
-    if constexpr(processor_type == task_processor_type_t::toc ||
-                 processor_type == task_processor_type_t::loc) {
-      return future<RETURN>{
-        legion_runtime->execute_task(legion_context, launcher)};
-    }
-    else {
-      static_assert(
-        processor_type == task_processor_type_t::mpi, "Unknown launch type");
-      flog_fatal("Invalid launch type!"
-                 << std::endl
-                 << "Legion backend does not support 'single' launch"
-                 << " for MPI tasks yet");
-    }
+    static_assert(processor_type == task_processor_type_t::toc ||
+                    processor_type == task_processor_type_t::loc,
+      "Unknown launch type");
+    return future<RETURN>{
+      legion_runtime->execute_task(legion_context, launcher)};
   }
 
   //------------------------------------------------------------------------//

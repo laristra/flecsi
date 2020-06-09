@@ -22,7 +22,6 @@
 #include <cstddef> // size_t
 
 #include "flecsi/data/privilege.hh"
-#include "flecsi/data/topology_accessor.hh"
 #include "flecsi/data/topology_slot.hh"
 #include "flecsi/util/type_traits.hh"
 
@@ -30,7 +29,9 @@ namespace flecsi {
 namespace data {
 template<class>
 struct coloring_slot; // avoid dependency on flecsi::execute
-}
+template<class, std::size_t>
+struct topology_accessor; // avoid circularity via launch.hh
+} // namespace data
 
 namespace topo {
 enum single_space { elements };

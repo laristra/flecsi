@@ -33,7 +33,7 @@ int
 simple_definition() {
   UNIT {
     // TODO: use test<> when reduction works for MPI tasks
-    execute<simple2d_16x16, flecsi::index, mpi>();
+    execute<simple2d_16x16, mpi>();
   };
 } // simple_definition
 

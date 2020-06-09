@@ -26,7 +26,7 @@ simple2d_16x16() {
 
 int
 colorer() {
-  UNIT { EXPECT_EQ((test<simple2d_16x16, flecsi::index, mpi>()), 0); };
+  UNIT { EXPECT_EQ((test<simple2d_16x16, mpi>()), 0); };
 } // colorer
 
 flecsi::unit::driver<colorer> driver;
