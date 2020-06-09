@@ -71,11 +71,11 @@ public:
   /// that as well.
   /// \tparam U actual (dynamic) entity type
   template<class U>
-  auto cast() const {
+  FLECSI_INLINE_TARGET auto cast() const {
     return rebind<U>{data, ids};
   }
   template<class U>
-  auto cast() {
+  FLECSI_INLINE_TARGET auto cast() {
     return rebind<U>{data, ids};
   }
 
@@ -86,6 +86,7 @@ public:
   //! @param begin begin offset
   //! @param end end offset
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   auto slice(size_t begin, size_t end) const {
     const auto b = ids.data();
     return rebind<>{data, {b + begin, b + end}};
@@ -97,6 +98,7 @@ public:
   //!
   //! @param r offset range
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   auto slice(const std::pair<size_t, size_t> & range) const {
     return slice(range.first, range.second);
   }

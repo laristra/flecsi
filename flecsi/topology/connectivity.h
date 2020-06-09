@@ -203,6 +203,7 @@ public:
   //-----------------------------------------------------------------//
   //! True if the connectivity is empty (hasn't been populated).
   //-----------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   bool empty() const {
     return index_space_.ids.empty();
   }
@@ -263,14 +264,17 @@ public:
     return index_space_.ids;
   }
 
+  FLECSI_INLINE_TARGET
   auto & get_index_space() {
     return index_space_;
   }
 
+  FLECSI_INLINE_TARGET
   auto & get_index_space() const {
     return index_space_;
   }
 
+  FLECSI_INLINE_TARGET
   auto range(size_t i) const {
     return offsets_.range(i);
   }
