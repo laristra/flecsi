@@ -484,7 +484,8 @@ clog_register_tag(execution);
     flecsi_internal_hash(nspace::task),                                        \
     flecsi::utils::hash::reduction_hash<flecsi_internal_hash(type),            \
       flecsi_internal_hash(datatype)>(),                                       \
-    flecsi_internal_return_type(task), flecsi_internal_arguments_type(task)>(  \
+    flecsi_internal_return_type(nspace::task),                                 \
+    flecsi_internal_arguments_type(nspace::task)>(                             \
     __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
