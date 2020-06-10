@@ -23,8 +23,8 @@
 using namespace flecsi;
 
 struct canon : topo::specialization<topo::canonical, canon> {
-  using index_space = base::index_space;
-  using index_spaces = base::index_spaces;
+  enum index_space { vertices, cells };
+  using index_spaces = util::constants<cells, vertices>;
 
   static coloring color(std::string const &) {
     return {16, 2};
@@ -34,7 +34,7 @@ struct canon : topo::specialization<topo::canonical, canon> {
 canon::slot canonical;
 canon::cslot coloring;
 
-const field<double>::definition<canon, canon::base::cells> cell_field;
+const field<double>::definition<canon, canon::cells> cell_field;
 auto pressure = cell_field(canonical);
 
 const int mine = 35;

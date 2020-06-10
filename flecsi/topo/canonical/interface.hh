@@ -37,6 +37,9 @@ namespace topo {
 
 template<typename Policy>
 struct canonical : canonical_base {
+  using index_space = typename Policy::index_space;
+  static constexpr std::size_t index_spaces = Policy::index_spaces;
+
   template<std::size_t>
   struct access;
 
@@ -46,18 +49,18 @@ struct canonical : canonical_base {
   }
 
   canonical(const coloring & c)
-    : vert(data::make_region<Policy, vertices>(c.size + 1),
+    : vert(data::make_region<Policy, index_space::vertices>(c.size + 1),
         c.parts,
         split(c.size + 1, c.parts),
         data::disjoint,
         data::complete),
-      cell(data::make_region<Policy, cells>(c.size),
+      cell(data::make_region<Policy, index_space::cells>(c.size),
         c.parts,
         split(c.size, c.parts),
         data::disjoint,
         data::complete) {}
 
-  static inline const field<int>::definition<Policy, cells> mine;
+  static inline const field<int>::definition<Policy, index_space::cells> mine;
 
   data::partitioned vert, cell;
 
@@ -67,7 +70,7 @@ struct canonical : canonical_base {
 
   template<index_space S>
   auto & get_partition() const {
-    return S == cells ? cell : vert;
+    return S == index_space::cells ? cell : vert;
   }
 
 private:
