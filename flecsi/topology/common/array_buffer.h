@@ -45,7 +45,7 @@ public:
   /// Convert to a typed \c vector_ref.
   /// \tparam U actual (dynamic) element type
   template<class U>
-  operator utils::vector_ref<U>() const {
+  FLECSI_INLINE_TARGET operator utils::vector_ref<U>() const {
     return {{static_cast<U *>(buffer()), capacity()}, size()};
   }
 
