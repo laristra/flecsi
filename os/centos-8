@@ -17,6 +17,7 @@ RUN dnf config-manager --set-enabled PowerTools
 #------------------------------------------------------------------------------#
 
 RUN dnf update -y && dnf install -y \
+  ccache \
   clang \
   cmake \
   doxygen \

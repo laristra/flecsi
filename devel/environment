@@ -6,106 +6,118 @@ ARG OS
 FROM ${OS}
 
 #------------------------------------------------------------------------------#
-# Clone repositories
+# The branch for this operation should be one of the primary flecsi
+# branches, e.g., 1.4, 2.0, or devel. The 'spack-repo' subdirectory of the
+# cloned branch will be used to install upstream packages, which can be
+# overriden if desired in the CI, but which will not have to be built
+# during the CI run if they are not overriden by the user's merge request.
 #------------------------------------------------------------------------------#
 
 ARG REPO
-ARG BRANCH
+ARG CI_BRANCH
 
-RUN git clone --single-branch --branch ${BRANCH} ${REPO} ${BRANCH}
-RUN git clone --single-branch \
-  --branch develop https://github.com/spack/spack.git
+RUN git clone --single-branch --branch devel ${REPO} default
 
 #------------------------------------------------------------------------------#
-# Setup spack configuration
+# This clones the flecsi CI branch as specified during cmake configuration.
+# It is used to set preferred versions and compiler configuration.
+#------------------------------------------------------------------------------#
+
+RUN git clone --single-branch --branch ${CI_BRANCH} ${REPO} ${CI_BRANCH}
+
+#------------------------------------------------------------------------------#
+# Clone spack for the upstream install.
+#------------------------------------------------------------------------------#
+
+RUN git clone --single-branch \
+  --branch develop https://github.com/spack/spack.git
+RUN cp -r spack upstream
+
+#------------------------------------------------------------------------------#
+# Setup spack configuration.
 #------------------------------------------------------------------------------#
 
 ARG SUBDIR
-
-RUN mkdir -p .spack/linux && \
-  export GNU_VERSION=`cat .gnu_version` && \
-  export NCURSES_VERSION=`cat .ncurses_version` && \
-  cat ${BRANCH}/${SUBDIR}/spack/packages.yaml | \
-    sed "s,GNU_VERSION,${GNU_VERSION},g" | \
-    sed "s,NCURSES_VERSION,${NCURSES_VERSION},g" > .spack/linux/packages.yaml
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack compiler find
-
-#------------------------------------------------------------------------------#
-# Add gfortran to clang
-#------------------------------------------------------------------------------#
-
 ADD clang_fortran.py ./clang_fortran.py
+
+RUN export GNU_VERSION=`cat .gnu_version` && \
+  export NCURSES_VERSION=`cat .ncurses_version` && \
+  cat ${CI_BRANCH}/${SUBDIR}/spack/upstream-packages.yaml | \
+    sed "s,GNU_VERSION,${GNU_VERSION},g" | \
+    sed "s,NCURSES_VERSION,${NCURSES_VERSION},g" > \
+    upstream/etc/spack/packages.yaml
+
+RUN . upstream/share/spack/setup-env.sh && \
+  spack compiler find && \
+  spack repo add default/spack-repo
+
 RUN export GNU_VERSION=`cat .gnu_version` && \
   /home/flecsi/clang_fortran.py '.spack/linux/compilers.yaml' \
-    '.spack/linux/compilers.yaml' "${GNU_VERSION}"
+    'upstream/etc/spack/compilers.yaml' "${GNU_VERSION}"
+
+RUN export GNU_VERSION=`cat .gnu_version` && \
+  /home/flecsi/clang_fortran.py '.spack/linux/compilers.yaml' \
+    'spack/etc/spack/compilers.yaml' "${GNU_VERSION}"
+RUN rm -rf ~/.spack/linux/compilers.yaml
+
+RUN export GNU_VERSION=`cat .gnu_version` && \
+  export NCURSES_VERSION=`cat .ncurses_version` && \
+  cat ${CI_BRANCH}/${SUBDIR}/spack/packages.yaml | \
+    sed "s,GNU_VERSION,${GNU_VERSION},g" | \
+    sed "s,NCURSES_VERSION,${NCURSES_VERSION},g" > \
+    spack/etc/spack/packages.yaml
+
+RUN cp ${CI_BRANCH}/${SUBDIR}/spack/upstreams.yaml spack/etc/spack
 
 #------------------------------------------------------------------------------#
-# Install generic packages
+# Build flecsi dependencies with mpich provider.
 #------------------------------------------------------------------------------#
 
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies boost && \
-  spack install boost
+ARG TARGET="flecsi@devel backend=legion +hdf5 +graphviz"
 
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies graphviz && \
-  spack install graphviz
+RUN . upstream/share/spack/setup-env.sh && \
+  spack fetch --dependencies ${TARGET} +debug_backend ^mpich && \
+  spack install --only dependencies ${TARGET} build_type=Debug \
+    +debug_backend ^mpich
 
-#------------------------------------------------------------------------------#
-# Create MPICH environment
-#------------------------------------------------------------------------------#
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies mpich && \
-  spack install mpich
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies gasnet^mpich && \
-  spack install gasnet^mpich
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies parmetis^mpich && \
-  spack install parmetis^mpich
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack env create ${SUBDIR}-mpich && \
-  spack env activate ${SUBDIR}-mpich && \
-  spack install cmake mpich gasnet^mpich parmetis^mpich boost graphviz
+RUN . upstream/share/spack/setup-env.sh && \
+  spack fetch --dependencies ${TARGET} ^mpich && \
+  spack install --only dependencies ${TARGET} build_type=Release ^mpich
 
 #------------------------------------------------------------------------------#
-# Create OpenMPI environment
+# Build flecsi dependencies with openmpi provider.
 #------------------------------------------------------------------------------#
 
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies openmpi && \
-  spack install openmpi
+ARG TARGET="flecsi@devel backend=legion +hdf5 +graphviz"
 
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies gasnet^openmpi && \
-  spack install gasnet^openmpi
+RUN . upstream/share/spack/setup-env.sh && \
+  spack fetch --dependencies ${TARGET} +debug_backend ^openmpi && \
+  spack install --only dependencies ${TARGET} build_type=Release \
+    +debug_backend ^openmpi
 
-RUN . spack/share/spack/setup-env.sh && \
-  spack fetch --dependencies parmetis^openmpi && \
-  spack install parmetis^openmpi
-
-RUN . spack/share/spack/setup-env.sh && \
-  spack env create ${SUBDIR}-openmpi && \
-  spack env activate ${SUBDIR}-openmpi && \
-  spack install cmake openmpi gasnet^openmpi parmetis^openmpi boost graphviz
+RUN . upstream/share/spack/setup-env.sh && \
+  spack fetch --dependencies ${TARGET} ^openmpi && \
+  spack install --only dependencies ${TARGET} build_type=Release ^openmpi
 
 #------------------------------------------------------------------------------#
-# Create format environment
+# Create format environment.
 #------------------------------------------------------------------------------#
 
-RUN . spack/share/spack/setup-env.sh && \
+RUN . upstream/share/spack/setup-env.sh && \
   spack env create format && \
   spack env activate format && \
   spack install cmake
 
 #------------------------------------------------------------------------------#
-# Set default shell for interactive
+# Remove the lanl_ristra_flecsi repository so that the MR can override
+# our defaults.
+#------------------------------------------------------------------------------#
+
+RUN . spack/share/spack/setup-env.sh && \
+  spack repo remove lanl_ristra_flecsi
+
+#------------------------------------------------------------------------------#
+# Set default shell for interactive.
 #------------------------------------------------------------------------------#
 
 RUN echo "export PATH=$HOME/.local/bin:$PATH" > .bashrc
