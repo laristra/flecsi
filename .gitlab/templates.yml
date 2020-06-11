@@ -119,11 +119,15 @@
     - *print_env_info
     - *env_shell
     - spack repo add spack-repo
+    - spack env create ${ENVIRONMENT}-${MPI_PROVIDER}
     - spack env activate ${ENVIRONMENT}-${MPI_PROVIDER}
     - spack install --only dependencies ${VERSION}
         backend=legion ${VARIANTS} ^${MPI_PROVIDER}
+    - spack install cmake
     - *env_spack_archive
   artifacts:
+    when: on_success
+    expire_in: 2 weeks
     paths:
       - ${CI_PROJECT_DIR}/state
 
@@ -172,6 +176,7 @@
     - make test
     - make install
   artifacts:
+    expire_in: 2 weeks
     paths:
       - ${CI_PROJECT_DIR}/state
 
@@ -210,6 +215,7 @@
     - make
     - make install
   artifacts:
+    expire_in: 2 weeks
     paths:
       - ${CI_PROJECT_DIR}/state
 
@@ -287,6 +293,7 @@
       fi
     - exit $result
   artifacts:
+    expire_in: 2 weeks
     paths:
       - ${CI_PROJECT_DIR}/state
 

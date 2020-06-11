@@ -60,6 +60,8 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12:')
 
+    depends_on("mpich@3.2.1", when="^mpich")
+    depends_on("openmpi@3.1.6", when="^openmpi")
     depends_on("legion@ctrl-rep-6:ctrl-rep-99",when="backend=legion")
     depends_on("hpx@1.3.0 cxxstd=14 malloc=system",when="backend=hpx")
 
@@ -70,9 +72,10 @@ class Flecsi(CMakePackage):
                        when='backend=%s %sdebug_backend'%(back,debug))
     depends_on('mpi', when='backend=mpi')
     depends_on('legion+hdf5',when='backend=legion +hdf5')
+    depends_on('hdf5@1.10.6',when='backend=legion +hdf5')
     del back,debug,bt
 
-    depends_on('boost@1.70.0: cxxstd=14 +program_options')
+    depends_on('boost@1.73.0: cxxstd=14 +program_options')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
     depends_on('hdf5+mpi', when='+hdf5')
