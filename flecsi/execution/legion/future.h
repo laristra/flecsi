@@ -263,6 +263,30 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
       silence_warnings);
   } // get
 
+  Legion::FutureMap & raw_future() {
+    return legion_future_;
+  }
+
+  RETURN & operator=(legion_future_u const & f) {
+    return data_;
+  }
+
+  operator RETURN &() {
+    return data_;
+  }
+
+  operator const RETURN &() const {
+    return data_;
+  }
+
+  friend std::ostream & operator<<(std::ostream & stream,
+    const legion_future_u & f) {
+    stream << f.data_;
+    return stream;
+  } // switch
+
+  RETURN data_;
+
   /*!
     Add Legion Future to the task launcher
    */
