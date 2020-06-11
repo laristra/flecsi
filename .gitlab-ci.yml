@@ -561,19 +561,6 @@ build:centOS_hpx:
   script:
     - *build_script
     - *test_script
-  allow_failure: false
-
-build:centOS_mpich_hpx_clang:
-  extends: build:centOS_hpx
-  variables:
-    <<: *compiler_clang
-    <<: *mpich
-
-build:centOS_hpx_intel_release:
-  extends: build:centOS_hpx
-  variables:
-    <<: *buildtype_release
-    <<: *compiler_intel
 
 build:centOS_mpi.ignoreNoCI:
   extends: build:centOS_mpi
@@ -587,11 +574,6 @@ build:centOS_legion.ignoreNoCI:
     <<: *ignore_noci
   allow_failure: true
 
-build:centOS_hpx.ignoreNoCI:
-  extends: build:centOS_hpx
-  variables:
-    <<: *ignore_noci
-  allow_failure: true
 
 #############
 # Test Jobs #
