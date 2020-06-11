@@ -38,44 +38,7 @@
   script: &env_spack_archive
     - mkdir -p ${CI_PROJECT_DIR}/state
     - rsync -apz /home/flecsi/.spack ${CI_PROJECT_DIR}/state
-    - rsync -apz
-        --exclude="spack/var/spack/cache"
-        --exclude="spack/opt/spack/*/*/autoconf-*"
-        --exclude="spack/opt/spack/*/*/automake-*"
-        --exclude="spack/opt/spack/*/*/bison-*"
-        --exclude="spack/opt/spack/*/*/boost-*"
-        --exclude="spack/opt/spack/*/*/bzip2-*"
-        --exclude="spack/opt/spack/*/*/cmake-*"
-        --exclude="spack/opt/spack/*/*/diffutils-*"
-        --exclude="spack/opt/spack/*/*/findutils-*"
-        --exclude="spack/opt/spack/*/*/flex-*"
-        --exclude="spack/opt/spack/*/*/gasnet-*"
-        --exclude="spack/opt/spack/*/*/gdbm-*"
-        --exclude="spack/opt/spack/*/*/gettext-*"
-        --exclude="spack/opt/spack/*/*/graphviz-*"
-        --exclude="spack/opt/spack/*/*/help2man-*"
-        --exclude="spack/opt/spack/*/*/hwloc-*"
-        --exclude="spack/opt/spack/*/*/libiconv-*"
-        --exclude="spack/opt/spack/*/*/libpciaccess-*"
-        --exclude="spack/opt/spack/*/*/libsigsegv-*"
-        --exclude="spack/opt/spack/*/*/libtool-*"
-        --exclude="spack/opt/spack/*/*/libxml2-*"
-        --exclude="spack/opt/spack/*/*/m4-*"
-        --exclude="spack/opt/spack/*/*/metis-*"
-        --exclude="spack/opt/spack/*/*/mpich-*"
-        --exclude="spack/opt/spack/*/*/numactl-*"
-        --exclude="spack/opt/spack/*/*/openmpi-*"
-        --exclude="spack/opt/spack/*/*/openssl-*"
-        --exclude="spack/opt/spack/*/*/parmetis-*"
-        --exclude="spack/opt/spack/*/*/perl-*"
-        --exclude="spack/opt/spack/*/*/pkgconf-*"
-        --exclude="spack/opt/spack/*/*/readline-*"
-        --exclude="spack/opt/spack/*/*/tar-*"
-        --exclude="spack/opt/spack/*/*/texinfo-*"
-        --exclude="spack/opt/spack/*/*/utils-macros-*"
-        --exclude="spack/opt/spack/*/*/xz-*"
-        --exclude="spack/opt/spack/*/*/zlib-*"
-        /home/flecsi/spack ${CI_PROJECT_DIR}/state
+    - rsync -apz /home/flecsi/spack ${CI_PROJECT_DIR}/state
 
 #------------------------------------------------------------------------------#
 # env_spack_restore
@@ -118,9 +81,9 @@
     - *env_permissions
     - *print_env_info
     - *env_shell
-    - spack repo add spack-repo
     - spack env create ${ENVIRONMENT}-${MPI_PROVIDER}
     - spack env activate ${ENVIRONMENT}-${MPI_PROVIDER}
+    - spack repo add spack-repo
     - spack install --only dependencies ${VERSION}
         backend=legion ${VARIANTS} ^${MPI_PROVIDER}
     - spack install cmake
