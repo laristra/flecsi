@@ -75,7 +75,7 @@ class Flecsi(CMakePackage):
     depends_on('hdf5@1.10.6',when='backend=legion +hdf5')
     del back,debug,bt
 
-    depends_on('boost@1.73.0: cxxstd=14 +program_options')
+    depends_on('boost@1.70.0: cxxstd=14 +program_options +atomic +filesystem +regex +system')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
     depends_on('hdf5+mpi', when='+hdf5')
