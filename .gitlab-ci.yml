@@ -98,6 +98,45 @@ mpich-legion-gnu:release:
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
+# Build and unit tests for MPI runtime with MPICH provider,
+# and GNU compiler toolchain.
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
+
+mpich-mpi-gnu:
+  extends: .build_template
+  dependencies:
+    - mpich
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "mpich"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    BUILD_TYPE: "debug"
+    RUNTIME: "mpi"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
+
+mpich-mpi-gnu:release:
+  extends: .build_template
+  dependencies:
+    - mpich:release
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "mpich"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    BUILD_TYPE: "release"
+    RUNTIME: "mpi"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
+
+#------------------------------------------------------------------------------#
 # Tutorial tests for Legion runtime with MPICH provider,
 # and GNU compiler toolchain.
 #
@@ -158,6 +197,45 @@ openmpi-legion-gnu:release:
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
+# Build and unit tests for MPI runtime with OpenMPI provider,
+# and GNU compiler toolchain.
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
+
+openmpi-mpi-gnu:
+  extends: .build_template
+  dependencies:
+    - openmpi
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "openmpi"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    BUILD_TYPE: "debug"
+    RUNTIME: "mpi"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
+
+openmpi-mpi-gnu:release:
+  extends: .build_template
+  dependencies:
+    - openmpi:release
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "openmpi"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "centos-7.8"
+    BUILD_TYPE: "release"
+    RUNTIME: "mpi"
+    CXX_COMPILER: "g++"
+    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
+    C_COMPILER: "gcc"
+    C_FLAGS: ${CXX_FLAGS}
+
+#------------------------------------------------------------------------------#
 # Build and unit tests for Legion runtime with MPICH provider,
 # and Clang compiler toolchain.
 #
@@ -175,6 +253,52 @@ mpich-legion-clang:
     IMAGE: "clearlinux"
     BUILD_TYPE: "debug"
     RUNTIME: "legion"
+    CXX_COMPILER: "clang++"
+    CXX_FLAGS: "-fcolor-diagnostics -ferror-limit=5 ${WARN} -Wno-parentheses"
+    C_COMPILER: "clang"
+    C_FLAGS: ${CXX_FLAGS}
+
+#------------------------------------------------------------------------------#
+# Build and unit tests for MPI runtime with MPICH provider,
+# and Clang compiler toolchain.
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
+
+mpich-mpi-clang:
+  extends: .build_template
+  dependencies:
+    - mpich-clang
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "mpich"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "clearlinux"
+    BUILD_TYPE: "debug"
+    RUNTIME: "mpi"
+    CXX_COMPILER: "clang++"
+    CXX_FLAGS: "-fcolor-diagnostics -ferror-limit=5 ${WARN} -Wno-parentheses"
+    C_COMPILER: "clang"
+    C_FLAGS: ${CXX_FLAGS}
+
+#------------------------------------------------------------------------------#
+# Build and unit tests for MPI runtime with OpenMPI provider,
+# and Clang compiler toolchain.
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
+
+openmpi-mpi-clang:
+  extends: .build_template
+  dependencies:
+    - openmpi-clang
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "openmpi"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "clearlinux"
+    BUILD_TYPE: "debug"
+    RUNTIME: "mpi"
     CXX_COMPILER: "clang++"
     CXX_FLAGS: "-fcolor-diagnostics -ferror-limit=5 ${WARN} -Wno-parentheses"
     C_COMPILER: "clang"

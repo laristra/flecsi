@@ -58,3 +58,15 @@ openmpi:release:
     IMAGE: "centos-7.8"
     VERSION: "flecsi@devel"
     VARIANTS: "+hdf5 +graphviz"
+
+openmpi-clang:
+  extends: .env_template
+  dependencies: []
+  variables:
+    ENVIRONMENT: "devel"
+    MPI_PROVIDER: "openmpi"
+    REGISTRY: "laristra/flecsi-ci"
+    IMAGE: "clearlinux"
+    VERSION: "flecsi@devel"
+    VARIANTS: "+hdf5 +graphviz +debug_backend"
+

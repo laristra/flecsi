@@ -118,6 +118,7 @@
   stage: Build + Unit Tests
   image: ${REGISTRY}:${ENVIRONMENT}-${IMAGE}
   script:
+    - ccache -z
     - *env_permissions
     - *env_spack_restore
     - *env_shell
@@ -138,6 +139,7 @@
     - make
     - make test
     - make install
+    - ccache -s
   artifacts:
     expire_in: 2 weeks
     paths:
@@ -166,6 +168,7 @@
   stage: Build + Unit Tests
   image: ${REGISTRY}:${ENVIRONMENT}-${IMAGE}
   script:
+    - ccache -z
     - *env_permissions
     - *env_spack_restore
     - *env_shell
@@ -177,6 +180,7 @@
       cmake -DCMAKE_INSTALL_PREFIX=${CI_PROJECT_DIR}/state/install ../..
     - make
     - make install
+    - ccache -s
   artifacts:
     expire_in: 2 weeks
     paths:
@@ -204,6 +208,7 @@
   stage: Tutorial
   image: ${REGISTRY}:${ENVIRONMENT}-${IMAGE}
   script:
+    - ccache -z
     - *env_permissions
     - *env_spack_restore
     - *env_shell
@@ -221,6 +226,7 @@
         ../../tutorial
     - make
     - make test
+    - ccache -s
 
 #------------------------------------------------------------------------------#
 # diff_format_template, check_format_template
