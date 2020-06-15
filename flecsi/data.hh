@@ -55,29 +55,29 @@ namespace detail {
 struct data_guard {
   struct global_guard {
     global_guard() {
-      global_topology.allocate({});
+      //global_topology.allocate({});
     }
     global_guard(global_guard &&) = delete;
     ~global_guard() {
-      global_topology.deallocate();
+      //global_topology.deallocate();
     }
   } g;
   struct color_guard {
     color_guard() {
-      process_coloring.allocate(run::context::instance().processes());
+      //process_coloring.allocate(run::context::instance().processes());
     }
     color_guard(color_guard &&) = delete;
     ~color_guard() {
-      process_coloring.deallocate();
+      //process_coloring.deallocate();
     }
   } c;
   struct process_guard {
     process_guard() {
-      process_topology.allocate(process_coloring.get());
+      //process_topology.allocate(process_coloring.get());
     }
     process_guard(process_guard &&) = delete;
     ~process_guard() {
-      process_topology.deallocate();
+      //process_topology.deallocate();
     }
   } p;
 };

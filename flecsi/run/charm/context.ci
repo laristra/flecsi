@@ -1,0 +1,14 @@
+mainmodule context {
+namespace flecsi {
+namespace run {
+namespace charm {
+
+  group ContextGroup {
+    entry ContextGroup();
+    entry void top_level_task();
+  }
+
+}
+}
+}
+}

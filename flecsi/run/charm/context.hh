@@ -68,14 +68,8 @@ using task = R(const Legion::Task *,
 
 class ContextGroup : public CBase_ContextGroup {
 public:
-  ContextGroup() {
-    CkPrintf("Group created on %i\n", CkMyPe());
-  }
-
-  void testEntry() {
-    CkPrintf("Hello from element %i\n", thisIndex);
-    contribute(CkCallback(CkCallback::ckExit));
-  }
+  ContextGroup();
+  void top_level_task();
 };
 
 }
@@ -88,6 +82,7 @@ struct context_t : context {
    */
 
   friend charm::task<> top_level_task, handoff_to_mpi_task, wait_on_mpi_task;
+  friend charm::ContextGroup;
 
   /*!
      The registration_function_t type defines a function type for
@@ -286,23 +281,6 @@ struct context_t : context {
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  /*!
-    Register a task with the runtime.
-
-    @param name       The task name string.
-    @param callback   The registration call back function.
-    \return task ID
-   */
-  std::size_t register_task(std::string_view name,
-    const registration_function_t & callback) {
-    flog_devel(info) << "Registering task callback: " << name << std::endl;
-
-    flog_assert(
-      task_registry_.size() < FLECSI_GENERATED_ID_MAX, "too many tasks");
-    task_registry_.push_back(callback);
-    return task_registry_.size(); // 0 is the top-level task
-  } // register_task
-
 private:
   /*!
      Handoff to legion runtime from MPI.
@@ -367,6 +345,8 @@ private:
     Runtime data.
    *--------------------------------------------------------------------------*/
 
+  charm::CProxy_ContextGroup cgProxy;
+
   // The first element is the head of the free list.
   std::vector<void *> enumerated = {nullptr};
   const std::function<int()> * top_level_action_ = nullptr;
@@ -378,12 +358,6 @@ private:
   std::function<void()> mpi_task_;
   Legion::MPILegionHandshake handshake_;
   LegionRuntime::Arrays::Rect<1> all_processes_;
-
-  /*--------------------------------------------------------------------------*
-    Task data members.
-   *--------------------------------------------------------------------------*/
-
-  std::vector<registration_function_t> task_registry_;
 };
 
 } // namespace flecsi::run

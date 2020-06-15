@@ -25,43 +25,31 @@
 #include "flecsi/run/types.hh"
 #include <flecsi/data.hh>
 
+#include <mpi-interoperate.h>
+
+#include "context.def.h"
+
 namespace flecsi::run {
 
 using namespace boost::program_options;
 using exec::charm::task_id;
 
-/*----------------------------------------------------------------------------*
-  Legion top-level task.
- *----------------------------------------------------------------------------*/
+namespace charm {
 
-void
-top_level_task(const Legion::Task *,
-  const std::vector<Legion::PhysicalRegion> &,
-  Legion::Context ctx,
-  Legion::Runtime * runtime) {
+ContextGroup::ContextGroup() {
+  CkPrintf("Group created on %i\n", CkMyPe());
+}
 
+void ContextGroup::top_level_task() {
+  std::cout << "Executing the top level task" << std::endl;
   context_t & context_ = context_t::instance();
-
-  /*
-    Initialize MPI interoperability.
-   */
-
-  context_.connect_with_mpi(ctx, runtime);
-  context_.wait_on_mpi(ctx, runtime);
-
-  /*
-    Invoke the FleCSI runtime top-level action.
-   */
-
   detail::data_guard(),
     context_.exit_status() = (*context_.top_level_action_)();
-
-  /*
-    Finish up Legion runtime and fall back out to MPI.
-   */
-
-  context_.handoff_to_mpi(ctx, runtime);
-} // top_level_task
+  if (CkMyPe() == 0) {
+    CkStartQD(CkCallback(CkCallback::ckExit));
+  }
+}
+}
 
 //----------------------------------------------------------------------------//
 // Implementation of context_t::initialize.
@@ -71,42 +59,20 @@ int
 context_t::initialize(int argc, char ** argv, bool dependent) {
 
   if(dependent) {
-    int version, subversion;
-    MPI_Get_version(&version, &subversion);
-
-#if defined(GASNET_CONDUIT_MPI)
-    if(version == 3 && subversion > 0) {
-      int provided;
-      MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
-
-      if(provided < MPI_THREAD_MULTIPLE) {
-        std::cerr << "Your implementation of MPI does not support "
-                     "MPI_THREAD_MULTIPLE which is required for use of the "
-                     "GASNet MPI conduit with the Legion-MPI Interop!"
-                  << std::endl;
-        std::abort();
-      } // if
+    CharmBeginInit(argc, argv);
+    if (CkMyPe() == 0) {
+      cgProxy = charm::CProxy_ContextGroup::ckNew();
     }
-    else {
-      // Initialize the MPI runtime
-      MPI_Init(&argc, &argv);
-    } // if
-#else
-    MPI_Init(&argc, &argv);
-#endif
+    CharmFinishInit();
   } // if
 
-  int rank, size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  context::process_ = rank;
-  context::processes_ = size;
+  context::process_ = CkMyPe();
+  context::processes_ = CkNumPes();
 
   auto status = context::initialize_generic(argc, argv, dependent);
 
   if(status != success && dependent) {
-    MPI_Finalize();
+    CharmLibExit();
   } // if
 
   return status;
@@ -120,11 +86,9 @@ void
 context_t::finalize() {
   context::finalize_generic();
 
-#ifndef GASNET_CONDUIT_MPI
   if(context::initialize_dependent_) {
-    MPI_Finalize();
+    CharmLibExit();
   } // if
-#endif
 } // finalize
 
 //----------------------------------------------------------------------------//
@@ -141,92 +105,20 @@ context_t::start(const std::function<int()> & action) {
 
   top_level_action_ = &action;
 
-  /*
-    Setup Legion top-level task.
-   */
-
-  Runtime::set_top_level_task_id(FLECSI_TOP_LEVEL_TASK_ID);
-
-  {
-    Legion::TaskVariantRegistrar registrar(
-      FLECSI_TOP_LEVEL_TASK_ID, "runtime_driver");
-    registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
-    registrar.set_replicable();
-    Runtime::preregister_task_variant<top_level_task>(
-      registrar, "runtime_driver");
-  } // scope
-
-  /*
-    Arg 0: MPI has initial control (true).
-    Arg 1: Number of MPI participants (1).
-    Arg 2: Number of Legion participants (1).
-   */
-
-  handshake_ = Legion::Runtime::create_handshake(true, 1, 1);
-
-  /*
-    Register custom mapper.
-   */
-
-  Runtime::add_registration_callback(mapper_registration);
-
-  /*
-    Configure interoperability layer.
-   */
-
-  Legion::Runtime::configure_MPI_interoperability(context::process_);
-
   context::start();
 
   /*
     Legion command-line arguments.
    */
 
-  std::vector<char *> largv;
-  largv.push_back(argv_[0]);
-
-  auto iss = std::istringstream{backend_};
-  std::vector<std::string> lsargv(std::istream_iterator<std::string>{iss},
-    std::istream_iterator<std::string>());
-
-  for(auto & arg : lsargv) {
-    largv.push_back(&arg[0]);
-  } // for
-
-  // FIXME: This needs to be gotten from Legion
+  // FIXME: This needs to be gotten from Charm
   context::threads_per_process_ = 1;
   context::threads_ = context::processes_ * context::threads_per_process_;
 
-  /*
-    Start Legion runtime.
-   */
-
-  {
-    log::devel_guard("context");
-
-    std::stringstream stream;
-
-    stream << "Starting Legion runtime" << std::endl;
-    stream << "\targc: " << largv.size() << std::endl;
-    stream << "\targv: ";
-
-    for(auto opt : largv) {
-      stream << opt << " ";
-    } // for
-
-    stream << std::endl;
-
-    flog_devel(info) << stream.str();
-  } // scope
-
-  Runtime::start(largv.size(), largv.data(), true);
-
-  do {
-    handoff_to_legion();
-    wait_on_legion();
-  } while(invoke_mpi_task());
-
-  Legion::Runtime::wait_for_shutdown();
+  if (context::process_ == 0) {
+    cgProxy.top_level_task();
+  }
+  StartCharmScheduler();
 
   return context::exit_status();
 } // context_t::start
