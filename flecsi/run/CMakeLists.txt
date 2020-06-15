@@ -52,7 +52,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
     ${run_HEADERS}
     charm/context.hh
     charm/mapper.hh
-    charm/tasks.hh
   )
 
   set(run_SOURCES

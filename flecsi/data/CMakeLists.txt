@@ -69,7 +69,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
 
   set(data_HEADERS
     charm/policy.hh
-    charm/types.hh
     ${data_HEADERS}
   )
 
