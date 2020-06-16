@@ -27,7 +27,7 @@ project(FleCSI-CI LANGUAGES NONE)
 
 set(REPOSITORY "https://gitlab.lanl.gov/laristra/flecsi.git" CACHE STRING
   "Set the FleCSI CI repository")
-set(BRANCH "gitlab-ci" CACHE STRING
+set(CI_BRANCH "gitlab-ci" CACHE STRING
   "Set the repository branch, e.g., gitlab-ci")
 set(REGISTRY "docker.io/laristra/flecsi-ci" CACHE STRING "Set the registry")
 
@@ -53,7 +53,7 @@ foreach(image in ${BASE_IMAGES})
     devel/environment
     ARGS
       REPO=${REPOSITORY}
-      BRANCH=${BRANCH}
+      CI_BRANCH=${CI_BRANCH}
       SUBDIR=devel
       OS=${REGISTRY}:${image}
     DEPENDS push-${image}
@@ -63,7 +63,7 @@ foreach(image in ${BASE_IMAGES})
     util/environment
     ARGS
       REPO=${REPOSITORY}
-      BRANCH=${BRANCH}
+      CI_BRANCH=${CI_BRANCH}
       SUBDIR=util
       OS=${REGISTRY}:${image}
     DEPENDS push-${image}

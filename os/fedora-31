@@ -9,6 +9,7 @@ FROM fedora:31
 #------------------------------------------------------------------------------#
 
 RUN dnf update -y && dnf install -y \
+  ccache \
   clang \
   cmake \
   curl \

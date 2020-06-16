@@ -10,9 +10,9 @@ FROM ${OS}
 #------------------------------------------------------------------------------#
 
 ARG REPO
-ARG BRANCH
+ARG CI_BRANCH
 
-RUN git clone --single-branch --branch ${BRANCH} ${REPO} ${BRANCH}
+RUN git clone --single-branch --branch ${CI_BRANCH} ${REPO} ${CI_BRANCH}
 RUN git clone --single-branch \
   --branch develop https://github.com/spack/spack.git
 
@@ -25,7 +25,7 @@ ARG SUBDIR
 RUN mkdir -p .spack/linux && \
   export GNU_VERSION=`cat .gnu_version` && \
   export NCURSES_VERSION=`cat .ncurses_version` && \
-  cat ${BRANCH}/${SUBDIR}/spack/packages.yaml | \
+  cat ${CI_BRANCH}/${SUBDIR}/spack/packages.yaml | \
     sed "s,GNU_VERSION,${GNU_VERSION},g" | \
     sed "s,NCURSES_VERSION,${NCURSES_VERSION},g" > .spack/linux/packages.yaml
 

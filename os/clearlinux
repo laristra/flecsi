@@ -10,6 +10,7 @@ FROM clearlinux:latest
 
 RUN swupd bundle-add \
   c-basic \
+  ccache \
   curl \
   devpkg-graphviz \
   devpkg-ncurses \

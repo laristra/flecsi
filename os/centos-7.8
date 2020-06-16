@@ -47,6 +47,21 @@ WORKDIR /
 RUN rm -rf gcc-9.3.0*
 
 #------------------------------------------------------------------------------#
+# Build ccache
+#------------------------------------------------------------------------------#
+
+RUN wget https://github.com/ccache/ccache/releases/download/v3.7.9/ccache-3.7.9.tar.xz
+RUN tar xf ccache-3.7.9.tar.xz
+
+WORKDIR ccache-3.7.9
+RUN ./configure --prefix=/opt/ccache/3.7.9
+RUN make
+RUN make install
+
+WORKDIR /
+RUN rm -rf ccache-3.7.9
+
+#------------------------------------------------------------------------------#
 # Add flecsi user
 #------------------------------------------------------------------------------#
 
@@ -66,7 +81,7 @@ RUN \
 # Setup path for gcc 9
 #------------------------------------------------------------------------------#
 
-ENV PATH /opt/gnu/9.3.0/bin:$PATH
+ENV PATH /opt/gnu/9.3.0/bin:/opt/ccache/3.7.9/bin:$PATH
 ENV LD_LIBRARY_PATH /opt/gnu/9.3.0/lib:/opt/gnu/9.3.0/lib64:$LD_LIBRARY_PATH
 
 #------------------------------------------------------------------------------#
