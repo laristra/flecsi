@@ -29,7 +29,7 @@ set(REPOSITORY "https://gitlab.lanl.gov/laristra/flecsi.git" CACHE STRING
   "Set the FleCSI CI repository")
 set(CI_BRANCH "gitlab-ci" CACHE STRING
   "Set the repository branch, e.g., gitlab-ci")
-set(REGISTRY "docker.io/laristra/flecsi-ci" CACHE STRING "Set the registry")
+set(REGISTRY "gitlab.lanl.gov:5050/laristra/flecsi" CACHE STRING "Set the registry")
 
 #------------------------------------------------------------------------------#
 # Images
