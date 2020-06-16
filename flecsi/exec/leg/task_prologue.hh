@@ -57,15 +57,6 @@ namespace exec::leg {
 
 struct task_prologue_t {
 
-  /*!
-    Construct an task_prologue_t instance.
-
-    @param runtime The Legion task runtime.
-    @param context The Legion task runtime context.
-   */
-
-  task_prologue_t(const size_t & domain) : domain_(domain) {}
-
   std::vector<Legion::RegionRequirement> const & region_requirements() const {
     return region_reqs_;
   } // region_requirements
@@ -137,10 +128,6 @@ struct task_prologue_t {
 
     constexpr auto priv = get_privilege(0, PRIVILEGES);
 
-    if(priv > partition_privilege_t::ro)
-      flog_assert(domain_ == 1,
-        "global can only be modified from within single launch task");
-
     Legion::RegionRequirement rr(region,
       priv > partition_privilege_t::ro ? privilege_mode(priv) : READ_ONLY,
       EXCLUSIVE,
@@ -159,11 +146,6 @@ struct task_prologue_t {
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, data::dense, Topo, Space> & ref) {
     auto & instance_data = ref.topology().get().template get_partition<Space>();
-
-    flog_assert(instance_data.colors() == domain_,
-      "attempting to pass field with "
-        << instance_data.colors()
-        << " partitions into task with launch domain of size " << domain_);
 
     static_assert(privilege_count(PRIVILEGES) == 1,
       "accessors for this topology type take only one privilege");
@@ -227,8 +209,6 @@ private:
   void walk(std::tuple<PP...> * /* to deduce PP */, const AA &... aa) {
     (visit(static_cast<std::decay_t<PP> *>(nullptr), aa), ...);
   }
-
-  size_t domain_;
 
   std::vector<Legion::RegionRequirement> region_reqs_;
   std::vector<Legion::Future> futures_;

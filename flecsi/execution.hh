@@ -26,7 +26,6 @@
 
 #include "flecsi/exec/backend.hh"
 #include "flecsi/exec/fold.hh"
-#include "flecsi/exec/launch.hh"
 #include "flecsi/exec/task_attributes.hh"
 #include "flecsi/flog.hh"
 #include "flecsi/run/backend.hh"
@@ -341,14 +340,12 @@ colors() {
   Execute a reduction task.
 
   @tparam TASK                The user task.
-  @tparam LAUNCH_DOMAIN       The launch domain.
   @tparam REDUCTION_OPERATION The reduction operation type.
   @tparam ATTRIBUTES          The task attributes mask.
   @tparam ARGS                The user-specified task arguments.
  */
 
 template<auto & TASK,
-  const exec::launch_domain & LAUNCH_DOMAIN,
   class REDUCTION_OPERATION,
   size_t ATTRIBUTES,
   typename... ARGS>
@@ -363,7 +360,6 @@ decltype(auto) reduce(ARGS &&... args);
     Legion return-value serialization interface, or any of several standard
     containers of such types.
     If \a ATTRIBUTES specifies an MPI task, parameters need merely be movable.
-  @tparam LAUNCH_DOMAIN The launch domain object.
   @tparam ATTRIBUTES    The task attributes mask.
   @tparam ARGS The user-specified task arguments, implicitly converted to the
     parameter types for \a TASK.
@@ -375,13 +371,11 @@ decltype(auto) reduce(ARGS &&... args);
  */
 
 template<auto & TASK,
-  const exec::launch_domain & LAUNCH_DOMAIN = index,
   size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
   typename... ARGS>
 decltype(auto)
 execute(ARGS &&... args) {
-  return reduce<TASK, LAUNCH_DOMAIN, void, ATTRIBUTES>(
-    std::forward<ARGS>(args)...);
+  return reduce<TASK, void, ATTRIBUTES>(std::forward<ARGS>(args)...);
 } // execute
 
 /*!
@@ -395,7 +389,6 @@ execute(ARGS &&... args) {
     Legion return-value serialization interface, or any of several standard
     containers of such types.
     If \a ATTRIBUTES specifies an MPI task, parameters need merely be movable.
-  @tparam LAUNCH_DOMAIN The launch domain object.
   @tparam ATTRIBUTES    The task attributes mask.
   @tparam ARGS The user-specified task arguments, implicitly converted to the
     parameter types for \a TASK.
@@ -404,12 +397,11 @@ execute(ARGS &&... args) {
  */
 
 template<auto & TASK,
-  const exec::launch_domain & LAUNCH_DOMAIN = flecsi::index,
   size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
   typename... ARGS>
 int
 test(ARGS &&... args) {
-  return reduce<TASK, LAUNCH_DOMAIN, exec::fold::sum<int>, ATTRIBUTES>(
+  return reduce<TASK, exec::fold::sum<int>, ATTRIBUTES>(
     std::forward<ARGS>(args)...)
     .get();
 } // test

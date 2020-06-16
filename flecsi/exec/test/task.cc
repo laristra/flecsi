@@ -65,7 +65,7 @@ test_driver() {
     execute<hydro::seq<V>>(V{"Elementary", " Dear Data"});
 
     int x = 0;
-    execute<hydro::mpi, flecsi::index, mpi>(&x);
+    execute<hydro::mpi, mpi>(&x);
     ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
   };
 } // test_driver

@@ -74,6 +74,10 @@ struct future<Return, exec::launch_type_t::index> {
       return legion_future_.get_result<Return>(index, silence_warnings);
   } // get
 
+  std::size_t size() const {
+    return legion_future_.get_future_map_domain().get_volume();
+  }
+
   Legion::FutureMap legion_future_;
 };
 

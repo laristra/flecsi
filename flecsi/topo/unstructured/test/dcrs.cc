@@ -92,8 +92,8 @@ int
 dcrs_driver() {
   UNIT {
     // TODO: use test<> when reduction works for MPI tasks
-    execute<naive_coloring, flecsi::index, mpi>();
-    execute<simple2d_8x8, flecsi::index, mpi>();
+    execute<naive_coloring, mpi>();
+    execute<simple2d_8x8, mpi>();
   };
 } // simple2d_8x8
 
