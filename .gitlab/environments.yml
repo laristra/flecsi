@@ -10,7 +10,7 @@ mpich:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     VERSION: "flecsi@devel"
     VARIANTS: "+hdf5 +graphviz +debug_backend"
@@ -21,7 +21,7 @@ mpich:release:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     VERSION: "flecsi@devel"
     VARIANTS: "+hdf5 +graphviz"
@@ -32,7 +32,7 @@ mpich-clang:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "clearlinux"
     VERSION: "flecsi@devel"
     VARIANTS: "+hdf5 +graphviz +debug_backend"
@@ -43,7 +43,7 @@ openmpi:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "openmpi"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     VERSION: "flecsi@devel"
     VARIANTS: "+hdf5 +graphviz +debug_backend"
@@ -54,7 +54,7 @@ openmpi:release:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "openmpi"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     VERSION: "flecsi@devel"
     VARIANTS: "+hdf5 +graphviz"
@@ -65,8 +65,7 @@ openmpi-clang:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "openmpi"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "clearlinux"
     VERSION: "flecsi@devel"
     VARIANTS: "+hdf5 +graphviz +debug_backend"
-
