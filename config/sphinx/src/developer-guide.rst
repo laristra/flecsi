@@ -280,7 +280,7 @@ configuration files that are used for Gitlab's continuous integration
 
 * **Images** |br|
   Operating system, build environment, and FleCSI images. These use
-  dockerfile syntax, and can be built and run with docker and podman
+  dockerfile syntax, and can be built and run with docker, and podman
   engines, or potentially, with any engine that is compatible with
   docker-generated images.
 
@@ -305,7 +305,7 @@ configuration files that are used for Gitlab's continuous integration
   * **Build** |br|
     Also located in the *branch* directory, the build image provides a
     pre-built FleCSI installation that can be used for debugging, or as
-    a building block for other project.
+    a building block for other projects.
 
 * **Spack Configuration Files** |br|
   Located in the *spack* subdirectory of an environment directory, these
@@ -319,26 +319,33 @@ Build System
 ============
 
 The *gitlab-ci* branch uses a standard CMake build system. There are
-three important configuration options that you need to be aware of:
+several important configuration options that you need to be aware of:
 
-* **BRANCH** |br|
+* **CI_BRANCH** |br|
   This is the branch name of the branch or fork of *gitlab-ci* that you
   wish to use. The default is *gitlab-ci*. However, it is useful to be
   able to set this to a personal branch name, so that you can test local
   changes without doing a merge request to the central FleCSI Gitlab
   project. Use this in conjunction with the *REPOSITORY* option.
 
+* **REPOSITORY** |br|
+  This is the url for the repository where the build system will look
+  for the *CI_BRANCH* option that you specified. The default is the main
+  FleCSI Gitlab repository
+  *https://gitlab.lanl.gov/laristra/flecsi.git*. However, it is useful
+  to set this to your personal fork for testing new images.
+
+* **REGISTRY** |br|
+  This is the container registry that will be used for *push-*, and
+  *pull-* targets. In general, this needs to be set to the registry that
+  is being used by the CI to pull images, e.g., laristra/flecsi-ci (this
+  is on dockerhub.com), or gitlab.lanl.gov:5050/laristra/flecsi
+  (internal container registry).
+
 * **CONTAINER_ENGINE** |br|
   This should be the name of the container engine that is installed on
   your system. Currently, only *docker*, and *podman* are supported.
   Additional engines may be added in the future.
-
-* **REPOSITORY** |br|
-  This is the url for the repository where the build system will look
-  for the *BRANCH* option that you specified. The default is the main
-  FleCSI Gitlab repository
-  *https://gitlab.lanl.gov/laristra/flecsi.git*. However, it is useful
-  to set this to your personal fork for testing new images.
 
 As an example configuration, consider the following:
 
@@ -346,7 +353,7 @@ As an example configuration, consider the following:
 
   $ mkdir build
   $ cd build
-  $ cmake .. -DBRANCH=ci-environment -DREPOSITORY=https://github.com/tuxfan/flecsi.git -D ENGINE=podman
+  $ cmake .. -DCI_BRANCH=ci-environment -DREPOSITORY=https://github.com/tuxfan/flecsi.git -DREGISTRY=gitlab.lanl.gov:5050/laristra/flecsi -DENGINE=podman
 
 This configuration will use the author's *ci-environment* branch on
 Github with the *podman* engine.
@@ -474,7 +481,7 @@ Install the flecsi dependencies:
 
 .. code-block:: console
 
-  $ spack install --only dependencies flecsi@devel backend=legion +hdf5 ^mpich
+  $ spack install --only dependencies flecsi@devel backend=legion +hdf5 +graphviz +flog ^mpich
 
 Create a spack environment and install the flecsi dependencies. This is
 not redundant, spack will not rebuild anything, but it needs to install
@@ -484,7 +491,7 @@ the dependencies in the environment:
 
   $ spack env create legion
   $ spack env activate legion
-  $ spack install --only dependencies flecsi@devel backend=legion +hdf5 ^mpich
+  $ spack install --only dependencies flecsi@devel backend=legion +hdf5 +graphviz +flog ^mpich
   $ spack install cmake
   
 Load clang and doxygen, install sphinx, and update your path:

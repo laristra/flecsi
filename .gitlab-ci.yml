@@ -29,7 +29,7 @@ format:diff:
   extends: .diff_format_template
   dependencies: []
   variables:
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "util-fedora-30"
     FORMAT_VERSION: "8.0.0"
   allow_failure: true
@@ -39,7 +39,7 @@ format:check:
   dependencies:
     - format:diff
   variables:
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "util-fedora-30"
 
 #------------------------------------------------------------------------------#
@@ -55,7 +55,7 @@ mpich-defaults:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
 
 #------------------------------------------------------------------------------#
@@ -72,7 +72,7 @@ mpich-legion-gnu:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     BUILD_TYPE: "debug"
     RUNTIME: "legion"
@@ -88,7 +88,7 @@ mpich-legion-gnu:release:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     BUILD_TYPE: "release"
     RUNTIME: "legion"
@@ -111,7 +111,7 @@ mpich-mpi-gnu:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     BUILD_TYPE: "debug"
     RUNTIME: "mpi"
@@ -127,7 +127,7 @@ mpich-mpi-gnu:release:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     BUILD_TYPE: "release"
     RUNTIME: "mpi"
@@ -150,7 +150,7 @@ tutorial:legion:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     CXX_COMPILER: "g++"
     CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
@@ -171,7 +171,7 @@ openmpi-legion-gnu:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "openmpi"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     BUILD_TYPE: "debug"
     RUNTIME: "legion"
@@ -187,7 +187,7 @@ openmpi-legion-gnu:release:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "openmpi"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     BUILD_TYPE: "release"
     RUNTIME: "legion"
@@ -210,7 +210,7 @@ openmpi-mpi-gnu:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "openmpi"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     BUILD_TYPE: "debug"
     RUNTIME: "mpi"
@@ -226,7 +226,7 @@ openmpi-mpi-gnu:release:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "openmpi"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "centos-7.8"
     BUILD_TYPE: "release"
     RUNTIME: "mpi"
@@ -249,7 +249,7 @@ mpich-legion-clang:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "clearlinux"
     BUILD_TYPE: "debug"
     RUNTIME: "legion"
@@ -272,7 +272,7 @@ mpich-mpi-clang:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "mpich"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "clearlinux"
     BUILD_TYPE: "debug"
     RUNTIME: "mpi"
@@ -295,7 +295,7 @@ openmpi-mpi-clang:
   variables:
     ENVIRONMENT: "devel"
     MPI_PROVIDER: "openmpi"
-    REGISTRY: "laristra/flecsi-ci"
+    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
     IMAGE: "clearlinux"
     BUILD_TYPE: "debug"
     RUNTIME: "mpi"
