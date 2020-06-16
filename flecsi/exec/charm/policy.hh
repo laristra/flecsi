@@ -132,7 +132,8 @@ reduce(ARGS &&... args) {
 
     if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
       constexpr auto send = [] {
-        run::context::instance().set_mpi_task(log::send_to_one);
+        // TODO: This functionality was removed from charm context
+        //run::context::instance().set_mpi_task(log::send_to_one);
       };
       Legion::IndexLauncher flog_mpi_launcher(charm::task_id<charm::verb<*send>>,
         launch_domain,
@@ -149,10 +150,12 @@ reduce(ARGS &&... args) {
       future_mpi.wait_all_results(true);
 
       // Handoff to the MPI runtime.
-      flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
+      // TODO: This functionality was removed from charm context
+      //flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
 
       // Wait for MPI to finish execution (synchronous).
-      flecsi_context.wait_on_mpi(legion_context, legion_runtime);
+      // TODO: This functionality was removed from charm context
+      //flecsi_context.wait_on_mpi(legion_context, legion_runtime);
     } // if
   } // if
 #endif // FLECSI_ENABLE_FLOG
@@ -293,11 +296,13 @@ reduce(ARGS &&... args) {
       future.wait_all_results(true);
 
       // Handoff to the MPI runtime.
-      flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
+      // TODO: This functionality was removed from charm context
+      //flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
 
       // Wait for MPI to finish execution (synchronous).
       // We must keep mpi_args alive until then.
-      flecsi_context.wait_on_mpi(legion_context, legion_runtime);
+      // TODO: This functionality was removed from charm context
+      //flecsi_context.wait_on_mpi(legion_context, legion_runtime);
 
       if constexpr(!std::is_void_v<REDUCTION>) {
         // FIXME implement logic for reduction MPI task

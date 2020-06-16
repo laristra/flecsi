@@ -276,7 +276,8 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();
-    c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
+    // TODO: Removed from context in charm backend
+    //c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
     // FIXME: Refactor
     // finalize_handles_t finalize_handles;

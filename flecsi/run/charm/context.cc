@@ -61,7 +61,7 @@ context_t::initialize(int argc, char ** argv, bool dependent) {
   if(dependent) {
     CharmBeginInit(argc, argv);
     if (CkMyPe() == 0) {
-      cgProxy = charm::CProxy_ContextGroup::ckNew();
+      context_proxy_ = charm::CProxy_ContextGroup::ckNew();
     }
     CharmFinishInit();
   } // if
@@ -116,66 +116,11 @@ context_t::start(const std::function<int()> & action) {
   context::threads_ = context::processes_ * context::threads_per_process_;
 
   if (context::process_ == 0) {
-    cgProxy.top_level_task();
+    context_proxy_.top_level_task();
   }
   StartCharmScheduler();
 
   return context::exit_status();
 } // context_t::start
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::handoff_to_mpi.
-//----------------------------------------------------------------------------//
-
-void
-context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
-  Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher handoff_to_mpi_launcher(
-    task_id<exec::charm::verb<mpi_handoff>>,
-    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0),
-    arg_map);
-
-  handoff_to_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
-
-  fm.wait_all_results(true);
-} // context_t::handoff_to_mpi
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::wait_on_mpi.
-//----------------------------------------------------------------------------//
-
-Legion::FutureMap
-context_t::wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
-  Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher wait_on_mpi_launcher(task_id<exec::charm::verb<mpi_wait>>,
-    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0),
-    arg_map);
-
-  wait_on_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
-
-  fm.wait_all_results(true);
-
-  return fm;
-} // context_t::wait_on_mpi
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::connect_with_mpi.
-//----------------------------------------------------------------------------//
-
-void
-context_t::connect_with_mpi(Legion::Context &, Legion::Runtime *) {
-  int size;
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  LegionRuntime::Arrays::Rect<1> launch_bounds(
-    LegionRuntime::Arrays::Point<1>(0),
-    LegionRuntime::Arrays::Point<1>(size - 1));
-
-  context_t::instance().set_all_processes(launch_bounds);
-} // context_t::connect_with_mpi
 
 } // namespace flecsi::run
