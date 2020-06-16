@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer Guide &mdash; FleCSI 2.-1 (devel) documentation</title>
+  <title>Developer Guide &mdash; FleCSI invalid documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                Version: 2.-1 (devel)
+                Version: invalid
               </div>
             
           
@@ -455,7 +455,7 @@ configuration files that are used for Gitlab’s continuous integration
 <ul>
 <li><p><strong>Images</strong> <br />
 Operating system, build environment, and FleCSI images. These use
-dockerfile syntax, and can be built and run with docker and podman
+dockerfile syntax, and can be built and run with docker, and podman
 engines, or potentially, with any engine that is compatible with
 docker-generated images.</p>
 <p>The images are modular, and are intended to be used to build up
@@ -477,7 +477,7 @@ support custom configuration of a branch that they are testing.</p>
 <li><p><strong>Build</strong> <br />
 Also located in the <em>branch</em> directory, the build image provides a
 pre-built FleCSI installation that can be used for debugging, or as
-a building block for other project.</p></li>
+a building block for other projects.</p></li>
 </ul>
 </li>
 <li><p><strong>Spack Configuration Files</strong> <br />
@@ -491,29 +491,35 @@ this guideline will greatly increase stability.</p></li>
 <div class="section" id="build-system">
 <h4>Build System<a class="headerlink" href="#build-system" title="Permalink to this headline">¶</a></h4>
 <p>The <em>gitlab-ci</em> branch uses a standard CMake build system. There are
-three important configuration options that you need to be aware of:</p>
+several important configuration options that you need to be aware of:</p>
 <ul class="simple">
-<li><p><strong>BRANCH</strong> <br />
+<li><p><strong>CI_BRANCH</strong> <br />
 This is the branch name of the branch or fork of <em>gitlab-ci</em> that you
 wish to use. The default is <em>gitlab-ci</em>. However, it is useful to be
 able to set this to a personal branch name, so that you can test local
 changes without doing a merge request to the central FleCSI Gitlab
 project. Use this in conjunction with the <em>REPOSITORY</em> option.</p></li>
+<li><p><strong>REPOSITORY</strong> <br />
+This is the url for the repository where the build system will look
+for the <em>CI_BRANCH</em> option that you specified. The default is the main
+FleCSI Gitlab repository
+<em>https://gitlab.lanl.gov/laristra/flecsi.git</em>. However, it is useful
+to set this to your personal fork for testing new images.</p></li>
+<li><p><strong>REGISTRY</strong> <br />
+This is the container registry that will be used for <em>push-</em>, and
+<em>pull-</em> targets. In general, this needs to be set to the registry that
+is being used by the CI to pull images, e.g., laristra/flecsi-ci (this
+is on dockerhub.com), or gitlab.lanl.gov:5050/laristra/flecsi
+(internal container registry).</p></li>
 <li><p><strong>CONTAINER_ENGINE</strong> <br />
 This should be the name of the container engine that is installed on
 your system. Currently, only <em>docker</em>, and <em>podman</em> are supported.
 Additional engines may be added in the future.</p></li>
-<li><p><strong>REPOSITORY</strong> <br />
-This is the url for the repository where the build system will look
-for the <em>BRANCH</em> option that you specified. The default is the main
-FleCSI Gitlab repository
-<em>https://gitlab.lanl.gov/laristra/flecsi.git</em>. However, it is useful
-to set this to your personal fork for testing new images.</p></li>
 </ul>
 <p>As an example configuration, consider the following:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> mkdir build
 <span class="gp">$</span> <span class="nb">cd</span> build
-<span class="gp">$</span> cmake .. -DBRANCH<span class="o">=</span>ci-environment -DREPOSITORY<span class="o">=</span>https://github.com/tuxfan/flecsi.git -D <span class="nv">ENGINE</span><span class="o">=</span>podman
+<span class="gp">$</span> cmake .. -DCI_BRANCH<span class="o">=</span>ci-environment -DREPOSITORY<span class="o">=</span>https://github.com/tuxfan/flecsi.git -DREGISTRY<span class="o">=</span>gitlab.lanl.gov:5050/laristra/flecsi -DENGINE<span class="o">=</span>podman
 </pre></div>
 </div>
 <p>This configuration will use the author’s <em>ci-environment</em> branch on
@@ -609,7 +615,7 @@ on the LANL Darwin cluster.</p>
 </pre></div>
 </div>
 <p>Install the flecsi dependencies:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack install --only dependencies flecsi@devel <span class="nv">backend</span><span class="o">=</span>legion +hdf5 ^mpich
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack install --only dependencies flecsi@devel <span class="nv">backend</span><span class="o">=</span>legion +hdf5 +graphviz +flog ^mpich
 </pre></div>
 </div>
 <p>Create a spack environment and install the flecsi dependencies. This is
@@ -617,7 +623,7 @@ not redundant, spack will not rebuild anything, but it needs to install
 the dependencies in the environment:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> spack env create legion
 <span class="gp">$</span> spack env activate legion
-<span class="gp">$</span> spack install --only dependencies flecsi@devel <span class="nv">backend</span><span class="o">=</span>legion +hdf5 ^mpich
+<span class="gp">$</span> spack install --only dependencies flecsi@devel <span class="nv">backend</span><span class="o">=</span>legion +hdf5 +graphviz +flog ^mpich
 <span class="gp">$</span> spack install cmake
 </pre></div>
 </div>
