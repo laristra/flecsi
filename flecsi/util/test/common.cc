@@ -38,7 +38,10 @@ using c31 = util::constants<3, 1>;
 static_assert(c31::size == 2);
 static_assert(c31::index<1> == 1);
 static_assert(c31::index<3> == 0);
-static_assert(util::constants<4>::value == 4);
+static_assert(c31::first == 3);
+using c4 = util::constants<4>;
+static_assert(c4::value == 4);
+static_assert(c4::first == 4);
 static_assert(!util::constants<>::size);
 
 int

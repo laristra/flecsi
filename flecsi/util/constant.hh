@@ -28,6 +28,13 @@ struct constant { // like std::integral_constant, but better
   static constexpr const auto & value = Value;
 };
 
+namespace detail {
+template<auto...>
+extern void * const first_constant; // undefined
+template<auto V, auto... VV>
+constexpr const auto & first_constant<V, VV...> = V;
+} // namespace detail
+
 // Non-type template parameters must be fixed-size through C++20, so we must
 // use a type to hold an arbitrary amount of information, but there's no need
 // to convert each to a type separately.
@@ -38,6 +45,8 @@ struct constants {
   static constexpr
     typename decltype((constant<0>(), ..., constant<VV>()))::type value =
       size == 1 ? (VV, ...) : throw;
+  static constexpr decltype(detail::first_constant<VV...>) first =
+    detail::first_constant<VV...>;
 
 private:
   template<auto V, std::size_t... II>
