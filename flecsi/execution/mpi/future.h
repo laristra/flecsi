@@ -30,6 +30,7 @@ namespace execution {
 
  @ingroup legion-execution
  */
+
 template<typename R, launch_type_t launch = launch_type_t::single>
 struct mpi_future_u {
   using result_t = R;
@@ -80,7 +81,7 @@ struct mpi_future_u<void, launch> {
 }; // struct mpi_future_u
 
 template<typename RETURN, launch_type_t launch>
-using flecsi_future = mpi_future_u<RETURN, launch>;
+using flecsi_future = mpi_future_u<RETURN, launch_type_t::single>;
 
 } // namespace execution
 } // namespace flecsi

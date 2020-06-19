@@ -22,6 +22,10 @@ template<typename T>
 using handle_t =
   flecsi::execution::flecsi_future<T, flecsi::execution::launch_type_t::single>;
 
+template<typename T>
+using index_handle_t =
+  flecsi::execution::flecsi_future<T, flecsi::execution::launch_type_t::index>;
+
 void
 future_dump(handle_t<double> x) {
   double tmp = x;
@@ -45,6 +49,22 @@ reader(handle_t<double> x, handle_t<double> y) {
 }
 
 flecsi_register_task(reader, , loc, single);
+
+int
+index_writer() {
+  int x = 1 + flecsi::execution::context_t::instance().color();
+  return x;
+}
+
+flecsi_register_task(index_writer, , loc, index);
+
+void
+index_reader(index_handle_t<int> x) {
+  int y = 1 + flecsi::execution::context_t::instance().color();
+  ASSERT_EQ(x, y);
+}
+
+flecsi_register_task(index_reader, , loc, index);
 
 namespace flecsi {
 namespace execution {
@@ -77,6 +97,10 @@ driver(int argc, char ** argv) {
   auto future = flecsi_execute_task(writer, , single, 0.0);
   flecsi_execute_task(future_dump, , single, future);
   flecsi_execute_task(reader, , single, future, future);
+
+  auto fm = flecsi_execute_task(index_writer, , index);
+  flecsi_execute_task(index_reader, , index, fm);
+
 } // driver
 
 //----------------------------------------------------------------------------//
