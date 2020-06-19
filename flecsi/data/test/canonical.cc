@@ -27,7 +27,7 @@ struct canon : topo::specialization<topo::canonical, canon> {
   using index_spaces = util::constants<cells, vertices>;
 
   static coloring color(std::string const &) {
-    return {16, 2};
+    return {{16, 17}, 2};
   } // color
 };
 

@@ -21,6 +21,7 @@
 
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/topology.hh"
+#include "flecsi/flog.hh"
 #include "flecsi/topo/canonical/types.hh"
 #include "flecsi/topo/core.hh" // base
 
@@ -38,7 +39,7 @@ namespace topo {
 template<typename Policy>
 struct canonical : canonical_base {
   using index_space = typename Policy::index_space;
-  static constexpr std::size_t index_spaces = Policy::index_spaces;
+  using index_spaces = typename Policy::index_spaces;
 
   template<std::size_t>
   struct access;
@@ -49,31 +50,38 @@ struct canonical : canonical_base {
   }
 
   canonical(const coloring & c)
-    : vert(data::make_region<Policy, index_space::vertices>(c.size + 1),
-        c.parts,
-        split(c.size + 1, c.parts),
-        data::disjoint,
-        data::complete),
-      cell(data::make_region<Policy, index_space::cells>(c.size),
-        c.parts,
-        split(c.size, c.parts),
-        data::disjoint,
-        data::complete) {}
+    : part(make_partitions(c,
+        index_spaces(),
+        std::make_index_sequence<index_spaces::size>())) {}
 
-  static inline const field<int>::definition<Policy, index_space::cells> mine;
+  // The first index space is distinguished in that we decorate it:
+  static inline const field<int>::definition<Policy, index_spaces::first> mine;
 
-  data::partitioned vert, cell;
+  util::key_array<data::partitioned, index_spaces> part;
 
   std::size_t colors() const {
-    return cell.colors();
+    return part.front().colors();
   }
 
   template<index_space S>
-  auto & get_partition() const {
-    return S == index_space::cells ? cell : vert;
+  const data::partition & get_partition() const {
+    return part.template get<S>();
   }
 
 private:
+  template<auto... VV, std::size_t... II>
+  static util::key_array<data::partitioned, util::constants<VV...>>
+  make_partitions(const canonical_base::coloring & c,
+    util::constants<VV...> /* index_spaces, to deduce a pack */,
+    std::index_sequence<II...>) {
+    flog_assert(c.sizes.size() == sizeof...(VV),
+      c.sizes.size() << " sizes for " << sizeof...(VV) << " index spaces");
+    return {{data::partitioned(data::make_region<Policy, VV>(c.sizes[II]),
+      c.parts,
+      split(c.sizes[II], c.parts),
+      data::disjoint,
+      data::complete)...}};
+  }
   static auto split(std::size_t n, std::size_t p) {
     return [=](std::size_t i) { return std::pair{i * n / p, (i + 1) * n / p}; };
   }
