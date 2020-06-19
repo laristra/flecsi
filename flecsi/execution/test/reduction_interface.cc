@@ -3,7 +3,8 @@
  * All rights reserved.
  *----------------------------------------------------------------------------*/
 
-#include <cinchdevel.h>
+#include <cinchlog.h>
+#include <cinchtest.h>
 
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
@@ -115,35 +116,38 @@ driver(int argc, char ** argv) {
     auto f = flecsi_execute_reduction_task(
       double_task, flecsi::execution, index, min, double, mh, vh);
 
-    clog(info) << "reduction min: " << f.get() << std::endl;
+    double min = f.get();
+    clog_assert(min == 64, "incorrect min from reduction");
   } // scope
 
   {
     auto f = flecsi_execute_reduction_task(
       double_task, flecsi::execution, index, max, double, mh, vh);
-
-    clog(info) << "reduction max: " << f.get() << std::endl;
+    double max = f.get();
+    std::cout << "max = " << max << std::endl;
+    // clog_assert(max == 64, "incorrect max from reduction");
   } // scope
 
   {
     auto f = flecsi_execute_reduction_task(
       double_task, flecsi::execution, index, sum, double, mh, vh);
-
-    clog(info) << "reduction sum: " << f.get() << std::endl;
+    double sum = f.get();
+    // clog_assert (min ==64, "incorrect sum from reduction");
   } // scope
 
   {
     auto f = flecsi_execute_reduction_task(
       double_task, flecsi::execution, index, product, double, mh, vh);
+    double product = f.get();
+    // clog_assert (product ==64, "incorrect product from reduction");
 
-    clog(info) << "reduction product: " << f.get() << std::endl;
   } // scope
 } // driver
 
 } // namespace execution
 } // namespace flecsi
 
-DEVEL(registration_interface) {}
+TEST(reduction_interface, testname) {}
 
 /*----------------------------------------------------------------------------*
  * Formatting options for vim.
