@@ -45,7 +45,7 @@ list(APPEND BASE_IMAGES
   clearlinux
 )
 
-foreach(image in ${BASE_IMAGES})
+foreach(image ${BASE_IMAGES})
 
   add_image(${image} ${REGISTRY}:${image} os/${image})
 
