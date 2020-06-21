@@ -34,7 +34,7 @@ function(add_image target tag dockerfile)
     ${ENGINE_EXECUTABLE} push \${PUSH_EXTRA} ${tag}
     DEPENDS ${target})
 
-  add_custom_target(pull-${target} ALL
+  add_custom_target(pull-${target}
     ${ENGINE_EXECUTABLE} pull \${PULL_EXTRA} ${tag})
 
   add_custom_target(clean-${target}
