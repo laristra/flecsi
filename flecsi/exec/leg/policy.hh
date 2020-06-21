@@ -162,12 +162,15 @@ reduce(ARGS &&... args) {
 #endif // FLECSI_ENABLE_FLOG
 
   const auto domain_size = [&args..., &flecsi_context] {
-    if constexpr(processor_type == task_processor_type_t::mpi)
+    if constexpr(processor_type == task_processor_type_t::mpi) {
       return launch_size<
         typename detail::tuple_prepend<launch_domain, param_tuple>::type>(
         launch_domain{flecsi_context.processes()}, args...);
-    else
+    }
+    else {
+      (void)flecsi_context;
       return launch_size<param_tuple>(args...);
+    }
   }();
 
   ++flecsi_context.tasks_executed();
