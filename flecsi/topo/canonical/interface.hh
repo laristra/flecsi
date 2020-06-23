@@ -24,6 +24,7 @@
 #include "flecsi/flog.hh"
 #include "flecsi/topo/canonical/types.hh"
 #include "flecsi/topo/core.hh" // base
+#include "flecsi/topo/utility_types.hh"
 
 #include <string>
 
@@ -47,6 +48,7 @@ struct canonical : canonical_base {
   template<class F>
   static void fields(F f) {
     f(mine);
+    connect_visit(f, connect);
   }
 
   canonical(const coloring & c)
@@ -56,6 +58,7 @@ struct canonical : canonical_base {
 
   // The first index space is distinguished in that we decorate it:
   static inline const field<int>::definition<Policy, index_spaces::first> mine;
+  static inline const connect_t<Policy> connect;
 
   util::key_array<data::partitioned, index_spaces> part;
 
@@ -93,10 +96,23 @@ struct canonical<P>::access {
   template<const auto & F>
   using accessor = data::accessor_member<F, Priv>;
   accessor<canonical::mine> mine;
+  connect_access<P, Priv> connect;
+
+  access() : connect(canonical::connect) {}
+
+  template<index_space F, index_space T>
+  auto & get_connect() {
+    return connect.template get<F>().template get<T>();
+  }
+  template<index_space F, index_space T>
+  const auto & get_connect() const {
+    return connect.template get<F>().template get<T>();
+  }
 
   template<class F>
   void bind(F f) {
     f(mine);
+    connect_visit(f, connect);
   }
 };
 

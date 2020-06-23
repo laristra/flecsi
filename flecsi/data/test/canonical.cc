@@ -25,6 +25,7 @@ using namespace flecsi;
 struct canon : topo::specialization<topo::canonical, canon> {
   enum index_space { vertices, cells };
   using index_spaces = has<cells, vertices>;
+  using connectivities = util::types<from<cells, has<vertices>>>;
 
   static coloring color(std::string const &) {
     return {{16, 17}, 2};
@@ -38,12 +39,14 @@ const field<double>::definition<canon, canon::cells> cell_field;
 auto pressure = cell_field(canonical);
 
 const int mine = 35;
+const std::size_t favorite = 3;
 const double p0 = 3.5;
 
 int
 init(canon::accessor<wo> t, field<double>::accessor<wo> c) {
   UNIT {
     t.mine(0) = mine;
+    t.get_connect<canon::cells, canon::vertices>()(0) = favorite;
     c(0) = p0;
   };
 } // init
@@ -54,6 +57,9 @@ check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
     auto & r = t.mine(0);
     static_assert(std::is_same_v<decltype(r), const int &>);
     EXPECT_EQ(r, mine);
+    auto & cv = t.get_connect<canon::cells, canon::vertices>()(0);
+    static_assert(std::is_same_v<decltype(cv), const std::size_t &>);
+    EXPECT_EQ(cv, favorite);
     EXPECT_EQ(c(0), p0);
   };
 } // check
