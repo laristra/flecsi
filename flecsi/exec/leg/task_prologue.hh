@@ -105,7 +105,7 @@ struct task_prologue_t {
   template<class T,
     std::size_t Priv,
     class Topo,
-    topo::index_space_t<Topo> Space>
+    typename Topo::index_space Space>
   void visit(data::accessor<data::singular, T, Priv> * null_p,
     const data::field_reference<T, data::singular, Topo, Space> & ref) {
     visit(get_null_base(null_p), ref.template cast<data::dense>());
@@ -140,8 +140,8 @@ struct task_prologue_t {
   template<typename DATA_TYPE,
     size_t PRIVILEGES,
     class Topo,
-    topo::index_space_t<Topo> Space,
-    class = std::enable_if_t<topo::privilege_count<Topo, Space> == 1>>
+    typename Topo::index_space Space,
+    class = std::enable_if_t<Topo::template privilege_count<Space> == 1>>
   void visit(
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, data::dense, Topo, Space> & ref) {

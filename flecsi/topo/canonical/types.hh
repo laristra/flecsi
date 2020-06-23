@@ -20,6 +20,7 @@
 #endif
 
 #include "flecsi/run/types.hh"
+#include "flecsi/util/constant.hh"
 
 #include <string>
 
@@ -28,7 +29,7 @@ namespace topo {
 
 struct canonical_base {
   enum index_space { vertices, cells };
-  static constexpr std::size_t index_spaces = 2;
+  using index_spaces = util::constants<cells, vertices>;
 
   struct coloring {
     std::size_t size, parts;
