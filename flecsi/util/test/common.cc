@@ -106,6 +106,14 @@ common() {
       static_assert(&m.get<1>() == &m[1]);
     }
 
+    {
+      constexpr util::key_tuple<util::key_type<2, short>,
+        util::key_type<8, void *>>
+        p{1, nullptr};
+      static_assert(p.get<2>() == 1);
+      static_assert(p.get<8>() == nullptr);
+    }
+
     // ------------------------
     // Compare
     // ------------------------

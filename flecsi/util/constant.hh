@@ -17,6 +17,7 @@
 
 #include <array>
 #include <cstddef>
+#include <tuple>
 #include <utility>
 
 namespace flecsi {
@@ -80,6 +81,43 @@ struct key_array : std::array<T, C::size> {
   template<auto V>
   constexpr const T & get() const {
     return (*this)[C::template index<V>];
+  }
+};
+
+template<auto V, class T>
+struct key_type {
+  static constexpr const auto & value = V;
+  using type = T;
+};
+
+// A std::tuple containing the given types and indexed by the given keys.
+template<class... VT>
+struct key_tuple : std::tuple<typename VT::type...> {
+  using keys = constants<VT::value...>;
+
+  using Base = typename key_tuple::tuple;
+  using Base::Base;
+
+  template<class F>
+  decltype(auto) apply(F && f) & {
+    return std::apply(std::forward<F>(f), static_cast<Base &>(*this));
+  }
+  template<class F>
+  decltype(auto) apply(F && f) const & {
+    return std::apply(std::forward<F>(f), static_cast<const Base &>(*this));
+  }
+  template<class F>
+  decltype(auto) apply(F && f) && {
+    return std::apply(std::forward<F>(f), static_cast<Base &&>(*this));
+  }
+
+  template<auto V>
+  constexpr auto & get() {
+    return std::get<keys::template index<V>>(*this);
+  }
+  template<auto V>
+  constexpr const auto & get() const {
+    return std::get<keys::template index<V>>(*this);
   }
 };
 
