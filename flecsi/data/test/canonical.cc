@@ -24,7 +24,7 @@ using namespace flecsi;
 
 struct canon : topo::specialization<topo::canonical, canon> {
   enum index_space { vertices, cells };
-  using index_spaces = util::constants<cells, vertices>;
+  using index_spaces = has<cells, vertices>;
 
   static coloring color(std::string const &) {
     return {{16, 17}, 2};

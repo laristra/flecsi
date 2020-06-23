@@ -50,12 +50,26 @@ using base_t = typename detail::base<T>::type;
 template<class T>
 using identity = T; // can be a trivial specialization interface
 
+struct specialization_base {
+  // For connectivity tuples:
+  template<auto V, class T>
+  using from = util::key_type<V, T>;
+  template<auto... V>
+  using has = util::constants<V...>;
+
+  // May be overridden by policy:
+  using index_space = single_space;
+  using index_spaces = util::constants<elements>;
+
+  specialization_base() = delete;
+};
+
 /// CRTP base for specializations.
 /// \tparam C core topology
 /// \tparam D derived topology type
 /// \tparam I specialization interface accepting a base class
 template<template<class> class C, class D, template<class> class I = identity>
-struct specialization {
+struct specialization : specialization_base {
   using core = C<D>;
   using base = base_t<C>;
   // This is just core::coloring, but core is incomplete here.
@@ -79,8 +93,7 @@ struct specialization {
   }
 
   // May be overridden by policy:
-  using index_space = single_space;
-  using index_spaces = util::constants<elements>;
+
   // Most compilers eagerly instantiate a deduced static member type, so we
   // have to use a function.
   static constexpr auto default_space() {
@@ -89,8 +102,6 @@ struct specialization {
   template<auto S> // we can't use D::index_space here
   static constexpr std::size_t privilege_count =
     std::is_same_v<decltype(S), typename D::index_space> ? 1 : throw;
-
-  specialization() = delete;
 };
 
 } // namespace topo
