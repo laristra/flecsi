@@ -45,8 +45,7 @@ struct partition {
 };
 #endif
 
-template<class Topo,
-  topo::index_space_t<Topo> Index = topo::default_space<Topo>>
+template<class Topo, typename Topo::index_space Index = Topo::default_space()>
 region
 make_region(std::size_t n) {
   return {n, run::context::instance().get_field_info_store<Topo, Index>()};

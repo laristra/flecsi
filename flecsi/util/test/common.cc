@@ -13,7 +13,10 @@
                                                                               */
 
 #include "flecsi/util/common.hh"
+#include "flecsi/util/constant.hh"
 #include "flecsi/util/unit.hh"
+
+using namespace flecsi;
 
 struct MyClass {
   int operator()(float, double, long double) const {
@@ -30,6 +33,13 @@ inline float
 MyFun(double, int, long) {
   return float(0);
 }
+
+using c31 = util::constants<3, 1>;
+static_assert(c31::size == 2);
+static_assert(c31::index<1> == 1);
+static_assert(c31::index<3> == 0);
+static_assert(util::constants<4>::value == 4);
+static_assert(!util::constants<>::size);
 
 int
 common() {

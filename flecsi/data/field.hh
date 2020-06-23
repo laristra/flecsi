@@ -31,10 +31,10 @@ namespace data {
 template<layout L, typename T, std::size_t Priv>
 struct accessor;
 
-template<class, layout, class, std::size_t>
+template<class, layout, class Topo, typename Topo::index_space>
 struct field_register;
 
-template<class T, class Topo, std::size_t Space>
+template<class T, class Topo, typename Topo::index_space Space>
 struct field_register<T, dense, Topo, Space> : field_info_t {
   field_register() : field_info_t{unique_fid_t::instance().next(), sizeof(T)} {
     run::context::instance().add_field_info<Topo, Space>(*this);
@@ -44,7 +44,7 @@ struct field_register<T, dense, Topo, Space> : field_info_t {
   field_register & operator=(const field_register &) = delete;
 };
 
-template<class T, class Topo, std::size_t Space>
+template<class T, class Topo, typename Topo::index_space Space>
 struct field_register<T, singular, Topo, Space>
   : field_register<T, dense, Topo, Space> {};
 
@@ -79,7 +79,7 @@ private:
 /// \tparam T data type (merely for type safety)
 /// \tparam L data layout (similarly)
 /// \tparam Space topology-relative index space
-template<class T, layout L, class Topo, topo::index_space_t<Topo> Space>
+template<class T, layout L, class Topo, typename Topo::index_space Space>
 struct field_reference : field_reference_t<Topo> {
   using Base = typename field_reference::field_reference_t; // TIP: dependent
   using value_type = T;
@@ -111,8 +111,7 @@ struct field {
   /// A field registration.
   /// \tparam Topo (specialized) topology type
   /// \tparam Space index space
-  template<class Topo,
-    topo::index_space_t<Topo> Space = topo::default_space<Topo>>
+  template<class Topo, typename Topo::index_space Space = Topo::default_space()>
   struct definition : data::field_register<T, L, Topo, Space> {
     using Field = field;
 

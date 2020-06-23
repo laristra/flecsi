@@ -21,8 +21,8 @@ using namespace flecsi;
 int
 identifiers() {
   UNIT {
-    flog(info) << "global: " << topo::id<topo::global>() << std::endl;
-    flog(info) << "index: " << topo::id<topo::index>() << std::endl;
+    flog(info) << "global: " << topo::global::id() << std::endl;
+    flog(info) << "index: " << topo::index::id() << std::endl;
   };
 }
 

@@ -483,12 +483,11 @@ struct context {
     \tparam Index topology-relative index space
     @param field_info               Field information.
    */
-  template<class Topo, std::size_t Index>
+  template<class Topo, typename Topo::index_space Index>
   void add_field_info(const data::field_info_t & field_info) {
-    constexpr std::size_t NIndex = topo::index_spaces<Topo>;
-    static_assert(Index < NIndex, "No such index space");
-    topology_field_info_map_.try_emplace(topo::id<Topo>(), NIndex)
-      .first->second[Index]
+    constexpr std::size_t NIndex = Topo::index_spaces::size;
+    topology_field_info_map_.try_emplace(Topo::id(), NIndex)
+      .first->second[Topo::index_spaces::template index<Index>]
       .push_back(&field_info);
   } // add_field_information
 
@@ -499,17 +498,15 @@ struct context {
     \tparam Topo topology type
     \tparam Index topology-relative index space
    */
-  template<class Topo, std::size_t Index = topo::default_space<Topo>>
+  template<class Topo, typename Topo::index_space Index = Topo::default_space()>
   field_info_store_t const & get_field_info_store() const {
-    static_assert(Index < topo::index_spaces<Topo>, "No such index space");
-
     static const field_info_store_t empty;
 
-    auto const & tita = topology_field_info_map_.find(topo::id<Topo>());
+    auto const & tita = topology_field_info_map_.find(Topo::id());
     if(tita == topology_field_info_map_.end())
       return empty;
 
-    return tita->second[Index];
+    return tita->second[Topo::index_spaces::template index<Index>];
   } // get_field_info_store
 
   /*!

@@ -23,10 +23,8 @@
 using namespace flecsi;
 
 struct canon : topo::specialization<topo::canonical, canon> {
-  constexpr static size_t value = 12;
-
-  using entity_types = std::tuple<util::constant<base::vertices>,
-    flecsi::util::constant<base::cells>>;
+  using index_space = base::index_space;
+  using index_spaces = base::index_spaces;
 
   static coloring color(std::string const &) {
     return {16, 2};

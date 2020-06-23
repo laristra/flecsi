@@ -79,7 +79,7 @@ template<class P,
   class T,
   data::layout L,
   class Topo,
-  topo::index_space_t<Topo> S>
+  typename Topo::index_space S>
 struct launch<P, data::field_reference<T, L, Topo, S>> {
   static std::size_t get(const data::field_reference<T, L, Topo, S> & r) {
     return r.topology().get().colors();

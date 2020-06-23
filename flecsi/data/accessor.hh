@@ -107,7 +107,7 @@ private:
 
 template<class T, std::size_t S>
 struct exec::detail::task_param<data::accessor<data::dense, T, S>> {
-  template<class Topo, topo::index_space_t<Topo> Space>
+  template<class Topo, typename Topo::index_space Space>
   static auto replace(
     const data::field_reference<T, data::dense, Topo, Space> & r) {
     return data::accessor<data::dense, T, S>(r.fid());
@@ -116,7 +116,7 @@ struct exec::detail::task_param<data::accessor<data::dense, T, S>> {
 template<class T, std::size_t S>
 struct exec::detail::task_param<data::accessor<data::singular, T, S>> {
   using type = data::accessor<data::singular, T, S>;
-  template<class Topo, topo::index_space_t<Topo> Space>
+  template<class Topo, typename Topo::index_space Space>
   static type replace(
     const data::field_reference<T, data::singular, Topo, Space> & r) {
     return exec::replace_argument<typename type::base_type>(
