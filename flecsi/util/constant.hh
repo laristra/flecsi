@@ -22,6 +22,9 @@
 namespace flecsi {
 namespace util {
 
+template<class...>
+struct types {};
+
 template<auto Value>
 struct constant { // like std::integral_constant, but better
   using type = decltype(Value);
