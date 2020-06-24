@@ -19,10 +19,81 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/field.hh"
+#include "flecsi/util/constant.hh"
 #include "flecsi/util/typeify.hh"
+
+#include <type_traits>
 
 namespace flecsi {
 namespace topo {
+
+namespace detail {
+template<class, class>
+struct connect;
+template<class P, class... VT>
+struct connect<P, util::types<VT...>> {
+  // FIXME: Use ragged instead of dense when it's functional.
+  using type = util::key_tuple<util::key_type<VT::value,
+    util::key_array<field<std::size_t, data::dense>::definition<P, VT::value>,
+      typename VT::type>>...>;
+};
+
+template<class, std::size_t>
+struct connect_access;
+template<class... VT, std::size_t Priv>
+struct connect_access<util::key_tuple<VT...>, Priv> {
+  using type = util::key_tuple<util::key_type<VT::value,
+    util::key_array<
+      typename VT::type::value_type::Field::template accessor1<Priv>,
+      typename VT::type::keys>>...>;
+};
+} // namespace detail
+
+// Construct a "sparse matrix" of field definitions; the row is the source
+// index space (which is enough to determine the field type) and the column is
+// the destination.
+template<class P>
+using connect_t = typename detail::connect<P, typename P::connectivities>::type;
+
+namespace detail {
+template<class P, std::size_t Priv>
+using connect_access_t = typename connect_access<connect_t<P>, Priv>::type;
+}
+
+// A parallel sparse matrix of accessors.
+template<class P, std::size_t Priv>
+struct connect_access : detail::connect_access_t<P, Priv> {
+  // The argument type is just connect_t<P>, but we want the VT pack.
+  // Prior to C++20, accessor_member can't refer to the subobjects of a
+  // connect_t, so the accessors must be initialized externally.
+  template<class... VT>
+  connect_access(const util::key_tuple<VT...> & c)
+    : detail::connect_access_t<P, Priv>(
+        make_from<std::decay_t<decltype(this->template get<VT::value>())>>(
+          c.template get<VT::value>())...) {}
+
+private:
+  // The .get<>s here and above just access the elements in order, of course.
+  template<class T, class U, auto... VV>
+  static T make_from(const util::key_array<U, util::constants<VV...>> & m) {
+    return {typename T::value_type(m.template get<VV>().fid)...};
+  }
+};
+
+// For either kind of sparse matrix:
+template<class F, class T>
+void
+connect_visit(F && f, T && t) {
+  std::forward<T>(t).apply([&](auto &... rr) {
+    (
+      [&](auto & r) {
+        for(auto & x : r)
+          std::forward<F>(f)(x);
+      }(rr),
+      ...);
+  });
+}
 
 //----------------------------------------------------------------------------//
 // Type creation utilities to create C++ types from size_t ids.
