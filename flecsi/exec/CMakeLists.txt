@@ -77,11 +77,6 @@ if(ENABLE_KOKKOS)
   )
 endif()
 
-#add_unit(reduction
-#  SOURCES
-#    test/reduction.cc
-#)
-
 add_unit(task
   SOURCES
     test/task.cc
