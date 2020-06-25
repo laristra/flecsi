@@ -95,14 +95,7 @@ add_unit(canonical
     test/canonical.cc
   THREADS 2
 )
-endif()
 
-add_unit(identifiers
-  SOURCES
-    test/identifiers.cc
-)
-
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 add_unit(index
   SOURCES
     test/index.cc
