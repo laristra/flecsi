@@ -45,7 +45,6 @@ set(util_HEADERS
   simple_id.hh
   static_verify.hh
   target.hh
-  tuple_type_converter.hh
   tuple_visitor.hh
   tuple_walker.hh
   typeify.hh
@@ -233,24 +232,6 @@ add_unit(simple_id
 add_unit(static_verify
   SOURCES
     test/static_verify.cc
-)
-
-#------------------------------------------------------------------------------#
-# tuple_type_converter
-#------------------------------------------------------------------------------#
-
-set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
-
-if(MSVC)
-  set(tuple_type_converter_blessed_input
-    test/tuple_type_converter.blessed.msvc)
-endif()
-
-add_unit(tuple_type_converter
-  SOURCES
-    test/tuple_type_converter.cc
-  INPUTS
-    ${tuple_type_converter_blessed_input}
 )
 
 #------------------------------------------------------------------------------#
