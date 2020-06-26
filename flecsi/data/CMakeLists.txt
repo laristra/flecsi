@@ -103,11 +103,6 @@ add_unit(index
 )
 endif()
 
-add_unit(privilege
-  SOURCES
-    test/privilege.cc
-)
-
 add_unit(structured
   SOURCES
     test/structured.cc
