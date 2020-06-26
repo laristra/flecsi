@@ -24,6 +24,9 @@ int
 naive_coloring() {
   UNIT {
     topo::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
+    ASSERT_EQ(sd.dimension(), 2lu);
+    ASSERT_EQ(sd.num_entities(0), 289lu);
+    ASSERT_EQ(sd.num_entities(2), 256lu);
 
     auto naive = topo::unstructured_impl::naive_coloring<2, 2>(sd);
   };
