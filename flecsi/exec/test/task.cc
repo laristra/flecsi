@@ -21,6 +21,28 @@ using namespace flecsi;
 
 log::devel_tag task_tag("task");
 
+template<std::size_t M,
+  exec::task_processor_type_t T,
+  bool F(const exec::task_attributes_bitset_t &)>
+constexpr void
+test() {
+  static_assert(exec::mask_to_processor_type(M) == T);
+  static_assert(F(M));
+}
+
+template<task_attributes_mask_t P, exec::task_processor_type_t T>
+constexpr bool
+test() {
+  test<P | leaf, T, exec::leaf_task>();
+  test<P | inner, T, exec::inner_task>();
+  test<P | idempotent, T, exec::idempotent_task>();
+  return true;
+}
+
+static_assert(test<loc, exec::task_processor_type_t::loc>());
+static_assert(test<toc, exec::task_processor_type_t::toc>());
+
+// ---------------
 namespace hydro {
 
 template<typename TYPE>

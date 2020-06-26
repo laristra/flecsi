@@ -82,11 +82,6 @@ add_unit(task
     test/task.cc
 )
 
-add_unit(task_attributes
-  SOURCES
-    test/task_attributes.cc
-)
-
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   add_unit(future
     SOURCES
