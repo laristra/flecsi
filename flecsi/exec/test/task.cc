@@ -76,9 +76,32 @@ mpi(int * p) {
 
 } // namespace hydro
 
+log::devel_tag color_tag("color");
+
 int
 test_driver() {
   UNIT {
+    {
+      auto & c = run::context::instance();
+      flog(info) << "task depth: " << c.task_depth() << std::endl;
+      ASSERT_EQ(c.task_depth(), 0u);
+
+      auto process = c.process();
+      auto processes = c.processes();
+      auto tpp = c.threads_per_process();
+
+      {
+        log::devel_guard guard(color_tag);
+        flog(info) << "(raw)" << std::endl
+                   << "\tprocess: " << process << std::endl
+                   << "\tprocesses: " << processes << std::endl
+                   << "\tthreads_per_process: " << tpp << std::endl;
+      }
+
+      ASSERT_EQ(processes, 4u);
+      ASSERT_LT(process, processes);
+    }
+
     execute<hydro::simple<float>>(6.2);
     execute<hydro::simple<double>>(5.3);
     execute<hydro::simple<const float &>>(4.4);

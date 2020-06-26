@@ -63,13 +63,6 @@ set(exec_HEADERS
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-add_unit(color
-  SOURCES
-    test/color.cc
-  THREADS
-    4 # Warning: This number is hard-coded into the the test.
-)
-
 if(ENABLE_KOKKOS)
   add_unit(kokkos
     SOURCES
@@ -80,6 +73,8 @@ endif()
 add_unit(task
   SOURCES
     test/task.cc
+  THREADS
+    4 # Warning: This number is hard-coded into the the test.
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
