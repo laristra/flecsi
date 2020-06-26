@@ -51,21 +51,8 @@ struct bars {
 FLECSI_MEMBER_CHECKER(foo); // Makes has_member_foo<T>. ...Does T have foo?
 FLECSI_MEMBER_CHECKER(bar); // Makes has_member_bar<T>. ...Does T have bar?
 
-template<class T>
-bool const has_member_foo<T>::value;
-template<class T>
-bool const has_member_bar<T>::value;
-
 namespace flecsi {
-namespace util {
-
-template<class T>
-bool const is_tuple<T>::value;
-
-template<class... T>
-bool const is_tuple<std::tuple<T...>>::value;
-
-} // namespace util
+namespace util {} // namespace util
 } // namespace flecsi
 
 int
