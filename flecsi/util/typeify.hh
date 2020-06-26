@@ -33,8 +33,5 @@ struct typeify {
   static constexpr T value = M;
 };
 
-template<typename T, T M>
-constexpr T typeify<T, M>::value;
-
 } // namespace util
 } // namespace flecsi

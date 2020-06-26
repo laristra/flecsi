@@ -62,7 +62,6 @@ set(util_HEADERS
 #------------------------------------------------------------------------------#
 
 set(util_SOURCES
-  debruijn.cc
   demangle.cc
 )
 
