@@ -143,24 +143,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 endif()
 
 #------------------------------------------------------------------------------#
-# function_traits
-#------------------------------------------------------------------------------#
-
-set(function_traits_input test/function_traits.blessed.gnug)
-
-if(MSVC)
-  set(function_traits_input test/function_traits.blessed.msvc)
-endif()
-
-add_unit(function_traits
-  SOURCES
-    test/function_traits.cc
-  INPUTS
-    test/function_traits.blessed
-    ${function_traits_input}
-)
-
-#------------------------------------------------------------------------------#
 # id
 #------------------------------------------------------------------------------#
 

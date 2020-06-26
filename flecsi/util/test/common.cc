@@ -12,10 +12,12 @@
    All rights reserved.
                                                                               */
 
+#define __FLECSI_PRIVATE__
 #include "flecsi/util/common.hh"
 #include "flecsi/util/constant.hh"
 #include "flecsi/util/debruijn.hh"
 #include "flecsi/util/demangle.hh"
+#include "flecsi/util/function_traits.hh"
 #include "flecsi/util/unit.hh"
 
 #include <random>
@@ -38,6 +40,63 @@ MyFun(double, int, long) {
   return float(0);
 }
 
+template<class T>
+using ft = util::function_traits<T>;
+
+template<class A, class B>
+constexpr const bool & eq = std::is_same_v<A, B>;
+
+template<class T>
+using ret = typename ft<T>::return_type;
+template<class T>
+using args = typename ft<T>::arguments_type;
+template<class... TT>
+using tup = std::tuple<TT...>;
+
+template<class T, class R, class A>
+constexpr bool
+test() {
+  static_assert(eq<typename ft<T>::return_type, R>);
+  static_assert(eq<typename ft<T>::arguments_type, A>);
+  return true;
+}
+template<class T, class... TT>
+constexpr bool
+same() {
+  return (
+    test<TT, typename ft<T>::return_type, typename ft<T>::arguments_type>() &&
+    ...);
+}
+template<auto M>
+constexpr bool
+pmf() {
+  using T = decltype(M);
+  static_assert(eq<typename ft<T>::owner_type, MyClass>);
+  return test<T, void, tup<char, int>>();
+}
+
+static_assert(pmf<&MyClass::mem>());
+static_assert(pmf<&MyClass::memc>());
+static_assert(pmf<&MyClass::memv>());
+static_assert(pmf<&MyClass::memcv>());
+
+static_assert(test<MyClass, int, tup<float, double, long double>>());
+static_assert(test<decltype(MyFun), float, tup<double, int, long>>());
+static_assert(same<decltype(MyFun),
+  decltype(&MyFun),
+  decltype(*MyFun),
+  std::function<decltype(MyFun)>>());
+static_assert(same<MyClass,
+  MyClass &,
+  const MyClass &,
+  volatile MyClass &,
+  const volatile MyClass &,
+  MyClass &&,
+  const MyClass &&,
+  volatile MyClass &&,
+  const volatile MyClass &&>());
+
+// ---------------
 using c31 = util::constants<3, 1>;
 static_assert(c31::size == 2);
 static_assert(c31::index<1> == 1);
