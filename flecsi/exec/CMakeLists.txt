@@ -87,11 +87,6 @@ add_unit(task_attributes
     test/task_attributes.cc
 )
 
-add_unit(gpu_task
-  SOURCES
-    test/gpu_task.cc
-)
-
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   add_unit(future
     SOURCES

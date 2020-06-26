@@ -93,10 +93,6 @@ add_unit(simple_definition
   INPUTS unstructured/test/simple2d-16x16.msh
 )
 
-add_unit(umesh_coloring
-  SOURCES unstructured/test/coloring.cc
-)
-
 #----------------------------------  NTREE  -----------------------------------#
 
 add_unit(ntree

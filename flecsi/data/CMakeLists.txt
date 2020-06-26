@@ -120,9 +120,3 @@ add_unit(structured
     test/structured.cc
   THREADS 2
 )
-
-add_unit(unstructured
-  SOURCES
-    test/unstructured.cc
-  THREADS 2
-)
