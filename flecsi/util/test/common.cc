@@ -15,6 +15,7 @@
 #include "flecsi/util/common.hh"
 #include "flecsi/util/constant.hh"
 #include "flecsi/util/debruijn.hh"
+#include "flecsi/util/demangle.hh"
 #include "flecsi/util/unit.hh"
 
 #include <random>
@@ -134,6 +135,27 @@ common() {
       random.seed(12345);
       for(int n = 10000; n--;)
         EXPECT_TRUE(debruijn(random() | 1));
+    }
+
+    {
+      // demangle, type
+      // The results depend on #ifdef __GNUG__, so we'll just exercise
+      // these functions, without checking for particular results.
+      EXPECT_NE(flecsi::util::demangle("foo"), "");
+
+      auto str_demangle = UNIT_TTYPE(int);
+      auto str_type = flecsi::util::type<int>();
+
+      EXPECT_NE(str_demangle, "");
+      EXPECT_NE(str_type, "");
+      EXPECT_EQ(str_demangle, str_type);
+
+      const auto sym = flecsi::util::symbol<common>();
+#ifdef __GNUG__
+      EXPECT_EQ(sym, "common()");
+#else
+      EXPECT_NE(sym, "");
+#endif
     }
 
     // ------------------------
