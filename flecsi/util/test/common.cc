@@ -18,6 +18,7 @@
 #include "flecsi/util/debruijn.hh"
 #include "flecsi/util/demangle.hh"
 #include "flecsi/util/function_traits.hh"
+#include "flecsi/util/static_verify.hh"
 #include "flecsi/util/unit.hh"
 
 #include <random>
@@ -106,6 +107,73 @@ using c4 = util::constants<4>;
 static_assert(c4::value == 4);
 static_assert(c4::first == 4);
 static_assert(!util::constants<>::size);
+
+// ---------------
+/*
+  Some classes, with or without members foo and bar.
+  These will facilitate our check of the FLECSI_MEMBER_CHECKER macro.
+ */
+
+struct first {
+  int foo;
+};
+
+struct second {
+  void bar() {}
+};
+
+struct both {
+  int foo;
+  void bar() {}
+};
+
+struct neither {};
+
+// make sure two bars aren't counted as a foo and a bar
+struct bars {
+  void bar() {}
+  void bar(int) {}
+};
+
+/*
+  We'll be interested in checking classes for the presence or absence
+  of members foo and bar. The following macro calls produce constructs
+  that will facilitate our doing this.
+ */
+FLECSI_MEMBER_CHECKER(foo); // Makes has_member_foo<T>. ...Does T have foo?
+FLECSI_MEMBER_CHECKER(bar); // Makes has_member_bar<T>. ...Does T have bar?
+
+// first{} has foo only
+static_assert(has_member_foo<first>::value);
+static_assert(!has_member_bar<first>::value);
+
+// second{} has bar only
+static_assert(!has_member_foo<second>::value);
+static_assert(has_member_bar<second>::value);
+
+// both{} has both
+static_assert(has_member_foo<both>::value);
+static_assert(has_member_bar<both>::value);
+
+// neither{} has neither
+static_assert(!has_member_foo<neither>::value);
+static_assert(!has_member_bar<neither>::value);
+
+// bars{} has two bars, but no foo
+static_assert(!has_member_foo<bars>::value);
+static_assert(has_member_bar<bars>::value);
+
+// ------------------------
+// is_tuple
+// ------------------------
+
+// with non-tuple
+static_assert(!util::is_tuple<int>::value);
+
+// with tuple
+static_assert(util::is_tuple<std::tuple<>>::value);
+static_assert(util::is_tuple<std::tuple<int>>::value);
+static_assert(util::is_tuple<std::tuple<int, char>>::value);
 
 // ---------------
 constexpr bool
