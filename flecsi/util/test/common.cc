@@ -38,7 +38,10 @@ using c31 = util::constants<3, 1>;
 static_assert(c31::size == 2);
 static_assert(c31::index<1> == 1);
 static_assert(c31::index<3> == 0);
-static_assert(util::constants<4>::value == 4);
+static_assert(c31::first == 3);
+using c4 = util::constants<4>;
+static_assert(c4::value == 4);
+static_assert(c4::first == 4);
 static_assert(!util::constants<>::size);
 
 int
@@ -96,6 +99,20 @@ common() {
     EXPECT_NE(flecsi::util::unique_name(&i), "");
     EXPECT_NE(flecsi::util::unique_name(&f), "");
     EXPECT_NE(flecsi::util::unique_name(&f), "");
+
+    {
+      constexpr util::key_array<int, c31> m{};
+      static_assert(&m.get<3>() == &m[0]);
+      static_assert(&m.get<1>() == &m[1]);
+    }
+
+    {
+      constexpr util::key_tuple<util::key_type<2, short>,
+        util::key_type<8, void *>>
+        p{1, nullptr};
+      static_assert(p.get<2>() == 1);
+      static_assert(p.get<8>() == nullptr);
+    }
 
     // ------------------------
     // Compare
