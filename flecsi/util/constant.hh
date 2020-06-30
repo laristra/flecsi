@@ -59,7 +59,7 @@ private:
     ((V == VV ? void(ret = II) : void()), ...);
     if(ret < size)
       return ret;
-    // otherwise UB which is rejected by the constexpr initialization of index
+    throw; // rejected by the constexpr initialization of index
   }
 
 public:
