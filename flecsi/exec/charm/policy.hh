@@ -104,11 +104,11 @@ reduce(ARGS &&... args) {
   constexpr auto processor_type = mask_to_processor_type(ATTRIBUTES);
 
   // Get the Legion runtime and context from the current task.
-  auto legion_runtime = Legion::Runtime::get_runtime();
-  auto legion_context = Legion::Runtime::get_context();
+  //auto legion_runtime = Legion::Runtime::get_runtime();
+  //auto legion_context = Legion::Runtime::get_context();
 
 #if defined(FLECSI_ENABLE_FLOG)
-  const size_t tasks_executed = flecsi_context.tasks_executed();
+  /*const size_t tasks_executed = flecsi_context.tasks_executed();
   if((tasks_executed > 0) &&
      (tasks_executed % FLOG_SERIALIZATION_INTERVAL == 0)) {
 
@@ -147,7 +147,7 @@ reduce(ARGS &&... args) {
         legion_runtime->execute_index_space(legion_context, flog_mpi_launcher);
 
       // Force synchronization
-      future_mpi.wait_all_results(true);
+      future_mpi.wait_all_results(true);*/
 
       // Handoff to the MPI runtime.
       // TODO: This functionality was removed from charm context
@@ -156,8 +156,8 @@ reduce(ARGS &&... args) {
       // Wait for MPI to finish execution (synchronous).
       // TODO: This functionality was removed from charm context
       //flecsi_context.wait_on_mpi(legion_context, legion_runtime);
-    } // if
-  } // if
+    //} // if
+  //} // if
 #endif // FLECSI_ENABLE_FLOG
 
   size_t domain_size = LAUNCH_DOMAIN.size();
@@ -189,9 +189,12 @@ reduce(ARGS &&... args) {
   //------------------------------------------------------------------------//
 
   using wrap = charm::task_wrapper<F, processor_type>;
-  const auto task = charm::task_id<wrap::execute,
-    (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
+  //const auto task = charm::task_id<wrap::execute,
+  //  (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
+  wrap::execute(buf);
+  return NULL;
 
+#if 0
   if constexpr(LAUNCH_DOMAIN == single) {
 
     static_assert(std::is_void_v<REDUCTION>,
@@ -316,6 +319,7 @@ reduce(ARGS &&... args) {
   } // if constexpr
 
   // return 0;
+#endif
 } // execute_task
 
 } // namespace flecsi

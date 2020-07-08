@@ -57,30 +57,28 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
     @param legion_context The Legion task runtime context.
    */
 
-  bind_accessors_t(Legion::Runtime * legion_runtime,
-    Legion::Context & legion_context,
-    std::vector<Legion::PhysicalRegion> const & regions,
-    std::vector<Legion::Future> const & futures)
-    : legion_runtime_(legion_runtime), legion_context_(legion_context),
-      regions_(regions), futures_(futures) {}
+  bind_accessors_t(std::vector<std::byte> buf)
+    : buf_(buf) {}
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense, DATA_TYPE, PRIVILEGES> & accessor) {
-    auto & reg = regions_[region++];
+    //auto & reg = regions_[region++];
 
     //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
-    const Legion::UnsafeFieldAccessor<DATA_TYPE,
+    /*const Legion::UnsafeFieldAccessor<DATA_TYPE,
       1,
       Legion::coord_t,
       Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
       ac(reg, accessor.identifier(), sizeof(DATA_TYPE));
     const auto dom = legion_runtime_->get_index_space_domain(
       legion_context_, reg.get_logical_region().get_index_space());
-    const auto r = dom.get_rect<1>();
+    const auto r = dom.get_rect<1>();*/
+    CkPrintf("Visiting dense data\n");
+    bind(accessor, sizeof(DATA_TYPE), buf_.data()[0]);
 
-    bind(accessor,
+    /*bind(accessor,
       r.hi[0] - r.lo[0] + 1,
-      ac.ptr(Legion::Domain::DomainPointIterator(dom).p));
+      ac.ptr(Legion::Domain::DomainPointIterator(dom).p));*/
   }
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
@@ -98,8 +96,8 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
   void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> & future) {
-    future.legion_future_ = futures_[future_id];
-    future_id++;
+    /*future.legion_future_ = futures_[future_id];
+    future_id++;*/
   }
 
   /*--------------------------------------------------------------------------*
@@ -118,12 +116,7 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
   } // visit
 
 private:
-  Legion::Runtime * legion_runtime_;
-  Legion::Context & legion_context_;
-  size_t region = 0;
-  const std::vector<Legion::PhysicalRegion> & regions_;
-  size_t future_id = 0;
-  const std::vector<Legion::Future> & futures_;
+  std::vector<std::byte> buf_;
 
 }; // struct bind_accessors_t
 

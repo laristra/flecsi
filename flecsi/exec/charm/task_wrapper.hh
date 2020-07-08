@@ -109,15 +109,15 @@ struct decay<std::tuple<TT...>> {
 
 template<class T>
 auto
-tuple_get(const Legion::Task & t) {
+tuple_get(const std::vector<std::byte>& buf) {
   struct Check {
     const std::byte *b, *e;
-    Check(const Legion::Task & t)
-      : b(static_cast<const std::byte *>(t.args)), e(b + t.arglen) {}
+    Check(const std::vector<std::byte>& buf)
+      : b(buf.data()), e(b + buf.size()) {}
     ~Check() {
-      flog_assert(b == e, "Bad Task::arglen");
+      flog_assert(b == e, "Bad vector<byte>::size()");
     }
-  } ch(t);
+  } ch(buf);
   return util::serial_get<typename decay<T>::type>(ch.b);
 }
 } // namespace detail
@@ -209,10 +209,7 @@ struct task_wrapper {
     Execution wrapper method for user tasks.
    */
 
-  static RETURN execute(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & regions,
-    Legion::Context context,
-    Legion::Runtime * runtime) {
+  static RETURN execute(std::vector<std::byte> buf) {
     {
       log::devel_guard guard(task_wrapper_tag);
       flog_devel(info) << "In execute_user_task" << std::endl;
@@ -221,9 +218,9 @@ struct task_wrapper {
     // Unpack task arguments
     // TODO: Can we deserialize directly into the user's parameters (i.e., do
     // without finalize_handles)?
-    auto task_args = detail::tuple_get<param_tuple>(*task);
+    auto task_args = detail::tuple_get<param_tuple>(buf);
 
-    bind_accessors_t bind_accessors(runtime, context, regions, task->futures);
+    bind_accessors_t bind_accessors(buf);
     bind_accessors.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
@@ -254,10 +251,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
   static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
-  static void execute(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *) {
+  static void execute(std::vector<std::byte> buf) {
     // FIXME: Refactor
     //    {
     //      log::devel_guard guard(task_wrapper_tag);
@@ -266,8 +260,8 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
     // Unpack task arguments.
     param_tuple * p;
-    flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
-    std::memcpy(&p, task->args, sizeof p);
+    flog_assert(buf.size() == sizeof p, "Bad Task::arglen");
+    std::memcpy(&p, buf.data(), sizeof p);
     auto & mpi_task_args = *p;
 
     // FIXME: Refactor
@@ -277,6 +271,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();
     // TODO: Removed from context in charm backend
+    apply(F, std::move(mpi_task_args));
     //c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
     // FIXME: Refactor
