@@ -53,7 +53,7 @@ struct partition {
   }
   void update(const partition &, field_id_t, completeness = incomplete) {}
   template<topo::single_space>
-  const partition & get_partition() const {
+  const partition & get_partition(field_id_t) const {
     return *this;
   }
 };

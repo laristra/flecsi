@@ -72,7 +72,7 @@ struct canonical : canonical_base {
     return part.template get<S>();
   }
   template<index_space S>
-  const data::partition & get_partition() const {
+  const data::partition & get_partition(field_id_t) const {
     return part.template get<S>();
   }
 

@@ -188,7 +188,7 @@ struct partition {
   unique_logical_partition logical_partition;
 
   template<topo::single_space>
-  const partition & get_partition() const {
+  const partition & get_partition(field_id_t) const {
     return *this;
   }
 
