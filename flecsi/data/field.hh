@@ -40,7 +40,7 @@ struct field_register;
 template<class T, class Topo, typename Topo::index_space Space>
 struct field_register<T, raw, Topo, Space> : field_info_t {
   field_register() : field_info_t{unique_fid_t::instance().next(), sizeof(T)} {
-    run::context::instance().add_field_info<Topo, Space>(*this);
+    run::context::instance().add_field_info<Topo, Space>(this);
   }
   // Copying/moving is inadvisable because the context knows the address.
   field_register(const field_register &) = delete;
