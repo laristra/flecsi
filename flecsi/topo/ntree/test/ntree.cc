@@ -116,7 +116,9 @@ ntree_driver() {
       std::cout<<"sph_ntree allocate DONE"<<std::endl;
 
     flecsi::execute<init,flecsi::mpi>(sph_ntree, tmp_ents);
-    tmp_ents.clear();     
+    tmp_ents.clear();  
+    // Construct the tree data structure 
+       
   };
 } // ntree_driver
 

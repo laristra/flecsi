@@ -99,11 +99,16 @@ add_unit(umesh_coloring
 
 #----------------------------------  NTREE  -----------------------------------#
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
 add_unit(ntree_policy
   SOURCES ntree/test/ntree.cc
   INPUTS ntree/test/coordinates.blessed
   THREADS 4
 )
+
+endif()
+
 
 add_unit(ntree_geometry
   SOURCES ntree/test/geometry.cc
