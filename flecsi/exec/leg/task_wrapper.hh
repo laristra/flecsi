@@ -264,9 +264,9 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
   static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
   static void execute(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *) {
+    const std::vector<Legion::PhysicalRegion> & reg,
+    Legion::Context ctx,
+    Legion::Runtime * runtime) {
     // FIXME: Refactor
     //    {
     //      log::devel_guard guard(task_wrapper_tag);
@@ -279,9 +279,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     std::memcpy(&p, task->args, sizeof p);
     auto & mpi_task_args = *p;
 
-    // FIXME: Refactor
-    // init_handles_t init_handles(runtime, context, regions, task->futures);
-    // init_handles.walk(mpi_task_args);
+    bind_accessors_t(runtime, ctx, reg, task->futures).walk(mpi_task_args);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();

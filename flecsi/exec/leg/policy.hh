@@ -78,6 +78,13 @@ serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
     {exec::replace_argument<PP>(std::forward<AA>(aa))...});
 }
 
+// Helper to deduce PP:
+template<class... PP, class... AA>
+void
+mpi_arguments(std::optional<std::tuple<PP...>> & opt, AA &&... aa) {
+  opt.emplace(exec::replace_argument<PP>(std::forward<AA>(aa))...);
+}
+
 template<class, class>
 struct tuple_prepend;
 template<class T, class... TT>
@@ -184,7 +191,7 @@ reduce(ARGS &&... args) {
     // MPI tasks must be invoked collectively from one task on each rank.
     // We therefore can transmit merely a pointer to a tuple of the arguments.
     // util::serial_put deliberately doesn't support this, so just memcpy it.
-    mpi_args.emplace(std::forward<ARGS>(args)...);
+    detail::mpi_arguments(mpi_args, std::forward<ARGS>(args)...);
     const auto p = &*mpi_args;
     buf.resize(sizeof p);
     std::memcpy(buf.data(), &p, sizeof p);
