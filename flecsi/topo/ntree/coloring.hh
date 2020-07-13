@@ -29,20 +29,16 @@ namespace topo {
 //----------------------------------------------------------------------------//
 
 struct ntree_base {
+  enum index_space { entities };
+  //static constexpr std::size_t index_spaces = 1;
+  using index_spaces = util::constants<entities>;
 
   struct coloring {
-
-    struct local_coloring {
-      size_t local_entities_;
-    }; // local_coloring
-
-    struct coloring_metadata {
-      std::vector<size_t> entities_distribution_;
-    }; // coloring_metadata
-
-    local_coloring local_coloring_;
-    coloring_metadata coloring_metadata_;
-
+    size_t local_entities_;
+    size_t global_entities_; 
+    std::vector<size_t> entities_distribution_;
+    size_t nparts_; 
+    std::vector<std::pair<size_t,size_t>> offset_;  
   }; // struct coloring
 }; // struct ntree_base
 

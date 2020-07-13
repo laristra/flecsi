@@ -99,9 +99,10 @@ add_unit(umesh_coloring
 
 #----------------------------------  NTREE  -----------------------------------#
 
-add_unit(ntree
+add_unit(ntree_policy
   SOURCES ntree/test/ntree.cc
   INPUTS ntree/test/coordinates.blessed
+  THREADS 4
 )
 
 add_unit(ntree_geometry
