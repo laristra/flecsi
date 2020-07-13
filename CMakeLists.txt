@@ -352,8 +352,8 @@ if(NOT FORMAT_ONLY)
   math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
   message(STATUS "${FLECSI_Yellow}Set id_t bits to allow:\n"
-    "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
-    "   ${FLECSI_ID_FBITS} flag bits\n"
+    "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS}"
+    " entities each\n   ${FLECSI_ID_FBITS} flag bits\n"
     "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${FLECSI_ColorReset}")
 
   #----------------------------------------------------------------------------#
@@ -388,6 +388,13 @@ if(NOT FORMAT_ONLY)
     FILES ${CMAKE_BINARY_DIR}/flecsi-config.h
     DESTINATION include
   )
+
+
+  #----------------------------------------------------------------------------#
+  # mesh-gen target
+  #----------------------------------------------------------------------------#
+
+  add_executable(mesh-gen tools/mesh-gen.cc)
 
   #----------------------------------------------------------------------------#
   # Configure environment module.

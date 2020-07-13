@@ -169,8 +169,20 @@ test_less(const T1 & v1, const T2 & v2) {
 
 template<typename T1, typename T2>
 inline bool
+test_less_equal(const T1 & v1, const T2 & v2) {
+  return test_less(v1, v2) || test_equal(v1, v2);
+}
+
+template<typename T1, typename T2>
+inline bool
 test_greater(const T1 & v1, const T2 & v2) {
   return v1 > v2;
+}
+
+template<typename T1, typename T2>
+inline bool
+test_greater_equal(const T1 & v1, const T2 & v2) {
+  return test_greater(v1, v2) || test_equal(v1, v2);
 }
 
 inline bool
@@ -256,10 +268,10 @@ string_case_compare(const char * lhs, const char * rhs) {
   EXPECT_TRUE(::flecsi::util::unit::test_less((val1), (val2)))
 
 #define ASSERT_LE(val1, val2)                                                  \
-  ASSERT_TRUE(::flecsi::util::unit::test_greater((val2), (val1)))
+  ASSERT_TRUE(::flecsi::util::unit::test_less_equal((val1), (val2)))
 
 #define EXPECT_LE(val1, val2)                                                  \
-  EXPECT_TRUE(::flecsi::util::unit::test_greater((val2), (val1)))
+  EXPECT_TRUE(::flecsi::util::unit::test_less_equal((val1), (val2)))
 
 #define ASSERT_GT(val1, val2)                                                  \
   ASSERT_TRUE(::flecsi::util::unit::test_greater((val1), (val2)))
@@ -268,10 +280,10 @@ string_case_compare(const char * lhs, const char * rhs) {
   EXPECT_TRUE(::flecsi::util::unit::test_greater((val1), (val2)))
 
 #define ASSERT_GE(val1, val2)                                                  \
-  ASSERT_TRUE(::flecsi::util::unit::test_less((val2), (val1)))
+  ASSERT_TRUE(::flecsi::util::unit::test_greater_equal((val1), (val2)))
 
 #define EXPECT_GE(val1, val2)                                                  \
-  EXPECT_TRUE(::flecsi::util::unit::test_less((val2), (val1)))
+  EXPECT_TRUE(::flecsi::util::unit::test_greater_equal((val1), (val2)))
 
 #define ASSERT_STREQ(str1, str2)                                               \
   if(::flecsi::util::unit::string_compare(str1, str2))                         \

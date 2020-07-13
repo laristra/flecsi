@@ -143,6 +143,7 @@ enum class launch_type_t : size_t { single, index };
 
 /// An explicit launch domain size.
 struct launch_domain {
+  std::size_t size() { return sz; }
   std::size_t sz;
 };
 
