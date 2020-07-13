@@ -41,7 +41,7 @@ hilbert_sanity() {
     flog(info) << "Hilbert TEST " << hc::max_depth() << std::endl;
 
     hc hc1;
-    hc hc2(range,p1);
+    hc hc2(range, p1);
     hc hc3 = hc::min();
     hc hc4 = hc::max();
     hc hc5 = hc::root();
@@ -76,9 +76,9 @@ hilbert_2d_rnd() {
     std::array<hc_2d, 4> hcs_2d;
 
     for(int i = 0; i < 4; ++i) {
-      hcs_2d[i] = hc_2d(rge,pts[i]);
+      hcs_2d[i] = hc_2d(rge, pts[i]);
       point_2d inv;
-      hcs_2d[i].coordinates(rge,inv);
+      hcs_2d[i].coordinates(rge, inv);
       double dist = distance(pts[i], inv);
       flog(info) << pts[i] << " " << hcs_2d[i] << " = " << inv << std::endl;
       ASSERT_TRUE(dist < 1.0e-4);
@@ -108,12 +108,12 @@ hilbert_3d_rnd() {
     std::array<hc, 8> hcs;
 
     for(int i = 0; i < 8; ++i) {
-      hcs[i] = hc(range,points[i]);
+      hcs[i] = hc(range, points[i]);
       point_t inv;
-      hcs[i].coordinates(range,inv);
+      hcs[i].coordinates(range, inv);
       double dist = distance(points[i], inv);
       flog(info) << points[i] << " " << hcs[i] << " = " << inv << std::endl;
-      //ASSERT_TRUE(dist < 1.0e-3);
+      // ASSERT_TRUE(dist < 1.0e-3);
     }
 
     // rnd
@@ -122,11 +122,11 @@ hilbert_3d_rnd() {
         (double)rand() / (double)RAND_MAX,
         (double)rand() / (double)RAND_MAX);
       point_t inv;
-      hc h(range,pt);
-      h.coordinates(range,inv);
+      hc h(range, pt);
+      h.coordinates(range, inv);
       double dist = distance(pt, inv);
       flog(info) << pt << " = " << h << " = " << inv << std::endl;
-      //ASSERT_TRUE(dist < 1.0e-4);
+      // ASSERT_TRUE(dist < 1.0e-4);
     }
   };
 } // hilbert_3d_rnd
@@ -144,7 +144,7 @@ morton_sanity() {
     flog(info) << " Morton TEST " << hc::max_depth() << std::endl;
 
     mc hc1;
-    mc hc2(range,p1);
+    mc hc2(range, p1);
     mc hc3 = mc::min();
     mc hc4 = mc::max();
     mc hc5 = mc::root();
@@ -179,9 +179,9 @@ morton_2d_rnd() {
     std::array<mc_2d, 4> mcs_2d;
 
     for(int i = 0; i < 4; ++i) {
-      mcs_2d[i] = mc_2d(rge,pts[i]);
+      mcs_2d[i] = mc_2d(rge, pts[i]);
       point_2d inv;
-      mcs_2d[i].coordinates(rge,inv);
+      mcs_2d[i].coordinates(rge, inv);
       double dist = distance(pts[i], inv);
       flog(info) << pts[i] << " " << mcs_2d[i] << " = " << inv << std::endl;
       ASSERT_TRUE(dist < 1.0e-4);
@@ -192,8 +192,8 @@ morton_2d_rnd() {
       point_2d pt(
         (double)rand() / (double)RAND_MAX, (double)rand() / (double)RAND_MAX);
       point_2d inv;
-      mc_2d h(rge,pt);
-      h.coordinates(rge,inv);
+      mc_2d h(rge, pt);
+      h.coordinates(rge, inv);
       double dist = distance(pt, inv);
       flog(info) << pt << " = " << h << " = " << inv << std::endl;
       ASSERT_TRUE(dist < 1.0e-4);
@@ -223,9 +223,9 @@ morton_3d_rnd() {
     std::array<mc, 8> mcs;
 
     for(int i = 0; i < 8; ++i) {
-      mcs[i] = mc(range,points[i]);
+      mcs[i] = mc(range, points[i]);
       point_t inv;
-      mcs[i].coordinates(range,inv);
+      mcs[i].coordinates(range, inv);
       double dist = distance(points[i], inv);
       flog(info) << points[i] << " " << mcs[i] << " = " << inv << std::endl;
       ASSERT_TRUE(dist < 1.0e-4);
@@ -237,8 +237,8 @@ morton_3d_rnd() {
         (double)rand() / (double)RAND_MAX,
         (double)rand() / (double)RAND_MAX);
       point_t inv;
-      mc h(range,pt);
-      h.coordinates(range,inv);
+      mc h(range, pt);
+      h.coordinates(range, inv);
       double dist = distance(pt, inv);
       flog(info) << pt << " = " << h << " = " << inv << std::endl;
       ASSERT_TRUE(dist < 1.0e-4);

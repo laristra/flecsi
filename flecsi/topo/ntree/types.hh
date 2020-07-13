@@ -27,49 +27,69 @@ namespace flecsi {
 namespace topo {
 
 /*
-*
-*/
+ *
+ */
 template<size_t DIM, typename T, class KEY>
-class sort_entity 
+class sort_entity
 {
   using point_t = util::point<T, DIM>;
   using key_t = KEY;
-  using type_t = T; 
-public: 
-  sort_entity(){}
+  using type_t = T;
 
-  point_t coordinates() const { return coordinates_; }
-  key_t key() const { return key_; }
-  int64_t id() const { return id_; }
-  type_t mass() const { return mass_; }
-  type_t radius() const { return radius_; }
+public:
+  sort_entity() {}
 
-  void set_coordinates(const point_t& coordinates){
-    coordinates_ = coordinates; 
+  point_t coordinates() const {
+    return coordinates_;
   }
-  void set_key(const key_t& key){ key_ = key; } 
-  void set_id(const int64_t& id){ id_ = id; }
-  void set_mass(const type_t& mass) {mass_ = mass;}
-  void set_radius(const type_t& radius) { radius_ = radius; }
+  key_t key() const {
+    return key_;
+  }
+  int64_t id() const {
+    return id_;
+  }
+  type_t mass() const {
+    return mass_;
+  }
+  type_t radius() const {
+    return radius_;
+  }
+
+  void set_coordinates(const point_t & coordinates) {
+    coordinates_ = coordinates;
+  }
+  void set_key(const key_t & key) {
+    key_ = key;
+  }
+  void set_id(const int64_t & id) {
+    id_ = id;
+  }
+  void set_mass(const type_t & mass) {
+    mass_ = mass;
+  }
+  void set_radius(const type_t & radius) {
+    radius_ = radius;
+  }
 
   template<size_t D, typename TY, class K>
-  friend std::ostream& operator<<(std::ostream& os,const sort_entity<D,TY,K>& e); 
-  
-private: 
-  point_t coordinates_;  
-  key_t key_; 
-  int64_t id_; 
-  type_t mass_; 
-  type_t radius_; 
+  friend std::ostream & operator<<(std::ostream & os,
+    const sort_entity<D, TY, K> & e);
+
+private:
+  point_t coordinates_;
+  key_t key_;
+  int64_t id_;
+  type_t mass_;
+  type_t radius_;
 }; // class sort_entity
 
-  template<size_t DIM, typename T, class KEY>
-  std::ostream&
-  operator<<(std::ostream& os, const sort_entity<DIM,T,KEY>& e){
-    os<<"Coords: "<<e.coordinates()<<" Mass: "<<e.mass()<<" Radius: "<<e.radius()<<" Key: "<<e.key()<<" Id: "<<e.id(); 
-    return os; 
-  }
-
+template<size_t DIM, typename T, class KEY>
+std::ostream &
+operator<<(std::ostream & os, const sort_entity<DIM, T, KEY> & e) {
+  os << "Coords: " << e.coordinates() << " Mass: " << e.mass()
+     << " Radius: " << e.radius() << " Key: " << e.key() << " Id: " << e.id();
+  return os;
+}
 
 } // namespace topo
 } // namespace flecsi

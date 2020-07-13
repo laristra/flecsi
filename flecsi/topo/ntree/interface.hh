@@ -49,9 +49,9 @@ namespace topo {
 template<typename Policy>
 struct ntree : ntree_base {
 
-  // Get types from Policy 
-  constexpr static unsigned int dimension = Policy::dimension; 
-  using type_t = double; 
+  // Get types from Policy
+  constexpr static unsigned int dimension = Policy::dimension;
+  using type_t = double;
   using point_t = util::point<type_t, dimension>;
   using key_t = typename Policy::key_t;
 
@@ -61,22 +61,25 @@ struct ntree : ntree_base {
   template<class F>
   static void fields(F f) {
     f(coordinates);
-    f(radius); 
-    f(keys); 
+    f(radius);
+    f(keys);
   }
 
   ntree(const coloring & c)
-    : ents(data::make_region<Policy, entities>(c.global_entities_),
+    : ents(
+        data::make_region<Policy, entities>(c.global_entities_),
         c.nparts_,
-        [=](std::size_t i) {
-          return c.offset_[i];
-        },
+        [=](std::size_t i) { return c.offset_[i]; },
         data::disjoint,
         data::complete) {}
 
-  static inline const typename field<point_t>::template definition<Policy, entities> coordinates;
+  static inline const typename field<point_t>::template definition<Policy,
+    entities>
+    coordinates;
   static inline const field<double>::definition<Policy, entities> radius;
-  static inline const typename field<key_t>::template definition<Policy, entities> keys;
+  static inline const typename field<key_t>::template definition<Policy,
+    entities>
+    keys;
 
   template<index_space S>
   auto & get_partition() const {
@@ -88,7 +91,6 @@ struct ntree : ntree_base {
   }
 
   data::partitioned ents;
-
 };
 
 template<class Policy>
@@ -108,18 +110,17 @@ struct ntree<Policy>::access {
     f(keys);
   }
 
-  point_t& get_coordinates(const size_t& i){
-    return coordinates(i); 
+  point_t & get_coordinates(const size_t & i) {
+    return coordinates(i);
   }
 
-  double& get_radius(const size_t& i){
-    return radius(i); 
+  double & get_radius(const size_t & i) {
+    return radius(i);
   }
 
-  key_t& get_key(const size_t& i){
-    return keys(i); 
+  key_t & get_key(const size_t & i) {
+    return keys(i);
   }
-  
 };
 
 template<>
