@@ -12,9 +12,16 @@
    All rights reserved.
                                                                               */
 
+#define __FLECSI_PRIVATE__
 #include "flecsi/util/common.hh"
 #include "flecsi/util/constant.hh"
+#include "flecsi/util/debruijn.hh"
+#include "flecsi/util/demangle.hh"
+#include "flecsi/util/function_traits.hh"
+#include "flecsi/util/static_verify.hh"
 #include "flecsi/util/unit.hh"
+
+#include <random>
 
 using namespace flecsi;
 
@@ -34,6 +41,63 @@ MyFun(double, int, long) {
   return float(0);
 }
 
+template<class T>
+using ft = util::function_traits<T>;
+
+template<class A, class B>
+constexpr const bool & eq = std::is_same_v<A, B>;
+
+template<class T>
+using ret = typename ft<T>::return_type;
+template<class T>
+using args = typename ft<T>::arguments_type;
+template<class... TT>
+using tup = std::tuple<TT...>;
+
+template<class T, class R, class A>
+constexpr bool
+test() {
+  static_assert(eq<typename ft<T>::return_type, R>);
+  static_assert(eq<typename ft<T>::arguments_type, A>);
+  return true;
+}
+template<class T, class... TT>
+constexpr bool
+same() {
+  return (
+    test<TT, typename ft<T>::return_type, typename ft<T>::arguments_type>() &&
+    ...);
+}
+template<auto M>
+constexpr bool
+pmf() {
+  using T = decltype(M);
+  static_assert(eq<typename ft<T>::owner_type, MyClass>);
+  return test<T, void, tup<char, int>>();
+}
+
+static_assert(pmf<&MyClass::mem>());
+static_assert(pmf<&MyClass::memc>());
+static_assert(pmf<&MyClass::memv>());
+static_assert(pmf<&MyClass::memcv>());
+
+static_assert(test<MyClass, int, tup<float, double, long double>>());
+static_assert(test<decltype(MyFun), float, tup<double, int, long>>());
+static_assert(same<decltype(MyFun),
+  decltype(&MyFun),
+  decltype(*MyFun),
+  std::function<decltype(MyFun)>>());
+static_assert(same<MyClass,
+  MyClass &,
+  const MyClass &,
+  volatile MyClass &,
+  const volatile MyClass &,
+  MyClass &&,
+  const MyClass &&,
+  volatile MyClass &&,
+  const volatile MyClass &&>());
+
+// ---------------
 using c31 = util::constants<3, 1>;
 static_assert(c31::size == 2);
 static_assert(c31::index<1> == 1);
@@ -43,6 +107,85 @@ using c4 = util::constants<4>;
 static_assert(c4::value == 4);
 static_assert(c4::first == 4);
 static_assert(!util::constants<>::size);
+
+// ---------------
+/*
+  Some classes, with or without members foo and bar.
+  These will facilitate our check of the FLECSI_MEMBER_CHECKER macro.
+ */
+
+struct first {
+  int foo;
+};
+
+struct second {
+  void bar() {}
+};
+
+struct both {
+  int foo;
+  void bar() {}
+};
+
+struct neither {};
+
+// make sure two bars aren't counted as a foo and a bar
+struct bars {
+  void bar() {}
+  void bar(int) {}
+};
+
+/*
+  We'll be interested in checking classes for the presence or absence
+  of members foo and bar. The following macro calls produce constructs
+  that will facilitate our doing this.
+ */
+FLECSI_MEMBER_CHECKER(foo); // Makes has_member_foo<T>. ...Does T have foo?
+FLECSI_MEMBER_CHECKER(bar); // Makes has_member_bar<T>. ...Does T have bar?
+
+// first{} has foo only
+static_assert(has_member_foo<first>::value);
+static_assert(!has_member_bar<first>::value);
+
+// second{} has bar only
+static_assert(!has_member_foo<second>::value);
+static_assert(has_member_bar<second>::value);
+
+// both{} has both
+static_assert(has_member_foo<both>::value);
+static_assert(has_member_bar<both>::value);
+
+// neither{} has neither
+static_assert(!has_member_foo<neither>::value);
+static_assert(!has_member_bar<neither>::value);
+
+// bars{} has two bars, but no foo
+static_assert(!has_member_foo<bars>::value);
+static_assert(has_member_bar<bars>::value);
+
+// ------------------------
+// is_tuple
+// ------------------------
+
+// with non-tuple
+static_assert(!util::is_tuple<int>::value);
+
+// with tuple
+static_assert(util::is_tuple<std::tuple<>>::value);
+static_assert(util::is_tuple<std::tuple<int>>::value);
+static_assert(util::is_tuple<std::tuple<int, char>>::value);
+
+// ---------------
+constexpr bool
+debruijn(std::uint32_t x) {
+  for(std::uint32_t i = 0; i < 32; ++i)
+    if(util::debruijn32_t::index(x << i) != i)
+      return false;
+  return true;
+}
+
+static_assert(util::debruijn32_t::index(0) == 0);
+static_assert(debruijn(1));
 
 int
 common() {
@@ -112,6 +255,34 @@ common() {
         p{1, nullptr};
       static_assert(p.get<2>() == 1);
       static_assert(p.get<8>() == nullptr);
+    }
+
+    {
+      std::mt19937 random;
+      random.seed(12345);
+      for(int n = 10000; n--;)
+        EXPECT_TRUE(debruijn(random() | 1));
+    }
+
+    {
+      // demangle, type
+      // The results depend on #ifdef __GNUG__, so we'll just exercise
+      // these functions, without checking for particular results.
+      EXPECT_NE(flecsi::util::demangle("foo"), "");
+
+      auto str_demangle = UNIT_TTYPE(int);
+      auto str_type = flecsi::util::type<int>();
+
+      EXPECT_NE(str_demangle, "");
+      EXPECT_NE(str_type, "");
+      EXPECT_EQ(str_demangle, str_type);
+
+      const auto sym = flecsi::util::symbol<common>();
+#ifdef __GNUG__
+      EXPECT_EQ(sym, "common()");
+#else
+      EXPECT_NE(sym, "");
+#endif
     }
 
     // ------------------------

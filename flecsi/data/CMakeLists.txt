@@ -95,14 +95,7 @@ add_unit(canonical
     test/canonical.cc
   THREADS 2
 )
-endif()
 
-add_unit(identifiers
-  SOURCES
-    test/identifiers.cc
-)
-
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 add_unit(index
   SOURCES
     test/index.cc
@@ -110,19 +103,8 @@ add_unit(index
 )
 endif()
 
-add_unit(privilege
-  SOURCES
-    test/privilege.cc
-)
-
 add_unit(structured
   SOURCES
     test/structured.cc
-  THREADS 2
-)
-
-add_unit(unstructured
-  SOURCES
-    test/unstructured.cc
   THREADS 2
 )

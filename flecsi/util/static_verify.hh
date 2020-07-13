@@ -16,6 +16,7 @@
 /*! @file */
 
 #include <tuple>
+#include <type_traits>
 
 // Description of FLECSI_MEMBER_CHECKER.
 // The macro invocation FLECSI_MEMBER_CHECKER(foo) produces a class template
@@ -40,7 +41,7 @@
     static char (&f(...))[2];                                                  \
                                                                                \
   public: /* all outsiders need... */                                          \
-    static bool const value = sizeof(f<D>(0)) == 2;                            \
+    static constexpr bool value = sizeof(f<D>(0)) == 2;                        \
   }
 #endif
 
@@ -49,15 +50,11 @@ namespace util {
 
 //! Check if the object is a tuple
 template<typename T>
-struct is_tuple {
-  static bool const value = false;
-};
+struct is_tuple : std::false_type {};
 
 //! Check if the object is a tuple
 template<typename... T>
-struct is_tuple<std::tuple<T...>> {
-  static bool const value = true;
-};
+struct is_tuple<std::tuple<T...>> : std::true_type {};
 
 } // namespace util
 } // namespace flecsi

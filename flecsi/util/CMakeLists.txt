@@ -45,7 +45,6 @@ set(util_HEADERS
   simple_id.hh
   static_verify.hh
   target.hh
-  tuple_type_converter.hh
   tuple_visitor.hh
   tuple_walker.hh
   typeify.hh
@@ -62,7 +61,6 @@ set(util_HEADERS
 #------------------------------------------------------------------------------#
 
 set(util_SOURCES
-  debruijn.cc
   demangle.cc
 )
 
@@ -126,29 +124,6 @@ add_unit(common
 )
 
 #------------------------------------------------------------------------------#
-# crs
-#------------------------------------------------------------------------------#
-
-if(FLECSI_ENABLE_PARMETIS)
-
-add_unit(crs
-  SOURCES
-    test/crs.cc
-)
-
-endif()
-    
-
-#------------------------------------------------------------------------------#
-# demangle
-#------------------------------------------------------------------------------#
-
-add_unit(demangle
-  SOURCES
-    test/demangle.cc
-)
-
-#------------------------------------------------------------------------------#
 # unit
 #------------------------------------------------------------------------------#
 
@@ -166,24 +141,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     THREADS 2
   )
 endif()
-
-#------------------------------------------------------------------------------#
-# function_traits
-#------------------------------------------------------------------------------#
-
-set(function_traits_input test/function_traits.blessed.gnug)
-
-if(MSVC)
-  set(function_traits_input test/function_traits.blessed.msvc)
-endif()
-
-add_unit(function_traits
-  SOURCES
-    test/function_traits.cc
-  INPUTS
-    test/function_traits.blessed
-    ${function_traits_input}
-)
 
 #------------------------------------------------------------------------------#
 # id
@@ -213,15 +170,6 @@ add_unit(serialize
 )
 
 #------------------------------------------------------------------------------#
-# set_intersection
-#------------------------------------------------------------------------------#
-
-add_unit(set_intersection
-  SOURCES
-    test/set_intersection.cc
-)
-
-#------------------------------------------------------------------------------#
 # set_utils
 #------------------------------------------------------------------------------#
 
@@ -230,42 +178,6 @@ add_unit(set_utils
     test/set_utils.cc
   INPUTS
     test/set_utils.blessed
-)
-
-#------------------------------------------------------------------------------#
-# simple_id
-#------------------------------------------------------------------------------#
-
-add_unit(simple_id
-  SOURCES
-    test/simple_id.cc
-)
-
-#------------------------------------------------------------------------------#
-# static_verify
-#------------------------------------------------------------------------------#
-
-add_unit(static_verify
-  SOURCES
-    test/static_verify.cc
-)
-
-#------------------------------------------------------------------------------#
-# tuple_type_converter
-#------------------------------------------------------------------------------#
-
-set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
-
-if(MSVC)
-  set(tuple_type_converter_blessed_input
-    test/tuple_type_converter.blessed.msvc)
-endif()
-
-add_unit(tuple_type_converter
-  SOURCES
-    test/tuple_type_converter.cc
-  INPUTS
-    ${tuple_type_converter_blessed_input}
 )
 
 #------------------------------------------------------------------------------#

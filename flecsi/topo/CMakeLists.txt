@@ -88,15 +88,6 @@ add_unit(dcrs
   THREADS 5
 )
 
-add_unit(simple_definition
-  SOURCES unstructured/test/simple_definition.cc
-  INPUTS unstructured/test/simple2d-16x16.msh
-)
-
-add_unit(umesh_coloring
-  SOURCES unstructured/test/coloring.cc
-)
-
 #----------------------------------  NTREE  -----------------------------------#
 
 add_unit(ntree
