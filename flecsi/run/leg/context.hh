@@ -47,10 +47,10 @@
 namespace flecsi::run {
 
 const size_t FLECSI_TOP_LEVEL_TASK_ID = 0;
-const size_t FLECSI_MAPPER_FORCE_RANK_MATCH = 0x00001000;
-const size_t FLECSI_MAPPER_COMPACTED_STORAGE = 0x00002000;
-const size_t FLECSI_MAPPER_SUBRANK_LAUNCH = 0x00003000;
-const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
+namespace mapper {
+constexpr size_t force_rank_match = 0x00001000, compacted_storage = 0x00002000,
+                 subrank_launch = 0x00003000, exclusive_lr = 0x00004000;
+}
 
 namespace leg {
 template<class R = void>

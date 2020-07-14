@@ -246,7 +246,7 @@ public:
 
     flog_assert((task.regions.size() >= (indx + 2)),
       "ERROR:: wrong number of regions passed to the task wirth \
-               the  tag = MAPPER_COMPACTED_STORAGE");
+               the tag = compacted_storage");
 
     flog_assert((task.regions[indx].region.exists()),
       "ERROR:: pasing not existing REGION to the mapper");
@@ -353,7 +353,7 @@ public:
    Specialization of the map_task funtion for FLeCSI
    By default, map_task will execute Legions map_task from DefaultMapper.
    In the case the launcher has been tagged with the
-   "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical
+   \c compacted_storage tag, mapper will create single physical
    instance for exclusive, shared and ghost partitions for each data handle
 
     @param ctx Mapper Context
@@ -413,7 +413,7 @@ public:
         if(task.regions[indx].privilege == REDUCE) {
           creade_reduction_instance(ctx, task, output, target_mem, indx);
         }
-        else if(task.regions[indx].tag == FLECSI_MAPPER_EXCLUSIVE_LR) {
+        else if(task.regions[indx].tag == mapper::exclusive_lr) {
 
           create_compacted_instance(
             ctx, task, output, target_mem, layout_constraints, indx);
@@ -439,8 +439,10 @@ public:
     const Legion::Mapping::Mapper::SliceTaskInput & input,
     Legion::Mapping::Mapper::SliceTaskOutput & output) {
 
+    using namespace mapper;
+
     switch(task.tag) {
-      case FLECSI_MAPPER_SUBRANK_LAUNCH:
+      case subrank_launch:
         // expect a 1-D index domain
         assert(input.domain.get_dim() == 1);
         // send the whole domain to our local processor
@@ -449,8 +451,8 @@ public:
         output.slices[0].proc = task.target_proc;
         break;
 
-      case FLECSI_MAPPER_FORCE_RANK_MATCH:
-      case FLECSI_MAPPER_COMPACTED_STORAGE: {
+      case force_rank_match:
+      case compacted_storage: {
         // expect a 1-D index domain - each point goes to the corresponding node
         assert(input.domain.get_dim() == 1);
         LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();

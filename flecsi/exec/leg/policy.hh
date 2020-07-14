@@ -143,7 +143,7 @@ reduce(ARGS &&... args) {
         Legion::TaskArgument(NULL, 0),
         arg_map);
 
-      flog_mpi_launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
+      flog_mpi_launcher.tag = run::mapper::force_rank_match;
 
       // Launch the MPI task
       auto future_mpi =
@@ -277,7 +277,7 @@ reduce(ARGS &&... args) {
     else {
       static_assert(
         processor_type == task_processor_type_t::mpi, "Unknown launch type");
-      launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
+      launcher.tag = run::mapper::force_rank_match;
 
       // Launch the MPI task
       const auto ret = future<RETURN, launch_type_t::index>{
