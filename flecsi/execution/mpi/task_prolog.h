@@ -82,7 +82,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     field_metadata.shared_data_buffer = shared_data;
     field_metadata.ghost_data_buffer = ghost_data;
-    exchange_queue.emplace(h.index_space, h.fid);
+    modified_dense_fields.emplace_back(h.index_space, h.fid);
   }
 
   template<typename T,
@@ -100,7 +100,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     update_ghost_row_sizes<T>(h);
 
-    sparse_exchange_queue.emplace(h.index_space, h.fid);
+    modified_sparse_fields.emplace_back(h.index_space, h.fid);
   }
 
   template<typename T,
@@ -123,7 +123,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     update_ghost_row_sizes<T>(h);
 
-    sparse_exchange_queue.emplace(h.index_space, h.fid);
+    modified_sparse_fields.emplace_back(h.index_space, h.fid);
     *(h.ghost_is_readable) = true;
   } // handle
 
@@ -354,7 +354,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   void handle(T &) {} // handle
 
 #if defined(FLECSI_USE_AGGCOMM)
-  void launch_copies() {
+  void launch_dense_exchange() {
     auto & context = context_t::instance();
     const int my_color = context.color();
     const int num_colors = context.colors();
@@ -364,19 +364,15 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     std::vector<int> sharedSize(num_colors, 0);
     std::vector<int> ghostSize(num_colors, 0);
 
-    std::vector<std::pair<size_t, field_id_t>> modified_fields;
+    auto & modified_fields = modified_dense_fields;
 
-    while(not exchange_queue.empty()) {
-      auto & fi = exchange_queue.front();
+    for (auto & fi : modified_fields) {
       auto & field_metadata = context.registered_field_metadata().at(fi.second);
-      modified_fields.emplace_back(fi.first, fi.second);
 
       for(auto rank = 0; rank < num_colors; ++rank) {
         ghostSize[rank] += field_metadata.ghost_field_sizes[rank];
         sharedSize[rank] += field_metadata.shared_field_sizes[rank];
       }
-
-      exchange_queue.pop();
     }
 
     std::vector<unsigned char *> allSendBuffer(num_colors);
@@ -495,7 +491,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       MPI_Free_mem(allSendBuffer[rank]);
   }
 
-  void launch_sparse_copies() {
+  void launch_sparse_exchange() {
     auto & context = context_t::instance();
     const int my_color = context.color();
     const int num_colors = context.colors();
@@ -504,15 +500,13 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     std::map<int, int> shared_sizes;
     std::map<int, int> ghost_sizes;
-    std::vector<std::pair<size_t, field_id_t>> modified_fields;
+    auto & modified_fields = modified_sparse_fields;
 
     // compute aggregated communication sizes
-    while(not sparse_exchange_queue.empty()) {
-      auto & fi = sparse_exchange_queue.front();
+    for (auto & fi : modified_fields) {
       auto & field_data = context.registered_sparse_field_data().at(fi.second);
       auto & field_metadata =
         context.registered_sparse_field_metadata().at(fi.second);
-      modified_fields.emplace_back(fi.first, fi.second);
 
       for(const auto & el : field_metadata.ghost_indices) {
         for(size_t ind : el.second) {
@@ -538,8 +532,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
             shared_sizes[el.first] = (count * field_data.type_size);
         }
       }
-
-      sparse_exchange_queue.pop();
     }
 
     std::map<int, std::vector<uint8_t>> all_send_buf;
@@ -689,8 +681,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
   }
 
-  std::queue<std::pair<size_t, field_id_t>> exchange_queue;
-  std::queue<std::pair<size_t, field_id_t>> sparse_exchange_queue;
+  // pairs (index space, field id) identifying dense fields to exchange
+  std::vector<std::pair<size_t, field_id_t>> modified_dense_fields;
+  // pairs (index space, field id) identifying sparse fields to exchange
+  std::vector<std::pair<size_t, field_id_t>> modified_sparse_fields;
 #endif
 
 }; // struct task_prolog_t

@@ -172,8 +172,8 @@ struct mpi_execution_policy_t {
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 #if defined(FLECSI_USE_AGGCOMM)
-    task_prolog.launch_copies();
-    task_prolog.launch_sparse_copies();
+    task_prolog.launch_dense_exchange();
+    task_prolog.launch_sparse_exchange();
 #endif
     annotation::end<annotation::execute_task_prolog>();
 
