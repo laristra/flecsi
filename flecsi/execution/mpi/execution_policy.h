@@ -172,6 +172,11 @@ struct mpi_execution_policy_t {
     task_prolog_t task_prolog;
     task_prolog.walk(task_args);
 #if defined(FLECSI_USE_AGGCOMM)
+    task_prolog.launch_rowsize_exchange();
+    /* with current sparse implementation we need row_resizer to handle any
+       sparse row resizing (although this communication is aggregated).*/
+    task_prolog.row_resizer.walk(task_args);
+
     task_prolog.launch_dense_exchange();
     task_prolog.launch_sparse_exchange();
 #endif
