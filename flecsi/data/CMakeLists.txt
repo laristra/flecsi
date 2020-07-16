@@ -103,8 +103,8 @@ add_unit(index
 )
 endif()
 
-add_unit(structured
-  SOURCES
-    test/structured.cc
-  THREADS 2
-)
+#add_unit(structured
+#  SOURCES
+#    test/structured.cc
+#  THREADS 2
+#)
