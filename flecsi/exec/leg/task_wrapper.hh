@@ -267,11 +267,10 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     const std::vector<Legion::PhysicalRegion> &,
     Legion::Context,
     Legion::Runtime *) {
-    // FIXME: Refactor
-    //    {
-    //      log::devel_guard guard(task_wrapper_tag);
-    //      flog_devel(info) << "In execute_mpi_task" << std::endl;
-    //    }
+    {
+      log::devel_guard guard(task_wrapper_tag);
+      flog_devel(info) << "In execute_mpi_task" << std::endl;
+    }
 
     // Unpack task arguments.
     param_tuple * p;
@@ -279,17 +278,22 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     std::memcpy(&p, task->args, sizeof p);
     auto & mpi_task_args = *p;
 
-    // FIXME: Refactor
-    // init_handles_t init_handles(runtime, context, regions, task->futures);
-    // init_handles.walk(mpi_task_args);
+    // FIXME Refactor  auto task_args = detail::tuple_get<param_tuple>(*task);
+
+    //  bind_accessors_t bind_accessors(runtime, context, regions,
+    //  task->futures); bind_accessors.walk(task_args);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();
     c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
-    // FIXME: Refactor
-    // finalize_handles_t finalize_handles;
-    // finalize_handles.walk(mpi_task_args);
+    auto & flecsi_context = run::context::instance();
+    flecsi_context.mpi_handoff();
+    flecsi_context.mpi_wait();
+
+    // FIXME   unbind_accessors_t unbind_accessors(runtime, context, regions,
+    //    task->futures);
+    //  unbind_accessors.walk(task_args);
   }
 };
 

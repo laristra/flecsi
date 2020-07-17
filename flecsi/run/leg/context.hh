@@ -227,6 +227,22 @@ struct context_t : context {
 
   void connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
+  // When GCC fixes bug #83258, these can be lambdas in the public functions:
+  /*!
+    Handoff to MPI from Legion.
+   */
+  static void mpi_handoff() {
+    instance().handshake_.legion_handoff_to_mpi();
+  }
+
+  /*!
+    Wait for MPI runtime to complete task execution.
+   */
+
+  static void mpi_wait() {
+    instance().handshake_.legion_wait_on_mpi();
+  }
+
 private:
   /*!
      Handoff to legion runtime from MPI.
@@ -255,23 +271,6 @@ private:
     handshake_.mpi_wait_on_legion();
     MPI_Barrier(MPI_COMM_WORLD);
   } // wait_on_legion
-
-  // When GCC fixes bug #83258, these can be lambdas in the public functions:
-  /*!
-    Handoff to MPI from Legion.
-   */
-
-  static void mpi_handoff() {
-    instance().handshake_.legion_handoff_to_mpi();
-  }
-
-  /*!
-    Wait for MPI runtime to complete task execution.
-   */
-
-  static void mpi_wait() {
-    instance().handshake_.legion_wait_on_mpi();
-  }
 
   /*!
     Invoke the current MPI task, if any, and clear it.

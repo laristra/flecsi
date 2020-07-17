@@ -154,9 +154,9 @@ reduce(ARGS &&... args) {
 
       // Handoff to the MPI runtime.
       flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
-
       // Wait for MPI to finish execution (synchronous).
       flecsi_context.wait_on_mpi(legion_context, legion_runtime);
+
     } // if
   } // if
 #endif // FLECSI_ENABLE_FLOG
@@ -282,15 +282,8 @@ reduce(ARGS &&... args) {
       // Launch the MPI task
       const auto ret = future<RETURN, launch_type_t::index>{
         legion_runtime->execute_index_space(legion_context, launcher)};
-      // Force synchronization
+      // FIXME do we ever need it? Force synchronization
       ret.wait(true);
-
-      // Handoff to the MPI runtime.
-      flecsi_context.handoff_to_mpi(legion_context, legion_runtime);
-
-      // Wait for MPI to finish execution (synchronous).
-      // We must keep mpi_args alive until then.
-      flecsi_context.wait_on_mpi(legion_context, legion_runtime);
 
       if constexpr(!std::is_void_v<REDUCTION>) {
         // FIXME implement logic for reduction MPI task
