@@ -100,7 +100,7 @@ flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
   {
     clog_tag_guard(legion_tasks);
-    clog(trace) << "Executing owner pos correction task " << std::endl;
+    std::cout << "Executing owner pos correction task " << std::endl;
   }
 
   clog_assert((regions.size() % 2) == 0,
@@ -150,10 +150,10 @@ flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
       {
         clog_tag_guard(legion_tasks);
-        clog(trace) << "points to " << old_location.x[0] << ","
-                    << old_location.x[1] << " local mirror is "
-                    << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
-                    << std::endl;
+        std::cout << "points to " << old_location.x[0] << ","
+                  << old_location.x[1] << " local mirror is "
+                  << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
+                  << std::endl;
       } // scope
 
       // NOTE: We stored a forward pointer in old shared location to new
@@ -164,9 +164,9 @@ flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
       {
         clog_tag_guard(legion_tasks);
-        clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
-                    << " points to " << new_location.x[0] << ","
-                    << new_location.x[1] << std::endl;
+        std::cout << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
+                  << " points to " << new_location.x[0] << ","
+                  << new_location.x[1] << std::endl;
       } // scope
 
     } // for itr
@@ -215,84 +215,58 @@ flecsi_internal_legion_task(unset_call_mpi_task, void) {
 flecsi_internal_legion_task(owner_pos_compaction_task, void) {
   const int my_color = task->index_point.point_data[0];
 
+  assert(task->regions.size() == 3);
+
+  using namespace Legion;
   {
     clog_tag_guard(legion_tasks);
-    clog(trace) << "executing compaction task " << my_color << std::endl;
+    std::cout << "executing compaction task " << my_color << std::endl;
   }
 
-  // Add additional setup.
   context_t & context_ = context_t::instance();
-
-  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map =
-    context_.coloring_map();
 
   auto ghost_owner_pos_fid = Legion::FieldID(internal_field::ghost_owner_pos);
 
-  {
-    clog_tag_guard(legion_tasks);
-    // In old position of shared, write compacted location
-    // In compacted position of ghost, write the reference/pointer
-    // to pre-compacted shared
-    // ghost reference/pointer will need to communicate with other ranks in
-    // correction_task to obtain corrected pointer
-    size_t region_idx = 0;
-    for(auto idx_space : coloring_map) {
+  flecsi::coloring::index_coloring_t idx_space =
+    *((flecsi::coloring::index_coloring_t *)task->args);
 
-      Legion::IndexSpace ispace =
-        regions[region_idx].get_logical_region().get_index_space();
-      LegionRuntime::Accessor::RegionAccessor<
-        LegionRuntime::Accessor::AccessorType::Generic,
-        LegionRuntime::Arrays::Point<2>>
-        acc_ref = regions[region_idx]
-                    .get_field_accessor(ghost_owner_pos_fid)
-                    .typeify<LegionRuntime::Arrays::Point<2>>();
+  Legion::Domain sh_dom = runtime->get_index_space_domain(
+    ctx, task->regions[1].region.get_index_space());
+  Legion::Domain gh_dom = runtime->get_index_space_domain(
+    ctx, task->regions[2].region.get_index_space());
 
-      Legion::Domain domain = runtime->get_index_space_domain(ctx, ispace);
-      LegionRuntime::Arrays::Rect<2> rect = domain.get_rect<2>();
-      LegionRuntime::Arrays::GenericPointInRectIterator<2> expanded_itr(rect);
+  std::vector<PhysicalRegion> comb_regions;
+  comb_regions.push_back(regions[0]);
+  comb_regions.push_back(regions[1]);
+  comb_regions.push_back(regions[2]);
 
-      for(auto exclusive_itr = idx_space.second.exclusive.begin();
-          exclusive_itr != idx_space.second.exclusive.end(); ++exclusive_itr) {
-        clog(trace) << my_color << " key " << idx_space.first << " exclusive "
-                    << " " << *exclusive_itr << std::endl;
-        expanded_itr++;
-      } // exclusive_itr
+  const Legion::MultiRegionAccessor<Legion::Point<2>, 2, Legion::coord_t,
+    Realm::AffineAccessor<Legion::Point<2>, 2, Legion::coord_t>>
+    acc(comb_regions, ghost_owner_pos_fid, sizeof(Legion::Point<2>));
 
-      for(auto shared_itr = idx_space.second.shared.begin();
-          shared_itr != idx_space.second.shared.end(); ++shared_itr) {
-        const flecsi::coloring::entity_info_t shared = *shared_itr;
-        const LegionRuntime::Arrays::Point<2> reference =
-          LegionRuntime::Arrays::make_point(shared.rank, shared.offset);
-        // reference is the old location, expanded_itr.p is the new location
-        acc_ref.write(
-          Legion::DomainPoint::from_point<2>(reference), expanded_itr.p);
+  PointInDomainIterator<2, coord_t> sh_itr(sh_dom);
+  PointInDomainIterator<2, coord_t> gh_itr(gh_dom);
 
-        clog(trace) << my_color << " key " << idx_space.first << " shared was "
-                    << " " << *shared_itr << " now at " << expanded_itr.p
-                    << std::endl;
+  for(auto shared_itr = idx_space.shared.begin();
+      shared_itr != idx_space.shared.end(); ++shared_itr) {
+    const flecsi::coloring::entity_info_t shared = *shared_itr;
+    const Point<2> reference(shared.rank, shared.offset);
+    // reference is the old location, expanded_itr.p is the new location
+    // acc.write(reference, sh_itr);
+    acc.write(reference, *sh_itr);
+    sh_itr++;
+  }
 
-        expanded_itr++;
-      } // shared_itr
-
-      for(auto ghost_itr = idx_space.second.ghost.begin();
-          ghost_itr != idx_space.second.ghost.end(); ++ghost_itr) {
-        const flecsi::coloring::entity_info_t ghost = *ghost_itr;
-        const LegionRuntime::Arrays::Point<2> reference =
-          LegionRuntime::Arrays::make_point(ghost.rank, ghost.offset);
-        // reference is where we used to point, expanded_itr.p is where ghost
-        // is now
-        acc_ref.write(
-          Legion::DomainPoint::from_point<2>(expanded_itr.p), reference);
-        clog(trace) << "color " << my_color << " key " << idx_space.first
-                    << " ghost "
-                    << " " << *ghost_itr <<
-          //" now at " << expanded_itr.p <<
-          std::endl;
-        expanded_itr++;
-      } // ghost_itr
-      region_idx++;
-    } // for idx_space
-  } // clog_tag_guard
+  for(auto ghost_itr = idx_space.ghost.begin();
+      ghost_itr != idx_space.ghost.end(); ++ghost_itr) {
+    const flecsi::coloring::entity_info_t ghost = *ghost_itr;
+    const Point<2> reference(ghost.rank, ghost.offset);
+    // reference is where we used to point, expanded_itr.p is where ghost
+    // is now
+    // acc.write(gh_itr, reference);
+    acc.write(*gh_itr, reference);
+    gh_itr++;
+  } // ghost_itr
 
 } // owner_pos_compaction_task
 
