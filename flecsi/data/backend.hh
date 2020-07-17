@@ -17,10 +17,16 @@
 
 #include <flecsi-config.h>
 
+#include "flecsi/run/types.hh" // field_id_t
+
+#include <cstddef>
+#include <utility>
+
 namespace flecsi::data {
 // Use {} if unknown:
-enum disjointness { aliased = -1, disjoint = 1 };
 enum completeness { incomplete = -1, complete = 1 };
+using size2 = std::pair<std::size_t, std::size_t>;
+constexpr inline std::size_t logical_size = 1ul << 32;
 } // namespace flecsi::data
 
 /*----------------------------------------------------------------------------*

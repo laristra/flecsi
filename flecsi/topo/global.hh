@@ -31,7 +31,7 @@ struct global_base {
 
 template<class P>
 struct global_category : global_base, data::region {
-  global_category(const coloring &) : region(data::make_region<P>(1)) {}
+  global_category(const coloring &) : region(data::make_region<P>({1, 1})) {}
 };
 template<>
 struct detail::base<global_category> {

@@ -21,6 +21,7 @@
 
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/topology.hh"
+#include "flecsi/execution.hh"
 #include "flecsi/flog.hh"
 #include "flecsi/topo/canonical/types.hh"
 #include "flecsi/topo/core.hh" // base
@@ -38,7 +39,7 @@ namespace topo {
  */
 
 template<typename Policy>
-struct canonical : canonical_base {
+struct canonical : canonical_base, with_size {
   using index_space = typename Policy::index_space;
   using index_spaces = typename Policy::index_spaces;
 
@@ -51,10 +52,12 @@ struct canonical : canonical_base {
     connect_visit(f, connect);
   }
 
+  // We use one size field to allocate everything for simplicity;
+  // it's a class member so as to outlive the other partitions.
   canonical(const coloring & c)
-    : part(make_partitions(c,
-        index_spaces(),
-        std::make_index_sequence<index_spaces::size>())) {}
+    : with_size(c.parts), part(make_partitions(c,
+                            index_spaces(),
+                            std::make_index_sequence<index_spaces::size>())) {}
 
   // The first index space is distinguished in that we decorate it:
   static inline const field<int>::definition<Policy, index_spaces::first> mine;
@@ -73,20 +76,14 @@ struct canonical : canonical_base {
 
 private:
   template<auto... VV, std::size_t... II>
-  static util::key_array<data::partitioned, util::constants<VV...>>
-  make_partitions(const canonical_base::coloring & c,
+  util::key_array<data::partitioned, util::constants<VV...>> make_partitions(
+    const canonical_base::coloring & c,
     util::constants<VV...> /* index_spaces, to deduce a pack */,
     std::index_sequence<II...>) {
     flog_assert(c.sizes.size() == sizeof...(VV),
       c.sizes.size() << " sizes for " << sizeof...(VV) << " index spaces");
-    return {{data::partitioned(data::make_region<Policy, VV>(c.sizes[II]),
-      c.parts,
-      split(c.sizes[II], c.parts),
-      data::disjoint,
-      data::complete)...}};
-  }
-  static auto split(std::size_t n, std::size_t p) {
-    return [=](std::size_t i) { return std::pair{i * n / p, (i + 1) * n / p}; };
+    return {{(execute<allocate>(sizes(), c.sizes[II], c.parts),
+      sizes.make_partitioned<Policy, VV>())...}};
   }
 }; // struct canonical
 

@@ -22,16 +22,25 @@ namespace flecsi {
 namespace data {
 
 struct region {
-  region(std::size_t, const fields &) {}
+  region(size2, const fields &) {}
+
+  size2 size() const {
+    return {};
+  }
 };
 
 struct partition {
-  template<class F>
+  using row = std::size_t;
+  static row make_row(std::size_t, std::size_t n) {
+    return n;
+  }
+
+  explicit partition(const region &) {}
   partition(const region &,
-    std::size_t,
-    F,
-    disjointness = {},
-    completeness = {}) {}
+    const partition &,
+    field_id_t,
+    completeness = incomplete) {}
+
   std::size_t colors() const {
     return 0;
   }

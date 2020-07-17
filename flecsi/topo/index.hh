@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/field.hh"
 #include "flecsi/data/topology.hh"
 #include "flecsi/topo/core.hh"
 
@@ -41,18 +42,37 @@ struct index_base {
 template<class P>
 struct index_category : index_base, data::partitioned {
   index_category(const coloring & c)
-    : partitioned(
-        data::make_region<P>(c.size()),
-        c.size(),
-        [](std::size_t i) {
-          return std::pair{i, i + 1};
-        },
-        data::disjoint,
-        data::complete) {}
+    : partitioned(data::make_region<P>({c.size(), 1})) {}
 };
 template<>
 struct detail::base<index_category> {
   using type = index_base;
+};
+
+struct resize {
+  explicit resize(std::size_t n) : size(n) {}
+
+  auto operator()() const {
+    return field(size.get_slot());
+  }
+  template<class Topo, typename Topo::index_space S = Topo::default_space()>
+  auto make_partitioned() const {
+    return data::make_partitioned<Topo, S>(*size, field.fid);
+  }
+
+  using Field = flecsi::field<data::partition::row, data::singular>;
+
+private:
+  // cslot can't be used, but is unneeded.
+  struct topo : specialization<index_category, topo> {};
+  static inline const Field::definition<topo> field;
+  data::anti_slot<topo> size;
+};
+
+// To control initialization order:
+struct with_size {
+  with_size(std::size_t n) : sizes(n) {}
+  resize sizes;
 };
 
 /*!
