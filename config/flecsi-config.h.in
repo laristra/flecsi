@@ -19,6 +19,7 @@
 
 #cmakedefine FLECSI_ENABLE_MPI
 #cmakedefine FLECSI_ENABLE_LEGION
+#cmakedefine FLECSI_ENABLE_HPX
 
 //----------------------------------------------------------------------------//
 // Enable Legion thread-local storage interface
@@ -40,6 +41,14 @@
     #cmakedefine COMPACTED_STORAGE_SORT
   #endif
 
+#endif
+
+//----------------------------------------------------------------------------//
+// Make sure HPX headers are included first
+//----------------------------------------------------------------------------//
+
+#if defined(FLECSI_ENABLE_HPX)
+#include <hpx/config.hpp>
 #endif
 
 //----------------------------------------------------------------------------//

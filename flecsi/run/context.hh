@@ -390,7 +390,7 @@ struct context {
             being failure.
    */
 
-  int start(const std::function<int(int, char **)> action &);
+  int start(const std::function<int()> action &);
 
   /*!
     Return the current process id.
@@ -575,7 +575,7 @@ currently only for unstructured mesh topologies.
 protected:
   context() = default;
   // Invoke initialization callbacks.
-  // Call from hiding function in derived classses.
+  // Call from hiding function in derived classes.
   void start() {
     for(auto ro : init_registry)
       ro();
