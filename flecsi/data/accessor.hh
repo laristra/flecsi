@@ -25,6 +25,7 @@
 
 #include "flecsi/data/reference.hh"
 #include "flecsi/exec/launch.hh"
+#include "flecsi/util/array_ref.hh"
 #include <flecsi/data/field.hh>
 
 namespace flecsi {
@@ -83,24 +84,20 @@ struct accessor<dense, DATA_TYPE, PRIVILEGES> : reference_base {
    */
 
   element_type & operator()(size_t index) const {
-    flog_assert(index < size_, "index out of range");
-    return data_[index];
+    flog_assert(index < s.size(), "index out of range");
+    return s[index];
   } // operator()
 
-  element_type * data() const {
-    return data_;
-  } // data
-
-private:
-  friend void bind(accessor & a, size_t size, element_type * data) {
-    a.size_ = size;
-    a.data_ = data;
+  auto span() const {
+    return s;
   }
 
-  // These must be initialized to copy into a user's accessor parameter.
-  size_t size_ = 0;
-  element_type * data_ = nullptr;
+private:
+  friend void bind(accessor & a, util::span<element_type> s) {
+    a.s = s;
+  }
 
+  util::span<element_type> s;
 }; // struct accessor
 
 } // namespace data
