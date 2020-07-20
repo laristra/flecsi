@@ -91,6 +91,10 @@ struct accessor<dense, DATA_TYPE, PRIVILEGES> : reference_base {
     return data_;
   } // data
 
+  size_t size() const{
+    return size_; 
+  }
+
 private:
   friend void bind(accessor & a, size_t size, element_type * data) {
     a.size_ = size;

@@ -29,20 +29,37 @@ namespace topo {
 //----------------------------------------------------------------------------//
 
 struct ntree_base {
-  enum index_space { entities };
+  enum index_space { entities, nodes, hashmap, tree_data };
   // static constexpr std::size_t index_spaces = 1;
-  using index_spaces = util::constants<entities>;
+  using index_spaces = util::constants<entities, nodes, hashmap, tree_data>;
 
   struct coloring {
+    // Global
+    size_t processes_;
+
+    // Entities 
     size_t local_entities_;
     size_t global_entities_;
     std::vector<size_t> entities_distribution_;
-    size_t nparts_;
-    std::vector<std::pair<size_t, size_t>> offset_;
+    std::vector<std::pair<size_t,size_t>> entities_offset_;
+
+    //nodes
+    size_t local_nodes_; 
+    size_t global_nodes_; 
+    std::vector<std::pair<size_t,size_t>> nodes_offset_; 
+
+    // hmap 
+    const size_t local_hmap_ = 1<<15;  
+    size_t global_hmap_; 
+    std::vector<std::pair<size_t,size_t>> hmap_offset_; 
+
+    // tdata 
+    std::vector<std::pair<size_t,size_t>> tdata_offset_; 
+
+    // All global sizes array for make_partition
+    std::vector<size_t> global_sizes_; 
   }; // struct coloring
 }; // struct ntree_base
-
-// using coloring_t = std::map<size_t, index_coloring_t>;
 
 } // namespace topo
 } // namespace flecsi

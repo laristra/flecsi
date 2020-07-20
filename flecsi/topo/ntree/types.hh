@@ -19,8 +19,8 @@
 #error Do not include this file directly!
 #endif
 
-#include "../utility_types.hh"
-#include "flecsi/topo/ntree/coloring.hh"
+//#include "../utility_types.hh"
+//#include "flecsi/topo/ntree/coloring.hh"
 #include "flecsi/util/geometry/point.hh"
 
 namespace flecsi {
@@ -90,6 +90,37 @@ operator<<(std::ostream & os, const sort_entity<DIM, T, KEY> & e) {
      << " Radius: " << e.radius() << " Key: " << e.key() << " Id: " << e.id();
   return os;
 }
+
+template<size_t DIM, typename T, class KEY>
+class hcell_base_t{
+
+  const size_t dimension = DIM; 
+  using type_t = T; 
+  using key_t = KEY; 
+
+public: 
+
+  hcell_base_t() = default;
+
+  hcell_base_t(const key_t& key, const size_t& ent_idx){
+    key_ = key; 
+    ent_idx_ = ent_idx; 
+  }
+
+  key_t key() const { return key_; }
+  
+private:
+  key_t key_; 
+  size_t node_idx_; 
+  size_t ent_idx_; 
+
+};
+
+template<size_t DIM, typename T, class KEY>
+class node{
+  node() = default;
+
+};
 
 } // namespace topo
 } // namespace flecsi
