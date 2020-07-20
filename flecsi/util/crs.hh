@@ -18,6 +18,7 @@
 #include "flecsi/util/array_ref.hh"
 
 #include <algorithm>
+#include <cassert>
 #include <ostream>
 
 namespace flecsi {
@@ -124,7 +125,7 @@ struct crs {
     auto operator*() {
       auto i = data_.offsets[pos_];
       auto n = data_.offsets[pos_ + 1] - i;
-      return util::make_array_ref(&data_.indices[i], n);
+      return util::span(&data_.indices[i], n);
     }
     auto & operator++() {
       pos_++;
@@ -150,7 +151,7 @@ struct crs {
     auto operator*() {
       auto i = data_.offsets[pos_];
       auto n = data_.offsets[pos_ + 1] - i;
-      return util::make_array_ref(&data_.indices[i], n);
+      return util::span(&data_.indices[i], n);
     }
     auto & operator++() {
       pos_++;

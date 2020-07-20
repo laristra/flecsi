@@ -4,21 +4,23 @@
 
 #include <iostream>
 
-// Prints an array_ref<char>, as a character string
+// Prints a span<const char>, as a character string
 inline void
-print_refc(const flecsi::util::array_ref<char> & arr) {
+print_refc(const flecsi::util::span<const char> & arr) {
   for(auto c = arr.begin(); c != arr.end(); ++c)
     UNIT_CAPTURE() << *c;
   UNIT_CAPTURE() << std::endl;
 }
 
+using flecsi::util::span;
+
 int
 array_ref() {
   UNIT {
-    using refd = flecsi::util::array_ref<double>;
-    using refc = flecsi::util::array_ref<char>;
-    using reff = flecsi::util::array_ref<float>;
-    using refi = flecsi::util::array_ref<int>;
+    using refd = span<const double>;
+    using refc = span<const char>;
+    using reff = span<const float>;
+    using refi = span<const int>;
 
     UNIT_CAPTURE() << std::endl;
 
@@ -103,22 +105,20 @@ array_ref() {
     print_refc(refc(abc));
     UNIT_CAPTURE() << std::endl;
 
-    print_refc(refc(abc).substr(0));
-    print_refc(refc(abc).substr(1));
-    print_refc(refc(abc).substr(2));
-    print_refc(refc(abc).substr(7));
-    print_refc(refc(abc).substr(8));
-    print_refc(refc(abc).substr(9)); // blank
-    print_refc(refc(abc).substr(100)); // blank
+    print_refc(refc(abc).subspan(0));
+    print_refc(refc(abc).subspan(1));
+    print_refc(refc(abc).subspan(2));
+    print_refc(refc(abc).subspan(7));
+    print_refc(refc(abc).subspan(8));
+    print_refc(refc(abc).subspan(9)); // blank
     UNIT_CAPTURE() << std::endl;
 
-    print_refc(refc(abc).substr(0, 2));
-    print_refc(refc(abc).substr(1, 4));
-    print_refc(refc(abc).substr(2, 3));
-    print_refc(refc(abc).substr(7, 5));
-    print_refc(refc(abc).substr(8, 1));
-    print_refc(refc(abc).substr(9, 1)); // blank
-    print_refc(refc(abc).substr(100, 1)); // blank
+    print_refc(refc(abc).subspan(0, 2));
+    print_refc(refc(abc).subspan(1, 4));
+    print_refc(refc(abc).subspan(2, 3));
+    print_refc(refc(abc).subspan(7, 2));
+    print_refc(refc(abc).subspan(8, 1));
+    print_refc(refc(abc).subspan(9, 0)); // blank
     UNIT_CAPTURE() << std::endl;
 
     // ------------------------
@@ -152,34 +152,13 @@ array_ref() {
     UNIT_CAPTURE() << (cap3.empty() ? "true" : "false") << std::endl; // not
     UNIT_CAPTURE() << std::endl;
 
-    // max_size() is machine-dependent, so I won't put it into a comparison
-    // file. Let's basically just be sure it's callable and reasonable...
-    EXPECT_TRUE(0 < cap0.max_size());
-    EXPECT_TRUE(0 < cap3.max_size());
-
     // ------------------------
     // element access
     // ------------------------
-
     // []
     UNIT_CAPTURE() << cap3[0] << std::endl;
     UNIT_CAPTURE() << cap3[1] << std::endl;
     UNIT_CAPTURE() << cap3[2] << std::endl;
-    UNIT_CAPTURE() << std::endl;
-
-    // at()
-    UNIT_CAPTURE() << cap3.at(0) << std::endl;
-    UNIT_CAPTURE() << cap3.at(1) << std::endl;
-    UNIT_CAPTURE() << cap3.at(2) << std::endl;
-    UNIT_CAPTURE() << std::endl;
-
-    // test at() exception
-    try {
-      UNIT_CAPTURE() << cap3.at(3) << std::endl;
-    }
-    catch(...) {
-      UNIT_CAPTURE() << "Caught an (intentionally generated!) test exception";
-    }
     UNIT_CAPTURE() << std::endl;
 
     // front(), back()
@@ -195,87 +174,66 @@ array_ref() {
     // ------------------------
 
     // to std::vector
-    EXPECT_EQ(vec3, std::vector<double>(cap3));
-    EXPECT_EQ(vec3, cap3.vec());
+    EXPECT_EQ(vec3, to_vector(cap3));
 
     // to std::string
-    EXPECT_EQ(abc, std::string(refc(abc)));
-    EXPECT_EQ(abc, refc(abc).str());
+    EXPECT_EQ(abc, std::string(refc(abc).begin(), refc(abc).end()));
 
     // ------------------------
     // mutators
     // ------------------------
 
     {
-      // clear()
-      const std::vector<double> vec = {3.14, 2.18, 2.72};
-      refd arr = vec;
-      EXPECT_NE(arr.begin(), nullptr);
-      EXPECT_NE(arr.size(), 0u);
-      arr.clear();
-      EXPECT_EQ(arr.begin(), nullptr);
-      EXPECT_EQ(arr.size(), 0u);
-
       // remove_*()
       int iarray[9] = {1, 9, 2, 8, 3, 7, 4, 6, 5};
       refi f = iarray;
-      f.remove_prefix(2);
-      f.remove_suffix(1);
+      f = f.last(f.size() - 2);
+      f = f.first(f.size() - 1);
       UNIT_CAPTURE() << f.front() << std::endl;
       UNIT_CAPTURE() << f.back() << std::endl;
       UNIT_CAPTURE() << std::endl;
 
-      f.remove_prefix(3);
-      f.remove_suffix(2);
+      f = f.last(f.size() - 3);
+      f = f.first(f.size() - 2);
       UNIT_CAPTURE() << f.front() << std::endl;
       UNIT_CAPTURE() << f.back() << std::endl;
       UNIT_CAPTURE() << std::endl;
 
-      f.remove_prefix(1); // ==> nothing left!
+      f = f.last(f.size() - 1); // ==> nothing left!
       EXPECT_EQ(f.size(), 0u);
       for(auto it = f.begin(); it != f.end(); ++it)
         assert(false);
-
-      // pop_*()
-      double darray[3] = {1.23, 4.56, 7.89};
-      refd d = darray;
-      d.pop_back();
-      d.pop_front();
-      UNIT_CAPTURE() << d.front() << std::endl;
-      UNIT_CAPTURE() << d.back() << std::endl;
-      UNIT_CAPTURE() << std::endl;
     }
 
     // ------------------------
-    // make_array_ref
+    // CTAD
     // ------------------------
 
     {
       // from * and length
       const std::size_t length = 9;
       int ints[length] = {1, 9, 2, 8, 3, 7, 4, 6, 5};
-      refi a = flecsi::util::make_array_ref(&ints[0], length);
+      const span a(&ints[0], length);
       UNIT_CAPTURE() << a.front() << '\n';
       UNIT_CAPTURE() << a.back() << '\n' << std::endl;
 
       // from T [n]
-      refi b = flecsi::util::make_array_ref(ints);
+      const span b(ints);
       UNIT_CAPTURE() << b.front() << '\n';
       UNIT_CAPTURE() << b.back() << '\n' << std::endl;
 
       // from std::vector
       std::vector<int> ivec(10, 1); // 10 1s
-      refi c = flecsi::util::make_array_ref(ivec);
+      const span c(ivec);
       UNIT_CAPTURE() << c.front() << '\n';
       UNIT_CAPTURE() << c.back() << '\n' << std::endl;
 
       // from std::array
       const std::array<int, 2> iarr = {{10, 20}};
-      refi d = flecsi::util::make_array_ref(iarr);
+      const span d(iarr);
       UNIT_CAPTURE() << d.front() << '\n';
       UNIT_CAPTURE() << d.back() << '\n';
     }
-
     // ------------------------
     // compare
     // ------------------------
