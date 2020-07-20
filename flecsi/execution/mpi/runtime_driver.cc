@@ -128,6 +128,7 @@ runtime_driver(int argc, char ** argv) {
   for(const auto & fi : context_.registered_fields()) {
     auto & ispace_data = ispace_dmap[fi.index_space];
     ispace_data.ghost_is_readable[fi.fid] = true;
+    ispace_data.ghost_was_resized[fi.fid] = false;
   }
 #endif
 

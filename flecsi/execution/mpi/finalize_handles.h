@@ -163,7 +163,8 @@ struct finalize_handles_t
     delete[] shared_data;
     delete[] ghost_data;
 #else
-    *(h.ghost_is_readable) = false;
+    *h.ghost_is_readable = false;
+    *h.ghost_was_resized = true;
 #endif
   } // handle
 

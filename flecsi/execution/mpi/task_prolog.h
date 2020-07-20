@@ -94,10 +94,14 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
+    if ((not *h.ghost_is_readable) and (h.ghost_was_resized))
+      resized_sparse_fields.emplace_back(h.index_space, h.fid);
+
     if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na))
       return;
 
     modified_sparse_fields.emplace_back(h.index_space, h.fid);
+    *h.ghost_is_readable = true;
   }
 
   template<typename T,
@@ -119,6 +123,12 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       return;
 
     modified_sparse_fields.emplace_back(h.index_space, h.fid);
+    *h.ghost_is_readable = true;
+
+    if (not (*h.ghost_was_resized))
+      return;
+
+    resized_sparse_fields.emplace_back(h.index_space, h.fid);
   } // handle
 
   template<typename T>
@@ -632,7 +642,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     // maps are rank->buffer_size
     std::map<int, int> shared_sizes;
     std::map<int, int> ghost_sizes;
-    auto & modified_fields = modified_sparse_fields;
+    auto & modified_fields = resized_sparse_fields;
 
     // compute aggregated communication sizes
     for (auto & fi : modified_fields) {
@@ -753,11 +763,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
                 GHOST_PERMISSIONS> & a) {
       auto & h = a.handle;
 
-      if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na))
-        return;
+      if (not (*h.ghost_was_resized)) return;
 
       update_ghost_row_sizes<T>(h);
-      *(h.ghost_is_readable) = true;
+      *h.ghost_was_resized = false;
     }
 
     template<typename T,
@@ -775,11 +784,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     void handle(ragged_mutator<T> & m) {
       auto & h = m.handle;
 
-      if(*(h.ghost_is_readable))
-        return;
+      if (not (*h.ghost_was_resized)) return;
 
       update_ghost_row_sizes<T>(h);
-      *(h.ghost_is_readable) = true;
+      *h.ghost_was_resized = false;
     } // handle
 
     template<typename T>
@@ -843,6 +851,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
   std::vector<std::pair<size_t, field_id_t>> modified_dense_fields;
   // pairs (index space, field id) identifying sparse fields to exchange
   std::vector<std::pair<size_t, field_id_t>> modified_sparse_fields;
+  // pairs (index space, field id) identifying sparse fields needing resizing
+  std::vector<std::pair<size_t, field_id_t>> resized_sparse_fields;
   // tuple walker for resizing sparse rows
   row_resize_t row_resizer;
 #endif
