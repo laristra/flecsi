@@ -35,7 +35,7 @@ struct ntree_base {
 
   struct coloring {
     // Global
-    size_t processes_;
+    size_t nparts_;
 
     // Entities 
     size_t local_entities_;

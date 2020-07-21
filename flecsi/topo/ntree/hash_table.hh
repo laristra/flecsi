@@ -35,30 +35,23 @@ private:
   using key_t = KEY;
   using type_t = TYPE;
 
-  size_t collision_ = 0; // Collision counter
-  const size_t modulo_ = 100; 
-  size_t hash_capacity_; 
+  static const size_t modulo_ = 1234;
 
 public: 
-
-  hash_table() = default; 
-
-  void set_capacity(const size_t& capacity){
-    hash_capacity_ = capacity; 
-  }
 
   /**
    * @brief Find a value in the hashtable
    * While the value or a null key is not found we keep looping
    */
   template<const auto& F, std::size_t Priv>
-  type_t * find(const data::accessor_member<F, Priv> & acc, key_t key) {
+  static type_t * find(const data::accessor_member<F, Priv> & acc,const key_t& key) {
+    size_t hash_capacity_ = acc.span().size(); 
     size_t h = hash(key, hash_capacity_);
-    type_t * ptr = acc.data() + h;
+    type_t * ptr = acc.span().data() + h;
     while(ptr->key() != key && ptr->key() != key_t::null()) {
       h += modulo_;
       h = h >= hash_capacity_ ? h % hash_capacity_ : h;
-      ptr = acc.data() + h;
+      ptr = acc.span().data() + h;
     }
     if(ptr->key() != key) {
       return nullptr;
@@ -72,26 +65,32 @@ public:
    * conflict using modulo method.
    */
   template<const auto& F, std::size_t Priv, class... ARGS>
-  type_t * insert(const data::accessor_member<F,Priv> & acc, const key_t & key, ARGS &&... args) {
+  static type_t * insert(const data::accessor_member<F,Priv> & acc, const key_t & key, ARGS &&... args) {
+    size_t hash_capacity_ = acc.span().size(); 
     size_t h = hash(key,hash_capacity_);
-    type_t * ptr = acc.data() + h;
+    type_t * ptr = acc.span().data() + h;
     while(ptr->key() != key && ptr->key() != key_t::null()) {
       h += modulo_;
       h = h >= hash_capacity_ ? h % hash_capacity_ : h;
-      ptr = acc.data() + h;
-      ++collision_;
+      ptr = acc.span().data() + h;
     }
     auto b = new(ptr) type_t(key, std::forward<ARGS>(args)...);
     return ptr;
   }
 
-  size_t collision() const { return collision_; } 
+  // Clear all keys
+  template<const auto& F, std::size_t Priv>
+  static void clear(const data::accessor_member<F,Priv> & acc){
+    for(auto a: acc.span()){
+      a.set_key(key_t::null()); 
+    }
+  }
 
   /**
    * @brief the Hash function transforming a key in position in the hash
    * table.
    */
-  size_t hash(const key_t & key, size_t capacity) {
+  static size_t hash(const key_t & key, size_t capacity) {
     return key % capacity;
   }
 }; // class hash_table

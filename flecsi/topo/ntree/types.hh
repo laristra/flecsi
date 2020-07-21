@@ -107,8 +107,24 @@ public:
     ent_idx_ = ent_idx; 
   }
 
+  hcell_base_t(const key_t& key){
+    key_ = key; 
+  }
+
   key_t key() const { return key_; }
+
+  size_t ent_idx() const { return ent_idx_; }
   
+  void set_key(const key_t& key){ key_ = key; }
+
+  void set_ent_idx(const int& idx){
+    ent_idx_ = idx; 
+  }
+
+  void add_child(const int& bit){
+    //todo
+  }
+
 private:
   key_t key_; 
   size_t node_idx_; 

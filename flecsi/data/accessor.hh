@@ -92,10 +92,6 @@ struct accessor<dense, DATA_TYPE, PRIVILEGES> : reference_base {
     return s;
   }
 
-  size_t size() const{
-    return size_; 
-  }
-
 private:
   friend void bind(accessor & a, util::span<element_type> s) {
     a.s = s;

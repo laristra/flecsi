@@ -48,7 +48,10 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     // Move to the coloring constructor
     // coloring c(hd);
     coloring c;
-    c.processes_ = size;
+
+    // For now the number of partitions is the number of processes
+    c.nparts_ = size; 
+
     c.local_entities_ = hd.local_num_entities();
     c.global_entities_ = hd.global_num_entities();
     c.entities_distribution_.resize(size);
@@ -79,9 +82,9 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     c.global_nodes_ = c.global_entities_; 
     c.nodes_offset_ = c.entities_offset_; 
 
-    c.global_hmap_ = c.processes_*c.local_hmap_; 
-    c.hmap_offset_.resize(c.processes_); 
-    for(int i = 0 ; i < c.processes_; ++i){
+    c.global_hmap_ = c.nparts_*c.local_hmap_; 
+    c.hmap_offset_.resize(c.nparts_); 
+    for(int i = 0 ; i < c.nparts_; ++i){
       c.hmap_offset_[i] = std::make_pair(i*c.local_hmap_,(i+1)*c.local_hmap_); 
     }
     if(rank == 0)
@@ -94,8 +97,8 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     if(rank == 0)
       std::cout << std::endl;
 
-    c.tdata_offset_.resize(c.processes_);
-    for(int i = 0 ; i < c.processes_; ++i){
+    c.tdata_offset_.resize(c.nparts_);
+    for(int i = 0 ; i < c.nparts_; ++i){
       c.tdata_offset_[i] = std::make_pair(i,i+1);
     }  
     if(rank == 0)
@@ -112,8 +115,7 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     c.global_sizes_[0] = c.global_entities_; 
     c.global_sizes_[1] = c.global_nodes_; 
     c.global_sizes_[2] = c.global_hmap_; 
-    c.global_sizes_[3] = c.processes_;  
-
+    c.global_sizes_[3] = c.nparts_;  
     
     return c;
   } // color

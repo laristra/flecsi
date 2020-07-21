@@ -95,25 +95,25 @@ struct ntree : ntree_base {
   : part{
       data::partitioned(
         data::make_region<Policy, entities>(c.global_entities_),
-        c.processes_,
+        c.nparts_,
         [=](std::size_t i) { return c.entities_offset_[i]; },
         data::disjoint,
         data::complete),
       data::partitioned(
         data::make_region<Policy, nodes>(c.global_nodes_),
-        c.processes_,
+        c.nparts_,
         [=](std::size_t i) { return c.nodes_offset_[i]; },
         data::disjoint,
         data::complete),
       data::partitioned(
         data::make_region<Policy, hashmap>(c.global_hmap_),
-        c.processes_,
+        c.nparts_,
         [=](std::size_t i) { return c.hmap_offset_[i]; },
         data::disjoint,
         data::complete),
       data::partitioned(
-        data::make_region<Policy, tree_data>(c.processes_),
-        c.processes_,
+        data::make_region<Policy, tree_data>(c.nparts_),
+        c.nparts_,
         [=](std::size_t i) { return c.tdata_offset_[i]; },
         data::disjoint,
         data::complete)
@@ -195,22 +195,151 @@ struct ntree<Policy>::access {
     f(hcells); 
   }
 
-  hash_table<ntree::key_t,ntree::hcell_t> hmap_; 
+  using hmap_t =  hash_table<ntree::key_t,ntree::hcell_t>; 
+
+  void exchange_boundaries(){
+
+  }
 
   void make_tree(){
-    hmap_.set_capacity(hcells.size()); 
     // Hashtable implementation and test 
     data_field(0).max_depth = 0;
-    data_field(0).nents = e_coordinates.size(); 
+    data_field(0).nents = e_coordinates.span().size(); 
     data_field(0).lobound = e_keys(0);
     data_field(0).hibound = e_keys(data_field(0).nents-1);
     std::cout<<data_field(0).lobound<<"-"<<data_field(0).hibound<<std::endl;
+    
+    //----- HASHtTABLE TEST -----------------
+    // Add the entities in the hash_map
     for(int i = 0; i < data_field(0).nents; ++i){
-      // Add the entities in the hash_map
       key_t c_key = e_keys(i); 
-      hmap_.insert(hcells,c_key,i); 
+      hmap_t::insert(hcells,c_key,i); 
     }
-    std::cout<<"Collisions: "<<hmap_.collision()<<std::endl;
+    // Find all the element in the map (and be sure of the id)
+    for(int i = 0 ; i < data_field(0).nents; ++i){
+      key_t c_key = e_keys(i); 
+      auto ptr = hmap_t::find(hcells,c_key); 
+      assert(ptr!=nullptr && ptr->ent_idx() == i);
+    }
+    // Clear the hmap_
+    hmap_t::clear(hcells);
+    //----------------------------------------
+
+    size_t size = run::context::instance().colors(); // colors();
+    size_t rank = run::context::instance().color(); // color(); 
+
+    /* Exchange high and low bound */
+    //key_t lokey = entities_[0].key();
+    //key_t hikey = entities_[entities_.size() - 1].key();
+    
+    // \TODO independent task? 
+    //exchange_boundaries_(hikey, lokey, hibound_, lobound_);
+        
+    // Add the root
+    hmap_t::insert(hcells,key_t::root(),key_t::root()); 
+    auto root_ = hmap_t::find(hcells,key_t::root()); 
+    assert(root_ != nullptr); 
+    //htable_.emplace(key_t::root(), key_t::root());
+    //root_ = htable_.find(key_t::root());
+
+    size_t current_depth = key_t::max_depth();
+    // Entity keys, last and current
+    key_t lastekey = key_t(0);
+    if(rank != 0)
+      lastekey = data_field(0).lobound;
+    key_t ekey;
+    // Node keys, last and Current
+    key_t lastnkey = key_t::root();
+    key_t nkey, loboundnode, hiboundnode;
+    // Current parent and value
+    hcell_t * parent = nullptr;
+    int oldidx = -1;
+
+    bool iam0 = rank == 0;
+    bool iamlast = rank == size - 1;
+
+    //assert(data_field(0).lobound <= lokey);
+    //assert(data_field(0).hibound >= hikey);
+
+    // The extra turn in the loop is to finish the missing
+    // parent of the last entity
+    for(size_t i = 0; i <= e_keys.span().size(); ++i) {
+      if(i < e_keys.span().size()) {
+        ekey = e_keys(i);
+        // Compute the current node key
+      }
+      else {
+        ekey = data_field(0).hibound;
+      }
+      nkey = ekey;
+      nkey.pop(current_depth);
+      bool loopagain = false;
+      // Loop while there is a difference in the current keys
+      while(nkey != lastnkey || (iamlast && i == e_keys.span().size())) {
+        loboundnode = data_field(0).lobound;
+        loboundnode.pop(current_depth);
+        hiboundnode = data_field(0).hibound;
+        hiboundnode.pop(current_depth);
+        if(loopagain && (iam0 || lastnkey > loboundnode) &&
+           (iamlast || lastnkey < hiboundnode)) {
+          // This node is done, we can compute CoFM
+          assert(false); 
+          //finish_(lastnkey, f_cc);
+        }
+        if(iamlast && lastnkey == key_t::root())
+          break;
+        loopagain = true;
+        current_depth++;
+        nkey = ekey;
+        nkey.pop(current_depth);
+        lastnkey = lastekey;
+        lastnkey.pop(current_depth);
+      } // while
+
+      if(iamlast && i == e_keys.span().size())
+        break;
+
+      parent = hmap_t::find(hcells,lastnkey);
+      oldidx = parent->ent_idx();
+      // Insert the eventual missing parents in the tree
+      // Find the current parent of the two entities
+      while(1) {
+        current_depth--;
+        lastnkey = lastekey;
+        lastnkey.pop(current_depth);
+        nkey = ekey;
+        nkey.pop(current_depth);
+        if(nkey != lastnkey)
+          break;
+        // Add a children
+        int bit = nkey.last_value();
+        parent->add_child(bit);
+        parent->set_ent_idx(-1);
+        hmap_t::insert(hcells, nkey);
+        parent = hmap_t::find(hcells,nkey);
+      } // while
+
+      // Recover deleted entity
+      if(oldidx != -1) {
+        int bit = lastnkey.last_value();
+        parent->add_child(bit);
+        parent->set_ent_idx(-1);
+        hmap_t::insert(hcells, lastnkey, i - 1);
+      } // if
+
+      if(i < e_keys.span().size()) {
+        // Insert the new entity
+        int bit = nkey.last_value();
+        parent->add_child(bit);
+        hmap_t::insert(hcells, nkey, i);
+      } // if
+
+      // Prepare next loop
+      lastekey = ekey;
+      lastnkey = nkey;
+      data_field(0).max_depth = std::max(data_field(0).max_depth, current_depth);
+
+    } // for
   }
 };
 
