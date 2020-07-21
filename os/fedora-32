@@ -29,6 +29,7 @@ RUN dnf update -y && dnf install -y \
   patch \
   python3 \
   python3-pip \
+  rsync \
   vim-enhanced \
   wget \
   which \
