@@ -197,11 +197,10 @@ struct ntree<Policy>::access {
 
   using hmap_t =  hash_table<ntree::key_t,ntree::hcell_t>; 
 
-  void exchange_boundaries(){
-
-  }
+  void exchange_boundaries(){}
 
   void make_tree(){
+    #if 0 
     // Hashtable implementation and test 
     data_field(0).max_depth = 0;
     data_field(0).nents = e_coordinates.span().size(); 
@@ -229,12 +228,15 @@ struct ntree<Policy>::access {
     size_t rank = run::context::instance().color(); // color(); 
 
     /* Exchange high and low bound */
-    //key_t lokey = entities_[0].key();
-    //key_t hikey = entities_[entities_.size() - 1].key();
+    key_t lokey = e_keys(0);
+    key_t hikey = e_keys(data_field(0).nents - 1);
     
     // \TODO independent task? 
     //exchange_boundaries_(hikey, lokey, hibound_, lobound_);
-        
+  
+    //assert(data_field(0).lobound <= lokey);
+    //assert(data_field(0).hibound >= hikey);
+
     // Add the root
     hmap_t::insert(hcells,key_t::root(),key_t::root()); 
     auto root_ = hmap_t::find(hcells,key_t::root()); 
@@ -257,9 +259,6 @@ struct ntree<Policy>::access {
 
     bool iam0 = rank == 0;
     bool iamlast = rank == size - 1;
-
-    //assert(data_field(0).lobound <= lokey);
-    //assert(data_field(0).hibound >= hikey);
 
     // The extra turn in the loop is to finish the missing
     // parent of the last entity
@@ -340,6 +339,7 @@ struct ntree<Policy>::access {
       data_field(0).max_depth = std::max(data_field(0).max_depth, current_depth);
 
     } // for
+    #endif 
   }
 };
 
