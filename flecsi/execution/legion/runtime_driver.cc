@@ -233,7 +233,7 @@ runtime_driver(const Legion::Task * task,
     Legion::IndexLauncher pos_compaction_launcher(pos_compaction_id,
       data.color_domain(),
       Legion::TaskArgument(
-        &is.second, sizeof(flecsi::coloring::index_coloring_t)),
+        &idx_space, sizeof(size_t)),
       Legion::ArgumentMap());
 
     pos_compaction_launcher.add_region_requirement(ex_rr);

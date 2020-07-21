@@ -227,8 +227,9 @@ flecsi_internal_legion_task(owner_pos_compaction_task, void) {
 
   auto ghost_owner_pos_fid = Legion::FieldID(internal_field::ghost_owner_pos);
 
-  flecsi::coloring::index_coloring_t idx_space =
-    *((flecsi::coloring::index_coloring_t *)task->args);
+  size_t is_id = *((size_t *)task->args);
+
+  auto idx_space = context_.coloring_map().at(is_id);
 
   Legion::Domain sh_dom = runtime->get_index_space_domain(
     ctx, task->regions[1].region.get_index_space());
