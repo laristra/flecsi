@@ -95,6 +95,10 @@ array_ref() {
     EXPECT_EQ(g.begin(), &ints[0]);
     EXPECT_EQ(g.end(), &ints[0] + ints.size());
 
+    span<double> sd(plain_array);
+    EXPECT_EQ(refd(sd).data(), sd.data()); // conversion from non-const span
+    EXPECT_EQ(refd(span<double>()).size(), 0u); // ...from rvalue span
+
     // ------------------------
     // substr
     // ------------------------

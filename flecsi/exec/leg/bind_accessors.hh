@@ -79,8 +79,8 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
     const auto r = dom.get_rect<2>();
 
     bind(accessor,
-      {ac.ptr(Legion::Domain::DomainPointIterator(dom).p),
-        std::size_t(r.hi[1] - r.lo[1] + 1)});
+      util::span(ac.ptr(Legion::Domain::DomainPointIterator(dom).p),
+        r.hi[1] - r.lo[1] + 1));
   }
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
