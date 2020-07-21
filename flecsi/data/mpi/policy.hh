@@ -34,6 +34,9 @@ struct partition {
   static row make_row(std::size_t, std::size_t n) {
     return n;
   }
+  static std::size_t row_size(const row & r) {
+    return r;
+  }
 
   explicit partition(const region &) {}
   partition(const region &,
@@ -44,6 +47,7 @@ struct partition {
   std::size_t colors() const {
     return 0;
   }
+  void update(const partition &, field_id_t, completeness = incomplete) {}
   template<topo::single_space>
   const partition & get_partition() const {
     return *this;

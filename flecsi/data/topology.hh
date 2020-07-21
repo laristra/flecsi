@@ -32,6 +32,7 @@ struct region {
 struct partition {
   static auto make_row(std::size_t i, std::size_t n);
   using row = decltype(make_row(0, 0));
+  static std::size_t row_size(const row &);
 
   explicit partition(const region &); // divides into rows
   // Derives row lengths from the field values (which should be of type row
@@ -43,6 +44,7 @@ struct partition {
     completeness = incomplete);
 
   std::size_t colors() const;
+  void update(const partition &, field_id_t, completeness = incomplete);
   template<topo::single_space>
   const partition & get_partition() const {
     return *this;
@@ -56,20 +58,12 @@ make_region(size2 s) {
   return {s, run::context::instance().get_field_info_store<Topo, Index>()};
 }
 
-struct partitioned : region, partition {
+template<class P>
+struct partitioned : region, P {
   template<class... TT>
   partitioned(region && r, TT &&... tt)
     : region(std::move(r)),
-      partition(static_cast<const region &>(*this), std::forward<TT>(tt)...) {}
+      P(static_cast<const region &>(*this), std::forward<TT>(tt)...) {}
 };
-
-template<class Topo, typename Topo::index_space Index = Topo::default_space()>
-partitioned
-make_partitioned(const partition & p,
-  field_id_t fid,
-  std::size_t n = logical_size,
-  completeness cpt = incomplete) {
-  return {make_region<Topo, Index>({p.colors(), n}), p, fid, cpt};
-}
 
 } // namespace flecsi::data

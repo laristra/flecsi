@@ -119,22 +119,17 @@ struct partition {
     const Legion::coord_t r = i;
     return {{r, 0}, {r, upper(n)}};
   }
+  static std::size_t row_size(const row & r) {
+    return r.hi[1] + 1;
+  }
 
   explicit partition(const region & reg)
     : partition(reg, run().get_index_space_domain(reg.index_space).hi()) {}
-  // We document that src must outlive this partitioning, although Legion is
-  // said to support deleting its color space before our partition using it.
   partition(const region & reg,
     const partition & src,
     field_id_t fid,
     completeness cpt = incomplete)
-    : index_partition(run().create_partition_by_image_range(ctx(),
-        reg.index_space,
-        src.logical_partition,
-        run().get_parent_logical_region(src.logical_partition),
-        fid,
-        src.get_color_space(),
-        Legion::PartitionKind((cpt + 3) % 3 * 3))),
+    : index_partition(part(reg.index_space, src, fid, cpt)),
       logical_partition(log(reg)) {}
 
   std::size_t colors() const {
@@ -148,6 +143,15 @@ struct partition {
   template<topo::single_space>
   const partition & get_partition() const {
     return *this;
+  }
+
+  void
+  update(const partition & src, field_id_t fid, completeness cpt = incomplete) {
+    auto & r = run();
+    auto ip = part(r.get_parent_index_space(index_partition), src, fid, cpt);
+    logical_partition = r.get_logical_partition(
+      r.get_parent_logical_region(logical_partition), ip);
+    index_partition = std::move(ip); // can't fail
   }
 
 private:
@@ -173,6 +177,21 @@ private:
     return run().get_index_partition_color_space_name(index_partition);
   }
 
+  // We document that src must outlive this partitioning, although Legion is
+  // said to support deleting its color space before our partition using it.
+  unique_index_partition part(const Legion::IndexSpace & is,
+    const partition & src,
+    field_id_t fid,
+    completeness cpt) {
+    auto & r = run();
+    return r.create_partition_by_image_range(ctx(),
+      is,
+      src.logical_partition,
+      r.get_parent_logical_region(src.logical_partition),
+      fid,
+      src.get_color_space(),
+      Legion::PartitionKind((cpt + 3) % 3 * 3));
+  }
   unique_logical_partition log(const region & reg) const {
     return run().get_logical_partition(reg.logical_region, index_partition);
   }

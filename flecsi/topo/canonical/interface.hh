@@ -39,7 +39,7 @@ namespace topo {
  */
 
 template<typename Policy>
-struct canonical : canonical_base, with_size {
+struct canonical : canonical_base {
   using index_space = typename Policy::index_space;
   using index_spaces = typename Policy::index_spaces;
 
@@ -52,18 +52,16 @@ struct canonical : canonical_base, with_size {
     connect_visit(f, connect);
   }
 
-  // We use one size field to allocate everything for simplicity;
-  // it's a class member so as to outlive the other partitions.
   canonical(const coloring & c)
-    : with_size(c.parts), part(make_partitions(c,
-                            index_spaces(),
-                            std::make_index_sequence<index_spaces::size>())) {}
+    : part(make_partitions(c,
+        index_spaces(),
+        std::make_index_sequence<index_spaces::size>())) {}
 
   // The first index space is distinguished in that we decorate it:
   static inline const field<int>::definition<Policy, index_spaces::first> mine;
   static inline const connect_t<Policy> connect;
 
-  util::key_array<data::partitioned, index_spaces> part;
+  util::key_array<repartitioned, index_spaces> part;
 
   std::size_t colors() const {
     return part.front().colors();
@@ -76,14 +74,14 @@ struct canonical : canonical_base, with_size {
 
 private:
   template<auto... VV, std::size_t... II>
-  util::key_array<data::partitioned, util::constants<VV...>> make_partitions(
+  util::key_array<repartitioned, util::constants<VV...>> make_partitions(
     const canonical_base::coloring & c,
     util::constants<VV...> /* index_spaces, to deduce a pack */,
     std::index_sequence<II...>) {
     flog_assert(c.sizes.size() == sizeof...(VV),
       c.sizes.size() << " sizes for " << sizeof...(VV) << " index spaces");
-    return {{(execute<allocate>(sizes(), c.sizes[II], c.parts),
-      sizes.make_partitioned<Policy, VV>())...}};
+    return {{make_repartitioned<Policy, VV>(
+      c.parts, make_partial<allocate>(c.sizes[II], c.parts))...}};
   }
 }; // struct canonical
 
