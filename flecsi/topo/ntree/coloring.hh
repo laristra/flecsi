@@ -37,27 +37,27 @@ struct ntree_base {
     // Global
     size_t nparts_;
 
-    // Entities 
+    // Entities
     size_t local_entities_;
     size_t global_entities_;
     std::vector<size_t> entities_distribution_;
-    std::vector<std::pair<size_t,size_t>> entities_offset_;
+    std::vector<std::pair<size_t, size_t>> entities_offset_;
 
-    //nodes
-    size_t local_nodes_; 
-    size_t global_nodes_; 
-    std::vector<std::pair<size_t,size_t>> nodes_offset_; 
+    // nodes
+    size_t local_nodes_;
+    size_t global_nodes_;
+    std::vector<std::pair<size_t, size_t>> nodes_offset_;
 
-    // hmap 
-    const size_t local_hmap_ = 1<<15;  
-    size_t global_hmap_; 
-    std::vector<std::pair<size_t,size_t>> hmap_offset_; 
+    // hmap
+    const size_t local_hmap_ = 1 << 15;
+    size_t global_hmap_;
+    std::vector<std::pair<size_t, size_t>> hmap_offset_;
 
-    // tdata 
-    std::vector<std::pair<size_t,size_t>> tdata_offset_; 
+    // tdata
+    std::vector<std::pair<size_t, size_t>> tdata_offset_;
 
     // All global sizes array for make_partition
-    std::vector<size_t> global_sizes_; 
+    std::vector<size_t> global_sizes_;
   }; // struct coloring
 }; // struct ntree_base
 

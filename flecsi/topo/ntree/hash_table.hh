@@ -30,22 +30,22 @@ namespace topo {
 template<class KEY, class TYPE>
 struct hash_table {
 
-private: 
+private:
   using id_t = util::id_t;
   using key_t = KEY;
   using type_t = TYPE;
 
   static const size_t modulo_ = 1234;
 
-public: 
-
+public:
   /**
    * @brief Find a value in the hashtable
    * While the value or a null key is not found we keep looping
    */
-  template<const auto& F, std::size_t Priv>
-  static type_t * find(const data::accessor_member<F, Priv> & acc,const key_t& key) {
-    size_t hash_capacity_ = acc.span().size(); 
+  template<const auto & F, std::size_t Priv>
+  static type_t * find(const data::accessor_member<F, Priv> & acc,
+    const key_t & key) {
+    size_t hash_capacity_ = acc.span().size();
     size_t h = hash(key, hash_capacity_);
     type_t * ptr = acc.span().data() + h;
     while(ptr->key() != key && ptr->key() != key_t::null()) {
@@ -64,10 +64,12 @@ public:
    * This function tries to find the first available position in case of
    * conflict using modulo method.
    */
-  template<const auto& F, std::size_t Priv, class... ARGS>
-  static type_t * insert(const data::accessor_member<F,Priv> & acc, const key_t & key, ARGS &&... args) {
-    size_t hash_capacity_ = acc.span().size(); 
-    size_t h = hash(key,hash_capacity_);
+  template<const auto & F, std::size_t Priv, class... ARGS>
+  static type_t * insert(const data::accessor_member<F, Priv> & acc,
+    const key_t & key,
+    ARGS &&... args) {
+    size_t hash_capacity_ = acc.span().size();
+    size_t h = hash(key, hash_capacity_);
     type_t * ptr = acc.span().data() + h;
     while(ptr->key() != key && ptr->key() != key_t::null()) {
       h += modulo_;
@@ -79,10 +81,10 @@ public:
   }
 
   // Clear all keys
-  template<const auto& F, std::size_t Priv>
-  static void clear(const data::accessor_member<F,Priv> & acc){
-    for(auto a: acc.span()){
-      a.set_key(key_t::null()); 
+  template<const auto & F, std::size_t Priv>
+  static void clear(const data::accessor_member<F, Priv> & acc) {
+    for(auto a : acc.span()) {
+      a.set_key(key_t::null());
     }
   }
 

@@ -92,51 +92,54 @@ operator<<(std::ostream & os, const sort_entity<DIM, T, KEY> & e) {
 }
 
 template<size_t DIM, typename T, class KEY>
-class hcell_base_t{
+class hcell_base_t
+{
 
-  const size_t dimension = DIM; 
-  using type_t = T; 
-  using key_t = KEY; 
+  const size_t dimension = DIM;
+  using type_t = T;
+  using key_t = KEY;
 
-public: 
-
+public:
   hcell_base_t() = default;
 
-  hcell_base_t(const key_t& key, const size_t& ent_idx){
-    key_ = key; 
-    ent_idx_ = ent_idx; 
+  hcell_base_t(const key_t & key, const size_t & ent_idx) {
+    key_ = key;
+    ent_idx_ = ent_idx;
   }
 
-  hcell_base_t(const key_t& key){
-    key_ = key; 
+  hcell_base_t(const key_t & key) {
+    key_ = key;
   }
 
-  key_t key() const { return key_; }
-
-  size_t ent_idx() const { return ent_idx_; }
-  
-  void set_key(const key_t& key){ key_ = key; }
-
-  void set_ent_idx(const int& idx){
-    ent_idx_ = idx; 
+  key_t key() const {
+    return key_;
   }
 
-  void add_child(const int& bit){
-    //todo
+  size_t ent_idx() const {
+    return ent_idx_;
+  }
+
+  void set_key(const key_t & key) {
+    key_ = key;
+  }
+
+  void set_ent_idx(const int & idx) {
+    ent_idx_ = idx;
+  }
+
+  void add_child(const int & bit) {
+    // todo
   }
 
 private:
-  key_t key_; 
-  size_t node_idx_; 
-  size_t ent_idx_; 
-
+  key_t key_;
+  size_t node_idx_;
+  size_t ent_idx_;
 };
 
 template<size_t DIM, typename T, class KEY>
-class node{
-  node() = default;
-
-};
+class node
+{ node() = default; };
 
 } // namespace topo
 } // namespace flecsi

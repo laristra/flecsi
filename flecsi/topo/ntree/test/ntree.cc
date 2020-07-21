@@ -21,8 +21,8 @@
 #include "flecsi/topo/ntree/interface.hh"
 #include "flecsi/topo/ntree/types.hh"
 
-#include "txt_definition.hh"
 #include "physics.hh"
+#include "txt_definition.hh"
 
 using namespace flecsi;
 
@@ -36,12 +36,12 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
   // using entity_types = std::tuple<util::constant<base::entities>>;
 
   using ent_t = flecsi::topo::sort_entity<dimension, double, key_t>;
-  using node_t = flecsi::topo::node<dimension,double,key_t>;
+  using node_t = flecsi::topo::node<dimension, double, key_t>;
 
   static coloring color(const std::string & name, std::vector<ent_t> & ents) {
     txt_definition<key_t, dimension> hd(name);
     int size, rank;
-    rank = process(); 
+    rank = process();
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -50,7 +50,7 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     coloring c;
 
     // For now the number of partitions is the number of processes
-    c.nparts_ = size; 
+    c.nparts_ = size;
 
     c.local_entities_ = hd.local_num_entities();
     c.global_entities_ = hd.global_num_entities();
@@ -77,51 +77,49 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
 
     // Nodes, hmap and tdata information
     // \TODO move these inside the topology ntree
-    // The user should not have control on their allocation 
-    c.local_nodes_ = c.local_entities_; 
-    c.global_nodes_ = c.global_entities_; 
-    c.nodes_offset_ = c.entities_offset_; 
+    // The user should not have control on their allocation
+    c.local_nodes_ = c.local_entities_;
+    c.global_nodes_ = c.global_entities_;
+    c.nodes_offset_ = c.entities_offset_;
 
-    c.global_hmap_ = c.nparts_*c.local_hmap_; 
-    c.hmap_offset_.resize(c.nparts_); 
-    for(int i = 0 ; i < c.nparts_; ++i){
-      c.hmap_offset_[i] = std::make_pair(i*c.local_hmap_,(i+1)*c.local_hmap_); 
+    c.global_hmap_ = c.nparts_ * c.local_hmap_;
+    c.hmap_offset_.resize(c.nparts_);
+    for(int i = 0; i < c.nparts_; ++i) {
+      c.hmap_offset_[i] =
+        std::make_pair(i * c.local_hmap_, (i + 1) * c.local_hmap_);
     }
     if(rank == 0)
       std::cout << "hmap offset: ";
     for(int i = 0; i < size; ++i) {
       if(rank == 0)
-        std::cout << c.hmap_offset_[i].first << "-"
-                  << c.hmap_offset_[i].second <<" ; ";
+        std::cout << c.hmap_offset_[i].first << "-" << c.hmap_offset_[i].second
+                  << " ; ";
     }
     if(rank == 0)
       std::cout << std::endl;
 
     c.tdata_offset_.resize(c.nparts_);
-    for(int i = 0 ; i < c.nparts_; ++i){
-      c.tdata_offset_[i] = std::make_pair(i,i+1);
-    }  
+    for(int i = 0; i < c.nparts_; ++i) {
+      c.tdata_offset_[i] = std::make_pair(i, i + 1);
+    }
     if(rank == 0)
       std::cout << "tdata offset: ";
     for(int i = 0; i < size; ++i) {
       if(rank == 0)
         std::cout << c.tdata_offset_[i].first << "-"
-                  << c.tdata_offset_[i].second <<" ; ";
+                  << c.tdata_offset_[i].second << " ; ";
     }
     if(rank == 0)
       std::cout << std::endl;
 
-    c.global_sizes_.resize(4); 
-    c.global_sizes_[0] = c.global_entities_; 
-    c.global_sizes_[1] = c.global_nodes_; 
-    c.global_sizes_[2] = c.global_hmap_; 
-    c.global_sizes_[3] = c.nparts_;  
-    
+    c.global_sizes_.resize(4);
+    c.global_sizes_[0] = c.global_entities_;
+    c.global_sizes_[1] = c.global_nodes_;
+    c.global_sizes_[2] = c.global_hmap_;
+    c.global_sizes_[3] = c.nparts_;
+
     return c;
   } // color
-
-
-
 };
 
 using point_t = typename topo::ntree<sph_ntree_t>::point_t;
@@ -135,9 +133,8 @@ auto pressure = entity_field(sph_ntree);
 
 std::vector<sph_ntree_t::ent_t> tmp_ents;
 
-
 int
-init(sph_ntree_t::accessor<wo> t, 
+init(sph_ntree_t::accessor<wo> t,
   const std::vector<sph_ntree_t::ent_t> & ents) {
   UNIT {
     for(int i = 0; i < ents.size(); ++i) {
@@ -148,11 +145,9 @@ init(sph_ntree_t::accessor<wo> t,
   };
 } // init
 
-int 
-make_tree(sph_ntree_t::accessor<rw> t){
-  UNIT{
-    t.make_tree(); 
-  };
+int
+make_tree(sph_ntree_t::accessor<rw> t) {
+  UNIT { t.make_tree(); };
 }
 
 int
@@ -166,7 +161,7 @@ ntree_driver() {
 
     // Call process function
     size_t proc = process();
-    size_t size = processes(); 
+    size_t size = processes();
     int tmp;
     coloring.allocate("coordinates.blessed", tmp_ents);
     if(!proc)
@@ -178,11 +173,9 @@ ntree_driver() {
     flecsi::execute<init, flecsi::mpi>(sph_ntree, tmp_ents);
     tmp_ents.clear();
 
-    // Construct the tree data structure    
+    // Construct the tree data structure
     flecsi::execute<make_tree>(sph_ntree);
   };
 } // ntree_driver
-
-
 
 flecsi::unit::driver<ntree_driver> driver;

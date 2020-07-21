@@ -1,9 +1,9 @@
 
-#pragma once 
+#pragma once
 
-
-//void
-//compute_cofm(node * cofm, std::vector<body *> ents, std::vector<node *> nodes) {
+// void
+// compute_cofm(node * cofm, std::vector<body *> ents, std::vector<node *>
+// nodes) {
 /*  // Then compute the CoFM
   point_t coordinates = point_t{};
   double radius = 0; // bmax
@@ -69,4 +69,3 @@
   }
 #endif*/
 //}
-

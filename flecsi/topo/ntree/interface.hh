@@ -19,8 +19,8 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/topology.hh"
 #include "flecsi/data/accessor.hh"
+#include "flecsi/data/topology.hh"
 #include "flecsi/topo/core.hh" // base
 #include "flecsi/topo/ntree/coloring.hh"
 //#include "flecsi/topo/ntree/geometry.hh"
@@ -57,18 +57,18 @@ struct ntree : ntree_base {
   using type_t = double;
   using point_t = util::point<type_t, dimension>;
   using key_t = typename Policy::key_t;
-  using hcell_t = hcell_base_t<dimension,type_t,key_t>; 
-  using node_t = typename Policy::node_t; 
+  using hcell_t = hcell_base_t<dimension, type_t, key_t>;
+  using node_t = typename Policy::node_t;
   using ent_t = typename Policy::ent_t;
 
   using index_space = typename Policy::index_space;
   using index_spaces = typename Policy::index_spaces;
 
-  struct ntree_data{
+  struct ntree_data {
     key_t hibound, lobound;
     size_t max_depth = 0;
-    size_t nents = 0;  
-  }; 
+    size_t nents = 0;
+  };
 
   template<std::size_t>
   struct access;
@@ -78,48 +78,45 @@ struct ntree : ntree_base {
     f(e_coordinates);
     f(e_radius);
     f(e_keys);
-    f(n_coordinates); 
-    f(n_radius); 
-    f(n_keys); 
-    f(data_field); 
-    f(hcells); 
+    f(n_coordinates);
+    f(n_radius);
+    f(n_keys);
+    f(data_field);
+    f(hcells);
   }
 
-  //ntree(const coloring & c)
+  // ntree(const coloring & c)
   //  : part(make_partitions(c,
   //      index_spaces(),
   //      std::make_index_sequence<index_spaces::size>())) {}
 
-//#if 0 
+  //#if 0
   ntree(const coloring & c)
-  : part{
-      data::partitioned(
-        data::make_region<Policy, entities>(c.global_entities_),
-        c.nparts_,
-        [=](std::size_t i) { return c.entities_offset_[i]; },
-        data::disjoint,
-        data::complete),
-      data::partitioned(
-        data::make_region<Policy, nodes>(c.global_nodes_),
-        c.nparts_,
-        [=](std::size_t i) { return c.nodes_offset_[i]; },
-        data::disjoint,
-        data::complete),
-      data::partitioned(
-        data::make_region<Policy, hashmap>(c.global_hmap_),
-        c.nparts_,
-        [=](std::size_t i) { return c.hmap_offset_[i]; },
-        data::disjoint,
-        data::complete),
-      data::partitioned(
-        data::make_region<Policy, tree_data>(c.nparts_),
-        c.nparts_,
-        [=](std::size_t i) { return c.tdata_offset_[i]; },
-        data::disjoint,
-        data::complete)
-      }
-  {}
-  //#endif 
+    : part{data::partitioned(
+             data::make_region<Policy, entities>(c.global_entities_),
+             c.nparts_,
+             [=](std::size_t i) { return c.entities_offset_[i]; },
+             data::disjoint,
+             data::complete),
+        data::partitioned(
+          data::make_region<Policy, nodes>(c.global_nodes_),
+          c.nparts_,
+          [=](std::size_t i) { return c.nodes_offset_[i]; },
+          data::disjoint,
+          data::complete),
+        data::partitioned(
+          data::make_region<Policy, hashmap>(c.global_hmap_),
+          c.nparts_,
+          [=](std::size_t i) { return c.hmap_offset_[i]; },
+          data::disjoint,
+          data::complete),
+        data::partitioned(
+          data::make_region<Policy, tree_data>(c.nparts_),
+          c.nparts_,
+          [=](std::size_t i) { return c.tdata_offset_[i]; },
+          data::disjoint,
+          data::complete)} {}
+  //#endif
 
   // Ntree mandatory fields ---------------------------------------------------
 
@@ -133,24 +130,26 @@ struct ntree : ntree_base {
     e_keys;
 
   // Nodes fields
-  static inline const typename field<point_t>::template definition<Policy,nodes>
-    n_coordinates; 
-  static inline const field<double>::definition<Policy, nodes> n_radius;
-  static inline const typename field<key_t>::template definition<Policy,
+  static inline const typename field<point_t>::template definition<Policy,
     nodes>
+    n_coordinates;
+  static inline const field<double>::definition<Policy, nodes> n_radius;
+  static inline const typename field<key_t>::template definition<Policy, nodes>
     n_keys;
 
-  // Hmap fields 
-  static inline const typename field<hcell_t>::template definition<Policy,hashmap>
-    hcells; 
+  // Hmap fields
+  static inline const typename field<hcell_t>::template definition<Policy,
+    hashmap>
+    hcells;
 
-  // Tdata field 
-  static inline const typename field<ntree_data>::template definition<Policy, tree_data>
-    data_field; 
+  // Tdata field
+  static inline const typename field<ntree_data>::template definition<Policy,
+    tree_data>
+    data_field;
 
   // --------------------------------------------------------------------------
 
-  // Use to reference the index spaces by id 
+  // Use to reference the index spaces by id
   util::key_array<data::partitioned, index_spaces> part;
 
   std::size_t colors() const {
@@ -162,10 +161,8 @@ struct ntree : ntree_base {
     return part.template get<S>();
   }
 
-private: 
-
-  const size_t nchildren_ = 1<<dimension; 
-
+private:
+  const size_t nchildren_ = 1 << dimension;
 };
 
 template<class Policy>
@@ -176,11 +173,11 @@ struct ntree<Policy>::access {
   accessor<ntree::e_coordinates> e_coordinates;
   accessor<ntree::e_radius> e_radius;
   accessor<ntree::e_keys> e_keys;
-  accessor<ntree::n_coordinates> n_coordinates; 
-  accessor<ntree::n_radius> n_radius; 
-  accessor<ntree::n_keys> n_keys; 
-  accessor<ntree::data_field> data_field; 
-  accessor<ntree::hcells> hcells; 
+  accessor<ntree::n_coordinates> n_coordinates;
+  accessor<ntree::n_radius> n_radius;
+  accessor<ntree::n_keys> n_keys;
+  accessor<ntree::data_field> data_field;
+  accessor<ntree::hcells> hcells;
 
   template<class F>
   void bind(F f) {
@@ -189,18 +186,18 @@ struct ntree<Policy>::access {
     f(e_radius);
     f(e_keys);
     f(n_coordinates);
-    f(n_radius); 
-    f(n_keys); 
-    f(data_field); 
-    f(hcells); 
+    f(n_radius);
+    f(n_keys);
+    f(data_field);
+    f(hcells);
   }
 
-  using hmap_t =  hash_table<ntree::key_t,ntree::hcell_t>; 
+  using hmap_t = hash_table<ntree::key_t, ntree::hcell_t>;
 
-  void exchange_boundaries(){}
+  void exchange_boundaries() {}
 
-  void make_tree(){
-    #if 0 
+  void make_tree() {
+#if 0 
     // Hashtable implementation and test 
     data_field(0).max_depth = 0;
     data_field(0).nents = e_coordinates.span().size(); 
@@ -339,7 +336,7 @@ struct ntree<Policy>::access {
       data_field(0).max_depth = std::max(data_field(0).max_depth, current_depth);
 
     } // for
-    #endif 
+#endif
   }
 };
 
