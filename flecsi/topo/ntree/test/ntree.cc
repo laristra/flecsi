@@ -21,7 +21,6 @@
 #include "flecsi/topo/ntree/interface.hh"
 #include "flecsi/topo/ntree/types.hh"
 
-#include "physics.hh"
 #include "txt_definition.hh"
 
 using namespace flecsi;
