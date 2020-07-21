@@ -189,7 +189,7 @@ public:
   auto get_entity_vec(size_t index) const {
     assert(index < offsets_.size());
     offset_t o = offsets_[index];
-    return util::make_array_ref(index_space_.id_array() + o.start(), o.count());
+    return util::span(index_space_.id_array() + o.start(), o.count());
   }
 
   //-----------------------------------------------------------------//

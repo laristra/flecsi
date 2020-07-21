@@ -19,13 +19,11 @@ hi
 i
 
 
-
 ab
 bcde
 cde
 hi
 i
-
 
 
 abcdefghi
@@ -42,11 +40,6 @@ false
 2.72
 
 3.14
-2.18
-2.72
-
-Caught an (intentionally generated!) test exception
-3.14
 2.72
 
 2
@@ -54,9 +47,6 @@ Caught an (intentionally generated!) test exception
 
 7
 7
-
-4.56
-4.56
 
 1
 5
