@@ -46,14 +46,32 @@ ctx() {
   return Legion::Runtime::get_context();
 }
 
-template<class T, void (Legion::Runtime::*D)(Legion::Context, T, bool)>
+inline void
+destroy(Legion::IndexSpace i) {
+  run().destroy_index_space(ctx(), i);
+}
+// Legion seems to be buggy with destroying partitions:
+inline void
+destroy(Legion::IndexPartition) {}
+inline void
+destroy(Legion::FieldSpace f) {
+  run().destroy_field_space(ctx(), f);
+}
+inline void
+destroy(Legion::LogicalRegion r) {
+  run().destroy_logical_region(ctx(), r);
+}
+inline void
+destroy(Legion::LogicalPartition) {}
+
+template<class T>
 struct unique_handle {
   unique_handle() = default;
   unique_handle(T t) : h(t) {}
   unique_handle(unique_handle && u) noexcept : h(std::exchange(u.h, {})) {}
   ~unique_handle() {
-    if(*this) // it's not clear whether empty handles can be deleted
-      (run().*D)(ctx(), h, false);
+    if(*this) // empty LogicalRegions, at least, cannot be deleted
+      destroy(h);
   }
   unique_handle & operator=(unique_handle u) noexcept {
     std::swap(h, u.h);
@@ -70,15 +88,11 @@ private:
   T h;
 };
 
-using unique_index_space =
-  unique_handle<Legion::IndexSpace, &Legion::Runtime::destroy_index_space>;
-// Legion seems to be buggy with destroying partitions:
-using unique_index_partition = Legion::IndexPartition;
-using unique_field_space =
-  unique_handle<Legion::FieldSpace, &Legion::Runtime::destroy_field_space>;
-using unique_logical_region = unique_handle<Legion::LogicalRegion,
-  &Legion::Runtime::destroy_logical_region>;
-using unique_logical_partition = Legion::LogicalPartition;
+using unique_index_space = unique_handle<Legion::IndexSpace>;
+using unique_index_partition = unique_handle<Legion::IndexPartition>;
+using unique_field_space = unique_handle<Legion::FieldSpace>;
+using unique_logical_region = unique_handle<Legion::LogicalRegion>;
+using unique_logical_partition = unique_handle<Legion::LogicalPartition>;
 
 // NB: n=0 works because Legion interprets inverted ranges as empty.
 inline Legion::coord_t
