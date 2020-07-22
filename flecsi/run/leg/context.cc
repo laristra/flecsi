@@ -244,7 +244,7 @@ context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
     Legion::TaskArgument(NULL, 0),
     arg_map);
 
-  handoff_to_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
+  handoff_to_mpi_launcher.tag = mapper::force_rank_match;
   auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
 
   fm.wait_all_results(true);
@@ -262,7 +262,7 @@ context_t::wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
     Legion::TaskArgument(NULL, 0),
     arg_map);
 
-  wait_on_mpi_launcher.tag = FLECSI_MAPPER_FORCE_RANK_MATCH;
+  wait_on_mpi_launcher.tag = mapper::force_rank_match;
   auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
 
   fm.wait_all_results(true);

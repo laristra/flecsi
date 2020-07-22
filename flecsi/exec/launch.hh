@@ -146,7 +146,39 @@ struct launch_domain {
   std::size_t sz;
 };
 
+/// A simple version of C++20's \c bind_front that can be an argument to a
+/// task template.
+template<auto & F, class... AA>
+struct partial : std::tuple<AA...> {
+  using Base = typename partial::tuple;
+  using Base::Base;
+  // Clang 8.0.1--10.0 considers the inherited tuple::tuple() non-constexpr:
+  constexpr partial() = default;
+  constexpr partial(const Base & b) : Base(b) {}
+  constexpr partial(Base && b) : Base(std::move(b)) {}
+
+  template<class... TT>
+  constexpr decltype(auto) operator()(TT &&... tt) const & {
+    return std::apply(F,
+      std::tuple_cat(std::tuple<const AA &...>(*this),
+        std::forward_as_tuple(std::forward<TT>(tt)...)));
+  }
+  template<class... TT>
+  constexpr decltype(auto) operator()(TT &&... tt) && {
+    return std::apply(F,
+      std::tuple_cat(std::tuple<AA &&...>(std::move(*this)),
+        std::forward_as_tuple(std::forward<TT>(tt)...)));
+  }
+
+  static partial param; // not defined; use as "f<decltype(p.param)>"
+};
 } // namespace exec
+
+template<auto & F, class... AA>
+constexpr exec::partial<F, AA...>
+make_partial(const AA &... aa) {
+  return {aa...};
+}
 
 /*!
   Single or multiple future.
