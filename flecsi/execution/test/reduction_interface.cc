@@ -3,7 +3,8 @@
  * All rights reserved.
  *----------------------------------------------------------------------------*/
 
-#include <cinchdevel.h>
+#include <cinchlog.h>
+#include <cinchtest.h>
 
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>
@@ -49,14 +50,34 @@ flecsi_register_field(mesh_t,
 void
 double_init(mesh<ro> m, field<rw, rw, na> v) {
   for(auto c : m.cells(owned)) {
-    v(c) = 1.0;
+    v(c) = 1.1;
   } // for
 } // double_init
 
 flecsi_register_task(double_init, flecsi::execution, loc, index);
 
 double
-double_task(mesh<ro> m, field<rw, rw, ro> v) {
+min_task(mesh<ro> m, field<rw, rw, ro> v) {
+  double min{1000000.0};
+
+  for(auto c : m.cells(owned)) {
+    min = std::min(v(c), min);
+  } // for
+
+  return min;
+} // min_task
+double
+max_task(mesh<ro> m, field<rw, rw, ro> v) {
+  double max{0.0};
+
+  for(auto c : m.cells(owned)) {
+    max = std::max(v(c), max);
+  } // for
+
+  return max;
+} // max_task
+double
+sum_task(mesh<ro> m, field<rw, rw, ro> v) {
   double sum{0.0};
 
   for(auto c : m.cells(owned)) {
@@ -64,9 +85,22 @@ double_task(mesh<ro> m, field<rw, rw, ro> v) {
   } // for
 
   return sum;
-} // double_task
+} // sum_task
+double
+prod_task(mesh<ro> m, field<rw, rw, ro> v) {
+  double prod{1.0};
 
-flecsi_register_task(double_task, flecsi::execution, loc, index);
+  for(auto c : m.cells(owned)) {
+    prod *= v(c);
+  } // for
+
+  return prod;
+} // prod_task
+
+flecsi_register_task(min_task, flecsi::execution, loc, index);
+flecsi_register_task(max_task, flecsi::execution, loc, index);
+flecsi_register_task(sum_task, flecsi::execution, loc, index);
+flecsi_register_task(prod_task, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
@@ -113,37 +147,42 @@ driver(int argc, char ** argv) {
 
   {
     auto f = flecsi_execute_reduction_task(
-      double_task, flecsi::execution, index, min, double, mh, vh);
+      min_task, flecsi::execution, index, min, double, mh, vh);
 
-    clog(info) << "reduction min: " << f.get() << std::endl;
+    double min = f.get();
+    clog_assert(min == 1.1, "incorrect min from reduction");
   } // scope
 
   {
     auto f = flecsi_execute_reduction_task(
-      double_task, flecsi::execution, index, max, double, mh, vh);
-
-    clog(info) << "reduction max: " << f.get() << std::endl;
+      max_task, flecsi::execution, index, max, double, mh, vh);
+    double max = f.get();
+    clog_assert(max == 1.1, "incorrect max from reduction");
   } // scope
 
   {
     auto f = flecsi_execute_reduction_task(
-      double_task, flecsi::execution, index, sum, double, mh, vh);
-
-    clog(info) << "reduction sum: " << f.get() << std::endl;
+      sum_task, flecsi::execution, index, sum, double, mh, vh);
+    double sum = f.get();
+    clog_assert(sum >= 281.6 - .001 && sum <= 281.6 + .001,
+      "incorrect sum from reduction");
   } // scope
 
   {
     auto f = flecsi_execute_reduction_task(
-      double_task, flecsi::execution, index, product, double, mh, vh);
+      prod_task, flecsi::execution, index, product, double, mh, vh);
+    double product = f.get();
+    double standard = pow(1.1, 256);
+    clog_assert(standard - 0.001 <= product && product <= standard + 0.001,
+      "incorrect product from reduction");
 
-    clog(info) << "reduction product: " << f.get() << std::endl;
   } // scope
 } // driver
 
 } // namespace execution
 } // namespace flecsi
 
-DEVEL(registration_interface) {}
+TEST(reduction_interface, testname) {}
 
 /*----------------------------------------------------------------------------*
  * Formatting options for vim.

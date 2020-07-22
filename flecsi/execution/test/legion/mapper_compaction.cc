@@ -88,14 +88,9 @@ check_task(const Legion::Task * task,
   comb_regions.push_back(regions[1]);
   comb_regions.push_back(regions[2]);
 
-  std::vector<PrivilegeMode> privileges;
-  privileges.push_back(task->regions[0].privilege);
-  privileges.push_back(task->regions[1].privilege);
-  privileges.push_back(task->regions[2].privilege);
-
   const Legion::MultiRegionAccessor<size_t, 2, Legion::coord_t,
     Realm::AffineAccessor<size_t, 2, Legion::coord_t>>
-    mrac(comb_regions, privileges, fid, sizeof(size_t));
+    mrac(comb_regions, fid, sizeof(size_t));
 
   combined_data = (size_t *)(ac.ptr(ex_itr.p));
 

@@ -341,7 +341,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         "Tests/Execution/Devel"
     )
 
-    cinch_add_devel_target(reduction_interface
+    cinch_add_unit(reduction_interface
       SOURCES
         test/reduction_interface.cc
         ../supplemental/coloring/add_colorings.cc
@@ -360,7 +360,9 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         -DFLECSI_16_16_MESH
       POLICY ${UNIT_POLICY}
+      THREADS 4
     )
+
 
     cinch_add_devel_target(concept_coloring
       SOURCES

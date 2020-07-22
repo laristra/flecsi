@@ -454,7 +454,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   #------------------------------------------------------------------------------#
   option(FLECSI_USE_AGGCOMM
 	"Use (lazy) aggregated communication for dense fields"
-	OFF)
+	ON)
 endif()
 
 #------------------------------------------------------------------------------#

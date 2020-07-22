@@ -201,9 +201,15 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   ///
   // Initialize arguments for future handle
   ///
-  template<typename T, launch_type_t launch>
-  void handle(legion_future_u<T, launch> & h) {
+  template<typename T>
+  void handle(legion_future_u<T, launch_type_t::single> & h) {
     futures.push_back(h.raw_future());
+    h.init_future();
+  }
+
+  template<typename T>
+  void handle(legion_future_u<T, launch_type_t::index> & h) {
+    future_maps.push_back(h.raw_future());
     h.init_future();
   }
 
@@ -363,6 +369,7 @@ struct init_args_t : public flecsi::utils::tuple_walker_u<init_args_t> {
   Legion::Context & context;
   std::vector<Legion::RegionRequirement> region_reqs;
   std::vector<Legion::Future> futures;
+  std::vector<Legion::FutureMap> future_maps;
 
 }; // struct init_args_t
 

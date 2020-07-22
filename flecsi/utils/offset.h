@@ -85,6 +85,7 @@ public:
    *
    * @return uint64_t Start index
    */
+  FLECSI_INLINE_TARGET
   uint64_t start() const {
     return o_ >> COUNT_BITS;
   }
@@ -94,6 +95,7 @@ public:
    *
    * @return uint32_t Number of elements
    */
+  FLECSI_INLINE_TARGET
   uint32_t count() const {
     return o_ & count_mask;
   }
@@ -105,6 +107,7 @@ public:
    * @return uint64_t End index pointing to the first element past the last
    *                  element in this offset range
    */
+  FLECSI_INLINE_TARGET
   uint64_t end() const {
     return start() + count();
   }
@@ -135,6 +138,7 @@ public:
    *
    * @return std::pair<size_t, size_t> Range of this offset range
    */
+  FLECSI_INLINE_TARGET
   std::pair<size_t, size_t> range() const {
     uint64_t s = start();
     return {s, s + count()};
