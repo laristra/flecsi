@@ -25,6 +25,8 @@
 #include <utility>
 #include <vector>
 
+#include <flecsi/utils/target.h>
+
 namespace flecsi {
 namespace utils {
 
@@ -515,10 +517,11 @@ private:
 };
 
 template<class C, class F>
-transform_view(C &&, F)
+FLECSI_TARGET transform_view(C &&, F)
   ->transform_view<typename std::remove_reference_t<C>::iterator, F>;
 template<class C, class F>
-transform_view(const C &, F)->transform_view<typename C::const_iterator, F>;
+FLECSI_TARGET transform_view(const C &, F)
+  ->transform_view<typename C::const_iterator, F>;
 
 /// A very simple emulation of std::ranges::filter_view from C++20.
 template<class I, class F>
