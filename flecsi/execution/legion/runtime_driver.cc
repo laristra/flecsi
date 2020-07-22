@@ -204,61 +204,90 @@ runtime_driver(const Legion::Task * task,
   const auto pos_compaction_id =
     context_.task_id<flecsi_internal_task_key(owner_pos_compaction_task)>();
 
-  Legion::IndexLauncher pos_compaction_launcher(pos_compaction_id,
-    data.color_domain(), Legion::TaskArgument(nullptr, 0),
-    Legion::ArgumentMap());
-
   for(auto is : context_.coloring_map()) {
     size_t idx_space = is.first;
     auto & flecsi_ispace = data.index_space(idx_space);
 
-    Legion::LogicalPartition color_lpart = runtime->get_logical_partition(
-      ctx, flecsi_ispace.logical_region, flecsi_ispace.color_partition);
-    pos_compaction_launcher
-      .add_region_requirement(
-        Legion::RegionRequirement(color_lpart, 0 /*projection ID*/,
-          WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
-      .add_field(ghost_owner_pos_fid);
-  } // for idx_space
+    Legion::LogicalPartition exclusive_lp = runtime->get_logical_partition(
+      ctx, flecsi_ispace.logical_region, flecsi_ispace.exclusive_partition);
 
-  pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-  runtime->execute_index_space(ctx, pos_compaction_launcher);
+    Legion::LogicalPartition shared_lp = runtime->get_logical_partition(
+      ctx, flecsi_ispace.logical_region, flecsi_ispace.shared_partition);
+
+    Legion::LogicalPartition ghost_lp = runtime->get_logical_partition(
+      ctx, flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
+
+    Legion::MappingTagID tag = EXCLUSIVE_LR;
+    Legion::RegionRequirement ex_rr(exclusive_lp, 0 /*projection ID*/,
+      WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region, tag);
+    ex_rr.add_field(ghost_owner_pos_fid);
+
+    Legion::RegionRequirement sh_rr(shared_lp, 0 /*projection ID*/,
+      WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region);
+    sh_rr.add_field(ghost_owner_pos_fid);
+
+    Legion::RegionRequirement gh_rr(ghost_lp, 0 /*projection ID*/,
+      WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region);
+    gh_rr.add_field(ghost_owner_pos_fid);
+
+    Legion::IndexLauncher pos_compaction_launcher(pos_compaction_id,
+      data.color_domain(), Legion::TaskArgument(&idx_space, sizeof(size_t)),
+      Legion::ArgumentMap());
+
+    pos_compaction_launcher.add_region_requirement(ex_rr);
+    pos_compaction_launcher.add_region_requirement(sh_rr);
+    pos_compaction_launcher.add_region_requirement(gh_rr);
+
+    pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+    runtime->execute_index_space(ctx, pos_compaction_launcher);
+
+  } // for idx_space
 
   // Fix ghost reference/pointer to point to compacted position of
   // shared that it needs
   const auto pos_correction_id =
     context_.task_id<flecsi_internal_task_key(owner_pos_correction_task)>();
 
-  Legion::IndexLauncher fix_ghost_refs_launcher(pos_correction_id,
-    data.color_domain(), Legion::TaskArgument(nullptr, 0),
-    Legion::ArgumentMap());
+  Legion::IndexSpace is_of_colors =
+    runtime->create_index_space(ctx, data.color_domain());
 
   for(auto is : context_.coloring_map()) {
     size_t idx_space = is.first;
     auto & flecsi_ispace = data.index_space(idx_space);
 
-    Legion::LogicalPartition ghost_lpart = runtime->get_logical_partition(
+    Legion::LogicalPartition ghost_lp = runtime->get_logical_partition(
       ctx, flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
-    fix_ghost_refs_launcher
-      .add_region_requirement(
-        Legion::RegionRequirement(ghost_lpart, 0 /*projection ID*/, READ_WRITE,
-          EXCLUSIVE, flecsi_ispace.logical_region))
-      .add_field(ghost_owner_pos_fid);
 
     Legion::LogicalPartition access_lp = runtime->get_logical_partition(
       ctx, flecsi_ispace.logical_region, flecsi_ispace.access_partition);
     Legion::LogicalRegion primary_lr =
       runtime->get_logical_subregion_by_color(ctx, access_lp, PRIMARY_ACCESS);
 
-    fix_ghost_refs_launcher.add_region_requirement(
-      Legion::RegionRequirement(
-        primary_lr, READ_ONLY, EXCLUSIVE, flecsi_ispace.logical_region)
-        .add_field(ghost_owner_pos_fid));
-  } // for idx_space
+    Legion::IndexPartition shared_corr_ip = runtime->create_partition_by_image(
+      ctx, primary_lr.get_index_space(), ghost_lp, flecsi_ispace.logical_region,
+      ghost_owner_pos_fid, is_of_colors);
+    Legion::LogicalPartition shared_corr_lp = runtime->get_logical_partition(
+      ctx, flecsi_ispace.logical_region, shared_corr_ip);
 
-  fix_ghost_refs_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-  auto fm = runtime->execute_index_space(ctx, fix_ghost_refs_launcher);
-  fm.wait_all_results(true);
+    Legion::RegionRequirement sh_rr(shared_corr_lp, 0 /*projection ID*/,
+      READ_ONLY, EXCLUSIVE, flecsi_ispace.logical_region);
+    sh_rr.add_field(ghost_owner_pos_fid);
+
+    Legion::RegionRequirement gh_rr(ghost_lp, 0 /*projection ID*/, READ_WRITE,
+      EXCLUSIVE, flecsi_ispace.logical_region);
+    gh_rr.add_field(ghost_owner_pos_fid);
+
+    Legion::IndexLauncher pos_correction_launcher(pos_correction_id,
+      data.color_domain(), Legion::TaskArgument(&idx_space, sizeof(size_t)),
+      Legion::ArgumentMap());
+
+    pos_correction_launcher.add_region_requirement(sh_rr);
+    pos_correction_launcher.add_region_requirement(gh_rr);
+
+    pos_correction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+    runtime->execute_index_space(ctx, pos_correction_launcher);
+
+  } // for
 
   // map of index space to the field_ids that are mapped to this index space
   std::map<size_t, std::vector<const field_info_t *>> fields_map;
