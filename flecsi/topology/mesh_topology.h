@@ -354,6 +354,7 @@ public:
   //! Get the connectivity of the specified from/to domain and from/to
   //! topological dimensions.
   //--------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const connectivity_t & get_connectivity(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -365,6 +366,7 @@ public:
   //! Get the connectivity of the specified from/to domain and from/to
   //! topological dimensions.
   //--------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   connectivity_t & get_connectivity(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -376,6 +378,7 @@ public:
   //! Get the connectivity of the specified domain and from/to topological
   //! dimensions.
   //--------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const connectivity_t & get_connectivity(size_t domain,
     size_t from_dim,
     size_t to_dim) const override {
@@ -386,6 +389,7 @@ public:
   //! Get the connectivity of the specified domain and from/to topological
   //! dimensions.
   //--------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   connectivity_t &
   get_connectivity(size_t domain, size_t from_dim, size_t to_dim) override {
     return get_connectivity_(domain, domain, from_dim, to_dim);
@@ -543,10 +547,10 @@ public:
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
     class ENT_TYPE>
-  const auto entities(const ENT_TYPE * e) const {
+  FLECSI_TARGET const auto entities(const ENT_TYPE * e) const {
 
     const connectivity_t & c =
-      get_connectivity(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
+      get_connectivity_(FROM_DOM, TO_DOM, ENT_TYPE::dimension, DIM);
     assert(!c.empty() && "empty connectivity");
 
     using etype = entity_type<DIM, TO_DOM>;
@@ -2004,6 +2008,7 @@ private:
   //! Implementation of get_connectivity for various get_connectivity
   //! convenience methods.
   //--------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const connectivity_t & get_connectivity_(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -2017,6 +2022,7 @@ private:
   //! Implementation of get_connectivity for various get_connectivity
   //! convenience methods.
   //--------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   connectivity_t & get_connectivity_(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -2035,7 +2041,7 @@ private:
   //! @tparam FROM_DIM from topological dimension
   //--------------------------------------------------------------------------//
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM>
-  connectivity_t & get_connectivity_(size_t to_dim) {
+  FLECSI_INLINE_TARGET connectivity_t & get_connectivity_(size_t to_dim) {
     return this->storage.topology[FROM_DOM][TO_DOM].template get<FROM_DIM>(
       to_dim);
   } // get_connectivity
@@ -2050,7 +2056,7 @@ private:
   //! @tparam TO_DIM to topological dimension
   //--------------------------------------------------------------------------//
   template<size_t FROM_DOM, size_t TO_DOM, size_t FROM_DIM, size_t TO_DIM>
-  connectivity_t & get_connectivity_() {
+  FLECSI_INLINE_TARGET connectivity_t & get_connectivity_() {
     return this->storage.topology[FROM_DOM][TO_DOM]
       .template get<FROM_DIM, TO_DIM>();
   } // get_connectivity
@@ -2059,6 +2065,7 @@ private:
   //! Implementation of get_connectivity for various get_connectivity
   //! convenience methods.
   //--------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   const connectivity_t &
   get_connectivity_(size_t domain, size_t from_dim, size_t to_dim) const {
     return get_connectivity_(domain, domain, from_dim, to_dim);
@@ -2068,6 +2075,7 @@ private:
   //! Implementation of get_connectivity for various get_connectivity
   //! convenience methods.
   //--------------------------------------------------------------------------//
+  FLECSI_INLINE_TARGET
   connectivity_t &
   get_connectivity_(size_t domain, size_t from_dim, size_t to_dim) {
     return get_connectivity_(domain, domain, from_dim, to_dim);

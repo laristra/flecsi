@@ -219,9 +219,9 @@ struct legion_execution_policy_t {
             launcher.add_region_requirement(req);
           } // for
 
-          for(auto & future : init_args.futures) {
-            launcher.add_future(future);
-          } // for
+          launcher.futures = std::move(init_args).futures;
+          if(init_args.future_maps.size() > 0)
+            clog_fatal("index future can't be passed to a single task");
 
           LegionRuntime::Arrays::Rect<1> launch_bounds(0, 1);
           Domain launch_domain = Domain::from_rect<1>(launch_bounds);
@@ -314,9 +314,9 @@ struct legion_execution_policy_t {
             launcher.add_region_requirement(req);
           } // for
 
-          for(auto & future : init_args.futures) {
-            launcher.add_future(future);
-          } // for
+          launcher.futures = std::move(init_args).futures;
+          launcher.point_futures.assign(
+            init_args.future_maps.begin(), init_args.future_maps.end());
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles
@@ -408,9 +408,9 @@ struct legion_execution_policy_t {
             launcher.add_region_requirement(req);
           } // for
 
-          for(auto & future : init_args.futures) {
-            launcher.add_future(future);
-          } // for
+          launcher.futures = std::move(init_args).futures;
+          launcher.point_futures.assign(
+            init_args.future_maps.begin(), init_args.future_maps.end());
 
           // Execute a tuple walker that applies the task prolog operations
           // on the mapped handles

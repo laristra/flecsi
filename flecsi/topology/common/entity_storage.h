@@ -45,6 +45,7 @@ public:
     add_count(static_cast<uint32_t>(end - start_));
   }
 
+  FLECSI_INLINE_TARGET
   std::pair<size_t, size_t> range(size_t i) const {
     return s_[i].range();
   }

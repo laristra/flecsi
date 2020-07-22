@@ -66,5 +66,18 @@ struct reduction_wrapper_u {
 
 }; // struct reduction_wrapper_u
 
+namespace reduction {
+template<typename T>
+using sum = Legion::SumReduction<T>;
+template<typename T>
+using min = Legion::MinReduction<T>;
+template<typename T>
+using max = Legion::MaxReduction<T>;
+template<typename T>
+using product = Legion::ProdReduction<T>;
+// TODO:  Legion Provides additonal reductions that we're not using:
+//  diff, div, or, and, xor.
+} // namespace reduction
+
 } // namespace execution
 } // namespace flecsi

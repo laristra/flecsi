@@ -27,6 +27,7 @@ class Legion(CMakePackage):
 
     version('master', branch='master')
     version('ctrl-rep', branch='control_replication')
+    version('ctrl-rep-7', commit='7041e61e70a4a041bfee983f2aab9e061c5a6e61')
     version('ctrl-rep-6', commit='095be5c6e8d36a6ddb235fd079bc6e9b8d37baeb')
     version('ctrl-rep-5', commit='a204dced578258246ea0933293f4017058bc4bf5')
     version('ctrl-rep-4', commit='b66083076016c63ea8398fdb89c237880fcb0173')
