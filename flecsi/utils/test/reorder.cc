@@ -95,8 +95,8 @@ TEST(reorder, both) {
       initial[i] = random(); // random values
       order[i] = i; // unique indices
     }
-    std::random_shuffle(order.begin(), order.end()); // still unique indices
 
+    std::shuffle(order.begin(), order.end(), std::default_random_engine(1));
     // ------------------------
     // Inplace reorder:
     // order preserving

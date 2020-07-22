@@ -63,6 +63,14 @@
 
 
 //----------------------------------------------------------------------------//
+// Annotation severity level
+//----------------------------------------------------------------------------//
+#define FLECSI_ANNOTATION_DETAIL_low 1
+#define FLECSI_ANNOTATION_DETAIL_medium 2
+#define FLECSI_ANNOTATION_DETAIL_high 3
+#cmakedefine FLECSI_ANNOTATION_DETAIL FLECSI_ANNOTATION_DETAIL_@FLECSI_ANNOTATION_DETAIL@
+
+//----------------------------------------------------------------------------//
 // Process id bits
 //----------------------------------------------------------------------------//
 

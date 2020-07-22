@@ -44,6 +44,7 @@ struct data_client_handle_entity_t {
   Legion::LogicalPartition ghost_owner_partition;
   bool * write_phase_started;
   bool * ghost_is_readable;
+  bool * ghost_id_updated;
 }; // struct data_client_handle_entity_t
 
 //----------------------------------------------------------------------------//

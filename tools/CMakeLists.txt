@@ -137,38 +137,41 @@ if(ENABLE_FLECSIT)
     #--------------------------------------------------------------------------#
 
     set(PythonInterp_FIND_VERSION TRUE) # unknown hack to search for versions
-    find_package(PythonInterp 2.7 REQUIRED)
-
-    if(${PYTHON_VERSION_MAJOR} LESS 3)
-      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-    else()
-      execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT TARGET Python2::Interpreter)
+      find_package(Python2 COMPONENTS Interpreter)
     endif()
 
-    install(DIRECTORY ${PROJECT_SOURCE_DIR}/tools/flecsit/flecsit
-        DESTINATION ${PYTHON_INSTDIR}
-        FILES_MATCHING PATTERN "*.py")
+    # if(${PYTHON_VERSION_MAJOR} LESS 3)
+    #   execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    # else()
+    #   execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print(cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}'))" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    # endif()
 
-    configure_file(${PROJECT_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
-      ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
+    # Disabling install and environment variable manipulation
+    # install(DIRECTORY ${PROJECT_SOURCE_DIR}/tools/flecsit/flecsit
+    #     DESTINATION ${PYTHON_INSTDIR}
+    #     FILES_MATCHING PATTERN "*.py")
 
-    install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
-        DESTINATION bin
-        PERMISSIONS
-            OWNER_READ OWNER_WRITE OWNER_EXECUTE
-            GROUP_READ GROUP_EXECUTE
-            WORLD_READ WORLD_EXECUTE
-    )
+    # configure_file(${PROJECT_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
+    #   ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
 
-    set(FLECSI_PYTHON_PATH_MODULE
-        "prepend-path PYTHONPATH ${PYTHON_INSTDIR}"
-    )
-    set(FLECSI_PYTHON_PATH_BASH
-        "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}"
-    )
-    set(FLECSI_PYTHON_PATH_CSH
-        "setenv PYTHONPATH \${PYTHONPATH}:${PYTHON_INSTDIR}"
-    )
+    # install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
+    #     DESTINATION bin
+    #     PERMISSIONS
+    #         OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    #         GROUP_READ GROUP_EXECUTE
+    #         WORLD_READ WORLD_EXECUTE
+    # )
+
+    # set(FLECSI_PYTHON_PATH_MODULE
+    #     "prepend-path PYTHONPATH ${PYTHON_INSTDIR}"
+    # )
+    # set(FLECSI_PYTHON_PATH_BASH
+    #     "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}"
+    # )
+    # set(FLECSI_PYTHON_PATH_CSH
+    #     "setenv PYTHONPATH \${PYTHONPATH}:${PYTHON_INSTDIR}"
+    # )
 
 endif()
 
