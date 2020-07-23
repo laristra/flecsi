@@ -195,6 +195,13 @@ struct task_prologue_t {
              T>::template null_base<Topo::template privilege_count<S>>,
       f);
   }
+  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
+  void visit(data::accessor<data::sparse, T, P> * null_p,
+    const data::field_reference<T, data::sparse, Topo, S> & ref) {
+    visit(get_null_base(null_p),
+      ref.template cast<data::ragged,
+        typename field<T, data::sparse>::base_type::value_type>());
+  }
 
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> * /* parameter */,

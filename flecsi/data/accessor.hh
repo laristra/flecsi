@@ -558,6 +558,57 @@ private:
   TaskBuffer * over = nullptr;
 };
 
+// Many compilers incorrectly require the 'template' for a base class.
+template<class T, std::size_t P>
+struct accessor<sparse, T, P>
+  : field<T, sparse>::base_type::template accessor1<P>,
+    util::with_index_iterator<const accessor<sparse, T, P>> {
+  static_assert(!privilege_write_only(P),
+    "sparse accessor requires read permission");
+
+private:
+  using FieldBase = typename field<T, sparse>::base_type;
+
+public:
+  using value_type = typename FieldBase::value_type;
+  using base_type = typename FieldBase::template accessor1<P>;
+  using element_type =
+    std::tuple_element_t<1, typename base_type::element_type>;
+
+private:
+  using base_row = typename base_type::row;
+
+public:
+  // Use the ragged interface to obtain the span directly.
+  struct row {
+    row(base_row s) : s(s) {}
+    element_type & operator()(std::size_t c) const {
+      return std::partition_point(
+        s.begin(), s.end(), [c](const value_type & v) { return v.first < c; })
+        ->second;
+    }
+
+  private:
+    base_row s;
+  };
+
+  accessor(const base_type & b) : base_type(b) {}
+
+  row operator[](std::size_t i) const {
+    return get_base()[i];
+  }
+
+  base_type & get_base() {
+    return *this;
+  }
+  const base_type & get_base() const {
+    return *this;
+  }
+  friend base_type * get_null_base(accessor *) { // for task_prologue_t
+    return nullptr;
+  }
+};
+
 } // namespace data
 
 template<class T, std::size_t P>
@@ -603,6 +654,17 @@ struct exec::detail::task_param<data::mutator<data::ragged, T>> {
   static type replace(
     const data::field_reference<T, data::ragged, Topo, S> & r) {
     return type::base_type::parameter(r);
+  }
+};
+template<class T, std::size_t S>
+struct exec::detail::task_param<data::accessor<data::sparse, T, S>> {
+  using type = data::accessor<data::sparse, T, S>;
+  template<class Topo, typename Topo::index_space Space>
+  static type replace(
+    const data::field_reference<T, data::sparse, Topo, Space> & r) {
+    return exec::replace_argument<typename type::base_type>(
+      r.template cast<data::ragged,
+        typename field<T, data::sparse>::base_type::value_type>());
   }
 };
 

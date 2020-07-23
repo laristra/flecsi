@@ -94,7 +94,7 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
   void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
     visit(accessor.get_base());
   }
-  // Because we don't have a catch-all, this matches accessor<ragged,...>.
+  // Without a catch-all, this matches accessor<ragged|sparse,...>.
   template<class T, std::size_t P, std::size_t OP>
   void visit(data::ragged_accessor<T, P, OP> & a) {
     visit(a.get_base());

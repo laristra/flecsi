@@ -111,6 +111,8 @@ struct field_reference : field_reference_t<Topo> {
 /// \tparam L data layout
 template<class T, data::layout L = data::dense>
 struct field : data::detail::field_base<T, L> {
+  using value_type = T;
+
   template<std::size_t Priv>
   using accessor1 = data::accessor<L, T, Priv>;
   /// The accessor to use as a parameter to receive this sort of field.
@@ -153,6 +155,10 @@ template<class T>
 struct field_base<T, ragged> {
   using base_type = field<T, raw>;
   using Offsets = field<std::size_t>;
+};
+template<class T>
+struct field_base<T, sparse> {
+  using base_type = field<std::pair<std::size_t, T>, ragged>;
 };
 
 // Many compilers incorrectly require the 'template' for a base class.

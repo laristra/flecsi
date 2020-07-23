@@ -37,9 +37,14 @@ using double1 = field<double, singular>;
 const double1::definition<topo::index> pressure_field;
 using intN = field<int, ragged>;
 const intN::definition<topo::index> verts_field;
+using double_at = field<double, sparse>;
+const double_at::definition<topo::index> vfrac_field;
 
 const auto pressure = pressure_field(process_topology);
 const auto verts = verts_field(process_topology);
+const auto vfrac = vfrac_field(process_topology);
+
+constexpr std::size_t column = 42;
 
 void
 allocate(resize::Field::accessor<wo> a) {
@@ -50,19 +55,30 @@ void
 rows(intN::mutator r) {
   r[0].resize(color() + 1);
 }
+void
+drows(double_at::base_type::mutator s) {
+  s[0].resize(color() + 1);
+}
 
 using noisy = field<Noisy, singular>;
 const noisy::definition<topo::index> noisy_field;
 const auto noise = noisy_field(process_topology);
 
 void
-assign(double1::accessor<wo> p, intN::accessor<rw> r) {
+assign(double1::accessor<wo> p,
+  intN::accessor<rw> r,
+  double_at::accessor<wo> sp) {
   const auto i = color();
   flog(info) << "assign on " << i << std::endl;
   p = i;
   static_assert(std::is_same_v<decltype(r.get_offsets().span()),
     util::span<const std::size_t>>);
   r[0].back() = 1;
+  std::size_t c = 0;
+  for(auto & x : sp.get_base()[0]) {
+    x = {column + c, i + c};
+    ++c;
+  }
 } // assign
 
 std::size_t
@@ -71,7 +87,10 @@ reset(noisy::accessor<wo>) {
 }
 
 int
-check(double1::accessor<ro> p, intN::accessor<ro> r, noisy::accessor<ro> n) {
+check(double1::accessor<ro> p,
+  intN::accessor<ro> r,
+  double_at::accessor<ro> sp,
+  noisy::accessor<ro> n) {
   UNIT {
     const auto me = color();
     flog(info) << "check on " << me << std::endl;
@@ -81,6 +100,9 @@ check(double1::accessor<ro> p, intN::accessor<ro> r, noisy::accessor<ro> n) {
     static_assert(std::is_same_v<decltype(s), const util::span<const int>>);
     ASSERT_EQ(s.size(), me + 1);
     EXPECT_EQ(s.back(), 1);
+    ASSERT_EQ(sp.size(), 1u);
+    const auto sr = sp[0];
+    EXPECT_EQ(sr(column + me), 2 * me);
     EXPECT_EQ(n.get().i, Noisy::value());
   };
 } // print
@@ -89,16 +111,19 @@ int
 index_driver() {
   UNIT {
     Noisy::count = 0;
-    auto & p = process_topology.get().ragged->get_partition<topo::elements>(
-      verts_field.fid);
-    execute<allocate>(p.sizes());
-    p.resize();
+    for(const auto f : {verts_field.fid, vfrac_field.fid}) {
+      auto & p =
+        process_topology.get().ragged->get_partition<topo::elements>(f);
+      execute<allocate>(p.sizes());
+      p.resize();
+    }
     execute<rows>(verts);
-    execute<assign>(pressure, verts);
+    execute<drows>(vfrac.cast<ragged, double_at::base_type::value_type>());
+    execute<assign>(pressure, verts, vfrac);
     execute<reset>(noise);
     EXPECT_EQ((reduce<reset, exec::fold::sum<std::size_t>, mpi>(noise).get()),
       processes());
-    EXPECT_EQ(test<check>(pressure, verts, noise), 0);
+    EXPECT_EQ(test<check>(pressure, verts, vfrac, noise), 0);
   };
 } // index
 
