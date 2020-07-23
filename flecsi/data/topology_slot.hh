@@ -46,6 +46,13 @@ struct topology_slot : convert_tag {
     return *data;
   }
 
+  data_t * operator->() {
+    return &*data;
+  }
+  const data_t * operator->() const {
+    return &*data;
+  }
+
 private:
   std::optional<data_t> data;
 }; // struct topology_slot
