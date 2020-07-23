@@ -89,14 +89,16 @@ struct util::serial<data::topology_accessor<T, Priv>,
 };
 
 template<auto & F, class... AA>
-struct util::serial_convert<exec::partial<F, AA...>> {
+struct util::serial<exec::partial<F, AA...>,
+  std::enable_if_t<!util::memcpyable_v<exec::partial<F, AA...>>>> {
   using type = exec::partial<F, AA...>;
   using Rep = typename type::Base;
-  static const Rep & put(const type & p) {
-    return p;
+  template<class P>
+  static void put(P & p, const type & t) {
+    serial_put(p, static_cast<const Rep &>(t));
   }
-  static type get(const Rep & t) {
-    return t;
+  static type get(const std::byte *& b) {
+    return serial_get<Rep>(b);
   }
 };
 
