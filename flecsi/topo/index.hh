@@ -19,9 +19,9 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/field.hh"
+#include "flecsi/data/accessor.hh"
 #include "flecsi/data/topology.hh"
-#include "flecsi/execution.hh"
+#include "flecsi/exec/launch.hh"
 #include "flecsi/topo/core.hh"
 
 namespace flecsi {
@@ -88,12 +88,7 @@ private:
 
 public:
   template<class F = decltype(zero)>
-  repartition(const data::region & r, F f = zero)
-    : with_size(r.size().first), partition(r, *sizes, [&] {
-        const auto r = sizes();
-        execute<fill<F>>(r, f);
-        return r.fid();
-      }()) {}
+  repartition(const data::region & r, F f = zero);
   void resize() {
     update(*sizes, sizes().fid());
   }
@@ -101,7 +96,7 @@ public:
 private:
   template<class F>
   static void fill(resize::Field::accessor<wo> a, const F & f) {
-    const auto i = color();
+    const auto i = run::context::instance().color();
     a = data::partition::make_row(i, f(i));
   }
 };

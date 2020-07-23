@@ -20,9 +20,7 @@
 #endif
 
 #include "flecsi/data/field.hh"
-#include "flecsi/data/privilege.hh"
 #include "flecsi/topo/core.hh"
-#include "flecsi/topo/global.hh"
 
 #include <cstddef>
 #include <optional>
@@ -64,15 +62,6 @@ template<class P, class A>
 struct launch {
   static auto get(const A &) {
     return nullptr;
-  }
-};
-template<data::layout L, class T, std::size_t Priv>
-struct launch<data::accessor<L, T, Priv>,
-  data::field_reference<T, L, topo::global, topo::elements>> {
-  static std::
-    conditional_t<(get_privilege(0, Priv) > ro), std::monostate, std::nullptr_t>
-    get(const data::field_reference<T, L, topo::global, topo::elements> &) {
-    return {};
   }
 };
 template<class P,

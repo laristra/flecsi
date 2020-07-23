@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/privilege.hh"
 #include "flecsi/data/topology.hh"
 #include "flecsi/topo/core.hh"
 
@@ -48,4 +49,16 @@ struct detail::base<global_category> {
 struct global : specialization<global_category, global> {}; // struct global
 
 } // namespace topo
+
+// Defined here to avoid circularity via ragged and execute.
+template<data::layout L, class T, std::size_t Priv>
+struct exec::detail::launch<data::accessor<L, T, Priv>,
+  data::field_reference<T, L, topo::global, topo::elements>> {
+  static std::
+    conditional_t<(get_privilege(0, Priv) > ro), std::monostate, std::nullptr_t>
+    get(const data::field_reference<T, L, topo::global, topo::elements> &) {
+    return {};
+  }
+};
+
 } // namespace flecsi
