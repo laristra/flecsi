@@ -53,8 +53,11 @@ struct detail::base<index_category> {
 struct resize {
   explicit resize(std::size_t n) : size(n) {}
 
-  auto operator()() const {
+  auto operator()() {
     return field(size.get_slot());
+  }
+  auto & operator*() {
+    return *size;
   }
   auto & operator*() const {
     return *size;

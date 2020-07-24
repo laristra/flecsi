@@ -59,19 +59,19 @@ struct field_reference_t : convert_tag {
   // the topology object has been created.
   using topology_t = topology_slot<Topo>;
 
-  field_reference_t(const field_info_t & info, const topology_t & topology)
+  field_reference_t(const field_info_t & info, topology_t & topology)
     : fid_(info.fid), topology_(&topology) {}
 
   field_id_t fid() const {
     return fid_;
   }
-  const topology_t & topology() const {
+  topology_t & topology() const {
     return *topology_;
   } // topology_identifier
 
 private:
   field_id_t fid_;
-  const topology_t * topology_;
+  topology_t * topology_;
 
 }; // struct field_reference
 
@@ -118,7 +118,7 @@ struct field {
     /// Return a reference to a field instance.
     /// \tparam t topology instance (need not be allocated yet)
     data::field_reference<T, L, Topo, Space> operator()(
-      const data::topology_slot<Topo> & t) const {
+      data::topology_slot<Topo> & t) const {
       return {*this, t};
     }
   };
