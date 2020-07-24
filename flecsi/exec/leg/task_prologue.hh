@@ -102,6 +102,11 @@ struct task_prologue_t {
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
+  template<class T, std::size_t Priv, class Topo, typename Topo::index_space S>
+  void visit(data::accessor<data::dense, T, Priv> * null_p,
+    const data::field_reference<T, data::dense, Topo, S> & ref) {
+    visit(get_null_base(null_p), ref.template cast<data::raw>());
+  }
   template<class T,
     std::size_t Priv,
     class Topo,
@@ -116,10 +121,9 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(
-    data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
+  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::
-      field_reference<DATA_TYPE, data::dense, topo::global, topo::elements> &
+      field_reference<DATA_TYPE, data::raw, topo::global, topo::elements> &
         ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
@@ -142,9 +146,8 @@ struct task_prologue_t {
     class Topo,
     typename Topo::index_space Space,
     class = std::enable_if_t<Topo::template privilege_count<Space> == 1>>
-  void visit(
-    data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, data::dense, Topo, Space> & ref) {
+  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
     auto & instance_data = ref.topology().get().template get_partition<Space>();
 
     static_assert(privilege_count(PRIVILEGES) == 1,

@@ -31,11 +31,14 @@ namespace data {
 template<layout L, typename T, std::size_t Priv>
 struct accessor;
 
+namespace detail {
+template<class, layout>
+struct field_base {};
 template<class, layout, class Topo, typename Topo::index_space>
 struct field_register;
 
 template<class T, class Topo, typename Topo::index_space Space>
-struct field_register<T, dense, Topo, Space> : field_info_t {
+struct field_register<T, raw, Topo, Space> : field_info_t {
   field_register() : field_info_t{unique_fid_t::instance().next(), sizeof(T)} {
     run::context::instance().add_field_info<Topo, Space>(*this);
   }
@@ -43,10 +46,7 @@ struct field_register<T, dense, Topo, Space> : field_info_t {
   field_register(const field_register &) = delete;
   field_register & operator=(const field_register &) = delete;
 };
-
-template<class T, class Topo, typename Topo::index_space Space>
-struct field_register<T, singular, Topo, Space>
-  : field_register<T, dense, Topo, Space> {};
+} // namespace detail
 
 /*!
   The field_reference_t type is used to reference fields. It adds a \em
@@ -100,7 +100,7 @@ struct field_reference : field_reference_t<Topo> {
 ///   or references
 /// \tparam L data layout
 template<class T, data::layout L = data::dense>
-struct field {
+struct field : data::detail::field_base<T, L> {
   template<std::size_t Priv>
   using accessor1 = data::accessor<L, T, Priv>;
   /// The accessor to use as a parameter to receive this sort of field.
@@ -108,11 +108,14 @@ struct field {
   template<partition_privilege_t... PP>
   using accessor = accessor1<privilege_pack<PP...>>;
 
+  template<class Topo, typename Topo::index_space S>
+  using Register = data::detail::field_register<T, L, Topo, S>;
+
   /// A field registration.
   /// \tparam Topo (specialized) topology type
   /// \tparam Space index space
   template<class Topo, typename Topo::index_space Space = Topo::default_space()>
-  struct definition : data::field_register<T, L, Topo, Space> {
+  struct definition : Register<Topo, Space> {
     using Field = field;
 
     /// Return a reference to a field instance.
@@ -125,6 +128,24 @@ struct field {
 };
 
 namespace data {
+namespace detail {
+template<class T>
+struct field_base<T, dense> {
+  using base_type = field<T, raw>;
+};
+template<class T>
+struct field_base<T, singular> {
+  using base_type = field<T>;
+};
+
+// Many compilers incorrectly require the 'template' for a base class.
+template<class T, layout L, class Topo, typename Topo::index_space Space>
+struct field_register : field<T, L>::base_type::template Register<Topo, Space> {
+  using Base = typename field<T, L>::base_type::template Register<Topo, Space>;
+  using Base::Base;
+};
+} // namespace detail
+
 template<class F, std::size_t Priv>
 using field_accessor =
   typename std::remove_reference_t<F>::Field::template accessor1<Priv>;

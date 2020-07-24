@@ -65,7 +65,7 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
       regions_(regions), futures_(futures) {}
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::dense, DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> & accessor) {
     auto & reg = regions_[region++];
 
     //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
@@ -83,6 +83,10 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
         r.hi[1] - r.lo[1] + 1));
   }
 
+  template<typename T, size_t P>
+  void visit(data::accessor<data::dense, T, P> & a) {
+    visit(a.get_base());
+  }
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
     visit(accessor.get_base());
