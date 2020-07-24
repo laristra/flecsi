@@ -276,32 +276,27 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     param_tuple * p;
     flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, task->args, sizeof p);
-    auto & mpi_task_args = *p;
-
-    // FIXME Refactor  auto task_args = detail::tuple_get<param_tuple>(*task);
 
     bind_accessors_t bind_accessors(runtime, context, regions, task->futures);
-    bind_accessors.walk(mpi_task_args);
+    bind_accessors.walk(*p);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();
 
     if constexpr(std::is_same_v<RETURN, void>) {
-      c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
-      c.mpi_handoff();
-      c.mpi_wait();
+      c.mpi_call([&] { apply(F, std::move(*p)); });
       // FIXME unbind accessors
     }
     else {
-      RETURN result;
-      c.set_mpi_task([&] { result = apply(F, std::move(mpi_task_args)); });
-      c.mpi_handoff();
-      c.mpi_wait();
+      std::optional<RETURN> result;
+      c.mpi_call([&] { result.emplace(std::apply(F, std::move(*p))); });
+
       // FIXME unbind accessors
-      return result;
+      return std::move(*result);
     }
-  }
-};
+
+  } // execute
+}; // task_wrapper
 
 } // namespace exec::leg
 } // namespace flecsi

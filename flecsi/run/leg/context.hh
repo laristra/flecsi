@@ -172,13 +172,15 @@ struct context_t : context {
     it will execute whichever function is currently set.
    */
 
-  void set_mpi_task(std::function<void()> mpi_task) {
+  void mpi_call(std::function<void()> mpi_task) {
     {
       log::devel_guard guard(context_tag);
-      flog_devel(info) << "In set_mpi_task" << std::endl;
+      flog_devel(info) << "In mpi_call" << std::endl;
     }
 
     mpi_task_ = std::move(mpi_task);
+    mpi_handoff();
+    mpi_wait();
   }
 
   /*!
@@ -198,27 +200,6 @@ struct context_t : context {
   } // all_processes
 
   /*!
-    Switch execution to the MPI runtime.
-
-    @param ctx The Legion runtime context.
-    @param runtime The Legion task runtime pointer.
-   */
-
-  void handoff_to_mpi_tlt(Legion::Context & ctx, Legion::Runtime * runtime);
-
-  /*!
-    Wait on the MPI runtime to finish the current task execution.
-
-    @param ctx The Legion runtime context.
-    @param runtime The Legion task runtime pointer.
-
-    @return A future map with the result of the task execution.
-   */
-
-  Legion::FutureMap wait_on_mpi_tlt(Legion::Context & ctx,
-    Legion::Runtime * runtime);
-
-  /*!
     Connect with the MPI runtime.
 
     @param ctx The Legion runtime context.
@@ -230,47 +211,19 @@ struct context_t : context {
   /*!
     Handoff to MPI from Legion.
    */
-  static void mpi_handoff() {
-    instance().handshake_.legion_handoff_to_mpi();
+  void mpi_handoff() {
+    handshake_.legion_handoff_to_mpi();
   }
 
   /*!
     Wait for MPI runtime to complete task execution.
    */
 
-  static void mpi_wait() {
-    instance().handshake_.legion_wait_on_mpi();
+  void mpi_wait() {
+    handshake_.legion_wait_on_mpi();
   }
 
 private:
-  /*!
-     Handoff to legion runtime from MPI.
-   */
-
-  void handoff_to_legion() {
-    {
-      log::devel_guard guard(context_tag);
-      flog_devel(info) << "In handoff_to_legion" << std::endl;
-    }
-
-    MPI_Barrier(MPI_COMM_WORLD);
-    handshake_.mpi_handoff_to_legion();
-  } // handoff_to_legion
-
-  /*!
-    Wait for Legion runtime to complete.
-   */
-
-  void wait_on_legion() {
-    {
-      log::devel_guard guard(context_tag);
-      flog_devel(info) << "In wait_on_legion" << std::endl;
-    }
-
-    handshake_.mpi_wait_on_legion();
-    MPI_Barrier(MPI_COMM_WORLD);
-  } // wait_on_legion
-
   /*!
     Invoke the current MPI task, if any, and clear it.
 

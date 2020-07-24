@@ -85,15 +85,19 @@ struct tuple_prepend<T, std::tuple<TT...>> {
   using type = std::tuple<T, TT...>;
 };
 
+#ifdef FLECSI_ENABLE_FLOG
+inline auto
+log_size() {
+  return log::flog_t::instance().packets().size();
+}
+#endif
+
 } // namespace detail
-} // namespace exec
 
 template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
 decltype(auto)
 reduce_internal(ARGS &&... args) {
   using namespace Legion;
-  using namespace exec;
-
   using traits_t = util::function_traits<decltype(F)>;
   using RETURN = typename traits_t::return_type;
   using param_tuple = typename traits_t::arguments_type;
@@ -234,7 +238,7 @@ reduce_internal(ARGS &&... args) {
         flog_devel(info) << "executing reduction logic for "
                          << util::type<REDUCTION>() << std::endl;
 
-        const auto ret = future<RETURN, launch_type_t::index>{
+        const auto ret = future<RETURN, launch_type_t::single>{
           legion_runtime->execute_index_space(
             legion_context, launcher, reduction_op<REDUCTION>)};
         ret.wait();
@@ -253,6 +257,8 @@ reduce_internal(ARGS &&... args) {
 
 } // reduce_internal
 
+} // namespace exec
+
 template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
 decltype(auto)
 reduce(ARGS &&... args) {
@@ -262,41 +268,28 @@ reduce(ARGS &&... args) {
   // This will guard the entire method
   log::devel_guard guard(execution_tag);
 
+#ifdef FLECSI_ENABLE_FLOG
   // Get the FleCSI runtime context
   auto & flecsi_context = run::context::instance();
 
   // Get the Legion runtime and context from the current task.
-  auto legion_runtime = Legion::Runtime::get_runtime();
-  auto legion_context = Legion::Runtime::get_context();
+  //  auto legion_runtime = Legion::Runtime::get_runtime();
+  //  auto legion_context = Legion::Runtime::get_context();
 
   const size_t tasks_executed = flecsi_context.tasks_executed();
   if((tasks_executed > 0) &&
      (tasks_executed % FLOG_SERIALIZATION_INTERVAL == 0)) {
 
-    size_t processes = flecsi_context.processes();
-    LegionRuntime::Arrays::Rect<1> launch_bounds(
-      LegionRuntime::Arrays::Point<1>(0),
-      LegionRuntime::Arrays::Point<1>(processes - 1));
-    Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+    flecsi::future<size_t, launch_type_t::single> future =
+      reduce_internal<detail::log_size, fold::max<std::size_t>, flecsi::mpi>();
 
-    constexpr auto red = [] {
-      return log::flog_t::instance().packets().size();
-    };
-    Legion::ArgumentMap arg_map;
-    Legion::IndexLauncher reduction_launcher(leg::task_id<leg::verb<*red>>,
-      launch_domain,
-      Legion::TaskArgument(NULL, 0),
-      arg_map);
-
-    Legion::Future future = legion_runtime->execute_index_space(
-      legion_context, reduction_launcher, reduction_op<fold::max<std::size_t>>);
-
-    if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
+    if(future.get() > FLOG_SERIALIZATION_THRESHOLD) {
       flecsi::future<void, launch_type_t::index> future_mpi =
         reduce_internal<log::send_to_one, void, flecsi::mpi>();
       future_mpi.wait();
     }
   }
+#endif
 
   return reduce_internal<F, REDUCTION, ATTRIBUTES, ARGS...>(
     std::forward<ARGS>(args)...);

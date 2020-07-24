@@ -69,13 +69,9 @@ seq(const T & s) {
   }(flog_info("s(")); // keep temporary alive throughout
 }
 
-void
+int
 mpi(int * p) {
   *p = 1;
-}
-
-int
-int_mpi() {
   return 4;
 }
 
@@ -115,11 +111,9 @@ test_driver() {
     execute<hydro::seq<V>>(V{"Elementary", " Dear Data"});
 
     int x = 0;
-    execute<hydro::mpi, mpi>(&x);
+    auto f = execute<hydro::mpi, mpi>(&x);
     ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
-
-    auto f = execute<hydro::int_mpi, mpi>();
-    ASSERT_EQ(f.get(0), 4); // NB: MPI calls are synchronous
+    ASSERT_EQ(f.get(0), 4);
   };
 } // test_driver
 
