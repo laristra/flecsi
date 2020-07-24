@@ -13,24 +13,23 @@ namespace topology {
 namespace structured_impl {
 
 template<size_t MESH_DIMENSION>
-struct structured_topology_storage_u
-{
-  using box_t       = flecsi::topology::structured_impl::box_t;
+struct structured_topology_storage_u {
+  using box_t = flecsi::topology::structured_impl::box_t;
   using box_color_t = flecsi::topology::structured_impl::box_color_t;
 
+  using topology_type =
+    typename gen_tuple_type<structured_index_space_u, MESH_DIMENSION>::type;
 
-  using topology_type = typename gen_tuple_type<structured_index_space_u, MESH_DIMENSION>::type; 
-
-  topology_type topology; 
+  topology_type topology;
 
   structured_topology_storage_u() {
-    //auto & context_ = flecsi::execution::context_t::instance();
-    //color = context_.color();
+    // auto & context_ = flecsi::execution::context_t::instance();
+    // color = context_.color();
   }
 
-}; //structured_topology_storage_u
+}; // structured_topology_storage_u
 
-} //structured_impl
-} //topology
-} //flecsi
-#endif 
+} // namespace structured_impl
+} // namespace topology
+} // namespace flecsi
+#endif

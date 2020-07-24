@@ -22,14 +22,13 @@
 //#endif
 
 #include <flecsi/topo/structured/box_types.hh>
-#include <flecsi/util/typeify.hh> 
+#include <flecsi/util/typeify.hh>
 
 //#include "box_types.h"
 
 namespace flecsi {
 namespace topology {
 namespace structured_impl {
-
 
 //----------------------------------------------------------------------------//
 // Utility types
@@ -61,56 +60,49 @@ auto gen() {
 
 struct structured_topology_base_t {
 
-  using coloring = flecsi::topology::structured_impl::box_coloring_t; 
+  using coloring = flecsi::topology::structured_impl::box_coloring_t;
 }; // structured_mesh_topology_base_t
 
-
 //----------------------------------------------------------------------------//
-// Structured mesh entity types. 
+// Structured mesh entity types.
 //----------------------------------------------------------------------------//
 class structured_mesh_entity_base_t
 {
- public:
-  using id_t = int64_t; 
+public:
+  using id_t = int64_t;
 
   structured_mesh_entity_base_t(){};
 
   virtual ~structured_mesh_entity_base_t() {}
 
-  size_t id() const
-  {
+  size_t id() const {
     return local_id_;
   }
 
-  void set_id(const id_t &id)
-  {
+  void set_id(const id_t & id) {
     local_id_ = id;
   }
 
-  size_t global_id() const
-  {
+  size_t global_id() const {
     return global_id_;
   }
 
-  void set_global_id(const id_t &id)
-  {
+  void set_global_id(const id_t & id) {
     global_id_ = id;
   }
 
-
-  template <class POLICY_TYPE>
+  template<class POLICY_TYPE>
   friend class structured_topology_u;
 
- private:
-  id_t local_id_; 
+private:
+  id_t local_id_;
   id_t global_id_;
 }; // class structured_mesh_entity_base__
 
-
-template <size_t DIM>
+template<size_t DIM>
 class structured_mesh_entity_u : public structured_mesh_entity_base_t
 {
- public:
+public:
   static const size_t dimension = DIM;
 
   structured_mesh_entity_u() : structured_mesh_entity_base_t(){};

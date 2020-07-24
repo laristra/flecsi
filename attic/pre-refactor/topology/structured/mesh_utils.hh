@@ -15,34 +15,30 @@
 
 /*! @file */
 
-#include <vector>
-#include <tuple> 
+#include <tuple>
 #include <utility>
+#include <vector>
 
 namespace flecsi {
 namespace topology {
 namespace structured_impl {
 
-template< template<size_t, size_t> class T, size_t N, size_t I>
+template<template<size_t, size_t> class T, size_t N, size_t I>
 using T_ = T<N, I>;
 
-template <template<size_t, size_t> class T, size_t N, typename I>
+template<template<size_t, size_t> class T, size_t N, typename I>
 struct selector;
 
-template <template<size_t, size_t> class T, size_t N, size_t... Is>
-struct selector<T, N, std::index_sequence<Is...>>
-{
-    using type = std::tuple<T_<T, N, Is>...>;
+template<template<size_t, size_t> class T, size_t N, size_t... Is>
+struct selector<T, N, std::index_sequence<Is...>> {
+  using type = std::tuple<T_<T, N, Is>...>;
 };
 
-template <template<size_t,size_t> class T, size_t N>
-struct gen_tuple_type
-{
-    using indices = std::make_index_sequence<N+1>;
-    using type = typename selector<T, N, indices>::type;
+template<template<size_t, size_t> class T, size_t N>
+struct gen_tuple_type {
+  using indices = std::make_index_sequence<N + 1>;
+  using type = typename selector<T, N, indices>::type;
 };
-
-
 
 /*----------------------------------------------------------------------------*
  * Tuple search utilities.
@@ -77,9 +73,7 @@ struct find_entity_st__ {
 
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
-    return T1::dimension == DIM
-               ? I
-               : find_entity_st__<I - 1, T, DIM>::find();
+    return T1::dimension == DIM ? I : find_entity_st__<I - 1, T, DIM>::find();
   }
 
 }; // find_entity__
@@ -114,12 +108,10 @@ struct find_entity_st_ {
   using entity_types = typename MESH_TYPE::entity_types;
 
   using pair_ = typename std::tuple_element<
-      find_entity_st__<
-          std::tuple_size<entity_types>::value,
-          entity_types,
-          DIM>::find() -
-          1,
-      entity_types>::type;
+    find_entity_st__<std::tuple_size<entity_types>::value, entity_types, DIM>::
+        find() -
+      1,
+    entity_types>::type;
 
   //-----------------------------------------------------------------//
   //! Define the type returned by searching the tuple for matching
@@ -127,7 +119,6 @@ struct find_entity_st_ {
   //-----------------------------------------------------------------//
   using type = typename std::tuple_element<1, pair_>::type;
 };
-
 
 } // namespace structured_impl
 } // namespace topology
