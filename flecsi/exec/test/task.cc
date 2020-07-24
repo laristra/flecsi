@@ -74,6 +74,11 @@ mpi(int * p) {
   *p = 1;
 }
 
+int
+int_mpi() {
+  return 4;
+}
+
 } // namespace hydro
 
 log::devel_tag color_tag("color");
@@ -112,6 +117,9 @@ test_driver() {
     int x = 0;
     execute<hydro::mpi, mpi>(&x);
     ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
+
+    auto f = execute<hydro::int_mpi, mpi>();
+    ASSERT_EQ(f.get(0), 4); // NB: MPI calls are synchronous
   };
 } // test_driver
 

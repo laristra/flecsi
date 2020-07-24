@@ -204,7 +204,7 @@ struct context_t : context {
     @param runtime The Legion task runtime pointer.
    */
 
-  void handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
+  void handoff_to_mpi_tlt(Legion::Context & ctx, Legion::Runtime * runtime);
 
   /*!
     Wait on the MPI runtime to finish the current task execution.
@@ -215,7 +215,7 @@ struct context_t : context {
     @return A future map with the result of the task execution.
    */
 
-  Legion::FutureMap wait_on_mpi(Legion::Context & ctx,
+  Legion::FutureMap wait_on_mpi_tlt(Legion::Context & ctx,
     Legion::Runtime * runtime);
 
   /*!
@@ -227,7 +227,6 @@ struct context_t : context {
 
   void connect_with_mpi(Legion::Context & ctx, Legion::Runtime * runtime);
 
-  // When GCC fixes bug #83258, these can be lambdas in the public functions:
   /*!
     Handoff to MPI from Legion.
    */

@@ -47,7 +47,7 @@ top_level_task(const Legion::Task *,
    */
 
   context_.connect_with_mpi(ctx, runtime);
-  context_.wait_on_mpi(ctx, runtime);
+  context_.wait_on_mpi_tlt(ctx, runtime);
 
   /*
     Invoke the FleCSI runtime top-level action.
@@ -60,7 +60,7 @@ top_level_task(const Legion::Task *,
     Finish up Legion runtime and fall back out to MPI.
    */
 
-  context_.handoff_to_mpi(ctx, runtime);
+  context_.handoff_to_mpi_tlt(ctx, runtime);
 } // top_level_task
 
 //----------------------------------------------------------------------------//
@@ -236,7 +236,8 @@ context_t::start(const std::function<int()> & action) {
 //----------------------------------------------------------------------------//
 
 void
-context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
+context_t::handoff_to_mpi_tlt(Legion::Context & ctx,
+  Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
     task_id<exec::leg::verb<mpi_handoff>>,
@@ -255,7 +256,7 @@ context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
 //----------------------------------------------------------------------------//
 
 Legion::FutureMap
-context_t::wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
+context_t::wait_on_mpi_tlt(Legion::Context & ctx, Legion::Runtime * runtime) {
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(task_id<exec::leg::verb<mpi_wait>>,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),

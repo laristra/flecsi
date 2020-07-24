@@ -263,10 +263,10 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
   static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
-  static void execute(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *) {
+  static RETURN execute(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime) {
     {
       log::devel_guard guard(task_wrapper_tag);
       flog_devel(info) << "In execute_mpi_task" << std::endl;
@@ -280,20 +280,26 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
     // FIXME Refactor  auto task_args = detail::tuple_get<param_tuple>(*task);
 
-    //  bind_accessors_t bind_accessors(runtime, context, regions,
-    //  task->futures); bind_accessors.walk(task_args);
+    bind_accessors_t bind_accessors(runtime, context, regions, task->futures);
+    bind_accessors.walk(mpi_task_args);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();
-    c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
-    auto & flecsi_context = run::context::instance();
-    flecsi_context.mpi_handoff();
-    flecsi_context.mpi_wait();
-
-    // FIXME   unbind_accessors_t unbind_accessors(runtime, context, regions,
-    //    task->futures);
-    //  unbind_accessors.walk(task_args);
+    if constexpr(std::is_same_v<RETURN, void>) {
+      c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
+      c.mpi_handoff();
+      c.mpi_wait();
+      // FIXME unbind accessors
+    }
+    else {
+      RETURN result;
+      c.set_mpi_task([&] { result = apply(F, std::move(mpi_task_args)); });
+      c.mpi_handoff();
+      c.mpi_wait();
+      // FIXME unbind accessors
+      return result;
+    }
   }
 };
 
