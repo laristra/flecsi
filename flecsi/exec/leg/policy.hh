@@ -85,6 +85,16 @@ struct tuple_prepend<T, std::tuple<TT...>> {
   using type = std::tuple<T, TT...>;
 };
 
+#ifdef FLECSI_ENABLE_FLOG
+inline auto
+log_size() {
+  return log::flog_t::instance().packets().size();
+}
+inline void
+send_log() {
+  run::context::instance().set_mpi_task(log::send_to_one);
+}
+#endif
 } // namespace detail
 } // namespace exec
 
@@ -122,11 +132,9 @@ reduce(ARGS &&... args) {
       LegionRuntime::Arrays::Point<1>(processes - 1));
     Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
-    constexpr auto red = [] {
-      return log::flog_t::instance().packets().size();
-    };
     Legion::ArgumentMap arg_map;
-    Legion::IndexLauncher reduction_launcher(leg::task_id<leg::verb<*red>>,
+    Legion::IndexLauncher reduction_launcher(
+      leg::task_id<leg::verb<detail::log_size>>,
       launch_domain,
       Legion::TaskArgument(NULL, 0),
       arg_map);
@@ -135,15 +143,13 @@ reduce(ARGS &&... args) {
       legion_context, reduction_launcher, reduction_op<fold::max<std::size_t>>);
 
     if(future.get_result<size_t>() > FLOG_SERIALIZATION_THRESHOLD) {
-      constexpr auto send = [] {
-        run::context::instance().set_mpi_task(log::send_to_one);
-      };
-      Legion::IndexLauncher flog_mpi_launcher(leg::task_id<leg::verb<*send>>,
+      Legion::IndexLauncher flog_mpi_launcher(
+        leg::task_id<leg::verb<detail::send_log>>,
         launch_domain,
         Legion::TaskArgument(NULL, 0),
         arg_map);
 
-      flog_mpi_launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
+      flog_mpi_launcher.tag = run::mapper::force_rank_match;
 
       // Launch the MPI task
       auto future_mpi =
@@ -277,7 +283,7 @@ reduce(ARGS &&... args) {
     else {
       static_assert(
         processor_type == task_processor_type_t::mpi, "Unknown launch type");
-      launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
+      launcher.tag = run::mapper::force_rank_match;
 
       // Launch the MPI task
       const auto ret = future<RETURN, launch_type_t::index>{
