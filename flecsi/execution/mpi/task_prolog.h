@@ -94,7 +94,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    if ((not *h.ghost_is_readable) and (h.ghost_was_resized))
+    if ((not *h.ghost_is_readable) and (*h.ghost_was_resized))
       resized_sparse_fields.emplace_back(h.index_space, h.fid);
 
     if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na))
@@ -370,6 +370,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     auto & modified_fields = modified_dense_fields;
 
+    if (modified_fields.size() == 0) return;
+
     for (auto & fi : modified_fields) {
       auto & field_metadata = context.registered_field_metadata().at(fi.second);
 
@@ -399,8 +401,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       const int resultAlloc =
         MPI_Alloc_mem(bufSize, MPI_INFO_NULL, &allRecvBuffer[rank]);
       if(resultAlloc != MPI_SUCCESS) {
-        clog(fatal) << "MPI failed to alloc memory on rank: " << my_color
-                    << " with error code: " << resultAlloc << std::endl;
+        clog_fatal("MPI failed to alloc memory on rank: " << my_color
+                   << " with error code: " << resultAlloc);
       }
 
       const int resultRecv = MPI_Irecv(allRecvBuffer[rank], bufSize, MPI_CHAR,
@@ -425,8 +427,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       const int resultAlloc =
         MPI_Alloc_mem(bufSize, MPI_INFO_NULL, &allSendBuffer[rank]);
       if(resultAlloc != MPI_SUCCESS) {
-        clog(fatal) << "MPI failed to alloc memory on rank: " << my_color
-                    << " with error code: " << resultAlloc << std::endl;
+        clog_fatal("MPI failed to alloc memory on rank: " << my_color
+                   << " with error code: " << resultAlloc);
       }
 
       size_t sendBufferOffset = 0;
@@ -456,9 +458,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     const int result = MPI_Waitall(
       allRecvRequests.size(), allRecvRequests.data(), MPI_STATUSES_IGNORE);
     if(result != MPI_SUCCESS) {
-      clog(fatal) << "ERROR: MPI_Waitall of rank " << my_color
-                  << " on recv requests failed with error code: " << result
-                  << std::endl;
+      clog_fatal("ERROR: MPI_Waitall of rank " << my_color
+                 << " on recv requests failed with error code: " << result);
     }
 
     // unpack data
@@ -505,6 +506,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     std::map<int, int> shared_sizes;
     std::map<int, int> ghost_sizes;
     auto & modified_fields = modified_sparse_fields;
+
+    if (modified_fields.size() == 0) return;
 
     // compute aggregated communication sizes
     for (auto & fi : modified_fields) {
@@ -595,9 +598,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       int err = MPI_Waitall(
         all_recv_req.size(), all_recv_req.data(), MPI_STATUSES_IGNORE);
       if(err != MPI_SUCCESS) {
-        clog(fatal) << "MPI_Waitall "
-                    << " on recv requests failed with error code: " << err
-                    << std::endl;
+        clog_fatal("MPI_Waitall "
+                   << " on recv requests failed with error code: " << err);
       }
     }
 
@@ -643,6 +645,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     std::map<int, int> shared_sizes;
     std::map<int, int> ghost_sizes;
     auto & modified_fields = resized_sparse_fields;
+
+    if (modified_fields.size() == 0) return;
 
     // compute aggregated communication sizes
     for (auto & fi : modified_fields) {
@@ -721,9 +725,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       int err = MPI_Waitall(
         all_recv_req.size(), all_recv_req.data(), MPI_STATUSES_IGNORE);
       if (err != MPI_SUCCESS) {
-        clog(fatal) << "MPI_Waitall "
-                    << " on recv requests failed with error code: " << err
-                    << std::endl;
+        clog_fatal("MPI_Waitall "
+                   << " on recv requests failed with error code: " << err);
       }
     }
 
