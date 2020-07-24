@@ -87,6 +87,9 @@ set(topo_SOURCES
 
 add_unit(test_interface
   SOURCES structured/test/test_interface.cc
+  INPUTS
+     structured/test/smesh_1d_0_blessed.txt
+     structured/test/smesh_1d_1_blessed.txt
   THREADS 2 
 )
 

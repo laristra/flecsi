@@ -1,0 +1,11 @@
+MESH DIM 1
+ENTITY OF DIM 1 COLORING
+   ----->Overlay:
+  ------->box_id 0 
+          dim 0 : 4, 9
+   ----->Strides:
+  ------->box_id 0 
+           dim 0 : 10
+   ----->Exclusive:
+  ------->box_id 0 
+          dim 0 : 6, 7
