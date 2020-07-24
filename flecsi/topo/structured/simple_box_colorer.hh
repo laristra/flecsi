@@ -18,33 +18,32 @@
 #include <type_traits>
 
 #include "flecsi/topo/structured/box_colorer.hh"
-#include "flecsi/topo/structured/coloring_types.hh"
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace structured_impl {
 
 //----------------------------------------------------------------------------//
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 template<size_t D>
-struct simple_box_colorer_t : public box_colorer_t<D> {
+struct simple_box_colorer : public box_colorer<D> {
   //! Default constructor
-  simple_box_colorer_t() {}
+  simple_box_colorer() {}
 
   //! Copy constructor (disabled)
-  simple_box_colorer_t(const simple_box_colorer_t &) = delete;
+  simple_box_colorer(const simple_box_colorer &) = delete;
 
   //! Assignment operator (disabled)
-  simple_box_colorer_t & operator=(const simple_box_colorer_t &) = delete;
+  simple_box_colorer & operator=(const simple_box_colorer &) = delete;
 
   //! Destructor
-  ~simple_box_colorer_t() {}
+  ~simple_box_colorer() {}
 
   // Simple partitioning algorithm for structured meshes. Partitions the highest
   // dimensional entities in the  mesh into as many blocks as number of input 
   // ranks.
-  box_coloring_t color(
+  box_coloring color(
       size_t grid_size[D],
       size_t nghost_layers,
       size_t ndomain_layers,
@@ -80,7 +79,7 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     get_indices(ncolors, rank, idx);
 
     // Step 1: Create global bounding boxes for domain including domain halo layers
-    box_t domain(D);
+    box_core domain(D);
     for (size_t i = 0; i < D; ++i) {
       domain.lowerbnd[i] = ndomain_layers;
       domain.upperbnd[i] = grid_size[i] + ndomain_layers - 1;
@@ -97,7 +96,7 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
 
     // Step 2: Create colored box type and set its primary box
     // info to the one created in step 1.
-    box_coloring_t colbox_cells;
+    box_coloring colbox_cells;
     colbox_cells.mesh_dim = D;
     colbox_cells.entity_dim = D;
     colbox_cells.primary_dim = D;
@@ -109,7 +108,6 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     colbox_cells.partition[0].ndomain_layers = ndomain_layers;
     colbox_cells.partition[0].thru_dim = thru_dim;
     
-    //colbox_cells.strides.push_back(strides);
     colbox_cells.strides[0] = strides;
 
     //Set the onbnd vector to false 
@@ -140,9 +138,9 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
 
 
   // Compute the aggregate information from a colored box. 
-  box_aggregate_info_t create_aggregate_info(box_coloring_t &cbox)
+  box_aggregate_info create_aggregate_info(box_coloring &cbox)
   {
-    box_aggregate_info_t colinfo; 
+    box_aggregate_info colinfo; 
  
     //#exclusive entities
     colinfo.exclusive = cbox.exclusive[0].domain.size();
@@ -220,7 +218,7 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
     {
       if (rbuf[i].size() > 0){
        for (size_t n = 0; n < cbox.num_boxes; ++n){
-          box_t ob(D); 
+          box_core ob(D); 
  
           for (size_t d = 0; d < D; d++){
            ob.lowerbnd[d]= rbuf[i][2*D*n+d];
@@ -236,8 +234,8 @@ struct simple_box_colorer_t : public box_colorer_t<D> {
 
   
 private:
-  auto create_primary_box(box_t & domain, size_t ncolors[D], size_t idx[D]) {
-    box_t pbox(D);
+  auto create_primary_box(box_core & domain, size_t ncolors[D], size_t idx[D]) {
+    box_core pbox(D);
     for (size_t i = 0; i < D; ++i) {
       size_t N = domain.upperbnd[i] - domain.lowerbnd[i] + 1;
       size_t ne = N / ncolors[i];
@@ -250,24 +248,23 @@ private:
         pbox.upperbnd[i] = domain.upperbnd[i];
     }
 
-    //pbox.strides = domain.strides; 
     return pbox;
   } // create_primary_box
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 1>::type create_exclusive_and_shared_boxes(
-      box_coloring_t & colbox,
+      box_coloring & colbox,
       size_t ncolors[D],
       size_t idx[D],
       size_t rank) {
-    box_t pbox = colbox.partition[0].box;
+    box_core pbox = colbox.partition[0].box;
     size_t hl = colbox.partition[0].nghost_layers;
     size_t TD = colbox.partition[0].thru_dim;
     std::cout<<"ncolors = "<<ncolors[0]<<std::endl;
 
     // Compute bounds for exclusive box
-    box_color_t ecbox(D);
-    box_t ebox = pbox;
+    box_color ecbox(D);
+    box_core ebox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.partition[0].onbnd[2*i])
@@ -281,7 +278,6 @@ private:
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
-    //size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
 
     size_t IM[D][4];
     for (size_t i = 0; i < D; ++i) {
@@ -291,8 +287,8 @@ private:
       IM[i][3] = pbox.upperbnd[i];
     }
 
-    box_t sbox(D);
-    box_color_t scbox(D);
+    box_core sbox(D);
+    box_color scbox(D);
     size_t ind[D], idx_new[D], cval;
 
     {
@@ -353,17 +349,17 @@ private:
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 2>::type create_exclusive_and_shared_boxes(
-      box_coloring_t & colbox,
+      box_coloring & colbox,
       size_t ncolors[D],
       size_t idx[D],
       size_t rank) {
-    box_t pbox = colbox.partition[0].box;
+    box_core pbox = colbox.partition[0].box;
     size_t hl = colbox.partition[0].nghost_layers;
     size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
-    box_color_t ecbox(D);
-    box_t ebox = pbox;
+    box_color ecbox(D);
+    box_core ebox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.partition[0].onbnd[2 * i])
@@ -377,7 +373,6 @@ private:
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
-    //size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
 
     size_t IM[D][4];
     for (size_t i = 0; i < D; ++i) {
@@ -387,8 +382,8 @@ private:
       IM[i][3] = pbox.upperbnd[i];
     }
 
-    box_t sbox(D);
-    box_color_t scbox(D);
+    box_core sbox(D);
+    box_color scbox(D);
     size_t ind[D], idx_new[D], cval;
 
     {
@@ -472,17 +467,17 @@ private:
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 3>::type create_exclusive_and_shared_boxes(
-      box_coloring_t & colbox,
+      box_coloring & colbox,
       size_t ncolors[D],
       size_t idx[D],
       size_t rank) {
-    box_t pbox = colbox.partition[0].box;
+    box_core pbox = colbox.partition[0].box;
     size_t hl = colbox.partition[0].nghost_layers;
     size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
-    box_color_t ecbox(D);
-    box_t ebox = pbox;
+    box_color ecbox(D);
+    box_core ebox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.partition[0].onbnd[2 * i])
@@ -506,8 +501,8 @@ private:
       IM[i][3] = pbox.upperbnd[i];
     }
 
-    box_t sbox(D);
-    box_color_t scbox(D);
+    box_core sbox(D);
+    box_color scbox(D);
     size_t ind[D], idx_new[D], cval;
 
     {
@@ -691,17 +686,16 @@ private:
   
   template<size_t D_ = D>
   typename std::enable_if<D_ == 1>::type create_ghost_boxes(
-      box_coloring_t & colbox,
+      box_coloring & colbox,
       size_t ncolors[D],
       size_t idx[D]) {
-    box_t pbox = colbox.partition[0].box;
+    box_core pbox = colbox.partition[0].box;
     size_t hl = colbox.partition[0].nghost_layers;
-    //size_t TD = colbox.partition[0].thru_dim;
     int TD = colbox.partition[0].thru_dim;
 
     std::cout<<"ncolors = "<<ncolors[0]<<std::endl;
     // Compute bounds for exclusive box
-    box_t gbox = pbox;
+    box_core gbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.partition[0].onbnd[2 * i])
@@ -712,8 +706,6 @@ private:
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
-    //size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
-
     size_t IM[D][4];
     for (size_t i = 0; i < D; ++i) {
       IM[i][0] = gbox.lowerbnd[i];
@@ -722,8 +714,8 @@ private:
       IM[i][3] = gbox.upperbnd[i];
     }
 
-    box_t ghbox(D);
-    box_color_t gcbox(D);
+    box_core ghbox(D);
+    box_color gcbox(D);
     size_t idx_new[D], cval;
 
     {
@@ -753,16 +745,15 @@ private:
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 2>::type create_ghost_boxes(
-      box_coloring_t & colbox,
+      box_coloring & colbox,
       size_t ncolors[D],
       size_t idx[D]) {
-    box_t pbox = colbox.partition[0].box;
+    box_core pbox = colbox.partition[0].box;
     size_t hl = colbox.partition[0].nghost_layers;
-    //size_t TD = colbox.partition[0].thru_dim;
     int TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
-    box_t gbox = pbox;
+    box_core gbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.partition[0].onbnd[2 * i])
@@ -773,8 +764,6 @@ private:
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
-    //size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
-
     size_t IM[D][4];
     for (size_t i = 0; i < D; ++i) {
       IM[i][0] = gbox.lowerbnd[i];
@@ -783,8 +772,8 @@ private:
       IM[i][3] = gbox.upperbnd[i];
     }
 
-    box_t ghbox(D);
-    box_color_t gcbox(D);
+    box_core ghbox(D);
+    box_color gcbox(D);
     size_t idx_new[D], cval;
 
     {
@@ -820,15 +809,15 @@ private:
 
   template<size_t D_ = D>
   typename std::enable_if<D_ == 3>::type create_ghost_boxes(
-      box_coloring_t & colbox,
+      box_coloring & colbox,
       size_t ncolors[D],
       size_t idx[D]) {
-    box_t pbox = colbox.partition[0].box;
+    box_core pbox = colbox.partition[0].box;
     size_t hl = colbox.partition[0].nghost_layers;
     int TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
-    box_t gbox = pbox;
+    box_core gbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (!colbox.partition[0].onbnd[2 * i])
@@ -839,8 +828,6 @@ private:
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
-    //size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
-
     size_t IM[D][4];
     for (size_t i = 0; i < D; ++i) {
       IM[i][0] = gbox.lowerbnd[i];
@@ -849,8 +836,8 @@ private:
       IM[i][3] = gbox.upperbnd[i];
     }
 
-    box_t ghbox(D);
-    box_color_t gcbox(D);
+    box_core ghbox(D);
+    box_color gcbox(D);
     size_t idx_new[D], cval;
 
     {
@@ -896,12 +883,12 @@ private:
     }
   } // create_ghost_boxes
 
-  void create_domain_halo_boxes(box_coloring_t & colbox) {
-    box_t pbox = colbox.partition[0].box;
+  void create_domain_halo_boxes(box_coloring & colbox) {
+    box_core pbox = colbox.partition[0].box;
     size_t hl = colbox.partition[0].ndomain_layers;
 
     // Compute bounds for domain with halo
-    box_t dbox = pbox;
+    box_core dbox = pbox;
 
     for (size_t i = 0; i < D; ++i) {
       if (colbox.partition[0].onbnd[2 * i])
@@ -912,7 +899,6 @@ private:
 
     size_t il[3] = {0, 0, 1};
     size_t iu[3] = {1, 0, 0};
-
     size_t IM[D][4];
     for (size_t i = 0; i < D; ++i) {
       IM[i][0] = dbox.lowerbnd[i];
@@ -921,7 +907,7 @@ private:
       IM[i][3] = dbox.upperbnd[i];
     }
 
-    box_color_t dhbox(D);
+    box_color dhbox(D);
 
     if (D == 1) {
         for (size_t i = 0; i < 3; ++i) {
@@ -967,11 +953,11 @@ private:
     }
   } // create_domain_halo_boxes
 
-  void compute_overlaying_bounding_box(box_coloring_t& colbox)
+  void compute_overlaying_bounding_box(box_coloring& colbox)
   {
     for (size_t n = 0; n < colbox.num_boxes; n++){
    
-      box_t obb(D); 
+      box_core obb(D); 
       std::vector<size_t> lbnds[D]; 
       std::vector<size_t> ubnds[D]; 
 
@@ -1021,10 +1007,10 @@ private:
     }
   } // get_indices
 
-}; // class simple_box_colorer_t
+}; // class simple_box_colorer
 
 } // namespace structured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi
 #endif // simple_box_colorer_h
 

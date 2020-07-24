@@ -30,8 +30,7 @@ namespace topo {
  */
 
 struct structured_base {
-  //using coloring = size_t;
-  using coloring = flecsi::topology::structured_impl::box_coloring_t; 
+  using coloring = flecsi::topo::structured_impl::box_coloring; 
 }; // structured_base
 
 } // namespace topo

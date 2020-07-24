@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef dependent_entities_colorer_h
-#define dependent_entities_colorer_h
+#ifndef dependent_entities_colorer_hh
+#define dependent_entities_colorer_hh
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -21,7 +21,7 @@
 #include "flecsi/topo/structured/coloring_types.hh"
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace structured_impl {
 
 struct dependent_entities_colorer {
@@ -40,7 +40,7 @@ struct dependent_entities_colorer {
 
  // Coloring algorithm for coloring the intermediate entities
  // from an input partition of the cells in the mesh 
- auto color(box_coloring_t &colored_cells)
+ auto color(box_coloring &colored_cells)
  {
     // Tag the boundaries of the colored cells to decipher which
     // intermediate entities are exclusive, shared, ghost and domain_halo. 
@@ -50,7 +50,7 @@ struct dependent_entities_colorer {
     //tag info from the cell boundaries to the box of a particular 
     //intermediate entity
   
-    std::vector<box_coloring_t> colored_depents; 
+    std::vector<box_coloring> colored_depents; 
     color_dependent_entities_(colored_cells, colored_depents); 
   
      return colored_depents; 
@@ -58,7 +58,7 @@ struct dependent_entities_colorer {
 
 
 private: 
-  void tag_box_boundary_entities(box_coloring_t& colored_cells)
+  void tag_box_boundary_entities(box_coloring& colored_cells)
   {
     std::vector<int> box_ids, box_bids; 
     auto& ebox = colored_cells.exclusive[0]; 
@@ -151,9 +151,6 @@ private:
     size_t dim = mbox.domain.dim;   
     
     auto bid2dim_map = bid2dim(dim); 
-    //auto d = bid2dim_map[bid];
-
-    //auto sites = dim2bid(dim, d);
     size_t nbids = pow(3,dim); 
 
     for (size_t b = 0; b < in_boxes.size(); b++) {
@@ -213,8 +210,8 @@ private:
   } //find_incident_boxes 
 
   void color_dependent_entities_(
-       box_coloring_t& colored_cells, 
-       std::vector<box_coloring_t>& col_depents)
+       box_coloring& colored_cells, 
+       std::vector<box_coloring>& col_depents)
   {
     int dim = colored_cells.mesh_dim;
     col_depents.resize(dim); 
@@ -335,13 +332,9 @@ private:
     } //edim        
  
   } //color_dependent_entities_
-}; // class depent_colorer
+}; // class dependent_entities_colorer
 } // namespace structured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi
-#endif // simple_box_colorer_h
+#endif //dependent_entities_colorer_hh
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

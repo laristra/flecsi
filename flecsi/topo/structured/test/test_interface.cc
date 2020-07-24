@@ -10,7 +10,7 @@
 
 using namespace flecsi;
 using namespace flecsi::topo;
-using namespace flecsi::topology::structured_impl; 
+using namespace flecsi::topo::structured_impl; 
 
 struct test_mesh : topo::specialization<structured, test_mesh> {
   static constexpr size_t num_dimensions = 1;
@@ -22,14 +22,12 @@ struct test_mesh : topo::specialization<structured, test_mesh> {
       size_t thru_dim,
       size_t ncolors[num_dimensions]) {
 
-     // Create a simple partition of the mesh
-     box_coloring_t colored_cells;
-
-     // Create a colorer instance to generate the coloring.
-     simple_box_colorer_t<num_dimensions> colorer;
+     // Create a colorer instance to generate the coloring/partition
+     // of the mesh.
+     simple_box_colorer<num_dimensions> colorer;
 
      //Create the coloring info for cells
-     colored_cells = colorer.color(grid_size, nghost_layers, ndomain_layers, thru_dim, ncolors);
+     auto colored_cells = colorer.color(grid_size, nghost_layers, ndomain_layers, thru_dim, ncolors);
     
      return colored_cells;
   } // color
@@ -77,10 +75,6 @@ int print()
        UNIT_CAPTURE() <<"          dim "<<i<<" : "<<de_ebox[n].domain.lowerbnd[i]
                 <<", "<<de_ebox[n].domain.upperbnd[i]<<std::endl;
    }
-   
-   //int owner = colored_ents.exclusive[0].colors[0]; 
-   //std::string fname = "smesh_"+ std::to_string(dim) + "d_" + std::to_string(owner) + ".txt"; 
-   //UNIT_WRITE(fname); 
 
   }; 
 }
@@ -97,7 +91,6 @@ topo_driver() {
 
     coloring.allocate(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
     
-    //std::cout<<"here"<<std::endl;
     tmesh.allocate(coloring.get());
     EXPECT_EQ(test<print>(), 0);
 

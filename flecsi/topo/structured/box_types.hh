@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef box_types_h
-#define box_types_h
+#ifndef box_types_hh
+#define box_types_hh
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -19,21 +19,21 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology { 
+namespace topo { 
 namespace structured_impl {
 
 /*!
    Type for specifying bounds of a box
  */
 
-struct box_t {
+struct box_core {
   size_t dim; 
   size_t bsize = 0;  
   std::vector<size_t> lowerbnd;
   std::vector<size_t> upperbnd;
  
-  box_t(){};   
-  box_t(size_t in_dim)
+  box_core(){};   
+  box_core(size_t in_dim)
   {
     dim = in_dim; 
     lowerbnd.resize(dim,0);
@@ -74,11 +74,11 @@ struct box_t {
     lowerbnd.resize(dim,0);
     upperbnd.resize(dim,0);
   }
-}; // class box_t
+}; // class box_core
 
 /*!
    Type for a colored box:
-   domain: a box_t type specifying bounds 
+   domain: a box_core type specifying bounds 
    colors: used to represent ranks this is communicated with
    tag: tag boundaries of the box as false if it doesn't satisfy 
         the criterion this box is supposed to satisfy. For example,
@@ -86,36 +86,36 @@ struct box_t {
         the boundary entities which are not exclusive are tagged 
         as false. 
  */
-struct box_color_t {
+struct box_color {
 
-  box_color_t () {}; 
-  box_color_t(int dim) 
+  box_color () {}; 
+  box_color(int dim) 
   {  
     domain.resize(dim);
     int nbid = pow(3, dim); 
     tag.resize(nbid,true);  
   }
 
-  box_t domain;
+  box_core domain;
   std::vector<size_t> colors;
   std::vector<bool> tag;
-}; // class box_color_t
+}; // class box_color
 
 /*!
    Type to specify primary box info
  */
-struct box_info_t {
-  box_t box;
+struct box_info {
+  box_core box;
   size_t nghost_layers;
   size_t ndomain_layers;
   size_t thru_dim;
   std::vector<bool> onbnd; 
-}; // class box_info_t
+}; // class box_info
 
 /*!
    Type for collecting aggregate of various colored boxes
  */
-struct box_coloring_t  
+struct box_coloring  
 {
   // The primary flag is true if the partition is on the index-space 
   // of the primary entity. Ex. the cells or the vertices of the mesh.
@@ -125,22 +125,22 @@ struct box_coloring_t
   size_t num_boxes = 0; 
  
   //! The box info for partitioned box
-  std::vector<box_info_t> partition;
+  std::vector<box_info> partition;
 
   //! The exclusive box owned by current rank
-  std::vector<box_color_t> exclusive;
+  std::vector<box_color> exclusive;
 
   //! The aggregate of shared boxes
-  std::vector<std::vector<box_color_t>> shared;
+  std::vector<std::vector<box_color>> shared;
 
   //! The aggregate of ghost boxes
-  std::vector<std::vector<box_color_t>> ghost;
+  std::vector<std::vector<box_color>> ghost;
 
   //! The aggregate of domain-halo boxes
-  std::vector<std::vector<box_color_t>> domain_halo;
+  std::vector<std::vector<box_color>> domain_halo;
   
   //! The bounding box covering exclusive+shared+ghost+domain-halo boxes
-  std::vector<box_t> overlay;
+  std::vector<box_core> overlay;
   std::vector<std::vector<size_t>> strides;
 
   //! Resize 
@@ -155,9 +155,9 @@ struct box_coloring_t
     strides.resize(num_boxes);  
   } //resize
 
-}; // class box_coloring_t
+}; // class box_coloring
 
-struct box_aggregate_info_t
+struct box_aggregate_info
 {
   //! The number of exclusive indices.
   size_t exclusive;
@@ -175,17 +175,12 @@ struct box_aggregate_info_t
   std::set<size_t> ghost_owners;
 
   //! The overlay boxes from ghost owners
-  std::unordered_map<size_t, std::vector<box_t>> ghost_overlays; 
+  std::unordered_map<size_t, std::vector<box_core>> ghost_overlays; 
 
-}; // class box_aggregate_info_t
+}; // class box_aggregate_info
 
 } // namespace structured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi
 
-#endif // box_types_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+#endif // box_types_hh

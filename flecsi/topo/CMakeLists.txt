@@ -40,15 +40,8 @@ set(topo_HEADERS
   structured/box_utils.hh
   structured/dependent_entities_colorer.hh
   structured/interface.hh
-  structured/mesh_utils.hh
-  structured/partition.hh
   structured/simple_box_colorer.hh
-  structured/structured_entity_types.hh
-  structured/structured_index_space.hh
-  structured/structured_topology.hh
-  structured/structured_topology_storage.hh
   structured/types.hh
-  structured/unit_box.hh
   unstructured/closure_utils.hh
   unstructured/coloring.hh
   unstructured/coloring_types.hh
@@ -91,11 +84,6 @@ set(topo_SOURCES
 #------------------------------------------------------------------------------#
 
 #---------------------------   Structured Mesh  -----------------------------#
-
-add_unit(test_topology
-  SOURCES structured/test/test_topology.cc
-  THREADS 2 
-)
 
 add_unit(test_interface
   SOURCES structured/test/test_interface.cc

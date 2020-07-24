@@ -17,11 +17,11 @@
 #include <type_traits>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace structured_impl {
 
- void print_boxes(box_coloring_t& colored_cells,
-           std::vector<box_coloring_t> colored_depents)
+ void print_boxes(const box_coloring& colored_cells,
+           const std::vector<box_coloring>& colored_depents)
  {
     int dim = colored_cells.exclusive[0].domain.dim;
     int nbids = pow(3, dim);
@@ -330,7 +330,6 @@ namespace structured_impl {
         break; 
       case 2: 
         if (edim == 0) {
-          //map = std::vector<std::vector<int>>{{1,1,0,1,2,3,5,6,7,8}};
           map = std::vector<std::vector<int>>{{1,1,0,2,6,8,1,3,5,7}};
         }
         else if (edim == 1) {
@@ -339,15 +338,11 @@ namespace structured_impl {
         break; 
       case 3: 
         if (edim == 0) {
-          //map = std::vector<std::vector<int>>{{1,1,1,0,1,2,3,4,5,6,7,
-          //                                      8,9,10,11,12,14,15,16,17,
-          //                                      18,19,20,21,22,23,24,25,26}};
           map = std::vector<std::vector<int>>{{1,1,1,0,2,6,8,18,20,24,26,
                                                1,3,5,7,9,11,15,17,19,21,23,25,
                                                4,10,12,14,16,22}};
         }
         else if (edim == 1) {
-          //map =  std::vector<std::vector<int>>{{1,1,0,9,10,11,12,14,15,16,17},                                                                                     {0,1,1,1,4,7,10,16,19,22,25},                                                                                       {1,0,1,3,4,5,12,14,21,22,23}};
           map =  std::vector<std::vector<int>>{{1,1,0,9,11,15,17,10,12,14,16},                                                                                     {0,1,1,1,7,19,25,4,10,16,22},                                                                                       {1,0,1,3,5,21,23,4,12,14,22}};
         }
         else if (edim == 2) {
@@ -361,11 +356,7 @@ namespace structured_impl {
  }//dim2bounds
 
 } // namespace structured_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi
-#endif // simple_box_colorer_h
+#endif // box_utils_hh
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
