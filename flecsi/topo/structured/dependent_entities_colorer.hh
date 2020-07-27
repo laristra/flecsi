@@ -77,14 +77,14 @@ private:
     }
 
     // shared
-    for(size_t s = 0; s < shboxes.size(); ++s) {
+    for(std::size_t s = 0; s < shboxes.size(); ++s) {
       for(int b = 0; b < nbids; ++b) {
         std::set<int> clrs;
         clrs.insert(owner_rank);
         // collect all the ghost ranks incident on the bid of this shared
         // box and set the tag to false if the owner rank is not the lowest
         find_incident_boxes(b, shboxes[s], ghboxes, box_ids);
-        for(size_t i = 0; i < box_ids.size(); ++i) {
+        for(std::size_t i = 0; i < box_ids.size(); ++i) {
           clrs.insert(ghboxes[box_ids[i]].colors[0]);
         }
 
@@ -94,13 +94,13 @@ private:
     }
 
     // ghost
-    for(size_t g = 0; g < ghboxes.size(); ++g) {
+    for(std::size_t g = 0; g < ghboxes.size(); ++g) {
       int nsh = shboxes.size();
       int ghost_rank = ghboxes[g].colors[0];
 
       // search over all shared and ghost boxes
       std::vector<box_color_t> search_boxes = shboxes;
-      for(size_t k = 0; k < ghboxes.size(); ++k) {
+      for(std::size_t k = 0; k < ghboxes.size(); ++k) {
         if(k != g)
           search_boxes.push_back(ghboxes[k]);
       }
@@ -112,7 +112,7 @@ private:
         // collect all the ranks incident on the bid of this ghost
         // box and set the tag is the owner rank is not the lowest
         find_incident_boxes(b, ghboxes[g], search_boxes, box_ids);
-        for(size_t i = 0; i < box_ids.size(); ++i) {
+        for(std::size_t i = 0; i < box_ids.size(); ++i) {
           auto gclrs = search_boxes[box_ids[i]].colors;
           if(box_ids[i] < nsh) {
             clrs.insert(owner_rank);
@@ -127,7 +127,7 @@ private:
       }
     }
     // domain halo
-    for(size_t d = 0; d < dhboxes.size(); ++d) {
+    for(std::size_t d = 0; d < dhboxes.size(); ++d) {
       // search over all exclusive, shared and ghost boxes
       std::vector<box_color_t> search_boxes{ebox};
       search_boxes.insert(search_boxes.end(), shboxes.begin(), shboxes.end());
@@ -141,21 +141,21 @@ private:
     }
   } // tag_box_boundary_entities
 
-  void find_incident_boxes(size_t bid,
+  void find_incident_boxes(std::size_t bid,
     box_color_t & mbox,
     std::vector<box_color_t> & in_boxes,
     std::vector<int> & inbox_ids) {
     inbox_ids.clear();
-    size_t dim = mbox.domain.dim;
+    std::size_t dim = mbox.domain.dim;
 
     auto bid2dim_map = bid2dim(dim);
-    size_t nbids = pow(3, dim);
+    std::size_t nbids = pow(3, dim);
 
-    for(size_t b = 0; b < in_boxes.size(); b++) {
-      for(size_t s = 0; s < nbids; s++) {
+    for(std::size_t b = 0; b < in_boxes.size(); b++) {
+      for(std::size_t s = 0; s < nbids; s++) {
         bool incident = true;
         // check incidence
-        for(size_t d = 0; d < dim; d++) {
+        for(std::size_t d = 0; d < dim; d++) {
 
           auto bid2dir_map = bid2dir(dim, d);
           auto mval = bid2dir_map[bid];
@@ -242,7 +242,7 @@ private:
           box.domain.upperbnd[d] = ebox.domain.upperbnd[d] + map[b][d];
         }
         // set tags
-        for(size_t i = dim; i < map[b].size(); ++i) {
+        for(std::size_t i = dim; i < map[b].size(); ++i) {
           auto bid = map[b][i];
           box.tag[bid] = ebox.tag[bid];
         }
@@ -252,7 +252,7 @@ private:
       }
 
       // shared
-      for(size_t s = 0; s < shboxes.size(); ++s) {
+      for(std::size_t s = 0; s < shboxes.size(); ++s) {
         for(int b = 0; b < nboxes; ++b) {
           // set bounds
           box_color_t box(dim);
@@ -261,7 +261,7 @@ private:
             box.domain.upperbnd[d] = shboxes[s].domain.upperbnd[d] + map[b][d];
           }
           // set tags
-          for(size_t i = dim; i < map[b].size(); ++i) {
+          for(std::size_t i = dim; i < map[b].size(); ++i) {
             auto bid = map[b][i];
             box.tag[bid] = shboxes[s].tag[bid];
           }
@@ -272,7 +272,7 @@ private:
       }
 
       // ghost
-      for(size_t g = 0; g < ghboxes.size(); ++g) {
+      for(std::size_t g = 0; g < ghboxes.size(); ++g) {
         for(int b = 0; b < nboxes; ++b) {
           // set bounds
           box_color_t box(dim);
@@ -281,7 +281,7 @@ private:
             box.domain.upperbnd[d] = ghboxes[g].domain.upperbnd[d] + map[b][d];
           }
           // set tags
-          for(size_t i = dim; i < map[b].size(); ++i) {
+          for(std::size_t i = dim; i < map[b].size(); ++i) {
             auto bid = map[b][i];
             box.tag[bid] = ghboxes[g].tag[bid];
           }
@@ -292,7 +292,7 @@ private:
       }
 
       // domain halo
-      for(size_t dh = 0; dh < dhboxes.size(); ++dh) {
+      for(std::size_t dh = 0; dh < dhboxes.size(); ++dh) {
         for(int b = 0; b < nboxes; ++b) {
           // set bounds
           box_color_t box(dim);
@@ -301,7 +301,7 @@ private:
             box.domain.upperbnd[d] = dhboxes[dh].domain.upperbnd[d] + map[b][d];
           }
           // set tags
-          for(size_t i = dim; i < map[b].size(); ++i) {
+          for(std::size_t i = dim; i < map[b].size(); ++i) {
             auto bid = map[b][i];
             box.tag[bid] = dhboxes[dh].tag[bid];
           }
@@ -320,7 +320,7 @@ private:
           box.upperbnd[d] = obox.upperbnd[d] + map[b][d];
         }
 
-        std::vector<size_t> str(dim);
+        std::vector<std::size_t> str(dim);
         for(int d = 0; d < dim; d++) {
           str[d] = strides[d] + map[b][d];
         }

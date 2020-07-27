@@ -26,7 +26,7 @@ namespace structured_impl {
 //----------------------------------------------------------------------------//
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
-template<size_t D>
+template<std::size_t D>
 struct simple_box_colorer : public box_colorer<D> {
   //! Default constructor
   simple_box_colorer() {}
@@ -43,50 +43,51 @@ struct simple_box_colorer : public box_colorer<D> {
   // Simple partitioning algorithm for structured meshes. Partitions the highest
   // dimensional entities in the  mesh into as many blocks as number of input
   // ranks.
-  box_coloring color(size_t grid_size[D],
-    size_t nghost_layers,
-    size_t ndomain_layers,
-    size_t thru_dim,
-    size_t ncolors[D]) override {
+  box_coloring color(std::size_t grid_size[D],
+    std::size_t nghost_layers,
+    std::size_t ndomain_layers,
+    std::size_t thru_dim,
+    std::size_t ncolors[D]) override {
     int size;
     int rank;
 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    // Assert that the number of partitions is equal to number of ranks
+    // Check that the number of partitions is equal to number of ranks
     int count = 1;
-    for(size_t nc = 0; nc < D; ++nc)
-      count = static_cast<int>(count * ncolors[nc]);
+    for(std::size_t nc = 0; nc < D; ++nc)
+      count *= ncolors[nc];
 
-    // Dont assert, abort.  Because assertions are removed with -DNDEBUG, and
-    // this does not provided any performance benefit.
-    // Note: could use clog_err, but its behaviour is not as expected (i.e. does
-    // not always show output).
+    // Abort if number of partitions is not equal to number of ranks or
+    // through dimension is more than mesh dimension. 
+    std::string err_msg; 
     if(count != size) {
-      std::cerr << "Number of processors (" << size << ") must equal the"
-                << " total number of domains (" << count << ")" << std::endl;
+      err_msg = "Number of processors (" + std::to_string(size) + ") must equal"
+                 " the total number of parts/domains (" + std::to_string(count) + ")"; 
+      flog_fatal(err_msg.c_str());   
     }
     if(thru_dim >= D) {
-      std::cerr << "Through dimension (" << thru_dim << ") must be less than"
-                << " total number of dimensions (" << D << ")" << std::endl;
+      err_msg = "Through dimension (" + std::to_string(thru_dim) + ") must be less than"
+                 " the total number of dimensions (" + std::to_string(D) + ")"; 
+      flog_fatal(err_msg.c_str());   
     }
 
     // Obtain indices of the current rank
-    size_t idx[D];
+    std::size_t idx[D];
     get_indices(ncolors, rank, idx);
 
     // Step 1: Create global bounding boxes for domain including domain halo
     // layers
     box_core domain(D);
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       domain.lowerbnd[i] = ndomain_layers;
       domain.upperbnd[i] = grid_size[i] + ndomain_layers - 1;
     }
 
     // Compute the strides of the global mesh
-    std::vector<size_t> strides(D);
-    for(size_t i = 0; i < D; ++i) {
+    std::vector<std::size_t> strides(D);
+    for(std::size_t i = 0; i < D; ++i) {
       strides[i] = grid_size[i] + 2 * ndomain_layers;
     }
 
@@ -110,10 +111,10 @@ struct simple_box_colorer : public box_colorer<D> {
     colbox_cells.strides[0] = strides;
 
     // Set the onbnd vector to false
-    for(size_t i = 0; i < 2 * D; ++i)
+    for(std::size_t i = 0; i < 2 * D; ++i)
       colbox_cells.partition[0].onbnd.push_back(false);
 
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       if(pbox.lowerbnd[i] == domain.lowerbnd[i])
         colbox_cells.partition[0].onbnd[2 * i] = true;
       if(pbox.upperbnd[i] == domain.upperbnd[i])
@@ -144,33 +145,33 @@ struct simple_box_colorer : public box_colorer<D> {
 
     //#shared entities
     colinfo.shared = 0;
-    std::set<size_t> shared_ranks;
-    for(size_t i = 0; i < cbox.shared[0].size(); i++) {
+    std::set<std::size_t> shared_ranks;
+    for(std::size_t i = 0; i < cbox.shared[0].size(); i++) {
       colinfo.shared += cbox.shared[0][i].domain.size();
-      for(size_t j = 0; j < cbox.shared[0][i].colors.size(); j++)
+      for(std::size_t j = 0; j < cbox.shared[0][i].colors.size(); j++)
         shared_ranks.insert(cbox.shared[0][i].colors[j]);
     }
     colinfo.shared_users = shared_ranks;
 
     //#ghost entities
     colinfo.ghost = 0;
-    std::set<size_t> ghost_ranks;
-    for(size_t i = 0; i < cbox.ghost[0].size(); i++) {
+    std::set<std::size_t> ghost_ranks;
+    for(std::size_t i = 0; i < cbox.ghost[0].size(); i++) {
       colinfo.ghost += cbox.ghost[0][i].domain.size();
-      for(size_t j = 0; j < cbox.ghost[0][i].colors.size(); j++)
+      for(std::size_t j = 0; j < cbox.ghost[0][i].colors.size(); j++)
         ghost_ranks.insert(cbox.ghost[0][i].colors[j]);
     }
     colinfo.ghost_owners = ghost_ranks;
 
     // Send the overlay boxes on the current rank to all the shared ranks
-    size_t sz = 2 * D * cbox.num_boxes;
+    std::size_t sz = 2 * D * cbox.num_boxes;
     int sbuf[sz], count = 0;
-    for(size_t i = 0; i < cbox.num_boxes; i++) {
-      for(size_t d = 0; d < D; d++) {
+    for(std::size_t i = 0; i < cbox.num_boxes; i++) {
+      for(std::size_t d = 0; d < D; d++) {
         sbuf[count] = cbox.overlay[i].lowerbnd[d];
         count += 1;
       }
-      for(size_t d = 0; d < D; d++) {
+      for(std::size_t d = 0; d < D; d++) {
         sbuf[count] = cbox.overlay[i].upperbnd[d];
         count += 1;
       }
@@ -184,7 +185,7 @@ struct simple_box_colorer : public box_colorer<D> {
     std::vector<int> rbuf[size];
 
     std::vector<MPI_Request> requests;
-    for(size_t i = 0; i < size; i++) {
+    for(std::size_t i = 0; i < size; i++) {
       if(i != rank) {
         MPI_Request request;
         MPI_Irecv(
@@ -194,7 +195,7 @@ struct simple_box_colorer : public box_colorer<D> {
     }
 
     // Post isends
-    std::set<size_t>::iterator it;
+    std::set<std::size_t>::iterator it;
     for(it = shared_ranks.begin(); it != shared_ranks.end(); ++it) {
       MPI_Request request;
       MPI_Isend((void *)&(sbuf), sz, MPI_INT, *it, 0, MPI_COMM_WORLD, &request);
@@ -207,12 +208,12 @@ struct simple_box_colorer : public box_colorer<D> {
     }
 
     // Add received data to map
-    for(size_t i = 0; i < size; ++i) {
+    for(std::size_t i = 0; i < size; ++i) {
       if(rbuf[i].size() > 0) {
-        for(size_t n = 0; n < cbox.num_boxes; ++n) {
+        for(std::size_t n = 0; n < cbox.num_boxes; ++n) {
           box_core ob(D);
 
-          for(size_t d = 0; d < D; d++) {
+          for(std::size_t d = 0; d < D; d++) {
             ob.lowerbnd[d] = rbuf[i][2 * D * n + d];
             ob.upperbnd[d] = rbuf[i][2 * D * n + d + D];
           }
@@ -225,11 +226,11 @@ struct simple_box_colorer : public box_colorer<D> {
   } // create_aggregate_color_info
 
 private:
-  auto create_primary_box(box_core & domain, size_t ncolors[D], size_t idx[D]) {
+  auto create_primary_box(box_core & domain, std::size_t ncolors[D], size_t idx[D]) {
     box_core pbox(D);
-    for(size_t i = 0; i < D; ++i) {
-      size_t N = domain.upperbnd[i] - domain.lowerbnd[i] + 1;
-      size_t ne = N / ncolors[i];
+    for(std::size_t i = 0; i < D; ++i) {
+      std::size_t N = domain.upperbnd[i] - domain.lowerbnd[i] + 1;
+      std::size_t ne = N / ncolors[i];
 
       pbox.lowerbnd[i] = domain.lowerbnd[i] + ne * idx[i];
 
@@ -242,22 +243,22 @@ private:
     return pbox;
   } // create_primary_box
 
-  template<size_t D_ = D>
-  typename std::enable_if<D_ == 1>::type create_exclusive_and_shared_boxes(
+  template<std::size_t D_ = D>
+  typename std::enable_if_t<D_ == 1> create_exclusive_and_shared_boxes(
     box_coloring & colbox,
-    size_t ncolors[D],
-    size_t idx[D],
-    size_t rank) {
+    std::size_t ncolors[D],
+    std::size_t idx[D],
+    std::size_t rank) {
     box_core pbox = colbox.partition[0].box;
-    size_t hl = colbox.partition[0].nghost_layers;
-    size_t TD = colbox.partition[0].thru_dim;
+    std::size_t hl = colbox.partition[0].nghost_layers;
+    std::size_t TD = colbox.partition[0].thru_dim;
     std::cout << "ncolors = " << ncolors[0] << std::endl;
 
     // Compute bounds for exclusive box
     box_color ecbox(D);
     box_core ebox = pbox;
 
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       if(!colbox.partition[0].onbnd[2 * i])
         ebox.lowerbnd[i] += hl;
       if(!colbox.partition[0].onbnd[2 * i + 1])
@@ -267,11 +268,11 @@ private:
     ecbox.colors.emplace_back(rank);
     colbox.exclusive[0] = ecbox;
 
-    size_t il[3] = {0, 0, 1};
-    size_t iu[3] = {1, 0, 0};
+    std::size_t il[3] = {0, 0, 1};
+    std::size_t iu[3] = {1, 0, 0};
 
-    size_t IM[D][4];
-    for(size_t i = 0; i < D; ++i) {
+    std::size_t IM[D][4];
+    for(std::size_t i = 0; i < D; ++i) {
       IM[i][0] = pbox.lowerbnd[i];
       IM[i][1] = ebox.lowerbnd[i];
       IM[i][2] = ebox.upperbnd[i];
@@ -280,10 +281,10 @@ private:
 
     box_core sbox(D);
     box_color scbox(D);
-    size_t ind[D], idx_new[D], cval;
+    std::size_t ind[D], idx_new[D], cval;
 
     {
-      for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t i = 0; i < 3; ++i) {
         bool flag;
         if(i == 1)
           flag = false;
@@ -304,7 +305,7 @@ private:
           ind[0] = i;
 
           // Add edge shared ranks
-          for(size_t d = 0; d < D; ++d) {
+          for(std::size_t d = 0; d < D; ++d) {
             idx_new[0] = idx[0];
             if(ind[d] == 0) {
               idx_new[d] -= 1;
@@ -339,21 +340,21 @@ private:
     }
   } // create_exclusive_and_shared_boxes
 
-  template<size_t D_ = D>
-  typename std::enable_if<D_ == 2>::type create_exclusive_and_shared_boxes(
+  template<std::size_t D_ = D>
+  typename std::enable_if_t<D_ == 2> create_exclusive_and_shared_boxes(
     box_coloring & colbox,
-    size_t ncolors[D],
-    size_t idx[D],
-    size_t rank) {
+    std::size_t ncolors[D],
+    std::size_t idx[D],
+    std::size_t rank) {
     box_core pbox = colbox.partition[0].box;
-    size_t hl = colbox.partition[0].nghost_layers;
-    size_t TD = colbox.partition[0].thru_dim;
+    std::size_t hl = colbox.partition[0].nghost_layers;
+    std::size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_color ecbox(D);
     box_core ebox = pbox;
 
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       if(!colbox.partition[0].onbnd[2 * i])
         ebox.lowerbnd[i] += hl;
       if(!colbox.partition[0].onbnd[2 * i + 1])
@@ -363,11 +364,11 @@ private:
     ecbox.colors.emplace_back(rank);
     colbox.exclusive[0] = ecbox;
 
-    size_t il[3] = {0, 0, 1};
-    size_t iu[3] = {1, 0, 0};
+    std::size_t il[3] = {0, 0, 1};
+    std::size_t iu[3] = {1, 0, 0};
 
-    size_t IM[D][4];
-    for(size_t i = 0; i < D; ++i) {
+    std::size_t IM[D][4];
+    for(std::size_t i = 0; i < D; ++i) {
       IM[i][0] = pbox.lowerbnd[i];
       IM[i][1] = ebox.lowerbnd[i];
       IM[i][2] = ebox.upperbnd[i];
@@ -376,11 +377,11 @@ private:
 
     box_core sbox(D);
     box_color scbox(D);
-    size_t ind[D], idx_new[D], cval;
+    std::size_t ind[D], idx_new[D], cval;
 
     {
-      for(size_t j = 0; j < 3; ++j)
-        for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t j = 0; j < 3; ++j)
+        for(std::size_t i = 0; i < 3; ++i) {
           bool flag;
           if((i == 1) && (j == 1))
             flag = false;
@@ -408,7 +409,7 @@ private:
             ind[1] = j;
 
             // Add edge shared ranks
-            for(size_t d = 0; d < D; ++d) {
+            for(std::size_t d = 0; d < D; ++d) {
               idx_new[0] = idx[0];
               idx_new[1] = idx[1];
               if(ind[d] == 0) {
@@ -459,21 +460,21 @@ private:
     }
   } // create_exclusive_and_shared_boxes
 
-  template<size_t D_ = D>
-  typename std::enable_if<D_ == 3>::type create_exclusive_and_shared_boxes(
+  template<std::size_t D_ = D>
+  typename std::enable_if_t<D_ == 3> create_exclusive_and_shared_boxes(
     box_coloring & colbox,
-    size_t ncolors[D],
-    size_t idx[D],
-    size_t rank) {
+    std::size_t ncolors[D],
+    std::size_t idx[D],
+    std::size_t rank) {
     box_core pbox = colbox.partition[0].box;
-    size_t hl = colbox.partition[0].nghost_layers;
-    size_t TD = colbox.partition[0].thru_dim;
+    std::size_t hl = colbox.partition[0].nghost_layers;
+    std::size_t TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_color ecbox(D);
     box_core ebox = pbox;
 
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       if(!colbox.partition[0].onbnd[2 * i])
         ebox.lowerbnd[i] += hl;
       if(!colbox.partition[0].onbnd[2 * i + 1])
@@ -483,12 +484,12 @@ private:
     ecbox.colors.emplace_back(rank);
     colbox.exclusive[0] = ecbox;
 
-    size_t il[3] = {0, 0, 1};
-    size_t iu[3] = {1, 0, 0};
-    size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
+    std::size_t il[3] = {0, 0, 1};
+    std::size_t iu[3] = {1, 0, 0};
+    std::size_t im[3][2] = {{0, 1}, {1, 2}, {2, 0}};
 
-    size_t IM[D][4];
-    for(size_t i = 0; i < D; ++i) {
+    std::size_t IM[D][4];
+    for(std::size_t i = 0; i < D; ++i) {
       IM[i][0] = pbox.lowerbnd[i];
       IM[i][1] = ebox.lowerbnd[i];
       IM[i][2] = ebox.upperbnd[i];
@@ -497,12 +498,12 @@ private:
 
     box_core sbox(D);
     box_color scbox(D);
-    size_t ind[D], idx_new[D], cval;
+    std::size_t ind[D], idx_new[D], cval;
 
     {
-      for(size_t k = 0; k < 3; ++k)
-        for(size_t j = 0; j < 3; ++j)
-          for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t k = 0; k < 3; ++k)
+        for(std::size_t j = 0; j < 3; ++j)
+          for(std::size_t i = 0; i < 3; ++i) {
             bool flag;
             if((i == 1) && (j == 1) && (k == 1))
               flag = false;
@@ -545,7 +546,7 @@ private:
               ind[2] = k;
 
               // Add face shared ranks
-              for(size_t d = 0; d < D; ++d) {
+              for(std::size_t d = 0; d < D; ++d) {
                 idx_new[0] = idx[0];
                 idx_new[1] = idx[1];
                 idx_new[2] = idx[2];
@@ -565,7 +566,7 @@ private:
 
               // Add edge shared ranks
               if(TD <= 1) {
-                for(size_t d = 0; d < D; ++d) {
+                for(std::size_t d = 0; d < D; ++d) {
                   idx_new[0] = idx[0];
                   idx_new[1] = idx[1];
                   idx_new[2] = idx[2];
@@ -679,28 +680,28 @@ private:
 
   } // create_exclusive_and_shared_boxes
 
-  template<size_t D_ = D>
-  typename std::enable_if<D_ == 1>::type
-  create_ghost_boxes(box_coloring & colbox, size_t ncolors[D], size_t idx[D]) {
+  template<std::size_t D_ = D>
+  typename std::enable_if_t<D_ == 1>
+  create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]) {
     box_core pbox = colbox.partition[0].box;
-    size_t hl = colbox.partition[0].nghost_layers;
+    std::size_t hl = colbox.partition[0].nghost_layers;
     int TD = colbox.partition[0].thru_dim;
 
     std::cout << "ncolors = " << ncolors[0] << std::endl;
     // Compute bounds for exclusive box
     box_core gbox = pbox;
 
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       if(!colbox.partition[0].onbnd[2 * i])
         gbox.lowerbnd[i] -= hl;
       if(!colbox.partition[0].onbnd[2 * i + 1])
         gbox.upperbnd[i] += hl;
     }
 
-    size_t il[3] = {0, 0, 1};
-    size_t iu[3] = {1, 0, 0};
-    size_t IM[D][4];
-    for(size_t i = 0; i < D; ++i) {
+    std::size_t il[3] = {0, 0, 1};
+    std::size_t iu[3] = {1, 0, 0};
+    std::size_t IM[D][4];
+    for(std::size_t i = 0; i < D; ++i) {
       IM[i][0] = gbox.lowerbnd[i];
       IM[i][1] = pbox.lowerbnd[i];
       IM[i][2] = pbox.upperbnd[i];
@@ -709,12 +710,12 @@ private:
 
     box_core ghbox(D);
     box_color gcbox(D);
-    size_t idx_new[D], cval;
+    std::size_t idx_new[D], cval;
 
     {
       int rankmap[3][2] = {{0, -1}, {1, 0}, {0, 1}};
 
-      for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t i = 0; i < 3; ++i) {
         if(i == 1)
           continue;
         else if(IM[0][i] != IM[0][i + 1]) {
@@ -722,7 +723,7 @@ private:
           ghbox.upperbnd[0] = IM[0][i + 1] - iu[i];
 
           gcbox.colors.clear();
-          size_t id = i;
+          std::size_t id = i;
           if(TD <= rankmap[id][0]) {
             idx_new[0] = idx[0] + rankmap[id][1];
 
@@ -736,27 +737,27 @@ private:
     }
   } // create_ghost_boxes
 
-  template<size_t D_ = D>
-  typename std::enable_if<D_ == 2>::type
-  create_ghost_boxes(box_coloring & colbox, size_t ncolors[D], size_t idx[D]) {
+  template<std::size_t D_ = D>
+  typename std::enable_if_t<D_ == 2>
+  create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]) {
     box_core pbox = colbox.partition[0].box;
-    size_t hl = colbox.partition[0].nghost_layers;
+    std::size_t hl = colbox.partition[0].nghost_layers;
     int TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_core gbox = pbox;
 
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       if(!colbox.partition[0].onbnd[2 * i])
         gbox.lowerbnd[i] -= hl;
       if(!colbox.partition[0].onbnd[2 * i + 1])
         gbox.upperbnd[i] += hl;
     }
 
-    size_t il[3] = {0, 0, 1};
-    size_t iu[3] = {1, 0, 0};
-    size_t IM[D][4];
-    for(size_t i = 0; i < D; ++i) {
+    std::size_t il[3] = {0, 0, 1};
+    std::size_t iu[3] = {1, 0, 0};
+    std::size_t IM[D][4];
+    for(std::size_t i = 0; i < D; ++i) {
       IM[i][0] = gbox.lowerbnd[i];
       IM[i][1] = pbox.lowerbnd[i];
       IM[i][2] = pbox.upperbnd[i];
@@ -765,7 +766,7 @@ private:
 
     box_core ghbox(D);
     box_color gcbox(D);
-    size_t idx_new[D], cval;
+    std::size_t idx_new[D], cval;
 
     {
       int rankmap[9][3] = {{0, -1, -1},
@@ -778,8 +779,8 @@ private:
         {1, 0, 1},
         {0, 1, 1}};
 
-      for(size_t j = 0; j < 3; ++j)
-        for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t j = 0; j < 3; ++j)
+        for(std::size_t i = 0; i < 3; ++i) {
           if((i == 1) && (j == 1))
             continue;
           else if((IM[0][i] != IM[0][i + 1]) && (IM[1][j] != IM[1][j + 1])) {
@@ -789,7 +790,7 @@ private:
             ghbox.upperbnd[1] = IM[1][j + 1] - iu[j];
 
             gcbox.colors.clear();
-            size_t id = i + 3 * j;
+            std::size_t id = i + 3 * j;
             if(TD <= rankmap[id][0]) {
               idx_new[0] = idx[0] + rankmap[id][1];
               idx_new[1] = idx[1] + rankmap[id][2];
@@ -804,27 +805,27 @@ private:
     }
   } // create_ghost_boxes
 
-  template<size_t D_ = D>
-  typename std::enable_if<D_ == 3>::type
-  create_ghost_boxes(box_coloring & colbox, size_t ncolors[D], size_t idx[D]) {
+  template<std::size_t D_ = D>
+  typename std::enable_if_t<D_ == 3>
+  create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]) {
     box_core pbox = colbox.partition[0].box;
-    size_t hl = colbox.partition[0].nghost_layers;
+    std::size_t hl = colbox.partition[0].nghost_layers;
     int TD = colbox.partition[0].thru_dim;
 
     // Compute bounds for exclusive box
     box_core gbox = pbox;
 
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       if(!colbox.partition[0].onbnd[2 * i])
         gbox.lowerbnd[i] -= hl;
       if(!colbox.partition[0].onbnd[2 * i + 1])
         gbox.upperbnd[i] += hl;
     }
 
-    size_t il[3] = {0, 0, 1};
-    size_t iu[3] = {1, 0, 0};
-    size_t IM[D][4];
-    for(size_t i = 0; i < D; ++i) {
+    std::size_t il[3] = {0, 0, 1};
+    std::size_t iu[3] = {1, 0, 0};
+    std::size_t IM[D][4];
+    for(std::size_t i = 0; i < D; ++i) {
       IM[i][0] = gbox.lowerbnd[i];
       IM[i][1] = pbox.lowerbnd[i];
       IM[i][2] = pbox.upperbnd[i];
@@ -833,7 +834,7 @@ private:
 
     box_core ghbox(D);
     box_color gcbox(D);
-    size_t idx_new[D], cval;
+    std::size_t idx_new[D], cval;
 
     {
       int rankmap[27][4] = {{0, -1, -1, -1},
@@ -864,9 +865,9 @@ private:
         {1, 0, 1, 1},
         {0, 1, 1, 1}};
 
-      for(size_t k = 0; k < 3; ++k)
-        for(size_t j = 0; j < 3; ++j)
-          for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t k = 0; k < 3; ++k)
+        for(std::size_t j = 0; j < 3; ++j)
+          for(std::size_t i = 0; i < 3; ++i) {
             if((i == 1) && (j == 1) && (k == 1))
               continue;
             else if((IM[0][i] != IM[0][i + 1]) && (IM[1][j] != IM[1][j + 1]) &&
@@ -879,7 +880,7 @@ private:
               ghbox.upperbnd[2] = IM[2][k + 1] - iu[k];
 
               gcbox.colors.clear();
-              size_t id = i + 3 * j + 9 * k;
+              std::size_t id = i + 3 * j + 9 * k;
               if(TD <= rankmap[id][0]) {
                 idx_new[0] = idx[0] + rankmap[id][1];
                 idx_new[1] = idx[1] + rankmap[id][2];
@@ -898,22 +899,22 @@ private:
 
   void create_domain_halo_boxes(box_coloring & colbox) {
     box_core pbox = colbox.partition[0].box;
-    size_t hl = colbox.partition[0].ndomain_layers;
+    std::size_t hl = colbox.partition[0].ndomain_layers;
 
     // Compute bounds for domain with halo
     box_core dbox = pbox;
 
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       if(colbox.partition[0].onbnd[2 * i])
         dbox.lowerbnd[i] -= hl;
       if(colbox.partition[0].onbnd[2 * i + 1])
         dbox.upperbnd[i] += hl;
     }
 
-    size_t il[3] = {0, 0, 1};
-    size_t iu[3] = {1, 0, 0};
-    size_t IM[D][4];
-    for(size_t i = 0; i < D; ++i) {
+    std::size_t il[3] = {0, 0, 1};
+    std::size_t iu[3] = {1, 0, 0};
+    std::size_t IM[D][4];
+    for(std::size_t i = 0; i < D; ++i) {
       IM[i][0] = dbox.lowerbnd[i];
       IM[i][1] = pbox.lowerbnd[i];
       IM[i][2] = pbox.upperbnd[i];
@@ -923,7 +924,7 @@ private:
     box_color dhbox(D);
 
     if(D == 1) {
-      for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t i = 0; i < 3; ++i) {
         if((i == 1))
           continue;
         else if((IM[0][i] != IM[0][i + 1])) {
@@ -934,8 +935,8 @@ private:
       }
     }
     else if(D == 2) {
-      for(size_t j = 0; j < 3; ++j)
-        for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t j = 0; j < 3; ++j)
+        for(std::size_t i = 0; i < 3; ++i) {
           if((i == 1) && (j == 1))
             continue;
           else if((IM[0][i] != IM[0][i + 1]) && (IM[1][j] != IM[1][j + 1])) {
@@ -948,9 +949,9 @@ private:
         }
     }
     else if(D == 3) {
-      for(size_t k = 0; k < 3; ++k)
-        for(size_t j = 0; j < 3; ++j)
-          for(size_t i = 0; i < 3; ++i) {
+      for(std::size_t k = 0; k < 3; ++k)
+        for(std::size_t j = 0; j < 3; ++j)
+          for(std::size_t i = 0; i < 3; ++i) {
             if((i == 1) && (j == 1) && (k == 1))
               continue;
             else if((IM[0][i] != IM[0][i + 1]) && (IM[1][j] != IM[1][j + 1]) &&
@@ -968,32 +969,32 @@ private:
   } // create_domain_halo_boxes
 
   void compute_overlaying_bounding_box(box_coloring & colbox) {
-    for(size_t n = 0; n < colbox.num_boxes; n++) {
+    for(std::size_t n = 0; n < colbox.num_boxes; n++) {
 
       box_core obb(D);
-      std::vector<size_t> lbnds[D];
-      std::vector<size_t> ubnds[D];
+      std::vector<std::size_t> lbnds[D];
+      std::vector<std::size_t> ubnds[D];
 
-      for(size_t d = 0; d < D; d++) {
-        for(size_t i = 0; i < colbox.ghost[n].size(); i++) {
+      for(std::size_t d = 0; d < D; d++) {
+        for(std::size_t i = 0; i < colbox.ghost[n].size(); i++) {
           lbnds[d].push_back(colbox.ghost[n][i].domain.lowerbnd[d]);
           ubnds[d].push_back(colbox.ghost[n][i].domain.upperbnd[d]);
         }
       }
 
-      for(size_t d = 0; d < D; d++) {
-        for(size_t i = 0; i < colbox.domain_halo[n].size(); i++) {
+      for(std::size_t d = 0; d < D; d++) {
+        for(std::size_t i = 0; i < colbox.domain_halo[n].size(); i++) {
           lbnds[d].push_back(colbox.domain_halo[n][i].domain.lowerbnd[d]);
           ubnds[d].push_back(colbox.domain_halo[n][i].domain.upperbnd[d]);
         }
       }
 
-      for(size_t d = 0; d < D; d++) {
+      for(std::size_t d = 0; d < D; d++) {
         std::sort(lbnds[d].begin(), lbnds[d].end());
         std::sort(ubnds[d].begin(), ubnds[d].end());
       }
 
-      for(size_t d = 0; d < D; d++) {
+      for(std::size_t d = 0; d < D; d++) {
         obb.lowerbnd[d] = *lbnds[d].begin();
         obb.upperbnd[d] = *(ubnds[d].end() - 1);
       }
@@ -1003,13 +1004,13 @@ private:
 
   } // compute_overlaying_bounding_box
 
-  void get_indices(size_t cobnds[D], int rank, size_t id[D]) {
-    size_t rem, factor, value;
+  void get_indices(std::size_t cobnds[D], int rank, size_t id[D]) {
+    std::size_t rem, factor, value;
 
     rem = rank;
-    for(size_t i = 0; i < D; ++i) {
+    for(std::size_t i = 0; i < D; ++i) {
       factor = 1;
-      for(size_t j = 0; j < D - i - 1; ++j)
+      for(std::size_t j = 0; j < D - i - 1; ++j)
         factor *= cobnds[j];
 
       value = rem / factor;

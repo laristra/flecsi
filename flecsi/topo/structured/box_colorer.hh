@@ -22,15 +22,15 @@ namespace structured_impl {
    colorings from an input grid-size.
    @ingroup coloring
  */
-template<size_t D>
+template<std::size_t D>
 struct box_colorer {
   virtual ~box_colorer(){};
 
-  virtual box_coloring color(size_t grid_size[D],
-    size_t nghost_layers,
-    size_t ndomain_layers,
-    size_t thru_dim,
-    size_t ncolors[D]) = 0;
+  virtual box_coloring color(std::size_t grid_size[D],
+    std::size_t nghost_layers,
+    std::size_t ndomain_layers,
+    std::size_t thru_dim,
+    std::size_t ncolors[D]) = 0;
 }; // struct box_colorer
 
 } // namespace structured_impl

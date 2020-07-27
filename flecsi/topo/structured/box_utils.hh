@@ -27,12 +27,12 @@ print_boxes(const box_coloring & colored_cells,
   int nbids = pow(3, dim);
 
   // Print colored cells: overlay, exclusive, shared, ghost, domain-halos
-  auto ebox = colored_cells.exclusive[0];
-  auto shboxes = colored_cells.shared[0];
-  auto ghboxes = colored_cells.ghost[0];
-  auto dhboxes = colored_cells.domain_halo[0];
-  auto obox = colored_cells.overlay[0];
-  auto strides = colored_cells.strides[0];
+  auto& ebox = colored_cells.exclusive[0];
+  auto& shboxes = colored_cells.shared[0];
+  auto& ghboxes = colored_cells.ghost[0];
+  auto& dhboxes = colored_cells.domain_halo[0];
+  auto& obox = colored_cells.overlay[0];
+  auto& strides = colored_cells.strides[0];
 
   std::cout << "CELL COLORING" << std::endl;
   std::cout << "   ----->Overlay:";
@@ -55,12 +55,12 @@ print_boxes(const box_coloring & colored_cells,
   std::cout << "]" << std::endl;
 
   std::cout << " colors = [";
-  for(size_t c = 0; c < ebox.colors.size(); ++c)
+  for(std::size_t c = 0; c < ebox.colors.size(); ++c)
     std::cout << ebox.colors[c] << " ";
   std::cout << "]" << std::endl;
 
   std::cout << "   ----->Shared:";
-  for(size_t s = 0; s < shboxes.size(); ++s) {
+  for(std::size_t s = 0; s < shboxes.size(); ++s) {
     std::cout << "   ---------->Shared Box " << s << ":";
     for(int i = 0; i < dim; ++i)
       std::cout << " dim " << i << " : " << shboxes[s].domain.lowerbnd[i]
@@ -72,13 +72,13 @@ print_boxes(const box_coloring & colored_cells,
     std::cout << "]" << std::endl;
 
     std::cout << " colors = [";
-    for(size_t c = 0; c < shboxes[s].colors.size(); ++c)
+    for(std::size_t c = 0; c < shboxes[s].colors.size(); ++c)
       std::cout << shboxes[s].colors[c] << " ";
     std::cout << "]" << std::endl;
   } // shared
 
   std::cout << "   ----->Ghost:";
-  for(size_t g = 0; g < ghboxes.size(); ++g) {
+  for(std::size_t g = 0; g < ghboxes.size(); ++g) {
     std::cout << "   ---------->Ghost Box " << g << ":";
     for(int i = 0; i < dim; ++i)
       std::cout << " dim " << i << " : " << ghboxes[g].domain.lowerbnd[i]
@@ -90,13 +90,13 @@ print_boxes(const box_coloring & colored_cells,
     std::cout << "]" << std::endl;
 
     std::cout << " colors = [";
-    for(size_t c = 0; c < ghboxes[g].colors.size(); ++c)
+    for(std::size_t c = 0; c < ghboxes[g].colors.size(); ++c)
       std::cout << ghboxes[g].colors[c] << " ";
     std::cout << "]" << std::endl;
   } // ghost
 
   std::cout << "   ----->Domain Halo:";
-  for(size_t h = 0; h < dhboxes.size(); ++h) {
+  for(std::size_t h = 0; h < dhboxes.size(); ++h) {
     std::cout << "   ---------->Domain Halo Box " << h << ":";
     for(int i = 0; i < dim; ++i)
       std::cout << " dim " << i << " : " << dhboxes[h].domain.lowerbnd[i]
@@ -108,27 +108,27 @@ print_boxes(const box_coloring & colored_cells,
     std::cout << "]" << std::endl;
 
     std::cout << " colors = [";
-    for(size_t c = 0; c < dhboxes[h].colors.size(); ++c)
+    for(std::size_t c = 0; c < dhboxes[h].colors.size(); ++c)
       std::cout << dhboxes[h].colors[c] << " ";
     std::cout << "]" << std::endl;
   } // domain_halo
 
   // Print colored depents: overlay, exclusive, shared, ghost, domain-halos
-  for(size_t edim = 0; edim < colored_depents.size(); ++edim) {
+  for(std::size_t edim = 0; edim < colored_depents.size(); ++edim) {
 
-    size_t de_nboxes = colored_depents[edim].num_boxes;
+    std::size_t de_nboxes = colored_depents[edim].num_boxes;
     ;
-    auto de_ebox = colored_depents[edim].exclusive;
-    auto de_shboxes = colored_depents[edim].shared;
-    auto de_ghboxes = colored_depents[edim].ghost;
-    auto de_dhboxes = colored_depents[edim].domain_halo;
-    auto de_obox = colored_depents[edim].overlay;
-    auto de_strides = colored_depents[edim].strides;
+    auto& de_ebox = colored_depents[edim].exclusive;
+    auto& de_shboxes = colored_depents[edim].shared;
+    auto& de_ghboxes = colored_depents[edim].ghost;
+    auto& de_dhboxes = colored_depents[edim].domain_halo;
+    auto& de_obox = colored_depents[edim].overlay;
+    auto& de_strides = colored_depents[edim].strides;
 
     std::cout << "DEPENDENT ENTITY OF DIM " << edim << " COLORING" << std::endl;
 
     std::cout << "   ----->Overlay:";
-    for(size_t n = 0; n < de_nboxes; ++n) {
+    for(std::size_t n = 0; n < de_nboxes; ++n) {
       std::cout << "  ------->box_id " << n << " " << std::endl;
       for(int i = 0; i < dim; ++i)
         std::cout << " dim " << i << " : " << de_obox[n].lowerbnd[i] << ", "
@@ -136,14 +136,14 @@ print_boxes(const box_coloring & colored_cells,
     }
 
     std::cout << "   ----->Strides:";
-    for(size_t n = 0; n < de_nboxes; ++n) {
+    for(std::size_t n = 0; n < de_nboxes; ++n) {
       std::cout << "  ------->box_id " << n << " " << std::endl;
       for(int i = 0; i < dim; ++i)
         std::cout << " dim " << i << " : " << de_strides[n][i] << std::endl;
     }
 
     std::cout << "   ----->Exclusive:";
-    for(size_t n = 0; n < de_nboxes; ++n) {
+    for(std::size_t n = 0; n < de_nboxes; ++n) {
       std::cout << "  ------->box_id " << n << " " << std::endl;
       for(int i = 0; i < dim; ++i)
         std::cout << " dim " << i << " : " << de_ebox[n].domain.lowerbnd[i]
@@ -155,16 +155,16 @@ print_boxes(const box_coloring & colored_cells,
       std::cout << "]" << std::endl;
 
       std::cout << " colors = [";
-      for(size_t c = 0; c < de_ebox[n].colors.size(); ++c)
+      for(std::size_t c = 0; c < de_ebox[n].colors.size(); ++c)
         std::cout << de_ebox[n].colors[c] << " ";
       std::cout << "]" << std::endl;
     } // de_nboxes
 
     std::cout << "   ----->Shared:";
-    size_t nsh = de_shboxes[0].size();
-    for(size_t s = 0; s < nsh; ++s) {
+    std::size_t nsh = de_shboxes[0].size();
+    for(std::size_t s = 0; s < nsh; ++s) {
       std::cout << "   ---------->Shared Box " << s << ":";
-      for(size_t n = 0; n < de_nboxes; ++n) {
+      for(std::size_t n = 0; n < de_nboxes; ++n) {
         std::cout << "  ------->box_id " << n << " " << std::endl;
         for(int i = 0; i < dim; ++i)
           std::cout << " dim " << i << " : "
@@ -177,17 +177,17 @@ print_boxes(const box_coloring & colored_cells,
         std::cout << "]" << std::endl;
 
         std::cout << " colors = [";
-        for(size_t c = 0; c < de_shboxes[n][s].colors.size(); ++c)
+        for(std::size_t c = 0; c < de_shboxes[n][s].colors.size(); ++c)
           std::cout << de_shboxes[n][s].colors[c] << " ";
         std::cout << "]" << std::endl;
       } // shared
     } // de_nboxes
 
     std::cout << "   ----->Ghost:";
-    size_t ngh = de_ghboxes[0].size();
-    for(size_t g = 0; g < ngh; ++g) {
+    std::size_t ngh = de_ghboxes[0].size();
+    for(std::size_t g = 0; g < ngh; ++g) {
       std::cout << "   ---------->Ghost Box " << g << ":";
-      for(size_t n = 0; n < de_nboxes; ++n) {
+      for(std::size_t n = 0; n < de_nboxes; ++n) {
         std::cout << "  ------->box_id " << n << " " << std::endl;
         for(int i = 0; i < dim; ++i)
           std::cout << " dim " << i << " : "
@@ -200,17 +200,17 @@ print_boxes(const box_coloring & colored_cells,
         std::cout << "]" << std::endl;
 
         std::cout << " colors = [";
-        for(size_t c = 0; c < de_ghboxes[n][g].colors.size(); ++c)
+        for(std::size_t c = 0; c < de_ghboxes[n][g].colors.size(); ++c)
           std::cout << de_ghboxes[n][g].colors[c] << " ";
         std::cout << "]" << std::endl;
       } // ghost
     } // de_nboxes
 
     std::cout << "   ----->Domain Halo:";
-    size_t ndh = de_dhboxes[0].size();
-    for(size_t h = 0; h < ndh; ++h) {
+    std::size_t ndh = de_dhboxes[0].size();
+    for(std::size_t h = 0; h < ndh; ++h) {
       std::cout << "   ---------->Domain Halo Box " << h << ":";
-      for(size_t n = 0; n < de_nboxes; ++n) {
+      for(std::size_t n = 0; n < de_nboxes; ++n) {
         std::cout << "  ------->box_id " << n << " " << std::endl;
         for(int i = 0; i < dim; ++i)
           std::cout << " dim " << i << " : "
@@ -223,7 +223,7 @@ print_boxes(const box_coloring & colored_cells,
         std::cout << "]" << std::endl;
 
         std::cout << " colors = [";
-        for(size_t c = 0; c < de_dhboxes[n][h].colors.size(); ++c)
+        for(std::size_t c = 0; c < de_dhboxes[n][h].colors.size(); ++c)
           std::cout << de_dhboxes[n][h].colors[c] << " ";
         std::cout << "]" << std::endl;
       } // domain halo
