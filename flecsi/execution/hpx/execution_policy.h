@@ -59,7 +59,8 @@ struct executor_u {
   ///
   ///
   template<typename Exec, typename T, typename A>
-  static hpx::shared_future<RETURN> execute(Exec && exec, T fun, A && targs) {
+  static hpx_future_u<RETURN, launch_type_t::single>
+  execute(Exec && exec, T fun, A && targs) {
     auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(fun));
     return hpx::async(
       std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
@@ -117,7 +118,8 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
     return context_t::instance()
-      .template register_function<KEY, RETURN, ARG_TUPLE, DELEGATE>();
+      .template register_task<KEY, RETURN, ARG_TUPLE, DELEGATE>(
+        processor, launch, name);
   } // register_task
 
   ///
@@ -130,7 +132,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   /// \param args
   ///
   template<launch_type_t launch,
-    size_t TASK,
+    size_t KEY,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
@@ -139,17 +141,36 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     context_t & context_ = context_t::instance();
 
     // Get the function and processor type.
-    auto fun = context_.function(TASK);
+    auto fun = context_.task<KEY>();
 
-    //     auto processor_type = context_.processor_type<KEY>();
-    //     if (launch == processor_type_t::mpi)
+    auto processor_type = context_.processor_type<KEY>();
+    if(processor_type == processor_type_t::mpi) {
+      {
+        clog_tag_guard(execution);
+        clog(info) << "Executing MPI task: " << KEY << std::endl;
+      }
 
-    // FIXME add logic for reduction
+      return executor_u<RETURN, ARG_TUPLE>::execute(
+        context_t::instance().get_mpi_executor(), std::move(fun),
+        std::make_tuple(std::forward<ARGS>(args)...));
+    }
 
     return executor_u<RETURN, ARG_TUPLE>::execute(
       context_t::instance().get_default_executor(), std::move(fun),
-      std::forward_as_tuple(std::forward<ARGS>(args)...));
+      std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_task
+
+  //--------------------------------------------------------------------------//
+  // Reduction interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+    MPI backend reduction registration. For documentation on this
+    method please see task_u::register_reduction_operation.
+   */
+
+  template<size_t NAME, typename OPERATION>
+  static bool register_reduction_operation() {} // register_reduction_operation
 
   //--------------------------------------------------------------------------//
   // Function interface.
@@ -176,7 +197,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
     ARGS &&... args) {
     return handle(context_t::instance().function(handle.get_key()),
-      std::forward_as_tuple(std::forward<ARGS>(args)...));
+      std::make_tuple(std::forward<ARGS>(args)...));
   } // execute_function
 
 }; // struct hpx_execution_policy_t
@@ -185,8 +206,3 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
 } // namespace flecsi
 
 #endif // flecsi_execution_hpx_execution_policy_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/

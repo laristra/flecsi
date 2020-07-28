@@ -232,7 +232,7 @@ DEVEL(coloring) {
       // off-color. If it is, compare it's rank for
       // the ownership logic below.
       if(remote_info_map.find(c) != remote_info_map.end()) {
-        min_rank = std::min(min_rank, remote_info_map[c].rank);
+        min_rank = (std::min)(min_rank, remote_info_map[c].rank);
         shared_vertices.insert(remote_info_map[c].rank);
       }
       else {
@@ -240,7 +240,7 @@ DEVEL(coloring) {
         // it is a local cell.
 
         // Add our rank to compare for ownership.
-        min_rank = std::min(min_rank, size_t(rank));
+        min_rank = (std::min)(min_rank, size_t(rank));
 
         // If the local cell is shared, we need to add all of
         // the ranks that reference it.

@@ -42,6 +42,7 @@ namespace utils {
 template<typename T, std::size_t MAX_ENTRIES>
 class fixed_vector
 {
+  using data_type = std::array<T, MAX_ENTRIES>;
 
 public:
   //---------------------------------------------------------------------------
@@ -53,10 +54,10 @@ public:
   using difference_type = std::ptrdiff_t;
   using reference = value_type &;
   using const_reference = const value_type &;
-  using pointer = value_type *;
-  using const_pointer = const value_type *;
-  using iterator = pointer;
-  using const_iterator = const_pointer;
+  using pointer = typename data_type::pointer;
+  using const_pointer = typename data_type::const_pointer;
+  using iterator = typename data_type::iterator;
+  using const_iterator = typename data_type::const_iterator;
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -72,8 +73,8 @@ public:
   //! \param other  the other list
   template<typename U,
     std::size_t N,
-    typename = std::enable_if_t<N<MAX_ENTRIES + 1>> fixed_vector(
-      const fixed_vector<U, N> & other) : length_(other.size()) {
+    typename = std::enable_if_t<(N < MAX_ENTRIES + 1)>>
+  fixed_vector(const fixed_vector<U, N> & other) : length_(other.size()) {
     std::copy_n(other.begin(), length_, begin());
   }
 
@@ -553,7 +554,7 @@ private:
 
   iterator _validate_iterator(const_iterator pos) {
     auto n = std::distance(cbegin(), pos);
-    assert(n >= 0 && n <= length_);
+    assert(n >= 0 && static_cast<size_t>(n) <= length_);
     return std::next(begin(), n);
   }
 

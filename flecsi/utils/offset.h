@@ -48,12 +48,12 @@ public:
    * we store count_max as a uint64_t for simplicity.  This will avoid having
    * to statically cast count_mask.
    */
-  static constexpr uint64_t count_mask = (1ul << COUNT_BITS) - 1;
+  static constexpr uint64_t count_mask = (1ull << COUNT_BITS) - 1;
 
   /**
    * @brief The maximum value of the start index value.
    */
-  static constexpr uint64_t start_max = (1ul << (64 - COUNT_BITS)) - 1;
+  static constexpr uint64_t start_max = (1ull << (64 - COUNT_BITS)) - 1;
 
   offset_u() : o_(0ul) {}
 

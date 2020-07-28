@@ -66,9 +66,9 @@ class Flecsi(CMakePackage):
     depends_on('legion@ctrl-rep-7+shared+mpi build_type=Debug', when='backend=legion +debug_backend ~hdf5')
     depends_on('legion@ctrl-rep-7+shared+mpi+hdf5 build_type=Release', when='backend=legion ~debug_backend +hdf5')
     depends_on('legion@ctrl-rep-7+shared+mpi build_type=Release', when='backend=legion ~debug_backend ~hdf5')
-    depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Debug', when='backend=hpx +debug_backend')
-    depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Release', when='backend=hpx ~debug_backend')
-    depends_on('boost@1.70.0: cxxstd=14 +program_options')
+    depends_on('hpx@1.4.1 cxxstd=17 malloc=system build_type=Debug max_cpu_count=128', when='backend=hpx +debug_backend')                                                                                                                                                                                                                                               
+    depends_on('hpx@1.4.1 cxxstd=17 malloc=system build_type=Release max_cpu_count=128', when='backend=hpx ~debug_backend')                                                                                                                                                                                                                                             
+    depends_on('boost@1.70.0: cxxstd=17 +program_options')                                                          
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
     depends_on('hdf5+mpi', when='+hdf5')
@@ -103,6 +103,7 @@ class Flecsi(CMakePackage):
         elif spec.variants['backend'].value == 'hpx':
             options.append('-DFLECSI_RUNTIME_MODEL=hpx')
             options.append('-DENABLE_MPI=ON')
+            options.append('-DHPX_IGNORE_CMAKE_BUILD_TYPE_COMPATIBILITY=ON')
         elif spec.variants['backend'].value == 'charmpp':
             options.append('-DFLECSI_RUNTIME_MODEL=charmpp')
             options.append('-DENABLE_MPI=ON')
