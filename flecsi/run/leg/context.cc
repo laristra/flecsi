@@ -220,12 +220,16 @@ context_t::start(const std::function<int()> & action) {
 
   Runtime::start(largv.size(), largv.data(), true);
 
-  do {
+  while(true) {
     MPI_Barrier(MPI_COMM_WORLD);
     handshake_.mpi_handoff_to_legion();
     handshake_.mpi_wait_on_legion();
     MPI_Barrier(MPI_COMM_WORLD);
-  } while(invoke_mpi_task());
+    if(!mpi_task_)
+      break;
+    mpi_task_();
+    mpi_task_ = nullptr;
+  }
 
   Legion::Runtime::wait_for_shutdown();
 

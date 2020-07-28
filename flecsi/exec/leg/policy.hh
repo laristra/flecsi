@@ -101,12 +101,12 @@ log_size() {
 
 } // namespace detail
 
-template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
+template<auto & F, class Reduction, size_t Attributes, typename... Args>
 auto
-reduce_internal(ARGS &&... args) {
+reduce_internal(Args &&... args) {
   using namespace Legion;
   using traits_t = util::function_traits<decltype(F)>;
-  using RETURN = typename traits_t::return_type;
+  using return_t = typename traits_t::return_type;
   using param_tuple = typename traits_t::arguments_type;
 
   // This will guard the entire method
@@ -116,7 +116,7 @@ reduce_internal(ARGS &&... args) {
   auto & flecsi_context = run::context::instance();
 
   // Get the processor type.
-  constexpr auto processor_type = mask_to_processor_type(ATTRIBUTES);
+  constexpr auto processor_type = mask_to_processor_type(Attributes);
 
   // Get the Legion runtime and context from the current task.
   auto legion_runtime = Legion::Runtime::get_runtime();
@@ -134,8 +134,6 @@ reduce_internal(ARGS &&... args) {
     }
   }();
 
-  ++flecsi_context.tasks_executed();
-
   leg::task_prologue_t pro;
   pro.walk<param_tuple>(args...);
 
@@ -145,14 +143,14 @@ reduce_internal(ARGS &&... args) {
     // MPI tasks must be invoked collectively from one task on each rank.
     // We therefore can transmit merely a pointer to a tuple of the arguments.
     // util::serial_put deliberately doesn't support this, so just memcpy it.
-    detail::mpi_arguments(mpi_args, std::forward<ARGS>(args)...);
+    detail::mpi_arguments(mpi_args, std::forward<Args>(args)...);
     const auto p = &*mpi_args;
     buf.resize(sizeof p);
     std::memcpy(buf.data(), &p, sizeof p);
   }
   else {
     buf = detail::serial_arguments(
-      static_cast<param_tuple *>(nullptr), std::forward<ARGS>(args)...);
+      static_cast<param_tuple *>(nullptr), std::forward<Args>(args)...);
   }
 
   //------------------------------------------------------------------------//
@@ -161,7 +159,7 @@ reduce_internal(ARGS &&... args) {
 
   using wrap = leg::task_wrapper<F, processor_type>;
   const auto task = leg::task_id<wrap::execute,
-    (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
+    (Attributes & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
 
   if constexpr(std::is_same_v<decltype(domain_size), const std::monostate>) {
     {
@@ -182,7 +180,7 @@ reduce_internal(ARGS &&... args) {
     static_assert(processor_type == task_processor_type_t::toc ||
                     processor_type == task_processor_type_t::loc,
       "Unknown launch type");
-    return future<RETURN>{
+    return future<return_t>{
       legion_runtime->execute_task(legion_context, launcher)};
   }
 
@@ -220,19 +218,19 @@ reduce_internal(ARGS &&... args) {
                  processor_type == task_processor_type_t::loc) {
       flog_devel(info) << "Executing index launch on loc" << std::endl;
 
-      if constexpr(!std::is_void_v<REDUCTION>) {
+      if constexpr(!std::is_void_v<Reduction>) {
         flog_devel(info) << "executing reduction logic for "
-                         << util::type<REDUCTION>() << std::endl;
+                         << util::type<Reduction>() << std::endl;
 
-        return future<RETURN>{legion_runtime->execute_index_space(
-          legion_context, launcher, reduction_op<REDUCTION>)};
+        return future<return_t>{legion_runtime->execute_index_space(
+          legion_context, launcher, reduction_op<Reduction>)};
       }
       else {
         // Enqueue the task.
         Legion::FutureMap future_map =
           legion_runtime->execute_index_space(legion_context, launcher);
 
-        return future<RETURN, launch_type_t::index>{future_map};
+        return future<return_t, launch_type_t::index>{future_map};
       } // else
     }
     else {
@@ -241,19 +239,19 @@ reduce_internal(ARGS &&... args) {
       launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
 
       // Launch the MPI task
-      if constexpr(!std::is_void_v<REDUCTION>) {
+      if constexpr(!std::is_void_v<Reduction>) {
         flog_devel(info) << "executing reduction logic for "
-                         << util::type<REDUCTION>() << std::endl;
+                         << util::type<Reduction>() << std::endl;
 
-        const auto ret = future<RETURN, launch_type_t::single>{
+        const auto ret = future<return_t, launch_type_t::single>{
           legion_runtime->execute_index_space(
-            legion_context, launcher, reduction_op<REDUCTION>)};
+            legion_context, launcher, reduction_op<Reduction>)};
         ret.wait();
 
         return ret;
       }
       else {
-        const auto ret = future<RETURN, launch_type_t::index>{
+        const auto ret = future<return_t, launch_type_t::index>{
           legion_runtime->execute_index_space(legion_context, launcher)};
         ret.wait();
 
@@ -266,40 +264,28 @@ reduce_internal(ARGS &&... args) {
 
 } // namespace exec
 
-template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
+template<auto & F, class Reduction, size_t Attributes, typename... Args>
 auto
-reduce(ARGS &&... args) {
+reduce(Args &&... args) {
   using namespace Legion;
   using namespace exec;
 
   // This will guard the entire method
   log::devel_guard guard(execution_tag);
 
-#ifdef FLECSI_ENABLE_FLOG
   // Get the FleCSI runtime context
   auto & flecsi_context = run::context::instance();
-
-  // Get the Legion runtime and context from the current task.
-  //  auto legion_runtime = Legion::Runtime::get_runtime();
-  //  auto legion_context = Legion::Runtime::get_context();
-
-  const size_t tasks_executed = flecsi_context.tasks_executed();
-  if((tasks_executed > 0) &&
-     (tasks_executed % FLOG_SERIALIZATION_INTERVAL == 0)) {
-
-    flecsi::future<size_t, launch_type_t::single> future =
-      reduce_internal<detail::log_size, fold::max<std::size_t>, flecsi::mpi>();
-
-    if(future.get() > FLOG_SERIALIZATION_THRESHOLD) {
-      flecsi::future<void, launch_type_t::index> future_mpi =
-        reduce_internal<log::send_to_one, void, flecsi::mpi>();
-      future_mpi.wait();
-    }
-  }
+  std::size_t & tasks_executed = flecsi_context.tasks_executed();
+  ++tasks_executed;
+#if defined(FLECSI_ENABLE_FLOG)
+  if(tasks_executed % FLOG_SERIALIZATION_INTERVAL == 0 &&
+     reduce_internal<detail::log_size, fold::max<std::size_t>, flecsi::mpi>()
+         .get() > FLOG_SERIALIZATION_THRESHOLD)
+    reduce_internal<log::send_to_one, void, flecsi::mpi>();
 #endif
 
-  return reduce_internal<F, REDUCTION, ATTRIBUTES, ARGS...>(
-    std::forward<ARGS>(args)...);
+  return reduce_internal<F, Reduction, Attributes, Args...>(
+    std::forward<Args>(args)...);
 }
 
 } // namespace flecsi

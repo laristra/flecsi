@@ -224,21 +224,6 @@ struct context_t : context {
   }
 
 private:
-  /*!
-    Invoke the current MPI task, if any, and clear it.
-
-    \return whether there was a task to invoke
-   */
-
-  bool invoke_mpi_task() {
-    const bool ret(mpi_task_);
-    if(ret) {
-      mpi_task_();
-      mpi_task_ = nullptr;
-    }
-    return ret;
-  } // invoke_mpi_task
-
   /*--------------------------------------------------------------------------*
     Runtime data.
    *--------------------------------------------------------------------------*/

@@ -111,9 +111,8 @@ test_driver() {
     execute<hydro::seq<V>>(V{"Elementary", " Dear Data"});
 
     int x = 0;
-    auto f = execute<hydro::mpi, mpi>(&x);
+    ASSERT_EQ((execute<hydro::mpi, mpi>(&x).get(0)), 4);
     ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
-    ASSERT_EQ(f.get(0), 4);
   };
 } // test_driver
 
