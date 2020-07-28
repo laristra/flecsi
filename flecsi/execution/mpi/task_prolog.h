@@ -94,7 +94,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    if ((not *h.ghost_is_readable) and (*h.ghost_was_resized))
+    if((not*h.ghost_is_readable) and (*h.ghost_was_resized))
       resized_sparse_fields.emplace_back(h.index_space, h.fid);
 
     if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na))
@@ -125,7 +125,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     modified_sparse_fields.emplace_back(h.index_space, h.fid);
     *h.ghost_is_readable = true;
 
-    if (not (*h.ghost_was_resized))
+    if(not(*h.ghost_was_resized))
       return;
 
     resized_sparse_fields.emplace_back(h.index_space, h.fid);
@@ -370,9 +370,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     auto & modified_fields = modified_dense_fields;
 
-    if (modified_fields.size() == 0) return;
+    if(modified_fields.size() == 0)
+      return;
 
-    for (auto & fi : modified_fields) {
+    for(auto & fi : modified_fields) {
       auto & field_metadata = context.registered_field_metadata().at(fi.second);
 
       for(auto rank = 0; rank < num_colors; ++rank) {
@@ -401,8 +402,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       const int resultAlloc =
         MPI_Alloc_mem(bufSize, MPI_INFO_NULL, &allRecvBuffer[rank]);
       if(resultAlloc != MPI_SUCCESS) {
-        clog_fatal("MPI failed to alloc memory on rank: " << my_color
-                   << " with error code: " << resultAlloc);
+        clog_fatal("MPI failed to alloc memory on rank: "
+                   << my_color << " with error code: " << resultAlloc);
       }
 
       const int resultRecv = MPI_Irecv(allRecvBuffer[rank], bufSize, MPI_CHAR,
@@ -427,8 +428,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       const int resultAlloc =
         MPI_Alloc_mem(bufSize, MPI_INFO_NULL, &allSendBuffer[rank]);
       if(resultAlloc != MPI_SUCCESS) {
-        clog_fatal("MPI failed to alloc memory on rank: " << my_color
-                   << " with error code: " << resultAlloc);
+        clog_fatal("MPI failed to alloc memory on rank: "
+                   << my_color << " with error code: " << resultAlloc);
       }
 
       size_t sendBufferOffset = 0;
@@ -458,7 +459,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     const int result = MPI_Waitall(
       allRecvRequests.size(), allRecvRequests.data(), MPI_STATUSES_IGNORE);
     if(result != MPI_SUCCESS) {
-      clog_fatal("ERROR: MPI_Waitall of rank " << my_color
+      clog_fatal("ERROR: MPI_Waitall of rank "
+                 << my_color
                  << " on recv requests failed with error code: " << result);
     }
 
@@ -507,10 +509,11 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     std::map<int, int> ghost_sizes;
     auto & modified_fields = modified_sparse_fields;
 
-    if (modified_fields.size() == 0) return;
+    if(modified_fields.size() == 0)
+      return;
 
     // compute aggregated communication sizes
-    for (auto & fi : modified_fields) {
+    for(auto & fi : modified_fields) {
       auto & field_data = context.registered_sparse_field_data().at(fi.second);
       auto & field_metadata =
         context.registered_sparse_field_metadata().at(fi.second);
@@ -631,7 +634,6 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
   }
 
-
   void launch_rowsize_exchange() {
     auto & context = context_t::instance();
     const int my_color = context.color();
@@ -646,23 +648,25 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     std::map<int, int> ghost_sizes;
     auto & modified_fields = resized_sparse_fields;
 
-    if (modified_fields.size() == 0) return;
+    if(modified_fields.size() == 0)
+      return;
 
     // compute aggregated communication sizes
-    for (auto & fi : modified_fields) {
-      auto & field_metadata = context.registered_sparse_field_metadata().at(fi.second);
+    for(auto & fi : modified_fields) {
+      auto & field_metadata =
+        context.registered_sparse_field_metadata().at(fi.second);
 
-      for (const auto & el : field_metadata.ghost_indices) {
+      for(const auto & el : field_metadata.ghost_indices) {
         auto gsize = ghost_sizes.find(el.first);
-        if (gsize != ghost_sizes.end())
+        if(gsize != ghost_sizes.end())
           gsize->second += el.second.size();
         else
           ghost_sizes[el.first] = el.second.size();
       }
 
-      for (const auto & el : field_metadata.shared_indices) {
+      for(const auto & el : field_metadata.shared_indices) {
         auto ssize = shared_sizes.find(el.first);
-        if (ssize != shared_sizes.end())
+        if(ssize != shared_sizes.end())
           ssize->second += el.second.size();
         else
           shared_sizes[el.first] = el.second.size();
@@ -676,35 +680,34 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     std::vector<MPI_Request> all_recv_req;
 
     // post receives
-    for (const auto & el : ghost_sizes) {
+    for(const auto & el : ghost_sizes) {
       int rank = el.first;
       int bufsize = el.second;
       all_recv_buf.emplace(rank, bufsize);
       all_recv_req.push_back(MPI_REQUEST_NULL);
-      int err = MPI_Irecv(all_recv_buf[rank].data(), bufsize, count_mpi_type, rank,
-                          rank, MPI_COMM_WORLD, &all_recv_req.back());
-      if (err != MPI_SUCCESS) {
+      int err = MPI_Irecv(all_recv_buf[rank].data(), bufsize, count_mpi_type,
+        rank, rank, MPI_COMM_WORLD, &all_recv_req.back());
+      if(err != MPI_SUCCESS) {
         clog(error) << "MPI_Irecv failed on rank " << rank
                     << " with error code: " << err << std::endl;
       }
     }
 
-
     // pack and send data
-    for (const auto & el : shared_sizes) {
+    for(const auto & el : shared_sizes) {
       int rank = el.first;
       int bufsize = el.second;
       all_send_buf.emplace(rank, std::vector<uint32_t>());
       all_send_req.push_back(MPI_REQUEST_NULL);
 
-      for (auto & fi : modified_fields) {
+      for(auto & fi : modified_fields) {
         auto & field_metadata =
           context.registered_sparse_field_metadata().at(fi.second);
         auto & field_data =
           context.registered_sparse_field_data().at(fi.second);
         auto * rows = reinterpret_cast<data::row_vector_u<uint8_t> *>(
           field_data.rows.data());
-        for (size_t i : field_metadata.shared_indices[rank]) {
+        for(size_t i : field_metadata.shared_indices[rank]) {
           int r = i + field_data.num_exclusive;
           const auto & row = rows[r];
           size_t count = row.size();
@@ -712,9 +715,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         }
       }
 
-      int err = MPI_Isend(all_send_buf[rank].data(), bufsize, count_mpi_type, rank,
-                          my_color, MPI_COMM_WORLD, &all_send_req.back());
-      if (err != MPI_SUCCESS) {
+      int err = MPI_Isend(all_send_buf[rank].data(), bufsize, count_mpi_type,
+        rank, my_color, MPI_COMM_WORLD, &all_send_req.back());
+      if(err != MPI_SUCCESS) {
         clog(error) << "MPI_Isend of rank " << my_color
                     << " with error code: " << err << std::endl;
       }
@@ -724,19 +727,19 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     {
       int err = MPI_Waitall(
         all_recv_req.size(), all_recv_req.data(), MPI_STATUSES_IGNORE);
-      if (err != MPI_SUCCESS) {
+      if(err != MPI_SUCCESS) {
         clog_fatal("MPI_Waitall "
                    << " on recv requests failed with error code: " << err);
       }
     }
 
     // unpack data
-    for (const auto & el : ghost_sizes) {
+    for(const auto & el : ghost_sizes) {
       int rank = el.first;
       int bufsize = el.second;
 
       size_t buf_offset = 0;
-      for (auto & fi : modified_fields) {
+      for(auto & fi : modified_fields) {
         auto & field_metadata =
           context.registered_sparse_field_metadata().at(fi.second);
         for(size_t i : field_metadata.ghost_indices[rank]) {
@@ -750,36 +753,35 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
   }
 
-
   struct row_resize_t : public flecsi::utils::tuple_walker_u<row_resize_t> {
 
     row_resize_t() = default;
 
-
     template<typename T,
-             size_t EXCLUSIVE_PERMISSIONS,
-             size_t SHARED_PERMISSIONS,
-             size_t GHOST_PERMISSIONS>
+      size_t EXCLUSIVE_PERMISSIONS,
+      size_t SHARED_PERMISSIONS,
+      size_t GHOST_PERMISSIONS>
     void handle(ragged_accessor<T,
-                EXCLUSIVE_PERMISSIONS,
-                SHARED_PERMISSIONS,
-                GHOST_PERMISSIONS> & a) {
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS> & a) {
       auto & h = a.handle;
 
-      if (not (*h.ghost_was_resized)) return;
+      if(not(*h.ghost_was_resized))
+        return;
 
       update_ghost_row_sizes<T>(h);
       *h.ghost_was_resized = false;
     }
 
     template<typename T,
-             size_t EXCLUSIVE_PERMISSIONS,
-             size_t SHARED_PERMISSIONS,
-             size_t GHOST_PERMISSIONS>
+      size_t EXCLUSIVE_PERMISSIONS,
+      size_t SHARED_PERMISSIONS,
+      size_t GHOST_PERMISSIONS>
     void handle(sparse_accessor<T,
-                EXCLUSIVE_PERMISSIONS,
-                SHARED_PERMISSIONS,
-                GHOST_PERMISSIONS> & a) {
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS> & a) {
       handle(a.ragged);
     } // handle
 
@@ -787,7 +789,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     void handle(ragged_mutator<T> & m) {
       auto & h = m.handle;
 
-      if (not (*h.ghost_was_resized)) return;
+      if(not(*h.ghost_was_resized))
+        return;
 
       update_ghost_row_sizes<T>(h);
       *h.ghost_was_resized = false;
@@ -802,11 +805,11 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       Handle individual list items
     */
     template<typename T,
-             std::size_t N,
-             template<typename, std::size_t>
-             typename Container,
-             typename =
-             std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
+      std::size_t N,
+      template<typename, std::size_t>
+      typename Container,
+      typename = std::enable_if_t<
+        std::is_base_of<data::data_reference_base_t, T>::value>>
     void handle(Container<T, N> & list) {
       for(auto & item : list) {
         handle(item);
@@ -818,20 +821,19 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
      */
     template<typename... Ts, size_t... I>
     void handle_tuple_items(std::tuple<Ts...> & items,
-                            std::index_sequence<I...>) {
+      std::index_sequence<I...>) {
       (handle(std::get<I>(items)), ...);
     }
 
     template<typename... Ts,
-             typename = std::enable_if_t<
-               utils::are_base_of_t<data::data_reference_base_t, Ts...>::value>>
+      typename = std::enable_if_t<
+        utils::are_base_of_t<data::data_reference_base_t, Ts...>::value>>
     void handle(std::tuple<Ts...> & items) {
       handle_tuple_items(items, std::make_index_sequence<sizeof...(Ts)>{});
     }
 
     template<typename T>
     void handle(T &) {} // handle
-
 
     template<typename T, typename HANDLE_TYPE>
     void update_ghost_row_sizes(HANDLE_TYPE & h) {
