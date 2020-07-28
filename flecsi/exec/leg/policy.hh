@@ -102,7 +102,7 @@ log_size() {
 } // namespace detail
 
 template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
-decltype(auto)
+auto
 reduce_internal(ARGS &&... args) {
   using namespace Legion;
   using traits_t = util::function_traits<decltype(F)>;
@@ -267,7 +267,7 @@ reduce_internal(ARGS &&... args) {
 } // namespace exec
 
 template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
-decltype(auto)
+auto
 reduce(ARGS &&... args) {
   using namespace Legion;
   using namespace exec;
