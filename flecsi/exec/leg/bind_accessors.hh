@@ -80,9 +80,8 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
       legion_context_, reg.get_logical_region().get_index_space());
     const auto r = dom.get_rect<2>();
 
-    bind(accessor,
-      util::span(ac.ptr(Legion::Domain::DomainPointIterator(dom).p),
-        r.hi[1] - r.lo[1] + 1));
+    accessor.bind(util::span(ac.ptr(Legion::Domain::DomainPointIterator(dom).p),
+      r.hi[1] - r.lo[1] + 1));
   }
 
   template<typename T, size_t P>

@@ -80,11 +80,11 @@ struct accessor<raw, DATA_TYPE, PRIVILEGES> : reference_base {
     return s;
   }
 
-private:
-  friend void bind(accessor & a, util::span<element_type> s) {
-    a.s = s;
+  void bind(util::span<element_type> x) { // for bind_accessors
+    s = x;
   }
 
+private:
   util::span<element_type> s;
 }; // struct accessor
 
