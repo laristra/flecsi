@@ -64,6 +64,12 @@ check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
   };
 } // check
 
+// Making the partition wider would require initializing the new elements.
+void
+shrink(topo::resize::Field::accessor<rw> a) {
+  a = data::partition::make_row(color(), data::partition::row_size(a) - 1);
+}
+
 int
 canonical_driver() {
   UNIT {
@@ -72,6 +78,11 @@ canonical_driver() {
     canonical.allocate(coloring.get());
 
     EXPECT_EQ(test<init>(canonical, pressure), 0);
+    EXPECT_EQ(test<check>(canonical, pressure), 0);
+
+    auto & c = canonical.get().part.get<canon::cells>();
+    execute<shrink>(c.sizes());
+    c.resize();
     EXPECT_EQ(test<check>(canonical, pressure), 0);
   };
 } // index

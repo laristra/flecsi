@@ -21,6 +21,7 @@
 
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/topology.hh"
+#include "flecsi/execution.hh"
 #include "flecsi/flog.hh"
 #include "flecsi/topo/canonical/types.hh"
 #include "flecsi/topo/core.hh" // base
@@ -60,7 +61,7 @@ struct canonical : canonical_base {
   static inline const field<int>::definition<Policy, index_spaces::first> mine;
   static inline const connect_t<Policy> connect;
 
-  util::key_array<data::partitioned, index_spaces> part;
+  util::key_array<repartitioned, index_spaces> part;
 
   std::size_t colors() const {
     return part.front().colors();
@@ -73,20 +74,14 @@ struct canonical : canonical_base {
 
 private:
   template<auto... VV, std::size_t... II>
-  static util::key_array<data::partitioned, util::constants<VV...>>
-  make_partitions(const canonical_base::coloring & c,
+  util::key_array<repartitioned, util::constants<VV...>> make_partitions(
+    const canonical_base::coloring & c,
     util::constants<VV...> /* index_spaces, to deduce a pack */,
     std::index_sequence<II...>) {
     flog_assert(c.sizes.size() == sizeof...(VV),
       c.sizes.size() << " sizes for " << sizeof...(VV) << " index spaces");
-    return {{data::partitioned(data::make_region<Policy, VV>(c.sizes[II]),
-      c.parts,
-      split(c.sizes[II], c.parts),
-      data::disjoint,
-      data::complete)...}};
-  }
-  static auto split(std::size_t n, std::size_t p) {
-    return [=](std::size_t i) { return std::pair{i * n / p, (i + 1) * n / p}; };
+    return {{make_repartitioned<Policy, VV>(
+      c.parts, make_partial<allocate>(c.sizes[II], c.parts))...}};
   }
 }; // struct canonical
 
