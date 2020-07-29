@@ -79,6 +79,18 @@ struct util::serial<data::topology_accessor<T, Priv>,
   }
 };
 
+template<auto & F, class... AA>
+struct util::serial_convert<exec::partial<F, AA...>> {
+  using type = exec::partial<F, AA...>;
+  using Rep = typename type::Base;
+  static const Rep & put(const type & p) {
+    return p;
+  }
+  static type get(const Rep & t) {
+    return t;
+  }
+};
+
 template<class T>
 struct util::serial_convert<future<T>> {
   using type = future<T>;

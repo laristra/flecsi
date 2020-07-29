@@ -52,18 +52,18 @@ simple(TYPE arg) {
   flog(info) << "arg(" << arg << ")\n";
 } // simple
 
-template<class T>
+template<class T, class F>
 void
-seq(const T & s) {
+seq(const T & s, F f) {
   log::devel_guard guard(task_tag);
-  [&s](auto && log) {
+  [&](auto && log) {
     bool first = true;
     for(auto & x : s) {
       if(first)
         first = false;
       else
         log << ',';
-      log << x;
+      log << f(x);
     }
     log << ")\n";
   }(flog_info("s(")); // keep temporary alive throughout
@@ -78,6 +78,13 @@ mpi(int * p) {
 } // namespace hydro
 
 log::devel_tag color_tag("color");
+
+namespace {
+auto
+drop(int n, const std::string & s) {
+  return s.substr(n);
+}
+} // namespace
 
 int
 test_driver() {
@@ -108,7 +115,9 @@ test_driver() {
     execute<hydro::simple<const float &>>(4.4);
     execute<hydro::simple<const double &>>(3.5);
     using V = std::vector<std::string>;
-    execute<hydro::seq<V>>(V{"Elementary", " Dear Data"});
+    const auto d = make_partial<drop>(5l);
+    execute<hydro::seq<V, decltype(d.param)>>(
+      V{"It's Elementary", "Dear, Dear Data"}, d);
 
     int x = 0;
     ASSERT_EQ((execute<hydro::mpi, mpi>(&x).get(0)), 4);

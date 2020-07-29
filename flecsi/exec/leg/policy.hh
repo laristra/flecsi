@@ -98,7 +98,6 @@ log_size() {
   return log::flog_t::instance().packets().size();
 }
 #endif
-
 } // namespace detail
 
 template<auto & F, class Reduction, size_t Attributes, typename... Args>
@@ -220,7 +219,7 @@ reduce_internal(Args &&... args) {
       pro.future_maps().begin(), pro.future_maps().end());
 
     if(processor_type == task_processor_type_t::mpi)
-      launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
+      launcher.tag = run::mapper::force_rank_match;
 
     if constexpr(!std::is_void_v<Reduction>) {
       flog_devel(info) << "executing reduction logic for "

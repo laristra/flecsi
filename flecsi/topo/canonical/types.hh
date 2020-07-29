@@ -22,6 +22,8 @@
 #include <cstddef>
 #include <vector>
 
+#include "flecsi/topo/index.hh"
+
 namespace flecsi {
 namespace topo {
 
@@ -32,6 +34,9 @@ struct canonical_base {
     std::size_t parts;
   }; // struct coloring
 
+  static std::size_t allocate(std::size_t n, std::size_t p, std::size_t i) {
+    return (i + 1) * n / p - i * n / p;
+  }
 }; // struct canonical_base
 
 } // namespace topo

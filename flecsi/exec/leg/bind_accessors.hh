@@ -70,17 +70,17 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
 
     //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
     const Legion::UnsafeFieldAccessor<DATA_TYPE,
-      1,
+      2,
       Legion::coord_t,
-      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
+      Realm::AffineAccessor<DATA_TYPE, 2, Legion::coord_t>>
       ac(reg, accessor.identifier(), sizeof(DATA_TYPE));
     const auto dom = legion_runtime_->get_index_space_domain(
       legion_context_, reg.get_logical_region().get_index_space());
-    const auto r = dom.get_rect<1>();
+    const auto r = dom.get_rect<2>();
 
     bind(accessor,
-      r.hi[0] - r.lo[0] + 1,
-      ac.ptr(Legion::Domain::DomainPointIterator(dom).p));
+      {ac.ptr(Legion::Domain::DomainPointIterator(dom).p),
+        std::size_t(r.hi[1] - r.lo[1] + 1)});
   }
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
