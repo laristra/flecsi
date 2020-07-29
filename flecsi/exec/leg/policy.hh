@@ -195,6 +195,11 @@ reduce_internal(Args &&... args) {
       flog_devel(info) << "Executing index task" << std::endl;
     }
 
+    static_assert(processor_type == task_processor_type_t::toc ||
+                    processor_type == task_processor_type_t::loc ||
+                    processor_type == task_processor_type_t::mpi,
+      "Unknown launch type");
+
     LegionRuntime::Arrays::Rect<1> launch_bounds(
       LegionRuntime::Arrays::Point<1>(0),
       LegionRuntime::Arrays::Point<1>(domain_size - 1));
@@ -214,50 +219,29 @@ reduce_internal(Args &&... args) {
     launcher.point_futures.assign(
       pro.future_maps().begin(), pro.future_maps().end());
 
-    if constexpr(processor_type == task_processor_type_t::toc ||
-                 processor_type == task_processor_type_t::loc) {
-      flog_devel(info) << "Executing index launch on loc" << std::endl;
-
-      if constexpr(!std::is_void_v<Reduction>) {
-        flog_devel(info) << "executing reduction logic for "
-                         << util::type<Reduction>() << std::endl;
-
-        return future<return_t>{legion_runtime->execute_index_space(
-          legion_context, launcher, reduction_op<Reduction>)};
-      }
-      else {
-        // Enqueue the task.
-        Legion::FutureMap future_map =
-          legion_runtime->execute_index_space(legion_context, launcher);
-
-        return future<return_t, launch_type_t::index>{future_map};
-      } // else
-    }
-    else {
-      static_assert(
-        processor_type == task_processor_type_t::mpi, "Unknown launch type");
+    if(processor_type == task_processor_type_t::mpi)
       launcher.tag = run::FLECSI_MAPPER_FORCE_RANK_MATCH;
 
-      // Launch the MPI task
-      if constexpr(!std::is_void_v<Reduction>) {
-        flog_devel(info) << "executing reduction logic for "
-                         << util::type<Reduction>() << std::endl;
+    if constexpr(!std::is_void_v<Reduction>) {
+      flog_devel(info) << "executing reduction logic for "
+                       << util::type<Reduction>() << std::endl;
 
-        const auto ret = future<return_t, launch_type_t::single>{
-          legion_runtime->execute_index_space(
-            legion_context, launcher, reduction_op<Reduction>)};
+      const auto ret = future<return_t, launch_type_t::single>{
+        legion_runtime->execute_index_space(
+          legion_context, launcher, reduction_op<Reduction>)};
+      if(processor_type == task_processor_type_t::mpi)
         ret.wait();
-
-        return ret;
-      }
-      else {
-        const auto ret = future<return_t, launch_type_t::index>{
-          legion_runtime->execute_index_space(legion_context, launcher)};
-        ret.wait();
-
-        return ret;
-      }
+      return ret;
     }
+    else {
+      const auto ret = future<return_t, launch_type_t::index>{
+        legion_runtime->execute_index_space(legion_context, launcher)};
+      if(processor_type == task_processor_type_t::mpi)
+        ret.wait();
+
+      return ret;
+    } // if reduction
+
   } // if constexpr
 
 } // reduce_internal
