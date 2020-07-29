@@ -83,8 +83,7 @@ struct box_core {
 struct box_color {
 
   box_color(){};
-  box_color(int dim) {
-    domain.resize(dim);
+  box_color(int dim) : domain(dim) {
     int nbid = pow(3, dim);
     tag.resize(nbid, true);
   }
