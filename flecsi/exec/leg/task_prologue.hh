@@ -40,6 +40,8 @@
 
 #include <legion.h>
 
+#include <memory>
+
 namespace flecsi {
 
 inline log::devel_tag task_prologue_tag("task_prologue");
@@ -106,6 +108,11 @@ struct task_prologue_t {
   void visit(data::accessor<data::dense, T, Priv> * null_p,
     const data::field_reference<T, data::dense, Topo, S> & ref) {
     visit(get_null_base(null_p), ref.template cast<data::raw>());
+    // TODO: use just one task for all fields
+    if constexpr(privilege_write_only(Priv) &&
+                 !std::is_trivially_destructible_v<T>)
+      ref.topology()->template get_region<S>().cleanup(
+        ref.fid(), [ref] { execute<destroy<T>>(ref); });
   }
   template<class T,
     std::size_t Priv,
@@ -202,6 +209,12 @@ struct task_prologue_t {
   } // visit
 
 private:
+  template<class T>
+  static void destroy(typename field<T>::template accessor<rw> a) {
+    const auto s = a.span();
+    std::destroy(s.begin(), s.end());
+  }
+
   // Argument types for which we don't also need the type of the parameter:
   template<class P, typename DATA_TYPE>
   void visit(P *, const DATA_TYPE & x) {

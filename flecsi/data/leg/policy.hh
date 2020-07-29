@@ -121,10 +121,43 @@ struct region {
     const auto p = run().get_index_space_domain(index_space).hi();
     return size2(p[0] + 1, p[1] + 1);
   }
+  template<topo::single_space>
+  region & get_region() {
+    return *this;
+  }
+
+  template<class D>
+  void cleanup(field_id_t f, D d) {
+    // We assume that creating the objects will be successful:
+    destroy[f] = d;
+  }
 
   unique_index_space index_space;
   unique_field_space field_space;
   unique_logical_region logical_region;
+
+private:
+  struct finalizer {
+    finalizer() = default;
+    template<class F>
+    finalizer(F f) : f(std::move(f)) {}
+    finalizer(finalizer && o) noexcept {
+      f.swap(o.f); // guarantee o.f is empty
+    }
+    ~finalizer() {
+      if(f)
+        f();
+    }
+    finalizer & operator=(finalizer o) noexcept {
+      f.swap(o.f);
+      return *this;
+    }
+
+  private:
+    std::function<void()> f;
+  };
+
+  std::map<field_id_t, finalizer> destroy;
 };
 
 struct partition {

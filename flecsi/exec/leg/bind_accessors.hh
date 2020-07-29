@@ -35,6 +35,8 @@
 
 #include <legion.h>
 
+#include <memory>
+
 namespace flecsi {
 
 inline log::devel_tag bind_accessors_tag("bind_accessors");
@@ -86,6 +88,10 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
   template<typename T, size_t P>
   void visit(data::accessor<data::dense, T, P> & a) {
     visit(a.get_base());
+    if constexpr(privilege_write_only(P)) {
+      const auto s = a.span();
+      std::uninitialized_default_construct(s.begin(), s.end());
+    }
   }
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {

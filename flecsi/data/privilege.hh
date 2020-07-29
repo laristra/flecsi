@@ -99,4 +99,12 @@ privilege_write(std::size_t pack) noexcept {
   return false;
 }
 
+constexpr bool
+privilege_write_only(std::size_t pack) noexcept {
+  for(auto i = privilege_count(pack); i--;)
+    if(get_privilege(i, pack) != wo)
+      return false;
+  return true;
+}
+
 } // namespace flecsi
