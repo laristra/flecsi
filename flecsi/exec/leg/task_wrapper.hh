@@ -232,7 +232,7 @@ struct task_wrapper {
     // without finalize_handles)?
     auto task_args = detail::tuple_get<param_tuple>(*task);
 
-    bind_accessors_t{runtime, context, regions, task->futures}.walk(task_args);
+    bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       apply(F, std::forward<param_tuple>(task_args));
@@ -244,9 +244,7 @@ struct task_wrapper {
     else {
       RETURN result = apply(F, std::forward<param_tuple>(task_args));
 
-      // FIXME: Refactor
-      // finalize_handles_t finalize_handles;
-      // finalize_handles.walk(task_args);
+      // FIXME: Refactor unbind_accessor
 
       return result;
     } // if
@@ -276,7 +274,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, task->args, sizeof p);
 
-    bind_accessors_t{runtime, context, regions, task->futures}.walk(*p);
+    bind_accessors{runtime, context, regions, task->futures}.walk(*p);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();

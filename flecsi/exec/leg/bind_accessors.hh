@@ -42,22 +42,22 @@ inline log::devel_tag bind_accessors_tag("bind_accessors");
 namespace exec::leg {
 
 /*!
-  The bind_accessors_t type is called to walk the user task arguments inside of
+  The bind_accessors type is called to walk the user task arguments inside of
   an executing legion task to properly complete the users accessors, i.e., by
   pointing the accessor \em view instances to the appropriate legion-mapped
   buffers.
  */
 
-struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
+struct bind_accessors : public util::tuple_walker<bind_accessors> {
 
   /*!
-    Construct an bind_accessors_t instance.
+    Construct an bind_accessors instance.
 
     @param legion_runtime The Legion task runtime.
     @param legion_context The Legion task runtime context.
    */
 
-  bind_accessors_t(Legion::Runtime * legion_runtime,
+  bind_accessors(Legion::Runtime * legion_runtime,
     Legion::Context & legion_context,
     std::vector<Legion::PhysicalRegion> const & regions,
     std::vector<Legion::Future> const & futures)
@@ -124,7 +124,7 @@ private:
   size_t future_id = 0;
   const std::vector<Legion::Future> & futures_;
 
-}; // struct bind_accessors_t
+}; // struct bind_accessors
 
 } // namespace exec::leg
 } // namespace flecsi
