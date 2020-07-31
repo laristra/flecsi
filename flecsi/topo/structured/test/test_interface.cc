@@ -4,8 +4,10 @@
 #include <memory>
 
 #include "flecsi/data.hh"
+#include "flecsi/topo/structured/dependent_entities_colorer.hh"
 #include "flecsi/topo/structured/interface.hh"
 #include "flecsi/topo/structured/simple_box_colorer.hh"
+#include "flecsi/topo/structured/test/test_utils.hh"
 #include "flecsi/util/unit.hh"
 
 using namespace flecsi;
@@ -21,15 +23,14 @@ struct test_mesh : specialization<structured, test_mesh> {
     std::size_t thru_dim,
     std::size_t ncolors[num_dimensions]) {
 
-    // Create a colorer instance to generate the coloring/partition
-    // of the mesh.
-    simple_box_colorer<num_dimensions> colorer;
-
     // Create the coloring info for cells
-    auto colored_cells = colorer.color(
+    auto cells_part = simple_box_colorer<num_dimensions>(
       grid_size, nghost_layers, ndomain_layers, thru_dim, ncolors);
 
-    return colored_cells;
+  
+    auto depent_part = dependent_entities_colorer(cells_part); 
+
+    return cells_part;
   } // color
 };
 
@@ -54,47 +55,11 @@ topo_driver() {
     int dim = colored_ents.mesh_dim;
 
     std::string fname =
-      "smesh_" + std::to_string(dim) + "d_" + std::to_string(owner) + ".txt";
+      "smesh_" + std::to_string(dim) + "d_" + std::to_string(owner) + ".current";
 
-    UNIT_CAPTURE() << "MESH DIM " << dim << std::endl;
-
-    // Print colored ents: overlay, exclusive, shared, ghost, domain-halos
-    int edim = colored_ents.entity_dim;
-    std::size_t de_nboxes = colored_ents.num_boxes;
-    auto de_ebox = colored_ents.exclusive;
-    auto de_obox = colored_ents.overlay;
-    auto de_strides = colored_ents.strides;
-
-    UNIT_CAPTURE() << "ENTITY OF DIM " << edim << " COLORING" << std::endl;
-
-    UNIT_CAPTURE() << "   ----->Overlay:\n";
-    for(std::size_t n = 0; n < de_nboxes; ++n) {
-      UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
-      for(int i = 0; i < dim; ++i)
-        UNIT_CAPTURE() << "          dim " << i << " : "
-                       << de_obox[n].lowerbnd[i] << ", "
-                       << de_obox[n].upperbnd[i] << std::endl;
-    }
-
-    UNIT_CAPTURE() << "   ----->Strides:\n";
-    for(std::size_t n = 0; n < de_nboxes; ++n) {
-      UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
-      for(int i = 0; i < dim; ++i)
-        UNIT_CAPTURE() << "           dim " << i << " : " << de_strides[n][i]
-                       << std::endl;
-    }
-
-    UNIT_CAPTURE() << "   ----->Exclusive:\n";
-    for(std::size_t n = 0; n < de_nboxes; ++n) {
-      UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
-      for(int i = 0; i < dim; ++i)
-        UNIT_CAPTURE() << "          dim " << i << " : "
-                       << de_ebox[n].domain.lowerbnd[i] << ", "
-                       << de_ebox[n].domain.upperbnd[i] << std::endl;
-    }
-    UNIT_WRITE(fname);
+    print_part_primary_entity(colored_ents); 
     UNIT_EQUAL_BLESSED(fname.c_str());
   };
-} // ntree_driver
+} // topo_driver
 
 flecsi::unit::driver<topo_driver> driver;

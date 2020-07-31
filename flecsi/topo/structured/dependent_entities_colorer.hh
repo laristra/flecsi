@@ -16,32 +16,24 @@
 #include <cmath>
 #include <type_traits>
 
-#include "flecsi/topo/structured/box_colorer.hh"
 #include "flecsi/topo/structured/box_utils.hh"
-#include "flecsi/topo/structured/coloring_types.hh"
 
 namespace flecsi {
 namespace topo {
 namespace structured_impl {
 
-struct dependent_entities_colorer {
+  //Forward declarations
+  void tag_box_boundary_entities(box_coloring & colored_cells);
 
-  //! Default constructor
-  dependent_entities_colorer() {}
+  void find_incident_boxes(std::size_t bid, box_color & mbox,
+    std::vector<box_color> & in_boxes, std::vector<int> & inbox_ids);
 
-  //! Copy constructor (disabled)
-  dependent_entities_colorer(const dependent_entities_colorer &) = delete;
-
-  //! Assignment operator (disabled)
-  dependent_entities_colorer & operator=(
-    const dependent_entities_colorer &) = delete;
-
-  //! Destructor
-  ~dependent_entities_colorer() {}
+  void color_dependent_entities_(box_coloring & colored_cells,
+    std::vector<box_coloring> & col_depents); 
 
   // Coloring algorithm for coloring the intermediate entities
   // from an input partition of the cells in the mesh
-  auto color(box_coloring & colored_cells) {
+  auto dependent_entities_colorer(box_coloring & colored_cells) {
     // Tag the boundaries of the colored cells to decipher which
     // intermediate entities are exclusive, shared, ghost and domain_halo.
     tag_box_boundary_entities(colored_cells);
@@ -56,7 +48,6 @@ struct dependent_entities_colorer {
     return colored_depents;
   } // color_dependent_entities
 
-private:
   void tag_box_boundary_entities(box_coloring & colored_cells) {
     std::vector<int> box_ids, box_bids;
     auto & ebox = colored_cells.exclusive[0];
@@ -99,7 +90,7 @@ private:
       int ghost_rank = ghboxes[g].colors[0];
 
       // search over all shared and ghost boxes
-      std::vector<box_color_t> search_boxes = shboxes;
+      std::vector<box_color> search_boxes = shboxes;
       for(std::size_t k = 0; k < ghboxes.size(); ++k) {
         if(k != g)
           search_boxes.push_back(ghboxes[k]);
@@ -129,7 +120,7 @@ private:
     // domain halo
     for(std::size_t d = 0; d < dhboxes.size(); ++d) {
       // search over all exclusive, shared and ghost boxes
-      std::vector<box_color_t> search_boxes{ebox};
+      std::vector<box_color> search_boxes{ebox};
       search_boxes.insert(search_boxes.end(), shboxes.begin(), shboxes.end());
       search_boxes.insert(search_boxes.end(), ghboxes.begin(), ghboxes.end());
       for(int b = 0; b < nbids; ++b) {
@@ -142,8 +133,8 @@ private:
   } // tag_box_boundary_entities
 
   void find_incident_boxes(std::size_t bid,
-    box_color_t & mbox,
-    std::vector<box_color_t> & in_boxes,
+    box_color & mbox,
+    std::vector<box_color> & in_boxes,
     std::vector<int> & inbox_ids) {
     inbox_ids.clear();
     std::size_t dim = mbox.domain.dim;
@@ -236,7 +227,7 @@ private:
       // exclusive
       for(int b = 0; b < nboxes; ++b) {
         // set bounds
-        box_color_t box(dim);
+        box_color box(dim);
         for(int d = 0; d < dim; d++) {
           box.domain.lowerbnd[d] = ebox.domain.lowerbnd[d];
           box.domain.upperbnd[d] = ebox.domain.upperbnd[d] + map[b][d];
@@ -255,7 +246,7 @@ private:
       for(std::size_t s = 0; s < shboxes.size(); ++s) {
         for(int b = 0; b < nboxes; ++b) {
           // set bounds
-          box_color_t box(dim);
+          box_color box(dim);
           for(int d = 0; d < dim; d++) {
             box.domain.lowerbnd[d] = shboxes[s].domain.lowerbnd[d];
             box.domain.upperbnd[d] = shboxes[s].domain.upperbnd[d] + map[b][d];
@@ -275,7 +266,7 @@ private:
       for(std::size_t g = 0; g < ghboxes.size(); ++g) {
         for(int b = 0; b < nboxes; ++b) {
           // set bounds
-          box_color_t box(dim);
+          box_color box(dim);
           for(int d = 0; d < dim; d++) {
             box.domain.lowerbnd[d] = ghboxes[g].domain.lowerbnd[d];
             box.domain.upperbnd[d] = ghboxes[g].domain.upperbnd[d] + map[b][d];
@@ -295,7 +286,7 @@ private:
       for(std::size_t dh = 0; dh < dhboxes.size(); ++dh) {
         for(int b = 0; b < nboxes; ++b) {
           // set bounds
-          box_color_t box(dim);
+          box_color box(dim);
           for(int d = 0; d < dim; d++) {
             box.domain.lowerbnd[d] = dhboxes[dh].domain.lowerbnd[d];
             box.domain.upperbnd[d] = dhboxes[dh].domain.upperbnd[d] + map[b][d];
@@ -314,7 +305,7 @@ private:
       // overlay and strides
       for(int b = 0; b < nboxes; ++b) {
         // set bounds
-        box_t box(dim);
+        box_core box(dim);
         for(int d = 0; d < dim; d++) {
           box.lowerbnd[d] = obox.lowerbnd[d];
           box.upperbnd[d] = obox.upperbnd[d] + map[b][d];
@@ -332,7 +323,7 @@ private:
     } // edim
 
   } // color_dependent_entities_
-}; // class dependent_entities_colorer
+
 } // namespace structured_impl
 } // namespace topo
 } // namespace flecsi

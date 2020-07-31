@@ -17,37 +17,58 @@
 #include <cmath>
 #include <type_traits>
 
-#include "flecsi/topo/structured/box_colorer.hh"
-
 namespace flecsi {
 namespace topo {
 namespace structured_impl {
 
-//----------------------------------------------------------------------------//
-//! FIXME: Description of class
-//----------------------------------------------------------------------------//
-template<std::size_t D>
-struct simple_box_colorer : public box_colorer<D> {
-  //! Default constructor
-  simple_box_colorer() {}
+ //Forward declaration
+  template<std::size_t D>
+  auto create_primary_box(box_core & domain, std::size_t ncolors[D], size_t idx[D]);
 
-  //! Copy constructor (disabled)
-  simple_box_colorer(const simple_box_colorer &) = delete;
+  template<std::size_t D>
+  typename std::enable_if_t<D == 1> create_exclusive_and_shared_boxes(
+    box_coloring & colbox,std::size_t ncolors[D],
+    std::size_t idx[D],std::size_t rank);
+  
+  template<std::size_t D>
+  typename std::enable_if_t<D == 2> create_exclusive_and_shared_boxes(
+    box_coloring & colbox,std::size_t ncolors[D],
+    std::size_t idx[D],std::size_t rank);
+  
+  template<std::size_t D>
+  typename std::enable_if_t<D == 3> create_exclusive_and_shared_boxes(
+    box_coloring & colbox,std::size_t ncolors[D],
+    std::size_t idx[D],std::size_t rank);
 
-  //! Assignment operator (disabled)
-  simple_box_colorer & operator=(const simple_box_colorer &) = delete;
+  template<std::size_t D>
+  typename std::enable_if_t<D == 1> 
+  create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]);
 
-  //! Destructor
-  ~simple_box_colorer() {}
+  template<std::size_t D>
+  typename std::enable_if_t<D == 2> 
+  create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]);
 
-  // Simple partitioning algorithm for structured meshes. Partitions the highest
-  // dimensional entities in the  mesh into as many blocks as number of input
-  // ranks.
-  box_coloring color(std::size_t grid_size[D],
+  template<std::size_t D>
+  typename std::enable_if_t<D == 3> 
+  create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]);
+
+  void create_domain_halo_boxes(box_coloring & colbox);
+
+  void compute_overlaying_bounding_box(box_coloring & colbox);
+  
+  template<std::size_t D>
+  void get_indices(std::size_t cobnds[D], int rank, size_t id[D]);
+
+
+ // Simple partitioning algorithm for structured meshes. Partitions the highest
+ // dimensional entities in the  mesh into as many blocks as number of input
+ // ranks.
+ template<std::size_t D>
+ box_coloring simple_box_colorer(std::size_t grid_size[D],
     std::size_t nghost_layers,
     std::size_t ndomain_layers,
     std::size_t thru_dim,
-    std::size_t ncolors[D]) override {
+    std::size_t ncolors[D]) {
     int size;
     int rank;
 
@@ -75,7 +96,7 @@ struct simple_box_colorer : public box_colorer<D> {
 
     // Obtain indices of the current rank
     std::size_t idx[D];
-    get_indices(ncolors, rank, idx);
+    get_indices<D>(ncolors, rank, idx);
 
     // Step 1: Create global bounding boxes for domain including domain halo
     // layers
@@ -92,7 +113,7 @@ struct simple_box_colorer : public box_colorer<D> {
     }
 
     // Step 2: Compute the primary box bounds for the current rank
-    auto pbox = create_primary_box(domain, ncolors, idx);
+    auto pbox = create_primary_box<D>(domain, ncolors, idx);
 
     // Step 2: Create colored box type and set its primary box
     // info to the one created in step 1.
@@ -122,10 +143,10 @@ struct simple_box_colorer : public box_colorer<D> {
     }
 
     // Step 3: Compute exclusive and shared boxes from primary box info.
-    create_exclusive_and_shared_boxes(colbox_cells, ncolors, idx, rank);
+    create_exclusive_and_shared_boxes<D>(colbox_cells, ncolors, idx, rank);
 
     // Step 4: Compute ghost boxes
-    create_ghost_boxes(colbox_cells, ncolors, idx);
+    create_ghost_boxes<D>(colbox_cells, ncolors, idx);
 
     // Step 5: Compute domain halo boxes
     create_domain_halo_boxes(colbox_cells);
@@ -137,7 +158,8 @@ struct simple_box_colorer : public box_colorer<D> {
   } // color
 
   // Compute the aggregate information from a colored box.
-  box_aggregate_info create_aggregate_info(box_coloring & cbox) {
+ template<std::size_t D>
+ box_aggregate_info create_aggregate_info(box_coloring & cbox) {
     box_aggregate_info colinfo;
 
     //#exclusive entities
@@ -224,8 +246,8 @@ struct simple_box_colorer : public box_colorer<D> {
 
     return colinfo;
   } // create_aggregate_color_info
-
-private:
+  
+  template<std::size_t D>
   auto create_primary_box(box_core & domain, std::size_t ncolors[D], size_t idx[D]) {
     box_core pbox(D);
     for(std::size_t i = 0; i < D; ++i) {
@@ -243,8 +265,8 @@ private:
     return pbox;
   } // create_primary_box
 
-  template<std::size_t D_ = D>
-  typename std::enable_if_t<D_ == 1> create_exclusive_and_shared_boxes(
+  template<std::size_t D>
+  typename std::enable_if_t<D == 1> create_exclusive_and_shared_boxes(
     box_coloring & colbox,
     std::size_t ncolors[D],
     std::size_t idx[D],
@@ -340,8 +362,8 @@ private:
     }
   } // create_exclusive_and_shared_boxes
 
-  template<std::size_t D_ = D>
-  typename std::enable_if_t<D_ == 2> create_exclusive_and_shared_boxes(
+  template<std::size_t D>
+  typename std::enable_if_t<D == 2> create_exclusive_and_shared_boxes(
     box_coloring & colbox,
     std::size_t ncolors[D],
     std::size_t idx[D],
@@ -460,8 +482,8 @@ private:
     }
   } // create_exclusive_and_shared_boxes
 
-  template<std::size_t D_ = D>
-  typename std::enable_if_t<D_ == 3> create_exclusive_and_shared_boxes(
+  template<std::size_t D>
+  typename std::enable_if_t<D == 3> create_exclusive_and_shared_boxes(
     box_coloring & colbox,
     std::size_t ncolors[D],
     std::size_t idx[D],
@@ -680,8 +702,8 @@ private:
 
   } // create_exclusive_and_shared_boxes
 
-  template<std::size_t D_ = D>
-  typename std::enable_if_t<D_ == 1>
+  template<std::size_t D>
+  typename std::enable_if_t<D == 1>
   create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]) {
     box_core pbox = colbox.partition[0].box;
     std::size_t hl = colbox.partition[0].nghost_layers;
@@ -737,8 +759,8 @@ private:
     }
   } // create_ghost_boxes
 
-  template<std::size_t D_ = D>
-  typename std::enable_if_t<D_ == 2>
+  template<std::size_t D>
+  typename std::enable_if_t<D == 2>
   create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]) {
     box_core pbox = colbox.partition[0].box;
     std::size_t hl = colbox.partition[0].nghost_layers;
@@ -805,8 +827,8 @@ private:
     }
   } // create_ghost_boxes
 
-  template<std::size_t D_ = D>
-  typename std::enable_if_t<D_ == 3>
+  template<std::size_t D>
+  typename std::enable_if_t<D == 3>
   create_ghost_boxes(box_coloring & colbox, std::size_t ncolors[D], size_t idx[D]) {
     box_core pbox = colbox.partition[0].box;
     std::size_t hl = colbox.partition[0].nghost_layers;
@@ -896,11 +918,12 @@ private:
           }
     }
   } // create_ghost_boxes
-
+ 
   void create_domain_halo_boxes(box_coloring & colbox) {
     box_core pbox = colbox.partition[0].box;
     std::size_t hl = colbox.partition[0].ndomain_layers;
 
+    std::size_t D = colbox.mesh_dim; 
     // Compute bounds for domain with halo
     box_core dbox = pbox;
 
@@ -971,6 +994,7 @@ private:
   void compute_overlaying_bounding_box(box_coloring & colbox) {
     for(std::size_t n = 0; n < colbox.num_boxes; n++) {
 
+      std::size_t D = colbox.mesh_dim; 
       box_core obb(D);
       std::vector<std::size_t> lbnds[D];
       std::vector<std::size_t> ubnds[D];
@@ -1004,6 +1028,7 @@ private:
 
   } // compute_overlaying_bounding_box
 
+  template<std::size_t D>
   void get_indices(std::size_t cobnds[D], int rank, size_t id[D]) {
     std::size_t rem, factor, value;
 
@@ -1019,14 +1044,8 @@ private:
     }
   } // get_indices
 
-}; // class simple_box_colorer
-
 } // namespace structured_impl
 } // namespace topo
 } // namespace flecsi
 #endif // simple_box_colorer_h
 
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
