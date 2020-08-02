@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <flecsi/execution/hpx/context_policy.h>
@@ -49,8 +50,8 @@ hpx_context_policy_t::hpx_main(int (*driver)(int, char *[]),
   char * argv[]) {
 
   // initialize executors (possible only after runtime is active)
-  exec_ = hpx::threads::executors::pool_executor{"default"};
-  mpi_exec_ = hpx::threads::executors::pool_executor{"mpi"};
+  exec_ = flecsi::execution::pool_executor{"default"};
+  mpi_exec_ = flecsi::execution::pool_executor{"mpi"};
 
   // execute user code (driver)
   int retval = (*driver)(argc, argv);
@@ -67,7 +68,7 @@ hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
   char * argv[]) {
 
   // Create the resource partitioner
-  std::vector<std::string> const cfg = {// allocate at least two cores
+  std::vector<std::string> cfg = {// allocate at least two cores
     "hpx.force_min_os_threads!=2",
     // make sure hpx_main is always executed
     "hpx.run_hpx_main!=1",
@@ -76,21 +77,35 @@ hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
     // disable HPX' short options
     "hpx.commandline.aliasing!=0"};
 
+  auto init_rp = [](hpx::resource::partitioner & rp) {
+    // Create a thread pool encapsulating the default scheduler
+    rp.create_thread_pool("default", hpx::resource::local_priority_fifo);
+
+    // Create a thread pool for executing MPI tasks
+    rp.create_thread_pool("mpi", hpx::resource::static_);
+
+    // Add first core to mpi pool
+    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
+  };
+
+  // Now, initialize and run the HPX runtime, will return when done.
+#if HPX_VERSION_FULL < 0x010500
   hpx::resource::partitioner rp{
     hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver), argc,
     argv, cfg};
-
-  // Create a thread pool encapsulating the default scheduler
-  rp.create_thread_pool("default", hpx::resource::local_priority_fifo);
-
-  // Create a thread pool for executing MPI tasks
-  rp.create_thread_pool("mpi", hpx::resource::static_);
-
-  // Add first core to mpi pool
-  rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
-
-  // Now, initialize and run the HPX runtime, will return when done.
+  init_rp(rp);
   return hpx::init();
+#else
+  // Newer versions of HPX do not allow to explicitly initialice the
+  // resource partitioner anymore
+  hpx::init_params params;
+  params.rp_callback = init_rp;
+  params.cfg = std::move(cfg);
+
+  return hpx::init(
+    hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver), argc,
+    argv, params);
+#endif
 }
 
 } // namespace execution

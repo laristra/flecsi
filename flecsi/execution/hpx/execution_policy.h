@@ -170,7 +170,9 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
    */
 
   template<size_t NAME, typename OPERATION>
-  static bool register_reduction_operation() {} // register_reduction_operation
+  static bool register_reduction_operation() {
+    return true;
+  } // register_reduction_operation
 
   //--------------------------------------------------------------------------//
   // Function interface.
