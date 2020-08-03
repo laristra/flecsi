@@ -130,7 +130,8 @@ struct task_prologue_t {
     const data::
       field_reference<DATA_TYPE, data::dense, topo::global, topo::elements> &
         ref) {
-    Legion::LogicalRegion region = ref.topology().get().logical_region;
+    auto & flecsi_context = run::context::instance();
+    flecsi_context.regField(ref.fid(), sizeof(DATA_TYPE));
 
     static_assert(privilege_count(PRIVILEGES) == 1,
       "global topology accessor type only takes one privilege");
@@ -147,7 +148,7 @@ struct task_prologue_t {
       region);
 
     rr.add_field(ref.fid());
-    region_reqs_.push_back(rr);
+    region_reqs_.push_back(rr);*/
   } // visit
 
   template<typename DATA_TYPE,

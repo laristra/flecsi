@@ -38,6 +38,10 @@ namespace charm {
 
 ContextGroup::ContextGroup() {
   CkPrintf("Group created on %i\n", CkMyPe());
+  data = new std::byte[256];
+  if (CkMyPe() != 0) {
+    run::context::instance().context_proxy_ = thisProxy;
+  }
 }
 
 void ContextGroup::top_level_task() {

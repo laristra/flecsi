@@ -147,19 +147,20 @@ detail::register_task() {
     "Legion tasks cannot use MPI");
 
   const std::string name = util::symbol<*TASK>();
+  std::cout << "Registering " << name << std::endl;
   {
     log::devel_guard guard(task_wrapper_tag);
     flog_devel(info) << "registering pure Legion task " << name << std::endl;
   }
 
-  Legion::TaskVariantRegistrar registrar(task_id<*TASK, A>, name.c_str());
-  Legion::Processor::Kind kind = processor_type == task_processor_type_t::toc
-                                   ? Legion::Processor::TOC_PROC
-                                   : Legion::Processor::LOC_PROC;
-  registrar.add_constraint(Legion::ProcessorConstraint(kind));
-  registrar.set_leaf(leaf_task(A));
-  registrar.set_inner(inner_task(A));
-  registrar.set_idempotent(idempotent_task(A));
+  //Legion::TaskVariantRegistrar registrar(task_id<*TASK, A>, name.c_str());
+  //Legion::Processor::Kind kind = processor_type == task_processor_type_t::toc
+  //                                 ? Legion::Processor::TOC_PROC
+  //                                 : Legion::Processor::LOC_PROC;
+  //registrar.add_constraint(Legion::ProcessorConstraint(kind));
+  //registrar.set_leaf(leaf_task(A));
+  //registrar.set_inner(inner_task(A));
+  //registrar.set_idempotent(idempotent_task(A));
 
   /*
     This section of conditionals is necessary because there is still
@@ -167,13 +168,13 @@ detail::register_task() {
     Legion.
    */
 
-  if constexpr(std::is_same_v<RETURN, void>) {
-    Legion::Runtime::preregister_task_variant<TASK>(registrar, name.c_str());
-  }
-  else {
-    Legion::Runtime::preregister_task_variant<RETURN, TASK>(
-      registrar, name.c_str());
-  } // if
+  //if constexpr(std::is_same_v<RETURN, void>) {
+  //  Legion::Runtime::preregister_task_variant<TASK>(registrar, name.c_str());
+  //}
+  //else {
+  //  Legion::Runtime::preregister_task_variant<RETURN, TASK>(
+  //    registrar, name.c_str());
+  //} // if
 } // registration_callback
 
 // A trivial wrapper for nullary functions.
@@ -209,7 +210,7 @@ struct task_wrapper {
     Execution wrapper method for user tasks.
    */
 
-  static RETURN execute(std::vector<std::byte> buf) {
+  static RETURN execute(std::vector<std::byte>& buf) {
     {
       log::devel_guard guard(task_wrapper_tag);
       flog_devel(info) << "In execute_user_task" << std::endl;
@@ -251,7 +252,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
   static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
-  static void execute(std::vector<std::byte> buf) {
+  static void execute(std::vector<std::byte>& buf) {
     // FIXME: Refactor
     //    {
     //      log::devel_guard guard(task_wrapper_tag);

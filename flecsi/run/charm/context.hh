@@ -61,15 +61,32 @@ const size_t FLECSI_MAPPER_EXCLUSIVE_LR = 0x00004000;
 
 namespace charm {
 template<class R = void>
-using task = R(const Legion::Task *,
-  const std::vector<Legion::PhysicalRegion> &,
-  Legion::Context,
-  Legion::Runtime *);
+using task = R(std::vector<std::byte>&);
 
 class ContextGroup : public CBase_ContextGroup {
 public:
   ContextGroup();
   void top_level_task();
+
+  template<class T>
+  void execute(std::vector<std::byte>& buf) {
+    depth++;
+    T::execute(buf);
+    depth--;
+  }
+  int task_depth() const {
+    return depth;
+  }
+
+  void regField(std::size_t i, std::size_t s) {}
+
+  std::byte* getField(std::size_t i) {
+    return data;
+  }
+
+private:
+  int depth;
+  std::byte* data;
 };
 
 }
@@ -155,19 +172,18 @@ struct context_t : context {
     Documentation for this interface is in the top-level context type.
    */
 
-  static size_t task_depth() {
+  size_t task_depth() {
     // TODO: Must be some way to get this from Charm runtime
-    return 0;
+    return context_proxy_.ckLocalBranch()->task_depth();
   } // task_depth
 
   /*
     Documentation for this interface is in the top-level context type.
    */
 
-  static size_t color() {
+  size_t color() {
     flog_assert(
       task_depth() > 0, "this method can only be called from within a task");
-    CkAbort("Can't get color of a task yet\n");
     return 0;
   } // color
 
@@ -175,10 +191,9 @@ struct context_t : context {
     Documentation for this interface is in the top-level context type.
    */
 
-  static size_t colors() {
+  size_t colors() {
     flog_assert(
       task_depth() > 0, "this method can only be called from within a task");
-    CkAbort("Can't get colors of a task yet\n");
     return 0;
   } // colors
 
@@ -208,6 +223,19 @@ struct context_t : context {
   template<class T>
   T & recall(std::size_t i) {
     return *static_cast<T *>(enumerated[i]);
+  }
+
+  template <class T>
+  void execute(std::vector<std::byte>& buf) {
+    context_proxy_.ckLocalBranch()->execute<T>(buf);
+  }
+
+  void regField(std::size_t i, std::size_t s) {
+    context_proxy_.ckLocalBranch()->regField(i, s);
+  }
+
+  std::byte* getField(std::size_t i) {
+    return context_proxy_.ckLocalBranch()->getField(i);
   }
 
 private:

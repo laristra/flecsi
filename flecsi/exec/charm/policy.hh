@@ -189,9 +189,9 @@ reduce(ARGS &&... args) {
   //------------------------------------------------------------------------//
 
   using wrap = charm::task_wrapper<F, processor_type>;
-  //const auto task = charm::task_id<wrap::execute,
-  //  (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
-  wrap::execute(buf);
+  const auto task = charm::task_id<wrap::execute,
+    (ATTRIBUTES & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
+  flecsi_context.execute<wrap>(buf);
   return NULL;
 
 #if 0

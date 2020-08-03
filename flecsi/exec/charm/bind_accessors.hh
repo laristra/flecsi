@@ -57,7 +57,7 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
     @param legion_context The Legion task runtime context.
    */
 
-  bind_accessors_t(std::vector<std::byte> buf)
+  bind_accessors_t(std::vector<std::byte>& buf)
     : buf_(buf) {}
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
@@ -73,8 +73,10 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
     const auto dom = legion_runtime_->get_index_space_domain(
       legion_context_, reg.get_logical_region().get_index_space());
     const auto r = dom.get_rect<1>();*/
-    CkPrintf("Visiting dense data\n");
-    bind(accessor, sizeof(DATA_TYPE), buf_.data()[0]);
+    flog_assert(buf_.size() % sizeof(DATA_TYPE) == 0, "Bad buffer size\n");
+    auto & flecsi_context = run::context::instance();
+    DATA_TYPE* d = (DATA_TYPE*)flecsi_context.getField(accessor.identifier());
+    bind(accessor, 1, d);
 
     /*bind(accessor,
       r.hi[0] - r.lo[0] + 1,
@@ -116,7 +118,7 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
   } // visit
 
 private:
-  std::vector<std::byte> buf_;
+  std::vector<std::byte>& buf_;
 
 }; // struct bind_accessors_t
 
