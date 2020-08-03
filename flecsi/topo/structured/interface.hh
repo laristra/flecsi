@@ -31,7 +31,7 @@ namespace topo {
 
 template<typename Policy>
 struct structured : structured_base {
-  structured(const coloring &){}
+  structured(const coloring &) {}
 }; // struct structured
 
 template<>

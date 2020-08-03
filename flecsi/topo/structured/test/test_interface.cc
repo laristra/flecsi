@@ -27,8 +27,7 @@ struct test_mesh : specialization<structured, test_mesh> {
     auto cells_part = simple_box_colorer<num_dimensions>(
       grid_size, nghost_layers, ndomain_layers, thru_dim, ncolors);
 
-  
-    auto depent_part = dependent_entities_colorer(cells_part); 
+    auto depent_part = dependent_entities_colorer(cells_part);
 
     return cells_part;
   } // color
@@ -50,14 +49,14 @@ topo_driver() {
     coloring.allocate(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
     tmesh.allocate(coloring.get());
 
-    auto& colored_ents = coloring.get();
+    auto & colored_ents = coloring.get();
     int owner = colored_ents.exclusive[0].colors[0];
     int dim = colored_ents.mesh_dim;
 
-    std::string fname =
-      "smesh_" + std::to_string(dim) + "d_" + std::to_string(owner) + ".current";
+    std::string fname = "smesh_" + std::to_string(dim) + "d_" +
+                        std::to_string(owner) + ".current";
 
-    print_part_primary_entity(colored_ents); 
+    print_part_primary_entity(colored_ents);
     UNIT_EQUAL_BLESSED(fname.c_str());
   };
 } // topo_driver

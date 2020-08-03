@@ -35,7 +35,6 @@ set(topo_HEADERS
   ntree/types.hh
   set/interface.hh
   set/types.hh
-  structured/box_colorer.hh
   structured/box_types.hh
   structured/box_utils.hh
   structured/dependent_entities_colorer.hh
