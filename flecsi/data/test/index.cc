@@ -29,8 +29,9 @@ const auto pressure = pressure_field(process_topology);
 
 void
 assign(double1::accessor<wo> p) {
-  flog(info) << "assign on " << color() << std::endl;
-  p = color();
+  const auto i = process();
+  flog(info) << "assign on " << i << std::endl;
+  p = i;
 } // assign
 
 int
@@ -44,7 +45,7 @@ check(double1::accessor<ro> p) {
 int
 index_driver() {
   UNIT {
-    execute<assign>(pressure);
+    execute<assign, mpi>(pressure); // exercise MPI task with accessor
     EXPECT_EQ(test<check>(pressure), 0);
   };
 } // index

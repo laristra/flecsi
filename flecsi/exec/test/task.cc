@@ -69,9 +69,10 @@ seq(const T & s, F f) {
   }(flog_info("s(")); // keep temporary alive throughout
 }
 
-void
+int
 mpi(int * p) {
   *p = 1;
+  return 4;
 }
 
 } // namespace hydro
@@ -119,7 +120,7 @@ test_driver() {
       V{"It's Elementary", "Dear, Dear Data"}, d);
 
     int x = 0;
-    execute<hydro::mpi, mpi>(&x);
+    ASSERT_EQ((execute<hydro::mpi, mpi>(&x).get(0)), 4);
     ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
   };
 } // test_driver

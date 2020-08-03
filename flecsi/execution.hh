@@ -349,7 +349,7 @@ template<auto & TASK,
   class REDUCTION_OPERATION,
   size_t ATTRIBUTES,
   typename... ARGS>
-decltype(auto) reduce(ARGS &&... args);
+auto reduce(ARGS &&... args);
 
 /*!
   Execute a task.
@@ -373,7 +373,7 @@ decltype(auto) reduce(ARGS &&... args);
 template<auto & TASK,
   size_t ATTRIBUTES = flecsi::loc | flecsi::leaf,
   typename... ARGS>
-decltype(auto)
+auto
 execute(ARGS &&... args) {
   return reduce<TASK, void, ATTRIBUTES>(std::forward<ARGS>(args)...);
 } // execute

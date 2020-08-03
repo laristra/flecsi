@@ -47,8 +47,7 @@ top_level_task(const Legion::Task *,
    */
 
   context_.connect_with_mpi(ctx, runtime);
-  context_.wait_on_mpi(ctx, runtime);
-
+  context_.mpi_wait();
   /*
     Invoke the FleCSI runtime top-level action.
    */
@@ -60,7 +59,7 @@ top_level_task(const Legion::Task *,
     Finish up Legion runtime and fall back out to MPI.
    */
 
-  context_.handoff_to_mpi(ctx, runtime);
+  context_.mpi_handoff();
 } // top_level_task
 
 //----------------------------------------------------------------------------//
@@ -221,54 +220,21 @@ context_t::start(const std::function<int()> & action) {
 
   Runtime::start(largv.size(), largv.data(), true);
 
-  do {
-    handoff_to_legion();
-    wait_on_legion();
-  } while(invoke_mpi_task());
+  while(true) {
+    MPI_Barrier(MPI_COMM_WORLD);
+    handshake_.mpi_handoff_to_legion();
+    handshake_.mpi_wait_on_legion();
+    MPI_Barrier(MPI_COMM_WORLD);
+    if(!mpi_task_)
+      break;
+    mpi_task_();
+    mpi_task_ = nullptr;
+  }
 
   Legion::Runtime::wait_for_shutdown();
 
   return context::exit_status();
 } // context_t::start
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::handoff_to_mpi.
-//----------------------------------------------------------------------------//
-
-void
-context_t::handoff_to_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
-  Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher handoff_to_mpi_launcher(
-    task_id<exec::leg::verb<mpi_handoff>>,
-    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0),
-    arg_map);
-
-  handoff_to_mpi_launcher.tag = mapper::force_rank_match;
-  auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
-
-  fm.wait_all_results(true);
-} // context_t::handoff_to_mpi
-
-//----------------------------------------------------------------------------//
-// Implementation of context_t::wait_on_mpi.
-//----------------------------------------------------------------------------//
-
-Legion::FutureMap
-context_t::wait_on_mpi(Legion::Context & ctx, Legion::Runtime * runtime) {
-  Legion::ArgumentMap arg_map;
-  Legion::IndexLauncher wait_on_mpi_launcher(task_id<exec::leg::verb<mpi_wait>>,
-    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
-    Legion::TaskArgument(NULL, 0),
-    arg_map);
-
-  wait_on_mpi_launcher.tag = mapper::force_rank_match;
-  auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
-
-  fm.wait_all_results(true);
-
-  return fm;
-} // context_t::wait_on_mpi
 
 //----------------------------------------------------------------------------//
 // Implementation of context_t::connect_with_mpi.
