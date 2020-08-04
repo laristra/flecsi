@@ -62,25 +62,10 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense, DATA_TYPE, PRIVILEGES> & accessor) {
-    //auto & reg = regions_[region++];
-
-    //    Legion::FieldAccessor<privilege_mode(get_privilege<0, PRIVILEGES>()),
-    /*const Legion::UnsafeFieldAccessor<DATA_TYPE,
-      1,
-      Legion::coord_t,
-      Realm::AffineAccessor<DATA_TYPE, 1, Legion::coord_t>>
-      ac(reg, accessor.identifier(), sizeof(DATA_TYPE));
-    const auto dom = legion_runtime_->get_index_space_domain(
-      legion_context_, reg.get_logical_region().get_index_space());
-    const auto r = dom.get_rect<1>();*/
     flog_assert(buf_.size() % sizeof(DATA_TYPE) == 0, "Bad buffer size\n");
     auto & flecsi_context = run::context::instance();
     DATA_TYPE* d = (DATA_TYPE*)flecsi_context.getField(accessor.identifier());
     bind(accessor, 1, d);
-
-    /*bind(accessor,
-      r.hi[0] - r.lo[0] + 1,
-      ac.ptr(Legion::Domain::DomainPointIterator(dom).p));*/
   }
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
@@ -98,8 +83,7 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
   void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> & future) {
-    /*future.legion_future_ = futures_[future_id];
-    future_id++;*/
+    CkAbort("Futures not yet supported\n");
   }
 
   /*--------------------------------------------------------------------------*

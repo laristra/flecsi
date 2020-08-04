@@ -153,31 +153,13 @@ detail::register_task() {
     flog_devel(info) << "registering pure Legion task " << name << std::endl;
   }
 
-  //Legion::TaskVariantRegistrar registrar(task_id<*TASK, A>, name.c_str());
-  //Legion::Processor::Kind kind = processor_type == task_processor_type_t::toc
-  //                                 ? Legion::Processor::TOC_PROC
-  //                                 : Legion::Processor::LOC_PROC;
-  //registrar.add_constraint(Legion::ProcessorConstraint(kind));
-  //registrar.set_leaf(leaf_task(A));
-  //registrar.set_inner(inner_task(A));
-  //registrar.set_idempotent(idempotent_task(A));
+  // TODO: At this point we would register some task information with the
+  // Charm++ runtime
 
-  /*
-    This section of conditionals is necessary because there is still
-    a distinction between void and non-void task registration with
-    Legion.
-   */
-
-  //if constexpr(std::is_same_v<RETURN, void>) {
-  //  Legion::Runtime::preregister_task_variant<TASK>(registrar, name.c_str());
-  //}
-  //else {
-  //  Legion::Runtime::preregister_task_variant<RETURN, TASK>(
-  //    registrar, name.c_str());
-  //} // if
 } // registration_callback
 
 // A trivial wrapper for nullary functions.
+// TODO: Need a charm++ replacement for this?
 template<auto & F>
 auto
 verb(const Legion::Task *,
@@ -269,11 +251,8 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     // init_handles_t init_handles(runtime, context, regions, task->futures);
     // init_handles.walk(mpi_task_args);
 
-    // Set the MPI function and make the runtime active.
-    auto & c = run::context::instance();
-    // TODO: Removed from context in charm backend
+    // TODO: Is more needed for synchronization with an "MPI" task?
     apply(F, std::move(mpi_task_args));
-    //c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
     // FIXME: Refactor
     // finalize_handles_t finalize_handles;
