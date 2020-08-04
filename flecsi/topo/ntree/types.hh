@@ -19,9 +19,8 @@
 #error Do not include this file directly!
 #endif
 
-//#include "../utility_types.hh"
-//#include "flecsi/topo/ntree/coloring.hh"
 #include "flecsi/util/geometry/point.hh"
+#include "flecsi/topo/index.hh"
 
 namespace flecsi {
 namespace topo {
@@ -105,10 +104,22 @@ public:
   hcell_base_t(const key_t & key, const size_t & ent_idx) {
     key_ = key;
     ent_idx_ = ent_idx;
+    node_idx_ = 0;
+    is_ent_ = true;  
+  }
+
+  hcell_base_t& operator=(const hcell_base_t& o){
+    key_ = o.key_;
+    node_idx_ = o.node_idx_; 
+    ent_idx_ = o.ent_idx_;
+    is_ent_ = o.is_ent_; 
+    return *this; 
   }
 
   hcell_base_t(const key_t & key) {
     key_ = key;
+    node_idx_ = 0; 
+    ent_idx_ = 0; 
   }
 
   key_t key() const {
@@ -116,6 +127,7 @@ public:
   }
 
   size_t ent_idx() const {
+    assert(is_ent_);
     return ent_idx_;
   }
 
@@ -124,6 +136,7 @@ public:
   }
 
   void set_ent_idx(const int & idx) {
+    is_ent_ = true; 
     ent_idx_ = idx;
   }
 
@@ -131,11 +144,23 @@ public:
     // todo
   }
 
+  template<size_t DD, typename TT, class KK>
+  friend std::ostream& operator<<(std::ostream& os, const hcell_base_t<DD,TT,KK>& hb); 
+
+
 private:
   key_t key_;
   size_t node_idx_;
   size_t ent_idx_;
+  bool is_ent_; 
 };
+
+template<size_t D, typename T, class K>
+std::ostream& operator<<(std::ostream& os, const hcell_base_t<D,T,K>& hb){
+  os << "hb: "<<hb.key_<<"-"<<hb.ent_idx_<<"-"<<hb.node_idx_<<std::endl;
+  return os; 
+}
+
 
 template<size_t DIM, typename T, class KEY>
 class node

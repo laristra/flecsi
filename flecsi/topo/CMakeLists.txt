@@ -29,7 +29,6 @@ set(topo_HEADERS
   index_space.hh
   ntree/coloring.hh
   ntree/geometry.hh
-  ntree/hash_table.hh
   ntree/interface.hh
   ntree/storage.hh
   ntree/types.hh
@@ -95,7 +94,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 add_unit(ntree_policy
   SOURCES ntree/test/ntree.cc
   INPUTS ntree/test/coordinates.blessed
-  THREADS 4
+  THREADS 1
 )
 
 endif()

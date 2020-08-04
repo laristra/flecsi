@@ -27,7 +27,6 @@
 #include "flecsi/exec/leg/future.hh"
 #include "flecsi/run/backend.hh"
 #include "flecsi/topo/global.hh"
-#include "flecsi/topo/ntree/interface.hh"
 #include "flecsi/topo/set/interface.hh"
 #include "flecsi/topo/structured/interface.hh"
 //#include "flecsi/topo/unstructured/interface.hh"

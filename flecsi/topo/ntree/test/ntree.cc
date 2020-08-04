@@ -27,10 +27,19 @@ using namespace flecsi;
 
 struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
   static constexpr unsigned int dimension = 3;
-  using key_t = morton_curve<dimension, int64_t>;
+  using key_int_t = uint64_t;
+  using key_t = morton_curve<dimension, key_int_t>;
 
   using index_space = flecsi::topo::ntree_base::index_space;
   using index_spaces = flecsi::topo::ntree_base::index_spaces;
+
+  struct key_t_hasher {
+    std::size_t operator()(const key_int_t & k) const noexcept {
+      return static_cast<std::size_t>(k & ((1 << 22) - 1));
+    }
+  };
+
+  using hash_f = key_t_hasher; 
 
   // using entity_types = std::tuple<util::constant<base::entities>>;
 
@@ -66,10 +75,9 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     }
 
     for(int i = 0; i < size; ++i) {
-      c.entities_offset_[i] = hd.offset(i);
+      c.entities_offset_[i] = hd.offset(i).second;
       if(rank == 0)
-        std::cout << c.entities_offset_[i].first << "-"
-                  << c.entities_offset_[i].second << " ; ";
+        std::cout << c.entities_offset_[i] <<  " ; ";
     }
     if(rank == 0)
       std::cout << std::endl;
@@ -84,29 +92,26 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     c.global_hmap_ = c.nparts_ * c.local_hmap_;
     c.hmap_offset_.resize(c.nparts_);
     for(int i = 0; i < c.nparts_; ++i) {
-      c.hmap_offset_[i] =
-        std::make_pair(i * c.local_hmap_, (i + 1) * c.local_hmap_);
+      c.hmap_offset_[i] = (i + 1) * c.local_hmap_;
     }
     if(rank == 0)
       std::cout << "hmap offset: ";
     for(int i = 0; i < size; ++i) {
       if(rank == 0)
-        std::cout << c.hmap_offset_[i].first << "-" << c.hmap_offset_[i].second
-                  << " ; ";
+        std::cout << c.hmap_offset_[i] << " ; ";
     }
     if(rank == 0)
       std::cout << std::endl;
 
     c.tdata_offset_.resize(c.nparts_);
     for(int i = 0; i < c.nparts_; ++i) {
-      c.tdata_offset_[i] = std::make_pair(i, i + 1);
+      c.tdata_offset_[i] = i + 1;
     }
     if(rank == 0)
       std::cout << "tdata offset: ";
     for(int i = 0; i < size; ++i) {
       if(rank == 0)
-        std::cout << c.tdata_offset_[i].first << "-"
-                  << c.tdata_offset_[i].second << " ; ";
+        std::cout << c.tdata_offset_[i] << " ; ";
     }
     if(rank == 0)
       std::cout << std::endl;

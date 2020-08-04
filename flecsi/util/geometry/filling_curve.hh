@@ -30,6 +30,7 @@ namespace flecsi {
 template<size_t DIM, typename T, class DERIVED>
 class filling_curve
 {
+
   static constexpr size_t dimension = DIM;
   using int_t = T;
   using point_t = flecsi::util::point<double, dimension>;
