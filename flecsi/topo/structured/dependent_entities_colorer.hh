@@ -144,7 +144,6 @@ find_incident_boxes(std::size_t bid,
   inbox_ids.clear();
   std::size_t dim = mbox.domain.dim;
 
-  auto bid2dim_map = bid2dim(dim);
   std::size_t nbids = pow(3, dim);
 
   for(std::size_t b = 0; b < in_boxes.size(); b++) {
