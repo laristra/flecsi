@@ -29,7 +29,6 @@
 #include "flecsi/util/common.hh"
 #include "flecsi/util/function_traits.hh"
 #include "flecsi/util/serialize.hh"
-#include "unbind_accessors.hh"
 #include <flecsi/flog.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -254,24 +253,18 @@ struct task_wrapper {
     }
 
     // Unpack task arguments
-    // TODO: Can we deserialize directly into the user's parameters (i.e., do
-    // without finalize_handles)?
     auto task_args = detail::tuple_get<param_tuple>(*task);
 
+    unbind_accessors ub(task_args);
     bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       apply(F, std::forward<param_tuple>(task_args));
-
-      // FIXME: Refactor
-      // finalize_handles_t finalize_handles;
-      // finalize_handles.walk(task_args);
+      ub();
     }
     else {
       RETURN result = apply(F, std::forward<param_tuple>(task_args));
-
-      // FIXME: Refactor unbind_accessor
-
+      ub();
       return result;
     } // if
   } // execute_user_task
@@ -300,6 +293,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, task->args, sizeof p);
 
+    unbind_accessors ub(*p);
     bind_accessors{runtime, context, regions, task->futures}.walk(*p);
 
     // Set the MPI function and make the runtime active.
@@ -307,13 +301,12 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
     if constexpr(std::is_void_v<RETURN>) {
       c.mpi_call([&] { apply(F, std::move(*p)); });
-      // FIXME unbind accessors
+      ub();
     }
     else {
       std::optional<RETURN> result;
       c.mpi_call([&] { result.emplace(std::apply(F, std::move(*p))); });
-
-      // FIXME unbind accessors
+      ub();
       return std::move(*result);
     }
 

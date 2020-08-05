@@ -23,9 +23,9 @@
 
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/privilege.hh"
+#include "flecsi/exec/launch.hh"
 #include "flecsi/run/context.hh"
 #include "flecsi/util/demangle.hh"
-#include "flecsi/util/tuple_walker.hh"
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -39,16 +39,18 @@ inline log::devel_tag unbind_accessors_tag("unbind_accessors");
 
 namespace exec::leg {
 
-/*!
-  The unbind_accessors_t type is called to walk the user task arguments inside
-  of an executing legion task to properly unbind the user's accessors.
- */
+// Note that what is visited are the objects \e moved into the user's
+// parameters (and are thus the same object only in case of a reference).
+template<class... TT>
+struct unbind_accessors {
+  using Tuple = std::tuple<TT...>;
 
-struct unbind_accessors_t : public util::tuple_walker<unbind_accessors_t> {
+  unbind_accessors(Tuple & t) : acc(t) {
+    buffer(std::index_sequence_for<TT...>());
+  }
 
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> &) {
-  } // visit
+  template<data::layout L, typename DATA_TYPE, size_t PRIVILEGES>
+  void visit(data::accessor<L, DATA_TYPE, PRIVILEGES> &) {} // visit
 
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
@@ -64,7 +66,25 @@ struct unbind_accessors_t : public util::tuple_walker<unbind_accessors_t> {
                        << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit
-}; // struct unbind_accessors_t
+
+  void operator()() {
+    std::apply(
+      [this](TT &... tt) {
+        (void)this; // to appease Clang
+        (visit(tt), ...);
+      },
+      acc);
+  }
+
+private:
+  template<std::size_t... II>
+  void buffer(std::index_sequence<II...>) {
+    (set_buffer(std::get<II>(acc), std::get<II>(buf)), ...);
+  }
+
+  Tuple & acc;
+  std::tuple<buffer_t<TT>...> buf;
+};
 
 } // namespace exec::leg
 } // namespace flecsi
