@@ -75,7 +75,8 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     }
 
     for(int i = 0; i < size; ++i) {
-      c.entities_offset_[i] = hd.offset(i).second;
+      c.entities_offset_[i] =
+        c.entities_distribution_[i]; // hd.offset(i).second;
       if(rank == 0)
         std::cout << c.entities_offset_[i] << " ; ";
     }
@@ -92,7 +93,7 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     c.global_hmap_ = c.nparts_ * c.local_hmap_;
     c.hmap_offset_.resize(c.nparts_);
     for(int i = 0; i < c.nparts_; ++i) {
-      c.hmap_offset_[i] = (i + 1) * c.local_hmap_;
+      c.hmap_offset_[i] = c.local_hmap_;
     }
     if(rank == 0)
       std::cout << "hmap offset: ";
@@ -105,7 +106,7 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
 
     c.tdata_offset_.resize(c.nparts_);
     for(int i = 0; i < c.nparts_; ++i) {
-      c.tdata_offset_[i] = i + 1;
+      c.tdata_offset_[i] = 1;
     }
     if(rank == 0)
       std::cout << "tdata offset: ";

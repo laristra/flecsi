@@ -188,7 +188,7 @@ struct ntree<Policy>::access {
     std::cout << data_field(0).lobound << "-" << data_field(0).hibound
               << std::endl;
 
-    //----- HASHtTABLE TEST -----------------
+    //----- HASHtTABLE TEST: move to hashtable.cc --------
     // Add the entities in the hash_map
     for(std::size_t i = 0; i < data_field(0).nents; ++i) {
       key_t c_key = e_keys(i);
@@ -202,7 +202,6 @@ struct ntree<Policy>::access {
       assert(ptr->second.ent_idx() == i);
     }
     // Loop over existing elements
-    std::cout << "hmap " << hmap.size() << " values: " << std::endl;
     int count = 0;
     for(auto a : hmap) {
       std::cout << count++ << " = " << a.first << std::endl;

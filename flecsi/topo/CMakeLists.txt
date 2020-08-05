@@ -94,7 +94,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 add_unit(ntree_policy
   SOURCES ntree/test/ntree.cc
   INPUTS ntree/test/coordinates.blessed
-  THREADS 1
+  THREADS 4
 )
 
 endif()

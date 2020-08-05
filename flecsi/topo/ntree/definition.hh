@@ -21,7 +21,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace topology {
+namespace topo {
 namespace ntree_impl {
 
 /*!
@@ -58,5 +58,5 @@ public:
 }; // class definition
 
 } // namespace ntree_impl
-} // namespace topology
+} // namespace topo
 } // namespace flecsi

@@ -30,7 +30,7 @@
  */
 
 template<typename KEY, int DIM>
-class txt_definition : public flecsi::topology::ntree_impl::definition<DIM>
+class txt_definition : public flecsi::topo::ntree_impl::definition<DIM>
 {
 public:
   const int dim = DIM;
