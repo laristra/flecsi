@@ -23,9 +23,9 @@
 #include "flecsi/data/topology.hh"
 #include "flecsi/execution.hh"
 #include "flecsi/flog.hh"
-#include "flecsi/topo/ntree/types.hh"
 #include "flecsi/topo/core.hh" // base
 #include "flecsi/topo/ntree/coloring.hh"
+#include "flecsi/topo/ntree/types.hh"
 #include "flecsi/util/hashtable.hh"
 
 #include <fstream>
@@ -53,7 +53,7 @@ template<typename Policy>
 struct ntree : ntree_base {
   // Get types from Policy
   constexpr static unsigned int dimension = Policy::dimension;
-  using key_int_t = typename Policy::key_int_t; 
+  using key_int_t = typename Policy::key_int_t;
   using key_t = typename Policy::key_t;
   using node_t = typename Policy::node_t;
   using ent_t = typename Policy::ent_t;
@@ -88,20 +88,14 @@ struct ntree : ntree_base {
   }
 
   ntree(const coloring & c)
-    : part{
-        make_repartitioned<Policy, entities>(
-          c.nparts_,
-          make_partial<allocate>(c.entities_offset_)),
-        make_repartitioned<Policy, nodes>(
-          c.nparts_,
+    : part{make_repartitioned<Policy, entities>(c.nparts_,
+             make_partial<allocate>(c.entities_offset_)),
+        make_repartitioned<Policy, nodes>(c.nparts_,
           make_partial<allocate>(c.nodes_offset_)),
-        make_repartitioned<Policy, hashmap>(
-          c.nparts_,
+        make_repartitioned<Policy, hashmap>(c.nparts_,
           make_partial<allocate>(c.hmap_offset_)),
-        make_repartitioned<Policy, tree_data>(
-          c.nparts_,
-          make_partial<allocate>(c.tdata_offset_))
-        } {}
+        make_repartitioned<Policy, tree_data>(c.nparts_,
+          make_partial<allocate>(c.tdata_offset_))} {}
 
   // Ntree mandatory fields ---------------------------------------------------
 
@@ -123,10 +117,8 @@ struct ntree : ntree_base {
     n_keys;
 
   // Hmap fields
-  static inline const typename 
-    field<std::pair<key_int_t,hcell_t>>::template definition<
-      Policy,
-      hashmap>
+  static inline const typename field<
+    std::pair<key_int_t, hcell_t>>::template definition<Policy, hashmap>
     hcells;
 
   // Tdata field
@@ -179,46 +171,42 @@ struct ntree<Policy>::access {
     f(hcells);
   }
 
-  using hmap_t = util::hashtable<
-                    ntree::key_int_t,
-                    ntree::hcell_t,
-                    ntree::hash_f>;
+  using hmap_t =
+    util::hashtable<ntree::key_int_t, ntree::hcell_t, ntree::hash_f>;
 
   void exchange_boundaries() {}
 
   void make_tree() {
-    // Cstr htable 
-    hmap_t hmap(hcells.span()); 
+    // Cstr htable
+    hmap_t hmap(hcells.span());
 
-    // Hashtable implementation and test 
+    // Hashtable implementation and test
     data_field(0).max_depth = 0;
-    data_field(0).nents = e_coordinates.span().size(); 
+    data_field(0).nents = e_coordinates.span().size();
     data_field(0).lobound = e_keys(0);
-    data_field(0).hibound = e_keys(data_field(0).nents-1);
-    std::cout<<data_field(0).lobound<<"-"<<data_field(0).hibound<<std::endl;
-    
+    data_field(0).hibound = e_keys(data_field(0).nents - 1);
+    std::cout << data_field(0).lobound << "-" << data_field(0).hibound
+              << std::endl;
+
     //----- HASHtTABLE TEST -----------------
     // Add the entities in the hash_map
-    for(std::size_t i = 0; i < data_field(0).nents; ++i){
-      key_t c_key = e_keys(i); 
-      hmap.insert(c_key,c_key,i); 
+    for(std::size_t i = 0; i < data_field(0).nents; ++i) {
+      key_t c_key = e_keys(i);
+      hmap.insert(c_key, c_key, i);
     }
-    std::cout<<"DONE INSERT"<<std::endl<<std::endl;
     // Find all the element in the map (and be sure of the id)
-    for(std::size_t i = 0 ; i < data_field(0).nents; ++i){
-      key_t c_key = e_keys(i); 
-      auto ptr = hmap.find(c_key); 
-      assert(ptr != hmap.end()); 
-      //assert(ptr->second.ent_idx() == i);
+    for(std::size_t i = 0; i < data_field(0).nents; ++i) {
+      key_t c_key = e_keys(i);
+      auto ptr = hmap.find(c_key);
+      assert(ptr != hmap.end());
+      assert(ptr->second.ent_idx() == i);
     }
-    // Loop over existing elements 
-    std::cout<<"hmap values: "<<std::endl;
-    int count = 0; 
-    //for(auto a: hmap){
-    //  std::cout<<count++<<" = "<<a.first<<std::endl;
-    //}
-
-
+    // Loop over existing elements
+    std::cout << "hmap " << hmap.size() << " values: " << std::endl;
+    int count = 0;
+    for(auto a : hmap) {
+      std::cout << count++ << " = " << a.first << std::endl;
+    }
     // Clear the hmap_
     hmap.clear();
     //----------------------------------------

@@ -39,7 +39,7 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     }
   };
 
-  using hash_f = key_t_hasher; 
+  using hash_f = key_t_hasher;
 
   // using entity_types = std::tuple<util::constant<base::entities>>;
 
@@ -77,7 +77,7 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     for(int i = 0; i < size; ++i) {
       c.entities_offset_[i] = hd.offset(i).second;
       if(rank == 0)
-        std::cout << c.entities_offset_[i] <<  " ; ";
+        std::cout << c.entities_offset_[i] << " ; ";
     }
     if(rank == 0)
       std::cout << std::endl;

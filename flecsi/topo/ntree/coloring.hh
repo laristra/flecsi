@@ -60,7 +60,8 @@ struct ntree_base {
     std::vector<std::size_t> global_sizes_;
   }; // struct coloring
 
-  static std::size_t allocate(const std::vector<std::size_t>& arr, const std::size_t& i){
+  static std::size_t allocate(const std::vector<std::size_t> & arr,
+    const std::size_t & i) {
     return arr[i];
   }
 

@@ -23,30 +23,45 @@
 namespace flecsi {
 namespace util {
 
+/**
+ * @brief Forward definition of hastable for hashtableIterator
+ */
 template<class KEY, class TYPE, class HASH = std::hash<KEY>>
 class hashtable;
 
+/**
+ * @brief hashtableIterator to iterate on the hashtable. 
+ * It iterator on the element defined in the hashtable, 
+ * if an element key is zero. 
+ */
 template<class KEY, class TYPE, class HASH>
 class hashtableIterator
 {
+  using ht_t = hashtable<KEY,TYPE,HASH>;
+  using ht_type_t = typename ht_t::pair_t; 
 
 private:
 
-    typename hashtable<KEY,TYPE,HASH>::pair_t* ptr_;
+    ht_type_t* ptr_;
+    const ht_t* h_; 
+
     friend class hashtable<KEY,TYPE,HASH>;
-    explicit hashtableIterator(typename hashtable<KEY,TYPE,HASH>::pair_t* p) : ptr_(p) {}
+    explicit hashtableIterator(
+      ht_type_t* p, 
+      const ht_t* h) : ptr_(p), h_(h) {}
 
 public:
 
-    typename hashtable<KEY,TYPE,HASH>::pair_t& operator*() const {
+    ht_type_t& operator*() const {
         return *ptr_;
     }
 
     hashtableIterator& operator++() {
-        while((ptr_+1)->first == key_t{}){
-          ++ptr_; 
-        }
-        return *this; 
+      auto end = &*(h_->end()); 
+      do{
+        ++ptr_;
+      }while(ptr_->first == key_t{} && ptr_ < end);
+      return *this; 
     }
 
     bool operator==(const hashtableIterator& iter) const {
@@ -56,59 +71,58 @@ public:
     bool operator!=(const hashtableIterator& iter) const {
         return this->ptr_ != iter.ptr_;
     }
+
+    constexpr ht_type_t* operator->() const {
+      return ptr_;
+    }
 };
 
-
-//----------------------------------------------------------------------------//
-//! Hash table class for the tree topology. This is a generic representation
-//! based on an index space implementing find insert and find functions
-//----------------------------------------------------------------------------//
+/**
+ * @brief hashtable implementation. 
+ * This hashtable is based on span as 1D array and implement the method of
+ * displacement when there is a collision, placing the element at a 
+ * distance of "modulo_".
+ * In this current implementation the neutral key is the default constructor
+ * of the object :key_t{}, 0 for numeric types. 
+ */
 template<class KEY, class TYPE, class HASH>
 struct hashtable {
 
 public: 
+  // Key use for search in the table 
   using key_t = KEY;
+  // Type stored with the key 
   using type_t = TYPE;
   using pair_t = std::pair<key_t,type_t>;
+  // Hasher 
   using hash_f = HASH; 
 
+  // Iterator 
   using pointer = pair_t*; 
-  using const_pointer = const pair_t*; 
-  using reference = pair_t&; 
-  using const_reference = const pair_t&; 
-  
-  //using iterator = pointer; 
-  //using const_iterator = const_pointer; 
-
   using iterator = hashtableIterator<KEY,TYPE,HASH>;
   using const_iterator = const iterator; 
 
 private: 
 
-  pointer p, q; 
-
   std::size_t nelements_; 
-  const std::size_t modulo_ = 334214459;
+  constexpr static std::size_t modulo_ = 334214459;
   util::span<pair_t> acc_; 
   std::size_t hash_capacity_; 
 
   // Max number of search before crash 
-  const std::size_t max_find_ = 10; 
+  constexpr static std::size_t max_find_ = 10; 
 
 public:
 
-  hashtable() = default; 
+  hashtable() = delete; 
 
   hashtable(const util::span<pair_t>& acc){
     acc_ = acc; 
     hash_capacity_ = acc_.size();
-    init_(); 
-  }
-
-  void set_acc(const util::span<pair_t>& acc){
-    acc_ = acc; 
-    hash_capacity_ = acc_.size(); 
-    init_(); 
+    nelements_ = 0; 
+    for(auto a: *this){
+      ++nelements_; 
+    }
   }
 
   /**
@@ -119,19 +133,15 @@ public:
     std::size_t h = hash_f()(key) % hash_capacity_;
     pointer ptr = acc_.data() + h;
     std::size_t iter = 0; 
-    std::cout<<"Search for: "<<key<<std::endl;
-    std::cout<<"On case: "<<ptr->first<<" ptr: "<<ptr<<std::endl;
     while(ptr->first != key && ptr->first != key_t{} && iter != max_find_) {
-      std::cout<<"Nothing"<<std::endl;
       h = (h + modulo_) % hash_capacity_;
       ptr = acc_.data() + h;
       ++iter; 
     }
-    std::cout<<"Found: "<<ptr->first<<" - "<<ptr->second<<std::endl;
     if(ptr->first != key || iter == max_find_) {
-      return iterator(nullptr);
+      return iterator(nullptr,this);
     }
-    return iterator(ptr);
+    return iterator(ptr,this);
   }
 
   /**
@@ -149,44 +159,40 @@ public:
       ptr = acc_.data() + h;
       ++iter; 
     }
-    // Update first and last pointer
-    if(p != nullptr){
-      p = p > ptr ? ptr : p;  
-    }else{
-      p = ptr; 
-    }
-    if(q != nullptr){
-      q = q < ptr ? ptr : q; 
-    }else{
-      q = ptr; 
-    }
+
     if(iter == max_find_){
       flog(error)<<"Max iteration reached, couldn't insert element: "<<key<<std::endl;
-      return iterator(nullptr); 
+      return iterator(nullptr,this); 
     }
     ++nelements_; 
     ptr = new(ptr) pair_t(key,{std::forward<ARGS>(args)...}); 
-
-    //ptr->first = key; 
-    //ptr->second = type_t(std::forward<ARGS>(args)...);
-    return iterator(ptr);
+    return iterator(ptr,this);
   }
 
   // Clear all keys
   void clear() {
-    for(auto a : *this) {
+    for(auto& a : *this) {
       a.first = key_t{};
     }
   }
 
   constexpr iterator begin() const noexcept{ 
-    return iterator(p); 
+    for(pointer a = acc_.data() ; a < acc_.data()+acc_.size(); ++a ){
+      if(a->first != key_t{}){
+        return iterator(a,this);
+      }
+    }
+    return iterator(nullptr,this); 
   }
 
   constexpr iterator end() const noexcept {
-    if(q == nullptr)
-      return iterator(nullptr);
-    return iterator(q+1); 
+    for(pointer a = acc_.data()+(acc_.size()-1) ; a >= acc_.data() ; --a ){
+      if(a->first != key_t{}){
+        ++a;  
+        return iterator(a+1,this); 
+      }
+    }
+    return iterator(nullptr,this);
   }
 
   constexpr const_iterator cbegin() const noexcept {
@@ -197,21 +203,6 @@ public:
     return end();
   }
 
-  constexpr reference front() const {
-    return *begin();
-  }
-  constexpr reference back() const {
-    return end()[-1];
-  }
-
-  constexpr reference operator[](std::size_t i) const {
-    return begin()[i];
-  }
-
-  constexpr pointer data() const noexcept {
-    return begin();
-  }
-
   constexpr std::size_t size() const noexcept {
     return nelements_;
   }
@@ -219,29 +210,6 @@ public:
   constexpr bool empty() const noexcept {
     return begin() == end();
   }
-
-private: 
-  void init_(){
-    p = nullptr;  
-    for(auto a: acc_){
-      if(a.first != key_t{}){
-        p = &a;
-        break;  
-      }
-    }
-    q = nullptr; 
-    for(auto a = acc_.rbegin(); a != acc_.rend(); ++a){
-      if(a->first != key_t{}){
-        q = &(*a); 
-        break;
-      }
-    }
-    nelements_ = 0; 
-    for(auto a: *this){
-      ++nelements_; 
-    }
-  }
-
 
 }; // class hashtable
 
