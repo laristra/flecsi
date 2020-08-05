@@ -35,7 +35,11 @@ set(topo_HEADERS
   ntree/types.hh
   set/interface.hh
   set/types.hh
+  structured/box_types.hh
+  structured/box_utils.hh
+  structured/dependent_entities_colorer.hh
   structured/interface.hh
+  structured/simple_box_colorer.hh
   structured/types.hh
   unstructured/closure_utils.hh
   unstructured/coloring.hh
@@ -77,6 +81,16 @@ set(topo_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+
+#---------------------------   Structured Mesh  -----------------------------#
+
+add_unit(test_interface
+  SOURCES structured/test/test_interface.cc
+  INPUTS
+     structured/test/smesh_1d_0.blessed
+     structured/test/smesh_1d_1.blessed
+  THREADS 2 
+)
 
 #---------------------------   Unstructured Mesh  -----------------------------#
 

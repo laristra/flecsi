@@ -8,36 +8,27 @@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
 
-   Copyright (c) 2016, Triad National Security, LLC
+   Copyright (c) 2016, Los Alamos National Security, LLC
    All rights reserved.
                                                                               */
 #pragma once
 
 /*! @file */
 
-#if !defined(__FLECSI_PRIVATE__)
-#error Do not include this file directly!
-#endif
-
-#include "flecsi/topo/core.hh" // base
-#include "flecsi/topo/structured/types.hh"
-
 namespace flecsi {
-namespace topo {
+namespace topology {
+namespace structured_impl {
 
-/*!
-  @ingroup topology
- */
+/*enum partition_t : size_t {
+  overlay = 1,
+  exclusive = 2,
+  shared = 3,
+  ghost = 4,
+  domain_halo = 5
+}; */
 
-template<typename Policy>
-struct structured : structured_base {
-  structured(const coloring &) {}
-}; // struct structured
+enum class partition_t { overlay, exclusive, shared, ghost, domain_halo };
 
-template<>
-struct detail::base<structured> {
-  using type = structured_base;
-};
-
-} // namespace topo
+} // namespace structured_impl
+} // namespace topology
 } // namespace flecsi

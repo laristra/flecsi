@@ -20,6 +20,7 @@
 #endif
 
 #include "flecsi/run/types.hh"
+#include <flecsi/topo/structured/box_types.hh>
 
 namespace flecsi {
 namespace topo {
@@ -29,7 +30,7 @@ namespace topo {
  */
 
 struct structured_base {
-  using coloring = size_t;
+  using coloring = structured_impl::box_coloring;
 }; // structured_base
 
 } // namespace topo
