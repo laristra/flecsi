@@ -29,8 +29,8 @@ namespace unstructured_impl {
 using coloring = topo::unstructured_base::coloring;
 
 template<size_t Dimension, typename Real = double>
-coloring color(definition<Dimension, Real> const * definition,
-  size_t colors) {
+coloring
+color(definition<Dimension, Real> const * definition, size_t colors) {
 
   flog(info) << "colors: " << colors << std::endl;
   flog(info) << "dimension: " << definition->dimension() << std::endl;
@@ -38,6 +38,6 @@ coloring color(definition<Dimension, Real> const * definition,
   return {};
 } // color_mesh
 
-} // namespace flecsi
-} // namespace topo
 } // namespace unstructured_impl
+} // namespace topo
+} // namespace flecsi

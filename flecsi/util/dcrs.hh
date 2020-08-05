@@ -28,10 +28,11 @@ struct dcrs {
   std::vector<size_t> indices;
   std::vector<size_t> distribution;
 
-#define define_as(member) \
-  template<typename T> \
-  std::vector<T> \
-  member##_as() const { return { member.begin(), member.end() }; }
+#define define_as(member)                                                      \
+  template<typename T>                                                         \
+  std::vector<T> member##_as() const {                                         \
+    return {member.begin(), member.end()};                                     \
+  }
 
   define_as(offsets);
   define_as(indices);
@@ -39,8 +40,8 @@ struct dcrs {
 #undef dcrs_as
 
   size_t entries() const {
-    flog_assert(!offsets.empty(),
-      "attempted to call colors() on empty offsets");
+    flog_assert(
+      !offsets.empty(), "attempted to call colors() on empty offsets");
     return offsets.size() - 1;
   }
 

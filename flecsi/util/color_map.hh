@@ -43,10 +43,11 @@ struct color_map {
 
   color_map(size_t processes, size_t colors, size_t indices)
     : colors_(colors), indices_(indices),
-      domain_size_(std::min(processes, colors)),
-      quotient_(indices/colors), remainder_(indices%colors),
-      color_quotient_(colors/processes), color_remainder_(colors%processes),
-      dist_(colors+1) { init(); }
+      domain_size_(std::min(processes, colors)), quotient_(indices / colors),
+      remainder_(indices % colors), color_quotient_(colors / processes),
+      color_remainder_(colors % processes), dist_(colors + 1) {
+    init();
+  }
 
   /*
     Initialization method.
@@ -54,11 +55,11 @@ struct color_map {
 
   void init() {
     dist_[0] = 0;
-    for(size_t p{0}, offset{0}; p<domain_size_; ++p) {
-      for(size_t c{0}; c<colors(p); ++c) {
-        dist_[offset+1] = dist_[offset] + indices(p, c);
+    for(size_t p{0}, offset{0}; p < domain_size_; ++p) {
+      for(size_t c{0}; c < colors(p); ++c) {
+        dist_[offset + 1] = dist_[offset] + indices(p, c);
         offset++;
-      } 
+      }
     }
   }
 
@@ -84,8 +85,8 @@ struct color_map {
    */
 
   size_t color_offset(size_t process) const {
-    return process*color_quotient_ +
-      (process >= color_remainder_ ? color_remainder_ : process);
+    return process * color_quotient_ +
+           (process >= color_remainder_ ? color_remainder_ : process);
   }
 
   /*!
@@ -125,7 +126,7 @@ struct color_map {
 
   size_t index_offset(size_t process, size_t color) const {
     const size_t c = color_offset(process) + color;
-    return c*quotient_ + (c >= remainder_ ? remainder_ : c);
+    return c * quotient_ + (c >= remainder_ ? remainder_ : c);
   }
 
   /*!
@@ -138,12 +139,12 @@ struct color_map {
     flog_assert(index < indices(),
       "index(" << index << " out-of-range(" << indices() << ")");
 
-    const size_t lower = remainder_*(quotient_ + 1);
-    if(index<lower) {
-      return index/(quotient_ + 1);
+    const size_t lower = remainder_ * (quotient_ + 1);
+    if(index < lower) {
+      return index / (quotient_ + 1);
     }
     else {
-      return remainder_ + (index - lower)/quotient_;
+      return remainder_ + (index - lower) / quotient_;
     }
   }
 
@@ -152,15 +153,15 @@ struct color_map {
    */
 
   size_t process(size_t color) {
-    flog_assert(color < colors_,
-      "color(" << color << " out-of-range(" << colors_ << ")");
+    flog_assert(
+      color < colors_, "color(" << color << " out-of-range(" << colors_ << ")");
 
-    const size_t lower = color_remainder_*(color_quotient_ + 1);
-    if(color<lower) {
-      return color/(color_quotient_ + 1);
+    const size_t lower = color_remainder_ * (color_quotient_ + 1);
+    if(color < lower) {
+      return color / (color_quotient_ + 1);
     }
     else {
-      return color_remainder_ + (color - lower)/color_quotient_;
+      return color_remainder_ + (color - lower) / color_quotient_;
     }
   }
 
@@ -185,7 +186,6 @@ struct color_map {
   }
 
 private:
-
   size_t colors_;
   size_t indices_;
   size_t domain_size_;

@@ -13,12 +13,12 @@
                                                                               */
 
 #define __FLECSI_PRIVATE__
+#include "flecsi/topo/unstructured/coloring_utils.hh"
+#include "flecsi/topo/unstructured/interface.hh"
+#include "flecsi/topo/unstructured/simple_definition.hh"
+#include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
-#include "flecsi/util/unit.hh"
-#include "flecsi/topo/unstructured/interface.hh"
-#include "flecsi/topo/unstructured/coloring_utils.hh"
-#include "flecsi/topo/unstructured/simple_definition.hh"
 
 using namespace flecsi;
 
@@ -38,9 +38,7 @@ unstructured::cslot coloring;
 
 int
 unstructured_driver() {
-  UNIT {
-    coloring.allocate("simple2d-8x8.msh");
-  };
+  UNIT { coloring.allocate("simple2d-8x8.msh"); };
 } // unstructured_driver
 
 flecsi::unit::driver<unstructured_driver> driver;

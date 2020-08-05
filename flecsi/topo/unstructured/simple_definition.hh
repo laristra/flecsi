@@ -15,8 +15,8 @@
 
 /*! @file */
 
-#include "flecsi/topo/unstructured/definition.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/topo/unstructured/definition.hh"
 
 #include <fstream>
 #include <iterator>
