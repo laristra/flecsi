@@ -30,6 +30,7 @@ struct ragged_topology; // defined in terms of field
 namespace data {
 
 /// A data accessor.
+/// Pass a \c field_reference to a task that accepts an accessor.
 /// \tparam L data layout
 /// \tparam T data type
 /// \tparam Priv access privileges
@@ -82,6 +83,7 @@ private:
 }; // struct field_reference
 
 /// A \c field_reference is a \c field_reference_t with more type information.
+/// Declare a task parameter as an \c accessor to use the field.
 /// \tparam T data type (merely for type safety)
 /// \tparam L data layout (similarly)
 /// \tparam Space topology-relative index space

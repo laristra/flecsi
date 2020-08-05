@@ -33,6 +33,8 @@ namespace data {
   that are not part of the core FleCSI topology type. By inheriting from the
   customized topology type, we pick up these additions.
 
+  Pass a \c topology_slot to a task that expects a \c topology_accessor.
+
   \tparam T topology type
   \tparam Priv privilege pack
  */
