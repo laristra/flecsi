@@ -23,19 +23,16 @@
 
 #include "../backend.hh"
 
-#if !defined(FLECSI_ENABLE_LEGION)
-#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#if !defined(FLECSI_ENABLE_CHARM)
+#error FLECSI_ENABLE_CHARM not defined! This file depends on Charm!
 #endif
-
-#include <legion.h>
-#include <legion/legion_mapping.h>
-#include <mappers/default_mapper.h>
 
 namespace flecsi {
 
 inline log::devel_tag legion_mapper_tag("legion_mapper");
 
 namespace run {
+#if 0
 
 /*
  The mpi_mapper_t - is a custom mapper that handles mpi-legion
@@ -313,6 +310,7 @@ mapper_registration(Legion::Machine machine,
     rt->replace_default_mapper(mapper, *it);
   }
 } // mapper registration
+#endif
 
 } // namespace run
 } // namespace flecsi

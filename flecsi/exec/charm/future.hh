@@ -24,11 +24,9 @@
 #include "flecsi/exec/launch.hh"
 #include "flecsi/run/backend.hh"
 
-#if !defined(FLECSI_ENABLE_LEGION)
-#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#if !defined(FLECSI_ENABLE_CHARM)
+#error FLECSI_ENABLE_CHARM not defined! This file depends on Charm!
 #endif
-
-#include <legion.h>
 
 #include <functional>
 #include <iostream>
@@ -38,7 +36,7 @@ namespace flecsi {
 namespace exec {
 
 /*!
-  Base legion future  type.
+  Base charm future  type.
 
   @tparam Return The return type of the task.
   @tparam Launch FleCSI launch type: single/index.
@@ -46,22 +44,22 @@ namespace exec {
   @ingroup legion-execution
 */
 template<typename Return, launch_type_t Launch>
-struct legion_future;
+struct charm_future;
 
-/*! Partial specialization for the Legion:Future
+/*! Partial specialization for the charm future
 
   @tparam Return The return type of the task.
 
   @ingroup legion-execution
  */
 template<typename Return>
-struct legion_future<Return, launch_type_t::single> {
+struct charm_future<Return, launch_type_t::single> {
 
   /*!
     Wait on a task result.
    */
   void wait() {
-    legion_future_.wait();
+    //charm_future_.wait();
   } // wait
 
   /*!
@@ -69,18 +67,20 @@ struct legion_future<Return, launch_type_t::single> {
    */
   Return get(bool silence_warnings = false) {
     if constexpr(std::is_same_v<Return, void>)
-      return legion_future_.get_void_result(silence_warnings);
+      //return charm_future_.get_void_result(silence_warnings);
+      return;
     else
-      return legion_future_.get_result<Return>(silence_warnings);
+      return Return();
+      //return charm_future_.get_result<Return>(silence_warnings);
   } // get
 
-  Legion::Future legion_future_;
-}; // legion_future
+  //Legion::Future charm_future_;
+}; // charm_future
 
 template<typename Return>
-struct legion_future<Return, launch_type_t::index> {
+struct charm_future<Return, launch_type_t::index> {
 
-  explicit operator legion_future<Return, launch_type_t::single>() const {
+  explicit operator charm_future<Return, launch_type_t::single>() const {
     return {};
   }
 
@@ -88,7 +88,7 @@ struct legion_future<Return, launch_type_t::index> {
     Wait on a task result.
   */
   void wait(bool silence_warnings = false) {
-    legion_future_.wait_all_results(silence_warnings);
+    //charm_future_.wait_all_results(silence_warnings);
   } // wait
 
   /*!
@@ -97,27 +97,30 @@ struct legion_future<Return, launch_type_t::index> {
 
   Return get(size_t index = 0, bool silence_warnings = false) {
     if constexpr(std::is_same_v<Return, void>)
-      return legion_future_.get_void_result(index, silence_warnings);
+      //return charm_future_.get_void_result(index, silence_warnings);
+      return;
     else
-      return legion_future_.get_result<Return>(
-        Legion::DomainPoint::from_point<1>(
-          LegionRuntime::Arrays::Point<1>(index)),
-        silence_warnings);
+      //return charm_future_.get_result<Return>(
+      //  Legion::DomainPoint::from_point<1>(
+      //    LegionRuntime::Arrays::Point<1>(index)),
+      //  silence_warnings);
+      return Return();
   } // get
 
-  Legion::FutureMap legion_future_;
+  //Legion::FutureMap charm_future_;
 
-}; // struct legion_future
+}; // struct charm_future
 
 //-----------------------------------------------------------------------
 
+
 template<typename Return, launch_type_t Launch = launch_type_t::single>
-using flecsi_future = legion_future<Return, Launch>;
+using flecsi_future = charm_future<Return, Launch>;
 
 template<class>
 constexpr bool is_index_future = false;
 template<class R>
-constexpr bool is_index_future<legion_future<R, launch_type_t::index>> = true;
+constexpr bool is_index_future<charm_future<R, launch_type_t::index>> = true;
 
 } // namespace exec
 } // namespace flecsi

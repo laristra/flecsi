@@ -29,11 +29,9 @@
 #include "flecsi/util/demangle.hh"
 #include "flecsi/util/tuple_walker.hh"
 
-#if !defined(FLECSI_ENABLE_LEGION)
-#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#if !defined(FLECSI_ENABLE_CHARM)
+#error FLECSI_ENABLE_CHARM not defined! This file depends on Charm!
 #endif
-
-#include <legion.h>
 
 namespace flecsi {
 

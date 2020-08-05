@@ -130,8 +130,8 @@ if(NOT FORMAT_ONLY)
     set(ENABLE_HPX ON CACHE BOOL "Enable HPX" FORCE)
   elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
     set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
-    set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
     set(ENABLE_CHARM ON CACHE BOOL "Enable Charm" FORCE)
+    set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
   endif()
 
   mark_as_advanced(ENABLE_MPI ENABLE_LEGION ENABLE_HPX ENABLE_CHARM)
@@ -297,22 +297,9 @@ if(NOT FORMAT_ONLY)
       message (FATAL_ERROR "MPI is required for the charm runtime model")
     endif()
 
-    if(NOT Legion_FOUND)
-      message (FATAL_ERROR "Legion is required for the charm runtime model")
-    endif()
-
     set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/exec/charm)
 
-    set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${Legion_LIBRARIES}
-      ${MPI_LIBRARIES})
-
-    list(APPEND FLECSI_INCLUDE_DEPENDENCIES ${Legion_INCLUDE_DIRS})
-
-    #
-    # Compacted storage interface
-    #
-    option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper compaction" ON)
-    mark_as_advanced(ENABLE_MAPPER_COMPACTION)
+    set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
 
   #----------------------------------------------------------------------------#
   # Default

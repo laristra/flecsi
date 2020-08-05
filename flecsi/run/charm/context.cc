@@ -101,8 +101,6 @@ context_t::finalize() {
 
 int
 context_t::start(const std::function<int()> & action) {
-  using namespace Legion;
-
   /*
     Store the top-level action for invocation from the top-level task.
    */

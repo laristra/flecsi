@@ -27,12 +27,6 @@
 #include <flecsi/run/types.hh>
 #include <flecsi/util/common.hh>
 
-#if !defined(FLECSI_ENABLE_LEGION)
-#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
-#endif
-
-#include <legion.h>
-
 #if !defined(FLECSI_ENABLE_MPI)
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif

@@ -72,15 +72,16 @@ const task_id_t TASK_ID_MAX = std::numeric_limits<size_t>::max();
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_charm
 
-#include <legion.h>
+#include <cstddef>
+#include <limits>
 
 namespace flecsi {
 
-using field_id_t = Legion::FieldID;
-const field_id_t FIELD_ID_MAX = LEGION_MAX_APPLICATION_FIELD_ID;
+using field_id_t = size_t;
+const field_id_t FIELD_ID_MAX = std::numeric_limits<size_t>::max();
 
-using task_id_t = Legion::TaskID;
-const task_id_t TASK_ID_MAX = LEGION_MAX_APPLICATION_TASK_ID;
+using task_id_t = size_t;
+const task_id_t TASK_ID_MAX = std::numeric_limits<size_t>::max();
 
 } // namespace flecsi
 

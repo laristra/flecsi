@@ -32,11 +32,9 @@
 #include "unbind_accessors.hh"
 #include <flecsi/flog.hh>
 
-#if !defined(FLECSI_ENABLE_LEGION)
-#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#if !defined(FLECSI_ENABLE_CHARM)
+#error FLECSI_ENABLE_CHARM not defined! This file depends on Charm!
 #endif
-
-#include <legion.h>
 
 #include <string>
 #include <utility>
@@ -162,10 +160,7 @@ detail::register_task() {
 // TODO: Need a charm++ replacement for this?
 template<auto & F>
 auto
-verb(const Legion::Task *,
-  const std::vector<Legion::PhysicalRegion> &,
-  Legion::Context,
-  Legion::Runtime *) {
+verb(std::vector<std::byte>& buf) {
   return F();
 }
 

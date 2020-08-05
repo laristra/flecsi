@@ -34,11 +34,9 @@
 #include "flecsi/util/demangle.hh"
 #include "flecsi/util/tuple_walker.hh"
 
-#if !defined(FLECSI_ENABLE_LEGION)
-#error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
+#if !defined(FLECSI_ENABLE_CHARM)
+#error FLECSI_ENABLE_LEGION not defined! This file depends on Charm!
 #endif
-
-#include <legion.h>
 
 namespace flecsi {
 
@@ -123,14 +121,14 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
   void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> *,
-    const exec::legion_future<DATA_TYPE, exec::launch_type_t::single> &
+    const exec::charm_future<DATA_TYPE, exec::launch_type_t::single> &
       future) {
     CkAbort("Futures not yet supported\n");
   }
 
   template<typename DATA_TYPE>
   void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> *,
-    const exec::legion_future<DATA_TYPE, exec::launch_type_t::index> & future) {
+    const exec::charm_future<DATA_TYPE, exec::launch_type_t::index> & future) {
     CkAbort("Futures not yet supported\n");
   }
 
