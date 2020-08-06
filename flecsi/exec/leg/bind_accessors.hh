@@ -102,6 +102,11 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
     if constexpr(privilege_write_only(P))
       construct(a);
   }
+  template<class T>
+  void visit(data::mutator<data::ragged, T> & m) {
+    visit(m.get_base());
+    m.bind();
+  }
 
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> & a) {

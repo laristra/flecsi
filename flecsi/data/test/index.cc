@@ -47,9 +47,8 @@ allocate(resize::Field::accessor<wo> a) {
   a = partition::make_row(i, i + 1);
 }
 void
-rows(intN::Offsets::accessor<wo> a) {
-  static_assert(std::is_same_v<decltype(a(0)), std::size_t &>);
-  a(0) = color() + 1;
+rows(intN::mutator r) {
+  r[0].resize(color() + 1);
 }
 
 using noisy = field<Noisy, singular>;
@@ -57,16 +56,13 @@ const noisy::definition<topo::index> noisy_field;
 const auto noise = noisy_field(process_topology);
 
 void
-assign(double1::accessor<wo> p, intN::accessor<wo> r) {
+assign(double1::accessor<wo> p, intN::accessor<rw> r) {
   const auto i = color();
   flog(info) << "assign on " << i << std::endl;
   p = i;
   static_assert(std::is_same_v<decltype(r.get_offsets().span()),
     util::span<const std::size_t>>);
-  const auto s = r[0];
-  for(auto & x : s)
-    x = 0;
-  s.back() = 1;
+  r[0].back() = 1;
 } // assign
 
 std::size_t
@@ -97,7 +93,7 @@ index_driver() {
       verts_field.fid);
     execute<allocate>(p.sizes());
     p.resize();
-    execute<rows>(verts_field.offsets(process_topology));
+    execute<rows>(verts);
     execute<assign>(pressure, verts);
     execute<reset>(noise);
     EXPECT_EQ((reduce<reset, exec::fold::sum<std::size_t>, mpi>(noise).get()),

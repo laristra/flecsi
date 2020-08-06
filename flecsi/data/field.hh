@@ -36,6 +36,10 @@ namespace data {
 template<layout L, typename T, std::size_t Priv>
 struct accessor;
 
+/// A specialized accessor for changing the extent of dynamic layouts.
+template<layout, class>
+struct mutator;
+
 namespace detail {
 template<class, layout>
 struct field_base {};
@@ -113,6 +117,7 @@ struct field : data::detail::field_base<T, L> {
   /// \tparam PP the appropriate number of privilege values
   template<partition_privilege_t... PP>
   using accessor = accessor1<privilege_pack<PP...>>;
+  using mutator = data::mutator<L, T>; // usable only for certain layouts
 
   template<class Topo, typename Topo::index_space S>
   using Register = data::detail::field_register<T, L, Topo, S>;

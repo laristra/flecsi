@@ -187,6 +187,14 @@ struct task_prologue_t {
     const data::field_reference<T, data::ragged, Topo, S> & f) {
     ragged(null_p, f);
   }
+  template<class T, class Topo, typename Topo::index_space S>
+  void visit(data::mutator<data::ragged, T> *,
+    const data::field_reference<T, data::ragged, Topo, S> & f) {
+    // A mutator doesn't have privileges, so supply the correct number to it:
+    ragged(data::mutator<data::ragged,
+             T>::template null_base<Topo::template privilege_count<S>>,
+      f);
+  }
 
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> * /* parameter */,
