@@ -35,7 +35,7 @@ template<class P, class... VT>
 struct connect<P, util::types<VT...>> {
   // FIXME: Use ragged instead of dense when it's functional.
   using type = util::key_tuple<util::key_type<VT::value,
-    util::key_array<field<std::size_t, data::dense>::definition<P, VT::value>,
+    util::key_array<field<util::id, data::dense>::definition<P, VT::value>,
       typename VT::type>>...>;
 };
 

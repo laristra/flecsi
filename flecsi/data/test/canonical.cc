@@ -39,7 +39,7 @@ const field<double>::definition<canon, canon::cells> cell_field;
 auto pressure = cell_field(canonical);
 
 const int mine = 35;
-const std::size_t favorite = 3;
+const util::id favorite = 3;
 const double p0 = 3.5;
 
 int
@@ -58,7 +58,7 @@ check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
     static_assert(std::is_same_v<decltype(r), const int &>);
     EXPECT_EQ(r, mine);
     auto & cv = t.get_connect<canon::cells, canon::vertices>()(0);
-    static_assert(std::is_same_v<decltype(cv), const std::size_t &>);
+    static_assert(std::is_same_v<decltype(cv), const util::id &>);
     EXPECT_EQ(cv, favorite);
     EXPECT_EQ(c(0), p0);
   };
