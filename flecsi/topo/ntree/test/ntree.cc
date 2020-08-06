@@ -41,8 +41,6 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
 
   using hash_f = key_t_hasher;
 
-  // using entity_types = std::tuple<util::constant<base::entities>>;
-
   using ent_t = flecsi::topo::sort_entity<dimension, double, key_t>;
   using node_t = flecsi::topo::node<dimension, double, key_t>;
 
@@ -53,8 +51,6 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    // Move to the coloring constructor
-    // coloring c(hd);
     coloring c;
 
     // For now the number of partitions is the number of processes

@@ -125,7 +125,7 @@ public:
       ++iter;
     }
     if(ptr->first != key) {
-      return iterator(nullptr, this);
+      return end();
     }
     return iterator(ptr, this);
   }
@@ -149,7 +149,7 @@ public:
     if(iter == max_find_) {
       flog(error) << "Max iteration reached, couldn't insert element: " << key
                   << std::endl;
-      return iterator(nullptr, this);
+      return end();
     }
     ++nelements_;
     ptr = new(ptr) pair_t(key, {std::forward<ARGS>(args)...});
