@@ -229,7 +229,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
   static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
-  static void execute(std::vector<std::byte>& buf) {
+  static RETURN execute(std::vector<std::byte>& buf) {
     // FIXME: Refactor
     //    {
     //      log::devel_guard guard(task_wrapper_tag);
@@ -247,7 +247,11 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     // init_handles.walk(mpi_task_args);
 
     // TODO: Is more needed for synchronization with an "MPI" task?
-    apply(F, std::move(mpi_task_args));
+    if constexpr(std::is_same_v<RETURN, void>) {
+      apply(F, std::move(mpi_task_args));
+    } else {
+      return apply(F, std::move(mpi_task_args));
+    }
 
     // FIXME: Refactor
     // finalize_handles_t finalize_handles;

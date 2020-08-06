@@ -63,9 +63,9 @@ public:
   void top_level_task();
 
   template<class T>
-  void execute(std::vector<std::byte>& buf) {
+  auto execute(std::vector<std::byte>& buf) {
     depth++;
-    T::execute(buf);
+    return T::execute(buf);
     depth--;
   }
   int task_depth() const {
@@ -220,8 +220,8 @@ struct context_t : context {
   }
 
   template <class T>
-  void execute(std::vector<std::byte>& buf) {
-    context_proxy_.ckLocalBranch()->execute<T>(buf);
+  auto execute(std::vector<std::byte>& buf) {
+    return context_proxy_.ckLocalBranch()->execute<T>(buf);
   }
 
   void regField(std::size_t i, std::size_t s) {

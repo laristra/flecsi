@@ -134,10 +134,21 @@ reduce(ARGS &&... args) {
   // TODO: Right now we just execute tasks inline which doesn't expose any
   // paralellism. Tasks should be converted to entry methods in charm or
   // something similar, ie charm tasks.
-  flecsi_context.execute<wrap>(buf);
-
-  // TODO: Should be able to return a future of some sort
-  return NULL;
+  if constexpr(LAUNCH_DOMAIN == single) {
+    if constexpr(std::is_same_v<RETURN, void>) {
+      flecsi_context.execute<wrap>(buf);
+      return charm_future<RETURN, launch_type_t::single>();
+    } else {
+      return charm_future<RETURN, launch_type_t::single>(flecsi_context.execute<wrap>(buf));
+    }
+  } else {
+    if constexpr(std::is_same_v<RETURN, void>) {
+      flecsi_context.execute<wrap>(buf);
+      return charm_future<RETURN, launch_type_t::index>();
+    } else {
+      return charm_future<RETURN, launch_type_t::index>(flecsi_context.execute<wrap>(buf));
+    }
+  }
 } // execute_task
 
 } // namespace flecsi
