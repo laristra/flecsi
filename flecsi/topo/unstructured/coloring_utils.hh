@@ -21,6 +21,7 @@
 
 #include "flecsi/flog.hh"
 #include "flecsi/topo/unstructured/definition.hh"
+#include "flecsi/topo/unstructured/types.hh"
 
 namespace flecsi {
 namespace topo {

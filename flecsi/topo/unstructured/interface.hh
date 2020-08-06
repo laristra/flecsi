@@ -22,6 +22,7 @@
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/topology.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/run/backend.hh"
 #include "flecsi/topo/core.hh"
 #include "flecsi/topo/unstructured/types.hh"
 #include "flecsi/topo/utility_types.hh"
@@ -47,8 +48,8 @@ inline util::dcrs
 naive_coloring(Definition const & md,
   size_t entity_dimension,
   size_t thru_dimension,
-  size_t process = flecsi::process(),
-  size_t processes = flecsi::processes()) {
+  size_t process = run::context::instance().process(),
+  size_t processes = run::context::instance().processes()) {
 
   /*
     This utility isn't really necessary here (since we are using colors =
@@ -152,8 +153,8 @@ struct unstructured : unstructured_base {
   inline util::dcrs naive_coloring(Definition const & md,
     size_t entity_dimension,
     size_t thru_dimension,
-    size_t process = flecsi::process(),
-    size_t processes = flecsi::processes()) {
+    size_t process = run::context::instance().process(),
+    size_t processes = run::context::instance().processes()) {
     return unstructured_impl::naive_coloring(
       md, entity_dimension, thru_dimension, process, processes);
   }
