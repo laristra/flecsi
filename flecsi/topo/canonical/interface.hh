@@ -38,7 +38,7 @@ namespace topo {
  */
 
 template<typename Policy>
-struct canonical : canonical_base {
+struct canonical : canonical_base, with_ragged<Policy> {
   using index_space = typename Policy::index_space;
   using index_spaces = typename Policy::index_spaces;
 
@@ -52,7 +52,8 @@ struct canonical : canonical_base {
   }
 
   canonical(const coloring & c)
-    : part(make_partitions(c,
+    : with_ragged<Policy>(c.parts),
+      part(make_partitions(c,
         index_spaces(),
         std::make_index_sequence<index_spaces::size>())) {}
 

@@ -118,6 +118,68 @@ struct accessor<dense, T, P> : accessor<raw, T, P> {
   }
 };
 
+template<class T, std::size_t P, std::size_t OP = P>
+struct ragged_accessor
+  : accessor<raw, T, P>,
+    util::with_index_iterator<const ragged_accessor<T, P, OP>> {
+  using base_type = typename ragged_accessor::accessor;
+  using typename base_type::element_type;
+  using Offsets = accessor<dense, std::size_t, OP>;
+  using row = util::span<element_type>;
+
+  ragged_accessor(const base_type & b)
+    : base_type(b), off(this->identifier()) {}
+
+  row operator[](std::size_t i) const {
+    // Without an extra element, we must store one endpoint implicitly.
+    // Storing the end usefully ignores any overallocation.
+    return this->span().first(off(i)).subspan(i ? off(i - 1) : 0);
+  }
+  std::size_t size() const noexcept { // not total!
+    return off.span().size();
+  }
+
+  util::span<element_type> span() const {
+    const auto s = off.span();
+    return get_base().span().first(s.empty() ? 0 : s.back());
+  }
+
+  base_type & get_base() {
+    return *this;
+  }
+  const base_type & get_base() const {
+    return *this;
+  }
+  friend base_type * get_null_base(ragged_accessor *) { // for task_prologue_t
+    return nullptr;
+  }
+
+  Offsets & get_offsets() {
+    return off;
+  }
+  const Offsets & get_offsets() const {
+    return off;
+  }
+  friend Offsets * get_null_offsets(ragged_accessor *) { // for task_prologue_t
+    return nullptr;
+  }
+
+  template<class Topo, typename Topo::index_space S>
+  static ragged_accessor parameter(
+    const field_reference<T, data::ragged, Topo, S> & r) {
+    return exec::replace_argument<base_type>(r.template cast<data::raw>());
+  }
+
+private:
+  Offsets off;
+};
+
+template<class T, std::size_t P>
+struct accessor<ragged, T, P>
+  : ragged_accessor<T, P, privilege_repeat(ro, privilege_count(P))> {
+  using accessor::ragged_accessor::ragged_accessor;
+};
+
 } // namespace data
 
 template<class T, std::size_t P>
@@ -145,6 +207,15 @@ struct exec::detail::task_param<data::accessor<data::singular, T, S>> {
     const data::field_reference<T, data::singular, Topo, Space> & r) {
     return exec::replace_argument<typename type::base_type>(
       r.template cast<data::dense>());
+  }
+};
+template<class T, std::size_t P>
+struct exec::detail::task_param<data::accessor<data::ragged, T, P>> {
+  using type = data::accessor<data::ragged, T, P>;
+  template<class Topo, typename Topo::index_space S>
+  static type replace(
+    const data::field_reference<T, data::ragged, Topo, S> & r) {
+    return type::parameter(r);
   }
 };
 

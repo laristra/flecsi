@@ -77,6 +77,9 @@ struct util::serial_convert<data::accessor<data::dense, T, P>>
 template<class T, std::size_t Priv>
 struct util::serial_convert<data::accessor<data::singular, T, Priv>>
   : data::detail::convert_accessor<data::accessor<data::singular, T, Priv>> {};
+template<class T, std::size_t P>
+struct util::serial_convert<data::accessor<data::ragged, T, P>>
+  : data::detail::convert_accessor<data::accessor<data::ragged, T, P>> {};
 template<class T, std::size_t Priv>
 struct util::serial<data::topology_accessor<T, Priv>,
   std::enable_if_t<!util::memcpyable_v<data::topology_accessor<T, Priv>>>> {

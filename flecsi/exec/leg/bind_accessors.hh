@@ -88,14 +88,20 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
   template<typename T, size_t P>
   void visit(data::accessor<data::dense, T, P> & a) {
     visit(a.get_base());
-    if constexpr(privilege_write_only(P)) {
-      const auto s = a.span();
-      std::uninitialized_default_construct(s.begin(), s.end());
-    }
+    if constexpr(privilege_write_only(P))
+      construct(a);
   }
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
     visit(accessor.get_base());
+  }
+  // Because we don't have a catch-all, this matches accessor<ragged,...>.
+  template<class T, std::size_t P, std::size_t OP>
+  void visit(data::ragged_accessor<T, P, OP> & a) {
+    visit(a.get_base());
+    visit(a.get_offsets());
+    if constexpr(privilege_write_only(P))
+      construct(a);
   }
 
   template<class Topo, std::size_t Priv>
@@ -127,6 +133,12 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
   } // visit
 
 private:
+  template<class A>
+  static void construct(const A & a) {
+    const auto s = a.span();
+    std::uninitialized_default_construct(s.begin(), s.end());
+  }
+
   Legion::Runtime * legion_runtime_;
   Legion::Context & legion_context_;
   size_t region = 0;

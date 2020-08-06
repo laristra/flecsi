@@ -20,8 +20,7 @@
 #endif
 
 #include "flecsi/data/privilege.hh"
-#include "flecsi/data/topology.hh"
-#include "flecsi/topo/core.hh"
+#include "flecsi/topo/index.hh"
 
 namespace flecsi {
 namespace topo {
@@ -31,8 +30,9 @@ struct global_base {
 };
 
 template<class P>
-struct global_category : global_base, data::region {
-  global_category(const coloring &) : region(data::make_region<P>({1, 1})) {}
+struct global_category : global_base, data::region, with_ragged<P> {
+  global_category(const coloring &)
+    : region(data::make_region<P>({1, 1})), with_ragged<P>(1) {}
 };
 template<>
 struct detail::base<global_category> {
