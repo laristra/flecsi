@@ -82,9 +82,9 @@ struct util::serial_convert<data::ragged_accessor<T, P, OP>>
 template<class T, std::size_t P>
 struct util::serial_convert<data::accessor<data::ragged, T, P>>
   : data::detail::convert_accessor<data::accessor<data::ragged, T, P>> {};
-template<class T>
-struct util::serial_convert<data::mutator<data::ragged, T>>
-  : data::detail::convert_accessor<data::mutator<data::ragged, T>> {};
+template<data::layout L, class T>
+struct util::serial_convert<data::mutator<L, T>>
+  : data::detail::convert_accessor<data::mutator<L, T>> {};
 template<class T, std::size_t P>
 struct util::serial_convert<data::accessor<data::sparse, T, P>>
   : data::detail::convert_accessor<data::accessor<data::sparse, T, P>> {};

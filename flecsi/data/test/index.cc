@@ -55,9 +55,42 @@ void
 rows(intN::mutator r) {
   r[0].resize(color() + 1);
 }
-void
-drows(double_at::base_type::mutator s) {
-  s[0].resize(color() + 1);
+int
+drows(double_at::mutator s) {
+  UNIT {
+    const auto me = color();
+    const auto && m = s[0];
+    for(std::size_t c = 0; c <= me; ++c)
+      m.try_emplace(column + c, me + c);
+    for(const auto && p : m)
+      EXPECT_EQ(p.first - column, p.second - me);
+    // Exercise std::map-like interface:
+    {
+      const auto [i, nu] = m.insert({column, 0});
+      EXPECT_FALSE(nu);
+      EXPECT_EQ((*i).first, column);
+      EXPECT_EQ((*i).second, me);
+    }
+    {
+      const auto [i, nu] = m.try_emplace(0, 1);
+      EXPECT_TRUE(nu);
+      EXPECT_EQ((*i).first, 0u);
+      EXPECT_EQ((*i).second, 1u);
+    }
+    {
+      const auto [i, nu] = m.insert_or_assign(0, 2);
+      EXPECT_FALSE(nu);
+      EXPECT_EQ((*i).first, 0u);
+      EXPECT_EQ((*i).second, 2u);
+    }
+    EXPECT_EQ(m.count(0), 1u);
+    EXPECT_EQ(m.erase(0), 1u);
+    EXPECT_EQ(m.count(0), 0u);
+    EXPECT_EQ(m.erase(0), 0u);
+    EXPECT_EQ((*m.find(column)).second, me);
+    EXPECT_EQ(m.lower_bound(column), m.begin());
+    EXPECT_EQ(m.upper_bound((*--m.end()).first), m.end());
+  };
 }
 
 using noisy = field<Noisy, singular>;
@@ -67,18 +100,14 @@ const auto noise = noisy_field(process_topology);
 void
 assign(double1::accessor<wo> p,
   intN::accessor<rw> r,
-  double_at::accessor<wo> sp) {
+  double_at::accessor<rw> sp) {
   const auto i = color();
   flog(info) << "assign on " << i << std::endl;
   p = i;
   static_assert(std::is_same_v<decltype(r.get_offsets().span()),
     util::span<const std::size_t>>);
   r[0].back() = 1;
-  std::size_t c = 0;
-  for(auto & x : sp.get_base()[0]) {
-    x = {column + c, i + c};
-    ++c;
-  }
+  ++sp[0](column + i);
 } // assign
 
 std::size_t
@@ -102,7 +131,7 @@ check(double1::accessor<ro> p,
     EXPECT_EQ(s.back(), 1);
     ASSERT_EQ(sp.size(), 1u);
     const auto sr = sp[0];
-    EXPECT_EQ(sr(column + me), 2 * me);
+    EXPECT_EQ(sr(column + me), 2 * me + 1);
     EXPECT_EQ(n.get().i, Noisy::value());
   };
 } // print
@@ -118,7 +147,7 @@ index_driver() {
       p.resize();
     }
     execute<rows>(verts);
-    execute<drows>(vfrac.cast<ragged, double_at::base_type::value_type>());
+    execute<drows>(vfrac);
     execute<assign>(pressure, verts, vfrac);
     execute<reset>(noise);
     EXPECT_EQ((reduce<reset, exec::fold::sum<std::size_t>, mpi>(noise).get()),

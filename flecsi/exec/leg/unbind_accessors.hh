@@ -52,8 +52,8 @@ struct unbind_accessors {
   template<data::layout L, typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<L, DATA_TYPE, PRIVILEGES> &) {} // visit
 
-  template<class T>
-  void visit(data::mutator<data::ragged, T> & m) {
+  template<data::layout L, class T>
+  void visit(data::mutator<L, T> & m) {
     m.commit();
   }
 

@@ -202,6 +202,13 @@ struct task_prologue_t {
       ref.template cast<data::ragged,
         typename field<T, data::sparse>::base_type::value_type>());
   }
+  template<class T, class Topo, typename Topo::index_space S>
+  void visit(data::mutator<data::sparse, T> * null_p,
+    const data::field_reference<T, data::sparse, Topo, S> & f) {
+    visit(get_null_base(null_p),
+      f.template cast<data::ragged,
+        typename field<T, data::sparse>::base_type::value_type>());
+  }
 
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> * /* parameter */,

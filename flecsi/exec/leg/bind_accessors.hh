@@ -107,6 +107,10 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
     visit(m.get_base());
     m.bind();
   }
+  template<class T>
+  void visit(data::mutator<data::sparse, T> & m) {
+    visit(m.get_base());
+  }
 
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> & a) {

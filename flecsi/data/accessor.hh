@@ -609,6 +609,214 @@ public:
   }
 };
 
+template<class T>
+struct mutator<sparse, T>
+  : util::with_index_iterator<const mutator<sparse, T>> {
+  using base_type = typename field<T, sparse>::base_type::mutator;
+  using TaskBuffer = typename base_type::TaskBuffer;
+
+private:
+  using base_row = typename base_type::row;
+  using base_iterator = typename base_row::iterator;
+
+public:
+  struct row {
+    using key_type = std::size_t;
+    using value_type = typename base_row::value_type;
+    using size_type = std::size_t;
+
+    // NB: invalidated by insertions/deletions, unlike std::map::iterator.
+    struct iterator {
+    public:
+      using value_type = std::pair<const key_type &, T &>;
+      using difference_type = std::ptrdiff_t;
+      using reference = value_type;
+      using pointer = void;
+      // We could easily implement random access, but std::map doesn't.
+      using iterator_category = std::bidirectional_iterator_tag;
+
+      iterator(base_iterator i = {}) : i(i) {}
+
+      value_type operator*() const {
+        return {i->first, i->second};
+      }
+
+      iterator & operator++() {
+        ++i;
+        return *this;
+      }
+      iterator operator++(int) {
+        iterator ret = *this;
+        ++*this;
+        return ret;
+      }
+      iterator & operator--() {
+        --i;
+        return *this;
+      }
+      iterator operator--(int) {
+        iterator ret = *this;
+        --*this;
+        return ret;
+      }
+
+      bool operator==(const iterator & o) const {
+        return i == o.i;
+      }
+      bool operator!=(const iterator & o) const {
+        return i != o.i;
+      }
+
+      base_iterator get_base() const {
+        return i;
+      }
+
+    private:
+      base_iterator i;
+    };
+
+    row(base_row r) : r(r) {}
+
+    T & operator[](key_type c) const {
+      return try_emplace(c).first->second;
+    }
+
+    iterator begin() const noexcept {
+      return r.begin();
+    }
+    iterator end() const noexcept {
+      return r.end();
+    }
+
+    bool empty() const noexcept {
+      return r.empty();
+    }
+    size_type size() const noexcept {
+      return r.size();
+    }
+    size_type max_size() const noexcept {
+      return r.max_size();
+    }
+
+    void clear() const noexcept {
+      r.clear();
+    }
+    std::pair<iterator, bool> insert(const value_type & p) const {
+      auto [i, hit] = lookup(p.first);
+      if(!hit)
+        i = r.insert(i, p); // assignment is no-op
+      return {i, !hit};
+    }
+    // TODO: insert(U&&), insert(value_type&&)
+    template<class I>
+    void insert(I a, I b) const {
+      for(; a != b; ++a)
+        insert(*a);
+    }
+    void insert(std::initializer_list<value_type> l) const {
+      insert(l.begin(), l.end());
+    }
+    template<class U>
+    std::pair<iterator, bool> insert_or_assign(key_type c, U && u) const {
+      auto [i, hit] = lookup(c);
+      if(hit)
+        i->second = std::forward<U>(u);
+      else
+        i = r.insert(i, {c, std::forward<U>(u)}); // assignment is no-op
+      return {i, !hit};
+    }
+    // We don't support emplace since we can't avoid moving the result.
+    template<class... AA>
+    std::pair<iterator, bool> try_emplace(key_type c, AA &&... aa) const {
+      auto [i, hit] = lookup(c);
+      if(!hit)
+        i = r.insert(i,
+          {std::piecewise_construct,
+            std::make_tuple(c),
+            std::forward_as_tuple(
+              std::forward<AA>(aa)...)}); // assignment is no-op
+      return {i, !hit};
+    }
+
+    iterator erase(iterator i) const {
+      return r.erase(i.get_base());
+    }
+    iterator erase(iterator i, iterator j) const {
+      return r.erase(i.get_base(), j.get_base());
+    }
+    size_type erase(key_type c) const {
+      const auto [i, hit] = lookup(c);
+      if(hit)
+        r.erase(i);
+      return hit;
+    }
+    // No swap: it would swap the handles, not the contents
+
+    size_type count(key_type c) const {
+      return lookup(c).second;
+    }
+    iterator find(key_type c) const {
+      const auto [i, hit] = lookup(c);
+      return hit ? i : end();
+    }
+    std::pair<iterator, iterator> equal_range(key_type c) const {
+      const auto [i, hit] = lookup(c);
+      return {i, i + hit};
+    }
+    iterator lower_bound(key_type c) const {
+      return lower(c);
+    }
+    iterator upper_bound(key_type c) const {
+      const auto [i, hit] = lookup(c);
+      return i + hit;
+    }
+
+  private:
+    base_iterator lower(key_type c) const {
+      return std::partition_point(
+        r.begin(), r.end(), [c](const value_type & v) { return v.first < c; });
+    }
+    std::pair<base_iterator, bool> lookup(key_type c) const {
+      const auto i = lower(c);
+      return {i, i != r.end() && i->first == c};
+    }
+
+    // We simply keep the (ragged) row sorted; this avoids the complexity of
+    // two lookaside structures and is efficient for small numbers of inserted
+    // elements and for in-order initialization.
+    base_row r;
+  };
+
+  mutator(const base_type & b) : rag(b) {}
+
+  row operator[](std::size_t i) const {
+    return get_base()[i];
+  }
+  std::size_t size() const noexcept {
+    return rag.size();
+  }
+
+  base_type & get_base() {
+    return rag;
+  }
+  const base_type & get_base() const {
+    return rag;
+  }
+  friend base_type * get_null_base(mutator *) { // for task_prologue_t
+    return nullptr;
+  }
+  void buffer(TaskBuffer & b) { // for unbind_accessors
+    rag.buffer(b);
+  }
+
+  void commit() const {
+    rag.commit();
+  }
+
+private:
+  base_type rag;
+};
+
 } // namespace data
 
 template<class T, std::size_t P>
@@ -662,6 +870,17 @@ struct exec::detail::task_param<data::accessor<data::sparse, T, S>> {
   template<class Topo, typename Topo::index_space Space>
   static type replace(
     const data::field_reference<T, data::sparse, Topo, Space> & r) {
+    return exec::replace_argument<typename type::base_type>(
+      r.template cast<data::ragged,
+        typename field<T, data::sparse>::base_type::value_type>());
+  }
+};
+template<class T>
+struct exec::detail::task_param<data::mutator<data::sparse, T>> {
+  using type = data::mutator<data::sparse, T>;
+  template<class Topo, typename Topo::index_space S>
+  static type replace(
+    const data::field_reference<T, data::sparse, Topo, S> & r) {
     return exec::replace_argument<typename type::base_type>(
       r.template cast<data::ragged,
         typename field<T, data::sparse>::base_type::value_type>());
