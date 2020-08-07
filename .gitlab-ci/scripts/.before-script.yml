@@ -1,0 +1,16 @@
+before_script:
+  - '[ "$(git rev-parse origin/$CI_COMMIT_REF_NAME)" != "$CI_COMMIT_SHA" ] && curl --header "PRIVATE-TOKEN: $MY_CI_API_TOKEN" -X POST https://gitlab.lanl.gov/api/v4/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel'
+  - export HOME=${CI_PROJECT_DIR}
+  - export TMPDIR=${CI_PROJECT_DIR}
+  - unset SPACK_ROOT
+  - source ${CI_PROJECT_DIR}/spack/share/spack/setup-env.sh || /bin/true
+  - echo ${CI_RUNNER_TAGS}
+  - export FLECSI_SPACK_SPEC="${FLECSI_SPACK_SPEC} $([ ${CI_RUNNER_TAGS} == 'laristra-setuid-shared' ] && echo 'target=x86_64')"
+  - export FLECSI_SPACK_SPEC="${FLECSI_SPACK_SPEC} $([ ${FLECSI_BUILD_TYPE} == 'Debug' ] && echo '+debug_backend')"
+  - |
+    if [[ ${FLECSI_MPI_PROVIDER} == 'openmpi' ]];
+    then
+      export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_SPEC} ^${FLECSI_MPI_PROVIDER}@${FLECSI_OPENMPI_VERSION}%gcc@${FLECSI_GCC_VERSION} ${FLECSI_OPENMPI_SPEC}";
+    else
+      export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_SPEC} ^${FLECSI_MPI_PROVIDER}@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} ${FLECSI_MPICH_SPEC}";
+    fi

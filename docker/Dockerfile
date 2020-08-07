@@ -59,6 +59,7 @@ RUN source $HOME/load_deps.sh && \
     cmake -DMPIEXEC_PREFLAGS=$([ "$MPI_PACKAGE" = "openmpi" ] && echo '--oversubscribe') \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+          -DHPX_IGNORE_COMPILER_COMPATIBILITY=ON \
           -DENABLE_FLECSIT=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
           -DENABLE_FLECSI_TUTORIAL=$([ "$RUNTIME" = "hpx" ] echo OFF || echo ON) \
           -DENABLE_UNIT_TESTS=ON \

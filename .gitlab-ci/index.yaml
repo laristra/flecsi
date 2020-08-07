@@ -1,0 +1,8 @@
+include:
+  - .gitlab-ci/scripts/.templates.yml
+  - .gitlab-ci/scripts/.global-variables.yml
+  - .gitlab-ci/scripts/.before-script.yml
+  - .gitlab-ci/scripts/env-jobs.yml
+  - .gitlab-ci/scripts/build-n-test-jobs.yml
+  - .gitlab-ci/scripts/trigger-jobs.yml
+  - .gitlab-ci/scripts/schedules/build-n-test-jobs.yml
