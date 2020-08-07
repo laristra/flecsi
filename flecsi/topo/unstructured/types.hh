@@ -53,6 +53,28 @@ struct coloring_meta {
   std::set<size_t> dependencies; // we depend on them
 };
 
+/*
+  Closure tokens for specifying the behavior of closure function.
+ */
+
+template<size_t IndexSpace,
+  size_t Dimension,
+  size_t ThroughDimension,
+  size_t Depth = 1>
+struct primary_independent {
+  static constexpr size_t index_space = IndexSpace;
+  static constexpr size_t dimension = Dimension;
+  static constexpr size_t thru_dimension = ThroughDimension;
+  static constexpr size_t depth = Depth;
+}; // struct primary_independent
+
+template<size_t IndexSpace, size_t Dimension, size_t PrimaryDimension>
+struct auxiliary_independent {
+  static constexpr size_t index_space = IndexSpace;
+  static constexpr size_t dimension = Dimension;
+  static constexpr size_t primary_dimension = PrimaryDimension;
+}; // struct auxiliary_independent
+
 } // namespace unstructured_impl
 
 struct unstructured_base {

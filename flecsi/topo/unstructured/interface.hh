@@ -135,9 +135,10 @@ naive_coloring(Definition const & md,
 template<typename Policy>
 unstructured_base::coloring
 closure(typename Policy::definition const & md,
-  std::vector<size_t> const & primary) {
+  std::vector<std::vector<size_t>> const & primary) {
   (void)md;
   (void)primary;
+  return {};
 } // closure
 
 } // namespace unstructured_impl
