@@ -1,0 +1,14 @@
+flecsale-mm:
+  stage: Trigger
+  only:
+    - merge_requests
+    - "1.4"
+  variables:
+    UPSTREAM_REPO: "flecsi"
+    UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
+    UPSTREAM_URL: $CI_PROJECT_URL
+  trigger:
+    project: laristra/flecsale-mm
+    branch: master
+    strategy: depend
+  allow_failure: true

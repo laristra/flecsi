@@ -1,0 +1,94 @@
+#############
+# Env Stage #
+#############
+
+.env:
+  extends:
+    - .job
+    - .artifacts
+  stage: Env
+  only:
+    refs:
+      - "1.4"
+      - "1"
+      - merge_requests
+      - schedules
+  except:
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR}/spack #/builds/next-generation-codes/laristra/flecsale-mm/spack
+      - ${CI_PROJECT_DIR}/ristra_spackages
+      - ${CI_PROJECT_DIR}/spack_env
+    expire_in: 2 hours
+  variables:
+    GIT_SUBMODULE_STRATEGY: none
+  script:
+    - cd ${CI_PROJECT_DIR}
+    - module load gcc/${FLECSI_GCC_VERSION}
+    - git clone https://github.com/laristra/ristra_spackages.git
+    - git clone git@gitlab.lanl.gov:laristra/ristra-spack-configurations.git
+    - echo 'Spack Version:' ${FLECSI_SPACK_REF}
+    - git clone ${FLECSI_SPACK_REPO}
+    - cd spack && git checkout ${FLECSI_SPACK_REF} && cd ${CI_PROJECT_DIR}
+    - export SPACK_ARCH=`./spack/bin/spack arch`
+    - echo ${SPACK_ARCH}
+    - export PLATFORM="${SPACK_ARCH%%-*}"
+    - echo ${PLATFORM}
+    - mkdir -p ${CI_PROJECT_DIR}/spack/etc/spack/${PLATFORM}
+    - cp ${CI_PROJECT_DIR}/.gitlab-ci/config/*.yaml ${CI_PROJECT_DIR}/spack/etc/spack/${PLATFORM}/
+    - cp ${CI_PROJECT_DIR}/ristra-spack-configurations/Darwin/*.yaml ${CI_PROJECT_DIR}/spack/etc/spack/${PLATFORM}/
+    - . ${CI_PROJECT_DIR}/spack/share/spack/setup-env.sh
+    - spack repo add --scope site ${CI_PROJECT_DIR}/ristra_spackages/spack-repo
+    - spack repo add --scope site ${CI_PROJECT_DIR}/spack-repo
+    - spack repo list
+    - mkdir -p ${CI_PROJECT_DIR}/spack_env
+    - spack env create -d ${CI_PROJECT_DIR}/spack_env
+    - spack env activate -d ${CI_PROJECT_DIR}/spack_env
+    - export FLECSI_CMD="spack install --show-log-on-error ${FLECSI_SPACK_FULL_SPEC}"
+    - ( echo "$FLECSI_CMD" && $FLECSI_CMD )
+    - spack module tcl refresh -y
+    - spack env loads -r
+    - export modName="${CI_PROJECT_DIR}/spack_env/loads"
+    - sed -i "1s;^;module load python/${FLECSI_PYTHON_VERSION}\n;" ${modName}
+    - sed -i "1s;^;module load gcc/${FLECSI_GCC_VERSION}\n;" ${modName}
+    #- sed -i "1s;^;source ${CI_PROJECT_DIR}/spack/share/spack/setup-env.sh\n;" ${modName}
+    - sed -i "1s;^;#%Module\n;" ${modName}
+
+############
+# Env Jobs #
+############
+
+openmpi_mpi:
+  extends:
+    - .env
+  variables:
+    FLECSI_RUNTIME: "mpi"
+    FLECSI_BUILD_TYPE: "Debug"
+    FLECSI_MPI_PROVIDER: "openmpi"
+
+openmpi_legion:
+  extends: openmpi_mpi
+  variables:
+    FLECSI_RUNTIME: "legion"
+
+openmpi_hpx:
+  extends: openmpi_mpi
+  variables:
+    FLECSI_RUNTIME: "hpx"
+  allow_failure: true
+
+mpich_mpi:
+  extends: openmpi_mpi
+  variables:
+    FLECSI_MPI_PROVIDER: "mpich"
+
+mpich_legion:
+  extends: mpich_mpi
+  variables:
+    FLECSI_RUNTIME: "legion"
+
+mpich_hpx:
+  extends: mpich_mpi
+  variables:
+    FLECSI_RUNTIME: "hpx"
+  allow_failure: true

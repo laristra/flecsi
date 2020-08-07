@@ -1,0 +1,101 @@
+#####################
+# Build_n_Test Jobs #
+#####################
+
+centOS_mpich_mpi_gcc:
+  extends:
+    - .build_n_test
+    - .nightly
+  dependencies: [ mpich_mpi ]
+  variables:
+    FLECSI_RUNTIME: "mpi"
+    FLECSI_BUILD_TYPE: "Debug"
+    FLECSI_MPI_PROVIDER: "mpich"
+
+centOS_mpich_mpi_gcc_release:
+  extends: centOS_mpich_mpi_gcc
+  variables:
+    FLECSI_BUILD_TYPE: "Release"
+
+centOS_mpich_mpi_clang_release:
+  extends: centOS_mpich_mpi_gcc_release
+
+centOS_mpich_mpi_intel:
+  extends: centOS_mpich_mpi_gcc
+  allow_failure: true
+
+centOS_mpich_mpi_intel_release:
+  extends: centOS_mpich_mpi_intel
+  variables:
+    FLECSI_BUILD_TYPE: "Release"
+
+centOS_openmpi_mpi_gcc_release:
+  extends: centOS_mpich_mpi_gcc
+  dependencies: [ openmpi_mpi ]
+  variables:
+    FLECSI_BUILD_TYPE: "Release"
+    FLECSI_MPI_PROVIDER: "openmpi"
+
+centOS_openmpi_mpi_clang_release:
+  extends: centOS_openmpi_mpi_gcc_release
+
+centOS_openmpi_mpi_clang:
+  extends: centOS_openmpi_mpi_clang_release
+  variables:
+    FLECSI_BUILD_TYPE: "Debug"
+
+centOS_openmpi_mpi_intel_release:
+  extends: centOS_openmpi_mpi_gcc_release
+  allow_failure: true
+
+centOS_openmpi_mpi_intel:
+  extends: centOS_openmpi_mpi_intel_release
+  variables:
+    FLECSI_BUILD_TYPE: "Debug"
+
+centOS_mpich_legion_gcc:
+  extends: centOS_mpich_mpi_gcc
+  dependencies: [ mpich_legion ]
+  variables:
+    FLECSI_RUNTIME: "legion"
+
+centOS_mpich_legion_gcc_release:
+  extends: centOS_mpich_legion_gcc
+  variables:
+    FLECSI_BUILD_TYPE: "Release"
+
+centOS_mpich_legion_clang_release:
+  extends: centOS_mpich_legion_gcc_release
+
+centOS_mpich_legion_intel:
+  extends: centOS_mpich_legion_gcc
+  allow_failure: true
+
+centOS_mpich_legion_intel_release:
+  extends: centOS_mpich_legion_intel
+  variables:
+    FLECSI_BUILD_TYPE: "Release"
+
+centOS_openmpi_legion_gcc_release:
+  extends: centOS_mpich_legion_gcc
+  dependencies: [ openmpi_legion ]
+  variables:
+    FLECSI_BUILD_TYPE: "Release"
+    FLECSI_MPI_PROVIDER: "openmpi"
+
+centOS_openmpi_legion_clang_release:
+  extends: centOS_openmpi_legion_gcc_release
+
+centOS_openmpi_legion_clang:
+  extends: centOS_openmpi_legion_clang_release
+  variables:
+    FLECSI_BUILD_TYPE: "Debug"
+
+centOS_openmpi_legion_intel_release:
+  extends: centOS_openmpi_legion_gcc_release
+  allow_failure: true
+
+centOS_openmpi_legion_intel:
+  extends: centOS_openmpi_legion_intel_release
+  variables:
+    FLECSI_BUILD_TYPE: "Debug"
