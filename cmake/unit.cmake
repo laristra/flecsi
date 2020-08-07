@@ -23,7 +23,14 @@ mark_as_advanced(ENABLE_EXPENSIVE_TESTS)
 
 if(ENABLE_UNIT_TESTS)
   enable_testing()
-  add_library(unit-main OBJECT ${CMAKE_SOURCE_DIR}/flecsi/util/unit/main.cc)
+
+  if(FLECSI_RUNTIME_MODEL STREQUAL "charm")
+    # Ensure that decl and def headers are generated before tests are compiled
+    add_library(unit-main OBJECT
+      ${CMAKE_SOURCE_DIR}/flecsi/util/unit/main.cc ${all-ci-outputs})
+  else()
+    add_library(unit-main OBJECT ${CMAKE_SOURCE_DIR}/flecsi/util/unit/main.cc)
+  endif()
 endif()
 
 function(add_unit name)
