@@ -29,7 +29,7 @@
 
 .artifacts:
   artifacts:
-    name: "${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}"
+    name: "flecsi-${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}-${CI_JOB_ID}"
     paths:
       - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsale-mm/build
     when: always
