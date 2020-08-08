@@ -42,8 +42,9 @@
     - spack repo add --scope site ${CI_PROJECT_DIR}/spack-repo
     - spack repo list
     - mkdir -p ${CI_PROJECT_DIR}/spack_env
-    - spack env create -d ${CI_PROJECT_DIR}/spack_env
+    - spack env create --without-view -d ${CI_PROJECT_DIR}/spack_env
     - spack env activate -d ${CI_PROJECT_DIR}/spack_env
+    - spack dev-build -q ${FLECSI_SPACK_FULL_SPEC} || ( cat spack-build-out.txt && exit 1 )
     - export FLECSI_CMD="spack install --show-log-on-error ${FLECSI_SPACK_FULL_SPEC}"
     - ( echo "$FLECSI_CMD" && $FLECSI_CMD )
     - spack module tcl refresh -y

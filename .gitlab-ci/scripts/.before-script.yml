@@ -14,3 +14,9 @@ before_script:
     else
       export FLECSI_SPACK_FULL_SPEC="${FLECSI_SPACK_SPEC} ^${FLECSI_MPI_PROVIDER}@${FLECSI_MPICH_VERSION}%gcc@${FLECSI_GCC_VERSION} ${FLECSI_MPICH_SPEC}";
     fi
+  - |
+    if [[ -d ${CI_PROJECT_DIR}/spack ]];
+    then
+      spack reindex;
+      spack module tcl refresh -y;
+    fi

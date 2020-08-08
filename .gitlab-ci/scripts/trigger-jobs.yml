@@ -7,6 +7,7 @@ flecsale-mm:
     UPSTREAM_REPO: "flecsi"
     UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
     UPSTREAM_URL: $CI_PROJECT_URL
+    CXXFLAGS: "-Wno-deprecated-declarations"
   trigger:
     project: laristra/flecsale-mm
     branch: master
