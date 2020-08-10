@@ -78,10 +78,11 @@ empty(span<pair_t> & span_ht) {
   hmap_t hmap(span_ht);
   hmap.clear();
   // Assert the table is empty
-  int error;
+  int error = 0;
   for(auto & a : hmap) {
     ++error;
   }
+  std::cout<<"Error: "<<error<<std::endl;
   return error;
 } // print
 
