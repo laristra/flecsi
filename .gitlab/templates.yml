@@ -137,7 +137,7 @@
         -DENABLE_FLOG=ON \
         ../..
     - make
-    - make test ARGS="-V"
+    - make test
     - make install
     - ccache -s
   artifacts:

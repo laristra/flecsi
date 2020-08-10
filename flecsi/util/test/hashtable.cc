@@ -82,7 +82,6 @@ empty(span<pair_t> & span_ht) {
   for(auto & a : hmap) {
     ++error;
   }
-  std::cout<<"Error: "<<error<<std::endl;
   return error;
 } // print
 
