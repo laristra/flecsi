@@ -33,7 +33,6 @@ centOS_openmpi_hpx_gcc:
   dependencies: [ openmpi_hpx ]
   variables:
     FLECSI_RUNTIME: "hpx"
-  allow_failure: true
 
 centOS_mpich_hpx_clang:
   extends: centOS_openmpi_hpx_gcc
