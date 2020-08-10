@@ -79,7 +79,7 @@ script:
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
   - if [[ ${TRAVIS_BRANCH} != "1.4" ]]; then TAG="${TAG}_${TRAVIS_BRANCH//[^a-zA-Z0-9]/_}"; fi
   - travis_retry timeout 540 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
-  - travis_wait 50 docker build
+  - travis_wait 60 docker build
                 --build-arg DISTRO=${DISTRO}
                 --build-arg MPI_PACKAGE=${MPI_PACKAGE}
                 --build-arg BUILD_TYPE=${BUILD_TYPE}
