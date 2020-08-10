@@ -50,6 +50,7 @@ include:
             ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
             -DFLECSI_ENABLE_TUTORIAL=OFF \
             -DENABLE_HDF5=$([ "$FLECSI_RUNTIME" = "hpx" ] && echo OFF || echo ON) \
+            -DHPX_IGNORE_COMPILER_COMPATIBILITY=ON \
             -DENABLE_DOXYGEN=ON \
             -DENABLE_COVERAGE_BUILD=ON \
             -DENABLE_DOCUMENTATION=OFF \
