@@ -72,15 +72,21 @@ public:
     return depth;
   }
 
-  void regField(std::size_t i, std::size_t s) {}
+  void regField(std::size_t i, std::size_t s) {
+    if (data_map.count(i)) return;
+    data_map[i] = data.size();
+    data.push_back(new std::byte[s]);
+  }
 
   std::byte* getField(std::size_t i) {
-    return data;
+    CkAssert(data_map.count(i));
+    return data[data_map[i]];
   }
 
 private:
   int depth;
-  std::byte* data;
+  std::unordered_map<std::size_t, std::size_t> data_map;
+  std::vector<std::byte*> data;
 };
 
 }

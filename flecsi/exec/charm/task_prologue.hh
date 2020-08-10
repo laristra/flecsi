@@ -105,6 +105,8 @@ struct task_prologue_t {
   void visit(
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, data::dense, Topo, Space> & ref) {
+    auto & flecsi_context = run::context::instance();
+    flecsi_context.regField(ref.fid(), sizeof(DATA_TYPE));
   } // visit
 
   template<class Topo, std::size_t Priv>
