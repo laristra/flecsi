@@ -1,16 +1,25 @@
 CELL COLORING
 MESH DIM 1
-   ----->Overlay: dim 0 : 0, 5
-   ----->Strides: dim 0 : 10
-   ----->Exclusive: dim 0 : 2, 3
- bid tags = [1 1 1 ]
+   ----->Overlay:
+ dim 0 : 0, 5
+   ----->Strides:
+ dim 0 : 10
+   ----->Exclusive:
+ dim 0 : 2, 3
+ bid tags = [1 1 0 ]
  colors = [0 ]
-   ----->Shared:   ---------->Shared Box 0: dim 0 : 4, 4
+   ----->Shared:
+   ---------->Shared Box 0:
+ dim 0 : 4, 4
  bid tags = [1 1 1 ]
  colors = [1 1 ]
-   ----->Ghost:   ---------->Ghost Box 0: dim 0 : 5, 5
- bid tags = [1 1 1 ]
+   ----->Ghost:
+   ---------->Ghost Box 0:
+ dim 0 : 5, 5
+ bid tags = [0 1 1 ]
  colors = [1 ]
-   ----->Domain Halo:   ---------->Domain Halo Box 0: dim 0 : 0, 1
- bid tags = [1 1 1 ]
+   ----->Domain Halo:
+   ---------->Domain Halo Box 0:
+ dim 0 : 0, 1
+ bid tags = [1 1 0 ]
  colors = []

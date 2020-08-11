@@ -35,6 +35,7 @@ set(topo_HEADERS
   ntree/types.hh
   set/interface.hh
   set/types.hh
+  structured/box.hh
   structured/box_types.hh
   structured/box_utils.hh
   structured/dependent_entities_colorer.hh
@@ -89,6 +90,10 @@ add_unit(test_interface
   INPUTS
      structured/test/smesh_1d_0.blessed
      structured/test/smesh_1d_1.blessed
+     structured/test/smesh_2d_0.blessed
+     structured/test/smesh_2d_1.blessed
+     structured/test/smesh_3d_0.blessed
+     structured/test/smesh_3d_1.blessed
   THREADS 2 
 )
 

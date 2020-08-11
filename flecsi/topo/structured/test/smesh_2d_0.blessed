@@ -1,0 +1,51 @@
+CELL COLORING
+MESH DIM 2
+   ----->Overlay:
+ dim 0 : 0, 5
+ dim 1 : 0, 9
+   ----->Strides:
+ dim 0 : 10
+ dim 1 : 10
+   ----->Exclusive:
+ dim 0 : 2, 3
+ dim 1 : 2, 7
+ bid tags = [1 1 0 1 1 0 1 1 0 ]
+ colors = [0 ]
+   ----->Shared:
+   ---------->Shared Box 0:
+ dim 0 : 4, 4
+ dim 1 : 2, 7
+ bid tags = [1 1 1 1 1 1 1 1 1 ]
+ colors = [1 ]
+   ----->Ghost:
+   ---------->Ghost Box 0:
+ dim 0 : 5, 5
+ dim 1 : 2, 7
+ bid tags = [0 1 1 0 1 1 0 1 1 ]
+ colors = [1 ]
+   ----->Domain Halo:
+   ---------->Domain Halo Box 0:
+ dim 0 : 0, 1
+ dim 1 : 0, 1
+ bid tags = [1 1 1 1 1 1 1 1 0 ]
+ colors = []
+   ---------->Domain Halo Box 1:
+ dim 0 : 2, 4
+ dim 1 : 0, 1
+ bid tags = [1 1 1 1 1 1 0 0 0 ]
+ colors = []
+   ---------->Domain Halo Box 2:
+ dim 0 : 0, 1
+ dim 1 : 2, 7
+ bid tags = [1 1 0 1 1 0 1 1 0 ]
+ colors = []
+   ---------->Domain Halo Box 3:
+ dim 0 : 0, 1
+ dim 1 : 8, 9
+ bid tags = [1 1 0 1 1 1 1 1 1 ]
+ colors = []
+   ---------->Domain Halo Box 4:
+ dim 0 : 2, 4
+ dim 1 : 8, 9
+ bid tags = [0 0 0 1 1 1 1 1 1 ]
+ colors = []
