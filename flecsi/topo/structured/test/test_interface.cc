@@ -51,25 +51,25 @@ topo_driver_1d() {
     coloring_1d.allocate(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
     tmesh_1d.allocate(coloring_1d.get());
 
-    auto& colored_ents = coloring_1d.get();
+    auto & colored_ents = coloring_1d.get();
     int owner = colored_ents.exclusive[0].colors[0];
     int dim = colored_ents.mesh_dim;
-    
-    auto& overlay = colored_ents.overlay[0]; 
-    std::vector<std::size_t> local_upbnd(dim); 
-    
-    for(int i=0; i<dim; ++i)
-       local_upbnd[i] = overlay.upperbnd[i]-overlay.lowerbnd[i]; 
 
-    box<1> lbox(local_upbnd); 
+    auto & overlay = colored_ents.overlay[0];
+    std::vector<std::size_t> local_upbnd(dim);
 
-    using id_array = box<1>::id_array; 
-    id_array indices; 
+    for(int i = 0; i < dim; ++i)
+      local_upbnd[i] = overlay.upperbnd[i] - overlay.lowerbnd[i];
 
-    for (auto c: lbox) {
-     lbox.indices_from_offset(c, indices); 
-     auto offset = lbox.offset_from_indices(indices);
-     EXPECT_EQ(c, offset);      
+    box<1> lbox(local_upbnd);
+
+    using id_array = box<1>::id_array;
+    id_array indices;
+
+    for(auto c : lbox) {
+      lbox.indices_from_offset(c, indices);
+      auto offset = lbox.offset_from_indices(indices);
+      EXPECT_EQ(c, offset);
     }
 
     std::string fname = "smesh_" + std::to_string(dim) + "d_" +
@@ -106,34 +106,34 @@ int
 topo_driver_2d() {
   UNIT {
     // Define bounds of a structured mesh
-    std::size_t grid_size[2] = {6,6};
+    std::size_t grid_size[2] = {6, 6};
     std::size_t nhalo = 1;
     std::size_t nhalo_domain = 2;
     std::size_t thru_dim = 0;
-    std::size_t ncolors[2] = {2,1};
+    std::size_t ncolors[2] = {2, 1};
 
     coloring_2d.allocate(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
     tmesh_2d.allocate(coloring_2d.get());
 
-    auto& colored_ents = coloring_2d.get();
+    auto & colored_ents = coloring_2d.get();
     int owner = colored_ents.exclusive[0].colors[0];
     int dim = colored_ents.mesh_dim;
-   
-    auto& overlay = colored_ents.overlay[0]; 
-    std::vector<std::size_t> local_upbnd(dim); 
-    
-    for(int i=0; i<dim; ++i)
-       local_upbnd[i] = overlay.upperbnd[i]-overlay.lowerbnd[i]; 
 
-    box<2> lbox(local_upbnd); 
+    auto & overlay = colored_ents.overlay[0];
+    std::vector<std::size_t> local_upbnd(dim);
 
-    using id_array = box<2>::id_array; 
-    id_array indices; 
-    
-    for (auto c: lbox) {
-     lbox.indices_from_offset(c, indices); 
-     auto offset = lbox.offset_from_indices(indices);
-     EXPECT_EQ(c, offset); 
+    for(int i = 0; i < dim; ++i)
+      local_upbnd[i] = overlay.upperbnd[i] - overlay.lowerbnd[i];
+
+    box<2> lbox(local_upbnd);
+
+    using id_array = box<2>::id_array;
+    id_array indices;
+
+    for(auto c : lbox) {
+      lbox.indices_from_offset(c, indices);
+      auto offset = lbox.offset_from_indices(indices);
+      EXPECT_EQ(c, offset);
     }
 
     std::string fname = "smesh_" + std::to_string(dim) + "d_" +
@@ -170,34 +170,34 @@ int
 topo_driver_3d() {
   UNIT {
     // Define bounds of a structured mesh
-    std::size_t grid_size[3] = {6,6,6};
+    std::size_t grid_size[3] = {6, 6, 6};
     std::size_t nhalo = 1;
     std::size_t nhalo_domain = 2;
     std::size_t thru_dim = 0;
-    std::size_t ncolors[3] = {2,1,1};
+    std::size_t ncolors[3] = {2, 1, 1};
 
     coloring_3d.allocate(grid_size, nhalo, nhalo_domain, thru_dim, ncolors);
     tmesh_3d.allocate(coloring_3d.get());
 
-    auto& colored_ents = coloring_3d.get();
+    auto & colored_ents = coloring_3d.get();
     int owner = colored_ents.exclusive[0].colors[0];
     int dim = colored_ents.mesh_dim;
-   
-    auto& overlay = colored_ents.overlay[0]; 
-    std::vector<std::size_t> local_upbnd(dim); 
-    
-    for(int i=0; i<dim; ++i)
-       local_upbnd[i] = overlay.upperbnd[i]-overlay.lowerbnd[i]; 
 
-    box<3> lbox(local_upbnd); 
+    auto & overlay = colored_ents.overlay[0];
+    std::vector<std::size_t> local_upbnd(dim);
 
-    using id_array = box<3>::id_array; 
-    id_array indices; 
+    for(int i = 0; i < dim; ++i)
+      local_upbnd[i] = overlay.upperbnd[i] - overlay.lowerbnd[i];
 
-    for (auto c: lbox) {
-     lbox.indices_from_offset(c, indices); 
-     auto offset = lbox.offset_from_indices(indices);
-     EXPECT_EQ(c, offset);      
+    box<3> lbox(local_upbnd);
+
+    using id_array = box<3>::id_array;
+    id_array indices;
+
+    for(auto c : lbox) {
+      lbox.indices_from_offset(c, indices);
+      auto offset = lbox.offset_from_indices(indices);
+      EXPECT_EQ(c, offset);
     }
 
     std::string fname = "smesh_" + std::to_string(dim) + "d_" +
@@ -207,7 +207,6 @@ topo_driver_3d() {
     UNIT_EQUAL_BLESSED(fname.c_str());
   };
 } // topo_driver
-
 
 flecsi::unit::driver<topo_driver_1d> driver_1d;
 flecsi::unit::driver<topo_driver_2d> driver_2d;

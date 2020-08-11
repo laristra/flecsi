@@ -37,16 +37,16 @@ print_part_primary_entity(const box_coloring & colored_cells) {
 
   UNIT_CAPTURE() << "CELL COLORING" << std::endl;
   UNIT_CAPTURE() << "MESH DIM " << dim << std::endl;
-  UNIT_CAPTURE() << "   ----->Overlay:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Overlay:" << std::endl;
   for(int i = 0; i < dim; ++i)
     UNIT_CAPTURE() << " dim " << i << " : " << obox.lowerbnd[i] << ", "
                    << obox.upperbnd[i] << std::endl;
 
-  UNIT_CAPTURE() << "   ----->Strides:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Strides:" << std::endl;
   for(int i = 0; i < dim; ++i)
     UNIT_CAPTURE() << " dim " << i << " : " << strides[i] << std::endl;
 
-  UNIT_CAPTURE() << "   ----->Exclusive:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Exclusive:" << std::endl;
   for(int i = 0; i < dim; ++i)
     UNIT_CAPTURE() << " dim " << i << " : " << ebox.domain.lowerbnd[i] << ", "
                    << ebox.domain.upperbnd[i] << std::endl;
@@ -61,9 +61,9 @@ print_part_primary_entity(const box_coloring & colored_cells) {
     UNIT_CAPTURE() << ebox.colors[c] << " ";
   UNIT_CAPTURE() << "]" << std::endl;
 
-  UNIT_CAPTURE() << "   ----->Shared:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Shared:" << std::endl;
   for(std::size_t s = 0; s < shboxes.size(); ++s) {
-    UNIT_CAPTURE() << "   ---------->Shared Box " << s << ":"<<std::endl;
+    UNIT_CAPTURE() << "   ---------->Shared Box " << s << ":" << std::endl;
     for(int i = 0; i < dim; ++i)
       UNIT_CAPTURE() << " dim " << i << " : " << shboxes[s].domain.lowerbnd[i]
                      << ", " << shboxes[s].domain.upperbnd[i] << std::endl;
@@ -79,9 +79,9 @@ print_part_primary_entity(const box_coloring & colored_cells) {
     UNIT_CAPTURE() << "]" << std::endl;
   } // shared
 
-  UNIT_CAPTURE() << "   ----->Ghost:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Ghost:" << std::endl;
   for(std::size_t g = 0; g < ghboxes.size(); ++g) {
-    UNIT_CAPTURE() << "   ---------->Ghost Box " << g << ":"<<std::endl;
+    UNIT_CAPTURE() << "   ---------->Ghost Box " << g << ":" << std::endl;
     for(int i = 0; i < dim; ++i)
       UNIT_CAPTURE() << " dim " << i << " : " << ghboxes[g].domain.lowerbnd[i]
                      << ", " << ghboxes[g].domain.upperbnd[i] << std::endl;
@@ -97,9 +97,9 @@ print_part_primary_entity(const box_coloring & colored_cells) {
     UNIT_CAPTURE() << "]" << std::endl;
   } // ghost
 
-  UNIT_CAPTURE() << "   ----->Domain Halo:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Domain Halo:" << std::endl;
   for(std::size_t h = 0; h < dhboxes.size(); ++h) {
-    UNIT_CAPTURE() << "   ---------->Domain Halo Box " << h << ":"<<std::endl;
+    UNIT_CAPTURE() << "   ---------->Domain Halo Box " << h << ":" << std::endl;
     for(int i = 0; i < dim; ++i)
       UNIT_CAPTURE() << " dim " << i << " : " << dhboxes[h].domain.lowerbnd[i]
                      << ", " << dhboxes[h].domain.upperbnd[i] << std::endl;
@@ -132,16 +132,16 @@ print_part_all_entities(const box_coloring & colored_cells,
   auto & strides = colored_cells.strides[0];
 
   UNIT_CAPTURE() << "CELL COLORING" << std::endl;
-  UNIT_CAPTURE() << "   ----->Overlay:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Overlay:" << std::endl;
   for(int i = 0; i < dim; ++i)
     UNIT_CAPTURE() << " dim " << i << " : " << obox.lowerbnd[i] << ", "
                    << obox.upperbnd[i] << std::endl;
 
-  UNIT_CAPTURE() << "   ----->Strides:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Strides:" << std::endl;
   for(int i = 0; i < dim; ++i)
     UNIT_CAPTURE() << " dim " << i << " : " << strides[i] << std::endl;
 
-  UNIT_CAPTURE() << "   ----->Exclusive:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Exclusive:" << std::endl;
   for(int i = 0; i < dim; ++i)
     UNIT_CAPTURE() << " dim " << i << " : " << ebox.domain.lowerbnd[i] << ", "
                    << ebox.domain.upperbnd[i] << std::endl;
@@ -156,9 +156,9 @@ print_part_all_entities(const box_coloring & colored_cells,
     UNIT_CAPTURE() << ebox.colors[c] << " ";
   UNIT_CAPTURE() << "]" << std::endl;
 
-  UNIT_CAPTURE() << "   ----->Shared:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Shared:" << std::endl;
   for(std::size_t s = 0; s < shboxes.size(); ++s) {
-    UNIT_CAPTURE() << "   ---------->Shared Box " << s << ":"<<std::endl;
+    UNIT_CAPTURE() << "   ---------->Shared Box " << s << ":" << std::endl;
     for(int i = 0; i < dim; ++i)
       UNIT_CAPTURE() << " dim " << i << " : " << shboxes[s].domain.lowerbnd[i]
                      << ", " << shboxes[s].domain.upperbnd[i] << std::endl;
@@ -174,9 +174,9 @@ print_part_all_entities(const box_coloring & colored_cells,
     UNIT_CAPTURE() << "]" << std::endl;
   } // shared
 
-  UNIT_CAPTURE() << "   ----->Ghost:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Ghost:" << std::endl;
   for(std::size_t g = 0; g < ghboxes.size(); ++g) {
-    UNIT_CAPTURE() << "   ---------->Ghost Box " << g << ":"<<std::endl;
+    UNIT_CAPTURE() << "   ---------->Ghost Box " << g << ":" << std::endl;
     for(int i = 0; i < dim; ++i)
       UNIT_CAPTURE() << " dim " << i << " : " << ghboxes[g].domain.lowerbnd[i]
                      << ", " << ghboxes[g].domain.upperbnd[i] << std::endl;
@@ -192,9 +192,9 @@ print_part_all_entities(const box_coloring & colored_cells,
     UNIT_CAPTURE() << "]" << std::endl;
   } // ghost
 
-  UNIT_CAPTURE() << "   ----->Domain Halo:"<<std::endl;
+  UNIT_CAPTURE() << "   ----->Domain Halo:" << std::endl;
   for(std::size_t h = 0; h < dhboxes.size(); ++h) {
-    UNIT_CAPTURE() << "   ---------->Domain Halo Box " << h << ":"<<std::endl;
+    UNIT_CAPTURE() << "   ---------->Domain Halo Box " << h << ":" << std::endl;
     for(int i = 0; i < dim; ++i)
       UNIT_CAPTURE() << " dim " << i << " : " << dhboxes[h].domain.lowerbnd[i]
                      << ", " << dhboxes[h].domain.upperbnd[i] << std::endl;
@@ -225,7 +225,7 @@ print_part_all_entities(const box_coloring & colored_cells,
     UNIT_CAPTURE() << "DEPENDENT ENTITY OF DIM " << edim << " COLORING"
                    << std::endl;
 
-    UNIT_CAPTURE() << "   ----->Overlay:"<<std::endl;
+    UNIT_CAPTURE() << "   ----->Overlay:" << std::endl;
     for(std::size_t n = 0; n < de_nboxes; ++n) {
       UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
       for(int i = 0; i < dim; ++i)
@@ -233,7 +233,7 @@ print_part_all_entities(const box_coloring & colored_cells,
                        << ", " << de_obox[n].upperbnd[i] << std::endl;
     }
 
-    UNIT_CAPTURE() << "   ----->Strides:"<<std::endl;
+    UNIT_CAPTURE() << "   ----->Strides:" << std::endl;
     for(std::size_t n = 0; n < de_nboxes; ++n) {
       UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
       for(int i = 0; i < dim; ++i)
@@ -241,7 +241,7 @@ print_part_all_entities(const box_coloring & colored_cells,
                        << std::endl;
     }
 
-    UNIT_CAPTURE() << "   ----->Exclusive:"<<std::endl;
+    UNIT_CAPTURE() << "   ----->Exclusive:" << std::endl;
     for(std::size_t n = 0; n < de_nboxes; ++n) {
       UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
       for(int i = 0; i < dim; ++i)
@@ -259,10 +259,10 @@ print_part_all_entities(const box_coloring & colored_cells,
       UNIT_CAPTURE() << "]" << std::endl;
     } // de_nboxes
 
-    UNIT_CAPTURE() << "   ----->Shared:"<<std::endl;
+    UNIT_CAPTURE() << "   ----->Shared:" << std::endl;
     std::size_t nsh = de_shboxes[0].size();
     for(std::size_t s = 0; s < nsh; ++s) {
-      UNIT_CAPTURE() << "   ---------->Shared Box " << s << ":"<<std::endl;
+      UNIT_CAPTURE() << "   ---------->Shared Box " << s << ":" << std::endl;
       for(std::size_t n = 0; n < de_nboxes; ++n) {
         UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
         for(int i = 0; i < dim; ++i)
@@ -282,10 +282,10 @@ print_part_all_entities(const box_coloring & colored_cells,
       } // shared
     } // de_nboxes
 
-    UNIT_CAPTURE() << "   ----->Ghost:"<<std::endl;
+    UNIT_CAPTURE() << "   ----->Ghost:" << std::endl;
     std::size_t ngh = de_ghboxes[0].size();
     for(std::size_t g = 0; g < ngh; ++g) {
-      UNIT_CAPTURE() << "   ---------->Ghost Box " << g << ":"<<std::endl;
+      UNIT_CAPTURE() << "   ---------->Ghost Box " << g << ":" << std::endl;
       for(std::size_t n = 0; n < de_nboxes; ++n) {
         UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
         for(int i = 0; i < dim; ++i)
@@ -305,10 +305,11 @@ print_part_all_entities(const box_coloring & colored_cells,
       } // ghost
     } // de_nboxes
 
-    UNIT_CAPTURE() << "   ----->Domain Halo:"<<std::endl;
+    UNIT_CAPTURE() << "   ----->Domain Halo:" << std::endl;
     std::size_t ndh = de_dhboxes[0].size();
     for(std::size_t h = 0; h < ndh; ++h) {
-      UNIT_CAPTURE() << "   ---------->Domain Halo Box " << h << ":"<<std::endl;
+      UNIT_CAPTURE() << "   ---------->Domain Halo Box " << h << ":"
+                     << std::endl;
       for(std::size_t n = 0; n < de_nboxes; ++n) {
         UNIT_CAPTURE() << "  ------->box_id " << n << " " << std::endl;
         for(int i = 0; i < dim; ++i)
