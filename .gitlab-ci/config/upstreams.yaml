@@ -1,0 +1,5 @@
+upstreams:
+  spack:
+    install_tree: /projects/ngc/private/ristra_module_gen/spack-v0.15.3/opt/spack
+    modules:
+      tcl: /projects/ngc/private/ristra_module_gen/spack-v0.15.3/share/spack/modules

@@ -1,0 +1,33 @@
+variables:
+  #CI_DEBUG_TRACE: "true"
+  #GET_SOURCES_ATTEMPTS: 10
+  #ARTIFACT_DOWNLOAD_ATTEMPTS: 10
+  #RESTORE_CACHE_ATTEMPTS: 10
+  #GLOBAL_CI_VARIABLE: "global_ci_value"
+  #http_proxy: "http://proxyout.lanl.gov:8080"
+  #https_proxy: "http://proxyout.lanl.gov:8080"
+  #ftp_proxy: "http://proxyout.lanl.gov:8080"
+  #no_proxy: "lanl.gov"
+  GIT_STRATEGY: fetch
+  GIT_SUBMODULE_STRATEGY: recursive
+  CCACHE_DIR: "${CI_PROJECT_DIR}/ccache"
+  CCACHE_UMASK: 000
+  CXXFLAGS: "-Werror -Wno-return-type -Wno-deprecated-declarations"
+  GASNET_BACKTRACE: 1
+  HPX_IGNORE_COMPILER_COMPATIBILITY: 1
+  FLECSI_DISTRO: "centOS"
+  FLECSI_CI_JOB_NAME_NOSTAGE: ${CI_JOB_NAME#*:}
+  FLECSI_MPI_PROVIDER: ""
+  FLECSI_MPICH_VERSION: "3.2.1"
+  FLECSI_MPICH_SPEC: "+slurm"
+  FLECSI_OPENMPI_VERSION: "3.1.4"
+  #FLECSI_OPENMPI_SPEC: "+pmi+legacylaunchers+thread_multiple schedulers=slurm"
+  #FLECSI_OPENMPI_SPEC: "+pmi+legacylaunchers+thread_multiple"
+  FLECSI_OPENMPI_SPEC: ""
+  FLECSI_INTEL_VERSION: "19.0.2"
+  FLECSI_CLANG_VERSION: "8.0.1"
+  FLECSI_GCC_VERSION: "8.3.0"
+  FLECSI_PYTHON_VERSION: "3.5.1"
+  FLECSI_SPACK_SPEC: "flecsi@1%gcc@${FLECSI_GCC_VERSION}+doxygen backend=${FLECSI_RUNTIME}"
+  FLECSI_SPACK_REPO: "https://github.com/spack/spack.git"
+  FLECSI_SPACK_REF: "v0.15.3"

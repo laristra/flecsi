@@ -1,0 +1,54 @@
+#############
+# Templates #
+#############
+
+.common:
+  only:
+    refs:
+      - "1.4"
+      - "1"
+      - merge_requests
+  except:
+    refs:
+      - schedules
+
+.nightly:
+  only:
+    refs:
+      - schedules
+    variables:
+      - $FLECSI_SCHEDULE == "nightly"
+  except:
+
+.cache:
+  cache:
+    #key: ${CI_JOB_NAME_NOSTAGE%.*}-${CI_COMMIT_REF_SLUG}
+    key: ${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}
+    paths:
+      - ${CCACHE_DIR}
+
+.artifacts:
+  artifacts:
+    name: "flecsi-${CI_COMMIT_REF_SLUG}-${CI_JOB_NAME}-${CI_JOB_ID}"
+    paths:
+      - ${CI_PROJECT_DIR}/build #/builds/next-generation-codes/laristra/flecsale-mm/build
+    when: always
+    expire_in: 1 week
+  dependencies: []
+
+.shell_runner:
+  tags:
+    - laristra-setuid-shared
+
+.batch_runner:
+  tags:
+    - darwin-slurm-shared
+  variables:
+    SCHEDULER_PARAMETERS: "--nodes=1 --partition=skylake-gold"
+
+.job:
+  retry: 0
+  extends:
+    - .common
+    - .cache
+    - .shell_runner
