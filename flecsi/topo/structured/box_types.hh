@@ -43,10 +43,10 @@ struct box_core {
     return dim;
   }
 
-  void local_strides(std::vector<std::size_t>& strides) {
-    strides.resize(dim,0);
+  void local_strides(std::vector<std::size_t> & strides) {
+    strides.resize(dim, 0);
     for(std::size_t i = 0; i < dim; i++)
-        strides[i] = upperbnd[i] - lowerbnd[i] + 1;
+      strides[i] = upperbnd[i] - lowerbnd[i] + 1;
   }
 
   std::size_t size() {
