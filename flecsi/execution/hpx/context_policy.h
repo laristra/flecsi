@@ -29,6 +29,7 @@
 #include <functional>
 #include <map>
 #include <mutex>
+#include <string>
 #include <tuple>
 #include <unordered_map>
 
@@ -51,6 +52,49 @@
 /// \authors bergen
 /// \date Initial file creation: Nov 15, 2015
 ///
+
+#if HPX_VERSION_FULL < 0x010500
+namespace flecsi {
+namespace execution {
+
+using pool_executor = hpx::threads::executors::pool_executor;
+} // namespace execution
+} // namespace flecsi
+#else
+namespace flecsi {
+namespace execution {
+
+// newer versions of HPX do not support pool_executor anymore
+class pool_executor : public hpx::parallel::execution::thread_pool_executor
+{
+public:
+  explicit pool_executor(std::string const & pool_name = "default")
+    : hpx::parallel::execution::thread_pool_executor(
+        &hpx::threads::get_thread_manager().get_pool(pool_name),
+        hpx::threads::thread_priority_default,
+        hpx::threads::thread_stacksize_default) {}
+};
+} // namespace execution
+} // namespace flecsi
+
+namespace hpx {
+namespace parallel {
+namespace execution {
+template<>
+struct is_one_way_executor<flecsi::execution::pool_executor> : std::true_type {
+};
+
+template<>
+struct is_two_way_executor<flecsi::execution::pool_executor> : std::true_type {
+};
+
+template<>
+struct is_bulk_two_way_executor<flecsi::execution::pool_executor>
+  : std::true_type {};
+} // namespace execution
+} // namespace parallel
+} // namespace hpx
+#endif
 
 namespace flecsi {
 namespace execution {
@@ -335,11 +379,11 @@ struct hpx_context_policy_t {
     return global_min_f;
   }
 
-  hpx::threads::executors::pool_executor & get_default_executor() {
+  flecsi::execution::pool_executor & get_default_executor() {
     return exec_;
   }
 
-  hpx::threads::executors::pool_executor & get_mpi_executor() {
+  flecsi::execution::pool_executor & get_mpi_executor() {
     return mpi_exec_;
   }
 
@@ -381,8 +425,8 @@ private:
   double max_reduction_;
 
 private:
-  hpx::threads::executors::pool_executor exec_;
-  hpx::threads::executors::pool_executor mpi_exec_;
+  flecsi::execution::pool_executor exec_;
+  flecsi::execution::pool_executor mpi_exec_;
 
 }; // struct hpx_context_policy_t
 
