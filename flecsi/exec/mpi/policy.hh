@@ -30,7 +30,7 @@
 namespace flecsi {
 
 template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
-decltype(auto)
+auto
 reduce(ARGS &&... args) {
   using R = typename util::function_traits<decltype(F)>::return_type;
   if constexpr(std::is_void_v<R>) {

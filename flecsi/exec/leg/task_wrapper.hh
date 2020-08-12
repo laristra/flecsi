@@ -244,8 +244,7 @@ struct task_wrapper {
     // without finalize_handles)?
     auto task_args = detail::tuple_get<param_tuple>(*task);
 
-    bind_accessors_t bind_accessors(runtime, context, regions, task->futures);
-    bind_accessors.walk(task_args);
+    bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       apply(F, std::forward<param_tuple>(task_args));
@@ -257,9 +256,7 @@ struct task_wrapper {
     else {
       RETURN result = apply(F, std::forward<param_tuple>(task_args));
 
-      // FIXME: Refactor
-      // finalize_handles_t finalize_handles;
-      // finalize_handles.walk(task_args);
+      // FIXME: Refactor unbind_accessor
 
       return result;
     } // if
@@ -275,33 +272,39 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
   static constexpr auto LegionProcessor = task_processor_type_t::loc;
 
-  static void execute(const Legion::Task * task,
-    const std::vector<Legion::PhysicalRegion> & reg,
-    Legion::Context ctx,
+  static RETURN execute(const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
     Legion::Runtime * runtime) {
-    // FIXME: Refactor
-    //    {
-    //      log::devel_guard guard(task_wrapper_tag);
-    //      flog_devel(info) << "In execute_mpi_task" << std::endl;
-    //    }
+    {
+      log::devel_guard guard(task_wrapper_tag);
+      flog_devel(info) << "In execute_mpi_task" << std::endl;
+    }
 
     // Unpack task arguments.
     param_tuple * p;
     flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, task->args, sizeof p);
-    auto & mpi_task_args = *p;
 
-    bind_accessors_t(runtime, ctx, reg, task->futures).walk(mpi_task_args);
+    bind_accessors{runtime, context, regions, task->futures}.walk(*p);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();
-    c.set_mpi_task([&] { apply(F, std::move(mpi_task_args)); });
 
-    // FIXME: Refactor
-    // finalize_handles_t finalize_handles;
-    // finalize_handles.walk(mpi_task_args);
-  }
-};
+    if constexpr(std::is_void_v<RETURN>) {
+      c.mpi_call([&] { apply(F, std::move(*p)); });
+      // FIXME unbind accessors
+    }
+    else {
+      std::optional<RETURN> result;
+      c.mpi_call([&] { result.emplace(std::apply(F, std::move(*p))); });
+
+      // FIXME unbind accessors
+      return std::move(*result);
+    }
+
+  } // execute
+}; // task_wrapper
 
 } // namespace exec::leg
 } // namespace flecsi

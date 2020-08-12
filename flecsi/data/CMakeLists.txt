@@ -103,8 +103,8 @@ add_unit(index
 )
 endif()
 
-add_unit(structured
+add_unit(privilege_pack
   SOURCES
-    test/structured.cc
-  THREADS 2
+    test/privilege_pack.cc
+  THREADS 1
 )
