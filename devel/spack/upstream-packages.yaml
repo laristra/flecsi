@@ -19,8 +19,9 @@ packages:
     version: [3.2.1]
   ncurses:
     buildable: False
-    paths:
-      ncurses@NCURSES_VERSION: /usr
+    externals:
+    - spec: ncurses@NCURSES_VERSION:
+      prefix: /usr
   openmpi:
     version: [3.1.6]
   parmetis:
