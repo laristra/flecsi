@@ -481,6 +481,13 @@ public:
         layout_constraints.add_constraint(
           Legion::FieldConstraint(all_fields, true));
 
+        static size_t offset = 0;
+        for(auto fid : task.regions[indx].privilege_fields) {
+          Legion::OffsetConstraint offset_constraint(fid, offset);
+          layout_constraints.add_constraint(offset_constraint);
+          offset += 64;
+        } // for fid
+
         // creating physical instance for the reduction task
         if(task.regions[indx].privilege == REDUCE) {
           creade_reduction_instance(ctx, task, output, target_mem, indx);
