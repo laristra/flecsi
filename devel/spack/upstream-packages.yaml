@@ -7,7 +7,7 @@ packages:
     version: [1.73.0]
     variants: cxxstd=14 +program_options
   cmake:
-    version: [3.17.1]
+    version: [3.18.1]
   gasnet:
     version: [2020.3.0]
     variants: ~aligned-segments~ibv+mpi~pshm~udp segment-mmap-max=16GB
@@ -20,7 +20,7 @@ packages:
   ncurses:
     buildable: False
     externals:
-    - spec: ncurses@NCURSES_VERSION:
+    - spec: ncurses@NCURSES_VERSION
       prefix: /usr
   openmpi:
     version: [3.1.6]
