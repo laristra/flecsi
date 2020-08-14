@@ -34,7 +34,7 @@ set(CMAKE_CXX_STANDARD 17)
 #------------------------------------------------------------------------------#
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8.4")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0")
     message(FATAL_ERROR "Version 9.0 of gnu compilers required!")
   endif()
 endif()
@@ -266,7 +266,7 @@ if(NOT FORMAT_ONLY)
       message (FATAL_ERROR "MPI is required for the mpi runtime model")
     endif()
 
-    set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/exec/mpi)
+    set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpi)
 
     set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
 
@@ -286,7 +286,7 @@ if(NOT FORMAT_ONLY)
 
     set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
 
-    set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/exec/hpx)
+    set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/hpx)
 
   #----------------------------------------------------------------------------#
   # Charm interface
@@ -297,7 +297,7 @@ if(NOT FORMAT_ONLY)
       message (FATAL_ERROR "MPI is required for the charm runtime model")
     endif()
 
-    set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/exec/charm)
+    set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/charm)
 
     set(FLECSI_RUNTIME_LIBRARIES ${DL_LIBS} ${MPI_LIBRARIES})
 

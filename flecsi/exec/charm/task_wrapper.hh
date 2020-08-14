@@ -66,11 +66,32 @@ struct util::serial_convert<data::accessor<data::singular, T, Priv>> {
     return b;
   }
 };
-// NB: topology_accessor is trivially copyable.
+template<class T, std::size_t Priv>
+struct util::serial<data::topology_accessor<T, Priv>,
+  std::enable_if_t<!util::memcpyable_v<data::topology_accessor<T, Priv>>>> {
+  using type = data::topology_accessor<T, Priv>;
+  template<class P>
+  static void put(P &, const type &) {}
+  static type get(const std::byte *&) {
+    return type();
+  }
+};
+
+template<auto & F, class... AA>
+struct util::serial_convert<exec::partial<F, AA...>> {
+  using type = exec::partial<F, AA...>;
+  using Rep = typename type::Base;
+  static const Rep & put(const type & p) {
+    return p;
+  }
+  static type get(const Rep & t) {
+    return t;
+  }
+};
 
 template<class T>
-struct util::serial_convert<exec::flecsi_future<T>> {
-  using type = exec::flecsi_future<T>;
+struct util::serial_convert<future<T>> {
+  using type = future<T>;
   struct Rep {};
   static Rep put(const type &) {
     return {};

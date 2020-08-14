@@ -62,7 +62,7 @@ struct task_prologue_t {
     @param context The Legion task runtime context.
    */
 
-  task_prologue_t(const size_t & domain) {}
+  task_prologue_t() {}
 
   template<class P, class... AA>
   void walk(const AA &... aa) {
@@ -77,7 +77,7 @@ struct task_prologue_t {
   template<class T,
     std::size_t Priv,
     class Topo,
-    topo::index_space_t<Topo> Space>
+    typename Topo::index_space Space>
   void visit(data::accessor<data::singular, T, Priv> * null_p,
     const data::field_reference<T, data::singular, Topo, Space> & ref) {
     visit(get_null_base(null_p), ref.template cast<data::dense>());
@@ -100,8 +100,8 @@ struct task_prologue_t {
   template<typename DATA_TYPE,
     size_t PRIVILEGES,
     class Topo,
-    topo::index_space_t<Topo> Space,
-    class = std::enable_if_t<topo::privilege_count<Topo, Space> == 1>>
+    typename Topo::index_space Space,
+    class = std::enable_if_t<Topo::template privilege_count<Space> == 1>>
   void visit(
     data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, data::dense, Topo, Space> & ref) {
@@ -122,15 +122,15 @@ struct task_prologue_t {
     Futures
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
-  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> *,
-    const exec::charm_future<DATA_TYPE, exec::launch_type_t::single> &
+  void visit(future<DATA_TYPE, launch_type_t::single> *,
+    const future<DATA_TYPE, exec::launch_type_t::single> &
       future) {
     CkAbort("Futures not yet supported\n");
   }
 
   template<typename DATA_TYPE>
-  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> *,
-    const exec::charm_future<DATA_TYPE, exec::launch_type_t::index> & future) {
+  void visit(future<DATA_TYPE, launch_type_t::single> *,
+    const future<DATA_TYPE, exec::launch_type_t::index> & future) {
     CkAbort("Futures not yet supported\n");
   }
 

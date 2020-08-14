@@ -50,8 +50,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
 
-  set(execution_HEADERS
-    ${execution_HEADERS}
+  set(exec_HEADERS
+    ${exec_HEADERS}
     charm/bind_accessors.hh
     charm/task_wrapper.hh
     charm/unbind_accessors.hh

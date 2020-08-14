@@ -63,7 +63,7 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
     flog_assert(buf_.size() % sizeof(DATA_TYPE) == 0, "Bad buffer size\n");
     auto & flecsi_context = run::context::instance();
     DATA_TYPE* d = (DATA_TYPE*)flecsi_context.getField(accessor.identifier());
-    bind(accessor, 1, d);
+    bind(accessor, {d, 1});
   }
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
@@ -80,7 +80,7 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
    Futures
    *--------------------------------------------------------------------------*/
   template<typename DATA_TYPE>
-  void visit(exec::flecsi_future<DATA_TYPE, launch_type_t::single> & future) {
+  void visit(future<DATA_TYPE, launch_type_t::single> & future) {
     CkAbort("Futures not yet supported\n");
   }
 
