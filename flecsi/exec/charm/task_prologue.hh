@@ -30,7 +30,6 @@
 #include "flecsi/topo/ntree/interface.hh"
 #include "flecsi/topo/set/interface.hh"
 #include "flecsi/topo/structured/interface.hh"
-//#include "flecsi/topo/unstructured/interface.hh"
 #include "flecsi/util/demangle.hh"
 #include "flecsi/util/tuple_walker.hh"
 
@@ -46,23 +45,13 @@ namespace exec::charm {
 
 /*!
   The task_prologue_t type can be called to walk task args before the
-  task launcher is created. This allows us to gather region requirements
-  and to set state on the associated data handles \em before Legion gets
-  the task arguments tuple.
+  task launcher is created. For now this is used to register data with
+  the Charm++ backend.
 
   @ingroup execution
 */
 
 struct task_prologue_t {
-
-  /*!
-    Construct an task_prologue_t instance.
-
-    @param runtime The Legion task runtime.
-    @param context The Legion task runtime context.
-   */
-
-  task_prologue_t() {}
 
   template<class P, class... AA>
   void walk(const AA &... aa) {

@@ -41,9 +41,9 @@ namespace exec::charm {
 
 /*!
   The bind_accessors_t type is called to walk the user task arguments inside of
-  an executing legion task to properly complete the users accessors, i.e., by
-  pointing the accessor \em view instances to the appropriate legion-mapped
-  buffers.
+  an executing task to properly complete the users accessors, i.e., by
+  pointing the accessor \em view instances to the appropriate data as managed by
+  the Charm++ backend.
  */
 
 struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
@@ -51,13 +51,17 @@ struct bind_accessors_t : public util::tuple_walker<bind_accessors_t> {
   /*!
     Construct an bind_accessors_t instance.
 
-    @param legion_runtime The Legion task runtime.
-    @param legion_context The Legion task runtime context.
+    @param buf the buffer containing serialized arguments.
+    TODO: buf may not even be needed anymore
    */
 
   bind_accessors_t(std::vector<std::byte>& buf)
     : buf_(buf) {}
 
+  /*!
+    Get field data from the Charm++ backend context and bind it to the accessor
+    TODO: For now this assumes a size of one
+  */
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::dense, DATA_TYPE, PRIVILEGES> & accessor) {
     flog_assert(buf_.size() % sizeof(DATA_TYPE) == 0, "Bad buffer size\n");

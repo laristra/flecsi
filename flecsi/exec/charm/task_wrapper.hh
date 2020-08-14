@@ -23,13 +23,11 @@
 
 #include "flecsi/exec/charm/bind_accessors.hh"
 #include "flecsi/exec/charm/future.hh"
-#include "flecsi/exec/charm/unbind_accessors.hh"
 #include "flecsi/exec/task_attributes.hh"
 #include "flecsi/run/backend.hh"
 #include "flecsi/util/common.hh"
 #include "flecsi/util/function_traits.hh"
 #include "flecsi/util/serialize.hh"
-#include "unbind_accessors.hh"
 #include <flecsi/flog.hh>
 
 #if !defined(FLECSI_ENABLE_CHARM)
@@ -107,13 +105,12 @@ using run::charm::task;
 namespace detail {
 inline task_id_t last_task; // 0 is the top-level task
 /*!
-  Register a task with Legion.
+  Register a task with the Charm backend.
 
   @tparam RETURN The return type of the task.
-  @tparam TASK   The legion task.
+  @tparam TASK   The task.
   \tparam A task attributes
 
-  @ingroup legion-execution
  */
 
 template<typename RETURN, task<RETURN> * TASK, std::size_t A>
@@ -144,7 +141,7 @@ tuple_get(const std::vector<std::byte>& buf) {
 /*!
   Arbitrary index for each task.
 
-  @tparam F          Legion task function.
+  @tparam F          Task function.
   @tparam ATTRIBUTES A size_t holding the mask of the task attributes mask
                      \ref task_attributes_mask_t.
  */
@@ -163,10 +160,9 @@ void
 detail::register_task() {
   constexpr auto processor_type = mask_to_processor_type(A);
   static_assert(processor_type != task_processor_type_t::mpi,
-    "Legion tasks cannot use MPI");
+    "Charm tasks cannot use MPI");
 
   const std::string name = util::symbol<*TASK>();
-  std::cout << "Registering " << name << std::endl;
   {
     log::devel_guard guard(task_wrapper_tag);
     flog_devel(info) << "registering pure Legion task " << name << std::endl;
@@ -178,7 +174,6 @@ detail::register_task() {
 } // registration_callback
 
 // A trivial wrapper for nullary functions.
-// TODO: Need a charm++ replacement for this?
 template<auto & F>
 auto
 verb(std::vector<std::byte>& buf) {
@@ -192,7 +187,6 @@ verb(std::vector<std::byte>& buf) {
  \tparam F the user task
  \tparam P the target processor type
 
- @ingroup legion-execution
  */
 
 template<auto & F, task_processor_type_t P> // P is for specialization only
@@ -202,7 +196,7 @@ struct task_wrapper {
   using RETURN = typename Traits::return_type;
   using param_tuple = typename Traits::arguments_type;
 
-  static constexpr task_processor_type_t LegionProcessor = P;
+  static constexpr task_processor_type_t CharmProcessor = P;
 
   /*!
     Execution wrapper method for user tasks.
@@ -224,18 +218,8 @@ struct task_wrapper {
 
     if constexpr(std::is_same_v<RETURN, void>) {
       apply(F, std::forward<param_tuple>(task_args));
-
-      // FIXME: Refactor
-      // finalize_handles_t finalize_handles;
-      // finalize_handles.walk(task_args);
-    }
-    else {
+    } else {
       RETURN result = apply(F, std::forward<param_tuple>(task_args));
-
-      // FIXME: Refactor
-      // finalize_handles_t finalize_handles;
-      // finalize_handles.walk(task_args);
-
       return result;
     } // if
   } // execute_user_task
@@ -248,24 +232,14 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
   using RETURN = typename Traits::return_type;
   using param_tuple = typename Traits::arguments_type;
 
-  static constexpr auto LegionProcessor = task_processor_type_t::loc;
+  static constexpr auto CharmProcessor = task_processor_type_t::loc;
 
   static RETURN execute(std::vector<std::byte>& buf) {
-    // FIXME: Refactor
-    //    {
-    //      log::devel_guard guard(task_wrapper_tag);
-    //      flog_devel(info) << "In execute_mpi_task" << std::endl;
-    //    }
-
     // Unpack task arguments.
     param_tuple * p;
     flog_assert(buf.size() == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, buf.data(), sizeof p);
     auto & mpi_task_args = *p;
-
-    // FIXME: Refactor
-    // init_handles_t init_handles(runtime, context, regions, task->futures);
-    // init_handles.walk(mpi_task_args);
 
     // TODO: Is more needed for synchronization with an "MPI" task?
     if constexpr(std::is_same_v<RETURN, void>) {
@@ -273,10 +247,6 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     } else {
       return apply(F, std::move(mpi_task_args));
     }
-
-    // FIXME: Refactor
-    // finalize_handles_t finalize_handles;
-    // finalize_handles.walk(mpi_task_args);
   }
 };
 

@@ -21,7 +21,6 @@
 #include "flecsi/exec/launch.hh"
 #include "flecsi/exec/charm/task_wrapper.hh"
 #include "flecsi/run/charm/context.hh"
-#include "flecsi/run/charm/mapper.hh"
 #include "flecsi/run/types.hh"
 #include <flecsi/data.hh>
 
@@ -37,14 +36,12 @@ using exec::charm::task_id;
 namespace charm {
 
 ContextGroup::ContextGroup() {
-  CkPrintf("Group created on %i\n", CkMyPe());
   if (CkMyPe() != 0) {
     run::context::instance().context_proxy_ = thisProxy;
   }
 }
 
 void ContextGroup::top_level_task() {
-  std::cout << "Executing the top level task" << std::endl;
   context_t & context_ = context_t::instance();
   detail::data_guard(),
     context_.exit_status() = (*context_.top_level_action_)();
@@ -107,10 +104,6 @@ context_t::start(const std::function<int()> & action) {
   top_level_action_ = &action;
 
   context::start();
-
-  /*
-    Legion command-line arguments.
-   */
 
   // FIXME: This needs to be gotten from Charm
   context::threads_per_process_ = 1;

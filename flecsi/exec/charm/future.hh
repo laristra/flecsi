@@ -34,6 +34,10 @@
 
 namespace flecsi {
 
+// TODO: These are all skeletal future implementations just to allow
+// for compilation and test execution. Once asynchrony is introduced
+// these should be setup to wrap Charm++ futures (similar to how the
+// legion backend wraps legion futures).
 template<typename Return>
 struct future<Return, exec::launch_type_t::single> {
 
@@ -47,7 +51,6 @@ struct future<Return, exec::launch_type_t::single> {
     Get a task result.
    */
   Return get(bool silence_warnings = false) const {
-    //return return_;
     return return_;
   } // get
 
@@ -90,7 +93,7 @@ struct future<Return, exec::launch_type_t::index> {
   std::size_t size() const { return 1; }
 
   Return return_;
-}; // future
+}; // struct future
 
 template <>
 struct future<void, exec::launch_type_t::index> {
@@ -110,7 +113,7 @@ struct future<void, exec::launch_type_t::index> {
 
   std::size_t size() const { return 1; }
 
-}; // future
+}; // struct future
 
 //-----------------------------------------------------------------------
 

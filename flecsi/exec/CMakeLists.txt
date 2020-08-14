@@ -54,11 +54,9 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
     ${exec_HEADERS}
     charm/bind_accessors.hh
     charm/task_wrapper.hh
-    charm/unbind_accessors.hh
     charm/policy.hh
     charm/future.hh
     charm/task_prologue.hh
-    charm/reduction_wrapper.hh
   )
 
 endif()

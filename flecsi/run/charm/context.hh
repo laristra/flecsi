@@ -22,8 +22,6 @@
 #endif
 
 #include "../context.hh"
-//#include "flecsi/execution/launch.hh"
-//#include "flecsi/execution/processor.hh"
 #include <flecsi/run/types.hh>
 #include <flecsi/util/common.hh>
 
@@ -57,6 +55,10 @@ namespace charm {
 template<class R = void>
 using task = R(std::vector<std::byte>&);
 
+// This is the charm group which manages the context and makes context info
+// accessible on all PEs. At the moment, it's pretty skeletal, but moving
+// forward, should include field management, communication, asynchronous task
+// execution, reduction logic, etc.
 class ContextGroup : public CBase_ContextGroup {
 public:
   ContextGroup();
@@ -173,7 +175,6 @@ struct context_t : context {
    */
 
   size_t task_depth() {
-    // TODO: Must be some way to get this from Charm runtime
     return context_proxy_.ckLocalBranch()->task_depth();
   } // task_depth
 
@@ -181,6 +182,8 @@ struct context_t : context {
     Documentation for this interface is in the top-level context type.
    */
 
+  // TODO: Color functionality still needs implementation. It may also need
+  // to be made static (as well as some of the other functions here)
   size_t color() {
     flog_assert(
       task_depth() > 0, "this method can only be called from within a task");

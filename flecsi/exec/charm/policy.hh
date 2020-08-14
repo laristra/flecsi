@@ -23,7 +23,6 @@
 
 #include "flecsi/exec/launch.hh"
 #include "flecsi/exec/charm/future.hh"
-#include "flecsi/exec/charm/reduction_wrapper.hh"
 #include "flecsi/exec/charm/task_prologue.hh"
 #include "flecsi/exec/charm/task_wrapper.hh"
 #include "flecsi/run/backend.hh"
@@ -144,7 +143,7 @@ reduce_internal(Args &&... args) {
 
   using wrap = charm::task_wrapper<F, processor_type>;
   const auto task = charm::task_id<wrap::execute,
-    (Attributes & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
+    (Attributes & ~mpi) | 1 << static_cast<std::size_t>(wrap::CharmProcessor)>;
 
   // TODO: Right now we just execute tasks inline which doesn't expose any
   // paralellism. Tasks should be converted to entry methods in charm or

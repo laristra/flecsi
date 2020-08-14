@@ -30,6 +30,8 @@ namespace flecsi {
 namespace data {
 namespace charm {
 
+// TODO: These are just placeholder definitions for region and partition
+// while the topo interface for Flecsi is still in flux.
 struct region {
   region(size2 s, const fields & fs) : s_(s) {}
   size2 size() const { return s_; }
@@ -52,7 +54,6 @@ struct partition {
     completeness cpt = incomplete) {}
 
   std::size_t colors() const {
-    //return run().get_index_space_domain(color_space).get_volume();
     return 1;
   }
 
