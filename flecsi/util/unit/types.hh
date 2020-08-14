@@ -200,7 +200,7 @@ string_case_compare(const char * lhs, const char * rhs) {
 } // namespace flecsi
 
 #define UNIT                                                                   \
-  ::flecsi::log::flog_t::instance().config_stream().add_buffer(                \
+  ::flecsi::log::state::instance().config_stream().add_buffer(                 \
     "flog", std::clog, true);                                                  \
   ::flecsi::util::unit::state_t auto_unit_state(__func__);                     \
   return auto_unit_state->*[&]() -> void

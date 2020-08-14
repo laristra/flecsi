@@ -31,14 +31,14 @@ namespace log {
  */
 
 struct tag_scope_t {
-  tag_scope_t(size_t tag = 0) : stash_(flog_t::instance().active_tag()) {
+  tag_scope_t(size_t tag = 0) : stash_(state::instance().active_tag()) {
 #if defined(FLOG_ENABLE_DEBUG)
     std::cerr << FLOG_COLOR_LTGRAY << "FLOG: activating tag " << tag
               << FLOG_COLOR_PLAIN << std::endl;
 #endif
 
     // Warn users about externally-scoped messages
-    if(!flog_t::instance().initialized()) {
+    if(!state::instance().initialized()) {
       std::cerr
         << FLOG_COLOR_YELLOW << "FLOG: !!!WARNING You cannot use "
         << "tag guards for externally scoped messages!!! "
@@ -46,11 +46,11 @@ struct tag_scope_t {
         << FLOG_COLOR_PLAIN << std::endl;
     } // if
 
-    flog_t::instance().active_tag() = tag;
+    state::instance().active_tag() = tag;
   } // tag_scope_t
 
   ~tag_scope_t() {
-    flog_t::instance().active_tag() = stash_;
+    state::instance().active_tag() = stash_;
   } // ~tag_scope_t
 
 private:

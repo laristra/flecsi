@@ -36,7 +36,7 @@ namespace log {
 void flush_packets();
 
 /*!
-  The flog_t type provides access to logging parameters and configuration.
+  The state type provides access to logging parameters and configuration.
 
   This type provides access to the underlying logging parameters for
   configuration and information. The FleCSI logging functions provide
@@ -49,20 +49,20 @@ void flush_packets();
   @ingroup logging
  */
 
-class flog_t
+class state
 {
 public:
   /*!
     Copy constructor (disabled)
    */
 
-  flog_t(const flog_t &) = delete;
+  state(const state &) = delete;
 
   /*!
     Assignment operator (disabled)
    */
 
-  flog_t & operator=(const flog_t &) = delete;
+  state & operator=(const state &) = delete;
 
   /*!
     Meyer's singleton instance.
@@ -70,8 +70,8 @@ public:
     \return The singleton instance of this type.
    */
 
-  static flog_t & instance() {
-    static flog_t c;
+  static state & instance() {
+    static state c;
     return c;
   } // instance
 
@@ -88,7 +88,7 @@ public:
 #if defined(FLOG_ENABLE_TAGS)
     // Because active tags are specified at runtime, it is
     // necessary to maintain a map of the compile-time registered
-    // tag names to the id that they get assigned after the flog_t
+    // tag names to the id that they get assigned after the state
     // initialization (register_tag). This map will be used to populate
     // the tag_bitset_ for fast runtime comparisons of enabled tag groups.
 
@@ -101,12 +101,14 @@ public:
 
     // The default group is always active (unscoped). To avoid
     // output for this tag, make sure to scope all FLOG output.
-    tag_bitset_.set(0);
-    tag_reverse_map_[0] = "all";
+    tag_reverse_map_[0] = "unscoped";
 
     if(active == "all") {
       // Turn on all of the bits for "all".
       tag_bitset_.set();
+    }
+    else if(active == "unscoped") {
+      tag_bitset_.set(0);
     }
     else if(active != "none") {
       // Turn on the bits for the selected groups.
@@ -195,37 +197,11 @@ public:
   }
 
   /*!
-    Return the buffered log stream.
-   */
-
-  std::stringstream & buffer_stream() {
-    return buffer_stream_;
-  }
-
-  /*!
     Return the log stream.
    */
 
   std::ostream & stream() {
     return *stream_;
-  }
-
-  /*!
-    Return the log stream predicated on a boolean.
-    This method interface will allow us to select between
-    the actual stream and a null stream.
-   */
-
-  std::ostream & severity_stream(bool active = true) {
-    return active ? buffer_stream_ : null_stream_;
-  }
-
-  /*!
-    Return a null stream to disable output.
-   */
-
-  std::ostream & null_stream() {
-    return null_stream_;
   }
 
   /*!
@@ -358,19 +334,20 @@ public:
     return packets_mutex_;
   }
 
-  void buffer_output() {
-    std::string tmp = buffer_stream().str();
+  void buffer_output(std::string const & message) {
+    std::string tmp = message;
 
     // Make sure that the string fits within the packet size.
-    if(tmp.size() > FLOG_MAX_MESSAGE_SIZE) {
+    if(message.size() > FLOG_MAX_MESSAGE_SIZE) {
       tmp.resize(FLOG_MAX_MESSAGE_SIZE - 100);
       std::stringstream stream;
       stream << tmp << FLOG_COLOR_LTRED << " OUTPUT BUFFER TRUNCATED "
-             << FLOG_MAX_MESSAGE_SIZE << "(" << buffer_stream().str().size()
-             << ")" << FLOG_COLOR_PLAIN << std::endl;
+             << FLOG_MAX_MESSAGE_SIZE << "(" << message.size() << ")"
+             << FLOG_COLOR_PLAIN << std::endl;
       tmp = stream.str();
     } // if
 
+    std::lock_guard<std::mutex> guard(message_mutex_);
     packets_.push_back({tmp.c_str()});
   }
 
@@ -400,11 +377,11 @@ private:
     Constructor. This method is hidden because we are a singleton.
    */
 
-  flog_t() : null_stream_(0), tag_id_(0), active_tag_(0) {}
+  state() : tag_id_(0), active_tag_(0) {}
 
-  ~flog_t() {
+  ~state() {
 #if defined(FLOG_ENABLE_DEBUG)
-    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: flog_t destructor" << std::endl;
+    std::cerr << FLOG_COLOR_LTGRAY << "FLOG: state destructor" << std::endl;
 #endif
   }
 
@@ -412,8 +389,8 @@ private:
   int verbose_ = 0;
 
   tee_stream_t stream_;
-  std::stringstream buffer_stream_;
-  std::ostream null_stream_;
+
+  std::mutex message_mutex_;
 
   size_t tag_id_;
   size_t active_tag_;
@@ -430,7 +407,7 @@ private:
   bool serialized_ = false;
 #endif
 
-}; // class flog_t
+}; // class state
 
 } // namespace log
 } // namespace flecsi
