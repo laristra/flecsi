@@ -21,9 +21,9 @@ set(util_HEADERS
   array_ref.hh
   bit_buffer.hh
   bitutils.hh
+  color_map.hh
   common.hh
   constant.hh
-  crs.hh
   dag.hh debruijn.hh
   demangle.hh
   dimensioned_array.hh
@@ -31,12 +31,12 @@ set(util_HEADERS
   function_traits.hh
   geometry/filling_curve.hh
   geometry/point.hh
-  graph/colorer.hh
-  graph/parmetis_colorer.hh
+  dcrs.hh
+  parmetis_colorer.hh
   graphviz.hh
   id.hh
   macros.hh
-  mpi_type_traits.hh
+  mpi_typetraits.hh
   offset.hh
   reorder.hh
   serialize.hh
@@ -121,6 +121,16 @@ add_unit(common
     test/common.blessed.ppc
     test/common.blessed
     ${common_blessed_input}
+)
+
+#------------------------------------------------------------------------------#
+# color_map
+#------------------------------------------------------------------------------#
+
+add_unit(color_map
+  SOURCES
+    test/color_map.cc
+  THREADS 3
 )
 
 #------------------------------------------------------------------------------#

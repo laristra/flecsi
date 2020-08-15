@@ -352,8 +352,8 @@ if(NOT FORMAT_ONLY)
   math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
   message(STATUS "${FLECSI_Yellow}Set id_t bits to allow:\n"
-    "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
-    "   ${FLECSI_ID_FBITS} flag bits\n"
+    "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS}"
+    " entities each\n   ${FLECSI_ID_FBITS} flag bits\n"
     "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${FLECSI_ColorReset}")
 
   #----------------------------------------------------------------------------#
@@ -388,6 +388,13 @@ if(NOT FORMAT_ONLY)
     FILES ${CMAKE_BINARY_DIR}/flecsi-config.h
     DESTINATION include
   )
+
+
+  #----------------------------------------------------------------------------#
+  # mesh-gen target
+  #----------------------------------------------------------------------------#
+
+  add_executable(mesh-gen tools/mesh-gen.cc)
 
   #----------------------------------------------------------------------------#
   # Configure environment module.
@@ -505,6 +512,9 @@ if(NOT FORMAT_ONLY)
   summary_info("CMAKE_CXX_FLAGS" "${CMAKE_CXX_FLAGS}" TRUE)
   summary_info("CMAKE_C_COMPILER" "${CMAKE_C_COMPILER}" TRUE)
   summary_info("CMAKE_C_FLAGS" "${CMAKE_C_FLAGS}" TRUE)
+  if(ClangFormat_FOUND)
+    summary_info("ClangFormat_EXECUTABLE" "${ClangFormat_EXECUTABLE}" TRUE)
+  endif()
   string(APPEND _summary "\n")
   summary_info("FleCSI_VERSION" "${FleCSI_VERSION}" TRUE)
   summary_info("FleCSI_DOCUMENTATION_VERSION"

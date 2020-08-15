@@ -8,14 +8,13 @@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
 
-   Copyright (c) 2016, Los Alamos National Security, LLC
+   Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
 #pragma once
 
 /*! @file */
 
-#include "flecsi/util/crs.hh"
 #include "flecsi/util/geometry/point.hh"
 
 #include <set>

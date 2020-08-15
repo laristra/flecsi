@@ -143,7 +143,10 @@ enum class launch_type_t : size_t { single, index };
 
 /// An explicit launch domain size.
 struct launch_domain {
-  std::size_t sz;
+  std::size_t size() {
+    return size_;
+  }
+  std::size_t size_;
 };
 
 /// A simple version of C++20's \c bind_front that can be an argument to a
@@ -223,7 +226,7 @@ struct detail::task_param<future<R>> {
 template<class P>
 struct detail::launch<P, launch_domain> {
   static std::size_t get(const launch_domain & d) {
-    return d.sz;
+    return d.size_;
   }
 };
 template<class P, class T>

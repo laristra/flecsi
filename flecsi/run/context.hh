@@ -49,7 +49,7 @@ struct context_t; // supplied by backend
 enum status : int {
   success,
   help,
-  control,
+  option,
   command_line_error,
   error, // add specific error modes
 }; // initialization_codes

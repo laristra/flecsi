@@ -169,3 +169,34 @@ if(ENABLE_DEVELOPER_MODE)
     ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 subcycle.pdf subcycle.png
   )
 endif()
+
+#------------------------------------------------------------------------------#
+# 3-execution
+#------------------------------------------------------------------------------#
+
+add_executable(execution-single-task
+  3-execution/1-single-task.cc
+  3-execution/control.hh
+  3-execution/main.cc
+)
+target_link_libraries(execution-single-task ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(execution-single-task)
+
+add_executable(execution-index-task
+  3-execution/2-index-task.cc
+  3-execution/control.hh
+  3-execution/main.cc
+)
+target_link_libraries(execution-index-task ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(execution-index-task)
+
+add_executable(execution-mpi-task
+  3-execution/3-mpi-task.cc
+  3-execution/control.hh
+  3-execution/main.cc
+)
+target_link_libraries(execution-mpi-task ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(execution-mpi-task)

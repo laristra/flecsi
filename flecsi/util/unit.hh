@@ -19,9 +19,9 @@
 #define __FLECSI_PRIVATE__
 #endif
 
-#include "flecsi/control.hh"
 #include "flecsi/execution.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/run/control.hh"
 #include "flecsi/util/unit/types.hh"
 
 #include <tuple>
@@ -66,7 +66,7 @@ struct control_policy {
   struct node_policy {};
 
   template<auto CP>
-  using control_point = flecsi::control_point<CP>;
+  using control_point = flecsi::run::control_point<CP>;
 
   using control_points =
     std::tuple<control_point<control_points_enum::initialization>,
@@ -75,7 +75,7 @@ struct control_policy {
 
 }; // struct control_policy
 
-using control = flecsi::control<flecsi::unit::control_policy>;
+using control = flecsi::run::control<flecsi::unit::control_policy>;
 
 template<control::target_type Target>
 using initialization =

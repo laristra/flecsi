@@ -1,9 +1,22 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
+   Copyright (c) 2016, Triad National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
+
+/*! @file */
+
+#include "flecsi/flog.hh"
+#include "flecsi/topo/unstructured/definition.hh"
 
 #include <fstream>
 #include <iterator>
@@ -11,9 +24,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include "flecsi/topo/unstructured/definition.hh"
-#include <flecsi/flog.hh>
 
 namespace flecsi {
 namespace topo {

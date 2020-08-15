@@ -22,8 +22,8 @@
 #include "../entity_storage.hh"
 #include "../index_space.hh"
 #include "flecsi/run/backend.hh"
-#include "flecsi/topo/unstructured/storage.hh"
-#include "flecsi/topo/unstructured/types.hh"
+#include "flecsi/topo/old_unstructured/storage.hh"
+#include "flecsi/topo/old_unstructured/types.hh"
 #include "flecsi/util/id.hh"
 
 #include <array>

@@ -11,28 +11,34 @@
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
+
 #include <flecsi/execution.hh>
-#include <flecsi/util/unit.hh>
+#include <flecsi/flog.hh>
+
+#include "control.hh"
+
+using namespace flecsi;
+
+/*
+  Task with no arguments.
+ */
+
+void
+task(exec::launch_domain ld) {
+  flog(info) << "Hello World from color " << color() << " of "
+             << ld.size() << std::endl;
+}
+
+/*
+  Advance control point.
+ */
 
 int
-main(int argc, char ** argv) {
+advance() {
+  exec::launch_domain ld{4};
 
-  auto status = flecsi::initialize(argc, argv);
+  execute<task>(ld);
 
-  if(status != flecsi::run::status::success) {
-    return status == flecsi::run::status::help ? 0 : status;
-  } // if
-
-  status = flecsi::unit::control::check_options();
-
-  if(status != flecsi::run::status::success) {
-    flecsi::finalize();
-    return status == flecsi::run::status::option ? 0 : status;
-  } // if
-
-  status = flecsi::start(flecsi::unit::control::execute);
-
-  flecsi::finalize();
-
-  return status;
-} // main
+  return 0;
+}
+control::action<advance, cp::advance> advance_action;
