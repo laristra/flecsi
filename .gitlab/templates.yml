@@ -130,9 +130,9 @@
       cmake -DCMAKE_INSTALL_PREFIX=${CI_PROJECT_DIR}/state/install \
         -DBUILD_TYPE=${BUILD_TYPE} \
         -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-        -DCMAKE_CXX_FLAGS=${CXX_FLAGS} \
+        -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" \
         -DCMAKE_C_COMPILER=${C_COMPILER} \
-        -DCMAKE_C_FLAGS=${C_FLAGS} \
+        -DCMAKE_C_FLAGS="${C_FLAGS}" \
         -DFLECSI_RUNTIME_MODEL=${RUNTIME} \
         -DENABLE_FLOG=ON \
         ../..
@@ -220,9 +220,9 @@
     - |-
       cmake -DENABLE_UNIT_TESTS=ON \
         -DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-        -DCMAKE_CXX_FLAGS=${CXX_FLAGS} \
+        -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" \
         -DCMAKE_C_COMPILER=${C_COMPILER} \
-        -DCMAKE_C_FLAGS=${C_FLAGS} \
+        -DCMAKE_C_FLAGS="${C_FLAGS}" \
         ../../tutorial
     - make
     - make test
