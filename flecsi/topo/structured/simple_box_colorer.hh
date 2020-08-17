@@ -222,8 +222,8 @@ create_aggregate_info(box_coloring & cbox) {
   std::vector<int> rbuf[size];
 
   std::vector<MPI_Request> requests;
-  for(std::size_t i = 0; i < size; i++) {
-    if(i != rank) {
+  for(std::size_t i = 0; i < std::size_t(size); i++) {
+    if(i != size_t(rank)) {
       MPI_Request request;
       MPI_Irecv(
         (void *)&(rbuf[i]), sz, MPI_INT, i, 0, MPI_COMM_WORLD, &request);
@@ -245,7 +245,7 @@ create_aggregate_info(box_coloring & cbox) {
   }
 
   // Add received data to map
-  for(std::size_t i = 0; i < size; ++i) {
+  for(std::size_t i = 0; i < std::size_t(size); ++i) {
     if(rbuf[i].size() > 0) {
       for(std::size_t n = 0; n < cbox.num_boxes; ++n) {
         box_core ob(D);

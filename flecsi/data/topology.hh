@@ -27,6 +27,10 @@ struct region {
   region(size2, const fields &);
 
   size2 size() const;
+  template<topo::single_space>
+  region & get_region() {
+    return *this;
+  }
 };
 
 struct partition {

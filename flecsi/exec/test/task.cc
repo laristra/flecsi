@@ -87,7 +87,7 @@ drop(int n, const std::string & s) {
 } // namespace
 
 int
-test_driver() {
+task_driver() {
   UNIT {
     {
       auto & c = run::context::instance();
@@ -123,6 +123,6 @@ test_driver() {
     ASSERT_EQ((execute<hydro::mpi, mpi>(&x).get(0)), 4);
     ASSERT_EQ(x, 1); // NB: MPI calls are synchronous
   };
-} // test_driver
+} // task_driver
 
-flecsi::unit::driver<test_driver> driver;
+flecsi::unit::driver<task_driver> driver;

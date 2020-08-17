@@ -27,15 +27,14 @@ namespace log {
 void
 send_to_one() {
 
-  if(flog_t::instance().initialized()) {
-    std::lock_guard<std::mutex> guard(flog_t::instance().packets_mutex());
+  if(state::instance().initialized()) {
+    std::lock_guard<std::mutex> guard(state::instance().packets_mutex());
 
-    int * sizes = flog_t::instance().process() == 0
-                    ? new int[flog_t::instance().processes()]
+    int * sizes = state::instance().process() == 0
+                    ? new int[state::instance().processes()]
                     : nullptr;
 
-    std::vector<std::byte> data =
-                             util::serial_put(flog_t::instance().packets()),
+    std::vector<std::byte> data = util::serial_put(state::instance().packets()),
                            buffer;
 
     const int bytes = data.size();
@@ -45,10 +44,10 @@ send_to_one() {
     int * offsets = nullptr;
     int sum{0};
 
-    if(flog_t::instance().process() == 0) {
-      offsets = new int[flog_t::instance().processes()];
+    if(state::instance().process() == 0) {
+      offsets = new int[state::instance().processes()];
 
-      for(size_t p{0}; p < flog_t::instance().processes(); ++p) {
+      for(size_t p{0}; p < state::instance().processes(); ++p) {
         offsets[p] = sum;
         sum += sizes[p];
       } // for
@@ -66,18 +65,18 @@ send_to_one() {
       0,
       MPI_COMM_WORLD);
 
-    flog_t::instance().packets().clear();
+    state::instance().packets().clear();
 
-    if(flog_t::instance().process() == 0) {
+    if(state::instance().process() == 0) {
 
-      for(size_t p{0}; p < flog_t::instance().processes(); ++p) {
+      for(size_t p{0}; p < state::instance().processes(); ++p) {
 
-        if(!flog_t::instance().one_process() ||
-           p == flog_t::instance().output_process()) {
+        if(!state::instance().one_process() ||
+           p == state::instance().output_process()) {
           const auto remote_packets = util::serial_get1<std::vector<packet_t>>(
             buffer.data() + offsets[p]);
 
-          std::vector<packet_t> & packets = flog_t::instance().packets();
+          std::vector<packet_t> & packets = state::instance().packets();
 
           packets.reserve(packets.size() + remote_packets.size());
           packets.insert(
@@ -89,7 +88,7 @@ send_to_one() {
       delete[] offsets;
     } // if
 
-    flog_t::instance().set_serialized();
+    state::instance().set_serialized();
   } // if
 
 } // send_to_one

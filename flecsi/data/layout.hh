@@ -35,6 +35,7 @@ namespace data {
  */
 
 enum layout : size_t {
+  raw, ///< Uninitialized memory with no objects constructed or destroyed.
   dense,
   singular, ///< Access to the single element of an array.
   sparse,

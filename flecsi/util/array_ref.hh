@@ -49,12 +49,14 @@ struct span {
   constexpr span(pointer p, pointer q) : p(p), q(q) {}
   template<std::size_t N>
   constexpr span(element_type (&a)[N]) : span(a, N) {}
+  /// \warning Destroying \a C leaves this object dangling if it owns its
+  ///   elements.  This implementation does not check for "borrowing".
   template<class C,
     class = std::enable_if_t<std::is_convertible_v<
-      std::remove_pointer_t<decltype(void(std::size(std::declval<C &>())),
-        std::data(std::declval<C &>()))> (*)[],
+      std::remove_pointer_t<decltype(void(std::size(std::declval<C &&>())),
+        std::data(std::declval<C &&>()))> (*)[],
       T (*)[]>>>
-  constexpr span(C & c) : span(std::data(c), std::size(c)) {}
+  constexpr span(C && c) : span(std::data(c), std::size(c)) {}
 
   constexpr iterator begin() const noexcept {
     return p;

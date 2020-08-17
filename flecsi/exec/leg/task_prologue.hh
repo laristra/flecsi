@@ -40,6 +40,8 @@
 
 #include <legion.h>
 
+#include <memory>
+
 namespace flecsi {
 
 inline log::devel_tag task_prologue_tag("task_prologue");
@@ -93,7 +95,7 @@ struct task_prologue_t {
   } // privilege_mode
 
   template<class P, class... AA>
-  void walk(const AA &... aa) {
+  void walk(AA &... aa) {
     walk(static_cast<P *>(nullptr), aa...);
   }
 
@@ -102,6 +104,16 @@ struct task_prologue_t {
     type, potentially for every permutation thereof.
    *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
+  template<class T, std::size_t Priv, class Topo, typename Topo::index_space S>
+  void visit(data::accessor<data::dense, T, Priv> * null_p,
+    const data::field_reference<T, data::dense, Topo, S> & ref) {
+    visit(get_null_base(null_p), ref.template cast<data::raw>());
+    // TODO: use just one task for all fields
+    if constexpr(privilege_write_only(Priv) &&
+                 !std::is_trivially_destructible_v<T>)
+      ref.topology()->template get_region<S>().cleanup(
+        ref.fid(), [ref] { execute<destroy<T>>(ref); });
+  }
   template<class T,
     std::size_t Priv,
     class Topo,
@@ -116,10 +128,9 @@ struct task_prologue_t {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(
-    data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
+  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::
-      field_reference<DATA_TYPE, data::dense, topo::global, topo::elements> &
+      field_reference<DATA_TYPE, data::raw, topo::global, topo::elements> &
         ref) {
     Legion::LogicalRegion region = ref.topology().get().logical_region;
 
@@ -142,9 +153,8 @@ struct task_prologue_t {
     class Topo,
     typename Topo::index_space Space,
     class = std::enable_if_t<Topo::template privilege_count<Space> == 1>>
-  void visit(
-    data::accessor<data::dense, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, data::dense, Topo, Space> & ref) {
+  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
     auto & instance_data = ref.topology().get().template get_partition<Space>();
 
     static_assert(privilege_count(PRIVILEGES) == 1,
@@ -163,7 +173,7 @@ struct task_prologue_t {
 
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> * /* parameter */,
-    const data::topology_slot<Topo> & slot) {
+    data::topology_slot<Topo> & slot) {
     Topo::core::fields([&](auto & f) {
       visit(static_cast<data::field_accessor<decltype(f), Priv> *>(nullptr),
         f(slot));
@@ -199,14 +209,20 @@ struct task_prologue_t {
   } // visit
 
 private:
+  template<class T>
+  static void destroy(typename field<T>::template accessor<rw> a) {
+    const auto s = a.span();
+    std::destroy(s.begin(), s.end());
+  }
+
   // Argument types for which we don't also need the type of the parameter:
   template<class P, typename DATA_TYPE>
-  void visit(P *, DATA_TYPE & x) {
+  void visit(P *, const DATA_TYPE & x) {
     visit(x);
   } // visit
 
   template<class... PP, class... AA>
-  void walk(std::tuple<PP...> * /* to deduce PP */, const AA &... aa) {
+  void walk(std::tuple<PP...> * /* to deduce PP */, AA &... aa) {
     (visit(static_cast<std::decay_t<PP> *>(nullptr), aa), ...);
   }
 

@@ -272,7 +272,7 @@ individual parts.):
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.hh
   :language: cpp
-  :lines: 48-92
+  :lines: 47-90
 
 The first type definition in the policy captures the control points
 enumeration type. This type is used in the control interface for
@@ -280,7 +280,7 @@ declaring actions:
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.hh
   :language: cpp
-  :lines: 58-63
+  :lines: 57-62
 
 The next type is the *node_policy*. Each set of actions under a control
 point forms a DAG. Specifying a non-trivial node policy allows the user
@@ -289,7 +289,7 @@ example, the node type is empty:
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.hh
   :language: cpp
-  :lines: 65-72
+  :lines: 64-71
 
 The actual control points are defined as a std::tuple of the typeified
 integer-valued control points enumeration. The templated *control_point*
@@ -297,7 +297,7 @@ definition is a convenience interface for typeifying the control points:
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.hh
   :language: cpp
-  :lines: 74-90
+  :lines: 73-89
 
 In the above *control_points* tuple definition, the order is important,
 as it is the order in which the control points will be sorted, and thus
@@ -308,7 +308,7 @@ type. This is the control type that we will use in our example application.
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.hh
   :language: cpp
-  :lines: 93-97
+  :lines: 92-96
 
 That's the entire control policy for this example. Without comments, it
 is about 20 lines of code. Let's see how we use it!

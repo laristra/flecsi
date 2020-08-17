@@ -8,64 +8,64 @@ mpich:
   extends: .env_template
   dependencies: []
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    VERSION: "flecsi@devel"
-    VARIANTS: "+hdf5 +graphviz +debug_backend"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    VERSION: flecsi@devel
+    VARIANTS: +hdf5 +graphviz +debug_backend
 
 mpich:release:
   extends: .env_template
   dependencies: []
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    VERSION: "flecsi@devel"
-    VARIANTS: "+hdf5 +graphviz"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    VERSION: flecsi@devel
+    VARIANTS: +hdf5 +graphviz
 
 mpich-clang:
   extends: .env_template
   dependencies: []
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "clearlinux"
-    VERSION: "flecsi@devel"
-    VARIANTS: "+hdf5 +graphviz +debug_backend"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: clearlinux
+    VERSION: flecsi@devel
+    VARIANTS: +hdf5 +graphviz +debug_backend
 
 openmpi:
   extends: .env_template
   dependencies: []
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "openmpi"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    VERSION: "flecsi@devel"
-    VARIANTS: "+hdf5 +graphviz +debug_backend"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: openmpi
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    VERSION: flecsi@devel
+    VARIANTS: +hdf5 +graphviz +debug_backend
 
 openmpi:release:
   extends: .env_template
   dependencies: []
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "openmpi"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    VERSION: "flecsi@devel"
-    VARIANTS: "+hdf5 +graphviz"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: openmpi
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    VERSION: flecsi@devel
+    VARIANTS: +hdf5 +graphviz
 
 openmpi-clang:
   extends: .env_template
   dependencies: []
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "openmpi"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "clearlinux"
-    VERSION: "flecsi@devel"
-    VARIANTS: "+hdf5 +graphviz +debug_backend"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: openmpi
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: clearlinux
+    VERSION: flecsi@devel
+    VARIANTS: +hdf5 +graphviz +debug_backend

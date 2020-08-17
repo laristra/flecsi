@@ -54,6 +54,8 @@ struct specialization_base {
   // For connectivity tuples:
   template<auto V, class T>
   using from = util::key_type<V, T>;
+  template<auto V, class T>
+  using entity = util::key_type<V, T>;
   template<auto... V>
   using has = util::constants<V...>;
 

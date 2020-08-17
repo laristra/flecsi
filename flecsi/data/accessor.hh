@@ -69,24 +69,12 @@ private:
 }; // struct accessor
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<dense, DATA_TYPE, PRIVILEGES> : reference_base {
+struct accessor<raw, DATA_TYPE, PRIVILEGES> : reference_base {
   using value_type = DATA_TYPE;
   using element_type = std::
     conditional_t<privilege_write(PRIVILEGES), value_type, const value_type>;
 
   explicit accessor(std::size_t f) : reference_base(f) {}
-
-  /*!
-    Provide logical array-based access to the data referenced by this
-    accessor.
-
-    @param index The index of the logical array to access.
-   */
-
-  element_type & operator()(size_t index) const {
-    flog_assert(index < s.size(), "index out of range");
-    return s[index];
-  } // operator()
 
   auto span() const {
     return s;
@@ -100,14 +88,53 @@ private:
   util::span<element_type> s;
 }; // struct accessor
 
+template<class T, std::size_t P>
+struct accessor<dense, T, P> : accessor<raw, T, P> {
+  using base_type = accessor<raw, T, P>;
+  using base_type::base_type;
+
+  accessor(const base_type & b) : base_type(b) {}
+
+  /*!
+    Provide logical array-based access to the data referenced by this
+    accessor.
+
+    @param index The index of the logical array to access.
+   */
+  typename accessor::element_type & operator()(std::size_t index) const {
+    const auto s = this->span();
+    flog_assert(index < s.size(), "index out of range");
+    return s[index];
+  } // operator()
+
+  base_type & get_base() {
+    return *this;
+  }
+  const base_type & get_base() const {
+    return *this;
+  }
+  friend base_type * get_null_base(accessor *) { // for task_prologue_t
+    return nullptr;
+  }
+};
+
 } // namespace data
 
+template<class T, std::size_t P>
+struct exec::detail::task_param<data::accessor<data::raw, T, P>> {
+  template<class Topo, typename Topo::index_space S>
+  static auto replace(const data::field_reference<T, data::raw, Topo, S> & r) {
+    return data::accessor<data::raw, T, P>(r.fid());
+  }
+};
 template<class T, std::size_t S>
 struct exec::detail::task_param<data::accessor<data::dense, T, S>> {
+  using type = data::accessor<data::dense, T, S>;
   template<class Topo, typename Topo::index_space Space>
-  static auto replace(
+  static type replace(
     const data::field_reference<T, data::dense, Topo, Space> & r) {
-    return data::accessor<data::dense, T, S>(r.fid());
+    return exec::replace_argument<typename type::base_type>(
+      r.template cast<data::raw>());
   }
 };
 template<class T, std::size_t S>
