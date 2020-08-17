@@ -1,0 +1,11 @@
+export PATH=$HOME/.local/bin:$PATH
+
+alias ls="ls --color"
+alias vi="vim"
+eval $(dircolors -b $HOME/.dircolors)
+
+export PS1="\[\033[0;32m\]flecsi \[\e[38;5;20m\]>\[\e[38;5;21m\]>\[\e[38;5;27m\]>\[\033[0m\] "
+
+source .spack/share/spack/setup-env.sh
+
+# vim: syntax=sh

@@ -4,7 +4,7 @@ packages:
       - gcc@GNU_VERSION
     target: [skylake]
   boost:
-    version: [1.73.0]
+    version: [1.74.0]
     variants: cxxstd=14 +program_options
   cmake:
     version: [3.18.1]
