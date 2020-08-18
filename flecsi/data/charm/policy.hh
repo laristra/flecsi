@@ -35,6 +35,12 @@ namespace charm {
 struct region {
   region(size2 s, const fields & fs) : s_(s) {}
   size2 size() const { return s_; }
+  template<topo::single_space>
+  region & get_region() {
+    return *this;
+  }
+  template<class D>
+  void cleanup(field_id_t f, D d) {}
 
   size2 s_;
 };
@@ -54,7 +60,8 @@ struct partition {
     completeness cpt = incomplete) {}
 
   std::size_t colors() const {
-    return 1;
+    // TODO: This may not be correct
+    return CkNumPes();
   }
 
   template<topo::single_space>

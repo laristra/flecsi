@@ -35,7 +35,9 @@ using exec::charm::task_id;
 
 namespace charm {
 
-ContextGroup::ContextGroup() {
+// TODO: Depth set to -1 because it's being incremented somewhere before
+// the top level action executes.
+ContextGroup::ContextGroup() : depth(-1) {
   if (CkMyPe() != 0) {
     run::context::instance().context_proxy_ = thisProxy;
   }
@@ -88,6 +90,7 @@ context_t::finalize() {
 
   if(context::initialize_dependent_) {
     CharmLibExit();
+    MPI_Finalize();
   } // if
 } // finalize
 
