@@ -1,3 +1,3 @@
 upstreams:
   default:
-    install_tree: /home/flecsi/upstream/opt/spack
+    install_tree: /home/flecsi/.spack-upstream/opt/spack

@@ -27,7 +27,7 @@ project(FleCSI-CI LANGUAGES NONE)
 
 set(REPOSITORY "https://gitlab.lanl.gov/laristra/flecsi.git" CACHE STRING
   "Set the FleCSI CI repository")
-set(CI_BRANCH "gitlab-ci" CACHE STRING
+set(IMAGE_BRANCH "gitlab-ci" CACHE STRING
   "Set the repository branch, e.g., gitlab-ci")
 set(REGISTRY "gitlab.lanl.gov:5050/laristra/flecsi" CACHE STRING "Set the registry")
 
@@ -53,7 +53,7 @@ foreach(image ${BASE_IMAGES})
     devel/environment
     ARGS
       REPO=${REPOSITORY}
-      CI_BRANCH=${CI_BRANCH}
+      IMAGE_BRANCH=${IMAGE_BRANCH}
       SUBDIR=devel
       OS=${REGISTRY}:${image}
     DEPENDS push-${image}
@@ -63,13 +63,24 @@ foreach(image ${BASE_IMAGES})
     util/environment
     ARGS
       REPO=${REPOSITORY}
-      CI_BRANCH=${CI_BRANCH}
+      IMAGE_BRANCH=${IMAGE_BRANCH}
       SUBDIR=util
       OS=${REGISTRY}:${image}
     DEPENDS push-${image}
   )
 
 endforeach()
+
+#------------------------------------------------------------------------------#
+# Tutorial image
+#------------------------------------------------------------------------------#
+
+add_image(tutorial ${REGISTRY}:tutorial
+  devel/tutorial
+    ARGS
+      OS=${REGISTRY}:devel-centos-7.8
+    DEPENDS push-devel-centos-7.8
+)
 
 #------------------------------------------------------------------------------#
 # Add .dockerignore file to avoid including cmake files in context
@@ -88,4 +99,16 @@ file(COPY ${CMAKE_SOURCE_DIR}/config/clang_fortran.py
     GROUP_EXECUTE
     WORLD_READ
     WORLD_EXECUTE
+)
+
+file(COPY ${CMAKE_SOURCE_DIR}/config/dircolors
+  DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+file(COPY ${CMAKE_SOURCE_DIR}/config/bashrc
+  DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+file(COPY ${CMAKE_SOURCE_DIR}/config/vimrc
+  DESTINATION ${CMAKE_BINARY_DIR}
 )
