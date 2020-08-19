@@ -65,7 +65,7 @@ with_by_value_argument(std::vector<size_t> v) {
 
 template<typename Type>
 Type
-templated(Type t) {
+templated_task(Type t) {
   Type retval{t + Type(10)};
   flog(info) << "Returning value " << retval << " with type "
              << typeid(t).name() << std::endl;
@@ -76,7 +76,7 @@ int
 advance() {
 
   /*
-    Execute the trivial task.
+    Execute a trivial task.
    */
 
   execute<trivial>();
@@ -86,7 +86,6 @@ advance() {
    */
 
   {
-
     /*
       A future is a mechanism to access the result of an asynchronous operation.
      */
@@ -118,7 +117,7 @@ advance() {
     std::vector<size_t> v = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34};
     auto future = execute<with_by_value_argument>(v);
     flog(info) << "Sum is " << future.get() << std::endl;
-  }
+  } // scope
 
   /*
     Execute a templated task.
@@ -126,9 +125,9 @@ advance() {
 
   {
     double value{32.0};
-    auto future = execute<templated<double>>(value);
+    auto future = execute<templated_task<double>>(value);
     flog(info) << "Got templated value " << future.get() << std::endl;
-  }
+  } // scope
 
   return 0;
 }

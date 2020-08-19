@@ -15,7 +15,7 @@
 #include <flecsi/execution.hh>
 
 /*
-  The top-level action can be any C/C++ function that takes (int, char**) and
+  The top-level action can be any C/C++ function that takes no arguments and
   returns an int.
 
   In this simple example, we only print a message to indicate that the

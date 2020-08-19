@@ -76,33 +76,33 @@ RUN \
   source .spack/share/spack/setup-env.sh && \
   spack install --only dependencies flecsi@devel backend=legion +flog ^mpich
 
-RUN \
-  source .spack/share/spack/setup-env.sh && \
-  spack install flecsi@devel backend=legion +flog ^mpich
-
-RUN \
-  source .spack/share/spack/setup-env.sh && \
-  spack env create flecsi && \
-  spack env activate flecsi && \
-  spack install flecsi@devel backend=legion +flog ^mpich && \
-  spack install cmake
-
-RUN \
-  echo ". .spack/share/spack/setup-env.sh" >> .bashrc && \
-  echo "spack env activate flecsi" >> .bashrc
-
-#------------------------------------------------------------------------------#
-# Copy the tutorial code to home and build
-#------------------------------------------------------------------------------#
-
-RUN cp -r .flecsi/tutorial/* . && rm -rf docker
-
-RUN \
-  source .spack/share/spack/setup-env.sh && \
-  spack env activate flecsi && \
-  mkdir build && \
-  cd build && \
-  cmake .. && make
+#RUN \
+#  source .spack/share/spack/setup-env.sh && \
+#  spack install flecsi@devel backend=legion +flog ^mpich
+#
+#RUN \
+#  source .spack/share/spack/setup-env.sh && \
+#  spack env create flecsi && \
+#  spack env activate flecsi && \
+#  spack install flecsi@devel backend=legion +flog ^mpich && \
+#  spack install cmake
+#
+#RUN \
+#  echo ". .spack/share/spack/setup-env.sh" >> .bashrc && \
+#  echo "spack env activate flecsi" >> .bashrc
+#
+##------------------------------------------------------------------------------#
+## Copy the tutorial code to home and build
+##------------------------------------------------------------------------------#
+#
+#RUN cp -r .flecsi/tutorial/* . && rm -rf docker
+#
+#RUN \
+#  source .spack/share/spack/setup-env.sh && \
+#  spack env activate flecsi && \
+#  mkdir build && \
+#  cd build && \
+#  cmake .. && make
 
 #------------------------------------------------------------------------------#
 # Set the execution shell

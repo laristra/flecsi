@@ -148,9 +148,9 @@ Let's consider our advanced user who would like to add a new action:
 Because FleCSI does not force her to add actions to a static loop, she
 can instead put it in a source file that only needs to link to the
 control points definition of the application.
-She still has to build an application driver. However, if the
-application packages are primarily developed as libraries, this is easy
-to do.
+She still has to build an application driver.
+However, if the application packages are primarily developed as
+libraries, this is easy to do.
 
 Without going into the specific details yet, inserting a new action *N*
 under *Control Point 2* would look something like this:
@@ -210,12 +210,13 @@ Example 1: Simple
 +++++++++++++++++
 
 This example will show you how to construct the simplest non-trivial
-control model that might make sense for an application. :numref:`simple`
-shows the control model, which has three control points (*initialize*,
-*advance*, and *finalize*) with one action under each. This is still not
-a very useful example because it lacks cycles (introduced in the next
-example). However, it will serve to introduce the definition of a
-control model from the core FleCSI type.
+control model that might make sense for an application.
+:numref:`simple` shows the control model, which has three control points
+(*initialize*, *advance*, and *finalize*) with one action under each.
+This is still not a very useful example because it lacks cycles
+(introduced in the next example).
+However, it will serve to introduce the definition of a control model
+from the core FleCSI type.
 
 .. _simple:
 .. figure:: images/simple.png
@@ -249,7 +250,10 @@ these, we use an enumeration. Consider the following from
   :lines: 21-26
 
 The name of the enumeration (*cp*) is arbitrary.
-However, it is useful to make it concise because it will be used in the application code (This is not precisely true because the specialization developer may choose to define helper types for registering actions, but it is true for this example.)
+However, it is useful to make it concise because it will be used in the
+application code (This is not precisely true because the specialization
+developer may choose to define helper types for registering actions, but
+it is true for this example.)
 At any rate, the name is not important because it will be used as a type
 definition in our control policy.
 
@@ -275,25 +279,27 @@ individual parts.):
   :lines: 47-90
 
 The first type definition in the policy captures the control points
-enumeration type. This type is used in the control interface for
-declaring actions:
+enumeration type.
+This type is used in the control interface for declaring actions:
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.hh
   :language: cpp
   :lines: 57-62
 
 The next type is the *node_policy*. Each set of actions under a control
-point forms a DAG. Specifying a non-trivial node policy allows the user
-to add additional interfaces and data to an action. In this simple
-example, the node type is empty:
+point forms a DAG.
+Specifying a non-trivial node policy allows the user to add additional
+interfaces and data to an action.
+In this simple example, the node type is empty:
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.hh
   :language: cpp
   :lines: 64-71
 
 The actual control points are defined as a std::tuple of the typeified
-integer-valued control points enumeration. The templated *control_point*
-definition is a convenience interface for typeifying the control points:
+integer-valued control points enumeration.
+The templated *control_point* definition is a convenience interface for
+typeifying the control points:
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.hh
   :language: cpp
@@ -310,14 +316,15 @@ type. This is the control type that we will use in our example application.
   :language: cpp
   :lines: 92-96
 
-That's the entire control policy for this example. Without comments, it
-is about 20 lines of code. Let's see how we use it!
+That's the entire control policy for this example.
+Without comments, it is about 20 lines of code. Let's see how we use it!
 
 Using the Control Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The source for this example is in *tutorial/2-control/1-simple.cc*. Much
-of the actual main function is the same as in the previous examples.
+The source for this example is in *tutorial/2-control/1-simple.cc*.
+Much of the actual main function is the same as in the previous
+examples.
 Let's first consider the parts that are different.
 
 As referenced earlier, the control type adds some command-line options to
@@ -351,9 +358,9 @@ Now that we have defined the control model, and added it to our runtime
 setup, the only thing that remains is to add some actions under the
 control points.
 
-As stated, actions are nothing more than C/C++ functions. For this
-example, there are three actions, which all have the same form. We list
-only the *initialize* function here:
+As stated, actions are nothing more than C/C++ functions.
+For this example, there are three actions, which all have the same form.
+We list only the *initialize* function here:
 
 .. literalinclude:: ../../../../tutorial/2-control/1-simple.cc
    :language: cpp
@@ -419,8 +426,8 @@ Example 2: Cycles
 +++++++++++++++++
 
 :numref:`cycle` shows a slightly more realistic control model that
-cycles over *advance* and *analyze* control points. This example
-demonstrates how to add a cycle.
+cycles over *advance* and *analyze* control points.
+This example demonstrates how to add a cycle.
 
 .. _cycle:
 .. figure:: images/cycle.png
@@ -459,13 +466,15 @@ complex, e.g., invoking a reduction to compute a variable time step.
   One important aspect of this pattern is that the *host* type (in this
   case the core control type) inherits from the *policy* type (the
   *control_policy* type). This allows the specialization to add data
-  members that will be carried with the control instance.
+  members that will be carried with the control instance. This is
+  covered in detail in :ref:`TUT-CM-STATE` below.
 
 Notice that the *cycle_control* function is static, and uses the
 *instance* method to access the single instance of the control object.
 The singleton instance can access any data members that have been added
-to the policy. In this case, we use it to access the *step_* data member
-that keeps track of which simulation step we are on:
+to the policy.
+In this case, we use it to access the *step_* data member that keeps
+track of which simulation step we are on:
 
 Although this example is simple, in general, we can use this design
 pattern to access simulation control state variables.
@@ -496,5 +505,108 @@ main function for this example is the same.
    :width: 60%
 
    Example FleCSI Control Model with Sub-cycles.
+
+Example 3: Dependencies
++++++++++++++++++++++++
+
+The code for this example provides a more detailed demonstration of
+adding dependencies between actions.
+In particular, it demonstrates adding dependencies after-the-fact.
+The resulting control model is shown in :numref:`dependencies`.
+
+.. _dependencies:
+.. figure:: images/dependencies.png
+   :align: center
+   :width: 60%
+
+   Example Action Dependencies.
+
+For the most part, this example is self-explanatory.
+Several actions are defined for the two control points in
+*3-actions.hh*:
+
+.. literalinclude:: ../../../../tutorial/2-control/3-actions.hh
+   :language: cpp
+   :lines: 22-77
+
+Additionally, several dependencies are defined in the same file:
+
+.. literalinclude:: ../../../../tutorial/2-control/3-actions.hh
+   :language: cpp
+   :lines: 79-95
+
+Finally, the additional dependencies from c to a, and from d to c, are
+added in the *3-dependencies.cc* file:
+
+.. literalinclude:: ../../../../tutorial/2-control/3-dependencies.cc
+   :language: cpp
+   :lines: 23-30
+
+The point of defining the dependencies involving c in a different file
+is to demonstrate that dependencies do not need to be collocated,
+provided that they honor normal C++ declaration rules.
+
+.. _TUT-CM-STATE:
+
+Example 4: Control State
+++++++++++++++++++++++++
+
+The design of the core control type ``flecsi::run::control`` allows users
+to add data members that will be carried with the control instance, and
+are accessible to the user through the ``state()`` method:
+
+.. code-block:: cpp
+
+   template<typename ControlPolicy>
+   struct control : ControlPolicy {
+ 
+     // ...
+ 
+     ControlPolicy & state();
+ 
+     // ...
+   };
+
+This means that, if you have defined your control policy with interface
+methods and data members, they can be accessed like:
+
+.. code-block:: cpp
+
+    auto state = control::state();
+    state.my_method();
+
+Let's consider a concrete example of this. In
+*tutorial/2-control/4-state.hh*, we define a control policy with several
+methods, and some private data:
+
+.. literalinclude:: ../../../../tutorial/2-control/4-state.hh
+   :language: cpp
+   :lines: 64-95
+
+.. important::
+
+    Although this example demonstrates the ability to allocate heap data
+    through the control state interface, this approach must not be used
+    to allocate data that will be modified by a task during the
+    simulation, i.e., control state data should only be used to
+    implement the control logic of the run, and should be treated as
+    globally constant in the context of task execution.
+    The FleCSI data model provides other mechanisms for creating
+    and managing state data, which are documented in the :ref:`TUT-DM`
+    section of this tutorial.
+
+These interfaces are used to implement the example actions in
+*tutorial/2-control/4-state.cc*. The basic structure of the example
+allocates a simple array, initializes the values, modifies the values,
+and frees the data. Again, the code is self-explanatory:
+
+.. literalinclude:: ../../../../tutorial/2-control/4-state.cc
+   :language: cpp
+   :lines: 22-92
+
+The primary take-away from this example should be that users can define
+arbitrary C++ interfaces and data, provided that they are not modified
+by a task. Modifying these data in FleCSI actions (outside of a task) is
+fine.
 
 .. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :
