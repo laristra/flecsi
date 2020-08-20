@@ -405,7 +405,7 @@ public:
 
     c.index_partition = runtime_->create_index_partition(ctx_, c.index_space,
       color_domain_, color_partitioning, true /*disjoint*/);
-    attach_name(c, c.index_partition, "color partitioning");
+    attach_name(c, c.index_partition, "adj olor partitioning");
 
     adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
   }
@@ -461,7 +461,7 @@ public:
 
     is.index_partition = runtime_->create_index_partition(ctx_, is.index_space,
       color_domain_, color_partitioning, true /*disjoint*/);
-
+    runtime_->attach_name(is.index_partition, "subspace color partitioning");
     index_subspace_map_.emplace(info.index_subspace, std::move(is));
   }
 
