@@ -266,6 +266,7 @@ runtime_driver(const Legion::Task * task,
     Legion::IndexPartition shared_corr_ip = runtime->create_partition_by_image(
       ctx, primary_lr.get_index_space(), ghost_lp, flecsi_ispace.logical_region,
       ghost_owner_pos_fid, is_of_colors);
+    runtime->attach_name(shared_corr_ip, "shared_corr_ip");
     Legion::LogicalPartition shared_corr_lp = runtime->get_logical_partition(
       ctx, flecsi_ispace.logical_region, shared_corr_ip);
 
