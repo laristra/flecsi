@@ -230,7 +230,7 @@ verb(const Legion::Task *,
  @ingroup legion-execution
  */
 
-template<auto & F, task_processor_type_t P> // P is for specialization only
+template<auto & F, task_processor_type_t P>
 struct task_wrapper {
 
   using Traits = util::function_traits<decltype(F)>;
