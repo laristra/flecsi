@@ -87,15 +87,21 @@ struct ntree : ntree_base {
     f(hcells);
   }
 
-  ntree(const coloring & c)
-    : part{make_repartitioned<Policy, entities>(c.nparts_,
-             make_partial<allocate>(c.entities_offset_)),
-        make_repartitioned<Policy, nodes>(c.nparts_,
+  ntree(const coloring & c): 
+    part{
+        make_repartitioned<Policy, entities>(
+          c.nparts_,
+          make_partial<allocate>(c.entities_offset_)),
+        make_repartitioned<Policy, nodes>(
+          c.nparts_, 
           make_partial<allocate>(c.nodes_offset_)),
-        make_repartitioned<Policy, hashmap>(c.nparts_,
+        make_repartitioned<Policy, hashmap>(
+          c.nparts_,
           make_partial<allocate>(c.hmap_offset_)),
-        make_repartitioned<Policy, tree_data>(c.nparts_,
-          make_partial<allocate>(c.tdata_offset_))} {}
+        make_repartitioned<Policy, tree_data>(
+          c.nparts_,
+          make_partial<allocate>(c.tdata_offset_))} 
+  {}
 
   // Ntree mandatory fields ---------------------------------------------------
 
@@ -174,30 +180,29 @@ struct ntree<Policy>::access {
   using hmap_t =
     util::hashtable<ntree::key_int_t, ntree::hcell_t, ntree::hash_f>;
 
-  void exchange_boundaries() {}
-
-  void make_tree() {
-    // Cstr htable
-    hmap_t hmap(hcells.span());
-
-    // Hashtable implementation and test
+  void exchange_boundaries() {
     data_field(0).max_depth = 0;
     data_field(0).nents = e_coordinates.span().size();
     data_field(0).lobound = e_keys(0);
     data_field(0).hibound = e_keys(data_field(0).nents - 1);
     std::cout << data_field(0).lobound << "-" << data_field(0).hibound
               << std::endl;
+  }
 
-    //----- HASHtTABLE TEST: move to hashtable.cc --------
+  void make_tree() {
+    // Cstr htable
+    hmap_t hmap(hcells.span());
+
+    //----- HASHTABLE TEST: move to hashtable.cc --------
     // Add the entities in the hash_map
     for(std::size_t i = 0; i < data_field(0).nents; ++i) {
       key_t c_key = e_keys(i);
-      hmap.insert(c_key, c_key, i);
+      hmap.insert(static_cast<key_int_t>(c_key), c_key, i);
     }
     // Find all the element in the map (and be sure of the id)
     for(std::size_t i = 0; i < data_field(0).nents; ++i) {
       key_t c_key = e_keys(i);
-      auto ptr = hmap.find(c_key);
+      auto ptr = hmap.find(static_cast<key_int_t>(c_key));
       assert(ptr != hmap.end());
       assert(ptr->second.ent_idx() == i);
     }

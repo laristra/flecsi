@@ -50,7 +50,7 @@ hilbert_sanity() {
     flog(info) << "Min    : " << hc3 << std::endl;
     flog(info) << "Max    : " << hc4 << std::endl;
     flog(info) << "root   : " << hc5 << std::endl;
-    ASSERT_TRUE(1 == hc5);
+    ASSERT_TRUE(1 == static_cast<uint64_t>(hc5));
 
     while(hc4 != hc5) {
       hc4.pop();
@@ -153,7 +153,7 @@ morton_sanity() {
     flog(info) << "Min    : " << hc3 << std::endl;
     flog(info) << "Max    : " << hc4 << std::endl;
     flog(info) << "root   : " << hc5 << std::endl;
-    ASSERT_TRUE(1 == hc5);
+    ASSERT_TRUE(1 == static_cast<uint64_t>(hc5));
 
     while(hc4 != hc5) {
       hc4.pop();

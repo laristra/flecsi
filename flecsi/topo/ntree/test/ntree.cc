@@ -51,10 +51,7 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    coloring c;
-
-    // For now the number of partitions is the number of processes
-    c.nparts_ = size;
+    coloring c(size);
 
     c.local_entities_ = hd.local_num_entities();
     c.global_entities_ = hd.global_num_entities();
@@ -85,33 +82,6 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
     c.local_nodes_ = c.local_entities_;
     c.global_nodes_ = c.global_entities_;
     c.nodes_offset_ = c.entities_offset_;
-
-    c.global_hmap_ = c.nparts_ * c.local_hmap_;
-    c.hmap_offset_.resize(c.nparts_);
-    for(int i = 0; i < c.nparts_; ++i) {
-      c.hmap_offset_[i] = c.local_hmap_;
-    }
-    if(rank == 0)
-      std::cout << "hmap offset: ";
-    for(int i = 0; i < size; ++i) {
-      if(rank == 0)
-        std::cout << c.hmap_offset_[i] << " ; ";
-    }
-    if(rank == 0)
-      std::cout << std::endl;
-
-    c.tdata_offset_.resize(c.nparts_);
-    for(int i = 0; i < c.nparts_; ++i) {
-      c.tdata_offset_[i] = 1;
-    }
-    if(rank == 0)
-      std::cout << "tdata offset: ";
-    for(int i = 0; i < size; ++i) {
-      if(rank == 0)
-        std::cout << c.tdata_offset_[i] << " ; ";
-    }
-    if(rank == 0)
-      std::cout << std::endl;
 
     c.global_sizes_.resize(4);
     c.global_sizes_[0] = c.global_entities_;

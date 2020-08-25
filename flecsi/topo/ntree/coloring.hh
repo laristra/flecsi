@@ -34,6 +34,25 @@ struct ntree_base {
   using index_spaces = util::constants<entities, nodes, hashmap, tree_data>;
 
   struct coloring {
+
+    coloring(int nparts){
+      nparts_ = nparts; 
+
+      // Fixed size, no exchanges 
+      global_hmap_ = nparts_ * local_hmap_;
+      hmap_offset_.resize(nparts_);
+      for(int i = 0; i < nparts_; ++i) {
+        hmap_offset_[i] = local_hmap_;
+      }
+
+      // tdata: size = 3, two neighbors + mine
+      tdata_offset_.resize(nparts_);
+      for(int i = 0; i < nparts_; ++i) {
+        tdata_offset_[i] = 3;
+      }
+
+    }
+
     // Global
     size_t nparts_;
 
