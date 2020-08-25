@@ -53,28 +53,27 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
 
     coloring c(size);
 
-    c.local_entities_ = hd.local_num_entities();
     c.global_entities_ = hd.global_num_entities();
     c.entities_distribution_.resize(size);
     for(int i = 0; i < size; ++i)
       c.entities_distribution_[i] = hd.distribution(i);
     c.entities_offset_.resize(size);
-    if(rank == 0)
-      std::cout << "Ents Offset: ";
 
-    ents.resize(hd.local_num_entities());
-    for(int i = 0; i < hd.local_num_entities(); ++i) {
-      ents[i] = hd.entities(i);
-    }
+    ents = hd.entities(); 
+
+    std::ostringstream oss; 
+    if(rank == 0)
+      oss << "Ents Offset: ";
 
     for(int i = 0; i < size; ++i) {
       c.entities_offset_[i] =
         c.entities_distribution_[i]; // hd.offset(i).second;
       if(rank == 0)
-        std::cout << c.entities_offset_[i] << " ; ";
+        oss << c.entities_offset_[i] << " ; ";
     }
+
     if(rank == 0)
-      std::cout << std::endl;
+      flog(info) << oss.str() << std::endl;
 
     // Nodes, hmap and tdata information
     // \TODO move these inside the topology ntree
@@ -135,12 +134,7 @@ ntree_driver() {
     size_t size = processes();
     int tmp;
     coloring.allocate("coordinates.blessed", tmp_ents);
-    if(!proc)
-      std::cout << "Coloring allocate DONE" << std::endl;
     sph_ntree.allocate(coloring.get());
-    if(!proc)
-      std::cout << "sph_ntree allocate DONE" << std::endl;
-
     flecsi::execute<init, flecsi::mpi>(sph_ntree, tmp_ents);
     tmp_ents.clear();
 

@@ -56,13 +56,10 @@ public:
     colorer_t::mpi_qsort(entities_, nglobal_entities_);
 
     if(rank == 0)
-      std::cout << rank << ": Range: " << range_[0] << ";" << range_[1]
+      flog(info) << rank << ": Range: " << range_[0] << ";" << range_[1]
                 << std::endl;
   }
 
-  size_t local_num_entities() const {
-    return nlocal_entities_;
-  }
   size_t global_num_entities() const {
     return nglobal_entities_;
   }
@@ -73,6 +70,10 @@ public:
 
   std::pair<size_t, size_t> offset(const int & i) const {
     return std::pair(offset_[i], offset_[i + 1]);
+  }
+
+  std::vector<ent_t>& entities(){
+    return entities_; 
   }
 
   ent_t & entities(const int & i) {
@@ -106,17 +107,20 @@ private:
     }
 
     if(rank == 0) {
-      std::cout << "Global entities: " << nglobal_entities_ << std::endl;
-      std::cout << "Distribution:";
+      flog(info) << "Global entities: " << nglobal_entities_ << std::endl;
+      std::ostringstream oss; 
+      oss << "Distribution:";
       for(int i = 0; i < size; ++i) {
-        std::cout << " " << i << ":" << distribution_[i];
+        oss << " " << i << ":" << distribution_[i];
       }
-      std::cout << std::endl;
-      std::cout << "Offset:";
+      flog(info) << oss.str() << std::endl;
+      oss.str(""); 
+      oss.clear(); 
+      oss << "Offset:";
       for(int i = 0; i < size + 1; ++i) {
-        std::cout << " " << i << ":" << offset_[i];
+        oss << " " << i << ":" << offset_[i];
       }
-      std::cout << std::endl;
+      flog(info) << oss.str() << std::endl;
     }
 
     nlocal_entities_ = distribution_[rank];

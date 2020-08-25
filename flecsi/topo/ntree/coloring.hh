@@ -35,23 +35,9 @@ struct ntree_base {
 
   struct coloring {
 
-    coloring(int nparts){
-      nparts_ = nparts; 
-
-      // Fixed size, no exchanges 
-      global_hmap_ = nparts_ * local_hmap_;
-      hmap_offset_.resize(nparts_);
-      for(int i = 0; i < nparts_; ++i) {
-        hmap_offset_[i] = local_hmap_;
-      }
-
-      // tdata: size = 3, two neighbors + mine
-      tdata_offset_.resize(nparts_);
-      for(int i = 0; i < nparts_; ++i) {
-        tdata_offset_[i] = 3;
-      }
-
-    }
+    coloring(int nparts): 
+      nparts_(nparts),global_hmap_(nparts*local_hmap_),
+      hmap_offset_(nparts,local_hmap_),tdata_offset_(nparts,3) {}
 
     // Global
     size_t nparts_;
@@ -68,7 +54,7 @@ struct ntree_base {
     std::vector<std::size_t> nodes_offset_;
 
     // hmap
-    const size_t local_hmap_ = 1 << 15;
+    static constexpr size_t local_hmap_ = 1 << 15;
     size_t global_hmap_;
     std::vector<std::size_t> hmap_offset_;
 
