@@ -120,10 +120,6 @@ RUN . .spack/share/spack/setup-env.sh && \
 # Set default shell for interactive.
 #------------------------------------------------------------------------------#
 
-USER root
-RUN echo "PS1=\"\[\033[1;31m\]root \[\e[38;5;160m\]>\[\e[38;5;166m\]>\[\e[38;5;172m\]>\[\033[0m\] \"" >> /root/.bashrc
-
-USER flecsi
 ADD --chown=flecsi:flecsi bashrc ./.bashrc
 ADD --chown=flecsi:flecsi dircolors ./.dircolors
 ADD --chown=flecsi:flecsi vimrc ./.vimrc

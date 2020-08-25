@@ -101,6 +101,22 @@ file(COPY ${CMAKE_SOURCE_DIR}/config/clang_fortran.py
     WORLD_EXECUTE
 )
 
+#------------------------------------------------------------------------------#
+# Build auxiliary
+#------------------------------------------------------------------------------#
+
+file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.tbz
+  DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.tbz
+  DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+#------------------------------------------------------------------------------#
+# Environment files
+#------------------------------------------------------------------------------#
+
 file(COPY ${CMAKE_SOURCE_DIR}/config/dircolors
   DESTINATION ${CMAKE_BINARY_DIR}
 )
