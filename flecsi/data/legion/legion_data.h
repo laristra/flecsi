@@ -499,6 +499,10 @@ public:
 
       using field_info_t = context_t::field_info_t;
 
+      is.logical_region =
+        runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+      attach_name(is, is.logical_region, "expanded logical region");
+
       for(const field_info_t & fi : context.registered_fields()) {
         switch(fi.storage_class) {
           case global:
@@ -513,26 +517,35 @@ public:
                 // CRF:  I don't think this is correct -
                 // but it also appears to be unused currently
                 allocator.allocate_field(fi.size, fi.fid);
+                auto tmp = malloc(fi.size);
+                memset(tmp, 0, fi.size);
+                runtime_->fill_field(ctx_, is.logical_region, is.logical_region, fi.fid, tmp, fi.size);
+                free(tmp);
               }
               else {
                 // CRF hack - use lowest bits of name_hash as serdez id
                 int sid = fi.name_hash & 0x7FFFFFFF;
                 allocator.allocate_field(
                   sizeof(data::row_vector_u<uint8_t>), fi.fid, sid);
+                auto sz = sizeof(data::row_vector_u<uint8_t>);
+                auto tmp = malloc(sz);
+                memset(tmp, 0, sz);
+                runtime_->fill_field(ctx_, is.logical_region, is.logical_region, fi.fid, tmp, sz);
+                free(tmp);
               }
             }
             break;
           default:
             if(fi.index_space == is.index_space_id) {
               allocator.allocate_field(fi.size, fi.fid);
+              auto tmp = malloc(fi.size);
+              memset(tmp, 0, fi.size);
+              runtime_->fill_field(ctx_, is.logical_region, is.logical_region, fi.fid, tmp, fi.size);
+              free(tmp);
             }
             break;
         }
       } // for
-
-      is.logical_region =
-        runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
-      attach_name(is, is.logical_region, "expanded logical region");
 
       // Partition expanded IndexSpace color-wise & create associated
       DomainColoring color_partitioning;
