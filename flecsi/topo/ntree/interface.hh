@@ -88,7 +88,7 @@ struct ntree : ntree_base {
   }
 
   ntree(const coloring & c)
-    : part{
+    : part{{
           make_repartitioned<Policy, entities>(c.nparts_,
              make_partial<allocate>(c.entities_offset_)),
           make_repartitioned<Policy, nodes>(c.nparts_,
@@ -97,7 +97,7 @@ struct ntree : ntree_base {
             make_partial<allocate>(c.hmap_offset_)),
           make_repartitioned<Policy, tree_data>(c.nparts_,
             make_partial<allocate>(c.tdata_offset_))
-      } {}
+    }} {}
 
   // Ntree mandatory fields ---------------------------------------------------
 
