@@ -9,12 +9,12 @@ FROM ${OS}
 # Clone repositories
 #------------------------------------------------------------------------------#
 
-ARG REPO
+ARG IMAGE_REPO
 ARG IMAGE_BRANCH
 
-RUN git clone --single-branch --branch ${IMAGE_BRANCH} ${REPO} .images
+RUN git clone --single-branch --branch ${IMAGE_BRANCH} ${IMAGE_REPO} .images
 RUN git clone --single-branch \
-  --branch develop https://github.com/spack/spack.git
+  --branch develop https://github.com/spack/spack.git .spack
 
 #------------------------------------------------------------------------------#
 # Setup spack configuration
@@ -29,23 +29,23 @@ RUN mkdir -p .spack/linux && \
     sed "s,GNU_VERSION,${GNU_VERSION},g" | \
     sed "s,NCURSES_VERSION,${NCURSES_VERSION},g" > .spack/linux/packages.yaml
 
-RUN . spack/share/spack/setup-env.sh && \
+RUN . .spack/share/spack/setup-env.sh && \
   spack compiler find
 
 #------------------------------------------------------------------------------#
 # Add gfortran to clang
 #------------------------------------------------------------------------------#
 
-ADD clang_fortran.py ./clang_fortran.py
+ADD clang_fortran.py ./.clang_fortran.py
 RUN export GNU_VERSION=`cat .gnu_version` && \
-  /home/flecsi/clang_fortran.py '.spack/linux/compilers.yaml' \
+  /home/flecsi/.clang_fortran.py '.spack/linux/compilers.yaml' \
     '.spack/linux/compilers.yaml' "${GNU_VERSION}"
 
 #------------------------------------------------------------------------------#
 # Install generic packages
 #------------------------------------------------------------------------------#
 
-RUN . spack/share/spack/setup-env.sh && \
+RUN . .spack/share/spack/setup-env.sh && \
   spack fetch --dependencies cmake && \
   spack install cmake
 
@@ -53,7 +53,7 @@ RUN . spack/share/spack/setup-env.sh && \
 # Create format environment
 #------------------------------------------------------------------------------#
 
-RUN . spack/share/spack/setup-env.sh && \
+RUN . .spack/share/spack/setup-env.sh && \
   spack env create format && \
   spack env activate format && \
   spack install cmake
@@ -62,8 +62,9 @@ RUN . spack/share/spack/setup-env.sh && \
 # Set default shell for interactive
 #------------------------------------------------------------------------------#
 
-RUN echo "export PATH=$HOME/.local/bin:$PATH" > .bashrc
-RUN echo "source spack/share/spack/setup-env.sh" >> .bashrc
+ADD --chown=flecsi:flecsi bashrc ./.bashrc
+ADD --chown=flecsi:flecsi dircolors ./.dircolors
+ADD --chown=flecsi:flecsi vimrc ./.vimrc
 
 CMD /bin/bash
 

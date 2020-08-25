@@ -13,17 +13,19 @@ FROM ${OS}
 # during the CI run if they are not overriden by the user's merge request.
 #------------------------------------------------------------------------------#
 
-ARG REPO
+ARG IMAGE_REPO
 ARG IMAGE_BRANCH
+ARG SOURCE_REPO
+ARG SOURCE_BRANCH
 
-RUN git clone --single-branch --branch devel ${REPO} .flecsi
+RUN git clone --single-branch --branch ${SOURCE_BRANCH} ${SOURCE_REPO} .flecsi
 
 #------------------------------------------------------------------------------#
 # This clones the flecsi CI branch as specified during cmake configuration.
 # It is used to set preferred versions and compiler configuration.
 #------------------------------------------------------------------------------#
 
-RUN git clone --single-branch --branch ${IMAGE_BRANCH} ${REPO} .images
+RUN git clone --single-branch --branch ${IMAGE_BRANCH} ${IMAGE_REPO} .images
 
 #------------------------------------------------------------------------------#
 # Clone spack and create copy for the upstream install.

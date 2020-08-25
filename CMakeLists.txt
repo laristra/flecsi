@@ -25,10 +25,14 @@ project(FleCSI-CI LANGUAGES NONE)
 # Options
 #------------------------------------------------------------------------------#
 
-set(REPOSITORY "https://gitlab.lanl.gov/laristra/flecsi.git" CACHE STRING
-  "Set the FleCSI CI repository")
+set(IMAGE_REPOSITORY "https://gitlab.lanl.gov/laristra/flecsi.git" CACHE STRING
+  "Set the FleCSI image repository")
 set(IMAGE_BRANCH "gitlab-ci" CACHE STRING
-  "Set the repository branch, e.g., gitlab-ci")
+  "Set the image repository branch, e.g., gitlab-ci")
+set(SOURCE_REPOSITORY "https://gitlab.lanl.gov/laristra/flecsi.git" CACHE STRING
+  "Set the FleCSI source repository")
+set(SOURCE_BRANCH "devel" CACHE STRING
+  "Set the source repository branch, e.g., devel")
 set(REGISTRY "gitlab.lanl.gov:5050/laristra/flecsi" CACHE STRING "Set the registry")
 
 #------------------------------------------------------------------------------#
@@ -52,8 +56,10 @@ foreach(image ${BASE_IMAGES})
   add_image(devel-${image} ${REGISTRY}:devel-${image}
     devel/environment
     ARGS
-      REPO=${REPOSITORY}
+      IMAGE_REPO=${IMAGE_REPOSITORY}
       IMAGE_BRANCH=${IMAGE_BRANCH}
+      SOURCE_REPO=${SOURCE_REPOSITORY}
+      SOURCE_BRANCH=${SOURCE_BRANCH}
       SUBDIR=devel
       OS=${REGISTRY}:${image}
     DEPENDS push-${image}
@@ -62,11 +68,18 @@ foreach(image ${BASE_IMAGES})
   add_image(util-${image} ${REGISTRY}:util-${image}
     util/environment
     ARGS
-      REPO=${REPOSITORY}
+      IMAGE_REPO=${IMAGE_REPOSITORY}
       IMAGE_BRANCH=${IMAGE_BRANCH}
       SUBDIR=util
       OS=${REGISTRY}:${image}
     DEPENDS push-${image}
+  )
+
+  add_image(flecsi-${image} ${REGISTRY}:flecsi-${image}
+    devel/flecsi
+    ARGS
+      OS=${REGISTRY}:devel-${image}
+    DEPENDS push-devel-${image}
   )
 
 endforeach()
@@ -77,9 +90,20 @@ endforeach()
 
 add_image(tutorial ${REGISTRY}:tutorial
   devel/tutorial
-    ARGS
-      OS=${REGISTRY}:devel-centos-7.8
-    DEPENDS push-devel-centos-7.8
+  ARGS
+    OS=${REGISTRY}:devel-centos-7.8
+  DEPENDS push-devel-centos-7.8
+)
+
+#------------------------------------------------------------------------------#
+# Legion unit test image
+#------------------------------------------------------------------------------#
+
+add_image(legion-unit ${REGISTRY}:legion-unit
+  devel/legion-unit
+  ARGS
+    OS=${REGISTRY}:devel-ubuntu-20.04
+  DEPENDS push-devel-ubuntu-20.04
 )
 
 #------------------------------------------------------------------------------#
@@ -105,13 +129,17 @@ file(COPY ${CMAKE_SOURCE_DIR}/config/clang_fortran.py
 # Build auxiliary
 #------------------------------------------------------------------------------#
 
-file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.tbz
-  DESTINATION ${CMAKE_BINARY_DIR}
-)
+if(EXISTS ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.tbz)
+  file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.tbz
+    DESTINATION ${CMAKE_BINARY_DIR}
+  )
+endif()
 
-file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.tbz
-  DESTINATION ${CMAKE_BINARY_DIR}
-)
+if(EXISTS ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.tbz)
+  file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.tbz
+    DESTINATION ${CMAKE_BINARY_DIR}
+  )
+endif()
 
 #------------------------------------------------------------------------------#
 # Environment files
