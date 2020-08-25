@@ -125,6 +125,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/config/clang_fortran.py
     WORLD_EXECUTE
 )
 
+<<<<<<< HEAD
 #------------------------------------------------------------------------------#
 # Build auxiliary
 #------------------------------------------------------------------------------#
@@ -145,6 +146,25 @@ endif()
 # Environment files
 #------------------------------------------------------------------------------#
 
+||||||| parent of c360ef39... Adding gnu builds
+=======
+#------------------------------------------------------------------------------#
+# Build auxiliary
+#------------------------------------------------------------------------------#
+
+file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.tbz
+  DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.tbz
+  DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+#------------------------------------------------------------------------------#
+# Environment files
+#------------------------------------------------------------------------------#
+
+>>>>>>> c360ef39... Adding gnu builds
 file(COPY ${CMAKE_SOURCE_DIR}/config/dircolors
   DESTINATION ${CMAKE_BINARY_DIR}
 )
