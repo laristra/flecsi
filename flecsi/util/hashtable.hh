@@ -92,7 +92,6 @@ public:
   // Iterator
   using pointer = pair_t *;
   using iterator = hashtableIterator<KEY, TYPE, HASH>;
-  using const_iterator = const pointer;
 
 private:
   std::size_t nelements_;
@@ -173,14 +172,6 @@ public:
 
   constexpr iterator end() const noexcept {
     return iterator(span_.end(), this);
-  }
-
-  constexpr const_iterator cbegin() const noexcept {
-    return begin();
-  }
-
-  constexpr const_iterator cend() const noexcept {
-    return end();
   }
 
   constexpr std::size_t size() const noexcept {
