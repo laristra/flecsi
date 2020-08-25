@@ -111,7 +111,7 @@ hilbert_3d_rnd() {
       hcs[i] = hc(range, points[i]);
       point_t inv;
       hcs[i].coordinates(range, inv);
-      double dist = distance(points[i], inv);
+      // double dist = distance(points[i], inv);
       flog(info) << points[i] << " " << hcs[i] << " = " << inv << std::endl;
       // ASSERT_TRUE(dist < 1.0e-3);
     }
@@ -124,7 +124,7 @@ hilbert_3d_rnd() {
       point_t inv;
       hc h(range, pt);
       h.coordinates(range, inv);
-      double dist = distance(pt, inv);
+      // double dist = distance(pt, inv);
       flog(info) << pt << " = " << h << " = " << inv << std::endl;
       // ASSERT_TRUE(dist < 1.0e-4);
     }

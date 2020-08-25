@@ -62,7 +62,6 @@ public:
   //! Biggest value possible at max_depth considering the root
   static constexpr DERIVED max() {
     int_t id = ~static_cast<int_t>(0);
-    int_t remove = int_t(1) << max_depth_ * dimension;
     for(size_t i = max_depth_ * dimension + 1; i < bits_; ++i) {
       id ^= int_t(1) << i;
     } // for
@@ -288,6 +287,11 @@ public:
     value_ >>= (max_depth_ - depth) * dimension;
   }
 
+  hilbert_curve & operator=(const hilbert_curve & bid) {
+    value_ = bid.value_;
+    return *this;
+  }
+
   /*! Convert this id to coordinates in range. */
   void coordinates(const std::array<point_t, 2> & range, point_t & p) {
     int_t key = value_;
@@ -501,6 +505,11 @@ public:
       ++k;
     } // for
   } // morton_curve
+
+  morton_curve & operator=(const morton_curve & bid) {
+    value_ = bid.value_;
+    return *this;
+  }
 
   /*! Convert this id to coordinates in range. */
   void coordinates(const std::array<point_t, 2> & range, point_t & p) {

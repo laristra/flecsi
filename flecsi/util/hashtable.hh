@@ -105,7 +105,7 @@ public:
   hashtable(const util::span<pair_t> & span) {
     span_ = span;
     nelements_ = 0;
-    for(auto & a : *this) {
+    for(auto it = this->begin(); it != this->end(); ++it) {
       ++nelements_;
     }
   }

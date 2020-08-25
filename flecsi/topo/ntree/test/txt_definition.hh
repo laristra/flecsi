@@ -86,7 +86,6 @@ private:
     // For now read all particles?
     std::ifstream myfile(filename);
     nglobal_entities_ = 0;
-    double d = 0;
     myfile >> nglobal_entities_;
 
     offset_.resize(size + 1, 0);
@@ -127,7 +126,7 @@ private:
 
     // Coordinates, ignore the other ranks
     int k = 0;
-    for(int i = 0; i < nglobal_entities_; ++i) {
+    for(size_t i = 0; i < nglobal_entities_; ++i) {
       point_t p;
       for(int j = 0; j < dim; ++j) {
         myfile >> p[j];
@@ -138,7 +137,7 @@ private:
 
     // Radius
     k = 0;
-    for(int i = 0; i < nglobal_entities_; ++i) {
+    for(size_t i = 0; i < nglobal_entities_; ++i) {
       double r;
       myfile >> r;
       if(i >= offset_[rank] && i < offset_[rank + 1])
@@ -147,7 +146,7 @@ private:
 
     // Mass
     k = 0;
-    for(int i = 0; i < nglobal_entities_; ++i) {
+    for(size_t i = 0; i < nglobal_entities_; ++i) {
       double m;
       myfile >> m;
       if(i >= offset_[rank] && i < offset_[rank + 1])
@@ -155,7 +154,7 @@ private:
     }
 
     k = 0;
-    for(int i = 0; i < nglobal_entities_; ++i) {
+    for(size_t i = 0; i < nglobal_entities_; ++i) {
       if(i >= offset_[rank] && i < offset_[rank + 1])
         entities_[k++].set_id(i);
     }

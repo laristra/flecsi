@@ -79,7 +79,7 @@ empty(span<pair_t> & span_ht) {
   hmap.clear();
   // Assert the table is empty
   int error = 0;
-  for(auto & a : hmap) {
+  for(auto it = hmap.begin(); it != hmap.end(); ++it) {
     ++error;
   }
   return error;

@@ -107,7 +107,7 @@ int
 init(sph_ntree_t::accessor<wo> t,
   const std::vector<sph_ntree_t::ent_t> & ents) {
   UNIT {
-    for(int i = 0; i < ents.size(); ++i) {
+    for(size_t i = 0; i < ents.size(); ++i) {
       t.e_coordinates(i) = ents[i].coordinates();
       t.e_radius(i) = ents[i].radius();
       t.e_keys(i) = ents[i].key();
@@ -124,15 +124,7 @@ int
 ntree_driver() {
   UNIT {
 
-    // Use txt_coloring in two MPI calls:
-    // coloring creating
-    // initialization
-    // Keep same object: MPI task allows pointer or reference
-
     // Call process function
-    size_t proc = process();
-    size_t size = processes();
-    int tmp;
     coloring.allocate("coordinates.blessed", tmp_ents);
     sph_ntree.allocate(coloring.get());
     flecsi::execute<init, flecsi::mpi>(sph_ntree, tmp_ents);
