@@ -40,19 +40,13 @@ set(topo_HEADERS
   structured/interface.hh
   structured/simple_box_colorer.hh
   structured/types.hh
-  unstructured/closure_utils.hh
-  unstructured/coloring.hh
-  unstructured/coloring_types.hh
-  unstructured/dcrs_utils.hh
+  unstructured/coloring_utils.hh
   unstructured/definition.hh
-  unstructured/index_coloring.hh
   unstructured/interface.hh
   unstructured/parallel_definition.hh
-  unstructured/partition.hh
   unstructured/simple_definition.hh
-  unstructured/storage.hh
   unstructured/types.hh
-  unstructured/utils.hh
+  unstructured/closure_utils.hh
   utility_types.hh
 )
 
@@ -93,8 +87,8 @@ add_unit(test_interface
 
 #---------------------------   Unstructured Mesh  -----------------------------#
 
-add_unit(dcrs
-  SOURCES unstructured/test/dcrs.cc
+add_unit(coloring
+  SOURCES unstructured/test/coloring.cc
   INPUTS
     unstructured/test/simple2d-16x16.msh
     unstructured/test/simple2d-8x8.msh

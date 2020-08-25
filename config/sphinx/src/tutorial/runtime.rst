@@ -2,8 +2,8 @@
 
    <br />
 
-Runtime
-*******
+Runtime Model
+*************
 
 Using FleCSI requires proper initialization and configuration of the
 FleCSI runtime. These examples illustrate some of the basic steps and

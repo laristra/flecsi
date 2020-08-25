@@ -30,7 +30,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace ctrl_impl {
+namespace run_impl {
 
 /*!
   Allow users to define cyclic control points. Cycles can be nested.
@@ -270,5 +270,5 @@ private:
 
 #endif // FLECSI_ENABLE_GRAPHVIZ
 
-} // namespace ctrl_impl
+} // namespace run_impl
 } // namespace flecsi

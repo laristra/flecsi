@@ -13,8 +13,8 @@
                                                                               */
 #pragma once
 
-#include "flecsi/control.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/run/control.hh"
 
 namespace cycle {
 
@@ -39,7 +39,7 @@ struct control_policy {
   using control_points_enum = cp;
   struct node_policy {};
 
-  using control = flecsi::control<control_policy>;
+  using control = flecsi::run::control<control_policy>;
 
   /*
     Define a function to access the step_ data member.
@@ -60,14 +60,14 @@ struct control_policy {
   }
 
   template<auto CP>
-  using control_point = flecsi::control_point<CP>;
+  using control_point = flecsi::run::control_point<CP>;
 
   /*
     The cycle type. Cycles are similar to the control_points tuple, with the
     addition of a predicate function that controls termination of the cycle.
    */
 
-  using cycle = flecsi::cycle<cycle_control,
+  using cycle = flecsi::run::cycle<cycle_control,
     control_point<cp::advance>,
     control_point<cp::analyze>>;
 
@@ -84,6 +84,6 @@ private:
   size_t step_{0};
 };
 
-using control = flecsi::control<control_policy>;
+using control = flecsi::run::control<control_policy>;
 
 } // namespace cycle

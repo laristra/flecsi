@@ -45,21 +45,10 @@ namespace flecsi {
 
 inline log::devel_tag task_wrapper_tag("task_wrapper");
 
-// Send and receive only the reference_base portion:
-template<class T, std::size_t Priv>
-struct util::serial_convert<data::accessor<data::dense, T, Priv>> {
-  using type = data::accessor<data::dense, T, Priv>;
-  using Rep = std::size_t;
-  static Rep put(const type & r) {
-    return r.identifier();
-  }
-  static type get(const Rep & r) {
-    return type(r);
-  }
-};
-template<class T, std::size_t Priv>
-struct util::serial_convert<data::accessor<data::singular, T, Priv>> {
-  using type = data::accessor<data::singular, T, Priv>;
+namespace data::detail {
+template<class A>
+struct convert_accessor {
+  using type = A;
   using Base = typename type::base_type;
   static const Base & put(const type & a) {
     return a.get_base();
@@ -68,6 +57,26 @@ struct util::serial_convert<data::accessor<data::singular, T, Priv>> {
     return b;
   }
 };
+} // namespace data::detail
+
+// Send and receive only the reference_base portion:
+template<class T, std::size_t Priv>
+struct util::serial_convert<data::accessor<data::raw, T, Priv>> {
+  using type = data::accessor<data::raw, T, Priv>;
+  using Rep = std::size_t;
+  static Rep put(const type & r) {
+    return r.identifier();
+  }
+  static type get(const Rep & r) {
+    return type(r);
+  }
+};
+template<class T, std::size_t P>
+struct util::serial_convert<data::accessor<data::dense, T, P>>
+  : data::detail::convert_accessor<data::accessor<data::dense, T, P>> {};
+template<class T, std::size_t Priv>
+struct util::serial_convert<data::accessor<data::singular, T, Priv>>
+  : data::detail::convert_accessor<data::accessor<data::singular, T, Priv>> {};
 template<class T, std::size_t Priv>
 struct util::serial<data::topology_accessor<T, Priv>,
   std::enable_if_t<!util::memcpyable_v<data::topology_accessor<T, Priv>>>> {

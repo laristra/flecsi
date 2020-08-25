@@ -101,6 +101,14 @@ add_unit(index
     test/index.cc
   THREADS 2
 )
+
+add_unit(unstructured
+  SOURCES
+    test/unstructured.cc
+  INPUTS
+    ../topo/unstructured/test/simple2d-8x8.msh
+  THREADS 2
+)
 endif()
 
 add_unit(privilege_pack

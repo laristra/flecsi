@@ -14,7 +14,6 @@ variables:
   COLOR_GREEN: '\033[0;32m'
   COLOR_MAGENTA: '\033[1;35m'
   COLOR_PLAIN: '\033[0m'
-  WARN: "-Wall -W -Werror"
 
 include: .gitlab/environments.yml
 
@@ -29,9 +28,9 @@ format:diff:
   extends: .diff_format_template
   dependencies: []
   variables:
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "util-fedora-30"
-    FORMAT_VERSION: "8.0.0"
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: util-fedora-30
+    FORMAT_VERSION: 8.0.0
   allow_failure: true
 
 format:check:
@@ -39,8 +38,8 @@ format:check:
   dependencies:
     - format:diff
   variables:
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "util-fedora-30"
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: util-fedora-30
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for default settings.
@@ -53,10 +52,10 @@ mpich-defaults:
   dependencies:
     - mpich
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for Legion runtime with MPICH provider,
@@ -70,15 +69,15 @@ mpich-legion-gnu:
   dependencies:
     - mpich
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    BUILD_TYPE: "debug"
-    RUNTIME: "legion"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    BUILD_TYPE: debug
+    RUNTIME: legion
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 mpich-legion-gnu:release:
@@ -86,15 +85,15 @@ mpich-legion-gnu:release:
   dependencies:
     - mpich:release
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    BUILD_TYPE: "release"
-    RUNTIME: "legion"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    BUILD_TYPE: release
+    RUNTIME: legion
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
@@ -109,15 +108,15 @@ mpich-mpi-gnu:
   dependencies:
     - mpich
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    BUILD_TYPE: "debug"
-    RUNTIME: "mpi"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    BUILD_TYPE: debug
+    RUNTIME: mpi
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 mpich-mpi-gnu:release:
@@ -125,15 +124,15 @@ mpich-mpi-gnu:release:
   dependencies:
     - mpich:release
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    BUILD_TYPE: "release"
-    RUNTIME: "mpi"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    BUILD_TYPE: release
+    RUNTIME: mpi
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
@@ -148,13 +147,13 @@ tutorial:legion:
   dependencies:
     - mpich-legion-gnu:release
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
@@ -169,15 +168,15 @@ openmpi-legion-gnu:
   dependencies:
     - openmpi
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "openmpi"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    BUILD_TYPE: "debug"
-    RUNTIME: "legion"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: openmpi
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    BUILD_TYPE: debug
+    RUNTIME: legion
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 openmpi-legion-gnu:release:
@@ -185,15 +184,15 @@ openmpi-legion-gnu:release:
   dependencies:
     - openmpi:release
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "openmpi"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    BUILD_TYPE: "release"
-    RUNTIME: "legion"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: openmpi
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    BUILD_TYPE: release
+    RUNTIME: legion
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
@@ -208,15 +207,15 @@ openmpi-mpi-gnu:
   dependencies:
     - openmpi
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "openmpi"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    BUILD_TYPE: "debug"
-    RUNTIME: "mpi"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: openmpi
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    BUILD_TYPE: debug
+    RUNTIME: mpi
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 openmpi-mpi-gnu:release:
@@ -224,15 +223,15 @@ openmpi-mpi-gnu:release:
   dependencies:
     - openmpi:release
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "openmpi"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "centos-7.8"
-    BUILD_TYPE: "release"
-    RUNTIME: "mpi"
-    CXX_COMPILER: "g++"
-    CXX_FLAGS: "-fmax-errors=5 -fdiagnostics-color=always ${WARN}"
-    C_COMPILER: "gcc"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: openmpi
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: centos-7.8
+    BUILD_TYPE: release
+    RUNTIME: mpi
+    CXX_COMPILER: g++
+    CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
@@ -247,15 +246,15 @@ mpich-legion-clang:
   dependencies:
     - mpich-clang
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "clearlinux"
-    BUILD_TYPE: "debug"
-    RUNTIME: "legion"
-    CXX_COMPILER: "clang++"
-    CXX_FLAGS: "-fcolor-diagnostics -ferror-limit=5 ${WARN} -Wno-parentheses"
-    C_COMPILER: "clang"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: clearlinux
+    BUILD_TYPE: debug
+    RUNTIME: legion
+    CXX_COMPILER: clang++
+    CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: clang
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
@@ -270,15 +269,15 @@ mpich-mpi-clang:
   dependencies:
     - mpich-clang
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "mpich"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "clearlinux"
-    BUILD_TYPE: "debug"
-    RUNTIME: "mpi"
-    CXX_COMPILER: "clang++"
-    CXX_FLAGS: "-fcolor-diagnostics -ferror-limit=5 ${WARN} -Wno-parentheses"
-    C_COMPILER: "clang"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: clearlinux
+    BUILD_TYPE: debug
+    RUNTIME: mpi
+    CXX_COMPILER: clang++
+    CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: clang
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
@@ -293,13 +292,13 @@ openmpi-mpi-clang:
   dependencies:
     - openmpi-clang
   variables:
-    ENVIRONMENT: "devel"
-    MPI_PROVIDER: "openmpi"
-    REGISTRY: "gitlab.lanl.gov:5050/laristra/flecsi"
-    IMAGE: "clearlinux"
-    BUILD_TYPE: "debug"
-    RUNTIME: "mpi"
-    CXX_COMPILER: "clang++"
-    CXX_FLAGS: "-fcolor-diagnostics -ferror-limit=5 ${WARN} -Wno-parentheses"
-    C_COMPILER: "clang"
+    ENVIRONMENT: devel
+    MPI_PROVIDER: openmpi
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: clearlinux
+    BUILD_TYPE: debug
+    RUNTIME: mpi
+    CXX_COMPILER: clang++
+    CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: clang
     C_FLAGS: ${CXX_FLAGS}

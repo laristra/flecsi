@@ -17,9 +17,9 @@
 
 #include <flecsi-config.h>
 
-#include "flecsi/ctrl/point_walker.hh"
 #include "flecsi/execution.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/run/point_walker.hh"
 #include "flecsi/util/constant.hh"
 #include "flecsi/util/dag.hh"
 #include "flecsi/util/demangle.hh"
@@ -29,6 +29,7 @@
 #include <vector>
 
 namespace flecsi {
+namespace run {
 
 inline log::devel_tag control_tag("control");
 
@@ -53,7 +54,7 @@ using control_point = util::constant<CP>;
  */
 
 template<bool (*Predicate)(), typename... ControlPoints>
-using cycle = ctrl_impl::cycle<Predicate, ControlPoints...>;
+using cycle = run_impl::cycle<Predicate, ControlPoints...>;
 
 /*!
   The control type provides a control model for specifying a
@@ -82,14 +83,14 @@ private:
   using control_points_enum = typename ControlPolicy::control_points_enum;
   using node_policy = typename ControlPolicy::node_policy;
 
-  using point_walker = ctrl_impl::point_walker<control<ControlPolicy>>;
+  using point_walker = run_impl::point_walker<control<ControlPolicy>>;
   friend point_walker;
 
-  using init_walker = ctrl_impl::init_walker<control<ControlPolicy>>;
+  using init_walker = run_impl::init_walker<control<ControlPolicy>>;
   friend init_walker;
 
 #if defined(FLECSI_ENABLE_GRAPHVIZ)
-  using point_writer = ctrl_impl::point_writer<control<ControlPolicy>>;
+  using point_writer = run_impl::point_writer<control<ControlPolicy>>;
   friend point_writer;
 #endif
 
@@ -178,7 +179,7 @@ private:
     point_writer(registry_, gv).template walk_types<control_points>();
     std::string file = program() + "-control-model.dot";
     gv.write(file);
-    return flecsi::run::status::control;
+    return flecsi::run::status::option;
   } // write
 
   int write_sorted() {
@@ -186,7 +187,7 @@ private:
     point_writer::write_sorted(sort(), gv);
     std::string file = program() + "-control-model-sorted.dot";
     gv.write(file);
-    return flecsi::run::status::control;
+    return flecsi::run::status::option;
   } // write_sorted
 #endif
 
@@ -290,4 +291,5 @@ public:
 
 }; // struct control
 
+} // namespace run
 } // namespace flecsi

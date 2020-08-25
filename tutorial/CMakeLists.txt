@@ -86,7 +86,7 @@ endfunction()
 #------------------------------------------------------------------------------#
 
 find_package(FleCSI REQUIRED)
-include_directories(${FleCSI_INCLUDE_DIRS})
+include_directories(SYSTEM ${FleCSI_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------#
 # FleCSI-Tutorial library.
@@ -96,76 +96,107 @@ add_library(FleCSI-Tutorial
   ${CMAKE_SOURCE_DIR}/specialization/dummy/dummy.cc
 )
 
+include_directories(${PROJECT_SOURCE_DIR})
+
 #------------------------------------------------------------------------------#
 # 1-runtime
 #------------------------------------------------------------------------------#
 
-add_executable(minimal 1-runtime/1-minimal.cc)
-target_link_libraries(minimal ${FleCSI_LIBRARIES}
+add_executable(runtime-minimal
+  1-runtime/1-minimal.cc
+)
+target_link_libraries(runtime-minimal ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
-add_unit(minimal)
+add_unit(runtime-minimal)
 
-add_executable(program_options 1-runtime/2-program_options.cc)
-target_link_libraries(program_options ${FleCSI_LIBRARIES}
+add_executable(runtime-program_options
+  1-runtime/2-program_options.cc
+)
+target_link_libraries(runtime-program_options ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
 file(TOUCH ${CMAKE_BINARY_DIR}/input.txt)
-add_unit(program_options
+add_unit(runtime-program_options
   ARGUMENTS
     input.txt
 )
 
-add_executable(flog 1-runtime/3-flog.cc)
-target_link_libraries(flog ${FleCSI_LIBRARIES}
+add_executable(runtime-flog
+  1-runtime/3-flog.cc
+)
+target_link_libraries(runtime-flog ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
-add_unit(flog)
+add_unit(runtime-flog)
 
 #------------------------------------------------------------------------------#
 # 2-control
 #------------------------------------------------------------------------------#
 
-add_executable(simple
+add_executable(control-simple
   2-control/1-simple.cc
   2-control/1-simple.hh
 )
-target_link_libraries(simple ${FleCSI_LIBRARIES}
+target_link_libraries(control-simple ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
-add_unit(simple)
+add_unit(control-simple)
 
-add_executable(cycle
+add_executable(control-cycle
   2-control/2-cycle.cc
   2-control/2-cycle.hh
 )
-target_link_libraries(cycle ${FleCSI_LIBRARIES}
+target_link_libraries(control-cycle ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
-add_unit(cycle)
+add_unit(control-cycle)
 
-add_executable(subcycle
+add_executable(control-subcycle
   2-control/2-cycle.cc
   2-control/2-subcycle.hh
 )
-target_compile_definitions(subcycle PUBLIC SUBCYCLE)
-target_link_libraries(subcycle ${FleCSI_LIBRARIES}
+target_compile_definitions(control-subcycle PUBLIC SUBCYCLE)
+target_link_libraries(control-subcycle ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
-add_unit(subcycle)
+add_unit(control-subcycle)
 
 if(ENABLE_DEVELOPER_MODE)
   add_custom_target(pngs
-    ${CMAKE_BINARY_DIR}/simple --control-model &&
+    ${CMAKE_BINARY_DIR}/control-simple --control-model &&
     ${DOT_EXECUTABLE} -Tpdf simple-control-model.dot > simple.pdf &&
     ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 simple.pdf simple.png &&
-    ${CMAKE_BINARY_DIR}/cycle --control-model &&
+    ${CMAKE_BINARY_DIR}/control-cycle --control-model &&
     ${DOT_EXECUTABLE} -Tpdf cycle-control-model.dot > cycle.pdf &&
     ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 cycle.pdf cycle.png &&
-    ${CMAKE_BINARY_DIR}/subcycle --control-model &&
+    ${CMAKE_BINARY_DIR}/control-subcycle --control-model &&
     ${DOT_EXECUTABLE} -Tpdf subcycle-control-model.dot > subcycle.pdf
     ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 subcycle.pdf subcycle.png
   )
 endif()
 
 #------------------------------------------------------------------------------#
-# 3-tasks
+# 3-execution
 #------------------------------------------------------------------------------#
 
-#add_executable(trivial 2-tasks/1-trivial.cc)
-#target_link_libraries(trivial ${FleCSI_LIBRARIES}
-#  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_executable(execution-single-task
+  3-execution/1-single-task.cc
+  3-execution/control.hh
+  3-execution/main.cc
+)
+target_link_libraries(execution-single-task ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(execution-single-task)
+
+add_executable(execution-index-task
+  3-execution/2-index-task.cc
+  3-execution/control.hh
+  3-execution/main.cc
+)
+target_link_libraries(execution-index-task ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(execution-index-task)
+
+add_executable(execution-mpi-task
+  3-execution/3-mpi-task.cc
+  3-execution/control.hh
+  3-execution/main.cc
+)
+target_link_libraries(execution-mpi-task ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(execution-mpi-task)

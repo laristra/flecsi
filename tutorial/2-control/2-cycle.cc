@@ -73,7 +73,7 @@ main(int argc, char ** argv) {
 
   if(status != flecsi::run::status::success) {
     flecsi::finalize();
-    return status == flecsi::run::status::control ? 0 : status;
+    return status == flecsi::run::status::option ? 0 : status;
   } // if
 
   flecsi::log::add_output_stream("clog", std::clog, true);

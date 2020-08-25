@@ -68,6 +68,10 @@ struct canonical : canonical_base {
   }
 
   template<index_space S>
+  data::region & get_region() {
+    return part.template get<S>();
+  }
+  template<index_space S>
   const data::partition & get_partition() const {
     return part.template get<S>();
   }

@@ -95,7 +95,7 @@ struct tuple_prepend<T, std::tuple<TT...>> {
 #ifdef FLECSI_ENABLE_FLOG
 inline auto
 log_size() {
-  return log::flog_t::instance().packets().size();
+  return log::state::instance().packets().size();
 }
 #endif
 } // namespace detail

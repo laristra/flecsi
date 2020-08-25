@@ -13,8 +13,8 @@
                                                                               */
 #pragma once
 
-#include "flecsi/control.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/run/control.hh"
 
 namespace simple {
 
@@ -76,7 +76,7 @@ struct control_policy {
    */
 
   template<auto CP>
-  using control_point = flecsi::control_point<CP>;
+  using control_point = flecsi::run::control_point<CP>;
 
   /*
     The control_points tuple defines the actual control points as typeified
@@ -93,6 +93,6 @@ struct control_policy {
   Define a fully-qualified control type for the end user.
  */
 
-using control = flecsi::control<control_policy>;
+using control = flecsi::run::control<control_policy>;
 
 } // namespace simple

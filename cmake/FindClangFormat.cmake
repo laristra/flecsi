@@ -9,23 +9,28 @@
 # ClangFormat_VERSION      - The version of clang-format found
 #
 
-find_program(ClangFormat_EXECUTABLE
- NAMES clang-format
-   clang-format-10
-   clang-format-9
-   clang-format-8
-   clang-format-7
-   clang-format-6.0
-   clang-format-5.0
-   clang-format-4.0
-   clang-format-3.9
-   clang-format-3.8
-   clang-format-3.7
-   clang-format-3.6
-   clang-format-3.5
-   clang-format-3.4
-   clang-format-3.3
- DOC "clang-format executable")
+if(ClangFormat_EXECUTABLE STREQUAL "")
+
+  find_program(ClangFormat_EXECUTABLE
+   NAMES clang-format
+     clang-format-10
+     clang-format-9
+     clang-format-8
+     clang-format-7
+     clang-format-6.0
+     clang-format-5.0
+     clang-format-4.0
+     clang-format-3.9
+     clang-format-3.8
+     clang-format-3.7
+     clang-format-3.6
+     clang-format-3.5
+     clang-format-3.4
+     clang-format-3.3
+   DOC "clang-format executable")
+
+endif()
+
 mark_as_advanced(ClangFormat_EXECUTABLE)
 
 # Extract version from command "clang-format -version"

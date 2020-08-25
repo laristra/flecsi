@@ -15,6 +15,8 @@
 set(run_HEADERS
   backend.hh
   context.hh
+  control.hh
+  point_walker.hh
   types.hh
 )
 
@@ -69,6 +71,21 @@ set(run_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
+# Note: The cycle test does not use the 'add_unit' interface because it is
+# meant to test different low-level control model features.
+#------------------------------------------------------------------------------#
+
+add_executable(cycle
+  test/cycle.cc
+  test/cycle_control.hh
+  test/package_a.hh
+  test/package_b.hh
+  test/package_c.hh)
+target_link_libraries(cycle FleCSI)
+target_link_libraries(cycle ${FLECSI_LIBRARY_DEPENDENCIES}
+  ${CMAKE_THREAD_LIBS_INIT})
 
 add_unit(program-options
   SOURCES

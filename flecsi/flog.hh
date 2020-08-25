@@ -21,6 +21,7 @@
 
 #if defined(FLECSI_ENABLE_FLOG)
 #include "flecsi/log/message.hh"
+#include "flecsi/log/severity.hh"
 #include "flecsi/log/tag_scope.hh"
 #endif
 
@@ -48,7 +49,7 @@ struct tag {
   friend guard;
 
   tag(const char * label) : label_(label) {
-    flog_t::instance().register_tag(label);
+    state::instance().register_tag(label);
   }
 
 private:
@@ -66,7 +67,7 @@ private:
 
 struct guard {
   guard(tag const & t)
-    : scope_(flog_t::instance().lookup_tag(t.label_.c_str())) {}
+    : scope_(state::instance().lookup_tag(t.label_.c_str())) {}
 
 private:
   tag_scope_t scope_;
@@ -101,7 +102,7 @@ inline void
 add_output_stream(std::string const & label,
   std::ostream & stream,
   bool colorize = false) {
-  flog_t::instance().config_stream().add_buffer(label, stream, colorize);
+  state::instance().config_stream().add_buffer(label, stream, colorize);
 } // add_output_stream
 
 } // namespace log
@@ -134,10 +135,8 @@ add_output_stream(std::string const & label,
  */
 
 #define flog(severity)                                                         \
-  /* MACRO IMPLEMENTATION */                                                   \
-                                                                               \
-  true && ::flecsi::log::severity##_log_message_t(__FILE__, __LINE__, false)   \
-            .stream()
+  true &&                                                                      \
+    ::flecsi::log::message<flecsi::log::severity>(__FILE__, __LINE__).format()
 
 #if defined(FLOG_ENABLE_DEVELOPER_MODE)
 
@@ -145,7 +144,8 @@ add_output_stream(std::string const & label,
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
   true &&                                                                      \
-    ::flecsi::log::severity##_log_message_t(__FILE__, __LINE__, true).stream()
+    ::flecsi::log::message<flecsi::log::severity>(__FILE__, __LINE__, true)    \
+      .format()
 
 #else
 
@@ -158,11 +158,11 @@ add_output_stream(std::string const & label,
 #endif // FLOG_ENABLE_DEVELOPER_MODE
 
 /*!
-  @def flog_trace(message)
+  @def flog_trace(stream)
 
   Method style interface for trace level severity log entries.
 
-  @param message The stream message to be printed.
+  @param stream The stream to be printed.
 
   @b Usage
   @code
@@ -175,17 +175,18 @@ add_output_stream(std::string const & label,
   @ingroup flog
  */
 
-#define flog_trace(message)                                                    \
+#define flog_trace(stream)                                                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  ::flecsi::log::trace_log_message_t(__FILE__, __LINE__).stream() << message
+  ::flecsi::log::message<flecsi::log::trace>(__FILE__, __LINE__).format()      \
+    << stream
 
 /*!
-  @def flog_info(message)
+  @def flog_info(stream)
 
   Method style interface for info level severity log entries.
 
-  @param message The stream message to be printed.
+  @param stream The stream to be printed.
 
   @b Usage
   @code
@@ -198,17 +199,18 @@ add_output_stream(std::string const & label,
   @ingroup flog
  */
 
-#define flog_info(message)                                                     \
+#define flog_info(stream)                                                      \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  ::flecsi::log::info_log_message_t(__FILE__, __LINE__).stream() << message
+  ::flecsi::log::message<flecsi::log::info>(__FILE__, __LINE__).format()       \
+    << stream
 
 /*!
-  @def flog_warn(message)
+  @def flog_warn(stream)
 
   Method style interface for warn level severity log entries.
 
-  @param message The stream message to be printed.
+  @param stream The stream to be printed.
 
   @b Usage
   @code
@@ -221,17 +223,18 @@ add_output_stream(std::string const & label,
   @ingroup flog
  */
 
-#define flog_warn(message)                                                     \
+#define flog_warn(stream)                                                      \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  ::flecsi::log::warn_log_message_t(__FILE__, __LINE__).stream() << message
+  ::flecsi::log::message<flecsi::log::warn>(__FILE__, __LINE__).format()       \
+    << stream
 
 /*!
-  @def flog_error(message)
+  @def flog_error(stream)
 
   Method style interface for error level severity log entries.
 
-  @param message The stream message to be printed.
+  @param stream The stream to be printed.
 
   @b Usage
   @code
@@ -244,10 +247,11 @@ add_output_stream(std::string const & label,
   @ingroup flog
  */
 
-#define flog_error(message)                                                    \
+#define flog_error(stream)                                                     \
   /* MACRO IMPLEMENTATION */                                                   \
                                                                                \
-  ::flecsi::log::error_log_message_t(__FILE__, __LINE__).stream() << message
+  ::flecsi::log::message<flecsi::log::error>(__FILE__, __LINE__).format()      \
+    << stream
 
 #define __flog_internal_wait_on_flusher() usleep(FLOG_PACKET_FLUSH_INTERVAL)
 

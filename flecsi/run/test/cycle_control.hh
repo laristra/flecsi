@@ -13,8 +13,8 @@
                                                                               */
 #pragma once
 
-#include "flecsi/control.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/run/control.hh"
 
 enum cp {
   initialization,
@@ -56,7 +56,7 @@ struct control_policy {
   struct node_policy {};
 
   template<auto CP>
-  using control_point = flecsi::control_point<CP>;
+  using control_point = flecsi::run::control_point<CP>;
 
   static bool subcycle_control() {
     if(substep % 3 < 2) {
@@ -65,7 +65,7 @@ struct control_policy {
     return substep++ % 3 < 2;
   }
 
-  using subcycle = flecsi::cycle<subcycle_control,
+  using subcycle = flecsi::run::cycle<subcycle_control,
     control_point<control_points_enum::advance_subcycle>>;
 
   static bool cycle_control() {
@@ -76,7 +76,7 @@ struct control_policy {
     return false;
   }
 
-  using cycle = flecsi::cycle<cycle_control,
+  using cycle = flecsi::run::cycle<cycle_control,
     control_point<control_points_enum::advance>,
     subcycle,
     control_point<control_points_enum::analyze>,
@@ -89,4 +89,4 @@ struct control_policy {
       control_point<control_points_enum::finalization>>;
 };
 
-using control = flecsi::control<control_policy>;
+using control = flecsi::run::control<control_policy>;

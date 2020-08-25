@@ -49,7 +49,7 @@ struct context_t; // supplied by backend
 enum status : int {
   success,
   help,
-  control,
+  option,
   command_line_error,
   error, // add specific error modes
 }; // initialization_codes
@@ -185,6 +185,8 @@ struct context {
         boost::program_options::value(&flog_tags_)
           ->default_value("all"),
         "Enable the specified output tags, e.g., --flog-tags=tag1,tag2."
+        " Use '--flog-tags=all' to show all output, and "
+        " '--flog-tags=unscoped' to show only unguarded output."
       )
       (
         "flog-verbose",
@@ -275,7 +277,7 @@ struct context {
         std::cout << flecsi << std::endl;
 
 #if defined(FLECSI_ENABLE_FLOG)
-        auto const & tm = log::flog_t::instance().tag_map();
+        auto const & tm = log::state::instance().tag_map();
 
         if(tm.size()) {
           std::cout << "Available FLOG Tags (FleCSI Logging Utility):"
@@ -336,7 +338,7 @@ struct context {
       parsed.options, boost::program_options::include_positional);
 
 #if defined(FLECSI_ENABLE_FLOG)
-    if(log::flog_t::instance().initialize(
+    if(log::state::instance().initialize(
          flog_tags_, flog_verbose_, flog_output_process_)) {
       return status::error;
     } // if
@@ -356,7 +358,7 @@ struct context {
 
   inline void finalize_generic() {
 #if defined(FLECSI_ENABLE_FLOG)
-    log::flog_t::instance().finalize();
+    log::state::instance().finalize();
 #endif
 
     if(initialize_dependent_) {
