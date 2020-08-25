@@ -36,18 +36,26 @@ RUN swupd bundle-add \
 # Build gcc 9
 #------------------------------------------------------------------------------#
 
-RUN wget http://ftpmirror.gnu.org/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
-RUN tar xf gcc-9.3.0.tar.xz
+ADD gnu-clearlinux.tbz /
 
-WORKDIR gcc-9.3.0
-RUN contrib/download_prerequisites
-RUN ./configure --disable-multilib --enable-languages=c,c++,fortran \
-  --prefix=/opt/gnu/9.3.0
-RUN make
-RUN make install
+#RUN wget http://ftpmirror.gnu.org/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
+#RUN tar xf gcc-9.3.0.tar.xz
+#
+#WORKDIR gcc-9.3.0
+#RUN contrib/download_prerequisites
+#RUN ./configure --disable-multilib --enable-languages=c,c++,fortran \
+#  --prefix=/opt/gnu/9.3.0
+#RUN make
+#RUN make install
+#
+#WORKDIR /
+#RUN rm -rf gcc-9.3.0*
 
-WORKDIR /
-RUN rm -rf gcc-9.3.0*
+#------------------------------------------------------------------------------#
+# Set root prompt
+#------------------------------------------------------------------------------#
+
+RUN echo "PS1=\"\[\033[1;31m\]root \[\e[38;5;160m\]>\[\e[38;5;166m\]>\[\e[38;5;172m\]>\[\033[0m\] \"" >> /root/.bashrc
 
 #------------------------------------------------------------------------------#
 # Add flecsi user
