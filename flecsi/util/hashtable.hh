@@ -24,7 +24,7 @@ namespace flecsi {
 namespace util {
 
 template<class KEY, class TYPE, class HASH = std::hash<KEY>>
-class hashtable;
+struct hashtable;
 
 /**
  * @brief hashtableIterator to iterate on the hashtable.

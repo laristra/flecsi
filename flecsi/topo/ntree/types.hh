@@ -140,7 +140,7 @@ public:
     ent_idx_ = idx;
   }
 
-  void add_child(const int & bit) {
+  void add_child(const int &) {
     // todo
   }
 
