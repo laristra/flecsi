@@ -3,6 +3,7 @@
 #include "flecsi/util/unit.hh"
 
 #include <iostream>
+#include <numeric>
 
 // Prints a span<const char>, as a character string
 inline void
@@ -248,6 +249,10 @@ array_ref() {
 #else
     EXPECT_TRUE(UNIT_EQUAL_BLESSED("array_ref.blessed"));
 #endif
+
+    const flecsi::util::iota_view gap(24, 29); // between primes
+    EXPECT_EQ(std::accumulate(gap.begin(), gap.end(), 0),
+      (gap.front() + gap.back()) * gap.size() / 2);
   };
 } // array_ref
 
