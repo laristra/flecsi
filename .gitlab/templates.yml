@@ -26,7 +26,7 @@
 .env_shell:
   script: &env_shell
     - export PATH=$HOME/.local/bin:$PATH
-    - source $HOME/spack/share/spack/setup-env.sh
+    - source $HOME/.spack/share/spack/setup-env.sh
 
 #------------------------------------------------------------------------------#
 # env_spack_archive
@@ -38,7 +38,6 @@
   script: &env_spack_archive
     - mkdir -p ${CI_PROJECT_DIR}/state
     - rsync -apz /home/flecsi/.spack ${CI_PROJECT_DIR}/state
-    - rsync -apz /home/flecsi/spack ${CI_PROJECT_DIR}/state
 
 #------------------------------------------------------------------------------#
 # env_spack_restore
@@ -48,7 +47,6 @@
 
 .env_spack_restore:
   script: &env_spack_restore
-    - rsync -apz ${CI_PROJECT_DIR}/state/spack /home/flecsi
     - rsync -apz ${CI_PROJECT_DIR}/state/.spack /home/flecsi
 
 #------------------------------------------------------------------------------#
