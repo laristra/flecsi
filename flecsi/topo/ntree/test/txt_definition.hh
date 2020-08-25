@@ -15,8 +15,6 @@
 
 /*! @file */
 
-#include <flecsi/topo/ntree/definition.hh>
-
 #include <fstream>
 #include <set>
 #include <vector>
@@ -30,7 +28,7 @@
  */
 
 template<typename KEY, int DIM>
-class txt_definition : public flecsi::topo::ntree_impl::definition<DIM>
+class txt_definition
 {
 public:
   const int dim = DIM;
