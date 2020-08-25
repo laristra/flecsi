@@ -59,9 +59,9 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
       c.entities_distribution_[i] = hd.distribution(i);
     c.entities_offset_.resize(size);
 
-    ents = hd.entities(); 
+    ents = hd.entities();
 
-    std::ostringstream oss; 
+    std::ostringstream oss;
     if(rank == 0)
       oss << "Ents Offset: ";
 

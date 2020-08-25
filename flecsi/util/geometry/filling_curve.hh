@@ -232,12 +232,11 @@ class hilbert_curve : public filling_curve<DIM, T, hilbert_curve<DIM, T>>
 
   using filling_curve<DIM, T, hilbert_curve>::value_;
   using filling_curve<DIM, T, hilbert_curve>::max_depth_;
-  using filling_curve<DIM, T, hilbert_curve>::bits_; 
+  using filling_curve<DIM, T, hilbert_curve>::bits_;
 
 public:
   hilbert_curve() : filling_curve<DIM, T, hilbert_curve>() {}
-  hilbert_curve(const int_t & id)
-    : filling_curve<DIM, T, hilbert_curve>(id) {}
+  hilbert_curve(const int_t & id) : filling_curve<DIM, T, hilbert_curve>(id) {}
   hilbert_curve(const hilbert_curve & bid)
     : filling_curve<DIM, T, hilbert_curve>(bid.value_) {}
   hilbert_curve(const std::array<point_t, 2> & range, const point_t & p)
@@ -254,7 +253,7 @@ public:
     *this = filling_curve<DIM, T, hilbert_curve>::min();
     assert(depth <= max_depth_);
     std::array<int_t, dimension> coords;
-    const int_t max_val = (int_t(1) << (bits_ - 1) / dimension)-1;
+    const int_t max_val = (int_t(1) << (bits_ - 1) / dimension) - 1;
 
     // Convert the position to integer
     for(size_t i = 0; i < dimension; ++i) {
@@ -276,11 +275,11 @@ public:
       for(size_t j = 0; j < dimension; ++j) {
         bits[j] = (s & coords[j]) > 0;
       }
-      if (dimension == 2) {
+      if(dimension == 2) {
         value_ += s * s * ((3 * bits[0]) ^ bits[1]);
         rotation2d(s, coords, bits);
       }
-      if (dimension == 3) {
+      if(dimension == 3) {
         value_ += s * s * s * ((7 * bits[0]) ^ (3 * bits[1]) ^ bits[2]);
         rotation3d(s, coords, bits);
       }
@@ -298,7 +297,7 @@ public:
     int_t n = int_t(1) << (max_depth_); // Number of cells to an edge.
     for(int_t mask = int_t(1); mask < n; mask <<= 1) {
       std::array<int_t, dimension> bits = {};
-      if (dimension == 3) {
+      if(dimension == 3) {
         bits[0] = (key & 4) > 0;
         bits[1] = ((key & 2) ^ bits[0]) > 0;
         bits[2] = ((key & 1) ^ bits[0] ^ bits[1]) > 0;
@@ -307,7 +306,7 @@ public:
         coords[1] += bits[1] * mask;
         coords[2] += bits[2] * mask;
       }
-      if (dimension == 2) {
+      if(dimension == 2) {
         bits[0] = (key & 2) > 0;
         bits[1] = ((key & 1) ^ bits[0]) > 0;
         rotation2d(mask, coords, bits);
@@ -342,7 +341,7 @@ private:
         coords[0] = n - 1 - coords[0];
         coords[1] = n - 1 - coords[1];
       }
-      // Swap X-Y 
+      // Swap X-Y
       int t = coords[0];
       coords[0] = coords[1];
       coords[1] = t;
@@ -470,14 +469,11 @@ class morton_curve : public filling_curve<DIM, T, morton_curve<DIM, T>>
 
 public:
   morton_curve() : filling_curve<DIM, T, morton_curve>() {}
-  morton_curve(const int_t & id)
-    : filling_curve<DIM, T, morton_curve>(id) {}
+  morton_curve(const int_t & id) : filling_curve<DIM, T, morton_curve>(id) {}
   morton_curve(const morton_curve & bid)
     : filling_curve<DIM, T, morton_curve>(bid.value_) {}
   morton_curve(const std::array<point_t, 2> & range, const point_t & p)
-    : morton_curve(range,
-        p,
-        filling_curve<DIM, T, morton_curve>::max_depth_) {}
+    : morton_curve(range, p, filling_curve<DIM, T, morton_curve>::max_depth_) {}
   ~morton_curve() = default;
 
   //! Morton key can be generated directly up to the right depth
@@ -487,13 +483,14 @@ public:
     *this = filling_curve<DIM, T, morton_curve>::min();
     assert(depth <= max_depth_);
     std::array<int_t, dimension> coords;
-    const int_t max_val = (int_t(1) << (bits_ - 1) / dimension)-1;
+    const int_t max_val = (int_t(1) << (bits_ - 1) / dimension) - 1;
     for(size_t i = 0; i < dimension; ++i) {
       double min = range[0][i];
       double scale = range[1][i] - min;
-      coords[i] = std::min(max_val,static_cast<int_t>(
-        (p[i] - min) / scale *
-        static_cast<double>((int_t(1) << (bits_ - 1) / dimension))));
+      coords[i] = std::min(max_val,
+        static_cast<int_t>(
+          (p[i] - min) / scale *
+          static_cast<double>((int_t(1) << (bits_ - 1) / dimension))));
     } // for
     size_t k = 0;
     for(size_t i = max_depth_ - depth; i < max_depth_; ++i) {

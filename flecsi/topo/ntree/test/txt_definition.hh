@@ -57,7 +57,7 @@ public:
 
     if(rank == 0)
       flog(info) << rank << ": Range: " << range_[0] << ";" << range_[1]
-                << std::endl;
+                 << std::endl;
   }
 
   size_t global_num_entities() const {
@@ -72,8 +72,8 @@ public:
     return std::pair(offset_[i], offset_[i + 1]);
   }
 
-  std::vector<ent_t>& entities(){
-    return entities_; 
+  std::vector<ent_t> & entities() {
+    return entities_;
   }
 
   ent_t & entities(const int & i) {
@@ -108,14 +108,14 @@ private:
 
     if(rank == 0) {
       flog(info) << "Global entities: " << nglobal_entities_ << std::endl;
-      std::ostringstream oss; 
+      std::ostringstream oss;
       oss << "Distribution:";
       for(int i = 0; i < size; ++i) {
         oss << " " << i << ":" << distribution_[i];
       }
       flog(info) << oss.str() << std::endl;
-      oss.str(""); 
-      oss.clear(); 
+      oss.str("");
+      oss.clear();
       oss << "Offset:";
       for(int i = 0; i < size + 1; ++i) {
         oss << " " << i << ":" << offset_[i];
