@@ -34,6 +34,7 @@ set(util_HEADERS
   dcrs.hh
   parmetis_colorer.hh
   graphviz.hh
+  hashtable.hh
   id.hh
   macros.hh
   mpi_typetraits.hh
@@ -200,4 +201,13 @@ add_unit(point
 
 add_unit(filling_curve
   SOURCES geometry/test/filling_curve.cc
+)
+
+#------------------------------------------------------------------------------#
+# hashtable
+#------------------------------------------------------------------------------#
+
+add_unit(hashtable
+  SOURCES
+    test/hashtable.cc
 )
