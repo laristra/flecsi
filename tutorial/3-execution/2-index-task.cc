@@ -25,8 +25,8 @@ using namespace flecsi;
 
 void
 task(exec::launch_domain ld) {
-  flog(info) << "Hello World from color " << color() << " of "
-             << ld.size() << std::endl;
+  flog(info) << "Hello World from color " << color() << " of " << ld.size()
+             << std::endl;
 }
 
 /*

@@ -249,7 +249,7 @@
     - spack env activate format
     - mkdir -p ${CI_PROJECT_DIR}/state/build
     - cd ${CI_PROJECT_DIR}/state/build
-    - cmake -DFORMAT_ONLY=ON -DCLANG_FORMAT_VERSION=${FORMAT_VERSION} ../..
+    - cmake -DFORMAT_ONLY=ON -DClangFormat_VERSION=${FORMAT_VERSION} ../..
     - *print_diff_format_info
     - set -o errexit
     - make format && git diff --exit-code --compact-summary

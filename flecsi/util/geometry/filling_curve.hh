@@ -36,7 +36,8 @@ class filling_curve
   using point_t = util::point<double, dimension>;
 
 protected:
-  static constexpr std::size_t bits_ = sizeof(int_t) * 8; //! Maximum number of bits
+  static constexpr std::size_t bits_ =
+    sizeof(int_t) * 8; //! Maximum number of bits
   static constexpr std::size_t max_depth_ =
     (bits_ - 1) /
     dimension; //! Maximum
