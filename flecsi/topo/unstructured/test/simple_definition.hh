@@ -16,7 +16,6 @@
 /*! @file */
 
 #include "flecsi/flog.hh"
-#include "flecsi/topo/unstructured/definition.hh"
 
 #include <fstream>
 #include <iterator>
@@ -29,9 +28,14 @@ namespace flecsi {
 namespace topo {
 namespace unstructured_impl {
 
-class simple_definition : public definition<2>
+class simple_definition
 {
 public:
+  using point = std::array<double, 2>;
+  static constexpr std::size_t dimension() {
+    return 2;
+  }
+
   simple_definition(const char * filename) {
     file_.open(filename, std::ifstream::in);
 
@@ -71,28 +75,34 @@ public:
   simple_definition(const simple_definition &) = delete;
   simple_definition & operator=(const simple_definition &) = delete;
 
-  size_t num_entities(size_t dimension) const override {
+  size_t num_entities(size_t dimension) const {
     flog_assert(dimension == 0 || dimension == 2, "invalid dimension");
     return dimension == 0 ? num_vertices_ : num_cells_;
   }
 
-  /// return the set of vertices that make up all cells
-  /// \param [in] from_dim the entity dimension to query
-  /// \param [in] to_dim the dimension of entities we wish to return
+  /*!
+    Return the set of vertices that make up all cells
+
+    @param [in] from_dim the entity dimension to query
+    @param [in] to_dim the dimension of entities we wish to return
+   */
 
   const std::vector<std::vector<size_t>> & entities(size_t from_dim,
-    size_t to_dim) const override {
+    size_t to_dim) const {
     flog_assert(from_dim == 2, "invalid dimension " << from_dim);
     flog_assert(to_dim == 0, "invalid dimension " << to_dim);
     return ids_;
   }
 
-  /// return the set of vertices of a particular entity.
-  /// \param [in] dimension  the entity dimension to query.
-  /// \param [in] entity_id  the id of the entity in question.
+  /*!
+    Return the set of vertices of a particular entity.
+
+    @param [in] dimension  the entity dimension to query.
+    @param [in] entity_id  the id of the entity in question.
+   */
 
   std::vector<size_t>
-  entities(size_t from_dim, size_t to_dim, size_t entity_id) const override {
+  entities(size_t from_dim, size_t to_dim, size_t entity_id) const {
     flog_assert(from_dim == 2, "invalid dimension " << from_dim);
     flog_assert(to_dim == 0, "invalid dimension " << to_dim);
 
@@ -123,15 +133,21 @@ public:
     return ids;
   } // vertices
 
-  point_t vertex(size_t vertex_id) const {
+  /*
+    Return the vertex with the given id.
+
+    @param id The vertex id.
+   */
+
+  point vertex(size_t id) const {
     std::string line;
-    point_t v;
+    point v;
 
     // Go to the start of the vertices.
     file_.seekg(vertex_start_);
 
     // Walk to the line with the requested id.
-    for(size_t l(0); l < vertex_id; ++l) {
+    for(size_t l(0); l < id; ++l) {
       std::getline(file_, line);
     } // for
 

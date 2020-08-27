@@ -15,10 +15,14 @@
 #define __FLECSI_PRIVATE__
 #include "flecsi/execution.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/topo/unstructured/coloring_utils.hh"
 #include "flecsi/topo/unstructured/interface.hh"
-#include "flecsi/topo/unstructured/simple_definition.hh"
-#include "flecsi/util/parmetis_colorer.hh"
+#include "flecsi/topo/unstructured/mpi_communicator.hh"
+#include "flecsi/topo/unstructured/test/simple_definition.hh"
+#include "flecsi/util/parmetis.hh"
 #include "flecsi/util/unit.hh"
+
+#include "tikz_writer.hh"
 
 using namespace flecsi;
 
@@ -30,7 +34,7 @@ naive_coloring() {
     ASSERT_EQ(sd.num_entities(0), 289lu);
     ASSERT_EQ(sd.num_entities(2), 256lu);
 
-    auto naive = topo::unstructured_impl::naive_coloring(sd, 2, 1);
+    auto naive = topo::unstructured_impl::make_dcrs(sd, 1);
 
     std::vector<size_t> distribution = {0, 52, 103, 154, 205, 256};
 
@@ -185,7 +189,7 @@ parmetis_colorer() {
     // Coloring with 5 colors with MPI_COMM_WORLD
     {
       const size_t colors{5};
-      auto naive = topo::unstructured_impl::naive_coloring(sd, 2, 1);
+      auto naive = topo::unstructured_impl::make_dcrs(sd, 1);
       auto raw = util::parmetis::color(naive, colors);
       {
         std::stringstream ss;
@@ -197,7 +201,7 @@ parmetis_colorer() {
         flog_devel(warn) << ss.str();
       } // scope
 
-      auto coloring = util::parmetis::distribute(naive, colors, raw);
+      auto coloring = topo::unstructured_impl::distribute(naive, colors, raw);
 
       {
         std::stringstream ss;
@@ -221,8 +225,7 @@ parmetis_colorer() {
         MPI_COMM_WORLD, process() < 2 ? 0 : MPI_UNDEFINED, 0, &group_comm);
 
       if(process() < 2) {
-        auto naive =
-          topo::unstructured_impl::naive_coloring(sd, 2, 1, process(), 2);
+        auto naive = topo::unstructured_impl::make_dcrs(sd, 1, group_comm);
         auto raw = util::parmetis::color(naive, 5, group_comm);
 
         {
@@ -235,7 +238,8 @@ parmetis_colorer() {
           flog_devel(warn) << ss.str();
         } // scope
 
-        auto coloring = util::parmetis::distribute(naive, 5, raw, group_comm);
+        auto coloring =
+          topo::unstructured_impl::distribute(naive, 5, raw, group_comm);
 
         {
           std::stringstream ss;
@@ -256,11 +260,71 @@ parmetis_colorer() {
 } // parmetis_colorer
 
 int
+ideas() {
+  UNIT {
+    topo::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
+    auto naive = topo::unstructured_impl::make_dcrs(sd, 1);
+    const std::size_t colors{3};
+    auto raw = util::parmetis::color(naive, colors);
+    auto coloring = topo::unstructured_impl::distribute(naive, colors, raw);
+
+    {
+      std::stringstream ss;
+      size_t color{0};
+      for(auto c : coloring) {
+        ss << "rank " << process() << " color " << color++ << ":" << std::endl;
+        for(auto i : c) {
+          ss << i << " ";
+        }
+        ss << std::endl;
+      }
+      ss << std::endl;
+      flog_devel(warn) << ss.str();
+    } // scope
+  }; // UNIT
+} // ideas
+
+struct coloring_policy {
+
+  using primary = topo::unstructured_impl::primary_independent<0, 2, 0, 1>;
+
+  using auxiliary =
+    std::tuple<topo::unstructured_impl::auxiliary_independent<1, 0, 2>>;
+
+  static constexpr size_t auxiliary_colorings =
+    std::tuple_size<auxiliary>::value;
+
+  using definition = topo::unstructured_impl::simple_definition;
+
+  using communicator = topo::unstructured_impl::mpi_communicator;
+}; // coloring_policy
+
+int
+dependency_closure() {
+  UNIT {
+    topo::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
+    // Coloring with 5 colors with MPI_COMM_WORLD
+    {
+      const size_t colors{processes()};
+      auto naive = topo::unstructured_impl::make_dcrs(sd, 1);
+      auto raw = util::parmetis::color(naive, colors);
+      auto coloring = topo::unstructured_impl::distribute(naive, colors, raw);
+      auto closure = topo::unstructured_impl::closure<coloring_policy>(
+        sd, coloring[0], MPI_COMM_WORLD);
+
+      supplemental::write_closure<coloring_policy>(closure, MPI_COMM_WORLD);
+    } // UNIT
+  };
+} // dependency_closure
+
+int
 coloring_driver() {
   UNIT {
     // TODO: use test<> when reduction works for MPI tasks
     execute<naive_coloring, mpi>();
     execute<parmetis_colorer, mpi>();
+    execute<dependency_closure, mpi>();
+    execute<ideas, mpi>();
   };
 } // simple2d_8x8
 

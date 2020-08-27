@@ -16,7 +16,6 @@
 /*! @file */
 
 #include "flecsi/flog.hh"
-#include "flecsi/topo/unstructured/definition.hh"
 #include "flecsi/util/set_utils.hh"
 #include "flecsi/util/type_traits.hh"
 
@@ -43,9 +42,9 @@ namespace unstructured_impl {
             are to be found.
  */
 
-template<size_t from_dim, size_t to_dim, size_t thru_dim, size_t D>
+template<typename Definition, size_t from_dim, size_t to_dim, size_t thru_dim>
 std::set<size_t>
-entity_neighbors(const definition<D> & md, size_t entity_id) {
+entity_neighbors(const Definition & md, size_t entity_id) {
   // Get the vertices of the requested id
   auto vertices = md.entities_set(from_dim, 0, entity_id);
 
@@ -92,14 +91,14 @@ entity_neighbors(const definition<D> & md, size_t entity_id) {
                        neighboring entity.
  */
 
-template<size_t from_dim,
+template<typename Definition,
+  size_t from_dim,
   size_t to_dim,
   size_t thru_dim,
-  size_t D,
   typename U,
   typename = std::enable_if_t<util::is_iterative_container_v<U>>>
 std::set<size_t>
-entity_neighbors(const definition<D> & md, U && indices) {
+entity_neighbors(const Definition & md, U && indices) {
   flog_assert(from_dim == to_dim, "from_dim does not equal to to_dim");
 
   // Closure should include the initial set
@@ -161,9 +160,9 @@ entity_neighbors(const definition<D> & md, U && indices) {
   @param id The id of the vertex.
  */
 
-template<size_t from_dim, size_t to_dim, size_t D>
+template<typename Definition, size_t from_dim, size_t to_dim>
 std::set<size_t>
-entity_referencers(const definition<D> & md, size_t id) {
+entity_referencers(const Definition & md, size_t id) {
   std::set<size_t> referencers;
 
   // Iterate over entities adding any entity that contains
@@ -194,9 +193,9 @@ entity_referencers(const definition<D> & md, size_t id) {
   @param indices The entity indeces.
  */
 
-template<size_t from_dim, size_t to_dim, size_t D, typename U>
+template<typename Definition, size_t from_dim, size_t to_dim, typename U>
 std::set<size_t>
-entity_closure(const definition<D> & md, U && indices) {
+entity_closure(const Definition & md, U && indices) {
   std::set<size_t> closure;
 
   // Iterate over the entities in indices and add any vertices that are

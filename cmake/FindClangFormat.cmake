@@ -37,6 +37,7 @@ if(ClangFormat_EXECUTABLE STREQUAL "")
   )
 
   set(ClangFormat_EXECUTABLE ${find_clangformat})
+  mark_as_advanced(find_clangformat)
 endif()
 
 # Extract version from command "clang-format -version"

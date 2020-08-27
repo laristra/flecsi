@@ -15,7 +15,7 @@
 #define __FLECSI_PRIVATE__
 #include "flecsi/topo/unstructured/coloring_utils.hh"
 #include "flecsi/topo/unstructured/interface.hh"
-#include "flecsi/topo/unstructured/simple_definition.hh"
+#include "flecsi/topo/unstructured/test/simple_definition.hh"
 #include "flecsi/util/unit.hh"
 #include <flecsi/data.hh>
 #include <flecsi/execution.hh>
@@ -44,7 +44,7 @@ struct unstructured : topo::specialization<topo::unstructured, unstructured> {
 
   static coloring color(std::string const & filename) {
     topo::unstructured_impl::simple_definition definition(filename.c_str());
-    return topo::unstructured_impl::color(&definition, processes());
+    return {};
   } // color
 }; // struct unstructured
 

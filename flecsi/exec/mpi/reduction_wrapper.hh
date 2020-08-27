@@ -21,7 +21,7 @@
 
 #include "flecsi/run/backend.hh"
 #include "flecsi/util/demangle.hh"
-#include "flecsi/util/mpi_typetraits.hh"
+#include "flecsi/util/mpi.hh"
 #include <flecsi/flog.hh>
 
 #include <type_traits>
