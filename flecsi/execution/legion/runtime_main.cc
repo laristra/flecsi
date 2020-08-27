@@ -56,7 +56,8 @@ main(int argc, char ** argv) {
   assert(provided == MPI_THREAD_MULTIPLE);
 
 #else
-  clog_error("LEGION+GAsnet should be configured with MPI support");
+  // Perform MPI start-up like normal for most GASNet conduits
+  MPI_Init(&argc, &argv);
 #endif
 
   // get the rank
@@ -131,6 +132,12 @@ main(int argc, char ** argv) {
     result = flecsi::execution::context_t::instance().initialize(argc, argv);
 
   } // if
+
+#ifndef GASNET_CONDUIT_MPI
+  // Then finalize MPI like normal
+  // Exception for the MPI conduit which does its own finalization
+  MPI_Finalize();
+#endif
 
   return result;
 } // main
