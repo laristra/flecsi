@@ -9,29 +9,35 @@
 # ClangFormat_VERSION      - The version of clang-format found
 #
 
+set(ClangFormat_EXECUTABLE "" CACHE STRING
+  "Explicitly set the clang-format executable to use")
+mark_as_advanced(ClangFormat_EXECUTABLE)
+
 if(ClangFormat_EXECUTABLE STREQUAL "")
 
-  find_program(ClangFormat_EXECUTABLE
-   NAMES clang-format
-     clang-format-10
-     clang-format-9
-     clang-format-8
-     clang-format-7
-     clang-format-6.0
-     clang-format-5.0
-     clang-format-4.0
-     clang-format-3.9
-     clang-format-3.8
-     clang-format-3.7
-     clang-format-3.6
-     clang-format-3.5
-     clang-format-3.4
-     clang-format-3.3
-   DOC "clang-format executable")
+  find_program(find_clangformat
+    NAMES
+      clang-format
+      clang-format-10
+      clang-format-9
+      clang-format-8
+      clang-format-7
+      clang-format-6.0
+      clang-format-5.0
+      clang-format-4.0
+      clang-format-3.9
+      clang-format-3.8
+      clang-format-3.7
+      clang-format-3.6
+      clang-format-3.5
+      clang-format-3.4
+      clang-format-3.3
+    DOC
+      "clang-format executable"
+  )
 
+  set(ClangFormat_EXECUTABLE ${find_clangformat})
 endif()
-
-mark_as_advanced(ClangFormat_EXECUTABLE)
 
 # Extract version from command "clang-format -version"
 if(ClangFormat_EXECUTABLE)
@@ -55,6 +61,11 @@ else()
 endif()
 
 include(FindPackageHandleStandardArgs)
+
 # handle the QUIETLY and REQUIRED arguments and set ClangFormat_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(ClangFormat REQUIRED_VARS ClangFormat_EXECUTABLE VERSION_VAR ClangFormat_VERSION)
+find_package_handle_standard_args(ClangFormat
+  REQUIRED_VARS
+    ClangFormat_EXECUTABLE
+    ClangFormat_VERSION
+)

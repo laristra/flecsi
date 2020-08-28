@@ -24,9 +24,6 @@ if(NOT TARGET format)
   add_custom_target(format)
 endif()
 
-set(ClangFormat_EXECUTABLE "" CACHE STRING
-  "Explicitly set the clang-format executable to use")
-
 find_package(ClangFormat ${ClangFormat_VERSION} EXACT)
 find_package(Git)
 
