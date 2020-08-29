@@ -37,9 +37,7 @@ namespace exec {
 
 template<typename ITERATOR, typename LAMBDA>
 void
-parallel_for(ITERATOR const iterator,
-  LAMBDA const lambda,
-  std::string const & name = "") {
+parallel_for(ITERATOR iterator, LAMBDA lambda, std::string name = "") {
 
   struct functor {
 
@@ -79,7 +77,7 @@ struct forall_t {
     @param name     An optional name that can be used for debugging.
    */
 
-  forall_t(ITERATOR iterator, std::string const & name = "")
+  forall_t(ITERATOR iterator, std::string name = "")
     : iterator_(iterator), name_(name) {}
 
   /*!
@@ -91,8 +89,8 @@ struct forall_t {
   template<typename LAMBDA>
   struct functor {
 
-    functor(ITERATOR iterator, LAMBDA lambda, std::string & name)
-      : iterator_(iterator), lambda_(lambda), name_(name) {}
+    functor(ITERATOR iterator, LAMBDA lambda)
+      : iterator_(iterator), lambda_(lambda) {}
 
     KOKKOS_INLINE_FUNCTION void operator()(int i) const {
       lambda_(iterator_[i]);
@@ -101,7 +99,6 @@ struct forall_t {
   private:
     ITERATOR iterator_;
     LAMBDA lambda_;
-    std::string & name_;
 
   }; // struct functor
 
@@ -129,14 +126,14 @@ private:
 }; // struct forall_t
 
 #define forall(it, iterator, name)                                             \
-  forall_t{iterator, name} + KOKKOS_LAMBDA(auto it)
+  flecsi::exec::forall_t{iterator, name} + KOKKOS_LAMBDA(auto it)
 
 template<typename ITERATOR, typename LAMBDA, typename REDUCER>
 void
-parallel_reduce(ITERATOR const iterator,
-  LAMBDA const lambda,
+parallel_reduce(ITERATOR iterator,
+  LAMBDA lambda,
   REDUCER result,
-  std::string const & name = "") {
+  std::string name = "") {
 
   using value_type = typename REDUCER::value_type;
 
@@ -163,7 +160,7 @@ parallel_reduce(ITERATOR const iterator,
 template<typename ITERATOR, typename REDUCER>
 struct reduceall_t {
 
-  reduceall_t(ITERATOR iterator, REDUCER reducer, std::string const & name = "")
+  reduceall_t(ITERATOR iterator, REDUCER reducer, std::string name = "")
     : iterator_(iterator), reducer_(reducer) {}
 
   using value_type = typename REDUCER::value_type;
@@ -197,7 +194,8 @@ private:
 }; // forall_t
 
 #define reduceall(it, tmp, iterator, reducer, name)                            \
-  reduceall_t{iterator, reducer, name} + KOKKOS_LAMBDA(auto it, auto & tmp)
+  flecsi::exec::reduceall_t{iterator, reducer, name} +                         \
+    KOKKOS_LAMBDA(auto it, auto & tmp)
 
 //----------------------------------------------------------------------------//
 //! Abstraction function for fine-grained, data-parallel interface.
