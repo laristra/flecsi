@@ -63,10 +63,6 @@ parallel_for(ITERATOR iterator, LAMBDA lambda, std::string name = "") {
   execution.
  */
 
-// We will need this when/if we begin to customize behavior based on
-// ITERATOR type.
-// template<typename ITERATOR> struct forall {};
-
 template<typename ITERATOR>
 struct forall_t {
 
@@ -128,6 +124,10 @@ private:
 #define forall(it, iterator, name)                                             \
   flecsi::exec::forall_t{iterator, name} + KOKKOS_LAMBDA(auto it)
 
+/*!
+  This function is a wrapper for Kokkos::parallel_reduce that has been adapted
+  to work with FleCSI's topology iterator types.
+ */
 template<typename ITERATOR, typename LAMBDA, typename REDUCER>
 void
 parallel_reduce(ITERATOR iterator,
@@ -157,6 +157,10 @@ parallel_reduce(ITERATOR iterator,
 
 } // parallel_reduce
 
+/*!
+  The reduce_all type provides a pretty interface for invoking data-parallel
+  reductions.
+ */
 template<typename ITERATOR, typename REDUCER>
 struct reduceall_t {
 
