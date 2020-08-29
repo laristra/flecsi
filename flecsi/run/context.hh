@@ -29,7 +29,9 @@
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
 
+#if defined(FLECSI_ENABLE_KOKKOS)
 #include <Kokkos_Core.hpp>
+#endif
 
 #include <cstddef>
 #include <functional>
