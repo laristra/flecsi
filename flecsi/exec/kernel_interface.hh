@@ -37,7 +37,8 @@ namespace exec {
 
 template<typename ITERATOR, typename LAMBDA>
 void
-parallel_for(ITERATOR const iterator, LAMBDA const  lambda, 
+parallel_for(ITERATOR const iterator,
+  LAMBDA const lambda,
   std::string const & name = "") {
 
   struct functor {
@@ -81,7 +82,6 @@ struct forall_t {
   forall_t(ITERATOR iterator, std::string const & name = "")
     : iterator_(iterator), name_(name) {}
 
-
   /*!
     The functor type wraps FleCSI iterators that have indirection.
 
@@ -101,7 +101,7 @@ struct forall_t {
   private:
     ITERATOR iterator_;
     LAMBDA lambda_;
-    std::string & name_; 
+    std::string & name_;
 
   }; // struct functor
 
@@ -119,13 +119,12 @@ struct forall_t {
    */
   template<typename CALLABLE>
   void operator<<(CALLABLE l) {
-    Kokkos::parallel_for(
-      name_, iterator_.size(), functor{iterator_, l});
+    Kokkos::parallel_for(name_, iterator_.size(), functor{iterator_, l});
   } // operator<<
 
 private:
   ITERATOR iterator_;
-  std::string & name_; 
+  std::string & name_;
 
 }; // struct forall_t
 
