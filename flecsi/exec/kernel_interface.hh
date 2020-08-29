@@ -161,7 +161,7 @@ template<typename ITERATOR, typename REDUCER>
 struct reduceall_t {
 
   reduceall_t(ITERATOR iterator, REDUCER reducer, std::string name = "")
-    : iterator_(iterator), reducer_(reducer) {}
+    : iterator_(iterator), reducer_(reducer), name_(name) {}
 
   using value_type = typename REDUCER::value_type;
 
@@ -184,12 +184,13 @@ struct reduceall_t {
   template<typename LAMBDA>
   void operator+(LAMBDA lambda) {
     Kokkos::parallel_reduce(
-      "  ", iterator_.size(), functor<LAMBDA>{iterator_, lambda}, reducer_);
+      name_, iterator_.size(), functor<LAMBDA>{iterator_, lambda}, reducer_);
   } // operator+
 
 private:
   ITERATOR iterator_;
   REDUCER reducer_;
+  std::string name_;
 
 }; // forall_t
 
@@ -211,7 +212,7 @@ private:
 
 template<class R, typename FUNCTION>
 inline void
-for_each_u(R && r, FUNCTION && function) {
+for_each(R && r, FUNCTION && function) {
   std::for_each(r.begin(), r.end(), std::forward<FUNCTION>(function));
 } // for_each_u
 
@@ -230,7 +231,7 @@ for_each_u(R && r, FUNCTION && function) {
 
 template<class R, typename FUNCTION, typename REDUCTION>
 inline void
-reduce_each_u(R && r, REDUCTION & reduction, FUNCTION && function) {
+reduce_each(R && r, REDUCTION & reduction, FUNCTION && function) {
   for(const auto & e : r)
     function(e, reduction);
 } // reduce_each_u
