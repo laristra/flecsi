@@ -15,6 +15,8 @@
 #define __FLECSI_PRIVATE__
 #include <flecsi/data.hh>
 
+#include "flecsi/topo/canonical/interface.hh"
+
 #include "flecsi/util/unit.hh"
 #include <flecsi/data/accessor.hh>
 #include <flecsi/exec/kernel_interface.hh>
@@ -211,16 +213,55 @@ specialization_spmd_init(int argc, char ** argv) {
   flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
 #endif
-//----------------------------------------------------------------------------//
-// Driver.
-//----------------------------------------------------------------------------//
+
+struct canon : topo::specialization<topo::canonical, canon> {
+  enum index_space { vertices, cells };
+  using index_spaces = has<cells, vertices>;
+  using connectivities = util::types<from<cells, has<vertices>>>;
+
+  static coloring color(std::string const &) {
+    return {{40, 60}, 2};
+  } // color
+};
+
+canon::slot canonical;
+canon::cslot coloring;
+
+const field<double>::definition<canon, canon::cells> cell_field;
+auto pressure = cell_field(canonical);
+
+const int mine = 35;
+const std::size_t favorite = 3;
+const double p0 = 3.5;
+
+int
+init(canon::accessor<wo> t, field<double>::accessor<wo> c) {
+  UNIT {
+    t.mine(0) = mine;
+    t.get_connect<canon::cells, canon::vertices>()(0) = favorite;
+    c(0) = p0;
+  };
+} // init
+
+int
+kokkos(canon::accessor<wo> t, field<double>::accessor<wo> c) {
+  UNIT {};
+}
 
 int
 kokkos_driver() {
   UNIT {
-    flog(info) << "Inside user driver" << std::endl;
 
+    flog(info) << "Inside user driver" << std::endl;
     Kokkos::print_configuration(std::cerr);
+
+    // use canonical
+    const std::string filename = "input.txt";
+    coloring.allocate(filename);
+    canonical.allocate(coloring.get());
+    EXPECT_EQ(test<init>(canonical, pressure), 0);
+
+    EXPECT_EQ(test<kokkos>(canonical, pressure), 0);
 
     // auto mh = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
     // auto ph = flecsi_get_handle(mh, hydro, pressure, double, dense, 0);

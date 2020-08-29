@@ -18,7 +18,7 @@ if(ENABLE_KOKKOS)
 
   find_package(Kokkos REQUIRED)
   
-  if(Kokkos_ENABLE_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND
+  if(KOKKOS_ENABLE_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND
     NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 8)
     message(FATAL_ERROR "Clang version 8 or greater required for Kokkos")
   endif()
