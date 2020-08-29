@@ -12,46 +12,12 @@
    All rights reserved.
                                                                               */
 
-//#include "flecsi/util/unit.hh"
-
-//#include <Kokkos_Core.hpp>
-
-/*
-
- */
-
-//int
-//kokkos_sanity() {
-//  UNIT {
-    // Kokkos::initialize(argc, argv);
-//    Kokkos::print_configuration(std::cerr);
-    // Kokkos::finalize();
-//  };
-//}
-
-//flecsi::unit::driver<kokkos_sanity> driver;
-
-
-/*
-    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-   /@@/////  /@@          @@////@@ @@////// /@@
-   /@@       /@@  @@@@@  @@    // /@@       /@@
-   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-   /@@       /@@/@@//// //@@    @@       /@@/@@
-   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-   //       ///  //////   //////  ////////  //
-
-   Copyright (c) 2016, Triad National Security, LLC
-   All rights reserved.
-                                                                              */
-
 #define __FLECSI_PRIVATE__
 #include <flecsi/data.hh>
 
+#include "flecsi/util/unit.hh"
 #include <flecsi/data/accessor.hh>
 #include <flecsi/exec/kernel_interface.hh>
-#include "flecsi/util/unit.hh"
 
 #include <Kokkos_Core.hpp>
 
@@ -244,31 +210,31 @@ specialization_spmd_init(int argc, char ** argv) {
   auto mh = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
   flecsi_execute_task(initialize_mesh, flecsi::supplemental, index, mh);
 } // specialization_spmd_init
-#endif 
+#endif
 //----------------------------------------------------------------------------//
 // Driver.
 //----------------------------------------------------------------------------//
 
 int
 kokkos_driver() {
-  UNIT{
+  UNIT {
     flog(info) << "Inside user driver" << std::endl;
 
     Kokkos::print_configuration(std::cerr);
 
-    //auto mh = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
-    //auto ph = flecsi_get_handle(mh, hydro, pressure, double, dense, 0);
-    //auto gh = flecsi_get_global(global, int1, int, 0);
-    //auto ch = flecsi_get_color(color, int2, int, 0);
-    //auto am = flecsi_get_mutator(mh, hydro, alpha, double, sparse, 0, 5);
-    //auto ah = flecsi_get_handle(mh, hydro, alpha, double, sparse, 0);
+    // auto mh = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+    // auto ph = flecsi_get_handle(mh, hydro, pressure, double, dense, 0);
+    // auto gh = flecsi_get_global(global, int1, int, 0);
+    // auto ch = flecsi_get_color(color, int2, int, 0);
+    // auto am = flecsi_get_mutator(mh, hydro, alpha, double, sparse, 0, 5);
+    // auto ah = flecsi_get_handle(mh, hydro, alpha, double, sparse, 0);
 
     // flecsi_execute_task_simple(init, index, mh, ph, ch, am);
     // flecsi_execute_task_simple(test, index, mh, ph, gh, ch, ah);
-    //flecsi_execute_task_simple(init_loc, index, mh, ph, ch, am);
-    //flecsi_execute_task_simple(init_toc, index, mh, ph, ch);
-    //flecsi_execute_task_simple(test, index, mh, ph, gh, ch);
-  }; 
+    // flecsi_execute_task_simple(init_loc, index, mh, ph, ch, am);
+    // flecsi_execute_task_simple(init_toc, index, mh, ph, ch);
+    // flecsi_execute_task_simple(test, index, mh, ph, gh, ch);
+  };
 } // driver
 
 //----------------------------------------------------------------------------//
