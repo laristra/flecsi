@@ -29,6 +29,8 @@
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
 
+#include <Kokkos_Core.hpp>
+
 #include <cstddef>
 #include <functional>
 #include <map>
