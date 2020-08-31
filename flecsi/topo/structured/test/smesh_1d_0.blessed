@@ -1,3 +1,9 @@
+Cell id 0 with offset 0 and indices = [0]
+Cell id 1 with offset 1 and indices = [1]
+Cell id 2 with offset 2 and indices = [2]
+Cell id 3 with offset 3 and indices = [3]
+Cell id 4 with offset 4 and indices = [4]
+Cell id 5 with offset 5 and indices = [5]
 CELL COLORING
 MESH DIM 1
    ----->Overlay:

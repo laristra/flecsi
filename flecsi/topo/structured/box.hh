@@ -37,7 +37,7 @@ public:
    * Constructors/initializers/destructors
    *
    *************************************************************************/
-  box() = default
+  box() = default;
 
   box(std::vector<std::size_t> & upperbnds) {
     assert(upperbnds.size() == MESH_DIMENSION);
@@ -47,6 +47,8 @@ public:
     size_ = 1;
     for(std::size_t i = 0; i < MESH_DIMENSION; ++i)
       size_ *= upperbnds_[i] + 1;
+
+    iterator = util::iota_view<id>(0,size_); 
   }
 
   box(const id_array & upperbnds) {
@@ -56,21 +58,9 @@ public:
     size_ = 1;
     for(std::size_t i = 0; i < MESH_DIMENSION; ++i)
       size_ *= upperbnds_[i] + 1;
+
+    iterator = util::iota_view<id>(0,size_); 
   }
-
-  ~box() {}
-
-  // This initialize function takes as input the bounds of each box representing
-  // this entity as well as the its boundary tags. f
-  void initialize(std::vector<std::size_t> & upperbnds) {
-    assert(upperbnds.size() == MESH_DIMENSION);
-    for(std::size_t i = 0; i < MESH_DIMENSION; ++i)
-      upperbnds_[i] = upperbnds[i];
-
-    size_ = 1;
-    for(std::size_t i = 0; i < MESH_DIMENSION; ++i)
-      size_ *= upperbnds_[i] + 1;
-  } // initialize
 
   /*****************************************************************************
    * Basic query methods: lower/upper bounds, strides, sizes, bounds-checking *
@@ -81,18 +71,13 @@ public:
     return upperbnds_;
   } // upper_bounds
 
-  template<std::size_t DIM>
-  void upper_bounds() {
-    return upperbnds_[DIM];
-  } // upper_bounds
-
   /* Strides */
   template<std::size_t DIM>
-  auto stride() {
+  auto stride() const {
     return upperbnds_[DIM] + 1;
   } // stride
 
-  auto stride(std::size_t dim) {
+  auto stride(std::size_t dim) const {
     return upperbnds_[dim] + 1;
   } // stride
 
@@ -111,6 +96,8 @@ public:
     for(std::size_t i = 0; i < MESH_DIMENSION; i++) {
       within_bnds =
         within_bnds && ((indices[i] >= 0) && (indices[i] <= upperbnds_[i]));
+
+     if (!within_bnds) return within_bnds;; 
     }
     return within_bnds;
   } // check_bounds_indices
@@ -143,22 +130,7 @@ public:
   } // offset_from_indices
 
   auto offset_from_indices(const id_array & indices) {
-    id value;
-    switch(MESH_DIMENSION) {
-      case 1:
-        return value = indices[0];
-      case 2:
-        return value = indices[0] + stride<0>() * indices[1];
-      case 3:
-        return value = indices[0] + stride<0>() * indices[1] +
-                       stride<0>() * stride<1>() * indices[2];
-      default:
-        value = indices[MESH_DIMENSION - 2] +
-                stride<MESH_DIMENSION - 2>() * indices[MESH_DIMENSION - 1];
-        for(std::size_t i = MESH_DIMENSION - 2; i > 0; --i)
-          value += indices[i - 1] + stride(i - 1) * value;
-        return value;
-    }
+   return std::as_const(*this).offset_from_indices(indices); 
   } // offset_from_indices
 
   void indices_from_offset(const id & offset, id_array & indices) const {
@@ -171,81 +143,19 @@ public:
   } // indices_from_offset
 
   void indices_from_offset(const id & offset, id_array & indices) {
-    id rem = offset;
-
-    for(std::size_t i = 0; i < MESH_DIMENSION; ++i) {
-      indices[i] = rem % stride(i);
-      rem = (rem - indices[i]) / stride(i);
-    }
+   return std::as_const(*this).indices_from_offset(offset, indices);
   } // indices_from_offset
 
   /************************************************************************
-   * Iterators
+   * Iterator
    *************************************************************************/
-  auto begin() {
-    return iterator(0);
-  }
-
-  auto end() {
-    return iterator(size_);
-  }
-
-  class iterator
-  {
-  public:
-    iterator(id current) : current_{current} {}
-
-    ~iterator() {}
-
-    iterator & operator++() {
-      ++current_;
-      return *this;
-    }
-
-    iterator & operator--() {
-      --current_;
-      return *this;
-    }
-
-    bool operator!=(const iterator & rhs) {
-      return (this->current_ != rhs.current());
-    };
-
-    bool operator==(const iterator & rhs) {
-      return (this->current_ == rhs.current());
-    }
-
-    bool operator<(const iterator & rhs) {
-      return (this->current_ < rhs.current());
-    };
-
-    bool operator>(const iterator & rhs) {
-      return (this->current_ > rhs.current());
-    };
-
-    bool operator<=(const iterator & rhs) {
-      return (this->current_ <= rhs.current());
-    };
-
-    bool operator>=(const iterator & rhs) {
-      return (this->current_ >= rhs.current());
-    };
-
-    id & operator*() {
-      return current_;
-    }
-
-    const id & current() const {
-      return current_;
-    }
-
-  private:
-    id current_;
-  };
+  util::iota_view<id> iterator;  
+  auto begin() { return iterator.begin();}
+  auto end() { return iterator.end();} 
 
 private:
   id_array upperbnds_;
-  id size_ = 0;
+  std::size_t size_ = 0;
 }; // box
 
 } // namespace structured_impl
