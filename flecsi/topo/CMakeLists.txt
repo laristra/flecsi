@@ -29,7 +29,6 @@ set(topo_HEADERS
   index_space.hh
   ntree/coloring.hh
   ntree/geometry.hh
-  ntree/hash_table.hh
   ntree/interface.hh
   ntree/storage.hh
   ntree/types.hh
@@ -103,10 +102,16 @@ add_unit(coloring
 
 #----------------------------------  NTREE  -----------------------------------#
 
-add_unit(ntree
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+add_unit(ntree_policy
   SOURCES ntree/test/ntree.cc
   INPUTS ntree/test/coordinates.blessed
+  THREADS 4
 )
+
+endif()
+
 
 add_unit(ntree_geometry
   SOURCES ntree/test/geometry.cc
