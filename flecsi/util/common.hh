@@ -44,13 +44,22 @@ namespace flecsi {
 namespace util {
 
 //----------------------------------------------------------------------------//
-// Entity id type.
+// Entity id type old. 
 //----------------------------------------------------------------------------//
 
 using id_t =
   id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
 
 using offset_t = offset<16>;
+
+//----------------------------------------------------------------------------//
+// Entity id type new. This type should be used for id types for entities
+// in topologies. 
+//----------------------------------------------------------------------------//
+
+#ifndef FLECSI_ID_TYPE
+#define FLECSI_ID_TYPE std::int32_t
+#endif
 
 //----------------------------------------------------------------------------//
 // Index type

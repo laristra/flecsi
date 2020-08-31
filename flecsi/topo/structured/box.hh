@@ -30,17 +30,14 @@ template<std::size_t MESH_DIMENSION>
 class box
 {
 public:
-  using id = std::size_t;
+  using id = FLECSI_ID_TYPE;
   using id_array = id[MESH_DIMENSION];
 
   /************************************************************************
    * Constructors/initializers/destructors
    *
    *************************************************************************/
-  box() {
-    for(std::size_t i = 0; i < MESH_DIMENSION; ++i)
-      upperbnds_[i] = 0;
-  }
+  box() = default
 
   box(std::vector<std::size_t> & upperbnds) {
     assert(upperbnds.size() == MESH_DIMENSION);
@@ -52,7 +49,7 @@ public:
       size_ *= upperbnds_[i] + 1;
   }
 
-  box(id_array & upperbnds) {
+  box(const id_array & upperbnds) {
     for(std::size_t i = 0; i < MESH_DIMENSION; ++i)
       upperbnds_[i] = upperbnds[i];
 
@@ -109,7 +106,7 @@ public:
     return (index >= 0 && index <= upperbnds_[dim]);
   } // check_bounds_index
 
-  bool check_bounds_indices(id_array indices) {
+  bool check_bounds_indices(const id_array indices) {
     bool within_bnds = true;
     for(std::size_t i = 0; i < MESH_DIMENSION; i++) {
       within_bnds =
