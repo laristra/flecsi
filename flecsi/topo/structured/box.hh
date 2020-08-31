@@ -48,7 +48,7 @@ public:
     for(std::size_t i = 0; i < MESH_DIMENSION; ++i)
       size_ *= upperbnds_[i] + 1;
 
-    iterator = util::iota_view<id>(0,size_); 
+    iterator = util::iota_view<id>(0, size_);
   }
 
   box(const id_array & upperbnds) {
@@ -59,7 +59,7 @@ public:
     for(std::size_t i = 0; i < MESH_DIMENSION; ++i)
       size_ *= upperbnds_[i] + 1;
 
-    iterator = util::iota_view<id>(0,size_); 
+    iterator = util::iota_view<id>(0, size_);
   }
 
   /*****************************************************************************
@@ -97,7 +97,9 @@ public:
       within_bnds =
         within_bnds && ((indices[i] >= 0) && (indices[i] <= upperbnds_[i]));
 
-     if (!within_bnds) return within_bnds;; 
+      if(!within_bnds)
+        return within_bnds;
+      ;
     }
     return within_bnds;
   } // check_bounds_indices
@@ -130,7 +132,7 @@ public:
   } // offset_from_indices
 
   auto offset_from_indices(const id_array & indices) {
-   return std::as_const(*this).offset_from_indices(indices); 
+    return std::as_const(*this).offset_from_indices(indices);
   } // offset_from_indices
 
   void indices_from_offset(const id & offset, id_array & indices) const {
@@ -143,15 +145,19 @@ public:
   } // indices_from_offset
 
   void indices_from_offset(const id & offset, id_array & indices) {
-   return std::as_const(*this).indices_from_offset(offset, indices);
+    return std::as_const(*this).indices_from_offset(offset, indices);
   } // indices_from_offset
 
   /************************************************************************
    * Iterator
    *************************************************************************/
-  util::iota_view<id> iterator;  
-  auto begin() { return iterator.begin();}
-  auto end() { return iterator.end();} 
+  util::iota_view<id> iterator;
+  auto begin() {
+    return iterator.begin();
+  }
+  auto end() {
+    return iterator.end();
+  }
 
 private:
   id_array upperbnds_;

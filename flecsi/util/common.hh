@@ -44,7 +44,7 @@ namespace flecsi {
 namespace util {
 
 //----------------------------------------------------------------------------//
-// Entity id type old. 
+// Entity id type old.
 //----------------------------------------------------------------------------//
 
 using id_t =
@@ -54,7 +54,7 @@ using offset_t = offset<16>;
 
 //----------------------------------------------------------------------------//
 // Entity id type new. This type should be used for id types for entities
-// in topologies. 
+// in topologies.
 //----------------------------------------------------------------------------//
 
 #ifndef FLECSI_ID_TYPE

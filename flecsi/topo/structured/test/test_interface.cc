@@ -70,7 +70,8 @@ topo_driver_1d() {
       lbox.indices_from_offset(c, indices);
       auto offset = lbox.offset_from_indices(indices);
       EXPECT_EQ(c, offset);
-      UNIT_CAPTURE()<<"Cell id "<<c<<" with offset "<<offset<<" and indices = ["<<indices[0]<<"]\n";
+      UNIT_CAPTURE() << "Cell id " << c << " with offset " << offset
+                     << " and indices = [" << indices[0] << "]\n";
     }
 
     std::string fname = "smesh_" + std::to_string(dim) + "d_" +
@@ -135,8 +136,9 @@ topo_driver_2d() {
       lbox.indices_from_offset(c, indices);
       auto offset = lbox.offset_from_indices(indices);
       EXPECT_EQ(c, offset);
-      UNIT_CAPTURE()<<"Cell id "<<c<<" with offset "<<offset
-		    <<" and indices = ["<<indices[0]<<", "<<indices[1]<<"]\n";
+      UNIT_CAPTURE() << "Cell id " << c << " with offset " << offset
+                     << " and indices = [" << indices[0] << ", " << indices[1]
+                     << "]\n";
     }
 
     std::string fname = "smesh_" + std::to_string(dim) + "d_" +
@@ -201,8 +203,9 @@ topo_driver_3d() {
       lbox.indices_from_offset(c, indices);
       auto offset = lbox.offset_from_indices(indices);
       EXPECT_EQ(c, offset);
-      UNIT_CAPTURE()<<"Cell id "<<c<<" with offset "<<offset
-		    <<" and indices = ["<<indices[0]<<", "<<indices[1]<<", "<<indices[2]<<"]\n";
+      UNIT_CAPTURE() << "Cell id " << c << " with offset " << offset
+                     << " and indices = [" << indices[0] << ", " << indices[1]
+                     << ", " << indices[2] << "]\n";
     }
 
     std::string fname = "smesh_" + std::to_string(dim) + "d_" +
