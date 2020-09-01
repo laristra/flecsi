@@ -90,7 +90,6 @@ context_t::finalize() {
 
   if(context::initialize_dependent_) {
     CharmLibExit();
-    MPI_Finalize();
   } // if
 } // finalize
 
