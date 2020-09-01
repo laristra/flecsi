@@ -29,6 +29,21 @@ project(FleCSI-Tutorial LANGUAGES CXX C)
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
+#set(CMAKE_SKIP_BUILD_RPATH FALSE)
+#set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+#set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+#
+## add the automatically determined parts of the RPATH
+## which point to directories outside the build tree to the install RPATH
+#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+#
+## the RPATH to be used when installing, but only if it's not a system directory
+#list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES
+#  "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+#if("${isSystemDir}" STREQUAL "-1")
+#  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+#endif("${isSystemDir}" STREQUAL "-1")
+
 #------------------------------------------------------------------------------#
 # Compiler version requirements.
 #------------------------------------------------------------------------------#
@@ -156,17 +171,37 @@ target_link_libraries(control-subcycle ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
 add_unit(control-subcycle)
 
+add_executable(control-dependencies
+  2-control/3-dependencies.cc
+  2-control/3-actions.hh
+  2-control/3-dependencies.hh
+)
+target_link_libraries(control-dependencies ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(control-dependencies)
+
+add_executable(control-state
+  2-control/4-state.cc
+  2-control/4-state.hh
+)
+target_link_libraries(control-state ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(control-state)
+
 if(ENABLE_DEVELOPER_MODE)
   add_custom_target(pngs
     ${CMAKE_BINARY_DIR}/control-simple --control-model &&
-    ${DOT_EXECUTABLE} -Tpdf simple-control-model.dot > simple.pdf &&
-    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 simple.pdf simple.png &&
+    ${DOT_EXECUTABLE} -Teps control-simple-control-model.dot > simple.eps &&
+    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 simple.eps simple.png &&
     ${CMAKE_BINARY_DIR}/control-cycle --control-model &&
-    ${DOT_EXECUTABLE} -Tpdf cycle-control-model.dot > cycle.pdf &&
-    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 cycle.pdf cycle.png &&
+    ${DOT_EXECUTABLE} -Teps control-cycle-control-model.dot > cycle.eps &&
+    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 cycle.eps cycle.png &&
     ${CMAKE_BINARY_DIR}/control-subcycle --control-model &&
-    ${DOT_EXECUTABLE} -Tpdf subcycle-control-model.dot > subcycle.pdf
-    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 subcycle.pdf subcycle.png
+    ${DOT_EXECUTABLE} -Teps control-subcycle-control-model.dot > subcycle.eps &&
+    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 subcycle.eps subcycle.png &&
+    ${CMAKE_BINARY_DIR}/control-dependencies --control-model &&
+    ${DOT_EXECUTABLE} -Teps control-dependencies-control-model.dot > dependencies.eps &&
+    ${IMAGEMAGICK_CONVERT_EXECUTABLE} -density 600 dependencies.eps dependencies.png
   )
 endif()
 

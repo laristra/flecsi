@@ -60,22 +60,38 @@ class Flecsi(CMakePackage):
 
     depends_on('cmake@3.12:')
 
-    depends_on("mpich@3.2.1", when="^mpich")
-    depends_on("openmpi@3.1.6", when="^openmpi")
-    depends_on("legion@ctrl-rep-6:ctrl-rep-99",when="backend=legion")
-    depends_on("hpx@1.3.0 cxxstd=14 malloc=system",when="backend=hpx")
+    depends_on('mpich@3.2.1', when='^mpich')
+    depends_on('openmpi@3.1.6', when='^openmpi')
+    depends_on('legion@ctrl-rep-6:ctrl-rep-99',when='backend=legion')
+    depends_on('hpx@1.3.0 cxxstd=14 malloc=system',when='backend=hpx')
 
-    for back in "legion","hpx":
-        depends_on('mpi', when='backend='+back)
-        for debug,bt in ("+","Debug"),("~","Release"):
-            depends_on(back+' build_type='+bt,
-                       when='backend=%s %sdebug_backend'%(back,debug))
+    depends_on('legion build_type=Debug',
+        when='backend=legion +debug_backend +hdf5')
+    depends_on('legion build_type=Debug',
+        when='backend=legion +debug_backend ~hdf5')
+    depends_on('legion build_type=Release',
+        when='backend=legion ~debug_backend +hdf5')
+    depends_on('legion build_type=Release',
+        when='backend=legion ~debug_backend ~hdf5')
+
+    depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Debug',
+        when='backend=hpx +debug_backend')
+    depends_on('hpx@1.3.0 cxxstd=14 malloc=system build_type=Release',
+        when='backend=hpx ~debug_backend')
+
+#    for back in 'legion','hpx':
+#        depends_on('mpi', when='backend='+back)
+#        for debug,bt in ('+','Debug'),('~','Release'):
+#            depends_on(back+' build_type='+bt,
+#                       when='backend=%s %sdebug_backend'%(back,debug))
+#    del back,debug,bt
+
     depends_on('mpi', when='backend=mpi')
     depends_on('legion+hdf5',when='backend=legion +hdf5')
     depends_on('hdf5@1.10.6',when='backend=legion +hdf5')
-    del back,debug,bt
 
-    depends_on('boost@1.70.0: cxxstd=14 +program_options +atomic +filesystem +regex +system')
+    depends_on('boost@1.70.0: cxxstd=14 +program_options +atomic '
+        '+filesystem +regex +system')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
     depends_on('hdf5+mpi', when='+hdf5')
@@ -114,6 +130,9 @@ class Flecsi(CMakePackage):
 
         if '+flog' in spec:
             options.append('-DENABLE_FLOG=ON')
+
+        if '+graphviz' in spec:
+            options.append('-DENABLE_GRAPHVIZ=ON')
 
         if '+hdf5' in spec and spec.variants['backend'].value != 'hpx':
             options.append('-DENABLE_HDF5=ON')

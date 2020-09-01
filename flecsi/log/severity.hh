@@ -44,8 +44,7 @@ verbose(const char * file, int line) {
 //----------------------------------------------------------------------------//
 
 struct utility {
-
-  static bool strip() {
+  static constexpr bool strip() {
     return false;
   }
 
@@ -57,7 +56,6 @@ struct utility {
     (void)devel;
     return false;
   }
-
 }; // struct utility
 
 //----------------------------------------------------------------------------//
@@ -65,8 +63,7 @@ struct utility {
 //----------------------------------------------------------------------------//
 
 struct trace {
-
-  static bool strip() {
+  static constexpr bool strip() {
     return FLOG_STRIP_LEVEL > 0;
   }
 
@@ -104,7 +101,7 @@ struct trace {
 //----------------------------------------------------------------------------//
 
 struct info {
-  static bool strip() {
+  static constexpr bool strip() {
     return FLOG_STRIP_LEVEL > 1;
   }
 
@@ -142,7 +139,7 @@ struct info {
 //----------------------------------------------------------------------------//
 
 struct warn {
-  static bool strip() {
+  static constexpr bool strip() {
     return FLOG_STRIP_LEVEL > 2;
   }
 
@@ -180,7 +177,7 @@ struct warn {
 //----------------------------------------------------------------------------//
 
 struct error {
-  static bool strip() {
+  static constexpr bool strip() {
     return FLOG_STRIP_LEVEL > 3;
   }
 

@@ -2,7 +2,7 @@
 
    <br />
 
-.. _TUT-CM:
+.. _TUT-DM:
 
 Data Model
 **********
