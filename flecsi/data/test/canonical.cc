@@ -96,9 +96,11 @@ check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
     auto & r = t.mine(0);
     static_assert(std::is_same_v<decltype(r), const int &>);
     EXPECT_EQ(r, mine);
-    auto & cv = t.get_connect<canon::cells, canon::vertices>()[0].front();
-    static_assert(std::is_same_v<decltype(cv), const util::id &>);
-    EXPECT_EQ(cv, favorite);
+    const auto cv =
+      t.entities<canon::vertices>(topo::id<canon::cells>(0)).front();
+    static_assert(
+      std::is_same_v<decltype(cv), const topo::id<canon::vertices>>);
+    EXPECT_EQ(cv - decltype(cv)(favorite), 0);
     EXPECT_EQ(c(0), p0);
   };
 } // check

@@ -108,6 +108,11 @@ struct canonical<P>::access {
     return connect.template get<F>().template get<T>();
   }
 
+  template<index_space T, index_space F>
+  auto entities(id<F> i) const {
+    return make_ids<T>(get_connect<F, T>()[i]);
+  }
+
   template<class F>
   void bind(F f) {
     f(mine);

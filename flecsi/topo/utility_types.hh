@@ -20,6 +20,7 @@
 #endif
 
 #include "flecsi/data/field.hh"
+#include "flecsi/util/array_ref.hh"
 #include "flecsi/util/constant.hh"
 #include "flecsi/util/typeify.hh"
 
@@ -94,6 +95,75 @@ connect_visit(F && f, T && t) {
       }(rr),
       ...);
   });
+}
+
+// The first parameter differentiates topologies/index spaces.
+template<auto, class T = util::id>
+struct id {
+  using difference_type = std::make_signed_t<T>;
+
+  id() = default; // allow trivial default initialization
+  explicit id(T t) : t(t) {}
+
+  T operator+() const {
+    return t;
+  }
+  operator T() const {
+    return t;
+  }
+
+  // Prevent assigning to transform_view results:
+  id & operator=(const id &) & = default;
+
+  id & operator++() & {
+    ++t;
+    return *this;
+  }
+  id operator++(int) & {
+    id ret = *this;
+    ++*this;
+    return ret;
+  }
+  id & operator--() & {
+    --t;
+    return *this;
+  }
+  id operator--(int) & {
+    id ret = *this;
+    --*this;
+    return ret;
+  }
+
+  id & operator+=(difference_type d) & {
+    t += d;
+    return *this;
+  }
+  id operator+(difference_type d) const {
+    return d + *this;
+  }
+  void operator+(id) const = delete;
+  friend id operator+(difference_type d, id i) {
+    return i += d;
+  }
+  id & operator-=(difference_type d) & {
+    t -= d;
+    return *this;
+  }
+  id operator-(difference_type d) const {
+    return d - *this;
+  }
+  difference_type operator-(id i) const { // also avoids ambiguity
+    return difference_type(t) - difference_type(i.t);
+  }
+
+private:
+  T t;
+};
+
+template<auto S, class C>
+auto make_ids(C && c) { // NB: return value may be lifetime-bound to c
+  return util::transform_view(
+    std::forward<C>(c), [](const auto & x) { return id<S>(x); });
 }
 
 //----------------------------------------------------------------------------//
