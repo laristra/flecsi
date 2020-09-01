@@ -94,8 +94,9 @@ class Flecsi(CMakePackage):
         '+filesystem +regex +system')
     depends_on('metis@5.1.0:')
     depends_on('parmetis@4.0.3:')
-    depends_on('hdf5+mpi', when='+hdf5')
     depends_on('graphviz', when='+graphviz')
+    depends_on('kokkos', when='+kokkos')
+    depends_on('hdf5+mpi', when='+hdf5')
 
     def cmake_args(self):
         spec = self.spec
