@@ -58,8 +58,10 @@ using offset_t = offset<16>;
 //----------------------------------------------------------------------------//
 
 #ifndef FLECSI_ID_TYPE
-#define FLECSI_ID_TYPE std::int32_t
+#define FLECSI_ID_TYPE std::uint32_t
 #endif
+
+using id = FLECSI_ID_TYPE;
 
 //----------------------------------------------------------------------------//
 // Index type

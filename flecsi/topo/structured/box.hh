@@ -84,18 +84,17 @@ public:
   /* Bounds checking */
   template<std::size_t DIM>
   bool check_bounds_index(id index) {
-    return (index >= 0 && index <= upperbnds_[DIM]);
+    return (index <= upperbnds_[DIM]);
   } // check_bounds_index
 
   bool check_bounds_index(std::size_t dim, id index) {
-    return (index >= 0 && index <= upperbnds_[dim]);
+    return (index <= upperbnds_[dim]);
   } // check_bounds_index
 
   bool check_bounds_indices(const id_array indices) {
     bool within_bnds = true;
     for(std::size_t i = 0; i < MESH_DIMENSION; i++) {
-      within_bnds =
-        within_bnds && ((indices[i] >= 0) && (indices[i] <= upperbnds_[i]));
+      within_bnds = within_bnds && (indices[i] <= upperbnds_[i]);
 
       if(!within_bnds)
         return within_bnds;
@@ -114,20 +113,15 @@ public:
    *****************************************************************************/
   auto offset_from_indices(const id_array & indices) const {
     id value;
-    switch(MESH_DIMENSION) {
-      case 1:
-        return value = indices[0];
-      case 2:
-        return value = indices[0] + stride<0>() * indices[1];
-      case 3:
-        return value = indices[0] + stride<0>() * indices[1] +
-                       stride<0>() * stride<1>() * indices[2];
-      default:
-        value = indices[MESH_DIMENSION - 2] +
-                stride<MESH_DIMENSION - 2>() * indices[MESH_DIMENSION - 1];
-        for(std::size_t i = MESH_DIMENSION - 2; i > 0; --i)
-          value += indices[i - 1] + stride(i - 1) * value;
-        return value;
+    if(MESH_DIMENSION == 1) {
+      return value = indices[0];
+    }
+    else {
+      value = indices[MESH_DIMENSION - 2] +
+              stride(MESH_DIMENSION - 2) * indices[MESH_DIMENSION - 1];
+      for(std::size_t i = MESH_DIMENSION - 2; i > 0; i--)
+        value = indices[i - 1] + stride(i - 1) * value;
+      return value;
     }
   } // offset_from_indices
 

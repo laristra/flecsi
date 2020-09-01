@@ -78,8 +78,8 @@ set(topo_SOURCES
 
 #---------------------------   Structured Mesh  -----------------------------#
 
-add_unit(test_interface
-  SOURCES structured/test/test_interface.cc
+add_unit(structured
+  SOURCES structured/test/structured.cc
   INPUTS
      structured/test/smesh_1d_0.blessed
      structured/test/smesh_1d_1.blessed

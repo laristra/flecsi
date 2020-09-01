@@ -83,7 +83,7 @@ if(NOT FORMAT_ONLY)
   # Add option for setting entity id type 
   #----------------------------------------------------------------------------#
 
-  set(FLECSI_ID_TYPE "std::int32_t" CACHE STRING
+  set(FLECSI_ID_TYPE "std::uint32_t" CACHE STRING
     "Select the type that will be used for entity ids by topologies")
   mark_as_advanced(FLECSI_ID_TYPE)
 
