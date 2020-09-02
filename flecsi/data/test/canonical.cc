@@ -57,6 +57,13 @@ init(canon::accessor<wo> t, field<double>::accessor<wo> c) {
   UNIT {
     t.mine(0) = mine;
     t.get_connect<canon::cells, canon::vertices>()[3].back() = favorite;
+    util::id last = -1;
+    for(const auto v : t.entities<canon::vertices>()) {
+      static_assert(
+        std::is_same_v<decltype(v), const topo::id<canon::vertices>>);
+      last = v;
+    }
+    EXPECT_EQ((last + 1) / 2, 4u);
     c(0) = p0;
   };
 } // init

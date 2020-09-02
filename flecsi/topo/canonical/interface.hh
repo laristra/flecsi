@@ -47,6 +47,8 @@ struct canonical : canonical_base, with_ragged<Policy> {
 
   template<class F>
   static void fields(F f, typename Policy::slot & s) {
+    for(auto & r : s->part)
+      f(r.sizes.field, r.sizes.get_slot());
     f(mine, s);
     connect_visit([&](const auto & fld) { f(fld, s); }, connect);
   }
@@ -92,12 +94,24 @@ private:
 template<class P>
 template<std::size_t Priv>
 struct canonical<P>::access {
+private:
   template<const auto & F>
   using accessor = data::accessor_member<F, Priv>;
-  accessor<canonical::mine> mine;
+  using size_accessor = resize::Field::accessor<ro>;
+  util::key_array<size_accessor, index_spaces> size{make_size(index_spaces())};
   connect_access<P, Priv> connect;
 
+public:
+  accessor<canonical::mine> mine;
+
   access() : connect(canonical::connect) {}
+
+  // NB: iota_view's iterators are allowed to outlive it.
+  template<index_space S>
+  auto entities() {
+    return make_ids<S>(util::iota_view<util::id>(
+      0, data::partition::row_size(size.template get<S>())));
+  }
 
   template<index_space F, index_space T>
   auto & get_connect() {
@@ -115,8 +129,18 @@ struct canonical<P>::access {
 
   template<class F>
   void bind(F f) {
+    for(auto & a : size)
+      f(a);
     f(mine);
     connect_visit(f, connect);
+  }
+
+private:
+  template<auto... VV>
+  static util::key_array<size_accessor, util::constants<VV...>> make_size(
+    util::constants<VV...> /* index_spaces, to deduce a pack */) {
+    return {{(void(VV),
+      size_accessor(size_accessor::base_type(resize::field.fid)))...}};
   }
 };
 
