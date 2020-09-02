@@ -95,6 +95,14 @@ if(NOT FORMAT_ONLY)
   mark_as_advanced(FLECSI_ID_FBITS)
 
   #----------------------------------------------------------------------------#
+  # Add option for setting entity id type 
+  #----------------------------------------------------------------------------#
+
+  set(FLECSI_ID_TYPE "std::uint32_t" CACHE STRING
+    "Select the type that will be used for entity ids by topologies")
+  mark_as_advanced(FLECSI_ID_TYPE)
+
+  #----------------------------------------------------------------------------#
   # Add option for counter size
   #----------------------------------------------------------------------------#
 
