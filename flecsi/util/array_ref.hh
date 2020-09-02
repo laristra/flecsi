@@ -257,5 +257,118 @@ private:
   iterator b, e;
 };
 
+template<class C>
+struct index_iterator {
+private:
+  C * c;
+  std::size_t i;
+
+public:
+  using reference = decltype((*c)[i]);
+  using value_type = std::remove_reference_t<reference>;
+  using pointer =
+    std::conditional_t<std::is_reference_v<reference>, value_type *, void>;
+  using difference_type = std::ptrdiff_t;
+  using iterator_category = std::random_access_iterator_tag;
+
+  index_iterator() noexcept : index_iterator(nullptr, 0) {}
+  index_iterator(C * p, std::size_t i) : c(p), i(i) {}
+
+  decltype(auto) operator*() const {
+    return (*this)[0];
+  }
+  auto operator-> () const {
+    return &**this;
+  }
+
+  decltype(auto) operator[](difference_type n) const {
+    return (*c)[i + n];
+  }
+
+  index_iterator & operator++() {
+    ++i;
+    return *this;
+  }
+  index_iterator operator++(int) {
+    index_iterator ret = *this;
+    ++*this;
+    return ret;
+  }
+  index_iterator & operator--() {
+    --i;
+    return *this;
+  }
+  index_iterator operator--(int) {
+    index_iterator ret = *this;
+    --*this;
+    return ret;
+  }
+
+  index_iterator & operator+=(difference_type n) {
+    i += n;
+    return *this;
+  }
+  friend index_iterator operator+(difference_type n, index_iterator i) {
+    return i += n;
+  }
+  index_iterator operator+(difference_type n) const {
+    return n + *this;
+  }
+  index_iterator & operator-=(difference_type n) {
+    i -= n;
+    return *this;
+  }
+  friend index_iterator operator-(difference_type n, index_iterator i) {
+    return i -= n;
+  }
+  index_iterator operator-(difference_type n) const {
+    return n - *this;
+  }
+  difference_type operator-(const index_iterator & o) const {
+    return i - o.i;
+  }
+
+  bool operator==(const index_iterator & o) const {
+    return i == o.i;
+  }
+  bool operator!=(const index_iterator & o) const {
+    return i != o.i;
+  }
+  bool operator<(const index_iterator & o) const {
+    return i < o.i;
+  }
+  bool operator<=(const index_iterator & o) const {
+    return i <= o.i;
+  }
+  bool operator>(const index_iterator & o) const {
+    return i > o.i;
+  }
+  bool operator>=(const index_iterator & o) const {
+    return i >= o.i;
+  }
+
+  std::size_t index() const noexcept {
+    return i;
+  }
+};
+
+template<class D> // CRTP, but D might be const
+struct with_index_iterator {
+  using iterator = index_iterator<D>;
+
+  iterator begin() const noexcept {
+    return {derived(), 0};
+  }
+  iterator end() const noexcept {
+    const auto * p = derived();
+    return {p, p->size()};
+  }
+
+private:
+  D * derived() const noexcept {
+    return static_cast<D *>(this);
+  }
+};
+
 } // namespace util
 } // namespace flecsi

@@ -28,6 +28,7 @@
 #include "flecsi/exec/fold.hh"
 #include "flecsi/flog.hh"
 #include "flecsi/run/backend.hh"
+#include "flecsi/topo/index.hh" // repartition
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface
@@ -384,4 +385,14 @@ test(ARGS &&... args) {
     .get();
 } // test
 
+// Defined here to avoid a circularity via global and ragged.
+namespace topo {
+template<class F>
+repartition::repartition(const data::region & r, F f)
+  : with_size(r.size().first), partition(r, *sizes, [&] {
+      const auto r = sizes();
+      execute<fill<F>>(r, f);
+      return r.fid();
+    }()) {}
+} // namespace topo
 } // namespace flecsi

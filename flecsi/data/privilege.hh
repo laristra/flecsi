@@ -107,4 +107,14 @@ privilege_write_only(std::size_t pack) noexcept {
   return true;
 }
 
+constexpr std::size_t
+privilege_repeat(partition_privilege_t p, std::size_t n) {
+  std::size_t ret = 1; // see above
+  while(n--) {
+    ret <<= privilege_bits;
+    ret |= p;
+  }
+  return ret;
+}
+
 } // namespace flecsi

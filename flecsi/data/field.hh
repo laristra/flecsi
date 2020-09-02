@@ -22,6 +22,11 @@
 #include <flecsi/data/privilege.hh>
 
 namespace flecsi {
+namespace topo {
+template<class>
+struct ragged_topology; // defined in terms of field
+}
+
 namespace data {
 
 /// A data accessor.
@@ -31,6 +36,10 @@ namespace data {
 template<layout L, typename T, std::size_t Priv>
 struct accessor;
 
+/// A specialized accessor for changing the extent of dynamic layouts.
+template<layout, class>
+struct mutator;
+
 namespace detail {
 template<class, layout>
 struct field_base {};
@@ -39,9 +48,10 @@ struct field_register;
 
 template<class T, class Topo, typename Topo::index_space Space>
 struct field_register<T, raw, Topo, Space> : field_info_t {
-  field_register() : field_info_t{unique_fid_t::instance().next(), sizeof(T)} {
-    run::context::instance().add_field_info<Topo, Space>(*this);
+  explicit field_register(field_id_t i) : field_info_t{i, sizeof(T)} {
+    run::context::instance().add_field_info<Topo, Space>(this);
   }
+  field_register() : field_register(unique_fid_t::instance().next()) {}
   // Copying/moving is inadvisable because the context knows the address.
   field_register(const field_register &) = delete;
   field_register & operator=(const field_register &) = delete;
@@ -101,15 +111,20 @@ struct field_reference : field_reference_t<Topo> {
 /// \tparam L data layout
 template<class T, data::layout L = data::dense>
 struct field : data::detail::field_base<T, L> {
+  using value_type = T;
+
   template<std::size_t Priv>
   using accessor1 = data::accessor<L, T, Priv>;
   /// The accessor to use as a parameter to receive this sort of field.
   /// \tparam PP the appropriate number of privilege values
   template<partition_privilege_t... PP>
   using accessor = accessor1<privilege_pack<PP...>>;
+  using mutator = data::mutator<L, T>; // usable only for certain layouts
 
   template<class Topo, typename Topo::index_space S>
   using Register = data::detail::field_register<T, L, Topo, S>;
+  template<class Topo, typename Topo::index_space S>
+  using Reference = data::field_reference<T, L, Topo, S>;
 
   /// A field registration.
   /// \tparam Topo (specialized) topology type
@@ -120,8 +135,7 @@ struct field : data::detail::field_base<T, L> {
 
     /// Return a reference to a field instance.
     /// \tparam t topology instance (need not be allocated yet)
-    data::field_reference<T, L, Topo, Space> operator()(
-      data::topology_slot<Topo> & t) const {
+    Reference<Topo, Space> operator()(data::topology_slot<Topo> & t) const {
       return {*this, t};
     }
   };
@@ -137,12 +151,34 @@ template<class T>
 struct field_base<T, singular> {
   using base_type = field<T>;
 };
+template<class T>
+struct field_base<T, ragged> {
+  using base_type = field<T, raw>;
+  using Offsets = field<std::size_t>;
+};
+template<class T>
+struct field_base<T, sparse> {
+  using base_type = field<std::pair<std::size_t, T>, ragged>;
+};
 
 // Many compilers incorrectly require the 'template' for a base class.
 template<class T, layout L, class Topo, typename Topo::index_space Space>
 struct field_register : field<T, L>::base_type::template Register<Topo, Space> {
   using Base = typename field<T, L>::base_type::template Register<Topo, Space>;
   using Base::Base;
+};
+template<class T, class Topo, typename Topo::index_space Space>
+struct field_register<T, ragged, Topo, Space>
+  : field<T, ragged>::base_type::template Register<topo::ragged_topology<Topo>,
+      Space> {
+  using Offsets = typename field<T, ragged>::Offsets;
+  // We use the same field ID for the offsets:
+  typename Offsets::template Register<Topo, Space> off{field_register::fid};
+
+  typename Offsets::template Reference<Topo, Space> offsets(
+    topology_slot<Topo> & t) const {
+    return {off, t};
+  }
 };
 } // namespace detail
 
