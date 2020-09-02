@@ -213,10 +213,13 @@ struct task_prologue_t {
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> * /* parameter */,
     data::topology_slot<Topo> & slot) {
-    Topo::core::fields([&](auto & f) {
-      visit(static_cast<data::field_accessor<decltype(f), Priv> *>(nullptr),
-        f(slot));
-    });
+    // Clang 10.0.1 deems 'this' unused:
+    Topo::core::fields(
+      [&](auto & f, auto & s) {
+        visit(static_cast<data::field_accessor<decltype(f), Priv> *>(nullptr),
+          f(s));
+      },
+      slot);
   }
 
   /*--------------------------------------------------------------------------*

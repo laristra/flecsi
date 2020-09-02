@@ -76,15 +76,15 @@ struct ntree : ntree_base {
   struct access;
 
   template<class F>
-  static void fields(F f) {
-    f(e_coordinates);
-    f(e_radius);
-    f(e_keys);
-    f(n_coordinates);
-    f(n_radius);
-    f(n_keys);
-    f(data_field);
-    f(hcells);
+  static void fields(F f, typename Policy::slot & s) {
+    f(e_coordinates, s);
+    f(e_radius, s);
+    f(e_keys, s);
+    f(n_coordinates, s);
+    f(n_radius, s);
+    f(n_keys, s);
+    f(data_field, s);
+    f(hcells, s);
   }
 
   ntree(const coloring & c)

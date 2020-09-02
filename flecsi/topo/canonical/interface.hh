@@ -46,9 +46,9 @@ struct canonical : canonical_base, with_ragged<Policy> {
   struct access;
 
   template<class F>
-  static void fields(F f) {
-    f(mine);
-    connect_visit(f, connect);
+  static void fields(F f, typename Policy::slot & s) {
+    f(mine, s);
+    connect_visit([&](const auto & fld) { f(fld, s); }, connect);
   }
 
   canonical(const coloring & c)
