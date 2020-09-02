@@ -117,7 +117,7 @@ struct forall_t {
 
 private:
   ITERATOR iterator_;
-  std::string & name_;
+  std::string name_;
 
 }; // struct forall_t
 

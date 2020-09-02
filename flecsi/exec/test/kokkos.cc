@@ -52,7 +52,7 @@ init(canon::accessor<wo> t, field<double>::accessor<wo> c) {
 } // init
 
 int
-local_kokkos(canon::accessor<rw> t, field<double>::accessor<rw> c) {
+local_kokkos(field<double>::accessor<rw> c) {
   UNIT {
     // Parallel for
     flecsi::exec::parallel_for(
@@ -65,15 +65,15 @@ local_kokkos(canon::accessor<rw> t, field<double>::accessor<rw> c) {
     }; // forall
 
     // Reduction
-    int res = 0;
+    std::size_t res = 0;
     flecsi::exec::parallel_reduce(
       c.span(),
-      KOKKOS_LAMBDA(auto cv, int & up) { up += cv; },
-      flecsi::exec::reducer::sum<int>(res),
+      KOKKOS_LAMBDA(auto cv, std::size_t & up) { up += cv; },
+      flecsi::exec::reducer::sum<std::size_t>(res),
       std::string("pred1"));
     assert(pvalue * c.span().size() == res);
     res = 0;
-    reduceall(cv, up, c.span(), flecsi::exec::reducer::sum<int>(res), "pred2") {
+    reduceall(cv, up, c.span(), flecsi::exec::reducer::sum<std::size_t>(res), "pred2") {
       up += cv;
     };
     assert(pvalue * c.span().size() == res);
@@ -92,7 +92,7 @@ kokkos_driver() {
     canonical.allocate(coloring.get());
     EXPECT_EQ(test<init>(canonical, pressure), 0);
 
-    EXPECT_EQ(test<local_kokkos>(canonical, pressure), 0);
+    EXPECT_EQ(test<local_kokkos>(pressure), 0);
   };
 } // driver
 
