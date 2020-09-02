@@ -258,6 +258,30 @@ mpich-legion-clang:
     C_FLAGS: ${CXX_FLAGS}
 
 #------------------------------------------------------------------------------#
+# Build and unit tests for Legion runtime with MPICH provider,
+# Clang compiler toolchain and kokkos serial
+#
+# Image: CentOS 7.8
+#------------------------------------------------------------------------------#
+
+mpich-legion-clang-kokkos-serial:
+  extends: .build_template
+  dependencies:
+    - mpich-clang
+  variables:
+    ENVIRONMENT: devel
+    MPI_PROVIDER: mpich
+    REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
+    IMAGE: clearlinux
+    BUILD_TYPE: debug
+    RUNTIME: legion
+    CXX_COMPILER: clang++
+    CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
+    C_COMPILER: clang
+    C_FLAGS: ${CXX_FLAGS}
+    CMAKE_OPTIONS: -DENABLE_KOKKOS=ON
+
+#------------------------------------------------------------------------------#
 # Build and unit tests for MPI runtime with MPICH provider,
 # and Clang compiler toolchain.
 #
@@ -279,7 +303,6 @@ mpich-mpi-clang:
     CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
     C_COMPILER: clang
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_KOKKOS=ON
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for MPI runtime with OpenMPI provider,
