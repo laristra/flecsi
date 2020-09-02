@@ -279,7 +279,7 @@ mpich-mpi-clang:
     CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
     C_COMPILER: clang
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_KOKKOS
+    CMAKE_OPTIONS: -DENABLE_KOKKOS=ON
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for MPI runtime with OpenMPI provider,
