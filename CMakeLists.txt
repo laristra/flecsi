@@ -29,6 +29,21 @@ project(FleCSI LANGUAGES CXX C)
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
+#set(CMAKE_SKIP_BUILD_RPATH FALSE)
+#set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+#set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+#
+## add the automatically determined parts of the RPATH
+## which point to directories outside the build tree to the install RPATH
+#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+#
+## the RPATH to be used when installing, but only if it's not a system directory
+#list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES
+#  "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+#if("${isSystemDir}" STREQUAL "-1")
+#  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+#endif("${isSystemDir}" STREQUAL "-1")
+
 #------------------------------------------------------------------------------#
 # Compiler version requirements.
 #------------------------------------------------------------------------------#
@@ -78,6 +93,14 @@ if(NOT FORMAT_ONLY)
   set(FLECSI_ID_FBITS "4" CACHE STRING
     "Select the number of bits to use for id flags. There will be 62-FLECSI_ID_PBITS-FLECSI_ID_FBITS available for entity ids")
   mark_as_advanced(FLECSI_ID_FBITS)
+
+  #----------------------------------------------------------------------------#
+  # Add option for setting entity id type 
+  #----------------------------------------------------------------------------#
+
+  set(FLECSI_ID_TYPE "std::uint32_t" CACHE STRING
+    "Select the type that will be used for entity ids by topologies")
+  mark_as_advanced(FLECSI_ID_TYPE)
 
   #----------------------------------------------------------------------------#
   # Add option for counter size

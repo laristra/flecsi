@@ -195,6 +195,18 @@ private:
 
 public:
   /*!
+    Return the user's control state.
+
+    @return The singleton instance of the user's control policy type. Users can
+            add arbitrary data members and interfaces to this type that can be
+            to store control state information.
+   */
+
+  static ControlPolicy & state() {
+    return instance();
+  }
+
+  /*!
     The action type provides a mechanism to add execution elements to the
     FleCSI control model.
 
