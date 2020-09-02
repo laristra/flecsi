@@ -44,7 +44,7 @@ auto pressure = cell_field(canonical);
 const int pvalue = 35;
 
 int
-init(canon::accessor<wo> t, field<double>::accessor<wo> c) {
+init(field<double>::accessor<wo> c) {
   UNIT {
     flecsi::exec::parallel_for(
       c.span(), KOKKOS_LAMBDA(auto & cv) { cv = pvalue; }, std::string("test"));
@@ -91,9 +91,9 @@ kokkos_driver() {
     const std::string filename = "input.txt";
     coloring.allocate(filename);
     canonical.allocate(coloring.get());
-    EXPECT_EQ(test<init>(canonical, pressure), 0);
+    flecsi::execute<init>(pressure);
 
-    EXPECT_EQ(test<local_kokkos>(pressure), 0);
+    flecsi::execute<local_kokkos>(pressure);
   };
 } // driver
 
