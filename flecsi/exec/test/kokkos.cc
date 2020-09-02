@@ -73,7 +73,8 @@ local_kokkos(field<double>::accessor<rw> c) {
       std::string("pred1"));
     assert(pvalue * c.span().size() == res);
     res = 0;
-    reduceall(cv, up, c.span(), flecsi::exec::reducer::sum<std::size_t>(res), "pred2") {
+    reduceall(
+      cv, up, c.span(), flecsi::exec::reducer::sum<std::size_t>(res), "pred2") {
       up += cv;
     };
     assert(pvalue * c.span().size() == res);
