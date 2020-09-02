@@ -63,13 +63,19 @@ struct resize {
     return *size;
   }
 
+  auto & get_slot() {
+    return size.get_slot();
+  }
+
   using Field = flecsi::field<data::partition::row, data::singular>;
 
 private:
   // cslot can't be used, but is unneeded.
   struct topo : specialization<size_category, topo> {};
-  static inline const Field::definition<topo> field;
   data::anti_slot<topo> size;
+
+public:
+  static inline const Field::definition<topo> field;
 };
 
 // To control initialization order:
