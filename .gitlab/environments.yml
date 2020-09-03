@@ -24,7 +24,7 @@ mpich:release:
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
     IMAGE: centos-7.8
     VERSION: flecsi@devel
-    VARIANTS: +hdf5 +graphviz
+    VARIANTS: +hdf5 +graphviz +kokkos
 
 mpich-clang:
   extends: .env_template
