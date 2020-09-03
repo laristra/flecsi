@@ -79,7 +79,7 @@ mpich-legion-gnu:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON -DENABLE_KOKKOS=ON
 
 mpich-legion-gnu:release:
   extends: .build_template
@@ -96,7 +96,7 @@ mpich-legion-gnu:release:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON -DENABLE_KOKKOS=ON
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for MPI runtime with MPICH provider,
