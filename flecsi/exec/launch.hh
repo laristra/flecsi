@@ -20,9 +20,7 @@
 #endif
 
 #include "flecsi/data/field.hh"
-#include "flecsi/data/privilege.hh"
 #include "flecsi/topo/core.hh"
-#include "flecsi/topo/global.hh"
 
 #include <cstddef>
 #include <optional>
@@ -64,15 +62,6 @@ template<class P, class A>
 struct launch {
   static auto get(const A &) {
     return nullptr;
-  }
-};
-template<data::layout L, class T, std::size_t Priv>
-struct launch<data::accessor<L, T, Priv>,
-  data::field_reference<T, L, topo::global, topo::elements>> {
-  static std::
-    conditional_t<(get_privilege(0, Priv) > ro), std::monostate, std::nullptr_t>
-    get(const data::field_reference<T, L, topo::global, topo::elements> &) {
-    return {};
   }
 };
 template<class P,
@@ -122,6 +111,19 @@ launch_size(std::tuple<PP...> *, const AA &... aa) {
           launch_combine(launch<std::decay_t<PP>, AA>::get(aa)))
     .get();
 }
+
+template<class T, class = void>
+struct buffer {
+  using type = decltype(nullptr);
+  static void apply(T &, type) {}
+};
+template<class T>
+struct buffer<T, util::voided<typename T::TaskBuffer>> {
+  using type = typename T::TaskBuffer;
+  static void apply(T & t, type & b) {
+    t.buffer(b);
+  }
+};
 } // namespace detail
 // Replaces certain task arguments before conversion to the parameter type.
 template<class P, class T>
@@ -216,6 +218,16 @@ struct future<Return, exec::launch_type_t::index> {
 #endif
 
 namespace exec {
+// The auxiliary object that survives the user task needed for a T,
+// or std::nullptr_t if none.
+template<class T>
+using buffer_t = typename detail::buffer<T>::type;
+template<class T>
+void
+set_buffer(T & t, buffer_t<T> & b) {
+  detail::buffer<T>::apply(t, b);
+}
+
 template<class R>
 struct detail::task_param<future<R>> {
   static future<R> replace(const future<R, launch_type_t::index> &) {

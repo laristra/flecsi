@@ -33,9 +33,8 @@ template<class, class>
 struct connect;
 template<class P, class... VT>
 struct connect<P, util::types<VT...>> {
-  // FIXME: Use ragged instead of dense when it's functional.
   using type = util::key_tuple<util::key_type<VT::value,
-    util::key_array<field<std::size_t, data::dense>::definition<P, VT::value>,
+    util::key_array<field<util::id, data::ragged>::definition<P, VT::value>,
       typename VT::type>>...>;
 };
 
@@ -77,7 +76,9 @@ private:
   // The .get<>s here and above just access the elements in order, of course.
   template<class T, class U, auto... VV>
   static T make_from(const util::key_array<U, util::constants<VV...>> & m) {
-    return {{typename T::value_type(m.template get<VV>().fid)...}};
+    using Accessor = typename T::value_type;
+    return {
+      {Accessor(typename Accessor::base_type(m.template get<VV>().fid))...}};
   }
 };
 

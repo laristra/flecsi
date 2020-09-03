@@ -80,22 +80,36 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
       legion_context_, reg.get_logical_region().get_index_space());
     const auto r = dom.get_rect<2>();
 
-    bind(accessor,
-      util::span(ac.ptr(Legion::Domain::DomainPointIterator(dom).p),
-        r.hi[1] - r.lo[1] + 1));
+    accessor.bind(util::span(ac.ptr(Legion::Domain::DomainPointIterator(dom).p),
+      r.hi[1] - r.lo[1] + 1));
   }
 
   template<typename T, size_t P>
   void visit(data::accessor<data::dense, T, P> & a) {
     visit(a.get_base());
-    if constexpr(privilege_write_only(P)) {
-      const auto s = a.span();
-      std::uninitialized_default_construct(s.begin(), s.end());
-    }
+    if constexpr(privilege_write_only(P))
+      construct(a);
   }
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
     visit(accessor.get_base());
+  }
+  // Without a catch-all, this matches accessor<ragged|sparse,...>.
+  template<class T, std::size_t P, std::size_t OP>
+  void visit(data::ragged_accessor<T, P, OP> & a) {
+    visit(a.get_base());
+    visit(a.get_offsets());
+    if constexpr(privilege_write_only(P))
+      construct(a);
+  }
+  template<class T>
+  void visit(data::mutator<data::ragged, T> & m) {
+    visit(m.get_base());
+    m.bind();
+  }
+  template<class T>
+  void visit(data::mutator<data::sparse, T> & m) {
+    visit(m.get_base());
   }
 
   template<class Topo, std::size_t Priv>
@@ -127,6 +141,12 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
   } // visit
 
 private:
+  template<class A>
+  static void construct(const A & a) {
+    const auto s = a.span();
+    std::uninitialized_default_construct(s.begin(), s.end());
+  }
+
   Legion::Runtime * legion_runtime_;
   Legion::Context & legion_context_;
   size_t region = 0;

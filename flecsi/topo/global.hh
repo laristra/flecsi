@@ -19,8 +19,8 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/topology.hh"
-#include "flecsi/topo/core.hh"
+#include "flecsi/data/privilege.hh"
+#include "flecsi/topo/index.hh"
 
 namespace flecsi {
 namespace topo {
@@ -30,8 +30,9 @@ struct global_base {
 };
 
 template<class P>
-struct global_category : global_base, data::region {
-  global_category(const coloring &) : region(data::make_region<P>({1, 1})) {}
+struct global_category : global_base, data::region, with_ragged<P> {
+  global_category(const coloring &)
+    : region(data::make_region<P>({1, 1})), with_ragged<P>(1) {}
 };
 template<>
 struct detail::base<global_category> {
@@ -48,4 +49,16 @@ struct detail::base<global_category> {
 struct global : specialization<global_category, global> {}; // struct global
 
 } // namespace topo
+
+// Defined here to avoid circularity via ragged and execute.
+template<data::layout L, class T, std::size_t Priv>
+struct exec::detail::launch<data::accessor<L, T, Priv>,
+  data::field_reference<T, L, topo::global, topo::elements>> {
+  static std::
+    conditional_t<(get_privilege(0, Priv) > ro), std::monostate, std::nullptr_t>
+    get(const data::field_reference<T, L, topo::global, topo::elements> &) {
+    return {};
+  }
+};
+
 } // namespace flecsi

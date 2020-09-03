@@ -29,7 +29,6 @@
 #include "flecsi/util/common.hh"
 #include "flecsi/util/function_traits.hh"
 #include "flecsi/util/serialize.hh"
-#include "unbind_accessors.hh"
 #include <flecsi/flog.hh>
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -77,6 +76,18 @@ struct util::serial_convert<data::accessor<data::dense, T, P>>
 template<class T, std::size_t Priv>
 struct util::serial_convert<data::accessor<data::singular, T, Priv>>
   : data::detail::convert_accessor<data::accessor<data::singular, T, Priv>> {};
+template<class T, std::size_t P, std::size_t OP>
+struct util::serial_convert<data::ragged_accessor<T, P, OP>>
+  : data::detail::convert_accessor<data::ragged_accessor<T, P, OP>> {};
+template<class T, std::size_t P>
+struct util::serial_convert<data::accessor<data::ragged, T, P>>
+  : data::detail::convert_accessor<data::accessor<data::ragged, T, P>> {};
+template<data::layout L, class T>
+struct util::serial_convert<data::mutator<L, T>>
+  : data::detail::convert_accessor<data::mutator<L, T>> {};
+template<class T, std::size_t P>
+struct util::serial_convert<data::accessor<data::sparse, T, P>>
+  : data::detail::convert_accessor<data::accessor<data::sparse, T, P>> {};
 template<class T, std::size_t Priv>
 struct util::serial<data::topology_accessor<T, Priv>,
   std::enable_if_t<!util::memcpyable_v<data::topology_accessor<T, Priv>>>> {
@@ -89,14 +100,16 @@ struct util::serial<data::topology_accessor<T, Priv>,
 };
 
 template<auto & F, class... AA>
-struct util::serial_convert<exec::partial<F, AA...>> {
+struct util::serial<exec::partial<F, AA...>,
+  std::enable_if_t<!util::memcpyable_v<exec::partial<F, AA...>>>> {
   using type = exec::partial<F, AA...>;
   using Rep = typename type::Base;
-  static const Rep & put(const type & p) {
-    return p;
+  template<class P>
+  static void put(P & p, const type & t) {
+    serial_put(p, static_cast<const Rep &>(t));
   }
-  static type get(const Rep & t) {
-    return t;
+  static type get(const std::byte *& b) {
+    return serial_get<Rep>(b);
   }
 };
 
@@ -249,24 +262,18 @@ struct task_wrapper {
     }
 
     // Unpack task arguments
-    // TODO: Can we deserialize directly into the user's parameters (i.e., do
-    // without finalize_handles)?
     auto task_args = detail::tuple_get<param_tuple>(*task);
 
+    unbind_accessors ub(task_args);
     bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       apply(F, std::forward<param_tuple>(task_args));
-
-      // FIXME: Refactor
-      // finalize_handles_t finalize_handles;
-      // finalize_handles.walk(task_args);
+      ub();
     }
     else {
       RETURN result = apply(F, std::forward<param_tuple>(task_args));
-
-      // FIXME: Refactor unbind_accessor
-
+      ub();
       return result;
     } // if
   } // execute_user_task
@@ -295,6 +302,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, task->args, sizeof p);
 
+    unbind_accessors ub(*p);
     bind_accessors{runtime, context, regions, task->futures}.walk(*p);
 
     // Set the MPI function and make the runtime active.
@@ -302,13 +310,12 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
 
     if constexpr(std::is_void_v<RETURN>) {
       c.mpi_call([&] { apply(F, std::move(*p)); });
-      // FIXME unbind accessors
+      ub();
     }
     else {
       std::optional<RETURN> result;
       c.mpi_call([&] { result.emplace(std::apply(F, std::move(*p))); });
-
-      // FIXME unbind accessors
+      ub();
       return std::move(*result);
     }
 

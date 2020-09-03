@@ -107,11 +107,7 @@ struct task_prologue_t {
   void visit(data::accessor<data::dense, T, Priv> * null_p,
     const data::field_reference<T, data::dense, Topo, S> & ref) {
     visit(get_null_base(null_p), ref.template cast<data::raw>());
-    // TODO: use just one task for all fields
-    if constexpr(privilege_write_only(Priv) &&
-                 !std::is_trivially_destructible_v<T>)
-      ref.topology()->template get_region<S>().cleanup(
-        ref.fid(), [ref] { execute<destroy<T>>(ref); });
+    realloc<S, T, Priv>(ref, [ref] { execute<destroy<T, data::dense>>(ref); });
   }
   template<class T,
     std::size_t Priv,
@@ -154,7 +150,8 @@ struct task_prologue_t {
     class = std::enable_if_t<Topo::template privilege_count<Space> == 1>>
   void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
-    auto & instance_data = ref.topology().get().template get_partition<Space>();
+    auto & instance_data =
+      ref.topology()->template get_partition<Space>(ref.fid());
 
     static_assert(privilege_count(PRIVILEGES) == 1,
       "accessors for this topology type take only one privilege");
@@ -169,6 +166,49 @@ struct task_prologue_t {
     rr.add_field(ref.fid());
     region_reqs_.push_back(rr);
   } // visit
+
+  template<class T,
+    std::size_t P,
+    std::size_t OP,
+    class Topo,
+    typename Topo::index_space S>
+  void ragged(data::ragged_accessor<T, P, OP> * null_p,
+    const data::field_reference<T, data::ragged, Topo, S> & f) {
+    // We rely on the fact that field_reference uses only the field ID.
+    visit(get_null_base(null_p),
+      data::field_reference<T, data::raw, topo::ragged_topology<Topo>, S>(
+        {f.fid(), 0}, f.topology()->ragged.get_slot()));
+    visit(
+      get_null_offsets(null_p), f.template cast<data::dense, std::size_t>());
+    realloc<S, T, P>(f, [=] { execute<destroy<T, data::ragged>>(f); });
+  }
+  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
+  void visit(data::accessor<data::ragged, T, P> * null_p,
+    const data::field_reference<T, data::ragged, Topo, S> & f) {
+    ragged(null_p, f);
+  }
+  template<class T, class Topo, typename Topo::index_space S>
+  void visit(data::mutator<data::ragged, T> *,
+    const data::field_reference<T, data::ragged, Topo, S> & f) {
+    // A mutator doesn't have privileges, so supply the correct number to it:
+    ragged(data::mutator<data::ragged,
+             T>::template null_base<Topo::template privilege_count<S>>,
+      f);
+  }
+  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
+  void visit(data::accessor<data::sparse, T, P> * null_p,
+    const data::field_reference<T, data::sparse, Topo, S> & ref) {
+    visit(get_null_base(null_p),
+      ref.template cast<data::ragged,
+        typename field<T, data::sparse>::base_type::value_type>());
+  }
+  template<class T, class Topo, typename Topo::index_space S>
+  void visit(data::mutator<data::sparse, T> * null_p,
+    const data::field_reference<T, data::sparse, Topo, S> & f) {
+    visit(get_null_base(null_p),
+      f.template cast<data::ragged,
+        typename field<T, data::sparse>::base_type::value_type>());
+  }
 
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> * /* parameter */,
@@ -208,10 +248,19 @@ struct task_prologue_t {
   } // visit
 
 private:
-  template<class T>
-  static void destroy(typename field<T>::template accessor<rw> a) {
+  template<class T, data::layout L>
+  static void destroy(typename field<T, L>::template accessor<rw> a) {
     const auto s = a.span();
     std::destroy(s.begin(), s.end());
+  }
+  template<auto S, class T, std::size_t Priv, class R, class F>
+  static void realloc(const R & ref, F f) {
+    // TODO: use just one task for all fields
+    if constexpr(privilege_write_only(Priv) &&
+                 !std::is_trivially_destructible_v<T>)
+      ref.topology()->template get_region<S>().cleanup(ref.fid(), std::move(f));
+    else
+      (void)ref, (void)f;
   }
 
   // Argument types for which we don't also need the type of the parameter:

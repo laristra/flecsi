@@ -21,7 +21,6 @@
 
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/topology.hh"
-#include "flecsi/execution.hh"
 #include "flecsi/flog.hh"
 #include "flecsi/topo/canonical/types.hh"
 #include "flecsi/topo/core.hh" // base
@@ -39,7 +38,7 @@ namespace topo {
  */
 
 template<typename Policy>
-struct canonical : canonical_base {
+struct canonical : canonical_base, with_ragged<Policy> {
   using index_space = typename Policy::index_space;
   using index_spaces = typename Policy::index_spaces;
 
@@ -53,7 +52,8 @@ struct canonical : canonical_base {
   }
 
   canonical(const coloring & c)
-    : part(make_partitions(c,
+    : with_ragged<Policy>(c.parts),
+      part(make_partitions(c,
         index_spaces(),
         std::make_index_sequence<index_spaces::size>())) {}
 
@@ -72,7 +72,7 @@ struct canonical : canonical_base {
     return part.template get<S>();
   }
   template<index_space S>
-  const data::partition & get_partition() const {
+  const data::partition & get_partition(field_id_t) const {
     return part.template get<S>();
   }
 
