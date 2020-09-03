@@ -61,9 +61,9 @@ topo_driver_1d() {
     for(int i = 0; i < dim; ++i)
       local_upbnd[i] = overlay.upperbnd[i] - overlay.lowerbnd[i];
 
-    box<1> lbox(local_upbnd);
+    structured_impl::box<1> lbox(local_upbnd);
 
-    using id_array = box<1>::id_array;
+    using id_array = structured_impl::box<1>::id_array;
     id_array indices;
 
     for(auto c : lbox) {
@@ -127,9 +127,9 @@ topo_driver_2d() {
     for(int i = 0; i < dim; ++i)
       local_upbnd[i] = overlay.upperbnd[i] - overlay.lowerbnd[i];
 
-    box<2> lbox(local_upbnd);
+    structured_impl::box<2> lbox(local_upbnd);
 
-    using id_array = box<2>::id_array;
+    using id_array = structured_impl::box<2>::id_array;
     id_array indices;
 
     for(auto c : lbox) {
@@ -194,9 +194,9 @@ topo_driver_3d() {
     for(int i = 0; i < dim; ++i)
       local_upbnd[i] = overlay.upperbnd[i] - overlay.lowerbnd[i];
 
-    box<3> lbox(local_upbnd);
+    structured_impl::box<3> lbox(local_upbnd);
 
-    using id_array = box<3>::id_array;
+    using id_array = structured_impl::box<3>::id_array;
     id_array indices;
 
     for(auto c : lbox) {
