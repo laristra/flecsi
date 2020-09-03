@@ -132,7 +132,7 @@
         -DCMAKE_C_COMPILER=${C_COMPILER} \
         -DCMAKE_C_FLAGS="${C_FLAGS}" \
         -DFLECSI_RUNTIME_MODEL=${RUNTIME} \
-        -DENABLE_FLOG=ON \
+        ${CMAKE_OPTIONS} \
         ../..
     - make
     - make test
