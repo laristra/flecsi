@@ -23,10 +23,6 @@ if(ENABLE_KOKKOS)
     message(FATAL_ERROR "Clang version 8 or greater required for Kokkos")
   endif()
 
-  set(Kokkos_LIBRARIES Kokkos::kokkos)
-
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Kokkos_LIBRARIES})
-  
-  add_definitions("-DFLECSI_ENABLE_KOKKOS")
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES Kokkos::kokkos)
 
 endif()
