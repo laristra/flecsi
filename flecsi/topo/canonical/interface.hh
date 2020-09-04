@@ -50,6 +50,7 @@ struct canonical : canonical_base, with_ragged<Policy> {
     for(auto & r : s->part)
       f(r.sizes.field, r.sizes.get_slot());
     f(mine, s);
+    f(meta_field, s->meta.get_slot());
     connect_visit([&](const auto & fld) { f(fld, s); }, connect);
   }
 
@@ -57,13 +58,21 @@ struct canonical : canonical_base, with_ragged<Policy> {
     : with_ragged<Policy>(c.parts),
       part(make_partitions(c,
         index_spaces(),
-        std::make_index_sequence<index_spaces::size>())) {}
+        std::make_index_sequence<index_spaces::size>())),
+      meta(c.parts) {}
 
+private:
+  struct meta_topo : specialization<color_category, meta_topo> {};
+  using MetaField = field<Meta, data::singular>;
+
+public:
   // The first index space is distinguished in that we decorate it:
   static inline const field<int>::definition<Policy, index_spaces::first> mine;
   static inline const connect_t<Policy> connect;
+  static inline const MetaField::definition<meta_topo> meta_field;
 
   util::key_array<repartitioned, index_spaces> part;
+  data::anti_slot<meta_topo> meta;
 
   std::size_t colors() const {
     return part.front().colors();
@@ -103,6 +112,7 @@ private:
 
 public:
   accessor<canonical::mine> mine;
+  accessor<meta_field> meta;
 
   access() : connect(canonical::connect) {}
 
@@ -132,6 +142,7 @@ public:
     for(auto & a : size)
       f(a);
     f(mine);
+    f(meta);
     connect_visit(f, connect);
   }
 
