@@ -465,9 +465,9 @@ if(NOT FORMAT_ONLY)
     _matchedVars "${_variableNames}")
 
   foreach(_variableName ${_matchedVars})
-    string(REGEX REPLACE "FLECSI" "FleCSI" _variableName ${_variableName})
+    string(REGEX REPLACE "FLECSI" "FleCSI" _tmpvariableName ${_variableName})
     set(FLECSI_CONFIG_CODE
-      "${FLECSI_CONFIG_CODE}\nset(${_variableName} \"${${_variableName}}\")")
+      "${FLECSI_CONFIG_CODE}\nset(${_tmpvariableName} \"${${_variableName}}\")")
   endforeach()
 
   string(REGEX MATCHALL "(^|;)FLOG_[A-Za-z0-9_]*"
