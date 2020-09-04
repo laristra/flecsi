@@ -82,6 +82,8 @@
     - spack env create ${ENVIRONMENT}-${MPI_PROVIDER}
     - spack env activate ${ENVIRONMENT}-${MPI_PROVIDER}
     - spack repo add spack-repo
+    # This uses the legion backend because it also satisfies the dependencies
+    # for MPI (and potentially HPX)
     - spack install --only dependencies ${VERSION}
         backend=legion ${VARIANTS} ^${MPI_PROVIDER}
     - spack install cmake
