@@ -15,7 +15,6 @@
 option(ENABLE_KOKKOS "Enable Kokkos" OFF)
 
 if(ENABLE_KOKKOS)
-
   find_package(Kokkos REQUIRED)
   
   if(KOKKOS_ENABLE_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND
@@ -23,10 +22,5 @@ if(ENABLE_KOKKOS)
     message(FATAL_ERROR "Clang version 8 or greater required for Kokkos")
   endif()
 
-  set(Kokkos_LIBRARIES Kokkos::kokkos)
-
-  list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${Kokkos_LIBRARIES})
-  
-  add_definitions("-DFLECSI_ENABLE_KOKKOS")
-
+  list(APPEND FLECSI_LIBRARY_DEPENDENCIES Kokkos::kokkos)
 endif()
