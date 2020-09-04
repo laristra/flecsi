@@ -96,12 +96,21 @@ function(add_unit name)
   )
 endfunction()
 
+
 #------------------------------------------------------------------------------#
 # FleCSI
 #------------------------------------------------------------------------------#
 
 find_package(FleCSI REQUIRED)
 include_directories(SYSTEM ${FleCSI_INCLUDE_DIRS})
+
+#------------------------------------------------------------------------------#
+# Kokkos, after FleCSI to get FleCSI_* cmakedefines
+#------------------------------------------------------------------------------#
+if(FleCSI_ENABLE_KOKKOS)
+  find_package(Kokkos REQUIRED)
+endif()
+  
 
 #------------------------------------------------------------------------------#
 # FleCSI-Tutorial library.
