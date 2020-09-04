@@ -13,7 +13,7 @@ mpich:
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
     IMAGE: centos-7.8
     VERSION: flecsi@devel
-    VARIANTS: +hdf5 +graphviz +debug_backend
+    VARIANTS: +hdf5 +graphviz +kokkos +debug_backend
 
 mpich:release:
   extends: .env_template
@@ -24,7 +24,7 @@ mpich:release:
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
     IMAGE: centos-7.8
     VERSION: flecsi@devel
-    VARIANTS: +hdf5 +graphviz
+    VARIANTS: +hdf5 +graphviz +kokkos
 
 mpich-clang:
   extends: .env_template
@@ -35,7 +35,7 @@ mpich-clang:
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
     IMAGE: clearlinux
     VERSION: flecsi@devel
-    VARIANTS: +hdf5 +graphviz +debug_backend
+    VARIANTS: +hdf5 +graphviz +kokkos +debug_backend
 
 openmpi:
   extends: .env_template

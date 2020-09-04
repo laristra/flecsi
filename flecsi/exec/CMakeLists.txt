@@ -69,11 +69,14 @@ add_unit(interface
     2
 )
 
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 if(ENABLE_KOKKOS)
   add_unit(kokkos
     SOURCES
       test/kokkos.cc
   )
+endif()
 endif()
 
 add_unit(task

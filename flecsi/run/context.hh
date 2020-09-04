@@ -14,6 +14,7 @@
 #pragma once
 
 /*! @file */
+#include <flecsi-config.h>
 
 #if !defined(__FLECSI_PRIVATE__)
 #error Do not include this file directly!
@@ -28,6 +29,10 @@
 
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
+
+#if defined(FLECSI_ENABLE_KOKKOS)
+#include <Kokkos_Core.hpp>
+#endif
 
 #include <cstddef>
 #include <functional>
