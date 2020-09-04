@@ -75,7 +75,7 @@ RUN cp .images/${SUBDIR}/spack/upstreams.yaml .spack/etc/spack
 # Build flecsi dependencies with mpich provider.
 #------------------------------------------------------------------------------#
 
-ARG TARGET="flecsi@devel backend=legion +hdf5 +graphviz"
+ARG TARGET="flecsi@devel backend=legion +hdf5 +graphviz +kokkos"
 
 RUN . .spack-upstream/share/spack/setup-env.sh && \
   spack fetch --dependencies ${TARGET} +debug_backend ^mpich && \
@@ -89,8 +89,6 @@ RUN . .spack-upstream/share/spack/setup-env.sh && \
 #------------------------------------------------------------------------------#
 # Build flecsi dependencies with openmpi provider.
 #------------------------------------------------------------------------------#
-
-ARG TARGET="flecsi@devel backend=legion +hdf5 +graphviz"
 
 RUN . .spack-upstream/share/spack/setup-env.sh && \
   spack fetch --dependencies ${TARGET} +debug_backend ^openmpi && \

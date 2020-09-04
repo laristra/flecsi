@@ -54,7 +54,7 @@ foreach(image ${BASE_IMAGES})
   add_image(${image} ${REGISTRY}:${image} os/${image})
 
   add_image(devel-${image} ${REGISTRY}:devel-${image}
-    devel/environment
+    devel/ci
     ARGS
       IMAGE_REPO=${IMAGE_REPOSITORY}
       IMAGE_BRANCH=${IMAGE_BRANCH}
@@ -66,7 +66,7 @@ foreach(image ${BASE_IMAGES})
   )
 
   add_image(util-${image} ${REGISTRY}:util-${image}
-    util/environment
+    util/ci
     ARGS
       IMAGE_REPO=${IMAGE_REPOSITORY}
       IMAGE_BRANCH=${IMAGE_BRANCH}
