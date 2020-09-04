@@ -41,12 +41,12 @@ struct index_base {
 };
 
 template<class P>
-struct size_category : index_base, data::partitioned<data::partition> {
-  size_category(const coloring & c)
+struct color_category : index_base, data::partitioned<data::partition> {
+  color_category(const coloring & c)
     : partitioned(data::make_region<P>({c.size(), 1})) {}
 };
 template<>
-struct detail::base<size_category> {
+struct detail::base<color_category> {
   using type = index_base;
 };
 
@@ -71,7 +71,7 @@ struct resize {
 
 private:
   // cslot can't be used, but is unneeded.
-  struct topo : specialization<size_category, topo> {};
+  struct topo : specialization<color_category, topo> {};
   data::anti_slot<topo> size;
 
 public:
@@ -184,9 +184,9 @@ struct detail::base<ragged_category> {
 };
 
 template<class P>
-struct index_category : size_category<P>, with_ragged<P> {
+struct index_category : color_category<P>, with_ragged<P> {
   index_category(const index_base::coloring & c)
-    : size_category<P>(c), with_ragged<P>(c.size()) {}
+    : color_category<P>(c), with_ragged<P>(c.size()) {}
 };
 template<>
 struct detail::base<index_category> {
