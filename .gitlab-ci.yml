@@ -35,8 +35,10 @@ format:diff:
 
 format:check:
   extends: .check_format_template
-  dependencies:
-    - format:diff
+  needs:
+    - job: format:diff
+      artifacts: true
+    - job: tutorial:legion # Hack to make this last. Gitlab needs some mechanism to allow this
   variables:
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
     IMAGE: util-fedora-30
@@ -49,8 +51,8 @@ format:check:
 
 mpich-defaults:
   extends: .defaults_build_template
-  dependencies:
-    - mpich
+  needs:
+    ["mpich"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
@@ -66,8 +68,8 @@ mpich-defaults:
 
 mpich-legion-gnu:
   extends: .build_template
-  dependencies:
-    - mpich
+  needs:
+    ["mpich"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
@@ -83,8 +85,8 @@ mpich-legion-gnu:
 
 mpich-legion-gnu:release:
   extends: .build_template
-  dependencies:
-    - mpich:release
+  needs:
+    ["mpich:release"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
@@ -107,8 +109,8 @@ mpich-legion-gnu:release:
 
 mpich-mpi-gnu:
   extends: .build_template
-  dependencies:
-    - mpich
+  needs:
+    ["mpich"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
@@ -124,8 +126,8 @@ mpich-mpi-gnu:
 
 mpich-mpi-gnu:release:
   extends: .build_template
-  dependencies:
-    - mpich:release
+  needs:
+    ["mpich:release"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
@@ -148,8 +150,8 @@ mpich-mpi-gnu:release:
 
 tutorial:legion:
   extends: .tutorial_template
-  dependencies:
-    - mpich-legion-gnu:release
+  needs:
+    ["mpich-legion-gnu:release"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
@@ -169,8 +171,8 @@ tutorial:legion:
 
 openmpi-legion-gnu:
   extends: .build_template
-  dependencies:
-    - openmpi
+  needs:
+    ["openmpi"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
@@ -186,8 +188,8 @@ openmpi-legion-gnu:
 
 openmpi-legion-gnu:release:
   extends: .build_template
-  dependencies:
-    - openmpi:release
+  needs:
+    ["openmpi:release"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
@@ -210,8 +212,8 @@ openmpi-legion-gnu:release:
 
 openmpi-mpi-gnu:
   extends: .build_template
-  dependencies:
-    - openmpi
+  needs:
+    ["openmpi"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
@@ -227,8 +229,8 @@ openmpi-mpi-gnu:
 
 openmpi-mpi-gnu:release:
   extends: .build_template
-  dependencies:
-    - openmpi:release
+  needs:
+    ["openmpi:release"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
@@ -251,8 +253,8 @@ openmpi-mpi-gnu:release:
 
 mpich-legion-clang:
   extends: .build_template
-  dependencies:
-    - mpich-clang
+  needs:
+    ["mpich-clang"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
@@ -275,8 +277,8 @@ mpich-legion-clang:
 
 mpich-mpi-clang:
   extends: .build_template
-  dependencies:
-    - mpich-clang
+  needs:
+    ["mpich-clang"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
@@ -299,8 +301,8 @@ mpich-mpi-clang:
 
 openmpi-mpi-clang:
   extends: .build_template
-  dependencies:
-    - openmpi-clang
+  needs:
+    ["openmpi-clang"]
   variables:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
