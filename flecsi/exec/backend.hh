@@ -67,6 +67,6 @@ auto execute(ARGS &&...);
 
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_charm
 
-#include <flecsi/exec/charm/policy.hh>
+#include "flecsi/exec/charm/policy.hh"
 
 #endif // FLECSI_RUNTIME_MODEL

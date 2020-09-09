@@ -28,7 +28,7 @@
 #include "flecsi/util/common.hh"
 #include "flecsi/util/function_traits.hh"
 #include "flecsi/util/serialize.hh"
-#include <flecsi/flog.hh>
+#include "flecsi/flog.hh"
 
 #if !defined(FLECSI_ENABLE_CHARM)
 #error FLECSI_ENABLE_CHARM not defined! This file depends on Charm!

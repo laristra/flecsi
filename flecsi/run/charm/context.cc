@@ -22,7 +22,7 @@
 #include "flecsi/exec/charm/task_wrapper.hh"
 #include "flecsi/run/charm/context.hh"
 #include "flecsi/run/types.hh"
-#include <flecsi/data.hh>
+#include "flecsi/data.hh"
 
 #include <mpi-interoperate.h>
 
@@ -35,9 +35,7 @@ using exec::charm::task_id;
 
 namespace charm {
 
-// TODO: Depth set to -1 because it's being incremented somewhere before
-// the top level action executes.
-ContextGroup::ContextGroup() : depth(-1) {
+ContextGroup::ContextGroup() {
   if (CkMyPe() != 0) {
     run::context::instance().context_proxy_ = thisProxy;
   }

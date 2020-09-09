@@ -28,7 +28,7 @@
 #include "flecsi/run/backend.hh"
 #include "flecsi/util/demangle.hh"
 #include "flecsi/util/function_traits.hh"
-#include <flecsi/flog.hh>
+#include "flecsi/flog.hh"
 
 #include <functional>
 #include <memory>
