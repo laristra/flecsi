@@ -59,9 +59,9 @@ struct convert_accessor {
 } // namespace data::detail
 
 // Send and receive only the reference_base portion:
-template<class T, std::size_t Priv>
-struct util::serial_convert<data::accessor<data::raw, T, Priv>> {
-  using type = data::accessor<data::raw, T, Priv>;
+template<data::layout L, class T, std::size_t Priv>
+struct util::serial_convert<data::accessor<L, T, Priv>> {
+  using type = data::accessor<L, T, Priv>;
   using Rep = std::size_t;
   static Rep put(const type & r) {
     return r.identifier();
@@ -70,24 +70,15 @@ struct util::serial_convert<data::accessor<data::raw, T, Priv>> {
     return type(r);
   }
 };
-template<class T, std::size_t P>
-struct util::serial_convert<data::accessor<data::dense, T, P>>
-  : data::detail::convert_accessor<data::accessor<data::dense, T, P>> {};
 template<class T, std::size_t Priv>
 struct util::serial_convert<data::accessor<data::singular, T, Priv>>
   : data::detail::convert_accessor<data::accessor<data::singular, T, Priv>> {};
 template<class T, std::size_t P, std::size_t OP>
 struct util::serial_convert<data::ragged_accessor<T, P, OP>>
   : data::detail::convert_accessor<data::ragged_accessor<T, P, OP>> {};
-template<class T, std::size_t P>
-struct util::serial_convert<data::accessor<data::ragged, T, P>>
-  : data::detail::convert_accessor<data::accessor<data::ragged, T, P>> {};
 template<data::layout L, class T>
 struct util::serial_convert<data::mutator<L, T>>
   : data::detail::convert_accessor<data::mutator<L, T>> {};
-template<class T, std::size_t P>
-struct util::serial_convert<data::accessor<data::sparse, T, P>>
-  : data::detail::convert_accessor<data::accessor<data::sparse, T, P>> {};
 template<class T, std::size_t Priv>
 struct util::serial<data::topology_accessor<T, Priv>,
   std::enable_if_t<!util::memcpyable_v<data::topology_accessor<T, Priv>>>> {

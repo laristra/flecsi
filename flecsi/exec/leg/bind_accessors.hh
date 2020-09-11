@@ -130,9 +130,9 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE>
-  static typename std::enable_if_t<
-    !std::is_base_of_v<data::reference_base, DATA_TYPE>>
-  visit(DATA_TYPE &) {
+  static
+    typename std::enable_if_t<!std::is_base_of_v<data::bind_tag, DATA_TYPE>>
+    visit(DATA_TYPE &) {
     {
       log::devel_guard guard(bind_accessors_tag);
       flog_devel(info) << "Skipping argument with type "

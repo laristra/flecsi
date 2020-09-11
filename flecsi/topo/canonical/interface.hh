@@ -46,22 +46,33 @@ struct canonical : canonical_base, with_ragged<Policy> {
   struct access;
 
   template<class F>
-  static void fields(F f) {
-    f(mine);
-    connect_visit(f, connect);
+  static void fields(F f, typename Policy::slot & s) {
+    for(auto & r : s->part)
+      f(r.sizes.field, r.sizes.get_slot());
+    f(mine, s);
+    f(meta_field, s->meta.get_slot());
+    connect_visit([&](const auto & fld) { f(fld, s); }, connect);
   }
 
   canonical(const coloring & c)
     : with_ragged<Policy>(c.parts),
       part(make_partitions(c,
         index_spaces(),
-        std::make_index_sequence<index_spaces::size>())) {}
+        std::make_index_sequence<index_spaces::size>())),
+      meta(c.parts) {}
 
+private:
+  struct meta_topo : specialization<color_category, meta_topo> {};
+  using MetaField = field<Meta, data::singular>;
+
+public:
   // The first index space is distinguished in that we decorate it:
   static inline const field<int>::definition<Policy, index_spaces::first> mine;
   static inline const connect_t<Policy> connect;
+  static inline const MetaField::definition<meta_topo> meta_field;
 
   util::key_array<repartitioned, index_spaces> part;
+  data::anti_slot<meta_topo> meta;
 
   std::size_t colors() const {
     return part.front().colors();
@@ -92,12 +103,25 @@ private:
 template<class P>
 template<std::size_t Priv>
 struct canonical<P>::access {
+private:
   template<const auto & F>
   using accessor = data::accessor_member<F, Priv>;
-  accessor<canonical::mine> mine;
+  using size_accessor = resize::Field::accessor<ro>;
+  util::key_array<size_accessor, index_spaces> size{make_size(index_spaces())};
   connect_access<P, Priv> connect;
 
+public:
+  accessor<canonical::mine> mine;
+  accessor<meta_field> meta;
+
   access() : connect(canonical::connect) {}
+
+  // NB: iota_view's iterators are allowed to outlive it.
+  template<index_space S>
+  auto entities() {
+    return make_ids<S>(util::iota_view<util::id>(
+      0, data::partition::row_size(size.template get<S>())));
+  }
 
   template<index_space F, index_space T>
   auto & get_connect() {
@@ -108,10 +132,26 @@ struct canonical<P>::access {
     return connect.template get<F>().template get<T>();
   }
 
+  template<index_space T, index_space F>
+  auto entities(id<F> i) const {
+    return make_ids<T>(get_connect<F, T>()[i]);
+  }
+
   template<class F>
   void bind(F f) {
+    for(auto & a : size)
+      f(a);
     f(mine);
+    f(meta);
     connect_visit(f, connect);
+  }
+
+private:
+  template<auto... VV>
+  static util::key_array<size_accessor, util::constants<VV...>> make_size(
+    util::constants<VV...> /* index_spaces, to deduce a pack */) {
+    return {{(void(VV),
+      size_accessor(size_accessor::base_type(resize::field.fid)))...}};
   }
 };
 

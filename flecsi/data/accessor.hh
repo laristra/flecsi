@@ -36,11 +36,12 @@ namespace flecsi {
 namespace data {
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<singular, DATA_TYPE, PRIVILEGES> {
+struct accessor<singular, DATA_TYPE, PRIVILEGES> : bind_tag {
   using value_type = DATA_TYPE;
   using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;
   using element_type = typename base_type::element_type;
 
+  explicit accessor(std::size_t s) : base(s) {}
   accessor(const base_type & b) : base(b) {}
 
   element_type & get() const {
@@ -131,8 +132,8 @@ struct ragged_accessor
   using Offsets = accessor<dense, std::size_t, OP>;
   using row = util::span<element_type>;
 
-  ragged_accessor(const base_type & b)
-    : base_type(b), off(this->identifier()) {}
+  using base_type::base_type;
+  ragged_accessor(const base_type & b) : base_type(b) {}
 
   row operator[](std::size_t i) const {
     // Without an extra element, we must store one endpoint implicitly.
@@ -175,7 +176,7 @@ struct ragged_accessor
   }
 
 private:
-  Offsets off;
+  Offsets off{this->identifier()};
 };
 
 template<class T, std::size_t P>
@@ -592,6 +593,7 @@ public:
     base_row s;
   };
 
+  using base_type::base_type;
   accessor(const base_type & b) : base_type(b) {}
 
   row operator[](std::size_t i) const {
@@ -819,40 +821,11 @@ private:
 
 } // namespace data
 
-template<class T, std::size_t P>
-struct exec::detail::task_param<data::accessor<data::raw, T, P>> {
+template<data::layout L, class T, std::size_t P>
+struct exec::detail::task_param<data::accessor<L, T, P>> {
   template<class Topo, typename Topo::index_space S>
-  static auto replace(const data::field_reference<T, data::raw, Topo, S> & r) {
-    return data::accessor<data::raw, T, P>(r.fid());
-  }
-};
-template<class T, std::size_t S>
-struct exec::detail::task_param<data::accessor<data::dense, T, S>> {
-  using type = data::accessor<data::dense, T, S>;
-  template<class Topo, typename Topo::index_space Space>
-  static type replace(
-    const data::field_reference<T, data::dense, Topo, Space> & r) {
-    return exec::replace_argument<typename type::base_type>(
-      r.template cast<data::raw>());
-  }
-};
-template<class T, std::size_t S>
-struct exec::detail::task_param<data::accessor<data::singular, T, S>> {
-  using type = data::accessor<data::singular, T, S>;
-  template<class Topo, typename Topo::index_space Space>
-  static type replace(
-    const data::field_reference<T, data::singular, Topo, Space> & r) {
-    return exec::replace_argument<typename type::base_type>(
-      r.template cast<data::dense>());
-  }
-};
-template<class T, std::size_t P>
-struct exec::detail::task_param<data::accessor<data::ragged, T, P>> {
-  using type = data::accessor<data::ragged, T, P>;
-  template<class Topo, typename Topo::index_space S>
-  static type replace(
-    const data::field_reference<T, data::ragged, Topo, S> & r) {
-    return type::parameter(r);
+  static auto replace(const data::field_reference<T, L, Topo, S> & r) {
+    return data::accessor<L, T, P>(r.fid());
   }
 };
 template<class T>
@@ -862,17 +835,6 @@ struct exec::detail::task_param<data::mutator<data::ragged, T>> {
   static type replace(
     const data::field_reference<T, data::ragged, Topo, S> & r) {
     return type::base_type::parameter(r);
-  }
-};
-template<class T, std::size_t S>
-struct exec::detail::task_param<data::accessor<data::sparse, T, S>> {
-  using type = data::accessor<data::sparse, T, S>;
-  template<class Topo, typename Topo::index_space Space>
-  static type replace(
-    const data::field_reference<T, data::sparse, Topo, Space> & r) {
-    return exec::replace_argument<typename type::base_type>(
-      r.template cast<data::ragged,
-        typename field<T, data::sparse>::base_type::value_type>());
   }
 };
 template<class T>

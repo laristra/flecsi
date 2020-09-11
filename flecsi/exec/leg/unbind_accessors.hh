@@ -57,14 +57,17 @@ struct unbind_accessors {
     m.commit();
   }
 
+  template<class Topo, std::size_t P>
+  void visit(data::topology_accessor<Topo, P> &) {}
+
   /*--------------------------------------------------------------------------*
     Non-FleCSI Data Types
    *--------------------------------------------------------------------------*/
 
   template<typename DATA_TYPE>
-  static typename std::enable_if_t<
-    !std::is_base_of_v<data::reference_base, DATA_TYPE>>
-  visit(DATA_TYPE &) {
+  static
+    typename std::enable_if_t<!std::is_base_of_v<data::bind_tag, DATA_TYPE>>
+    visit(DATA_TYPE &) {
     {
       log::devel_guard guard(unbind_accessors_tag);
       flog_devel(info) << "Skipping argument with type "

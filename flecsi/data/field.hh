@@ -58,11 +58,7 @@ struct field_register<T, raw, Topo, Space> : field_info_t {
 };
 } // namespace detail
 
-/*!
-  The field_reference_t type is used to reference fields. It adds a \em
-  topology field to the \c reference_base to track the
-  associated topology instance.
- */
+/// Identifies a field on a particular topology instance.
 template<class Topo>
 struct field_reference_t : convert_tag {
   // The use of the slot allows creating field references statically, before
@@ -188,6 +184,7 @@ using field_accessor =
 template<const auto & F, std::size_t Priv>
 struct accessor_member : field_accessor<decltype(F), Priv> {
   accessor_member() : accessor_member::accessor(F.fid) {}
+  using accessor_member::accessor::operator=; // for singular
 };
 
 } // namespace data

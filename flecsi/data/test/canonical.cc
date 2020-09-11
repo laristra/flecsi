@@ -56,7 +56,15 @@ int
 init(canon::accessor<wo> t, field<double>::accessor<wo> c) {
   UNIT {
     t.mine(0) = mine;
+    t.meta = {6, 3};
     t.get_connect<canon::cells, canon::vertices>()[3].back() = favorite;
+    util::id last = -1;
+    for(const auto v : t.entities<canon::vertices>()) {
+      static_assert(
+        std::is_same_v<decltype(v), const topo::id<canon::vertices>>);
+      last = v;
+    }
+    EXPECT_EQ((last + 1) / 2, 4u);
     c(0) = p0;
   };
 } // init
@@ -96,9 +104,14 @@ check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
     auto & r = t.mine(0);
     static_assert(std::is_same_v<decltype(r), const int &>);
     EXPECT_EQ(r, mine);
-    auto & cv = t.get_connect<canon::cells, canon::vertices>()[0].front();
-    static_assert(std::is_same_v<decltype(cv), const util::id &>);
-    EXPECT_EQ(cv, favorite);
+    auto & m = t.meta.get();
+    static_assert(std::is_same_v<decltype(m), const canon::core::Meta &>);
+    EXPECT_EQ(m.column_size, 2 * m.column_offset);
+    const auto cv =
+      t.entities<canon::vertices>(topo::id<canon::cells>(0)).front();
+    static_assert(
+      std::is_same_v<decltype(cv), const topo::id<canon::vertices>>);
+    EXPECT_EQ(cv - decltype(cv)(favorite), 0);
     EXPECT_EQ(c(0), p0);
   };
 } // check

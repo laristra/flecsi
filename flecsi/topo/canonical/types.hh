@@ -34,6 +34,10 @@ struct canonical_base {
     std::size_t parts;
   }; // struct coloring
 
+  struct Meta {
+    util::id column_size, column_offset;
+  };
+
   static std::size_t allocate(std::size_t n, std::size_t p, std::size_t i) {
     return (i + 1) * n / p - i * n / p;
   }
