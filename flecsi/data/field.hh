@@ -184,6 +184,7 @@ using field_accessor =
 template<const auto & F, std::size_t Priv>
 struct accessor_member : field_accessor<decltype(F), Priv> {
   accessor_member() : accessor_member::accessor(F.fid) {}
+  using accessor_member::accessor::operator=; // for singular
 };
 
 } // namespace data
