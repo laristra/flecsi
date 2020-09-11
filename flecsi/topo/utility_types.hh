@@ -77,9 +77,7 @@ private:
   // The .get<>s here and above just access the elements in order, of course.
   template<class T, class U, auto... VV>
   static T make_from(const util::key_array<U, util::constants<VV...>> & m) {
-    using Accessor = typename T::value_type;
-    return {
-      {Accessor(typename Accessor::base_type(m.template get<VV>().fid))...}};
+    return {{typename T::value_type(m.template get<VV>().fid)...}};
   }
 };
 
