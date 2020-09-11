@@ -36,7 +36,7 @@ namespace flecsi {
 namespace data {
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<singular, DATA_TYPE, PRIVILEGES> {
+struct accessor<singular, DATA_TYPE, PRIVILEGES> : bind_tag {
   using value_type = DATA_TYPE;
   using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;
   using element_type = typename base_type::element_type;

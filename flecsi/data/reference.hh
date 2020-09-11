@@ -29,18 +29,10 @@
 namespace flecsi {
 namespace data {
 
-#if 0
-template<typename TOPOLOGY_TYPE>
-struct topology_instance;
-#endif
+struct bind_tag {}; // must be recognized as a task parameter
 
-/*!
-  The reference_base type is the base of all FleCSI data model types.
-  It is used to identify FleCSI data model types, and to store basic handle
-  information.
- */
-
-struct reference_base {
+/// An integer used to identify a resource to bind in a task.
+struct reference_base : bind_tag {
 
   reference_base(size_t identifier) : identifier_(identifier) {}
 

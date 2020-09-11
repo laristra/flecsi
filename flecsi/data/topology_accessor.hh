@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/reference.hh"
 #include "flecsi/exec/launch.hh"
 #include <cstddef> // size_t
 
@@ -37,7 +38,8 @@ namespace data {
  */
 template<class T, std::size_t Priv>
 struct topology_accessor
-  : T::template interface<typename T::core::template access<Priv>> {
+  : T::template interface<typename T::core::template access<Priv>>,
+    bind_tag {
   using core = typename T::core::template access<Priv>;
   static_assert(sizeof(typename T::template interface<core>) == sizeof(core),
     "topology interfaces may not add data members");
