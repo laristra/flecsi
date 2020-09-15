@@ -194,8 +194,7 @@ struct unstructured<Policy>::access {
 private:
   template<const auto & Field>
   using accessor = data::accessor_member<Field, Privileges>;
-  using size_accessor = resize::Field::accessor<ro>;
-  util::key_array<size_accessor, index_spaces> size_{make_size(index_spaces())};
+  util::key_array<resize::accessor, index_spaces> size_;
   connect_access<Policy, Privileges> connect_;
 
   template<index_space From, index_space To>
@@ -234,14 +233,6 @@ public:
   template<index_space To, index_space From>
   auto entities(id<From> from) const {
     return make_ids<To>(connectivity<From, To>()[from]);
-  }
-
-private:
-  template<auto... Value>
-  static util::key_array<size_accessor, util::constants<Value...>> make_size(
-    util::constants<Value...> /* index spaces to deduce pack */) {
-    return {{(void(Value),
-      size_accessor(size_accessor::base_type(resize::field.fid)))...}};
   }
 }; // struct unstructured<Policy>::access
 
