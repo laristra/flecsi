@@ -40,6 +40,9 @@ struct index_base {
   };
 };
 
+// A topology with one index point per color.
+// Suitable for the singular layout but not the ragged layout, which is
+// implemented in terms of this topology.
 template<class P>
 struct color_category : index_base, data::partitioned<data::partition> {
   color_category(const coloring & c)
@@ -50,6 +53,7 @@ struct detail::base<color_category> {
   using type = index_base;
 };
 
+// A subtopology for storing/updating row sizes of a partition.
 struct resize {
   explicit resize(std::size_t n) : size(n) {}
 
@@ -93,9 +97,12 @@ private:
   static constexpr auto zero = make_partial<k0>();
 
 public:
+  // Construct a partition with an initial size.
+  // f is passed as a task argument, so it must be serializable;
+  // consider using make_partial.
   template<class F = decltype(zero)>
   repartition(const data::region & r, F f = zero);
-  void resize() {
+  void resize() { // apply sizes stored in the field
     update(*sizes, sizes().fid());
   }
 
@@ -183,6 +190,7 @@ struct detail::base<ragged_category> {
   using type = ragged_base;
 };
 
+// The user-facing variant of the color category supports ragged fields.
 template<class P>
 struct index_category : color_category<P>, with_ragged<P> {
   index_category(const index_base::coloring & c)
