@@ -34,6 +34,10 @@ struct constant { // like std::integral_constant, but better
 
 namespace detail {
 template<auto...>
+struct constant1 {};
+template<auto V>
+struct constant1<V> : constant<V> {};
+template<auto...>
 extern void * const first_constant; // undefined
 template<auto V, auto... VV>
 constexpr const auto & first_constant<V, VV...> = V;
@@ -43,12 +47,8 @@ constexpr const auto & first_constant<V, VV...> = V;
 // use a type to hold an arbitrary amount of information, but there's no need
 // to convert each to a type separately.
 template<auto... VV>
-struct constants {
+struct constants : detail::constant1<VV...> {
   static constexpr std::size_t size = sizeof...(VV);
-  // NB: not SFINAE-friendly:
-  static constexpr
-    typename decltype((constant<0>(), ..., constant<VV>()))::type value =
-      size == 1 ? (VV, ...) : throw;
   static constexpr decltype(detail::first_constant<VV...>) first =
     detail::first_constant<VV...>;
 
