@@ -44,6 +44,7 @@ struct base;
 inline std::size_t next_id;
 } // namespace detail
 
+// To obtain the base class without instantiating a core topology type:
 template<template<class> class T>
 using base_t = typename detail::base<T>::type;
 
