@@ -41,14 +41,7 @@ namespace exec::leg {
 
 // Note that what is visited are the objects \e moved into the user's
 // parameters (and are thus the same object only in case of a reference).
-template<class... TT>
-struct unbind_accessors {
-  using Tuple = std::tuple<TT...>;
-
-  unbind_accessors(Tuple & t) : acc(t) {
-    buffer(std::index_sequence_for<TT...>());
-  }
-
+struct unbind_base {
   template<data::layout L, typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<L, DATA_TYPE, PRIVILEGES> &) {} // visit
 
@@ -74,6 +67,15 @@ struct unbind_accessors {
                        << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit
+};
+
+template<class... TT>
+struct unbind_accessors : unbind_base {
+  using Tuple = std::tuple<TT...>;
+
+  unbind_accessors(Tuple & t) : acc(t) {
+    buffer(std::index_sequence_for<TT...>());
+  }
 
   void operator()() {
     std::apply(
