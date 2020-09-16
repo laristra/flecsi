@@ -461,25 +461,6 @@ struct context {
   }
 
   /*--------------------------------------------------------------------------*
-    Topology interface.
-   *--------------------------------------------------------------------------*/
-
-  /*!
-    Return a boolean indicating whether or not the given instance of
-    a data topology has had its internal fields registered with the
-    data model.
-
-    @param topology_type_identifier Topology type identifier.
-    @param instance_identifier      Instance identifier.
-   */
-
-  bool topology_fields_registered(size_t type_key, size_t instance_key) {
-    return !registered_topology_fields_
-              .insert(std::make_pair(type_key, instance_key))
-              .second;
-  } // topology_fields_registered
-
-  /*--------------------------------------------------------------------------*
     Field interface.
    *--------------------------------------------------------------------------*/
 
@@ -647,12 +628,6 @@ protected:
    *--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, void *> function_registry_;
-
-  /*--------------------------------------------------------------------------*
-    Topology data members.
-   *--------------------------------------------------------------------------*/
-
-  std::set<std::pair<size_t, size_t>> registered_topology_fields_;
 
   /*--------------------------------------------------------------------------*
     Field data members.
