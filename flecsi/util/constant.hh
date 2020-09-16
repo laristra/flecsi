@@ -98,6 +98,8 @@ struct key_tuple : std::tuple<typename VT::type...> {
   using Base = typename key_tuple::tuple;
   using Base::Base;
 
+  // std::apply doesn't natively support classes derived from std::tuple.
+  // We could alternatively specialize std::tuple_size for key_tuple.
   template<class F>
   decltype(auto) apply(F && f) & {
     return std::apply(std::forward<F>(f), static_cast<Base &>(*this));
