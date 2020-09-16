@@ -47,6 +47,7 @@ struct field_base {};
 template<class, layout, class Topo, typename Topo::index_space>
 struct field_register;
 
+// All field registration is ultimately defined in terms of raw fields.
 template<class T, class Topo, typename Topo::index_space Space>
 struct field_register<T, raw, Topo, Space> : field_info_t {
   explicit field_register(field_id_t i) : field_info_t{i, sizeof(T)} {
@@ -181,8 +182,10 @@ struct field_register<T, ragged, Topo, Space>
 } // namespace detail
 
 template<class F, std::size_t Priv>
-using field_accessor =
+using field_accessor = // for convenience with decltype
   typename std::remove_reference_t<F>::Field::template accessor1<Priv>;
+// Accessors that are always used with the same (internal) field can be
+// automatically initialized with its ID rather than having to be serialized.
 template<const auto & F, std::size_t Priv>
 struct accessor_member : field_accessor<decltype(F), Priv> {
   accessor_member() : accessor_member::accessor(F.fid) {}

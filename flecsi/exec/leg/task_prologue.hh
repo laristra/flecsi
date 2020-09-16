@@ -98,6 +98,8 @@ struct task_prologue_t {
     walk(static_cast<P *>(nullptr), aa...);
   }
 
+  // All fields are handled in terms of their underlying raw-layout fields.
+
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
     The following methods are specializations on layout and client
     type, potentially for every permutation thereof.
@@ -143,6 +145,8 @@ struct task_prologue_t {
     region_reqs_.push_back(rr);
   } // visit
 
+  // This implementation can be generic because all topologies are expected to
+  // provide get_partition.
   template<typename DATA_TYPE,
     size_t PRIVILEGES,
     class Topo,
@@ -210,6 +214,8 @@ struct task_prologue_t {
         typename field<T, data::sparse>::base_type::value_type>());
   }
 
+  // Topology accessors use the Visitor pattern: topologies provide a fields
+  // function that maps recursive calls to visit over all their fields.
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> * /* parameter */,
     data::topology_slot<Topo> & slot) {
