@@ -58,17 +58,13 @@ struct resize {
   explicit resize(std::size_t n) : size(n) {}
 
   auto operator()() {
-    return field(size.get_slot());
+    return field(size);
   }
   auto & operator*() {
-    return *size;
+    return size;
   }
   auto & operator*() const {
-    return *size;
-  }
-
-  auto & get_slot() {
-    return size.get_slot();
+    return size;
   }
 
   using Field = flecsi::field<data::partition::row, data::singular>;
@@ -76,7 +72,7 @@ struct resize {
 private:
   // cslot can't be used, but is unneeded.
   struct topo : specialization<color_category, topo> {};
-  data::anti_slot<topo> size;
+  topo::core size;
 
 public:
   static inline const Field::definition<topo> field;
@@ -182,7 +178,7 @@ struct ragged_topology : specialization<ragged_category, ragged_topology<T>> {
 template<class P>
 struct with_ragged { // for interface consistency
   with_ragged(std::size_t n) : ragged(n) {}
-  data::anti_slot<ragged_topology<P>> ragged;
+  typename ragged_topology<P>::core ragged;
 };
 
 template<>
