@@ -95,6 +95,8 @@ connect_visit(F && f, T && t) {
   });
 }
 
+// A "strong typedef" for T that supports overload resolution, template
+// argument deduction, and limited arithmetic.
 // The first parameter differentiates topologies/index spaces.
 template<auto, class T = util::id>
 struct id {
