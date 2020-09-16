@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/flog.hh"
 #include <optional>
 
 namespace flecsi {
@@ -43,10 +44,11 @@ struct topology_slot : convert_tag {
   } // deallocate
 
   data_t & get() {
+    flog_assert(data, "topology not allocated");
     return *data;
   }
   const data_t & get() const {
-    return *data;
+    return const_cast<topology_slot &>(*this).get();
   }
 
   data_t * operator->() {
