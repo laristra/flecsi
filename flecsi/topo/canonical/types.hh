@@ -38,6 +38,7 @@ struct canonical_base {
     util::id column_size, column_offset;
   };
 
+  // For this simple case, two scalars determine all colors' sizes.
   static std::size_t allocate(std::size_t n, std::size_t p, std::size_t i) {
     return (i + 1) * n / p - i * n / p;
   }
