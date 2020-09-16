@@ -81,14 +81,8 @@ struct util::serial_convert<data::mutator<L, T>>
   : data::detail::convert_accessor<data::mutator<L, T>> {};
 template<class T, std::size_t Priv>
 struct util::serial<data::topology_accessor<T, Priv>,
-  std::enable_if_t<!util::memcpyable_v<data::topology_accessor<T, Priv>>>> {
-  using type = data::topology_accessor<T, Priv>;
-  template<class P>
-  static void put(P &, const type &) {}
-  static type get(const std::byte *&) {
-    return type();
-  }
-};
+  std::enable_if_t<!util::memcpyable_v<data::topology_accessor<T, Priv>>>>
+  : util::serial_value<data::topology_accessor<T, Priv>> {};
 
 template<auto & F, class... AA>
 struct util::serial<exec::partial<F, AA...>,
@@ -105,16 +99,7 @@ struct util::serial<exec::partial<F, AA...>,
 };
 
 template<class T>
-struct util::serial_convert<future<T>> {
-  using type = future<T>;
-  struct Rep {};
-  static Rep put(const type &) {
-    return {};
-  }
-  static type get(const Rep &) {
-    return {};
-  }
-};
+struct util::serial<future<T>> : util::serial_value<future<T>> {};
 
 namespace exec::leg {
 using run::leg::task;
