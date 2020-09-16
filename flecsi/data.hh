@@ -41,11 +41,6 @@ namespace flecsi {
 inline topo::global::slot global_topology;
 
 /*
-  Per-process coloring.
- */
-inline topo::index::cslot process_coloring;
-
-/*
   Per-process topology instance.
  */
 inline topo::index::slot process_topology;
@@ -62,18 +57,9 @@ struct data_guard {
       global_topology.deallocate();
     }
   } g;
-  struct color_guard {
-    color_guard() {
-      process_coloring.allocate(run::context::instance().processes());
-    }
-    color_guard(color_guard &&) = delete;
-    ~color_guard() {
-      process_coloring.deallocate();
-    }
-  } c;
   struct process_guard {
     process_guard() {
-      process_topology.allocate(process_coloring.get());
+      process_topology.allocate(run::context::instance().processes());
     }
     process_guard(process_guard &&) = delete;
     ~process_guard() {
