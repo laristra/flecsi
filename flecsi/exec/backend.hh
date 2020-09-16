@@ -33,6 +33,9 @@ namespace flecsi {
   @tparam ATTRIBUTES    The task attributes mask.
   @tparam ARGS The user-specified task arguments, implicitly converted to the
     parameter types for \a TASK.
+    Certain FleCSI-defined parameter types accept particular, different
+    argument types that serve as selectors for information stored by the
+    backend; each type involved documents the correspondence.
 
   \note Additional types may be supported by defining appropriate
     specializations of \c util::serial or \c util::serial_convert.  Avoid

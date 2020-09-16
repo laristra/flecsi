@@ -48,6 +48,8 @@ namespace exec::leg {
   an executing legion task to properly complete the users accessors, i.e., by
   pointing the accessor \em view instances to the appropriate legion-mapped
   buffers.
+
+  This is the other half of the wire protocol implemented by \c task_prologue.
  */
 
 struct bind_accessors : public util::tuple_walker<bind_accessors> {
@@ -65,6 +67,8 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
     std::vector<Legion::Future> const & futures)
     : legion_runtime_(legion_runtime), legion_context_(legion_context),
       regions_(regions), futures_(futures) {}
+
+  // All accessors are handled in terms of their underlying raw accessors.
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> & accessor) {
@@ -112,6 +116,8 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
     visit(m.get_base());
   }
 
+  // Topology accessors use the Visitor pattern: core topology interfaces
+  // provide a bind function that calls visit on all their accessors.
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> & a) {
     a.bind([&](auto & x) { visit(x); }); // Clang 8.0.1 deems 'this' unused

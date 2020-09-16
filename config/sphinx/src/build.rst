@@ -101,7 +101,7 @@ to install and configure:
 
 .. code-block:: console
 
-  $ git clone git@github.com:spack/spack.git
+  $ git clone https://github.com/spack/spack.git
   $ source path/to/spack/repository/share/spack/setup-env.sh
 
 Once spack is installed, you can install FleCSI like:

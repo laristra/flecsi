@@ -123,6 +123,7 @@ reduce_internal(Args &&... args) {
 
   const auto domain_size = [&args..., &flecsi_context] {
     if constexpr(processor_type == task_processor_type_t::mpi) {
+      // The status of being an MPI task contributes a launch domain:
       return launch_size<
         typename detail::tuple_prepend<launch_domain, param_tuple>::type>(
         launch_domain{flecsi_context.processes()}, args...);
@@ -157,6 +158,7 @@ reduce_internal(Args &&... args) {
   //------------------------------------------------------------------------//
 
   using wrap = leg::task_wrapper<F, processor_type>;
+  // Replace the MPI "processor type" with an actual flag:
   const auto task = leg::task_id<wrap::execute,
     (Attributes & ~mpi) | 1 << static_cast<std::size_t>(wrap::LegionProcessor)>;
 
@@ -247,6 +249,7 @@ reduce_internal(Args &&... args) {
 
 } // namespace exec
 
+// To avoid compile- and runtime recursion, only user tasks trigger logging.
 template<auto & F, class Reduction, size_t Attributes, typename... Args>
 auto
 reduce(Args &&... args) {

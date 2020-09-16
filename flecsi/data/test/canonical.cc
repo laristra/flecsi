@@ -48,6 +48,8 @@ allocate0(topo::resize::Field::accessor<wo> a) {
 }
 void
 allocate(field<util::id, data::ragged>::mutator m) {
+  // This could provide meaningful initial values, but we want to exercise
+  // writable topology/ragged accessors.
   for(int i = 0; i < 4; ++i)
     m[i].resize(i + 1);
 }

@@ -456,7 +456,7 @@ Checkout spack and flecsi:
 .. code-block:: console
 
   $ git clone --branch devel git@gitlab.lanl.gov:laristra/flecsi.git
-  $ git clone --single-branch --branch develop git@github.com:spack/spack.git
+  $ git clone --single-branch --branch develop https://github.com/spack/spack.git
 
 Source the spack environment script:
 
@@ -470,22 +470,15 @@ Add the flecsi spack repo:
 
   $ spack repo add flecsi/spack-repo
 
-Load gcc module and update spack compilers:
+Load compiler modules (both work if loaded in this order) and update spack
+compilers:
 
 .. code-block:: console
 
-  $ module load gcc/9.3.0
+  $ module load clang/8.0.1 gcc/9.3.0
   $ spack compilers
 
-Install the flecsi dependencies:
-
-.. code-block:: console
-
-  $ spack install --only dependencies flecsi@devel backend=legion +hdf5 +graphviz +flog ^mpich
-
-Create a spack environment and install the flecsi dependencies. This is
-not redundant, spack will not rebuild anything, but it needs to install
-the dependencies in the environment:
+Create a spack environment and install the flecsi dependencies.
 
 .. code-block:: console
 
@@ -494,11 +487,10 @@ the dependencies in the environment:
   $ spack install --only dependencies flecsi@devel backend=legion +hdf5 +graphviz +flog ^mpich
   $ spack install cmake
   
-Load clang and doxygen, install sphinx, and update your path:
+Load doxygen, install sphinx, and update your path:
 
 .. code-block:: console
 
-  $ module load clang/8.0.1
   $ module load doxygen
   $ pip3 install --user Sphinx
   $ pip3 install --user recommonmark

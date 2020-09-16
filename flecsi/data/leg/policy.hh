@@ -46,6 +46,10 @@ ctx() {
   return Legion::Runtime::get_context();
 }
 
+// Legion uses a number of "handle" types that are non-owning identifiers for
+// inaccessible objects maintained by the runtime.  By wrapping their deletion
+// functions in a uniform interface, we can use normal RAII hereafter.
+
 inline void
 destroy(Legion::IndexSpace i) {
   run().destroy_index_space(ctx(), i);
@@ -137,6 +141,8 @@ struct region {
   unique_logical_region logical_region;
 
 private:
+  // Each field can have a destructor (for individual field values) registered
+  // that is invoked when the field is recreated or the region is destroyed.
   struct finalizer {
     finalizer() = default;
     template<class F>

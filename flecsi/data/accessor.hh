@@ -35,9 +35,13 @@
 namespace flecsi {
 namespace data {
 
+// All accessors are ultimately implemented in terms of those for the raw
+// layout, minimizing the amount of backend-specific code required.
+
 template<typename DATA_TYPE, size_t PRIVILEGES>
 struct accessor<singular, DATA_TYPE, PRIVILEGES> : bind_tag {
   using value_type = DATA_TYPE;
+  // We don't actually inherit from base_type; we don't want its interface.
   using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;
   using element_type = typename base_type::element_type;
 
@@ -123,6 +127,8 @@ struct accessor<dense, T, P> : accessor<raw, T, P> {
   }
 };
 
+// The offsets privileges are separate because they are writable for mutators
+// but read-only for even writable accessors.
 template<class T, std::size_t P, std::size_t OP = P>
 struct ragged_accessor
   : accessor<raw, T, P>,

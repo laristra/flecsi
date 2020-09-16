@@ -26,6 +26,9 @@ namespace data {
 
 struct convert_tag {}; // must be recognized as a task argument
 
+/// A slot that holds a topology, constructed upon request.
+/// Declare a task parameter as a \c topology_accessor to use the topology.
+/// \note A \c specialization provides aliases for both these types.
 template<typename TOPOLOGY_TYPE>
 struct topology_slot : convert_tag {
   using data_t = typename TOPOLOGY_TYPE::core;

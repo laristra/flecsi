@@ -74,6 +74,7 @@ public:
   util::key_array<repartitioned, index_spaces> part;
   data::anti_slot<meta_topo> meta;
 
+  // These functions are part of the standard topology interface.
   std::size_t colors() const {
     return part.front().colors();
   }
