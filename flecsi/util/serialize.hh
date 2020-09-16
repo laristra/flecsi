@@ -44,21 +44,23 @@ mempcpy(std::size_t & x, const void *, std::size_t n) {
 template<class, class = void>
 struct serial;
 
+// Store t at p, advancing past its serialized form.
+// For calculating sizes, P should be std::size_t.
+// For actual serialization, P should be std::byte*.
 template<class T, class P>
 void
 serial_put(P & p, const T & t) {
   serial<std::remove_const_t<T>>::put(p, t);
 }
 template<class T>
-std::size_t
-serial_size(const T & t) {
+std::size_t serial_size(
+  const T & t) { // wrapper to provide an initial size of 0
   std::size_t ret = 0;
   serial_put(ret, t);
   return ret;
 }
 template<class T>
-T
-serial_get(const std::byte *& p) {
+T serial_get(const std::byte *& p) { // reconstruct and advance past an object
   return serial<std::remove_const_t<T>>::get(p);
 }
 
