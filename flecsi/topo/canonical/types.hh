@@ -38,6 +38,13 @@ struct canonical_base {
     util::id column_size, column_offset;
   };
 
+protected:
+  struct meta_topo : specialization<color_category, meta_topo> {};
+
+public:
+  static inline const field<Meta, data::singular>::definition<meta_topo>
+    meta_field;
+
   // For this simple case, two scalars determine all colors' sizes.
   static std::size_t allocate(std::size_t n, std::size_t p, std::size_t i) {
     return (i + 1) * n / p - i * n / p;
