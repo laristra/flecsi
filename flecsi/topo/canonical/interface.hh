@@ -48,7 +48,7 @@ struct canonical : canonical_base, with_ragged<Policy> {
   template<class F>
   void fields(F f) {
     for(auto & r : part)
-      f(r.sizes.field, *r.sizes);
+      f(resize::field, r.sz);
     f(mine, *this);
     f(meta_field, meta);
     connect_visit([&](const auto & fld) { f(fld, *this); }, connect);
