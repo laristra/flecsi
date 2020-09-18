@@ -38,13 +38,20 @@ struct mpi_future_u {
   /*!
     wait() method
    */
-  void wait() {}
+  void wait() const {
+    if (request_) {
+      MPI_Status status;
+      MPI_Wait(request_.get(), &status);
+      request_.reset();
+    }
+  }
 
   /*!
     get() mothod
    */
   const result_t & get(size_t index = 0) const {
-    return result_;
+    wait();
+    return *result_;
   }
 
   // private:
@@ -52,19 +59,38 @@ struct mpi_future_u {
   /*!
     set method
    */
-  void set(const result_t & result) {
-    result_ = result;
+  void set(const result_t & result)
+  {
+    result_ = std::make_shared<result_t>(result);
+  }
+  
+  void reduce(MPI_Datatype datatype, MPI_Op op)
+  {
+    local_result_ = std::make_shared<result_t>(*result_);
+    request_ = std::make_shared<MPI_Request>();
+    MPI_Iallreduce(
+        local_result_.get(),
+        result_.get(),
+        1,
+        datatype,
+        op,
+        MPI_COMM_WORLD,
+        request_.get());
   }
 
   operator R &() {
-    return result_;
+    wait();
+    return *result_;
   }
 
   operator const R &() const {
-    return result_;
+    wait();
+    return *result_;
   }
 
-  result_t result_;
+  std::shared_ptr<result_t> local_result_;
+  std::shared_ptr<result_t> result_;
+  mutable std::shared_ptr<MPI_Request> request_;
 
 }; // struct mpi_future_u
 
