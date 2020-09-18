@@ -204,15 +204,8 @@ struct mpi_execution_policy_t {
       clog_assert(reduction_op != context_.reduction_operations().end(),
         "invalid reduction operation");
 
-      const RETURN sendbuf = future.get();
-      RETURN recvbuf;
-
-      MPI_Allreduce(
-        &sendbuf, &recvbuf, 1, datatype, reduction_op->second, MPI_COMM_WORLD);
-
-      mpi_future_u<RETURN> gfuture;
-      gfuture.set(recvbuf);
-      return gfuture;
+      future.reduce(datatype, reduction_op->second);
+      return future;
     }
     else {
       return future;
