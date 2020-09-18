@@ -391,7 +391,7 @@ test(ARGS &&... args) {
 namespace topo {
 template<class F>
 repartition::repartition(const data::region & r, F f)
-  : with_size(r.size().first), partition(r, *sizes, [&] {
+  : with_size(r.size().first), partition(r, sz, [&] {
       const auto r = sizes();
       execute<fill<F>>(r, f);
       return r.fid();

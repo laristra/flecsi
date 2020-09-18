@@ -35,8 +35,7 @@ struct canon : topo::specialization<topo::canonical, canon> {
 canon::slot canonical;
 canon::cslot coloring;
 
-const field<double>::definition<canon, canon::cells> cell_field;
-auto pressure = cell_field(canonical);
+const field<double>::definition<canon, canon::cells> pressure;
 
 const int mine = 35;
 const util::id favorite = 3;
@@ -132,18 +131,19 @@ canonical_driver() {
     canonical.allocate(coloring.get());
 
     auto & cf = canonical->connect.get<canon::cells>().get<canon::vertices>();
-    auto & p = canonical->ragged->get_partition<canon::cells>(cf.fid);
+    auto & p = canonical->ragged.get_partition<canon::cells>(cf.fid);
     execute<allocate0>(p.sizes());
     p.resize();
     execute<allocate>(cf(canonical));
-    EXPECT_EQ(test<init>(canonical, pressure), 0);
+    auto pc = pressure(canonical);
+    EXPECT_EQ(test<init>(canonical, pc), 0);
     EXPECT_EQ(test<permute>(cf(canonical)), 0);
-    EXPECT_EQ(test<check>(canonical, pressure), 0);
+    EXPECT_EQ(test<check>(canonical, pc), 0);
 
     auto & c = canonical.get().part.get<canon::cells>();
     execute<shrink>(c.sizes());
     c.resize();
-    EXPECT_EQ(test<check>(canonical, pressure), 0);
+    EXPECT_EQ(test<check>(canonical, pc), 0);
   };
 } // index
 

@@ -40,10 +40,6 @@ const intN::definition<topo::index> verts_field;
 using double_at = field<double, sparse>;
 const double_at::definition<topo::index> vfrac_field;
 
-const auto pressure = pressure_field(process_topology);
-const auto verts = verts_field(process_topology);
-const auto vfrac = vfrac_field(process_topology);
-
 constexpr std::size_t column = 42;
 
 void
@@ -95,7 +91,6 @@ drows(double_at::mutator s) {
 
 using noisy = field<Noisy, singular>;
 const noisy::definition<topo::index> noisy_field;
-const auto noise = noisy_field(process_topology);
 
 void
 assign(double1::accessor<wo> p,
@@ -140,11 +135,14 @@ index_driver() {
   UNIT {
     Noisy::count = 0;
     for(const auto f : {verts_field.fid, vfrac_field.fid}) {
-      auto & p =
-        process_topology.get().ragged->get_partition<topo::elements>(f);
+      auto & p = process_topology->ragged.get_partition<topo::elements>(f);
       execute<allocate>(p.sizes());
       p.resize();
     }
+    const auto pressure = pressure_field(process_topology);
+    const auto verts = verts_field(process_topology);
+    const auto vfrac = vfrac_field(process_topology);
+    const auto noise = noisy_field(process_topology);
     execute<rows>(verts);
     execute<drows>(vfrac);
     execute<assign>(pressure, verts, vfrac);

@@ -21,8 +21,6 @@ using namespace flecsi;
 using double1 = field<double, data::singular>;
 const double1::definition<topo::global> energy_field;
 
-const auto energy = energy_field(global_topology);
-
 namespace future_test {
 
 double
@@ -61,6 +59,8 @@ int
 future_driver() {
   UNIT {
     using namespace future_test;
+
+    const auto energy = energy_field(global_topology);
 
     // single future
     auto f = execute<init>(3.1, energy);

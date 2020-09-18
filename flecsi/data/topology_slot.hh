@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/flog.hh"
 #include <optional>
 
 namespace flecsi {
@@ -43,10 +44,11 @@ struct topology_slot : convert_tag {
   } // deallocate
 
   data_t & get() {
+    flog_assert(data, "topology not allocated");
     return *data;
   }
   const data_t & get() const {
-    return *data;
+    return const_cast<topology_slot &>(*this).get();
   }
 
   data_t * operator->() {
@@ -59,38 +61,6 @@ struct topology_slot : convert_tag {
 private:
   std::optional<data_t> data;
 }; // struct topology_slot
-
-// Non-optional slot wrapper for use in other topology types.
-template<class T>
-struct anti_slot {
-  using Slot = topology_slot<T>;
-  anti_slot(const typename Slot::coloring & c) {
-    s.allocate(c);
-  }
-
-  auto & operator*() const {
-    return s.get();
-  }
-  auto & operator*() {
-    return s.get();
-  }
-  auto operator-> () const {
-    return &**this;
-  }
-  auto operator-> () {
-    return &**this;
-  }
-
-  const Slot & get_slot() const {
-    return s;
-  }
-  Slot & get_slot() {
-    return s;
-  }
-
-private:
-  Slot s;
-};
 
 } // namespace data
 } // namespace flecsi

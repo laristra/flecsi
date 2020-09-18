@@ -63,9 +63,7 @@ struct field_register<T, raw, Topo, Space> : field_info_t {
 /// Identifies a field on a particular topology instance.
 template<class Topo>
 struct field_reference_t : convert_tag {
-  // The use of the slot allows creating field references statically, before
-  // the topology object has been created.
-  using topology_t = topology_slot<Topo>;
+  using topology_t = typename Topo::core;
 
   field_reference_t(const field_info_t & info, topology_t & topology)
     : fid_(info.fid), topology_(&topology) {}
@@ -133,8 +131,11 @@ struct field : data::detail::field_base<T, L> {
     using Field = field;
 
     /// Return a reference to a field instance.
-    /// \tparam t topology instance (need not be allocated yet)
-    Reference<Topo, Space> operator()(data::topology_slot<Topo> & t) const {
+    /// \param t topology instance (must be allocated)
+    auto operator()(data::topology_slot<Topo> & t) const {
+      return (*this)(t.get());
+    }
+    Reference<Topo, Space> operator()(typename Topo::core & t) const {
       return {*this, t};
     }
   };

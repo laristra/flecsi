@@ -54,38 +54,21 @@ struct detail::base<color_category> {
 };
 
 // A subtopology for storing/updating row sizes of a partition.
-struct resize {
-  explicit resize(std::size_t n) : size(n) {}
-
-  auto operator()() {
-    return field(size.get_slot());
-  }
-  auto & operator*() {
-    return *size;
-  }
-  auto & operator*() const {
-    return *size;
-  }
-
-  auto & get_slot() {
-    return size.get_slot();
-  }
-
+struct resize : specialization<color_category, resize> {
+  // cslot is useless without a color function, but we don't need it.
   using Field = flecsi::field<data::partition::row, data::singular>;
-
-private:
-  // cslot can't be used, but is unneeded.
-  struct topo : specialization<color_category, topo> {};
-  data::anti_slot<topo> size;
-
-public:
-  static inline const Field::definition<topo> field;
+  static const Field::definition<resize> field;
 };
+// Now that resize is complete:
+inline const resize::Field::definition<resize> resize::field;
 
 // To control initialization order:
 struct with_size {
-  with_size(std::size_t n) : sizes(n) {}
-  resize sizes;
+  with_size(std::size_t n) : sz(n) {}
+  auto sizes() {
+    return resize::field(sz);
+  }
+  resize::core sz;
 };
 
 // A partition with a field for dynamically resizing it.
@@ -103,7 +86,7 @@ public:
   template<class F = decltype(zero)>
   repartition(const data::region & r, F f = zero);
   void resize() { // apply sizes stored in the field
-    update(*sizes, sizes().fid());
+    update(sz, resize::field.fid);
   }
 
 private:
@@ -182,7 +165,7 @@ struct ragged_topology : specialization<ragged_category, ragged_topology<T>> {
 template<class P>
 struct with_ragged { // for interface consistency
   with_ragged(std::size_t n) : ragged(n) {}
-  data::anti_slot<ragged_topology<P>> ragged;
+  typename ragged_topology<P>::core ragged;
 };
 
 template<>

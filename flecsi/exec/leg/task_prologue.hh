@@ -129,7 +129,7 @@ struct task_prologue_t {
     const data::
       field_reference<DATA_TYPE, data::raw, topo::global, topo::elements> &
         ref) {
-    Legion::LogicalRegion region = ref.topology().get().logical_region;
+    Legion::LogicalRegion region = ref.topology().logical_region;
 
     static_assert(privilege_count(PRIVILEGES) == 1,
       "global topology accessor type only takes one privilege");
@@ -155,7 +155,7 @@ struct task_prologue_t {
   void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
     auto & instance_data =
-      ref.topology()->template get_partition<Space>(ref.fid());
+      ref.topology().template get_partition<Space>(ref.fid());
 
     static_assert(privilege_count(PRIVILEGES) == 1,
       "accessors for this topology type take only one privilege");
@@ -181,7 +181,7 @@ struct task_prologue_t {
     // We rely on the fact that field_reference uses only the field ID.
     visit(get_null_base(null_p),
       data::field_reference<T, data::raw, topo::ragged_topology<Topo>, S>(
-        {f.fid(), 0}, f.topology()->ragged.get_slot()));
+        {f.fid(), 0}, f.topology().ragged));
     visit(
       get_null_offsets(null_p), f.template cast<data::dense, std::size_t>());
     realloc<S, T, P>(f, [=] { execute<destroy<T, data::ragged>>(f); });
@@ -220,12 +220,10 @@ struct task_prologue_t {
   void visit(data::topology_accessor<Topo, Priv> * /* parameter */,
     data::topology_slot<Topo> & slot) {
     // Clang 10.0.1 deems 'this' unused:
-    Topo::core::fields(
-      [&](auto & f, auto & s) {
-        visit(static_cast<data::field_accessor<decltype(f), Priv> *>(nullptr),
-          f(s));
-      },
-      slot);
+    slot->fields([&](auto & f, auto & s) {
+      visit(
+        static_cast<data::field_accessor<decltype(f), Priv> *>(nullptr), f(s));
+    });
   }
 
   /*--------------------------------------------------------------------------*
@@ -267,7 +265,7 @@ private:
     // TODO: use just one task for all fields
     if constexpr(privilege_write_only(Priv) &&
                  !std::is_trivially_destructible_v<T>)
-      ref.topology()->template get_region<S>().cleanup(ref.fid(), std::move(f));
+      ref.topology().template get_region<S>().cleanup(ref.fid(), std::move(f));
     else
       (void)ref, (void)f;
   }

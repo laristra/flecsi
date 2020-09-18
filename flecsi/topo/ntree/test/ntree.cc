@@ -99,7 +99,6 @@ sph_ntree_t::cslot coloring;
 
 const field<double>::definition<sph_ntree_t, sph_ntree_t::base::entities>
   entity_field;
-auto pressure = entity_field(sph_ntree);
 
 std::vector<sph_ntree_t::ent_t> tmp_ents;
 

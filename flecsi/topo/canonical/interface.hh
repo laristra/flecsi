@@ -46,12 +46,12 @@ struct canonical : canonical_base, with_ragged<Policy> {
   struct access;
 
   template<class F>
-  static void fields(F f, typename Policy::slot & s) {
-    for(auto & r : s->part)
-      f(r.sizes.field, r.sizes.get_slot());
-    f(mine, s);
-    f(meta_field, s->meta.get_slot());
-    connect_visit([&](const auto & fld) { f(fld, s); }, connect);
+  void fields(F f) {
+    for(auto & r : part)
+      f(resize::field, r.sz);
+    f(mine, *this);
+    f(meta_field, meta);
+    connect_visit([&](const auto & fld) { f(fld, *this); }, connect);
   }
 
   canonical(const coloring & c)
@@ -61,18 +61,12 @@ struct canonical : canonical_base, with_ragged<Policy> {
         std::make_index_sequence<index_spaces::size>())),
       meta(c.parts) {}
 
-private:
-  struct meta_topo : specialization<color_category, meta_topo> {};
-  using MetaField = field<Meta, data::singular>;
-
-public:
   // The first index space is distinguished in that we decorate it:
   static inline const field<int>::definition<Policy, index_spaces::first> mine;
   static inline const connect_t<Policy> connect;
-  static inline const MetaField::definition<meta_topo> meta_field;
 
   util::key_array<repartitioned, index_spaces> part;
-  data::anti_slot<meta_topo> meta;
+  meta_topo::core meta;
 
   // These functions are part of the standard topology interface.
   std::size_t colors() const {

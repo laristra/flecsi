@@ -39,7 +39,6 @@ canon::slot canonical;
 canon::cslot coloring;
 
 const field<double>::definition<canon, canon::cells> cell_field;
-auto pressure = cell_field(canonical);
 
 const int pvalue = 35;
 
@@ -91,6 +90,7 @@ kokkos_driver() {
     const std::string filename = "input.txt";
     coloring.allocate(filename);
     canonical.allocate(coloring.get());
+    const auto pressure = cell_field(canonical);
     flecsi::execute<init>(pressure);
 
     flecsi::execute<local_kokkos>(pressure);
