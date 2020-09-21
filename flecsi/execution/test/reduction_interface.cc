@@ -14,6 +14,17 @@
 
 clog_register_tag(reduction_interface);
 
+using array_t = std::array<int, 2>;
+
+namespace flecsi {
+namespace execution {
+namespace reduction {
+flecsi_register_reduction_operation(sum, array_t);
+} // namespace
+} // namespace
+} // namespace
+
+
 namespace flecsi {
 namespace execution {
 
@@ -102,6 +113,19 @@ flecsi_register_task(max_task, flecsi::execution, loc, index);
 flecsi_register_task(sum_task, flecsi::execution, loc, index);
 flecsi_register_task(prod_task, flecsi::execution, loc, index);
 
+array_t
+sum_array(mesh<ro> m, field<rw, rw, ro> v) {
+  int sum{0};
+
+  for(auto c : m.cells(owned)) {
+    sum += static_cast<int>(v(c));
+  } // for
+
+  return {sum, 2*sum};
+} // sum_task
+
+flecsi_register_task(sum_array, flecsi::execution, loc, index);
+
 //----------------------------------------------------------------------------//
 // Top-Level Specialization Initialization
 //----------------------------------------------------------------------------//
@@ -177,6 +201,16 @@ driver(int argc, char ** argv) {
       "incorrect product from reduction");
 
   } // scope
+  
+  {
+    auto f = flecsi_execute_reduction_task(
+      sum_array, flecsi::execution, index, sum, array_t, mh, vh);
+
+    auto res = f.get();
+    ASSERT_EQ(res[0], 256);
+    ASSERT_EQ(res[1], 2*256);
+  } // scope
+
 } // driver
 
 } // namespace execution
