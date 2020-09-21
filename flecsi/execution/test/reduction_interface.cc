@@ -17,6 +17,10 @@ clog_register_tag(reduction_interface);
 namespace flecsi {
 namespace execution {
 
+typedef reduction::array_type<double, 2> array_t;
+namespace reduction {
+flecsi_register_reduction_operation(array_sum, array_t);
+}
 //----------------------------------------------------------------------------//
 // Type definitions
 //----------------------------------------------------------------------------//
@@ -86,6 +90,19 @@ sum_task(mesh<ro> m, field<rw, rw, ro> v) {
 
   return sum;
 } // sum_task
+array_t
+sum_task_2(mesh<ro> m, field<rw, rw, ro> v) {
+  array_t sum{0.0, 0.0};
+
+  for(auto c : m.cells(owned)) {
+    sum.at(0) += v(c);
+  } // for
+
+  sum.at(1) = 1;
+
+  return sum;
+}
+
 double
 prod_task(mesh<ro> m, field<rw, rw, ro> v) {
   double prod{1.0};
@@ -100,6 +117,7 @@ prod_task(mesh<ro> m, field<rw, rw, ro> v) {
 flecsi_register_task(min_task, flecsi::execution, loc, index);
 flecsi_register_task(max_task, flecsi::execution, loc, index);
 flecsi_register_task(sum_task, flecsi::execution, loc, index);
+flecsi_register_task(sum_task_2, flecsi::execution, loc, index);
 flecsi_register_task(prod_task, flecsi::execution, loc, index);
 
 //----------------------------------------------------------------------------//
@@ -165,6 +183,15 @@ driver(int argc, char ** argv) {
       sum_task, flecsi::execution, index, sum, double, mh, vh);
     double sum = f.get();
     clog_assert(sum >= 281.6 - .001 && sum <= 281.6 + .001,
+      "incorrect sum from reduction");
+  } // scope
+
+  {
+    auto f = flecsi_execute_reduction_task(
+      sum_task_2, flecsi::execution, index, array_sum, array_t, mh, vh);
+    array_t sum = f.get();
+    clog_assert(
+      sum.at(0) >= 281.6 - .001 && sum.at(0) <= 281.6 + .001 && sum.at(1) == 4,
       "incorrect sum from reduction");
   } // scope
 
