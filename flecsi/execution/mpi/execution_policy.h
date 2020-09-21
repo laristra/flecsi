@@ -196,15 +196,12 @@ struct mpi_execution_policy_t {
 
     if constexpr(REDUCTION != ZERO) {
 
-      MPI_Datatype datatype;
-      datatype = flecsi::utils::mpi_typetraits_u<RETURN>::type();
-
       auto reduction_op = context_.reduction_operations().find(REDUCTION);
 
       clog_assert(reduction_op != context_.reduction_operations().end(),
         "invalid reduction operation");
 
-      future.reduce(datatype, reduction_op->second);
+      future.reduce(reduction_op->second);
       return future;
     }
     else {
