@@ -14,6 +14,8 @@
 #pragma once
 
 /*! @file */
+#include "flecsi/utils/mpi_type_traits.h"
+#include "flecsi/utils/type_traits.h"
 
 #include <functional>
 #include <memory>
@@ -63,12 +65,26 @@ struct mpi_future_u {
   {
     result_ = std::make_shared<result_t>(result);
   }
-  
-  void reduce(MPI_Datatype datatype, MPI_Op op)
+      
+  void reduce(MPI_Op op)
   {
     local_result_ = std::make_shared<result_t>(*result_);
     request_ = std::make_shared<MPI_Request>();
-    MPI_Iallreduce(
+    if constexpr (utils::is_container_v<result_t>) {
+      using value_t = typename result_t::value_type;
+      auto datatype = flecsi::utils::mpi_typetraits_u<value_t>::type();
+      MPI_Iallreduce(
+        local_result_->data(),
+        result_->data(),
+        local_result_->size(),
+        datatype,
+        op,
+        MPI_COMM_WORLD,
+        request_.get());
+    }
+    else {
+      auto datatype = flecsi::utils::mpi_typetraits_u<result_t>::type();
+      MPI_Iallreduce(
         local_result_.get(),
         result_.get(),
         1,
@@ -76,6 +92,7 @@ struct mpi_future_u {
         op,
         MPI_COMM_WORLD,
         request_.get());
+    }
   }
 
   operator R &() {

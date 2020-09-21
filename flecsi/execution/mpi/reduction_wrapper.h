@@ -21,6 +21,7 @@
 
 #include <flecsi/execution/context.h>
 #include <flecsi/utils/mpi_type_traits.h>
+#include <flecsi/utils/type_traits.h>
 
 clog_register_tag(reduction_wrapper);
 
@@ -234,7 +235,6 @@ struct sum {
         newval.as_T = oldval.as_T + rhs;
       } while(
         !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-
     } // if constexpr
   } // apply
 
@@ -260,6 +260,59 @@ struct sum {
   } // fold
 
 }; // struct sum
+
+template<>
+template<typename T, std::size_t N>
+struct sum<std::array<T, N>> {
+
+  using array_t = std::array<T, N>;
+  using LHS = typename array_t::value_type;
+  using RHS = typename array_t::value_type;
+  static constexpr T identity{};
+
+  template<bool EXCLUSIVE = true>
+  static void apply(LHS & lhs, RHS rhs) {
+
+    if constexpr(EXCLUSIVE) {
+      lhs += rhs;
+    }
+    else {
+      int64_t * target = (int64_t *)&lhs;
+      union
+      {
+        int64_t as_int;
+        T as_T;
+      } oldval, newval;
+      do {
+        oldval.as_int = *target;
+        newval.as_T = oldval.as_T + rhs;
+      } while(
+        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+    } // if constexpr
+  } // apply
+
+  template<bool EXCLUSIVE = true>
+  static void fold(LHS & lhs, RHS rhs) {
+    if constexpr(EXCLUSIVE) {
+      lhs += rhs;
+    }
+    else {
+      int64_t * target = (int64_t *)&lhs;
+      union
+      {
+        int64_t as_int;
+        T as_T;
+      } oldval, newval;
+      do {
+        oldval.as_int = *target;
+        newval.as_T = oldval.as_T + rhs;
+      } while(
+        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
+    } // if constexpr
+  } // fold
+
+}; // struct sum
+
 
 /*!
   Product reduction type.
