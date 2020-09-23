@@ -18,15 +18,11 @@
 #------------------------------------------------------------------------------#
 
 set(topo_HEADERS
-  array_buffer.hh
   canonical/interface.hh
   canonical/types.hh
-  connectivity.hh
   core.hh
-  entity_storage.hh
   global.hh
   index.hh
-  index_space.hh
   ntree/coloring.hh
   ntree/geometry.hh
   ntree/interface.hh

@@ -19,6 +19,8 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/topo/index.hh"
+
 #include <cstddef>
 #include <set>
 
@@ -85,9 +87,18 @@ struct unstructured_base {
   using coloring_meta = unstructured_impl::coloring_meta;
 
   struct coloring {
-    std::vector<index_coloring> indices;
+    std::size_t colors;
+    std::vector<index_coloring> index_colorings;
     std::vector<std::vector<coloring_meta>> distribution;
   }; // struct coloring
+
+  static std::size_t allocate(
+    unstructured_impl::index_coloring const & index_coloring,
+    std::size_t color) {
+    (void)index_coloring;
+    (void)color;
+    return 0;
+  }
 
 }; // struct unstructured_base
 

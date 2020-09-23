@@ -19,10 +19,10 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/topo/index.hh"
+
 #include <cstddef>
 #include <vector>
-
-#include "flecsi/topo/index.hh"
 
 namespace flecsi {
 namespace topo {
