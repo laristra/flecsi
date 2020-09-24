@@ -129,14 +129,14 @@ file(COPY ${CMAKE_SOURCE_DIR}/config/clang_fortran.py
 # Build auxiliary
 #------------------------------------------------------------------------------#
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.tbz)
-  file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.tbz
+if(EXISTS ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.xz)
+  file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-centos-7.8.xz
     DESTINATION ${CMAKE_BINARY_DIR}
   )
 endif()
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.tbz)
-  file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.tbz
+if(EXISTS ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.xz)
+  file(COPY ${CMAKE_SOURCE_DIR}/aux/gnu-clearlinux.xz
     DESTINATION ${CMAKE_BINARY_DIR}
   )
 endif()

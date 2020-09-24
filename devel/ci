@@ -75,29 +75,33 @@ RUN cp .images/${SUBDIR}/spack/upstreams.yaml .spack/etc/spack
 # Build flecsi dependencies with mpich provider.
 #------------------------------------------------------------------------------#
 
-ARG TARGET="flecsi@devel backend=legion +hdf5 +graphviz +kokkos"
+RUN . .spack-upstream/share/spack/setup-env.sh && \
+  spack fetch --dependencies flecsi@devel backend=legion +hdf5 +graphviz \
+    +kokkos  +debug_backend ^mpich && \
+  spack install --only dependencies flecsi@devel backend=legion +hdf5 \
+    +graphviz +kokkos build_type=Debug +debug_backend ^mpich
 
 RUN . .spack-upstream/share/spack/setup-env.sh && \
-  spack fetch --dependencies ${TARGET} +debug_backend ^mpich && \
-  spack install --only dependencies ${TARGET} build_type=Debug \
-    +debug_backend ^mpich
-
-RUN . .spack-upstream/share/spack/setup-env.sh && \
-  spack fetch --dependencies ${TARGET} ^mpich && \
-  spack install --only dependencies ${TARGET} build_type=Release ^mpich
+  spack fetch --dependencies flecsi@devel backend=legion +hdf5 +graphviz \
+    +kokkos ^mpich && \
+  spack install --only dependencies flecsi@devel backend=legion +hdf5 \
+    +graphviz +kokkos build_type=Release ^mpich
 
 #------------------------------------------------------------------------------#
 # Build flecsi dependencies with openmpi provider.
 #------------------------------------------------------------------------------#
 
 RUN . .spack-upstream/share/spack/setup-env.sh && \
-  spack fetch --dependencies ${TARGET} +debug_backend ^openmpi && \
-  spack install --only dependencies ${TARGET} build_type=Release \
-    +debug_backend ^openmpi
+  spack fetch --dependencies flecsi@devel backend=legion +hdf5 +graphviz \
+    +kokkos +debug_backend ^openmpi && \
+  spack install --only dependencies flecsi@devel backend=legion +hdf5 \
+    +graphviz +kokkos build_type=Release +debug_backend ^openmpi
 
 RUN . .spack-upstream/share/spack/setup-env.sh && \
-  spack fetch --dependencies ${TARGET} ^openmpi && \
-  spack install --only dependencies ${TARGET} build_type=Release ^openmpi
+  spack fetch --dependencies flecsi@devel backend=legion +hdf5 +graphviz \
+    +kokkos ^openmpi && \
+  spack install --only dependencies flecsi@devel backend=legion +hdf5 \
+    +graphviz +kokkos build_type=Release ^openmpi
 
 #------------------------------------------------------------------------------#
 # Create format environment.

@@ -36,7 +36,7 @@ RUN swupd bundle-add \
 # Build gcc 9
 #------------------------------------------------------------------------------#
 
-ADD gnu-clearlinux.tbz /
+ADD gnu-clearlinux.xz /
 
 #RUN wget http://ftpmirror.gnu.org/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
 #RUN tar xf gcc-9.3.0.tar.xz
@@ -47,7 +47,7 @@ ADD gnu-clearlinux.tbz /
 #  --prefix=/opt/gnu/9.3.0
 #RUN make
 #RUN make install
-#
+
 #WORKDIR /
 #RUN rm -rf gcc-9.3.0*
 

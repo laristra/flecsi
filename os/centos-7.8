@@ -34,7 +34,7 @@ RUN yum update -y && yum install -y \
 # Build gcc 9
 #------------------------------------------------------------------------------#
 
-ADD gnu-centos-7.8.tbz /
+ADD gnu-centos-7.8.xz /
 
 #RUN wget http://ftpmirror.gnu.org/gcc/gcc-9.3.0/gcc-9.3.0.tar.xz
 #RUN tar xf gcc-9.3.0.tar.xz
@@ -45,7 +45,7 @@ ADD gnu-centos-7.8.tbz /
 #  --prefix=/opt/gnu/9.3.0
 #RUN make
 #RUN make install
-#
+
 #WORKDIR /
 #RUN rm -rf gcc-9.3.0*
 
