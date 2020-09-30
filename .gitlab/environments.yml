@@ -11,7 +11,7 @@ mpich:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     VERSION: flecsi@devel
     VARIANTS: +hdf5 +graphviz +kokkos +debug_backend
 
@@ -22,7 +22,7 @@ mpich:release:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     VERSION: flecsi@devel
     VARIANTS: +hdf5 +graphviz +kokkos
 
@@ -44,7 +44,7 @@ openmpi:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     VERSION: flecsi@devel
     VARIANTS: +hdf5 +graphviz +debug_backend
 
@@ -55,7 +55,7 @@ openmpi:release:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     VERSION: flecsi@devel
     VARIANTS: +hdf5 +graphviz
 

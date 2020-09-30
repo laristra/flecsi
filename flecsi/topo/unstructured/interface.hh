@@ -22,7 +22,6 @@
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/topology.hh"
 #include "flecsi/flog.hh"
-#include "flecsi/run/backend.hh"
 #include "flecsi/topo/core.hh"
 #include "flecsi/topo/unstructured/types.hh"
 #include "flecsi/topo/utility_types.hh"
@@ -36,6 +35,10 @@ namespace flecsi {
 namespace topo {
 
 namespace unstructured_impl {
+
+/*----------------------------------------------------------------------------*
+  Method Implementations.
+ *----------------------------------------------------------------------------*/
 
 /*
   This is a test implmentation to be used in developing and testing the
@@ -128,10 +131,6 @@ naive_coloring(Definition const & md,
   return dcrs;
 } // naive_coloring
 
-/*----------------------------------------------------------------------------*
-  Dependency Closure.
- *----------------------------------------------------------------------------*/
-
 template<typename Policy>
 unstructured_base::coloring
 closure(typename Policy::definition const & md,
@@ -148,7 +147,18 @@ closure(typename Policy::definition const & md,
  *----------------------------------------------------------------------------*/
 
 template<typename Policy>
-struct unstructured : unstructured_base {
+struct unstructured : unstructured_base, with_ragged<Policy> {
+  using index_space = typename Policy::index_space;
+  using index_spaces = typename Policy::index_spaces;
+
+  template<std::size_t>
+  struct access;
+
+  unstructured(coloring const & c)
+    : with_ragged<Policy>(c.colors),
+      part(make_partitions(c,
+        index_spaces(),
+        std::make_index_sequence<index_spaces::size>())) {}
 
   template<typename Definition>
   inline util::dcrs naive_coloring(Definition const & md,
@@ -160,7 +170,80 @@ struct unstructured : unstructured_base {
       md, entity_dimension, thru_dimension, process, processes);
   }
 
+  static inline const connect_t<Policy> connect_;
+  util::key_array<repartitioned, index_spaces> part;
+
+private:
+  template<auto... Value, std::size_t... Index>
+  util::key_array<repartitioned, util::constants<Value...>> make_partition(
+    unstructured_base::coloring const & c,
+    util::constants<Value...> /* index spaces to deduce pack */,
+    std::index_sequence<Index...>) {
+    return {{make_repartitioned<Policy, Value>(c.colors,
+      make_partial<allocate>(c.index_colorings[Index], c.colors))...}};
+  }
 }; // struct unstructured
+
+/*----------------------------------------------------------------------------*
+  Unstructured Access.
+ *----------------------------------------------------------------------------*/
+
+template<typename Policy>
+template<std::size_t Privileges>
+struct unstructured<Policy>::access {
+private:
+  template<const auto & Field>
+  using accessor = data::accessor_member<Field, Privileges>;
+  using size_accessor = resize::Field::accessor<ro>;
+  util::key_array<size_accessor, index_spaces> size_{make_size(index_spaces())};
+  connect_access<Policy, Privileges> connect_;
+
+  template<index_space From, index_space To>
+  auto & connectivity() {
+    return connect_.template get<From>().template get<To>();
+  }
+
+  template<index_space From, index_space To>
+  auto const & connectivity() const {
+    return connect_.template get<From>().template get<To>();
+  }
+
+public:
+  access() : connect_(unstructured::connect_) {}
+
+  /*!
+    Return an iterator to the parameterized index space.
+
+    @tparam IndexSpace The index space identifier.
+   */
+
+  template<index_space IndexSpace>
+  auto entities() {
+    return make_ids<IndexSpace>(util::iota_view<util::id>(
+      0, data::partition::row_size(size_.template get<IndexSpace>())));
+  }
+
+  /*!
+    Return an iterator to the connectivity information for the parameterized
+    index spaces.
+
+    @tparam To   The connected index space.
+    @tparam From The index space with connections.
+   */
+
+  template<index_space To, index_space From>
+  auto entities(id<From> from) const {
+    return make_ids<To>(connectivity<From, To>()[from]);
+  }
+
+private:
+  template<auto... Value>
+  static util::key_array<size_accessor, util::constants<Value...>> make_size(
+    util::constants<Value...> /* index spaces to deduce pack */) {
+    return {{(void(Value),
+      size_accessor(size_accessor::base_type(resize::field.fid)))...}};
+  }
+}; // struct unstructured<Policy>::access
 
 template<>
 struct detail::base<unstructured> {

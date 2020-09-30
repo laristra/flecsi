@@ -57,7 +57,7 @@ mpich-defaults:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for Legion runtime with MPICH provider,
@@ -74,7 +74,7 @@ mpich-legion-gnu:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     BUILD_TYPE: debug
     RUNTIME: legion
     CXX_COMPILER: g++
@@ -91,7 +91,7 @@ mpich-legion-gnu:release:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     BUILD_TYPE: release
     RUNTIME: legion
     CXX_COMPILER: g++
@@ -115,7 +115,7 @@ mpich-mpi-gnu:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     BUILD_TYPE: debug
     RUNTIME: mpi
     CXX_COMPILER: g++
@@ -132,7 +132,7 @@ mpich-mpi-gnu:release:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     BUILD_TYPE: release
     RUNTIME: mpi
     CXX_COMPILER: g++
@@ -156,7 +156,7 @@ tutorial:legion:
     ENVIRONMENT: devel
     MPI_PROVIDER: mpich
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     CXX_COMPILER: g++
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
@@ -177,7 +177,7 @@ openmpi-legion-gnu:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     BUILD_TYPE: debug
     RUNTIME: legion
     CXX_COMPILER: g++
@@ -194,7 +194,7 @@ openmpi-legion-gnu:release:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     BUILD_TYPE: release
     RUNTIME: legion
     CXX_COMPILER: g++
@@ -218,7 +218,7 @@ openmpi-mpi-gnu:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     BUILD_TYPE: debug
     RUNTIME: mpi
     CXX_COMPILER: g++
@@ -235,7 +235,7 @@ openmpi-mpi-gnu:release:
     ENVIRONMENT: devel
     MPI_PROVIDER: openmpi
     REGISTRY: gitlab.lanl.gov:5050/laristra/flecsi
-    IMAGE: centos-7.8
+    IMAGE: centos-8
     BUILD_TYPE: release
     RUNTIME: mpi
     CXX_COMPILER: g++
