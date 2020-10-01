@@ -213,6 +213,16 @@ struct detail::base<index_category> {
   using type = index_base;
 };
 
+// A subtopology for holding topology-specific metadata per color.
+template<class P>
+struct meta_topology : specialization<index_category, meta_topology<P>> {};
+
+template<class P>
+struct with_meta { // for interface consistency
+  with_meta(std::size_t n) : meta(n) {}
+  typename meta_topology<P>::core meta;
+};
+
 /*!
   The \c index type allows users to register data on an
   arbitrarily-sized set of indices that have an implicit one-to-one coloring.

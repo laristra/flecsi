@@ -39,7 +39,7 @@ struct canonical_base {
   };
 
 protected:
-  struct meta_topo : specialization<color_category, meta_topo> {};
+  using meta_topo = meta_topology<canonical_base>;
 
 public:
   static inline const field<Meta, data::singular>::definition<meta_topo>
