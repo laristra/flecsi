@@ -26,7 +26,6 @@ set(topo_HEADERS
   ntree/coloring.hh
   ntree/geometry.hh
   ntree/interface.hh
-  ntree/storage.hh
   ntree/types.hh
   set/interface.hh
   set/types.hh
