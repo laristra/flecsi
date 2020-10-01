@@ -190,15 +190,7 @@ static_assert(debruijn(1));
 int
 common() {
   UNIT {
-    // *BITS #defines
-    UNIT_CAPTURE() << FLECSI_ID_PBITS << std::endl;
-    UNIT_CAPTURE() << FLECSI_ID_EBITS << std::endl;
-    UNIT_CAPTURE() << FLECSI_ID_FBITS << std::endl;
-    UNIT_CAPTURE() << FLECSI_ID_GBITS << std::endl;
-    UNIT_CAPTURE() << std::endl;
-
     // types
-    UNIT_CAPTURE() << UNIT_TTYPE(flecsi::util::id_t) << std::endl;
     UNIT_CAPTURE() << UNIT_TTYPE(FLECSI_COUNTER_TYPE) << std::endl;
     UNIT_CAPTURE() << UNIT_TTYPE(flecsi::util::counter_t) << std::endl;
     UNIT_CAPTURE() << std::endl;
