@@ -20,7 +20,6 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/layout.hh"
 #include "flecsi/exec/task_attributes.hh"
 #include "flecsi/run/types.hh"
 #include "flecsi/topo/core.hh"
