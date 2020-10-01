@@ -48,7 +48,6 @@ set(util_HEADERS
   target.hh
   tuple_visitor.hh
   tuple_walker.hh
-  typeify.hh
   type_traits.hh
   uint128.hh
   unit.hh
