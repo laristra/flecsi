@@ -25,8 +25,7 @@ using namespace flecsi;
 struct unstructured : topo::specialization<topo::unstructured, unstructured> {
   enum index_space { vertices, edges, cells };
   using index_spaces = has<cells, vertices, edges>;
-  using connectivities =
-    util::types<entity<cells, has<vertices>>, entity<cells, has<edges>>>;
+  using connectivities = list<entity<cells, has<vertices, edges>>>;
 
 #if 0
   enum range { dirichlet, neumann, special_vertices };
