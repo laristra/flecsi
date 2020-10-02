@@ -176,7 +176,23 @@ struct ragged_topology : specialization<ragged_category, ragged_topology<T>> {
 template<class P>
 struct with_ragged { // for interface consistency
   with_ragged(std::size_t n) : ragged(n) {}
+
+  // Extend a offsets fields to define empty rows for the suffix.
+  template<typename P::index_space, class F = decltype(zero::partial)>
+  void extend_offsets(
+    F = zero::partial); // serializable function from color to old size
+
   typename ragged_topology<P>::core ragged;
+
+private:
+  template<class F>
+  static void extend(field<std::size_t, data::raw>::accessor<rw> a, F old) {
+    const auto s = a.span();
+    const std::size_t i = old(run::context::instance().color());
+    // A dense field will be default-constructed on first use, but this
+    // function means to support the case where it was resized.
+    std::uninitialized_fill(s.begin() + i, s.end(), i ? s.back() : 0);
+  }
 };
 
 template<>
@@ -188,7 +204,9 @@ struct detail::base<ragged_category> {
 template<class P>
 struct index_category : color_category<P>, with_ragged<P> {
   index_category(const index_base::coloring & c)
-    : color_category<P>(c), with_ragged<P>(c.size()) {}
+    : color_category<P>(c), with_ragged<P>(c.size()) {
+    this->template extend_offsets<elements>();
+  }
 };
 template<>
 struct detail::base<index_category> {
