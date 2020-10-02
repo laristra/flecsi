@@ -184,6 +184,16 @@ struct serial<std::string> {
 
 // Adapters for other protocols:
 
+template<class T>
+struct serial_value { // serializes nothing; returns T()
+  using type = T;
+  template<class P>
+  static void put(P &, const T &) {}
+  static T get(const std::byte *&) {
+    return T();
+  }
+};
+
 // This works even without Legion:
 template<class T>
 struct serial<T,

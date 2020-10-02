@@ -21,39 +21,15 @@
 #include <sstream>
 #include <typeinfo>
 
-#include "flecsi/util/id.hh"
 #include "flecsi/util/offset.hh"
-
-#ifndef FLECSI_ID_PBITS
-#define FLECSI_ID_PBITS 20
-#endif
-
-#ifndef FLECSI_ID_EBITS
-#define FLECSI_ID_EBITS 40
-#endif
-
-#ifndef FLECSI_ID_FBITS
-#define FLECSI_ID_FBITS 4
-#endif
-
-#ifndef FLECSI_ID_GBITS
-#define FLECSI_ID_GBITS 60
-#endif
 
 namespace flecsi {
 namespace util {
 
-//----------------------------------------------------------------------------//
-// Entity id type old.
-//----------------------------------------------------------------------------//
-
-using id_t =
-  id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
-
 using offset_t = offset<16>;
 
 //----------------------------------------------------------------------------//
-// Entity id type new. This type should be used for id types for entities
+// Entity id type. This type should be used for id types for entities
 // in topologies.
 //----------------------------------------------------------------------------//
 

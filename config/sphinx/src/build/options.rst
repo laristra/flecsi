@@ -178,22 +178,6 @@ built.
 * **FLECSI_DBC_REQUIRE [default: ON]** |br|
   Enable DBC pre/post condition assertions.
 
-* **FLECSI_ID_FBITS [default: 4]** |br|
-  Specify the number of bits to be used to represent id flags. This
-  option affects the number of entities that can be represented on a
-  FleCSI mesh type. The number of bits used to represent entities is
-  62-FLECSI_ID_PBITS-FLECSI_ID_FBITS. With the current defaults there
-  are 38 bits available to represent entities, i.e., up to 274877906944
-  entities can be resolved.
-
-* **FLECSI_ID_PBITS [default: 20]** |br|
-  Specify the number of bits to be used to represent partition ids. This
-  option affects the number of entities that can be represented on a
-  FleCSI mesh type. The number of bits used to represent entities is
-  62-FLECSI_ID_PBITS-FLECSI_ID_FBITS. With the current defaults there
-  are 38 bits available to represent entities, i.e., up to 274877906944
-  entities can be resolved.
-
 * **FLECSI_RUNTIME_MODEL [default: mpi]** |br|
   Specify the low-level runtime model. Currently, *legion* and *mpi* are
   the only valid options.

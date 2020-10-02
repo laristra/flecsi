@@ -35,7 +35,6 @@ set(util_HEADERS
   parmetis_colorer.hh
   graphviz.hh
   hashtable.hh
-  id.hh
   macros.hh
   mpi_typetraits.hh
   offset.hh
@@ -43,12 +42,10 @@ set(util_HEADERS
   serialize.hh
   set_intersection.hh
   set_utils.hh
-  simple_id.hh
   static_verify.hh
   target.hh
   tuple_visitor.hh
   tuple_walker.hh
-  typeify.hh
   type_traits.hh
   uint128.hh
   unit.hh
@@ -152,24 +149,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     THREADS 2
   )
 endif()
-
-#------------------------------------------------------------------------------#
-# id
-#------------------------------------------------------------------------------#
-
-set(id_blessed_input test/id.blessed.gnug)
-
-if(MSVC)
-  set(id_blessed_input test/id.blessed.msvc)
-endif()
-
-add_unit(id
-  SOURCES
-    test/id.cc
-  INPUTS
-    test/id.blessed
-    ${id_blessed_input}
-)
 
 #------------------------------------------------------------------------------#
 # serialize

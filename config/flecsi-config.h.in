@@ -49,15 +49,6 @@
 #cmakedefine FLECSI_ENABLE_MAPPER_COMPACTION
 
 //----------------------------------------------------------------------------//
-// Process id bits
-//----------------------------------------------------------------------------//
-
-#cmakedefine FLECSI_ID_PBITS @FLECSI_ID_PBITS@
-#cmakedefine FLECSI_ID_EBITS @FLECSI_ID_EBITS@
-#cmakedefine FLECSI_ID_FBITS @FLECSI_ID_FBITS@
-#cmakedefine FLECSI_ID_GBITS @FLECSI_ID_GBITS@
-
-//----------------------------------------------------------------------------//
 // Counter type
 //----------------------------------------------------------------------------//
 

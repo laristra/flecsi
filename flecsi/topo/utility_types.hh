@@ -22,7 +22,6 @@
 #include "flecsi/data/field.hh"
 #include "flecsi/util/array_ref.hh"
 #include "flecsi/util/constant.hh"
-#include "flecsi/util/typeify.hh"
 
 #include <type_traits>
 

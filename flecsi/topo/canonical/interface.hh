@@ -101,8 +101,7 @@ struct canonical<P>::access {
 private:
   template<const auto & F>
   using accessor = data::accessor_member<F, Priv>;
-  using size_accessor = resize::Field::accessor<ro>;
-  util::key_array<size_accessor, index_spaces> size{make_size(index_spaces())};
+  util::key_array<resize::accessor, index_spaces> size;
   connect_access<P, Priv> connect;
 
 public:
@@ -139,14 +138,6 @@ public:
     f(mine);
     f(meta);
     connect_visit(f, connect);
-  }
-
-private:
-  template<auto... VV>
-  static util::key_array<size_accessor, util::constants<VV...>> make_size(
-    util::constants<VV...> /* index_spaces, to deduce a pack */) {
-    return {{(void(VV),
-      size_accessor(size_accessor::base_type(resize::field.fid)))...}};
   }
 };
 
