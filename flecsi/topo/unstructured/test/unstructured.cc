@@ -27,19 +27,9 @@ struct unstructured : topo::specialization<topo::unstructured, unstructured> {
   using index_spaces = has<cells, vertices, edges>;
   using connectivities = list<entity<cells, has<vertices, edges>>>;
 
-#if 0
-  enum range { dirichlet, neumann, special_vertices };
-  using iterators = util::types<entity<edges, iterates<dirichlet>, entity<edges, iterates<neumann>>,
-    entity<vertices, iterates<special_vertices>>>;
-#endif
-  /*
-    DAVIS: I don't know if this is what you had in mind, but I could see this
-    type of interface being intuitive for users. It would be used like:
-
-    for(auto e: m.edges(dirichlet)) {
-      ...
-    }
-   */
+  enum entity_list { dirichlet, neumann, special_vertices };
+  using entity_lists = list<entity<edges, has<dirichlet, neumann>>,
+    entity<vertices, has<special_vertices>>>;
 
   static coloring color(std::string const & filename) {
     topo::unstructured_impl::simple_definition definition(filename.c_str());
@@ -50,9 +40,23 @@ struct unstructured : topo::specialization<topo::unstructured, unstructured> {
 unstructured::slot mesh;
 unstructured::cslot coloring;
 
+void
+allocate(topo::resize::Field::accessor<wo> a) {
+  a = data::partition::make_row(color(), 2);
+}
+void
+init(field<util::id, data::ragged>::mutator m) {
+  m[0].resize(2, 47);
+}
 int
-check(unstructured::accessor<ro>) {
-  UNIT {};
+check(unstructured::accessor<ro> t) {
+  UNIT {
+    for(auto i :
+      t.special_entities<unstructured::edges, unstructured::neumann>()) {
+      static_assert(std::is_same_v<decltype(i), topo::id<unstructured::edges>>);
+      EXPECT_EQ(i, 47u);
+    }
+  };
 }
 
 int
@@ -62,6 +66,12 @@ unstructured_driver() {
     // Provide 0s to allow vacuous topology construction:
     coloring.get().index_colorings.resize(unstructured::index_spaces::size);
     mesh.allocate(coloring.get());
+    auto & neuf =
+      mesh->special.get<unstructured::edges>().get<unstructured::neumann>();
+    auto & p = mesh->meta.ragged.get_partition(neuf.fid);
+    execute<allocate>(p.sizes());
+    p.resize();
+    execute<init>(neuf(mesh->meta));
     EXPECT_EQ(test<check>(mesh), 0);
   };
 } // unstructured_driver
