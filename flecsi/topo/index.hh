@@ -146,6 +146,15 @@ struct ragged_category : ragged_base {
     return part.template get<S>()[i];
   }
 
+  // These can't just be default template arguments, since they would be
+  // instantiated even if unused.
+  const repartition & get_partition(field_id_t i) const {
+    return const_cast<ragged_category &>(*this).get_partition(i);
+  }
+  repartition & get_partition(field_id_t i) {
+    return get_partition<P::default_space()>(i);
+  }
+
 private:
   template<auto... VV>
   static util::key_array<ragged_partitioned, util::constants<VV...>>
