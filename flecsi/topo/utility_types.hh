@@ -20,6 +20,7 @@
 #endif
 
 #include "flecsi/data/field.hh"
+#include "flecsi/topo/index.hh" // meta_topo
 #include "flecsi/util/array_ref.hh"
 #include "flecsi/util/constant.hh"
 
@@ -38,10 +39,19 @@ struct connect<P, util::types<VT...>> {
       typename VT::type>>...>;
 };
 
+template<class, class>
+struct lists;
+template<class P, class... VT>
+struct lists<P, util::types<VT...>> {
+  using type = util::key_tuple<util::key_type<VT::value,
+    util::key_array<field<util::id, data::ragged>::definition<P>,
+      typename VT::type>>...>;
+};
+
 template<class, std::size_t>
-struct connect_access;
+struct key_access;
 template<class... VT, std::size_t Priv>
-struct connect_access<util::key_tuple<VT...>, Priv> {
+struct key_access<util::key_tuple<VT...>, Priv> {
   using type = util::key_tuple<util::key_type<VT::value,
     util::key_array<
       typename VT::type::value_type::Field::template accessor1<Priv>,
@@ -56,19 +66,17 @@ template<class P>
 using connect_t = typename detail::connect<P, typename P::connectivities>::type;
 
 namespace detail {
-template<class P, std::size_t Priv>
-using connect_access_t = typename connect_access<connect_t<P>, Priv>::type;
-}
+template<class C, std::size_t Priv>
+using key_access_t = typename key_access<C, Priv>::type;
 
 // A parallel sparse matrix of accessors.
-template<class P, std::size_t Priv>
-struct connect_access : detail::connect_access_t<P, Priv> {
-  // The argument type is just connect_t<P>, but we want the VT pack.
+template<class C, std::size_t Priv>
+struct connect_access : key_access_t<C, Priv> {
   // Prior to C++20, accessor_member can't refer to the subobjects of a
   // connect_t, so the accessors must be initialized externally.
   template<class... VT>
   connect_access(const util::key_tuple<VT...> & c)
-    : detail::connect_access_t<P, Priv>(
+    : key_access_t<C, Priv>(
         make_from<std::decay_t<decltype(this->template get<VT::value>())>>(
           c.template get<VT::value>())...) {}
 
@@ -79,6 +87,20 @@ private:
     return {{typename T::value_type(m.template get<VV>().fid)...}};
   }
 };
+} // namespace detail
+
+// Accessors for the connectivity requested by a topology.
+template<class P, std::size_t Priv>
+using connect_access = detail::connect_access<connect_t<P>, Priv>;
+
+// Fields for the distinguished entities requested by a topology.
+template<class P>
+using lists_t =
+  typename detail::lists<meta_topology<P>, typename P::entity_lists>::type;
+
+// Accessors for the distinguished entities requested by a topology.
+template<class P, std::size_t Priv>
+using list_access = detail::connect_access<lists_t<P>, Priv>;
 
 // For either kind of sparse matrix:
 template<class F, class T>
