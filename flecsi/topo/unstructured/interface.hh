@@ -339,19 +339,48 @@ struct unstructured : unstructured_base, with_ragged<Policy> {
     : with_ragged<Policy>(c.colors),
       part(make_partitions(c,
         index_spaces(),
-        std::make_index_sequence<index_spaces::size>())) {}
+        std::make_index_sequence<index_spaces::size>())) {
+    init_ragged(index_spaces());
+  }
 
   static inline const connect_t<Policy> connect_;
   util::key_array<repartitioned, index_spaces> part;
 
+  std::size_t colors() const {
+    return part.front().colors();
+  }
+
+  template<index_space S>
+  data::region & get_region() {
+    return part.template get<S>();
+  }
+  template<index_space S>
+  const data::partition & get_partition(field_id_t) const {
+    return part.template get<S>();
+  }
+
+  template<class F>
+  void fields(F fn) {
+    for(auto & r : part)
+      fn(resize::field, r.sz);
+    connect_visit([&](const auto & f) { fn(f, *this); }, connect_);
+  }
+
 private:
   template<auto... Value, std::size_t... Index>
-  util::key_array<repartitioned, util::constants<Value...>> make_partition(
+  util::key_array<repartitioned, util::constants<Value...>> make_partitions(
     unstructured_base::coloring const & c,
     util::constants<Value...> /* index spaces to deduce pack */,
     std::index_sequence<Index...>) {
+    flog_assert(c.index_colorings.size() == sizeof...(Value),
+      c.index_colorings.size()
+        << " sizes for " << sizeof...(Value) << " index spaces");
     return {{make_repartitioned<Policy, Value>(c.colors,
       make_partial<allocate>(c.index_colorings[Index], c.colors))...}};
+  }
+  template<index_space... SS>
+  void init_ragged(util::constants<SS...>) {
+    (this->template extend_offsets<SS>(), ...);
   }
 }; // struct unstructured
 
@@ -404,6 +433,13 @@ public:
   template<index_space To, index_space From>
   auto entities(id<From> from) const {
     return make_ids<To>(connectivity<From, To>()[from]);
+  }
+
+  template<class F>
+  void bind(F f) {
+    for(auto & a : size_)
+      f(a);
+    connect_visit(f, connect_);
   }
 }; // struct unstructured<Policy>::access
 

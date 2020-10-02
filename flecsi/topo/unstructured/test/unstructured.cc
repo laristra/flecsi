@@ -43,7 +43,7 @@ struct unstructured : topo::specialization<topo::unstructured, unstructured> {
 
   static coloring color(std::string const & filename) {
     topo::unstructured_impl::simple_definition definition(filename.c_str());
-    return {};
+    return {processes(), {}, {}};
   } // color
 }; // struct unstructured
 
@@ -51,8 +51,19 @@ unstructured::slot mesh;
 unstructured::cslot coloring;
 
 int
+check(unstructured::accessor<ro>) {
+  UNIT {};
+}
+
+int
 unstructured_driver() {
-  UNIT { coloring.allocate("simple2d-8x8.msh"); };
+  UNIT {
+    coloring.allocate("simple2d-8x8.msh");
+    // Provide 0s to allow vacuous topology construction:
+    coloring.get().index_colorings.resize(unstructured::index_spaces::size);
+    mesh.allocate(coloring.get());
+    EXPECT_EQ(test<check>(mesh), 0);
+  };
 } // unstructured_driver
 
 flecsi::unit::driver<unstructured_driver> driver;
