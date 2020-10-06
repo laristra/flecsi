@@ -29,6 +29,7 @@ set(execution_HEADERS
   global_object_wrapper.h
   internal_index_space.h
   kernel.h
+  reduction.h
   remap_shared.h
   task.h
 )
