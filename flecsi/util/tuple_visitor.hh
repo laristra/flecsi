@@ -32,6 +32,7 @@ tuple_visitor_impl(_Tuple && t, _Fn && f, std::index_sequence<_Idx...>) {
     Attribution: Andy Prowl on stackoverflow.
    */
   auto _l = {(f(_Idx, std::get<_Idx>(t)), 0)...};
+  (void)_l; // for unused variable warning
 }
 
 /*!

@@ -102,6 +102,10 @@ public:
     return DIMENSION;
   }; // size
 
+  operator std::array<TYPE, DIMENSION>() {
+    return data_;
+  }
+
   //--------------------------------------------------------------------------//
   //! Support for enumerated type access, e.g., da[x], for accessing the
   //! x axis.

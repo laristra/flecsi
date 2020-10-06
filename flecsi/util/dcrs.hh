@@ -17,27 +17,32 @@
 
 #include "flecsi/flog.hh"
 
+#include <algorithm>
+#include <iterator>
 #include <ostream>
 #include <vector>
 
 namespace flecsi {
 namespace util {
 
+template<typename T, typename U>
+std::vector<T>
+as(std::vector<U> const & v) {
+  return {v.begin(), v.end()};
+} // as
+
+template<typename ForwardIt, typename T>
+auto
+distribution_offset(ForwardIt const & distribution, T index) {
+  auto it = std::upper_bound(distribution.begin(), distribution.end(), index);
+  flog_assert(it != distribution.end(), "index out of range");
+  return std::distance(distribution.begin(), it) - 1;
+}
+
 struct dcrs {
   std::vector<size_t> offsets;
   std::vector<size_t> indices;
   std::vector<size_t> distribution;
-
-#define define_as(member)                                                      \
-  template<typename T>                                                         \
-  std::vector<T> member##_as() const {                                         \
-    return {member.begin(), member.end()};                                     \
-  }
-
-  define_as(offsets);
-  define_as(indices);
-  define_as(distribution);
-#undef dcrs_as
 
   size_t entries() const {
     flog_assert(
@@ -45,22 +50,11 @@ struct dcrs {
     return offsets.size() - 1;
   }
 
-  size_t global_colors() const {
-    flog_assert(!distribution.empty(),
-      "attempted to call colors() on empty distribution");
-    return distribution.size() - 1;
-  }
-
-  size_t global_indices() const {
-    return distribution.back();
-  }
-
   void clear() {
     offsets.clear();
     indices.clear();
     distribution.clear();
   }
-
 }; // struct dcrs
 
 inline std::ostream &

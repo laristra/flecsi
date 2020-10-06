@@ -37,10 +37,7 @@ set(topo_HEADERS
   structured/simple_box_colorer.hh
   structured/types.hh
   unstructured/coloring_utils.hh
-  unstructured/definition.hh
   unstructured/interface.hh
-  unstructured/parallel_definition.hh
-  unstructured/simple_definition.hh
   unstructured/types.hh
   unstructured/closure_utils.hh
   utility_types.hh
@@ -88,12 +85,33 @@ add_unit(structured
 #---------------------------   Unstructured Mesh  -----------------------------#
 
 add_unit(coloring
-  SOURCES unstructured/test/coloring.cc
+  SOURCES
+    unstructured/test/coloring.cc
+    unstructured/test/simple_definition.hh
   INPUTS
     unstructured/test/simple2d-16x16.msh
     unstructured/test/simple2d-8x8.msh
   THREADS 5
 )
+
+add_unit(closure
+  SOURCES
+    unstructured/test/closure.cc
+    unstructured/test/test_definition.hh
+)
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+add_unit(unstructured
+  SOURCES
+    unstructured/test/simple_definition.hh
+    unstructured/test/unstructured.cc
+  INPUTS
+    unstructured/test/simple2d-8x8.msh
+  THREADS 2
+)
+
+endif()
 
 #----------------------------------  NTREE  -----------------------------------#
 
