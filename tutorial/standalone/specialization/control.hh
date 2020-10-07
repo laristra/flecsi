@@ -13,8 +13,8 @@
                                                                               */
 #pragma once
 
-#include "flecsi/control.hh"
 #include "flecsi/flog.hh"
+#include "flecsi/run/control.hh"
 
 namespace standalone {
 
@@ -39,7 +39,25 @@ struct control_policy {
   using control_points_enum = cp;
   struct node_policy {};
 
-  using control = flecsi::control<control_policy>;
+  using control = flecsi::run::control<control_policy>;
+
+  static bool cycle_control() {
+    return control::instance().step()++ < control::instance().steps();
+  }
+
+  template<auto CP>
+  using control_point = flecsi::run::control_point<CP>;
+
+  using cycle = flecsi::run::cycle<cycle_control,
+    control_point<cp::advance>,
+    control_point<cp::analyze>>;
+
+  using control_points = std::
+    tuple<control_point<cp::initialize>, cycle, control_point<cp::finalize>>;
+
+  /*--------------------------------------------------------------------------*
+    State interface
+   *--------------------------------------------------------------------------*/
 
   size_t & steps() {
     return steps_;
@@ -48,25 +66,11 @@ struct control_policy {
     return step_;
   }
 
-  static bool cycle_control() {
-    return control::instance().step()++ < 5;
-  }
-
-  template<auto CP>
-  using control_point = flecsi::control_point<CP>;
-
-  using cycle = flecsi::cycle<cycle_control,
-    control_point<cp::advance>,
-    control_point<cp::analyze>>;
-
-  using control_points = std::
-    tuple<control_point<cp::initialize>, cycle, control_point<cp::finalize>>;
-
 private:
   size_t steps_{0};
   size_t step_{0};
 }; // struct control_policy
 
-using control = flecsi::control<control_policy>;
+using control = flecsi::run::control<control_policy>;
 
 } // namespace standalone
