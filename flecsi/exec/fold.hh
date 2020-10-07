@@ -218,7 +218,7 @@ struct product {
 
   using LHS = T;
   using RHS = T;
-  static constexpr T identity{};
+  static constexpr T identity{1};
 
   template<bool EXCLUSIVE = true>
   static void apply(LHS & lhs, RHS rhs) {
