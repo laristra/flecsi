@@ -77,20 +77,14 @@ struct task_prologue_t {
    */
 
   static Legion::PrivilegeMode privilege_mode(size_t mode) {
-    switch(mode) {
-      case size_t(nu):
-        return WRITE_DISCARD;
-      case size_t(ro):
-        return READ_ONLY;
-      case size_t(wo):
-        return WRITE_DISCARD;
-      case size_t(rw):
-        return READ_WRITE;
-      default:
-        flog_fatal("invalid privilege mode");
-    } // switch
-
-    return NO_ACCESS;
+    // Reduce the read and write permissions for each privilege separately:
+    bool r = false, w = false;
+    for(auto i = privilege_count(mode); i-- && !(r && w);) {
+      const auto p = get_privilege(i, mode);
+      r = r || privilege_read(p);
+      w = w || privilege_write(p);
+    }
+    return r ? w ? READ_WRITE : READ_ONLY : w ? WRITE_DISCARD : NO_ACCESS;
   } // privilege_mode
 
   template<class P, class... AA>
@@ -134,12 +128,8 @@ struct task_prologue_t {
     static_assert(privilege_count(PRIVILEGES) == 1,
       "global topology accessor type only takes one privilege");
 
-    constexpr auto priv = get_privilege(0, PRIVILEGES);
-
-    Legion::RegionRequirement rr(region,
-      priv > partition_privilege_t::ro ? privilege_mode(priv) : READ_ONLY,
-      EXCLUSIVE,
-      region);
+    Legion::RegionRequirement rr(
+      region, privilege_mode(PRIVILEGES), EXCLUSIVE, region);
 
     rr.add_field(ref.fid());
     region_reqs_.push_back(rr);
@@ -150,19 +140,19 @@ struct task_prologue_t {
   template<typename DATA_TYPE,
     size_t PRIVILEGES,
     class Topo,
-    typename Topo::index_space Space,
-    class = std::enable_if_t<Topo::template privilege_count<Space> == 1>>
+    typename Topo::index_space Space>
   void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
     auto & instance_data =
       ref.topology().template get_partition<Space>(ref.fid());
 
-    static_assert(privilege_count(PRIVILEGES) == 1,
-      "accessors for this topology type take only one privilege");
+    constexpr auto np = privilege_count(PRIVILEGES);
+    static_assert(np == Topo::template privilege_count<Space>,
+      "privilege-count mismatch between accessor and topology type");
 
     Legion::RegionRequirement rr(instance_data.logical_partition,
       0,
-      privilege_mode(get_privilege(0, PRIVILEGES)),
+      privilege_mode(PRIVILEGES),
       EXCLUSIVE,
       Legion::Runtime::get_runtime()->get_parent_logical_region(
         instance_data.logical_partition));
