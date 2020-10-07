@@ -724,6 +724,14 @@ make_dcrs_distributed(
 
 } // make_dcrs
 
+
+inline bool owned_by( const std::vector<size_t> & dist, size_t id, size_t owner)
+{
+  if (id < dist[owner]) return false;
+  else if (id < dist[owner+1]) return true;
+  else return false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Migrate pieces of a mesh from one processor to another
 ////////////////////////////////////////////////////////////////////////////////
@@ -731,6 +739,7 @@ template<std::size_t DIMENSION>
 void
 migrate(size_t dimension,
   const std::vector<size_t> & partitioning,
+  const std::vector<size_t> & partition_dist,
   dcrs_t & dcrs,
   typename topology::parallel_mesh_definition_u<DIMENSION> & md) {
 
@@ -738,7 +747,7 @@ migrate(size_t dimension,
 
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
-
+  
   //----------------------------------------------------------------------------
   // Pack information together.
   //
@@ -768,15 +777,16 @@ migrate(size_t dimension,
 
       // the global id
       auto global_id = dcrs.distribution[comm_rank] + local_id;
+      auto partition_id = partitioning[local_id];
 
       //------------------------------------------------------------------------
       // No migration necessary
-      if(partitioning[local_id] == comm_rank) {
+      if( owned_by(partition_dist, partition_id, comm_rank) ) {
         // just keep track of the global ids
       }
       //------------------------------------------------------------------------
       // Entity to be migrated
-      else if(partitioning[local_id] == rank) {
+      else if( owned_by(partition_dist, partition_id, rank) ) {
         // mark for deletion
         erase_local_ids.emplace_back(local_id);
         // global id
