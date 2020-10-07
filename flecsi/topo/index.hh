@@ -72,20 +72,21 @@ struct with_size {
   resize::core sz;
 };
 
+namespace zero {
+inline std::size_t
+function(std::size_t) {
+  return 0;
+}
+inline constexpr auto partial = make_partial<function>();
+} // namespace zero
+
 // A partition with a field for dynamically resizing it.
 struct repartition : with_size, data::partition {
-private:
-  static std::size_t k0(std::size_t) {
-    return 0;
-  }
-  static constexpr auto zero = make_partial<k0>();
-
-public:
   // Construct a partition with an initial size.
   // f is passed as a task argument, so it must be serializable;
   // consider using make_partial.
-  template<class F = decltype(zero)>
-  repartition(const data::region & r, F f = zero);
+  template<class F = decltype(zero::partial)>
+  repartition(const data::region & r, F f = zero::partial);
   void resize() { // apply sizes stored in the field
     update(sz, resize::field.fid);
   }
