@@ -23,14 +23,10 @@
 
 namespace flecsi::data {
 #ifdef DOXYGEN // implemented per-backend
-struct region {
+struct region_base {
   region(size2, const fields &);
 
   size2 size() const;
-  template<topo::single_space>
-  region & get_region() {
-    return *this;
-  }
 };
 
 struct partition {
@@ -38,11 +34,11 @@ struct partition {
   using row = decltype(make_row(0, 0));
   static std::size_t row_size(const row &);
 
-  explicit partition(const region &); // divides into rows
+  explicit partition(const region_base &); // divides into rows
   // Derives row lengths from the field values (which should be of type row
   // and be equal in number to the rows).  The argument partition must survive
   // until this partition is updated or destroyed.
-  partition(const region &,
+  partition(const region_base &,
     const partition &,
     field_id_t,
     completeness = incomplete);
@@ -55,6 +51,14 @@ struct partition {
   }
 };
 #endif
+
+struct region : region_base {
+  using region_base::region_base;
+  template<topo::single_space>
+  region & get_region() {
+    return *this;
+  }
+};
 
 template<class Topo, typename Topo::index_space Index = Topo::default_space()>
 region

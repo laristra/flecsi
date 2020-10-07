@@ -125,10 +125,6 @@ struct region {
     const auto p = run().get_index_space_domain(index_space).hi();
     return size2(p[0] + 1, p[1] + 1);
   }
-  template<topo::single_space>
-  region & get_region() {
-    return *this;
-  }
 
   template<class D>
   void cleanup(field_id_t f, D d) {
@@ -251,7 +247,9 @@ private:
 };
 } // namespace leg
 
-using leg::region, leg::partition; // for backend-agnostic interface
+// For backend-agnostic interface:
+using region_base = leg::region;
+using leg::partition;
 
 } // namespace data
 } // namespace flecsi

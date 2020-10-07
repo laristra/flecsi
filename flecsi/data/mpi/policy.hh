@@ -21,15 +21,12 @@
 namespace flecsi {
 namespace data {
 
+namespace mpi {
 struct region {
   region(size2, const fields &) {}
 
   size2 size() const {
     return {};
-  }
-  template<topo::single_space>
-  region & get_region() {
-    return *this;
   }
 };
 
@@ -57,6 +54,11 @@ struct partition {
     return *this;
   }
 };
+} // namespace mpi
+
+// For backend-agnostic interface:
+using region_base = mpi::region;
+using mpi::partition;
 
 } // namespace data
 } // namespace flecsi
