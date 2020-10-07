@@ -73,6 +73,8 @@ public:
 
   virtual const flecsi::coloring::crs_t & side_vertices() const = 0;
   virtual const std::vector<size_t> & side_ids() const = 0;
+
+  virtual void set_partitioning(const std::vector<size_t> &) {}
 };
 
 //----------------------------------------------------------------------------
