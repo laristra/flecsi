@@ -48,9 +48,6 @@ inline std::size_t next_id;
 template<template<class> class T>
 using base_t = typename detail::base<T>::type;
 
-template<class T>
-using identity = T; // can be a trivial specialization interface
-
 struct specialization_base {
   // For connectivity tuples:
   template<auto V, class T>
@@ -65,6 +62,8 @@ struct specialization_base {
   // May be overridden by policy:
   using index_space = single_space;
   using index_spaces = util::constants<elements>;
+  template<class B>
+  using interface = B;
 
   specialization_base() = delete;
 };
@@ -72,15 +71,12 @@ struct specialization_base {
 /// CRTP base for specializations.
 /// \tparam C core topology
 /// \tparam D derived topology type
-/// \tparam I specialization interface accepting a base class
-template<template<class> class C, class D, template<class> class I = identity>
+template<template<class> class C, class D>
 struct specialization : specialization_base {
   using core = C<D>;
   using base = base_t<C>;
   // This is just core::coloring, but core is incomplete here.
   using coloring = typename base::coloring;
-  template<class B>
-  using interface = I<B>;
 
   // NB: nested classes would prevent template argument deduction.
   using slot = data::topology_slot<D>;
