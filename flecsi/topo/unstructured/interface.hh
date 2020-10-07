@@ -328,7 +328,9 @@ closure(typename Policy::definition const & md,
  *----------------------------------------------------------------------------*/
 
 template<typename Policy>
-struct unstructured : unstructured_base, with_ragged<Policy> {
+struct unstructured : unstructured_base,
+                      with_ragged<Policy>,
+                      with_meta<Policy> {
   using index_space = typename Policy::index_space;
   using index_spaces = typename Policy::index_spaces;
 
@@ -336,22 +338,53 @@ struct unstructured : unstructured_base, with_ragged<Policy> {
   struct access;
 
   unstructured(coloring const & c)
-    : with_ragged<Policy>(c.colors),
+    : with_ragged<Policy>(c.colors), with_meta<Policy>(c.colors),
       part(make_partitions(c,
         index_spaces(),
-        std::make_index_sequence<index_spaces::size>())) {}
+        std::make_index_sequence<index_spaces::size>())) {
+    init_ragged(index_spaces());
+  }
 
   static inline const connect_t<Policy> connect_;
+  static inline const lists_t<Policy> special;
   util::key_array<repartitioned, index_spaces> part;
+
+  std::size_t colors() const {
+    return part.front().colors();
+  }
+
+  template<index_space S>
+  data::region & get_region() {
+    return part.template get<S>();
+  }
+  template<index_space S>
+  const data::partition & get_partition(field_id_t) const {
+    return part.template get<S>();
+  }
+
+  template<class F>
+  void fields(F fn) {
+    for(auto & r : part)
+      fn(resize::field, r.sz);
+    connect_visit([&](const auto & f) { fn(f, *this); }, connect_);
+    connect_visit([&](const auto & f) { fn(f, this->meta); }, special);
+  }
 
 private:
   template<auto... Value, std::size_t... Index>
-  util::key_array<repartitioned, util::constants<Value...>> make_partition(
+  util::key_array<repartitioned, util::constants<Value...>> make_partitions(
     unstructured_base::coloring const & c,
     util::constants<Value...> /* index spaces to deduce pack */,
     std::index_sequence<Index...>) {
+    flog_assert(c.index_colorings.size() == sizeof...(Value),
+      c.index_colorings.size()
+        << " sizes for " << sizeof...(Value) << " index spaces");
     return {{make_repartitioned<Policy, Value>(c.colors,
       make_partial<allocate>(c.index_colorings[Index], c.colors))...}};
+  }
+  template<index_space... SS>
+  void init_ragged(util::constants<SS...>) {
+    (this->template extend_offsets<SS>(), ...);
   }
 }; // struct unstructured
 
@@ -363,10 +396,12 @@ template<typename Policy>
 template<std::size_t Privileges>
 struct unstructured<Policy>::access {
 private:
+  using entity_list = typename Policy::entity_list;
   template<const auto & Field>
   using accessor = data::accessor_member<Field, Privileges>;
   util::key_array<resize::accessor, index_spaces> size_;
   connect_access<Policy, Privileges> connect_;
+  list_access<Policy, Privileges> special{unstructured::special};
 
   template<index_space From, index_space To>
   auto & connectivity() {
@@ -404,6 +439,19 @@ public:
   template<index_space To, index_space From>
   auto entities(id<From> from) const {
     return make_ids<To>(connectivity<From, To>()[from]);
+  }
+
+  template<index_space I, entity_list L>
+  auto special_entities() const {
+    return make_ids<I>(special.template get<I>().template get<L>()[0]);
+  }
+
+  template<class F>
+  void bind(F f) {
+    for(auto & a : size_)
+      f(a);
+    connect_visit(f, connect_);
+    connect_visit(f, special);
   }
 }; // struct unstructured<Policy>::access
 

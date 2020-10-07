@@ -59,7 +59,9 @@ struct canonical : canonical_base, with_ragged<Policy> {
       part(make_partitions(c,
         index_spaces(),
         std::make_index_sequence<index_spaces::size>())),
-      meta(c.parts) {}
+      meta(c.parts) {
+    init_ragged(index_spaces());
+  }
 
   // The first index space is distinguished in that we decorate it:
   static inline const field<int>::definition<Policy, index_spaces::first> mine;
@@ -92,6 +94,10 @@ private:
       c.sizes.size() << " sizes for " << sizeof...(VV) << " index spaces");
     return {{make_repartitioned<Policy, VV>(
       c.parts, make_partial<allocate>(c.sizes[II], c.parts))...}};
+  }
+  template<index_space... SS>
+  void init_ragged(util::constants<SS...>) {
+    (this->template extend_offsets<SS>(), ...);
   }
 }; // struct canonical
 

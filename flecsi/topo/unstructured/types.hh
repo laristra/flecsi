@@ -20,6 +20,7 @@
 #endif
 
 #include "flecsi/topo/index.hh"
+#include "flecsi/util/serialize.hh"
 
 #include <cstddef>
 #include <set>
@@ -159,8 +160,10 @@ struct unstructured_base {
 
   static std::size_t allocate(
     unstructured_impl::index_coloring const & index_coloring,
+    std::size_t colors,
     std::size_t color) {
     (void)index_coloring;
+    (void)colors;
     (void)color;
     return 0;
   }
@@ -168,4 +171,29 @@ struct unstructured_base {
 }; // struct unstructured_base
 
 } // namespace topo
+
+template<>
+struct util::serial<topo::unstructured_impl::entity_info> {
+  using type = topo::unstructured_impl::entity_info;
+  template<class P>
+  static void put(P & p, const type & c) {
+    serial_put(p, std::tie(c.id, c.rank, c.offset, c.shared));
+  }
+  static type get(const std::byte *& p) {
+    const serial_cast r{p};
+    return type{r, r, r, std::set<std::size_t>(r)};
+  }
+};
+template<>
+struct util::serial<topo::unstructured_impl::index_coloring> {
+  using type = topo::unstructured_impl::index_coloring;
+  template<class P>
+  static void put(P & p, const type & c) {
+    serial_put(p, std::tie(c.primary, c.exclusive, c.shared, c.ghost));
+  }
+  static type get(const std::byte *& p) {
+    const serial_cast r{p};
+    return type{r, r, r, r};
+  }
+};
 } // namespace flecsi

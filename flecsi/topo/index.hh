@@ -72,20 +72,21 @@ struct with_size {
   resize::core sz;
 };
 
+namespace zero {
+inline std::size_t
+function(std::size_t) {
+  return 0;
+}
+inline constexpr auto partial = make_partial<function>();
+} // namespace zero
+
 // A partition with a field for dynamically resizing it.
 struct repartition : with_size, data::partition {
-private:
-  static std::size_t k0(std::size_t) {
-    return 0;
-  }
-  static constexpr auto zero = make_partial<k0>();
-
-public:
   // Construct a partition with an initial size.
   // f is passed as a task argument, so it must be serializable;
   // consider using make_partial.
-  template<class F = decltype(zero)>
-  repartition(const data::region & r, F f = zero);
+  template<class F = decltype(zero::partial)>
+  repartition(const data::region & r, F f = zero::partial);
   void resize() { // apply sizes stored in the field
     update(sz, resize::field.fid);
   }
@@ -146,6 +147,15 @@ struct ragged_category : ragged_base {
     return part.template get<S>()[i];
   }
 
+  // These can't just be default template arguments, since they would be
+  // instantiated even if unused.
+  const repartition & get_partition(field_id_t i) const {
+    return const_cast<ragged_category &>(*this).get_partition(i);
+  }
+  repartition & get_partition(field_id_t i) {
+    return get_partition<P::default_space()>(i);
+  }
+
 private:
   template<auto... VV>
   static util::key_array<ragged_partitioned, util::constants<VV...>>
@@ -166,7 +176,23 @@ struct ragged_topology : specialization<ragged_category, ragged_topology<T>> {
 template<class P>
 struct with_ragged { // for interface consistency
   with_ragged(std::size_t n) : ragged(n) {}
+
+  // Extend a offsets fields to define empty rows for the suffix.
+  template<typename P::index_space, class F = decltype(zero::partial)>
+  void extend_offsets(
+    F = zero::partial); // serializable function from color to old size
+
   typename ragged_topology<P>::core ragged;
+
+private:
+  template<class F>
+  static void extend(field<std::size_t, data::raw>::accessor<rw> a, F old) {
+    const auto s = a.span();
+    const std::size_t i = old(run::context::instance().color());
+    // A dense field will be default-constructed on first use, but this
+    // function means to support the case where it was resized.
+    std::uninitialized_fill(s.begin() + i, s.end(), i ? s.back() : 0);
+  }
 };
 
 template<>
@@ -178,11 +204,23 @@ struct detail::base<ragged_category> {
 template<class P>
 struct index_category : color_category<P>, with_ragged<P> {
   index_category(const index_base::coloring & c)
-    : color_category<P>(c), with_ragged<P>(c.size()) {}
+    : color_category<P>(c), with_ragged<P>(c.size()) {
+    this->template extend_offsets<elements>();
+  }
 };
 template<>
 struct detail::base<index_category> {
   using type = index_base;
+};
+
+// A subtopology for holding topology-specific metadata per color.
+template<class P>
+struct meta_topology : specialization<index_category, meta_topology<P>> {};
+
+template<class P>
+struct with_meta { // for interface consistency
+  with_meta(std::size_t n) : meta(n) {}
+  typename meta_topology<P>::core meta;
 };
 
 /*!

@@ -28,7 +28,7 @@
 #include "flecsi/exec/fold.hh"
 #include "flecsi/flog.hh"
 #include "flecsi/run/backend.hh"
-#include "flecsi/topo/index.hh" // repartition
+#include "flecsi/topo/index.hh" // for member definitions
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface
@@ -396,5 +396,15 @@ repartition::repartition(const data::region & r, F f)
       execute<fill<F>>(r, f);
       return r.fid();
     }()) {}
+template<class P>
+template<typename P::index_space S, class F>
+void
+with_ragged<P>::extend_offsets(F old) {
+  for(auto f :
+    run::context::instance().get_field_info_store<ragged_topology<P>, S>())
+    execute<extend<F>>(data::field_reference<std::size_t, data::raw, P, S>(
+                         *f, static_cast<typename P::core &>(*this)),
+      old);
+}
 } // namespace topo
 } // namespace flecsi

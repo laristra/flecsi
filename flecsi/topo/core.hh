@@ -59,6 +59,8 @@ struct specialization_base {
   using entity = util::key_type<V, T>;
   template<auto... V>
   using has = util::constants<V...>;
+  template<class... TT>
+  using list = util::types<TT...>;
 
   // May be overridden by policy:
   using index_space = single_space;

@@ -77,6 +77,14 @@ T serial_get1(const std::byte * p) { // for a single object
   return serial_get<T>(p);
 }
 
+struct serial_cast {
+  const std::byte *& p;
+  template<class T>
+  operator T() const {
+    return serial_get<T>(p);
+  }
+};
+
 namespace detail {
 template<class T>
 struct serial_container {
