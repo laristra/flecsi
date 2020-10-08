@@ -261,7 +261,6 @@ struct sum {
 
 }; // struct sum
 
-template<>
 template<typename T, std::size_t N>
 struct sum<std::array<T, N>> {
 
