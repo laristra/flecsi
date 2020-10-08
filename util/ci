@@ -9,24 +9,10 @@ FROM ${OS}
 # Clone repositories
 #------------------------------------------------------------------------------#
 
-<<<<<<< HEAD
 ARG IMAGE_REPO
 ARG IMAGE_BRANCH
-||||||| parent of c360ef39... Adding gnu builds
-ARG REPO
-ARG CI_BRANCH
-=======
-ARG REPO
-ARG IMAGE_BRANCH
->>>>>>> c360ef39... Adding gnu builds
 
-<<<<<<< HEAD
 RUN git clone --single-branch --branch ${IMAGE_BRANCH} ${IMAGE_REPO} .images
-||||||| parent of c360ef39... Adding gnu builds
-RUN git clone --single-branch --branch ${CI_BRANCH} ${REPO} ${CI_BRANCH}
-=======
-RUN git clone --single-branch --branch ${IMAGE_BRANCH} ${REPO} .images
->>>>>>> c360ef39... Adding gnu builds
 RUN git clone --single-branch \
   --branch develop https://github.com/spack/spack.git .spack
 
