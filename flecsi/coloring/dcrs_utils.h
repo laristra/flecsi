@@ -432,7 +432,11 @@ make_dcrs_distributed(
   //----------------------------------------------------------------------------
 
   // first figure out the maximum global id on this rank
-  const auto & vertex_local_to_global = md.local_to_global(to_dimension);
+  using conn_t = decltype(md.local_to_global(0));
+  using decayed_conn_t = std::decay_t<conn_t>;
+  decayed_conn_t empty_conn;
+  const auto & vertex_local_to_global = (md.num_entities(to_dimension)) ?
+    md.local_to_global(to_dimension) : empty_conn;
 
   size_t max_global_vert_id{0};
   for(auto v : vertex_local_to_global)
@@ -453,7 +457,12 @@ make_dcrs_distributed(
 
   // essentially vertex to cell connectivity
   std::map<size_t, std::vector<size_t>> vertex2cell;
-  const auto & cells2vertex = md.entities_crs(from_dimension, to_dimension);
+
+  using entities_t = decltype(md.entities_crs(0,0));
+  using decayed_entities_t = std::decay_t<entities_t>;
+  decayed_entities_t empty_entities;
+  const auto & cells2vertex = (md.num_entities(from_dimension)) ?
+    md.entities_crs(from_dimension, to_dimension) : empty_entities;
 
   // Travel from the FROM_DIMENSION (cell) to the TO_DIMENSION (other)
   for(size_t ic = 0; ic < num_cells; ++ic) {
@@ -1882,6 +1891,40 @@ ghost_connectivity(
   ghost_connectivity(
     from2to, to_local2global, from_entities, from_ids, connectivity);
 }
+
+static MPI_Comm create_communicator(MPI_Comm parent_comm, bool flag)
+{
+  int parent_size, parent_rank;
+  MPI_Comm_size(parent_comm, &parent_size);
+  MPI_Comm_rank(parent_comm, &parent_rank);
+
+  std::vector<char> rank_flags(parent_size);
+  MPI_Allgather(&flag, 1, MPI_CHAR, rank_flags.data(), 1, MPI_CHAR, parent_comm);
+  
+  size_t num_ranks = 0;
+  for (auto i : rank_flags) if (i) num_ranks++;
+
+  std::vector<int> included_ranks;
+  included_ranks.reserve(num_ranks);
+  for (unsigned i=0; i<parent_size; ++i)
+    if (rank_flags[i])
+      included_ranks.emplace_back(i);
+
+  MPI_Group parent_group;
+  MPI_Comm_group(parent_comm, &parent_group);
+
+  MPI_Group new_group;
+  MPI_Group_incl(
+    parent_group,
+    num_ranks,
+    included_ranks.data(),
+    &new_group);
+
+  MPI_Comm new_comm;
+  MPI_Comm_create_group(parent_comm, new_group, 0, &new_comm);
+  return new_comm;
+}
+  
 
 } // namespace coloring
 } // namespace flecsi
