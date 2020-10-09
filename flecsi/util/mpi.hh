@@ -133,7 +133,10 @@ private:
   template<bool Make>
   static MPI_Datatype make() {
     static_assert(Make, "type not predefined");
-    static_assert(std::is_trivially_copyable_v<TYPE>);
+    // Unfortunately, std::tuple<int> is not trivially copyable:
+    static_assert(std::is_trivially_copy_assignable_v<TYPE> ||
+                  std::is_copy_assignable_v<TYPE> &&
+                    std::is_trivially_copy_constructible_v<TYPE>);
     // TODO: destroy at MPI_Finalize
     static const MPI_Datatype ret = [] {
       MPI_Datatype data_type;
