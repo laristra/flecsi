@@ -103,10 +103,11 @@ new_naive_coloring(Definition const & md,
       const std::size_t bytes = data.size();
       flog(info) << "sending " << bytes << " to " << r << std::endl;
 
-      MPI_Isend(&bytes, 1, mpi::size_type, r, 0, comm, &size_requests[r]);
+      MPI_Isend(
+        &bytes, 1, mpi::type<std::size_t>(), r, 0, comm, &size_requests[r]);
       MPI_Isend(data.data(),
         data.size(),
-        mpi::byte_type,
+        mpi::type<std::byte>(),
         r,
         0,
         comm,
@@ -115,10 +116,10 @@ new_naive_coloring(Definition const & md,
   }
   else {
     std::size_t bytes{0};
-    MPI_Recv(&bytes, 1, mpi::size_type, 0, 0, comm, &status);
+    MPI_Recv(&bytes, 1, mpi::type<std::size_t>(), 0, 0, comm, &status);
     flog(info) << "set to receive " << bytes << " bytes" << std::endl;
     std::vector<std::byte> data(bytes);
-    MPI_Recv(data.data(), bytes, mpi::byte_type, 0, 0, comm, &status);
+    MPI_Recv(data.data(), bytes, mpi::type<std::byte>(), 0, 0, comm, &status);
     const auto * p = data.data();
     auto cells = serial_get<std::vector<std::vector<size_t>>>(p);
 

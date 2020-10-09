@@ -161,20 +161,6 @@ static_type() {
   return traits<T>::template type<false>();
 }
 
-// Convenience variables
-inline const auto size_type = type<std::size_t>();
-inline const auto byte_type = type<std::byte>();
-inline const auto char_type = type<char>();
-inline const auto unsigned_char_type = type<unsigned char>();
-inline const auto short_type = type<short>();
-inline const auto unsigned_short_type = type<unsigned short>();
-inline const auto int_type = type<int>();
-inline const auto unsigend_type = type<unsigned>();
-inline const auto long_type = type<long>();
-inline const auto float_type = type<float>();
-inline const auto double_type = type<double>();
-inline const auto long_double_type = type<long double>();
-
 /*!
   Convenience function to get basic MPI communicator information.
  */
@@ -222,10 +208,10 @@ one_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
       const std::size_t bytes = data.size();
 
       requests.resize(requests.size() + 1);
-      MPI_Isend(&bytes, 1, mpi::size_type, r, 0, comm, &requests.back());
+      MPI_Isend(&bytes, 1, type<std::size_t>(), r, 0, comm, &requests.back());
       requests.resize(requests.size() + 1);
       MPI_Isend(
-        data.data(), bytes, mpi::byte_type, r, 0, comm, &requests.back());
+        data.data(), bytes, type<std::byte>(), r, 0, comm, &requests.back());
     } // for
 
     std::vector<MPI_Status> status(requests.size());
@@ -234,9 +220,9 @@ one_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
   else {
     std::size_t bytes{0};
     MPI_Status status;
-    MPI_Recv(&bytes, 1, mpi::size_type, 0, 0, comm, &status);
+    MPI_Recv(&bytes, 1, type<std::size_t>(), 0, 0, comm, &status);
     std::vector<std::byte> data(bytes);
-    MPI_Recv(data.data(), bytes, mpi::byte_type, 0, 0, comm, &status);
+    MPI_Recv(data.data(), bytes, type<std::byte>(), 0, 0, comm, &status);
     auto const * p = data.data();
     return serial_get<typename F::return_type>(p);
   } // if
@@ -276,8 +262,13 @@ all_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
     counts.emplace_back(f.count(r));
   } // for
 
-  MPI_Alltoall(
-    counts.data(), 1, mpi::size_type, bytes.data(), 1, mpi::size_type, comm);
+  MPI_Alltoall(counts.data(),
+    1,
+    type<std::size_t>(),
+    bytes.data(),
+    1,
+    type<std::size_t>(),
+    comm);
 
   std::vector<MPI_Request> requests;
 
@@ -290,7 +281,7 @@ all_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
       requests.resize(requests.size() + 1);
       MPI_Irecv(recv_bufs[r].data(),
         recv_bufs[r].size(),
-        mpi::byte_type,
+        type<std::byte>(),
         r,
         0,
         comm,
@@ -304,7 +295,7 @@ all_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
       send_bufs[r] = serial_put(f(r, size));
       MPI_Isend(send_bufs[r].data(),
         send_bufs[r].size(),
-        mpi::byte_type,
+        type<std::byte>(),
         r,
         0,
         comm,
