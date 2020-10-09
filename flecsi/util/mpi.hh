@@ -32,6 +32,7 @@
 
 namespace flecsi {
 namespace util {
+namespace mpi {
 
 /*!
  Wrapper to convert from C++ types to MPI types.
@@ -42,7 +43,7 @@ namespace util {
  */
 
 template<typename TYPE>
-struct mpi_typetraits {
+struct traits {
   // NB: OpenMPI's predefined handles are not constant expressions.
   template<bool Make = true>
   static MPI_Datatype type() {
@@ -150,31 +151,29 @@ private:
 
 template<class T>
 MPI_Datatype
-mpi_type() {
-  return mpi_typetraits<T>::type();
+type() {
+  return traits<T>::type();
 }
 // Use this to restrict to predefined types before MPI_Init:
 template<class T>
 MPI_Datatype
-mpi_static_type() {
-  return mpi_typetraits<T>::template type<false>();
+static_type() {
+  return traits<T>::template type<false>();
 }
 
-namespace mpi {
-
 // Convenience variables
-inline const auto size_type = mpi_typetraits<std::size_t>::type();
-inline const auto byte_type = mpi_typetraits<std::byte>::type();
-inline const auto char_type = mpi_typetraits<char>::type();
-inline const auto unsigned_char_type = mpi_typetraits<unsigned char>::type();
-inline const auto short_type = mpi_typetraits<short>::type();
-inline const auto unsigned_short_type = mpi_typetraits<unsigned short>::type();
-inline const auto int_type = mpi_typetraits<int>::type();
-inline const auto unsigend_type = mpi_typetraits<unsigned>::type();
-inline const auto long_type = mpi_typetraits<long>::type();
-inline const auto float_type = mpi_typetraits<float>::type();
-inline const auto double_type = mpi_typetraits<double>::type();
-inline const auto long_double_type = mpi_typetraits<long double>::type();
+inline const auto size_type = type<std::size_t>();
+inline const auto byte_type = type<std::byte>();
+inline const auto char_type = type<char>();
+inline const auto unsigned_char_type = type<unsigned char>();
+inline const auto short_type = type<short>();
+inline const auto unsigned_short_type = type<unsigned short>();
+inline const auto int_type = type<int>();
+inline const auto unsigend_type = type<unsigned>();
+inline const auto long_type = type<long>();
+inline const auto float_type = type<float>();
+inline const auto double_type = type<double>();
+inline const auto long_double_type = type<long double>();
 
 /*!
   Convenience function to get basic MPI communicator information.

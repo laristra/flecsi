@@ -401,10 +401,10 @@ public:
     std::vector<size_t> recv_cnts(colors);
     MPI_Alltoall(&send_cnts[0],
       1,
-      util::mpi_typetraits<size_t>::type(),
+      util::mpi::type<std::size_t>(),
       &recv_cnts[0],
       1,
-      util::mpi_typetraits<size_t>::type(),
+      util::mpi::type<std::size_t>(),
       comm);
 
     // Start receive operations (non-blocking).
@@ -416,7 +416,7 @@ public:
         requests.push_back({});
         MPI_Irecv(&rbuffers[r][0],
           recv_cnts[r],
-          util::mpi_typetraits<size_t>::type(),
+          util::mpi::type<std::size_t>(),
           r,
           0,
           comm,
@@ -434,7 +434,7 @@ public:
 
         MPI_Send(&sbuffers[r][0],
           send_cnts[r],
-          util::mpi_typetraits<size_t>::type(),
+          util::mpi::type<std::size_t>(),
           r,
           0,
           comm);
@@ -475,7 +475,7 @@ public:
         requests.push_back({});
         MPI_Irecv(&rbuffers[r][0],
           send_cnts[r],
-          util::mpi_typetraits<size_t>::type(),
+          util::mpi::type<std::size_t>(),
           r,
           0,
           comm,
@@ -489,7 +489,7 @@ public:
       if(recv_cnts[r]) {
         MPI_Send(&sbuffers[r][0],
           recv_cnts[r],
-          util::mpi_typetraits<size_t>::type(),
+          util::mpi::type<std::size_t>(),
           r,
           0,
           comm);
