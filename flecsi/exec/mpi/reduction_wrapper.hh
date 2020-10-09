@@ -24,56 +24,42 @@
 #include "flecsi/util/mpi.hh"
 #include <flecsi/flog.hh>
 
-#include <type_traits>
-
 namespace flecsi {
 
 inline log::devel_tag reduction_wrapper_tag("reduction_wrapper");
 
 namespace exec {
+namespace fold {
 
-namespace detail {
-template<class>
-void register_reduction();
-}
+template<class R, class T>
+struct wrap {
+private:
+  static void apply(void * in, void * inout, int * len, MPI_Datatype *) {
+    const auto rd = static_cast<const T *>(in);
+    const auto rw = static_cast<T *>(inout);
 
-// NB: The real initialization is in the callback.
-template<class R>
-inline MPI_Op reduction_op = (run::context::instance().register_init(
-                                detail::register_reduction<R>),
-  MPI_Op());
+    for(std::size_t i = 0, n = *len; i < n; ++i) {
+      rw[i] = R::combine(rw[i], rd[i]);
+    } // for
+  }
 
-/*!
-  Register the user-defined reduction operator with the runtime.
- */
+  static void init() {
+    {
+      log::devel_guard guard(reduction_wrapper_tag);
+      flog_devel(info) << "registering reduction operation " << util::type<R>()
+                       << " for " << util::type<T>() << std::endl;
+    } // scope
 
-template<typename TYPE>
-void
-detail::register_reduction() {
-  using value_type = typename TYPE::LHS;
-  // MPI does not have support for mixed-type reductions
-  static_assert(std::is_same_v<value_type, typename TYPE::RHS>,
-    "type mismatch: LHS != RHS");
+    // Create the operator and register it with the runtime
+    MPI_Op_create(apply, true, &op);
+  }
 
-  {
-    log::devel_guard guard(reduction_wrapper_tag);
-    flog(info) << "Executing reduction wrapper callback for "
-               << util::type<TYPE>() << std::endl;
-  } // scope
+public:
+  // NB: The real initialization is in the callback.
+  static inline MPI_Op op =
+    (run::context::instance().register_init(init), MPI_Op());
+};
 
-  // Create the operator and register it with the runtime
-  MPI_Op_create(
-    [](void * in, void * inout, int * len, MPI_Datatype *) {
-      const auto lhs = static_cast<value_type *>(inout);
-      const auto rhs = static_cast<const value_type *>(in);
-
-      for(size_t i{0}; i < *len; ++i) {
-        TYPE::template apply<true>(lhs[i], rhs[i]);
-      } // for
-    },
-    true,
-    &reduction_op<TYPE>);
-}
-
+} // namespace fold
 } // namespace exec
 } // namespace flecsi

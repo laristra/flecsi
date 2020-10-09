@@ -158,8 +158,7 @@ index_driver() {
     execute<drows>(vfrac);
     execute<assign>(pressure, verts, vfrac);
     execute<reset>(noise);
-    EXPECT_EQ((reduce<reset, exec::fold::sum<std::size_t>, mpi>(noise).get()),
-      processes());
+    EXPECT_EQ((reduce<reset, exec::fold::sum, mpi>(noise).get()), processes());
     EXPECT_EQ(test<check>(pressure, verts, vfrac, noise), 0);
   };
 } // index
