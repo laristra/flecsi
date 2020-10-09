@@ -75,8 +75,9 @@ struct parmetis_geom_colorer_t : public colorer_t {
 
   std::vector<size_t> new_color(size_t num_parts, const dcrs_t & dcrs) override {
     
-    int size = 0;
+    int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     auto num_ents = dcrs.size();
     auto vtxdist = dcrs.distribution_as<idx_t>();
@@ -85,8 +86,10 @@ struct parmetis_geom_colorer_t : public colorer_t {
       clog_fatal("Unfortunately, ParMETIS_V3_PartGeom requires all ranks to have an "
           "initial partitioning." );
     
+    if (num_parts != size)
+      clog_fatal("Unfortunately, ParMETIS_V3_PartGeom requires nparts == comm_size." );
     
-    std::vector<idx_t> part(num_ents);
+    std::vector<idx_t> part(num_ents, rank);
 
     // Actual call to ParMETIS.
     idx_t npart = num_parts;
