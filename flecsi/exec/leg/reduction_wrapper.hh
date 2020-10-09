@@ -27,6 +27,7 @@
 #include <legion.h>
 
 #include <atomic>
+#include <complex>
 #include <cstdint>
 #include <cstring>
 #include <mutex>
@@ -123,7 +124,7 @@ namespace fold {
 inline Legion::ReductionOpID reduction_id;
 
 // Adapts our interface to Legion's.
-template<class R, class T>
+template<class R, class T, class = void>
 struct wrap {
   typedef T LHS, RHS;
 
@@ -163,6 +164,103 @@ public:
   // NB: 0 is reserved by Legion.
   static inline const Legion::ReductionOpID id =
     (run::context::instance().register_init(init), ++reduction_id);
+};
+
+template<class>
+constexpr legion_redop_kind_t redop() = delete;
+template<>
+constexpr legion_redop_kind_t
+redop<min>() {
+  return LEGION_REDOP_KIND_MIN;
+}
+template<>
+constexpr legion_redop_kind_t
+redop<max>() {
+  return LEGION_REDOP_KIND_MAX;
+}
+template<>
+constexpr legion_redop_kind_t
+redop<sum>() {
+  return LEGION_REDOP_KIND_SUM;
+}
+template<>
+constexpr legion_redop_kind_t
+redop<product>() {
+  return LEGION_REDOP_KIND_PROD;
+}
+
+template<class>
+constexpr legion_type_id_t redtype() = delete;
+template<>
+constexpr legion_type_id_t
+redtype<bool>() {
+  return LEGION_TYPE_BOOL;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::int8_t>() {
+  return LEGION_TYPE_INT8;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::int16_t>() {
+  return LEGION_TYPE_INT16;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::int32_t>() {
+  return LEGION_TYPE_INT32;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::int64_t>() {
+  return LEGION_TYPE_INT64;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::uint8_t>() {
+  return LEGION_TYPE_UINT8;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::uint16_t>() {
+  return LEGION_TYPE_UINT16;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::uint32_t>() {
+  return LEGION_TYPE_UINT32;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::uint64_t>() {
+  return LEGION_TYPE_UINT64;
+}
+template<>
+constexpr legion_type_id_t
+redtype<float>() {
+  return LEGION_TYPE_FLOAT32;
+}
+template<>
+constexpr legion_type_id_t
+redtype<double>() {
+  return LEGION_TYPE_FLOAT64;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::complex<float>>() {
+  return LEGION_TYPE_COMPLEX64;
+}
+template<>
+constexpr legion_type_id_t
+redtype<std::complex<double>>() {
+  return LEGION_TYPE_COMPLEX128;
+}
+
+template<class R, class T>
+struct wrap<R, T, decltype(void((redop<R>(), redtype<T>())))> {
+  static constexpr Legion::ReductionOpID id =
+    LEGION_REDOP_BASE + redop<R>() * LEGION_TYPE_TOTAL + redtype<T>();
 };
 
 } // namespace fold
