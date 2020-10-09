@@ -102,8 +102,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     ${execution_HEADERS}
     hpx/context_policy.h
     hpx/execution_policy.h
+    hpx/finalize_handles.h
     hpx/future.h
+    hpx/reduction_wrapper.h
     hpx/runtime_driver.h
+    hpx/task_epilog.h
+    hpx/task_prolog.h
   )
   set(execution_SOURCES
     ${execution_SOURCES}
@@ -225,7 +229,6 @@ if (FLECSI_ENABLE_KOKKOS)
 endif()
 
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 #
 # Test basic task to test future_handle
 #
@@ -363,7 +366,6 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       THREADS 4
     )
 
-
     cinch_add_devel_target(concept_coloring
       SOURCES
         test/concept_coloring.cc
@@ -452,7 +454,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
     )
-    
+
     cinch_add_unit(handle_tuple
       SOURCES
         test/handle_tuple.cc
@@ -474,7 +476,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       POLICY ${UNIT_POLICY}
       THREADS 2
     )
-  
+
   if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     cinch_add_unit(legacy_restart
       SOURCES
@@ -498,8 +500,7 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
       THREADS 2
     )
   endif()
-    
-    
+
   cinch_add_unit(data_handle_task
       SOURCES
         test/data_handle_task.cc
@@ -906,5 +907,3 @@ if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
     endif() # (ENABLE_PARMETIS)
 
   endif() # legion
-
-endif()# not hpx

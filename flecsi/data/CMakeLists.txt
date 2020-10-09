@@ -114,18 +114,15 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 
   set(data_HEADERS
     ${data_HEADERS}
+    hpx/color.h
     hpx/data_client_handle_policy.h
     hpx/data_handle_policy.h
     hpx/data_policy.h
     hpx/dense.h
     hpx/global.h
-    hpx/meta_data.h
-    hpx/registration_wrapper.h
-    hpx/scoped.h
     hpx/sparse.h
-    hpx/storage_policy.h
     hpx/sparse_data_handle_policy.h
-    hpx/tuple.h
+    hpx/storage_policy.h
   )
 
   set(UNIT_POLICY HPX)
@@ -233,7 +230,6 @@ if(ENABLE_PARMETIS)
   cinch_add_unit(client_registration
     SOURCES
       test/client_registration.cc
-      ../utils/demangle.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES

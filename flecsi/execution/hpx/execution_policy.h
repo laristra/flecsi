@@ -1,25 +1,27 @@
-/*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_hpx_execution_policy_h
-#define flecsi_execution_hpx_execution_policy_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
+
+/*! @file */
 
 #include <hpx/include/async.hpp>
 #include <hpx/include/lcos.hpp>
 #include <hpx/include/parallel_execution.hpp>
+#include <hpx/include/parallel_executors.hpp>
 #include <hpx/include/thread_executors.hpp>
 
+#include <cinchlog.h>
 #include <functional>
 #include <tuple>
 #include <unordered_map>
@@ -28,42 +30,33 @@
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
 #include <flecsi/execution/context.h>
+#include <flecsi/execution/hpx/finalize_handles.h>
 #include <flecsi/execution/hpx/future.h>
-#include <flecsi/execution/hpx/runtime_driver.h>
-#include <flecsi/execution/hpx/task_wrapper.h>
-#include <flecsi/utils/export_definitions.h>
-
+#include <flecsi/execution/hpx/reduction_wrapper.h>
+#include <flecsi/execution/hpx/task_epilog.h>
+#include <flecsi/execution/hpx/task_prolog.h>
+#include <flecsi/utils/annotation.h>
 #include <flecsi/utils/const_string.h>
-
-//#include "flecsi/execution/task.h"
-
-///
-// \file hpx/execution_policy.h
-// \authors bergen
-// \date Initial file creation: Nov 15, 2015
-///
+#include <flecsi/utils/export_definitions.h>
+#include <flecsi/utils/tuple_type_converter.h>
 
 namespace flecsi {
 namespace execution {
 
-//----------------------------------------------------------------------------//
-// Future.
-//----------------------------------------------------------------------------//
+/*!
+  Executor interface.
+ */
 
-///
-/// Executor interface.
-///
 template<typename RETURN, typename ARG_TUPLE>
 struct executor_u {
-  ///
-  ///
-  ///
+  /*!
+   FIXME documentation
+   */
   template<typename Exec, typename T, typename A>
-  static hpx_future_u<RETURN, launch_type_t::single>
-  execute(Exec && exec, T fun, A && targs) {
-    auto user_fun = (reinterpret_cast<RETURN (*)(ARG_TUPLE)>(fun));
+  static decltype(auto) execute(Exec && exec, T function, A && targs) {
+    auto user_fun = reinterpret_cast<RETURN (*)(std::decay_t<A>)>(function);
     return hpx::async(
-      std::forward<Exec>(exec), std::move(user_fun), std::forward<A>(targs));
+      std::forward<Exec>(exec), user_fun, std::forward<A>(targs));
   } // execute_task
 }; // struct executor_u
 
@@ -71,93 +64,167 @@ struct executor_u {
 // Execution policy.
 //----------------------------------------------------------------------------//
 
-///
-/// \struct hpx_execution_policy hpx_execution_policy.h
-/// \brief hpx_execution_policy provides...
-///
+/*!
+  The hpx_execution_policy_t is the backend runtime execution policy
+  for HPX.
+
+  @ingroup hpx-execution
+ */
+
 struct FLECSI_EXPORT hpx_execution_policy_t {
+
+  /*!
+    The future_u type may be used for explicit synchronization of tasks.
+
+    @tparam RETURN The return type of the task.
+   */
 
   template<typename R, launch_type_t launch = launch_type_t::single>
   using future_u = hpx_future_u<R, launch>;
 
-  //--------------------------------------------------------------------------//
-  //! The task_wrapper_u type FIXME
-  //!
-  //! @tparam RETURN The return type of the task. FIXME
-  //--------------------------------------------------------------------------//
-
-  template<typename FUNCTOR_TYPE>
-  using functor_task_wrapper_u =
-    typename flecsi::execution::functor_task_wrapper_u<FUNCTOR_TYPE>;
+  /*!
+    The runtime_state_t type identifies a public type for the high-level
+    runtime interface to pass state required by the backend.
+   */
 
   struct runtime_state_t {};
+  // using runtime_state_t = hpx_runtime_state_t;
 
-  //   static
-  //   runtime_state_t &
-  //   runtime_state(
-  //     void * task
-  //   )
-  //   {
-  //     return {};
-  //   }
+  /*!
+    Return the runtime state of the calling FleCSI task.
+
+    @param task The calling task.
+   */
+
+  static runtime_state_t & runtime_state(void * task);
+
   //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  ///
-  /// hpx task registration.
-  ///
-  /// \tparam R The return type of the task.
-  /// \tparam A The arguments type of the task. This is a std::tuple of the
-  ///           user task arguments.
-  ///
-  template<size_t KEY,
+  /*!
+    HPX backend task registration. For documentation on this
+    method please see task_u::register_task.
+   */
+
+  template<size_t TASK,
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool
   register_task(processor_type_t processor, launch_t launch, std::string name) {
+#if defined(ENABLE_CALIPER)
     return context_t::instance()
-      .template register_task<KEY, RETURN, ARG_TUPLE, DELEGATE>(
-        processor, launch, name);
+      .template register_function<TASK, RETURN, ARG_TUPLE, DELEGATE>(name);
+#else
+    return context_t::instance()
+      .template register_function<TASK, RETURN, ARG_TUPLE, DELEGATE>();
+#endif
   } // register_task
 
-  ///
-  /// \tparam R The task return type.
-  /// \tparam T The user task type.
-  /// \tparam As The user task argument types.
-  ///
-  /// \param key
-  /// \param user_task_handle
-  /// \param args
-  ///
+  /*!
+    HPX backend task execution. For documentation on this method,
+    please see task_u::execute_task.
+   */
+
   template<launch_type_t launch,
-    size_t KEY,
+    size_t TASK,
     size_t REDUCTION,
     typename RETURN,
     typename ARG_TUPLE,
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
+
     context_t & context_ = context_t::instance();
 
-    // Get the function and processor type.
-    auto fun = context_.task<KEY>();
+    auto function = context_.function(TASK);
 
-    auto processor_type = context_.processor_type<KEY>();
-    if(processor_type == processor_type_t::mpi) {
-      {
-        clog_tag_guard(execution);
-        clog(info) << "Executing MPI task: " << KEY << std::endl;
-      }
+    using annotation = flecsi::utils::annotation;
+#if defined(ENABLE_CALIPER)
+    auto tname = context_.function_name(TASK);
+#else
+    /* using a placeholder so we do not have to maintain function_name_registry
+       when annotations are disabled. */
+    std::string tname{""};
+#endif
 
-      return executor_u<RETURN, ARG_TUPLE>::execute(
-        context_t::instance().get_mpi_executor(), std::move(fun),
-        std::make_tuple(std::forward<ARGS>(args)...));
+    // Make a tuple from the task arguments.
+    utils::convert_tuple_t<ARG_TUPLE, std::decay_t> task_args =
+      std::make_tuple(std::forward<ARGS>(args)...);
+
+    annotation::begin<annotation::execute_task_prolog>(tname);
+    // run task_prolog to copy ghost cells.
+    task_prolog_t task_prolog;
+    task_prolog.walk(task_args);
+#if defined(FLECSI_USE_AGGCOMM)
+    task_prolog.launch_copies();
+    task_prolog.launch_sparse_copies();
+#endif
+    annotation::end<annotation::execute_task_prolog>();
+
+    annotation::begin<annotation::execute_task_user>(tname);
+
+    //     hpx_future_u<RETURN> future;
+    //     auto processor_type = context_.processor_type<TASK>();
+    //     if(processor_type == processor_type_t::mpi) {
+    //
+    //       {
+    //         clog_tag_guard(execution);
+    //         clog(info) << "Executing MPI task: " << TASK << std::endl;
+    //       }
+    //
+    //       future = executor_u<RETURN, ARG_TUPLE>::execute(
+    //         context_t::instance().get_mpi_executor(), std::move(function),
+    //         task_args);
+    //     }
+    //     else {
+    //       future = executor_u<RETURN, ARG_TUPLE>::execute(
+    //         context_t::instance().get_default_executor(),
+    //         std::move(function), task_args);
+    //     }
+    hpx_future_u<RETURN> future = executor_u<RETURN, ARG_TUPLE>::execute(
+      context_t::instance().get_default_executor(), std::move(function),
+      task_args);
+
+    annotation::end<annotation::execute_task_user>();
+
+    annotation::begin<annotation::execute_task_epilog>(tname);
+    task_epilog_t task_epilog;
+    task_epilog.walk(task_args);
+    annotation::end<annotation::execute_task_epilog>();
+
+    annotation::begin<annotation::execute_task_finalize>(tname);
+    finalize_handles_t finalize_handles;
+    finalize_handles.walk(task_args);
+    annotation::end<annotation::execute_task_finalize>();
+
+    constexpr size_t ZERO =
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+
+    if constexpr(REDUCTION != ZERO) {
+
+      return future
+        .then([&](hpx_future_u<RETURN> && future) {
+          MPI_Datatype datatype =
+            flecsi::utils::mpi_typetraits_u<RETURN>::type();
+
+          auto reduction_op = context_.reduction_operations().find(REDUCTION);
+
+          clog_assert(reduction_op != context_.reduction_operations().end(),
+            "invalid reduction operation");
+
+          const RETURN sendbuf = future.get();
+          RETURN recvbuf;
+
+          MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
+            MPI_COMM_WORLD);
+
+          return recvbuf;
+        })
+        .share();
     }
 
-    return executor_u<RETURN, ARG_TUPLE>::execute(
-      context_t::instance().get_default_executor(), std::move(fun),
-      std::make_tuple(std::forward<ARGS>(args)...));
+    return future;
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -165,46 +232,48 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
   //--------------------------------------------------------------------------//
 
   /*!
-    MPI backend reduction registration. For documentation on this
+    HPX backend reduction registration. For documentation on this
     method please see task_u::register_reduction_operation.
    */
 
   template<size_t NAME, typename OPERATION>
   static bool register_reduction_operation() {
-    return true;
+    using wrapper_t = reduction_wrapper_u<NAME, OPERATION>;
+
+    return context_t::instance().register_reduction_operation(
+      NAME, wrapper_t::registration_callback);
   } // register_reduction_operation
 
   //--------------------------------------------------------------------------//
   // Function interface.
   //--------------------------------------------------------------------------//
-  template<size_t KEY,
+
+  /*!
+    HPX backend function registration. For documentation on this
+    method, please see function_u::register_function.
+   */
+
+  template<size_t FUNCTION,
     typename RETURN,
     typename ARG_TUPLE,
-    RETURN (*FUNCTION)(ARG_TUPLE)>
+    RETURN (*DELEGATE)(ARG_TUPLE)>
   static bool register_function() {
     return context_t::instance()
-      .template register_function<KEY, RETURN, ARG_TUPLE, FUNCTION>();
+      .template register_function<FUNCTION, RETURN, ARG_TUPLE, DELEGATE>();
   } // register_function
 
-  ///
-  /// This method looks up a function from the \e handle argument
-  /// and executes the associated it with the provided \e args arguments.
-  ///
-  /// \param handle The function handle to execute.
-  /// \param args A variadic argument list of the function parameters.
-  ///
-  /// \return The return type of the provided function handle.
-  ///
-  template<typename FUNCTION_HANDLE, typename... ARGS>
-  static decltype(auto) execute_function(FUNCTION_HANDLE & handle,
-    ARGS &&... args) {
+  /*!
+    HPX backend function execution. For documentation on this
+    method, please see function_u::execute_function.
+   */
+
+  template<typename HANDLE, typename... ARGS>
+  static decltype(auto) execute_function(HANDLE & handle, ARGS &&... args) {
     return handle(context_t::instance().function(handle.get_key()),
-      std::make_tuple(std::forward<ARGS>(args)...));
+      std::forward_as_tuple(args...));
   } // execute_function
 
 }; // struct hpx_execution_policy_t
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_hpx_execution_policy_h

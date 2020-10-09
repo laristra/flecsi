@@ -61,7 +61,7 @@ flecsi_register_task(index_writer, , loc, index);
 void
 index_reader(index_handle_t<int> x) {
   int y = 1 + flecsi::execution::context_t::instance().color();
-  ASSERT_EQ(x, y);
+  ASSERT_EQ(x.get(), y);
 }
 
 flecsi_register_task(index_reader, , loc, index);

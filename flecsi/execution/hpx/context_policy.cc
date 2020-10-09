@@ -1,12 +1,18 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
+/*! @file */
 
 #include <flecsi-config.h>
 
@@ -18,24 +24,27 @@
 #include <hpx/hpx_init.hpp>
 
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <flecsi/execution/hpx/context_policy.h>
-
 #include <flecsi/data/storage.h>
+#include <flecsi/execution/hpx/context_policy.h>
 
 namespace flecsi {
 namespace execution {
 
-hpx_context_policy_t::hpx_context_policy_t()
-  : min_reduction_{0}, max_reduction_{0} {
+//----------------------------------------------------------------------------//
+// Implementation of hpx_context_policy_t.
+//----------------------------------------------------------------------------//
+
+hpx_context_policy_t::hpx_context_policy_t() {
 #if defined(_MSC_VER)
   hpx::detail::init_winsocket();
 #endif
-}
+} // namespace execution
 
 // Return the color for which the context was initialized.
 size_t
@@ -45,25 +54,23 @@ hpx_context_policy_t::color() const {
 
 // Main HPX thread, does nothing but wait for the application to exit
 int
-hpx_context_policy_t::hpx_main(int (*driver)(int, char *[]),
+hpx_context_policy_t::hpx_main(void (*driver)(int, char *[]),
   int argc,
   char * argv[]) {
 
   // initialize executors (possible only after runtime is active)
-  exec_ = flecsi::execution::pool_executor{"default"};
-  mpi_exec_ = flecsi::execution::pool_executor{"mpi"};
+  exec_ = std::make_unique<flecsi::execution::pool_executor>("default");
+  mpi_exec_ = std::make_unique<flecsi::execution::pool_executor>("mpi");
 
   // execute user code (driver)
-  int retval = (*driver)(argc, argv);
+  (*driver)(argc, argv);
 
   // tell the runtime it's ok to exit
-  hpx::finalize();
-
-  return retval;
+  return hpx::finalize();
 }
 
 int
-hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
+hpx_context_policy_t::start_hpx(void (*driver)(int, char *[]),
   int argc,
   char * argv[]) {
 
@@ -96,7 +103,7 @@ hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
   init_rp(rp);
   return hpx::init();
 #else
-  // Newer versions of HPX do not allow to explicitly initialice the
+  // Newer versions of HPX do not allow to explicitly initialize the
   // resource partitioner anymore
   hpx::init_params params;
   params.rp_callback = init_rp;

@@ -29,9 +29,8 @@
 #include <flecsi/data/global_data_handle.h>
 #include <flecsi/data/storage.h>
 #include <flecsi/execution/context.h>
-#include <flecsi/utils/const_string.h>
 
-#include <algorithm>
+#include <flecsi/utils/const_string.h>
 
 namespace flecsi {
 namespace data {
@@ -42,7 +41,7 @@ namespace hpx {
 //----------------------------------------------------------------------------//
 
 /*!
- The global_handle_u provide an access to global variables that have
+ The color_handle_u provide an access to color variables that have
  been registered in data model
 
  \tparam T The type of the data variable. If this type is not
@@ -56,7 +55,7 @@ namespace hpx {
  */
 
 template<typename T, size_t PERMISSIONS>
-struct global_handle_u : public global_data_handle_u<T, PERMISSIONS> {
+struct color_handle_u : public global_data_handle_u<T, PERMISSIONS> {
 
   /*!
     Type definitions.
@@ -68,22 +67,22 @@ struct global_handle_u : public global_data_handle_u<T, PERMISSIONS> {
     Constructor.
    */
 
-  global_handle_u() {
-    base_t::global = true;
+  color_handle_u() {
+    base_t::color = true;
   }
 
   /*!
    Destructor.
    */
 
-  ~global_handle_u() {}
+  ~color_handle_u() {}
 
   /*
     Copy constructor.
    */
 
   template<size_t P2>
-  global_handle_u(const global_handle_u<T, P2> & a)
+  color_handle_u(const color_handle_u<T, P2> & a)
     : base_t(reinterpret_cast<const base_t &>(a)), label_(a.label()),
       size_(a.size()) {
     static_assert(P2 == 0, "passing mapped handle to task args");
@@ -124,7 +123,7 @@ struct global_handle_u : public global_data_handle_u<T, PERMISSIONS> {
 private:
   std::string label_ = "";
   size_t size_ = 1;
-}; // struct global_handle_u
+}; // struct color_handle_u
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -138,14 +137,14 @@ private:
  FIXME: Global storage type.
  */
 template<>
-struct storage_class_u<global> {
+struct storage_class_u<storage_label_type_t::color> {
 
   /*!
    Type definitions.
    */
 
   template<typename T, size_t PERMISSIONS>
-  using handle_t = global_handle_u<T, PERMISSIONS>;
+  using handle_t = color_handle_u<T, PERMISSIONS>;
 
   /*!
    Data handles.
@@ -181,7 +180,7 @@ struct storage_class_u<global> {
 
     h.combined_data = reinterpret_cast<DATA_TYPE *>(data);
 
-    h.global = true;
+    h.color = true;
     h.state = context.execution_state();
 
     return h;

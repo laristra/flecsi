@@ -82,16 +82,18 @@ struct hpx_set_topology_storage_policy_u {
   void finalize_storage() {
     auto & context = execution::context_t::instance();
 
-    auto & im = context.local_index_space_data_map();
-    for(auto & itr : im) {
-      std::size_t index_space = itr.first;
+    /*
+    auto& im = context.local_index_space_data_map();
+    for(auto& itr : im){
+      size_t index_space = itr.first;
 
       auto sitr = index_space_map.find(index_space);
       clog_assert(sitr != index_space_map.end(), "invalid index space");
-      auto & is = index_spaces[sitr->second];
-      execution::context_t::local_index_space_data_t & isd = itr.second;
+      auto& is = index_spaces[sitr->second];
+      execution::context_t::local_index_space_data_t& isd = itr.second;
       isd.size = is.size();
     }
+    */
   }
 
   template<class T, class... ARG_TYPES>

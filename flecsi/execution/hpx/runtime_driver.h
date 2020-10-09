@@ -1,15 +1,21 @@
-/*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-#ifndef flecsi_execution_hpx_runtime_driver_h
-#define flecsi_execution_hpx_runtime_driver_h
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+#pragma once
 
-///
-/// \file
-/// \date Initial file creation: Aug 01, 2016
-///
+/*! @file */
+
+#include <flecsi-config.h>
 
 namespace flecsi {
 namespace execution {
@@ -28,7 +34,7 @@ namespace execution {
 
 #if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
 void specialization_tlt_init(int argc, char ** argv);
-#endif
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
 void specialization_spmd_init(int argc, char ** argv);
@@ -47,14 +53,8 @@ void driver(int argc, char ** argv);
 
  @ingroup hpx-execution
  */
-int hpx_runtime_driver(int argc, char ** argv);
+
+void hpx_runtime_driver(int argc, char ** argv);
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_execution_hpx_runtime_driver_h
-
-/*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
- * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
