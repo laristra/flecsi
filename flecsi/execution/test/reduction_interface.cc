@@ -61,7 +61,7 @@ min_task(mesh<ro> m, field<rw, rw, ro> v) {
   double min{1000000.0};
 
   for(auto c : m.cells(owned)) {
-    min = std::min(v(c), min);
+    min = (std::min)(v(c), min);
   } // for
 
   return min;
@@ -71,7 +71,7 @@ max_task(mesh<ro> m, field<rw, rw, ro> v) {
   double max{0.0};
 
   for(auto c : m.cells(owned)) {
-    max = std::max(v(c), max);
+    max = (std::max)(v(c), max);
   } // for
 
   return max;

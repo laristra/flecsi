@@ -213,7 +213,7 @@ generic_coloring(typename COLORING_POLICY::mesh_definition_t & md,
         auto referencers =
           entity_referencers<primary_dimension, dimension>(md, i);
 
-        size_t min_rank(std::numeric_limits<size_t>::max());
+        size_t min_rank((std::numeric_limits<size_t>::max)());
         std::set<size_t> shared_entities;
 
         // Iterate the direct referencers to assign entity ownership

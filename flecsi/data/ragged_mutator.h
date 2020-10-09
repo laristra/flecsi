@@ -62,13 +62,12 @@ struct mutator_u<data::ragged, T> : public mutator_u<data::base, T>,
 
   T & operator()(size_t index, size_t ragged_index) {
     auto & row = this->handle[index];
-    return row[ragged_index];
-
+    return row[static_cast<uint32_t>(ragged_index)];
   } // operator ()
 
   void resize(size_t index, size_t size) {
     auto & row = this->handle[index];
-    row.resize(size);
+    row.resize(static_cast<uint32_t>(size));
   } // resize
 
   void erase(size_t index, size_t ragged_index) {

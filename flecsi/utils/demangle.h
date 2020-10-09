@@ -13,6 +13,8 @@
                                                                               */
 #pragma once
 
+#include <flecsi/utils/export_definitions.h>
+
 /*! @file */
 
 namespace flecsi {
@@ -26,7 +28,7 @@ namespace utils {
   @ingroup utils
  */
 
-std::string demangle(const char * const name);
+FLECSI_EXPORT std::string demangle(const char * const name);
 
 /*!
   Return the demangled name of the type T.

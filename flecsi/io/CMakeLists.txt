@@ -140,21 +140,21 @@ endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" AND ENABLE_HDF5)
 
-cinch_add_unit(io_hdf5
-  SOURCES
-    test/legion/io_hdf5.cc
-    ${DRIVER_INITIALIZATION}
-    ${RUNTIME_DRIVER}
-  DEFINES
-    -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-  POLICY
-    ${UNIT_POLICY}
-  LIBRARIES
-    FleCSI
-    ${CINCH_RUNTIME_LIBRARIES}
-    ${HDF5_LIBRARIES}
-  THREADS 4
-)
+  cinch_add_unit(io_hdf5
+    SOURCES
+      test/legion/io_hdf5.cc
+      ${DRIVER_INITIALIZATION}
+      ${RUNTIME_DRIVER}
+    DEFINES
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+    POLICY
+      ${UNIT_POLICY}
+    LIBRARIES
+      FleCSI
+      ${CINCH_RUNTIME_LIBRARIES}
+      ${HDF5_LIBRARIES}
+    THREADS 4
+  )
 endif()
 
 cinch_add_unit(simple_definition

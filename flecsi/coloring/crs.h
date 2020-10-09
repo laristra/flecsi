@@ -24,10 +24,14 @@ namespace coloring {
 // Convenience macro to avoid having to reimplement this for each member.
 //----------------------------------------------------------------------------//
 
+// initialize with an explicit loop to circumvent integral conversion warnings
 #define define_as(member)                                                      \
   template<typename T>                                                         \
   std::vector<T> member##_as() const {                                         \
-    std::vector<T> asvec(member.begin(), member.end());                        \
+    std::vector<T> asvec;                                                      \
+    asvec.reserve(member.size());                                              \
+    for(auto v : member)                                                       \
+      asvec.push_back(static_cast<T>(v));                                      \
     return asvec;                                                              \
   }
 
@@ -255,10 +259,10 @@ operator<<(std::ostream & stream, const crs_t & crs) {
 struct dcrs_t : public crs_t {
   std::vector<size_t> distribution;
 
-  define_as(distribution)
+  define_as(distribution);
 
-    /// \brief clears the current storage
-    void clear() {
+  /// \brief clears the current storage
+  void clear() {
     crs_t::clear();
     distribution.clear();
   }

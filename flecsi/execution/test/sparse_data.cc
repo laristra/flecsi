@@ -37,7 +37,7 @@ init(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> sm) {
     if(gid >= 11 && gid <= 13)
       stop = (parity ? 16 : 17);
     for(size_t j = start; j < stop; j += 2) {
-      sm(c, j) = rank * 10000 + gid * 100 + j;
+      sm(c, j) = static_cast<double>(rank * 10000 + gid * 100 + j);
     }
   }
 } // init
@@ -64,7 +64,7 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> sm) {
       int start = (parity ? 6 : 5);
       int stop = (parity ? 20 : 21);
       for(size_t j = start; j < stop; j += 2) {
-        sm(c, j) = rank * 10000 + gid * 100 + 50 + j;
+        sm(c, j) = static_cast<double>(rank * 10000 + gid * 100 + 50 + j);
       }
       sm.erase(c, start - 4);
       sm.erase(c, stop - 4);
@@ -73,10 +73,10 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, sparse_mutator<double> sm) {
       sm.erase(c, 9);
     }
     else if(parity) {
-      sm(c, 6) = rank * 10000 + gid * 100 + 66;
+      sm(c, 6) = static_cast<double>(rank * 10000 + gid * 100 + 66);
     }
     else {
-      sm(c, 3) = rank * 10000 + gid * 100 + 77;
+      sm(c, 3) = static_cast<double>(rank * 10000 + gid * 100 + 77);
     }
   }
 } // mutate

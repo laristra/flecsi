@@ -73,6 +73,7 @@ public:
   struct runtime_finish : region<execution> {
     inline static const std::string name{"finish"};
   };
+#if !defined(_MSC_VER)
   template<class T>
   struct execute_task : region<execution> {
     /// Set code region name for regions inheriting from execute_task with the
@@ -102,7 +103,50 @@ public:
     inline static const std::string tag{"finalize-handles"};
     static constexpr detail detail_level = detail::high;
   };
-
+#else
+  // MSVC is eagerly instantiating things, we must work around this
+  template<class T>
+  struct execute_task : region<execution> {
+    /// Set code region name for regions inheriting from execute_task with the
+    /// following prefix.
+    inline static const std::string tag{"execute_task->"};
+  };
+  struct execute_task_init : execute_task<execute_task_init> {
+    inline static const std::string tag{"init-handles"};
+    inline static const std::string name{
+      execute_task<execute_task_init>::tag + tag};
+    static constexpr detail detail_level = detail::high;
+  };
+  struct execute_task_initargs : execute_task<execute_task_initargs> {
+    inline static const std::string tag{"init-args"};
+    inline static const std::string name{
+      execute_task<execute_task_initargs>::tag + tag};
+    static constexpr detail detail_level = detail::high;
+  };
+  struct execute_task_prolog : execute_task<execute_task_prolog> {
+    inline static const std::string tag{"prolog"};
+    inline static const std::string name{
+      execute_task<execute_task_prolog>::tag + tag};
+    static constexpr detail detail_level = detail::high;
+  };
+  struct execute_task_user : execute_task<execute_task_user> {
+    inline static const std::string tag{"user"};
+    inline static const std::string name{
+      execute_task<execute_task_user>::tag + tag};
+  };
+  struct execute_task_epilog : execute_task<execute_task_epilog> {
+    inline static const std::string tag{"epilog"};
+    inline static const std::string name{
+      execute_task<execute_task_epilog>::tag + tag};
+    static constexpr detail detail_level = detail::high;
+  };
+  struct execute_task_finalize : execute_task<execute_task_finalize> {
+    inline static const std::string tag{"finalize-handles"};
+    inline static const std::string name{
+      execute_task<execute_task_finalize>::tag + tag};
+    static constexpr detail detail_level = detail::high;
+  };
+#endif
   /**
    * Tag beginning of code region with caliper annotation.
    *

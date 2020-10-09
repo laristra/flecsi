@@ -80,8 +80,8 @@ remap_shared_entities() {
         buf.resize(n);
         requests.resize(requests.size() + 1);
         auto & my_request = requests.back();
-        auto ret = MPI_Irecv(
-          buf.data(), n, mpi_size_t, rank, tag, MPI_COMM_WORLD, &my_request);
+        auto ret = MPI_Irecv(buf.data(), static_cast<int>(n), mpi_size_t,
+          static_cast<int>(rank), tag, MPI_COMM_WORLD, &my_request);
       }
     }
 
@@ -92,13 +92,14 @@ remap_shared_entities() {
       const auto & buf = comm_pair.second;
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
-      auto ret = MPI_Isend(buf.data(), buf.size(), mpi_size_t, rank, tag,
-        MPI_COMM_WORLD, &my_request);
+      auto ret = MPI_Isend(buf.data(), static_cast<int>(buf.size()), mpi_size_t,
+        static_cast<int>(rank), tag, MPI_COMM_WORLD, &my_request);
     }
 
     // wait for everything to complete
     std::vector<MPI_Status> status(requests.size());
-    MPI_Waitall(requests.size(), requests.data(), status.data());
+    MPI_Waitall(
+      static_cast<int>(requests.size()), requests.data(), status.data());
 
     // now we can unpack the messages and reconstruct the ghost entities
     std::set<flecsi::coloring::entity_info_t> new_ghost;

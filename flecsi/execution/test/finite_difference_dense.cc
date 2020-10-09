@@ -106,7 +106,7 @@ flecsi_register_task(init, flecsi::execution, loc, index);
 void
 check_results(mesh<ro> mesh, field<ro, ro, ro> values, size_t global_target) {
   auto target = flecsi_get_global_object(global_target, global, vec_2d_t);
-  auto rank = context_t::instance().color();
+  size_t rank = context_t::instance().color();
 
   for(auto c : mesh.cells(owned)) {
     auto v = values(c);
@@ -115,7 +115,7 @@ check_results(mesh<ro> mesh, field<ro, ro, ro> values, size_t global_target) {
     auto t = (*target)[i][j];
 
     if(std::abs(v - t) > test_tolerance) {
-      printf("[Rank %lu] at [%lu,%lu] %.15e != %.15e\n", rank, i, j, v, t);
+      printf("[Rank %zu] at [%zu,%zu] %.15e != %.15e\n", rank, i, j, v, t);
       throw std::runtime_error("Got wrong result");
     }
   }

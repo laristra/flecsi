@@ -107,6 +107,9 @@ driver(int argc, char ** argv) {
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
   int my_color;
   MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+  int my_color;
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
 #endif
 
   clog(trace) << "Rank " << my_color << " in driver" << std::endl;
@@ -351,7 +354,7 @@ add_colorings(int dummy) {
     // Get the set of cells that reference this vertex.
     auto referencers = flecsi::topology::entity_referencers<2, 0>(sd, i);
 
-    size_t min_rank(std::numeric_limits<size_t>::max());
+    size_t min_rank((std::numeric_limits<size_t>::max)());
     std::set<size_t> shared_vertices;
 
     // Iterate the direct referencers to assign vertex ownership.

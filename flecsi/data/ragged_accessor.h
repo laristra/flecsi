@@ -141,7 +141,7 @@ struct accessor_u<data::ragged,
     auto & row = this->handle.rows[index];
     assert(ragged_index < row.size() && "ragged accessor: index out of range");
 
-    return row[ragged_index];
+    return row[static_cast<int>(ragged_index)];
   } // operator ()
 
   const T & operator()(size_t index, size_t ragged_index) const {

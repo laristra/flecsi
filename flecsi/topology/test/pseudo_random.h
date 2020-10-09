@@ -23,7 +23,7 @@ public:
   //! \brief Generate a new random number with a uniform distribution between
   //!        [0, 1).
   double uniform() {
-    return double(rng_()) / rng_.max();
+    return double(rng_()) / (rng_.max)();
   }
 
   //! \brief Generate a new random number with a uniform distribution between

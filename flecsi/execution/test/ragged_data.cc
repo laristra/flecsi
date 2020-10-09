@@ -37,7 +37,7 @@ init(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
       count = 8;
     rm.resize(c, count);
     for(size_t j = 0; j < count; ++j) {
-      rm(c, j) = rank * 10000 + gid * 100 + j;
+      rm(c, j) = static_cast<double>(rank * 10000 + gid * 100 + j);
     }
   }
 } // init
@@ -64,14 +64,14 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
     if(gid == 11 || gid == 14) {
       rm.resize(c, 10);
       for(size_t j = 3; j < 10; ++j) {
-        rm(c, j) = rank * 10000 + gid * 100 + 50 + j;
+        rm(c, j) = static_cast<double>(rank * 10000 + gid * 100 + 50 + j);
       }
       rm.erase(c, 1);
     }
     else if(gid == 13) {
       auto n = rank * 10000 + gid * 100 + 66;
-      rm.push_back(c, n);
-      rm.insert(c, 1, n + 1);
+      rm.push_back(c, static_cast<double>(n));
+      rm.insert(c, 1, static_cast<double>(n + 1));
     }
     // flip the checkerboard:  entries that had 3 entries will now
     // have 2, and vice-versa
@@ -81,7 +81,7 @@ mutate(client_handle_t<test_mesh_t, ro> mesh, ragged_mutator<double> rm) {
     }
     else {
       auto n = rank * 10000 + gid * 100 + 88;
-      rm.insert(c, 1, n);
+      rm.insert(c, 1, static_cast<double>(n));
       rm(c, 2) = -rm(c, 2) + 80;
     }
   }

@@ -80,11 +80,13 @@ struct field_registration_wrapper_u {
     // register custom serdez op, if applicable
     if constexpr(STORAGE_CLASS == ragged) {
       using serdez_t = serdez_u<row_vector_u<DATA_TYPE>>;
-      execution::context_t::instance().register_serdez<serdez_t>(fid);
+      execution::context_t::instance().register_serdez<serdez_t>(
+        static_cast<int32_t>(fid));
     } // if
     else if constexpr(STORAGE_CLASS == sparse) {
       using serdez_t = serdez_u<row_vector_u<sparse_entry_value_u<DATA_TYPE>>>;
-      execution::context_t::instance().register_serdez<serdez_t>(fid);
+      execution::context_t::instance().register_serdez<serdez_t>(
+        static_cast<int32_t>(fid));
     }
   } // register_callback
 

@@ -18,6 +18,8 @@
 #include <cxxabi.h>
 #endif
 
+#include <flecsi/utils/demangle.h>
+
 namespace flecsi {
 namespace utils {
 
