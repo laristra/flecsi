@@ -28,6 +28,7 @@ set(coloring_HEADERS
   box_types.h
   box_colorer.h
   simple_box_colorer.h
+  naive_colorer.h
 )
 
 #------------------------------------------------------------------------------#
@@ -75,6 +76,8 @@ if(ENABLE_PARMETIS)
   set(coloring_HEADERS
     ${coloring_HEADERS}
     parmetis_colorer.h
+    parmetis_geom_colorer.h
+    parmetis_geomkway_colorer.h
   )
 endif()
 
