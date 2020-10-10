@@ -172,8 +172,8 @@ struct program_option {
     const char * flag,
     const char * help,
     std::initializer_list<initializer_value> values = {},
-    std::function<bool(const any &)> const & check = default_check) {
-
+    std::function<bool(boost::any const &, std::stringstream & ss)> check =
+      default_check) {
     auto semantic_ = boost::program_options::value(&value_);
 
     bool zero{false}, implicit{false};
@@ -231,7 +231,8 @@ struct program_option {
   program_option(const char * name,
     const char * help,
     size_t count,
-    std::function<bool(const any &)> const & check = default_check) {
+    std::function<bool(boost::any const &, std::stringstream & ss)> check =
+      default_check) {
     auto semantic_ = boost::program_options::value(&value_);
     semantic_->required();
 
@@ -259,7 +260,7 @@ struct program_option {
   }
 
 private:
-  static bool default_check(const boost::any &) {
+  static bool default_check(boost::any const &, std::stringstream &) {
     return true;
   }
 
