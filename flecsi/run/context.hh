@@ -20,11 +20,11 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/data/field_info.hh"
 #include "flecsi/exec/task_attributes.hh"
+#include "flecsi/flog.hh"
 #include "flecsi/run/types.hh"
 #include "flecsi/topo/core.hh"
-#include <flecsi/data/field_info.hh>
-#include <flecsi/flog.hh>
 
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
@@ -122,7 +122,8 @@ struct context {
   }
 
   std::map<std::string,
-    std::pair<bool, std::function<bool(boost::any const &)>>> &
+    std::pair<bool,
+      std::function<bool(boost::any const &, std::stringstream & ss)>>> &
   option_checks() {
     return option_checks_;
   }
@@ -202,8 +203,9 @@ struct context {
       )
       (
         "flog-process",
-        boost::program_options::value(&flog_output_process_)->default_value(-1),
-        "Restrict output to the specified process id."
+        boost::program_options::value(&flog_output_process_)->default_value(0),
+        "Restrict output to the specified process id. The default is process 0."
+        " Use '--flog_process=-1' to enable all processes."
       ); // clang-format on
 #endif
 
@@ -310,13 +312,20 @@ struct context {
       for(auto const & [name, boost_any] : vm) {
         auto const & ita = option_checks_.find(name);
         if(ita != option_checks_.end()) {
-          auto const & [positional, check] = ita->second;
+          auto [positional, check] = ita->second;
 
-          if(!check(boost_any.value())) {
-            std::string dash = positional ? "" : "--";
-            std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED
-                      << "invalid argument for '" << dash << name
-                      << "' option!!!" << FLOG_COLOR_PLAIN << std::endl;
+          std::stringstream ss;
+          if(!check(boost_any.value(), ss)) {
+            if(process_ == 0) {
+              std::string dash = positional ? "" : "--";
+              std::cerr << FLOG_COLOR_LTRED << "ERROR: " << FLOG_COLOR_RED
+                        << "invalid argument for '" << dash << name
+                        << "' option!!!" << std::endl
+                        << FLOG_COLOR_LTRED << (ss.str().empty() ? "" : " => ")
+                        << ss.str() << FLOG_COLOR_PLAIN << std::endl
+                        << std::endl;
+            } // if
+
             print_usage(program_, master, flecsi_desc);
             return status::help;
           } // if
@@ -605,7 +614,8 @@ protected:
 
   // Validation functions
   std::map<std::string,
-    std::pair<bool, std::function<bool(boost::any const &)>>>
+    std::pair<bool,
+      std::function<bool(boost::any const &, std::stringstream & ss)>>>
     option_checks_;
 
   std::vector<std::string> unrecognized_options_;

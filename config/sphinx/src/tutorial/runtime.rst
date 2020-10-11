@@ -164,7 +164,7 @@ this option, we use the following declaration:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 17-30
+  :lines: 17-32
 
 First, notice that the flecsi::program_option type is templated on the
 underlying option type *int*. In general, this can be any valid C++
@@ -197,7 +197,7 @@ parameters:
   an argument, and an implicit value must be provided. If multi is
   specified, the option takes multiple values.
 
-* *check ([](flecsi::any const &...)* |br|
+* *check ([](flecsi::any const &, std::stringstream & ss...)* |br|
   An optional, user-defined predicate to validate the value passed by
   the user.
 
@@ -206,7 +206,7 @@ value type:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 32-45
+  :lines: 34-49
 
 The only real difference is that (because the underlying type is
 std::string) the default value is also a string.
@@ -216,7 +216,7 @@ demonstrates the use of flecsi::option_implicit:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 47-59
+  :lines: 51-63
 
 Providing an implicit value, defines the behavior for the case that the
 user invokes the program with the given flag, but does not assign a
@@ -239,7 +239,7 @@ code:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 61-75
+  :lines: 65-81
 
 This option demonstrates how an enumeration can be used to define
 possible values. Although FleCSI does not enforce correctness, the
@@ -253,14 +253,14 @@ whether or not an option was passed in the next section:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 77-85
+  :lines: 83-91
 
 The final option in this example is a positional option, i.e., it is an
 argument to the program itself:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 87-99
+  :lines: 93-107
 
 Positional options are required, i.e., the program will error and print
 the usage message if a value is not passed.
@@ -279,7 +279,7 @@ Options that have a default value defined do not need to be tested:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 110-138
+  :lines: 118-146
 
 Here, we simply need to access the value of the option using the
 *value()* method.
@@ -289,14 +289,14 @@ option has a value using the *has_value()* method:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 140-147
+  :lines: 148-155
 
 Our one positional option works like the defaulted options (because it
 is required), and can be accessed using the *value()* method:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/2-program_options.cc
   :language: cpp
-  :lines: 149-160
+  :lines: 157-168
 
 Here is the full source for this tutorial example:
 
