@@ -59,6 +59,7 @@ struct naive_colorer_t : public colorer_t {
 
   std::set<size_t> color(const dcrs_t & dcrs) override {
    clog_error("Not implemented."); 
+   return {};
   } // color
 
   /*!
