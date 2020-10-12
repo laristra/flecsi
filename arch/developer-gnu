@@ -79,6 +79,7 @@ $cmake_mode \
   -DENABLE_FLECSIT=ON \
   -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
   -DENABLE_KOKKOS=$kokkos \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   $cinch_dir
 
 #------------------------------------------------------------------------------#

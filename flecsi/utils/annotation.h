@@ -73,11 +73,15 @@ public:
   struct runtime_finish : region<execution> {
     inline static const std::string name{"finish"};
   };
+
   template<class T>
   struct execute_task : region<execution> {
     /// Set code region name for regions inheriting from execute_task with the
     /// following prefix.
-    inline static const std::string name{"execute_task->" + T::tag};
+    static std::string const & name() {
+      static const std::string name_{"execute_task->" + T::tag};
+      return name_;
+    }
   };
   struct execute_task_init : execute_task<execute_task_init> {
     inline static const std::string tag{"init-handles"};
@@ -139,7 +143,7 @@ public:
   begin(std::string task_name) {
 #if defined(ENABLE_CALIPER)
     if constexpr(reg::detail_level <= detail_level) {
-      std::string atag{reg::name + "->" + task_name};
+      std::string atag{reg::name() + "->" + task_name};
       reg::outer_context::ann.begin(atag.c_str());
     }
 #endif

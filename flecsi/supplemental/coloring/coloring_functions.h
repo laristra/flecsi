@@ -81,7 +81,7 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
       } // guard
 #endif
 
-      size_t min_rank(std::numeric_limits<size_t>::max());
+      size_t min_rank((std::numeric_limits<size_t>::max)());
       std::set<size_t> shared_entities;
 
       // Iterate the direct referencers to assign entity ownership.
@@ -168,9 +168,9 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
   {
     clog_tag_guard(coloring_functions);
     clog_container_one(
-      info, 
-      "exclusive entities("<<ENTITY_DIM<<")", 
-      entities.exclusive, 
+      info,
+      "exclusive entities("<<ENTITY_DIM<<")",
+      entities.exclusive,
       clog::newline
     );
     clog_container_one(

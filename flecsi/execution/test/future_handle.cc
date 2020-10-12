@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------------//
 
 template<typename T>
-using handle_t =
+using future_handle_t =
   flecsi::execution::flecsi_future<T, flecsi::execution::launch_type_t::single>;
 
 template<typename T>
@@ -27,7 +27,7 @@ using index_handle_t =
   flecsi::execution::flecsi_future<T, flecsi::execution::launch_type_t::index>;
 
 void
-future_dump(handle_t<double> x) {
+future_dump(future_handle_t<double> x) {
   double tmp = x.get();
   std::cout << " future = " << x.get() << std::endl;
 }
@@ -43,7 +43,7 @@ writer(double a) {
 flecsi_register_task(writer, , loc, single);
 
 void
-reader(handle_t<double> x, handle_t<double> y) {
+reader(future_handle_t<double> x, future_handle_t<double> y) {
   ASSERT_EQ(x.get(), static_cast<double>(3.14));
   ASSERT_EQ(x.get(), y.get());
 }
@@ -52,7 +52,8 @@ flecsi_register_task(reader, , loc, single);
 
 int
 index_writer() {
-  int x = 1 + flecsi::execution::context_t::instance().color();
+  int x =
+    1 + static_cast<int>(flecsi::execution::context_t::instance().color());
   return x;
 }
 
@@ -60,8 +61,9 @@ flecsi_register_task(index_writer, , loc, index);
 
 void
 index_reader(index_handle_t<int> x) {
-  int y = 1 + flecsi::execution::context_t::instance().color();
-  ASSERT_EQ(x, y);
+  int y =
+    1 + static_cast<int>(flecsi::execution::context_t::instance().color());
+  ASSERT_EQ(x.get(), y);
 }
 
 flecsi_register_task(index_reader, , loc, index);

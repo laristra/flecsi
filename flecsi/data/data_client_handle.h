@@ -50,7 +50,7 @@ struct data_client_handle_base_u : public DATA_CLIENT_TYPE,
   data_client_handle_base_u(const data_client_handle_base_u<DATA_CLIENT_TYPE,
     UNMAPPED_PERMISSIONS,
     DATA_POLICY> & h)
-    : DATA_POLICY(h), DATA_CLIENT_TYPE(h), type_hash(h.type_hash),
+    : DATA_CLIENT_TYPE(h), DATA_POLICY(h), type_hash(h.type_hash),
       name_hash(h.name_hash), namespace_hash(h.namespace_hash) {
     static_assert(
       UNMAPPED_PERMISSIONS == 0, "passing mapped client handle to task args");

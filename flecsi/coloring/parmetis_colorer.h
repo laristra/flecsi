@@ -263,14 +263,14 @@ struct parmetis_colorer_t : public colorer_t {
     idx_t wgtflag = 0;
     idx_t numflag = 0;
     idx_t ncon = 1;
-    std::vector<real_t> tpwgts(ncon * size, 1.0 / size);
+    std::vector<real_t> tpwgts(ncon * size, static_cast<real_t>(1.0 / size));
 
     // We may need to expose some of the ParMETIS configuration options.
-    std::vector<real_t> ubvec(ncon, 1.05);
+    std::vector<real_t> ubvec(ncon, static_cast<real_t>(1.05));
     idx_t options[3] = {0, 0, 0};
     idx_t edgecut;
     MPI_Comm comm = MPI_COMM_WORLD;
-    std::vector<idx_t> part(dcrs.size(), std::numeric_limits<idx_t>::max());
+    std::vector<idx_t> part(dcrs.size(), (std::numeric_limits<idx_t>::max)());
 
     // Get the dCRS information using ParMETIS types.
     std::vector<idx_t> vtxdist = dcrs.distribution_as<idx_t>();
@@ -281,8 +281,9 @@ struct parmetis_colorer_t : public colorer_t {
     int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0],
       nullptr, nullptr, &wgtflag, &numflag, &ncon, &size, &tpwgts[0],
       ubvec.data(), options, &edgecut, &part[0], &comm);
-    if(result != METIS_OK)
+    if(result != METIS_OK) {
       clog_error("Parmetis failed!");
+    }
 
     std::vector<size_t> partitioning(part.begin(), part.end());
 

@@ -321,8 +321,8 @@ alltoallv(const SEND_TYPE & sendbuf,
       auto buf = recvbuf.data() + recvdispls[rank];
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
-      auto ret =
-        MPI_Irecv(buf, count, mpi_recv_t, rank, tag, comm, &my_request);
+      auto ret = MPI_Irecv(buf, static_cast<int>(count), mpi_recv_t,
+        static_cast<int>(rank), tag, comm, &my_request);
       if(ret != MPI_SUCCESS)
         return ret;
     }
@@ -335,8 +335,8 @@ alltoallv(const SEND_TYPE & sendbuf,
       auto buf = sendbuf.data() + senddispls[rank];
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
-      auto ret =
-        MPI_Isend(buf, count, mpi_send_t, rank, tag, comm, &my_request);
+      auto ret = MPI_Isend(buf, static_cast<int>(count), mpi_send_t,
+        static_cast<int>(rank), tag, comm, &my_request);
       if(ret != MPI_SUCCESS)
         return ret;
     }
@@ -344,7 +344,8 @@ alltoallv(const SEND_TYPE & sendbuf,
 
   // wait for everything to complete
   std::vector<MPI_Status> status(requests.size());
-  auto ret = MPI_Waitall(requests.size(), requests.data(), status.data());
+  auto ret = MPI_Waitall(
+    static_cast<int>(requests.size()), requests.data(), status.data());
 
   return ret;
 }
@@ -436,7 +437,7 @@ make_dcrs_distributed(
 
   size_t max_global_vert_id{0};
   for(auto v : vertex_local_to_global)
-    max_global_vert_id = std::max(max_global_vert_id, v);
+    max_global_vert_id = (std::max)(max_global_vert_id, v);
 
   // now the global max id
   size_t tot_verts{0};
@@ -1096,9 +1097,9 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   std::vector<size_t> recvcounts(comm_size);
   auto ret = MPI_Alltoall(sendcounts.data(), 1, mpi_size_t, recvcounts.data(),
     1, mpi_size_t, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertex counts");
-
+  }
   // how much info will we be receiving
   std::vector<size_t> recvdispls(comm_size + 1);
   recvdispls[0] = 0;
@@ -1112,9 +1113,9 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   // now send the actual vertex info
   ret = alltoallv(sendbuf, sendcounts, senddispls, recvbuf, recvcounts,
     recvdispls, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertices");
-
+  }
   //----------------------------------------------------------------------------
   // Unpack results
   //----------------------------------------------------------------------------
@@ -1149,7 +1150,7 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   // first figure out the maximum global id on this rank
   size_t max_global_ent_id{0};
   for(auto v : local2global)
-    max_global_ent_id = std::max(max_global_ent_id, v);
+    max_global_ent_id = (std::max)(max_global_ent_id, v);
 
   // now the global max id
   size_t tot_ents{0};
@@ -1217,9 +1218,9 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   // send counts
   ret = MPI_Alltoall(sendcounts.data(), 1, mpi_size_t, recvcounts.data(), 1,
     mpi_size_t, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertex counts");
-
+  }
   // how much info will we be receiving
   recvdispls[0] = 0;
   for(size_t r = 0; r < comm_size; ++r)
@@ -1231,8 +1232,9 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   // now send the actual vertex info
   ret = alltoallv(sendbuf, sendcounts, senddispls, recvbuf, recvcounts,
     recvdispls, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertices");
+  }
 
   // upack results
   for(size_t r = 0; r < comm_size; ++r) {
@@ -1293,8 +1295,9 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   // send counts
   ret = MPI_Alltoall(sendcounts.data(), 1, mpi_size_t, recvcounts.data(), 1,
     mpi_size_t, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertex counts");
+  }
 
   // how much info will we be receiving
   recvdispls[0] = 0;
@@ -1307,9 +1310,9 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   // now send the actual vertex info
   ret = alltoallv(sendbuf, sendcounts, senddispls, recvbuf, recvcounts,
     recvdispls, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertices");
-
+  }
   // upack results
   for(size_t r = 0; r < comm_size; ++r) {
     for(size_t i = recvdispls[r]; i < recvdispls[r + 1]; i++) {
@@ -1378,9 +1381,9 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   // send counts
   ret = MPI_Alltoall(sendcounts.data(), 1, mpi_size_t, recvcounts.data(), 1,
     mpi_size_t, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertex counts");
-
+  }
   // how much info will we be receiving
   recvdispls[0] = 0;
   for(size_t r = 0; r < comm_size; ++r)
@@ -1392,8 +1395,9 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   // now send the actual vertex info
   ret = alltoallv(sendbuf, sendcounts, senddispls, recvbuf, recvcounts,
     recvdispls, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertices");
+  }
 
   // upack results
   for(size_t r = 0; r < comm_size; ++r) {
@@ -1428,7 +1432,7 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   }
 
   // shared and ghost
-  for(const auto pair : entities2rank) {
+  for(const auto & pair : entities2rank) {
     auto global_id = pair.first;
     auto owner = pair.second;
     // if i am the owner, shared
@@ -1484,7 +1488,7 @@ match_ids(
 
   size_t max_global_vert_id{0};
   for(auto v : vertex_local2global)
-    max_global_vert_id = std::max(max_global_vert_id, v);
+    max_global_vert_id = (std::max)(max_global_vert_id, v);
 
   // now the global max id
   size_t tot_verts{0};
@@ -1808,9 +1812,9 @@ ghost_connectivity(const flecsi::coloring::crs_t & from2to,
   std::vector<size_t> recvcounts(comm_size);
   auto ret = MPI_Alltoall(sendcounts.data(), 1, mpi_size_t, recvcounts.data(),
     1, mpi_size_t, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertex counts");
-
+  }
   // how much info will we be receiving
   std::vector<size_t> recvdispls(comm_size + 1);
   recvdispls[0] = 0;
@@ -1821,9 +1825,9 @@ ghost_connectivity(const flecsi::coloring::crs_t & from2to,
   // now send the actual vertex info
   ret = alltoallv(sendbuf, sendcounts, senddispls, recvbuf, recvcounts,
     recvdispls, MPI_COMM_WORLD);
-  if(ret != MPI_SUCCESS)
+  if(ret != MPI_SUCCESS) {
     clog_error("Error communicating vertices");
-
+  }
   //----------------------------------------------------------------------------
   // Unpack results
   //----------------------------------------------------------------------------

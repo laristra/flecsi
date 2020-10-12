@@ -41,7 +41,7 @@ fill_task(client_handle_t<test_mesh_t, ro> mesh,
   dense_accessor<double, rw, rw, na> pressure) {
   size_t count = 0;
   for(auto c : mesh.cells()) {
-    pressure(c) = count++;
+    pressure(c) = static_cast<double>(count++);
   } // for
 } // fill_task
 
@@ -57,7 +57,7 @@ print_task(client_handle_t<test_mesh_t, ro> mesh,
       CINCH_CAPTURE() << "vertex id: " << v->id() << std::endl;
     } // for
 
-    clog(info) << "presure: " << pressure(c) << std::endl;
+    clog(info) << "pressure: " << pressure(c) << std::endl;
   } // for
 
 } // print_task

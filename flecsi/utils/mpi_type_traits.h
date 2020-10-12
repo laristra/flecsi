@@ -121,7 +121,9 @@ struct mpi_typetraits_u {
       return MPI_CXX_DOUBLE_COMPLEX;
     else if constexpr(is_same_v<TYPE, complex<long double>>)
       return MPI_CXX_LONG_DOUBLE_COMPLEX;
-    else if constexpr(is_same_v<TYPE, byte>)
+
+    // MSVC is confused without the explicit std:: qualification
+    else if constexpr(is_same_v<TYPE, std::byte>)
       return MPI_BYTE;
     else
       return make<Make>();

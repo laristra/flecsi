@@ -33,8 +33,8 @@ write_task(data_client_handle_u<mesh_t, ro> mesh,
   auto & context = execution::context_t::instance();
   const auto & map = context.index_map(cells);
   for(auto c : mesh.cells(flecsi::owned)) {
-    std::get<0>(fs)(c) = map.at(c.id());
-    std::get<1>(fs)(c) = 2 * map.at(c.id());
+    std::get<0>(fs)(c) = static_cast<int>(map.at(c.id()));
+    std::get<1>(fs)(c) = static_cast<int>(2 * map.at(c.id()));
   }
 } // task1
 

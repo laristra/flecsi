@@ -306,18 +306,20 @@ public:
     (--e)->~value_type();
   }
 
+  struct cleanup {
+    vector_ref & v;
+    size_type sz0;
+    bool fail = true;
+    ~cleanup() {
+      if(fail)
+        v.resize(sz0);
+    }
+  };
+
   constexpr void resize(size_type n) {
     reserve(n);
     auto sz = size();
-    struct cleanup {
-      vector_ref & v;
-      size_type sz0;
-      bool fail = true;
-      ~cleanup() {
-        if(fail)
-          v.resize(sz0);
-      }
-    } guard = {*this, sz};
+    cleanup guard = {*this, sz};
 
     for(; sz > n; --sz)
       pop_back();

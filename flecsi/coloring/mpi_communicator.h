@@ -613,13 +613,13 @@ public:
     std::unordered_map<size_t, coloring_info_t> coloring_info;
 
     for(size_t c(0); c < colors; ++c) {
-      auto  & ci = coloring_info[c];
+      auto & ci = coloring_info[c];
       ci.exclusive = buffer[c].exclusive;
       ci.shared = buffer[c].shared;
       ci.ghost = buffer[c].ghost;
     } // for
 
-#if  0
+#if 0
     alltoall_coloring_info(
       color_info.shared_users, [&](size_t c, size_t value) {
         coloring_info[c].shared_users.insert(value);

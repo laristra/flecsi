@@ -92,7 +92,7 @@ struct row_vector_u {
   }
 
   void assign(const_iterator first, const_iterator last) {
-    resize(last - first);
+    resize(static_cast<uint32_t>(last - first));
     std::copy(first, last, datap);
   }
 

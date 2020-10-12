@@ -5,6 +5,7 @@
 
 #include <cinchdevel.h>
 
+#include <flecsi/data/data.h>
 #include <flecsi/data/dense_accessor.h>
 #include <flecsi/execution/context.h>
 #include <flecsi/execution/execution.h>

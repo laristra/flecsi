@@ -19,6 +19,7 @@
 
 #include <cinchlog.h>
 
+#include <flecsi/data/common/privilege.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/execution/execution.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
@@ -265,7 +266,7 @@ do_test_mesh_2d_coloring() {
 //----------------------------------------------------------------------------//
 
 void
-initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
+initialize_mesh(data_client_handle_u<test_mesh_2d_t, flecsi::wo> mesh) {
   auto & context = execution::context_t::instance();
 
   auto & vertex_map{context.index_map(index_spaces::vertices)};

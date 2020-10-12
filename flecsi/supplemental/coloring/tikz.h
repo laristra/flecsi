@@ -71,7 +71,8 @@ struct tikz_writer_t {
       const size_t round_robin(c.first % palette.size());
 
       for(size_t id : c.second) {
-        write_node(tex, id % (N + 1), id / (N + 1), id, round_robin);
+        write_node(tex, static_cast<double>(id % (N + 1)),
+          static_cast<double>(id / (N + 1)), id, round_robin);
       } // for
     } // for
 
@@ -142,9 +143,9 @@ struct tikz_writer_t {
 
     size_t vertex(0);
     for(size_t j(0); j < M + 1; ++j) {
-      double yoff(j);
+      double yoff(static_cast<double>(j));
       for(size_t i(0); i < N + 1; ++i) {
-        double xoff(i);
+        double xoff(static_cast<double>(i));
 
         auto evertex = exclusive_vertices.find(vertex);
         auto svertex = shared_vertices.find(vertex);
