@@ -135,6 +135,7 @@ cinch_add_unit(factory
   SOURCES
     demangle.cc
     test/factory.cc
+    ${utils_SOURCES}
   INPUTS
     test/factory.blessed
     ${factory_blessed_input}
@@ -192,6 +193,7 @@ cinch_add_unit(test_utility
   SOURCES
     demangle.cc
     test/utility.cc
+    ${utils_SOURCES}
   INPUTS
     test/utility.blessed.gnug
 )
@@ -206,6 +208,7 @@ cinch_add_unit(tuple_type_converter
   SOURCES
     demangle.cc
     test/tuple_type_converter.cc
+    ${utils_SOURCES}
   INPUTS
     ${tuple_type_converter_blessed_input}
 )
@@ -226,6 +229,7 @@ cinch_add_unit(array_ref
   SOURCES
     demangle.cc
     test/array_ref.cc
+    ${utils_SOURCES}
   INPUTS
     test/array_ref.blessed ${array_ref_blessed_input}
 )
@@ -240,6 +244,7 @@ cinch_add_unit(common
   SOURCES
     demangle.cc
     test/common.cc
+    ${utils_SOURCES}
   INPUTS
     test/common.blessed.ppc test/common.blessed ${common_blessed_input}
 )
@@ -254,6 +259,7 @@ cinch_add_unit(id
   SOURCES
     demangle.cc
     test/id.cc
+    ${utils_SOURCES}
   INPUTS
     test/id.blessed ${id_blessed_input}
 )

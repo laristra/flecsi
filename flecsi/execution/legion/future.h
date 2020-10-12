@@ -256,7 +256,17 @@ struct legion_future_u<RETURN, launch_type_t::index> : public future_base_t {
    */
 
   RETURN
-  get(size_t index = 0, bool silence_warnings = false) {
+  get(size_t index, bool silence_warnings = false) {
+    return legion_future_.get_result<RETURN>(
+      Legion::DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::Point<1>(index)),
+      silence_warnings);
+  } // get
+
+  RETURN
+  get(bool silence_warnings = false) {
+    auto runtime = Legion::Runtime::get_runtime();
+    size_t index = runtime->find_local_MPI_rank();
     return legion_future_.get_result<RETURN>(
       Legion::DomainPoint::from_point<1>(
         LegionRuntime::Arrays::Point<1>(index)),
