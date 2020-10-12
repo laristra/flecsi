@@ -78,6 +78,7 @@ if(ENABLE_PARMETIS)
     parmetis_colorer.h
     parmetis_geom_colorer.h
     parmetis_geomkway_colorer.h
+    parmetis_repart_colorer.h
   )
 endif()
 

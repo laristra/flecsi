@@ -123,7 +123,7 @@ struct parmetis_colorer_t : public colorer_t {
     // Actual call to ParMETIS.
     idx_t npart = size;
     int result = ParMETIS_V3_PartKway(&vtxdist[0], &xadj[0], &adjncy[0],
-      nullptr, nullptr, &wgtflag, &numflag, &ncon, &size, &tpwgts[0], &ubvec,
+      nullptr, nullptr, &wgtflag, &numflag, &ncon, &npart, &tpwgts[0], &ubvec,
       &options, &edgecut, &part[0], &comm);
 
 #if 0
