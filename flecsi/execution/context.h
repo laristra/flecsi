@@ -315,6 +315,10 @@ struct context_u : public CONTEXT_POLICY {
     @param index_space The map key.
     @param index_map   The map to add.
    */
+  
+  auto & new_index_map(size_t index_space) {
+    return index_map_[index_space];
+  }
 
   void add_index_map(size_t index_space, std::map<size_t, size_t> & index_map) {
     index_map_[index_space] = index_map;
@@ -424,6 +428,9 @@ struct context_u : public CONTEXT_POLICY {
 
     @param index_space The map key.
    */
+  auto & new_reverse_index_map(size_t index_space) {
+    return reverse_index_map_[index_space];
+  }
 
   auto & reverse_index_map(size_t index_space) {
     auto it = reverse_index_map_.find(index_space);
@@ -967,8 +974,8 @@ private:
   // key: mesh index space entity id
   //--------------------------------------------------------------------------//
 
-  std::map<size_t, std::map<size_t, size_t>> index_map_;
-  std::map<size_t, std::map<size_t, size_t>> reverse_index_map_;
+  std::map<size_t, std::vector<size_t>> index_map_;
+  std::map<size_t, std::map<size_t, unsigned int>> reverse_index_map_;
 
   //--------------------------------------------------------------------------//
   // key: index space

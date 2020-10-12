@@ -42,7 +42,7 @@ initialize_mesh(mesh<wo> m) {
   const double dt{1.0 / width};
 
   for(auto & vm : vertex_map) {
-    const size_t mid{vm.second};
+    const size_t mid{vm};
     const size_t row{mid / (width + 1)};
     const size_t column{mid % (width + 1)};
 
@@ -52,7 +52,7 @@ initialize_mesh(mesh<wo> m) {
 
   size_t count{0};
   for(auto & cm : cell_map) {
-    const size_t mid{cm.second};
+    const size_t mid{cm};
 
     const size_t row{mid / width};
     const size_t column{mid % width};

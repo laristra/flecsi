@@ -282,7 +282,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
 
   // make vertices
   for(auto & vm : vertex_map) {
-    const size_t mid{vm.second};
+    const size_t mid{vm};
     const size_t row{mid / (width + 1)};
     const size_t column{mid % (width + 1)};
     // printf("vertex %lu: (%lu, %lu)\n", mid, row, column);
@@ -296,7 +296,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
   std::unordered_map<size_t, cell_t *> cells_vs_ids;
 
   for(auto & cm : cell_map) {
-    const size_t mid{cm.second};
+    const size_t mid{cm};
 
     const size_t row{mid / width};
     const size_t column{mid % width};
