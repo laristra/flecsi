@@ -55,6 +55,8 @@ task_A(mesh<ro> mesh, field<rw, rw, na> h) {
   auto & context = execution::context_t::instance();
   auto rank = context.color();
 
+  const auto cs = mesh.cells();
+
   for(auto c : mesh.cells(exclusive)) {
     CINCH_CAPTURE() << "task A before exclusive cell " << rank << " " << c->id()
                     << " " << c->gid() << " " << c->index()[0] << " "

@@ -33,6 +33,7 @@
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/simple_id.h>
 
@@ -975,7 +976,7 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, std::vector<size_t>> index_map_;
-  std::map<size_t, std::map<size_t, unsigned int>> reverse_index_map_;
+  std::map<size_t, std::map<size_t, utils::indices_t>> reverse_index_map_;
 
   //--------------------------------------------------------------------------//
   // key: index space

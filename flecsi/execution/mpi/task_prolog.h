@@ -223,16 +223,17 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       adj.num_indices = adj_info.color_sizes[color];
       fieldDataIter = registered_field_data.find(adj.index_fid);
       if(fieldDataIter == registered_field_data.end()) {
-        size_t size = sizeof(utils::id_t) * adj.num_indices;
+        size_t size = sizeof(utils::indices_t) * adj.num_indices;
         execution::context_t::instance().register_field_data(
           adj.index_fid, size);
       }
       adj.indices_buf =
-        reinterpret_cast<id_t *>(registered_field_data[adj.index_fid].data());
+        reinterpret_cast<utils::indices_t *>(registered_field_data[adj.index_fid].data());
 
-      h.storage.init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
-        adj.to_dim, reinterpret_cast<utils::offset_t *>(adj.offsets_buf),
-        adj.num_offsets, reinterpret_cast<utils::id_t *>(adj.indices_buf),
+      h.storage.init_connectivity(
+        adj.from_domain, adj.to_domain, adj.from_dim,
+        adj.to_dim, adj.offsets_buf,
+        adj.num_offsets, adj.indices_buf,
         adj.num_indices, _read);
     }
 

@@ -43,14 +43,14 @@ struct mpi_topology_storage_policy_u {
   using id_t = utils::id_t;
 
   using storage_t =
-    index_space_u<mesh_entity_base_, topology_storage_u, entity_storage_t>;
-
+    index_space_u<mesh_entity_base_, mesh_entity_base_::id_t, topology_storage_u, entity_storage_t>;
+  
   using index_spaces_t = std::array<storage_t, NUM_DIMS + 1>;
 
   using index_subspaces_t = std::array<storage_t, NUM_INDEX_SUBSPACES>;
 
   using partition_index_spaces_t =
-    std::array<index_space_u<mesh_entity_base_, utils::span, entity_storage_t>,
+    std::array<index_space_u<mesh_entity_base_, mesh_entity_base_::id_t, utils::span, entity_storage_t>,
       NUM_DIMS + 1>;
 
   // array of array of domain_connectivity_u
@@ -71,7 +71,8 @@ struct mpi_topology_storage_policy_u {
     color = context_.color();
   }
 
-  void init_entities(size_t domain,
+  void init_entities(
+    size_t domain,
     size_t dim,
     mesh_entity_base_ * entities,
     utils::id_t * ids,
@@ -154,13 +155,14 @@ struct mpi_topology_storage_policy_u {
     }
   } // init_index_subspaces
 
-  void init_connectivity(size_t from_domain,
+  void init_connectivity(
+    size_t from_domain,
     size_t to_domain,
     size_t from_dim,
     size_t to_dim,
     utils::offset_t * offsets,
     size_t num_offsets,
-    utils::id_t * indices,
+    utils::indices_t * indices,
     size_t num_indices,
     bool read) {
     // TODO - this is an initial implementation for testing purposes.
@@ -168,8 +170,8 @@ struct mpi_topology_storage_policy_u {
     // into the connectivity
     auto & conn = topology[from_domain][to_domain].get(from_dim, to_dim);
 
-    auto & id_storage = conn.get_index_space().ids;
-    id_storage = full_array(indices, num_indices, read);
+    auto & is = conn.get_index_space();
+    is.ids = full_array(indices, num_indices, read);
 
     conn.offsets().storage() = full_array(offsets, num_offsets+1, read);
   } // init_connectivities
@@ -189,6 +191,7 @@ struct mpi_topology_storage_policy_u {
 
     size_t entity = id.entity();
     is.ids[entity] = id;
+    std::cout << "make2" << std::endl;
     return make2<T, DOM>(entity, id, std::forward<ARG_TYPES>(args)...);
   } // make
 

@@ -41,7 +41,7 @@ namespace topology {
 class connectivity_t
 {
 public:
-  using id_t = utils::id_t;
+  using id_t = utils::indices_t;
   using offset_t = utils::offset_t;
 
   // We don't ever mutate this ourselves:
@@ -67,7 +67,7 @@ public:
   //!
   //! \param cv The connectivity information.
   //-----------------------------------------------------------------//
-  void init(const connection_vector_t & cv) {
+  void init(const std::vector<std::vector<id_t>> & cv) {
 
     clear();
 
@@ -76,7 +76,7 @@ public:
     size_t n = cv.size();
 
     for(size_t i = 0; i < n; ++i) {
-      const id_vector_t & iv = cv[i];
+      const auto & iv = cv[i];
 
       for(id_t id : iv) {
         push(id);
@@ -125,14 +125,14 @@ public:
       offset_t oi = offsets_[i];
       auto count = offsets_[i+1] - oi;
       for(size_t j = 0; j < count; ++j) {
-        stream << ids[oi + j].entity() << std::endl;
+        stream << ids[oi + j] << std::endl;
       }
       stream << std::endl;
     }
 
     stream << "=== indices" << std::endl;
     for(const id_t id : ids) {
-      stream << id.entity() << std::endl;
+      stream << id << std::endl;
     } // for
 
     stream << "=== offsets" << std::endl;
@@ -242,7 +242,7 @@ public:
   //! Set/init the connectivity use by compute topology methods like transpose.
   //-----------------------------------------------------------------//
   template<size_t DOM, size_t NUM_DOMAINS>
-  void set(entity_vector_t<NUM_DOMAINS> & ev, connection_vector_t & conns) {
+  void set(entity_vector_t<NUM_DOMAINS> & ev, std::vector<std::vector<id_t>> & conns) {
     clear();
 
     size_t n = conns.size();
@@ -256,7 +256,7 @@ public:
     }
 
     for(size_t i = 0; i < n; ++i) {
-      const id_vector_t & conn = conns[i];
+      const auto & conn = conns[i];
       uint64_t m = conn.size();
 
       for(size_t j = 0; j < m; ++j) {
@@ -308,7 +308,7 @@ public:
     offsets_.add_end(to_size());
   } // end_from
 
-  index_space_u<entity_base_, topology_storage_u, entity_storage_t>
+  index_space_u<entity_base_, utils::indices_t, topology_storage_u, entity_storage_t>
     index_space_;
 
   offset_storage_t offsets_;
