@@ -171,7 +171,7 @@ struct mpi_topology_storage_policy_u {
     auto & id_storage = conn.get_index_space().ids;
     id_storage = full_array(indices, num_indices, read);
 
-    conn.offsets().storage() = full_array(offsets, num_offsets, read);
+    conn.offsets().storage() = full_array(offsets, num_offsets+1, read);
   } // init_connectivities
 
   template<class T, size_t DOM, class... ARG_TYPES>

@@ -29,6 +29,8 @@
 using namespace boost::program_options;
 #endif
 
+//#include <gperftools/heap-profiler.h>
+
 /*!
  FleCSI runtime main function.
  */
@@ -41,6 +43,10 @@ main(int argc, char ** argv) {
   // get the rank
   int rank{0};
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  std::stringstream ss;
+  ss << "hprof.rank" << rank;
+  //HeapProfilerStart(ss.str().c_str());
 
   //--------------------------------------------------------------------------//
   // INIT CLOG
@@ -95,6 +101,8 @@ main(int argc, char ** argv) {
     result = flecsi::execution::context_t::instance().initialize(argc, argv);
     flecsi::execution::context_t::instance().finalize();
   } // if
+
+  //HeapProfilerStop();
 
   // Shutdown the MPI runtime
   MPI_Finalize();

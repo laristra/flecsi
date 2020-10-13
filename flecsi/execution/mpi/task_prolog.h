@@ -211,12 +211,12 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         (color_info.exclusive + color_info.shared + color_info.ghost);
       auto fieldDataIter = registered_field_data.find(adj.offset_fid);
       if(fieldDataIter == registered_field_data.end()) {
-        size_t size = sizeof(size_t) * adj.num_offsets;
+        size_t size = sizeof(utils::offset_t) * (adj.num_offsets+1);
 
         execution::context_t::instance().register_field_data(
           adj.offset_fid, size);
       }
-      adj.offsets_buf = reinterpret_cast<size_t *>(
+      adj.offsets_buf = reinterpret_cast<utils::offset_t *>(
         registered_field_data[adj.offset_fid].data());
 
       auto adj_info = (context_.adjacency_info()).at(adj_index_space);

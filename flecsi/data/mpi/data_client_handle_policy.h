@@ -61,7 +61,7 @@ struct data_client_handle_adjacency_t {
   field_id_t offset_fid;
   size_t index_fid_size;
   size_t offset_fid_size;
-  size_t * offsets_buf;
+  unsigned * offsets_buf;
   id_t * indices_buf;
 };
 

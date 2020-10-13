@@ -63,7 +63,7 @@ constexpr T typeify<T, M>::value;
 using id_t =
   id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
 
-using offset_t = offset_u<16>;
+using offset_t = unsigned;
 
 //----------------------------------------------------------------------------//
 // Index type
