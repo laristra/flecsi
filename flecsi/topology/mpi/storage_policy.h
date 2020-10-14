@@ -45,9 +45,12 @@ struct mpi_topology_storage_policy_u {
   using storage_t =
     index_space_u<mesh_entity_base_, mesh_entity_base_::id_t, topology_storage_u, entity_storage_t>;
   
+  using id_storage_t =
+    index_space_u<mesh_entity_base_, utils::indices_t, topology_storage_u, entity_storage_t>;
+  
   using index_spaces_t = std::array<storage_t, NUM_DIMS + 1>;
 
-  using index_subspaces_t = std::array<storage_t, NUM_INDEX_SUBSPACES>;
+  using index_subspaces_t = std::array<id_storage_t, NUM_INDEX_SUBSPACES>;
 
   using partition_index_spaces_t =
     std::array<index_space_u<mesh_entity_base_, mesh_entity_base_::id_t, utils::span, entity_storage_t>,
@@ -132,7 +135,7 @@ struct mpi_topology_storage_policy_u {
     size_t index_subspace,
     size_t domain,
     size_t dim,
-    utils::id_t * ids,
+    utils::indices_t * ids,
     size_t num_entities,
     bool read) {
 
