@@ -52,9 +52,9 @@ set_intersection(const std::set<T> & s1, const std::set<T> & s2) {
 //!
 //! \return A set containing the union of s1 with s2.
 //!
-template<class T>
+template<class T, class U>
 inline std::set<T>
-set_union(const std::set<T> & s1, const std::set<T> & s2) {
+set_union(const std::set<T> & s1, const std::set<U> & s2) {
   std::set<T> sunion;
 
   std::set_union(s1.begin(), s1.end(), s2.begin(), s2.end(),

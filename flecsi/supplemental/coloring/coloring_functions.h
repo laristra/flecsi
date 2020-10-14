@@ -91,7 +91,7 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
         // off-color. If it is, compare it's rank for
         // the ownership logic below.
         if(remote_info_map.find(c) != remote_info_map.end()) {
-          min_rank = std::min(min_rank, remote_info_map.at(c).rank);
+          min_rank = std::min<size_t>(min_rank, remote_info_map.at(c).rank);
           shared_entities.insert(remote_info_map.at(c).rank);
         }
         else {
@@ -135,7 +135,7 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
   for(auto i : entity_info) {
     // if it belongs to other colors, its a shared entity
     if(i.shared.size()) {
-      entities.shared.insert(i);
+      entities.shared.emplace_back(i);
       // Collect all colors with whom we require communication
       // to send shared information.
       entity_color_info.shared_users =
@@ -143,8 +143,11 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
     }
     // otherwise, its exclusive
     else
-      entities.exclusive.insert(i);
+      entities.exclusive.emplace_back(i);
   } // for
+
+  coloring::remove_unique(entities.exclusive);
+  coloring::remove_unique(entities.shared);
 
   {
     size_t r(0);
@@ -152,7 +155,7 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
 
       auto offset(entity_offset_info[r].begin());
       for(auto s : i) {
-        entities.ghost.insert(entity_info_t(s, r, *offset));
+        entities.ghost.emplace_back(entity_info_t(s, r, *offset));
         // Collect all colors with whom we require communication
         // to receive ghost information.
         entity_color_info.ghost_owners.insert(r);
@@ -163,6 +166,8 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
       ++r;
     } // for
   } // scope
+  
+  coloring::remove_unique(entities.ghost);
 
 #if 0
   {

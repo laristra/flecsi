@@ -38,6 +38,27 @@ namespace flecsi {
 namespace coloring {
 
 clog_register_tag(dcrs_utils);
+  
+template<typename T>
+static void remove_unique(T & list) {
+  std::sort(list.begin(), list.end());
+  auto last = std::unique(list.begin(), list.end());
+  list.erase(last, list.end());
+};
+
+template<typename T, typename...ARGS>
+static std::pair<typename T::iterator, bool>
+insert(T & list, ARGS...args) {
+  auto e = typename T::value_type{std::forward<ARGS>(args)...};
+  auto it = std::find(list.begin(), list.end(), e);
+  if (it == list.end()) {
+    list.emplace_back(std::move(e));
+    return {std::prev(list.end()), true}; 
+  }
+  else {
+    return {it, false};
+  }
+}
 
 /*!
  Create a naive coloring suitable for calling a distributed-memory
@@ -974,10 +995,10 @@ get_owner_info(const dcrs_t & dcrs,
         auto ghost_id = neighbor - dcrs.distribution[rank];
         auto e = entity_info_t(neighbor, rank, ghost_id, comm_rank);
         // search for it
-        auto it = entities.ghost.find(e);
+        auto it = std::find(entities.ghost.begin(), entities.ghost.end(), e);
         // if it has not been added, then add it!
         if(it == entities.ghost.end()) {
-          entities.ghost.emplace(e);
+          entities.ghost.emplace_back(e);
           color_info.ghost_owners.insert(rank);
           // num_ghost++;
         }
@@ -988,15 +1009,19 @@ get_owner_info(const dcrs_t & dcrs,
 
     // the original cell is exclusive
     if(shared_ranks.empty()) {
-      entities.exclusive.emplace(entity_info_t(global_id, comm_rank, local_id));
+      entities.exclusive.emplace_back(entity_info_t(global_id, comm_rank, local_id));
     }
     // otherwise it must be shared
     else {
-      entities.shared.emplace(
+      entities.shared.emplace_back(
         entity_info_t(global_id, comm_rank, local_id, shared_ranks));
       color_info.shared_users.insert(shared_ranks.begin(), shared_ranks.end());
     }
   }
+
+  remove_unique(entities.exclusive);
+  remove_unique(entities.shared);
+  remove_unique(entities.ghost);
 
   // store the sizes of each set
   color_info.exclusive = entities.exclusive.size();
@@ -1047,11 +1072,6 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   }
 
   // remove duplicates
-  auto remove_unique = [](auto & list) {
-    std::sort(list.begin(), list.end());
-    auto last = std::unique(list.begin(), list.end());
-    list.erase(last, list.end());
-  };
   remove_unique(potential_shared);
 
   //----------------------------------------------------------------------------
@@ -1442,9 +1462,10 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   for(size_t local_id = 0; local_id < num_ents; ++local_id) {
     if(exclusive[local_id]) {
       auto global_id = local2global[local_id];
-      entities.exclusive.emplace(global_id, comm_rank, local_id);
+      entities.exclusive.emplace_back(global_id, comm_rank, local_id);
     }
   }
+  remove_unique(entities.exclusive);
 
   // shared and ghost
   for(const auto pair : entities2rank) {
@@ -1453,21 +1474,24 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
     // if i am the owner, shared
     if(owner.rank == comm_rank) {
       assert(owner.ghost_ranks.size() && "shared/ghost has no ghost ranks!");
-      auto it = entities.shared.emplace(
+      entities.shared.emplace_back(
         global_id, owner.rank, owner.local_id, owner.ghost_ranks);
       color_info.shared_users.insert(
-        it.first->shared.begin(), it.first->shared.end());
+        owner.ghost_ranks.begin(), owner.ghost_ranks.end());
     }
     // otherwise this "may" be a ghost
     else {
       auto is_ghost = std::binary_search(
         potential_ghost.begin(), potential_ghost.end(), global_id);
       if(is_ghost) {
-        auto it = entities.ghost.emplace(global_id, owner.rank, owner.local_id);
-        color_info.ghost_owners.insert(owner.rank);
+        entities.ghost.emplace_back(global_id, owner.rank, owner.local_id);
+        color_info.ghost_owners.emplace(owner.rank);
       } // is ghost
     }
   }
+  
+  remove_unique(entities.shared);
+  remove_unique(entities.ghost);
 
   // entitiy summaries
   color_info.exclusive = entities.exclusive.size();

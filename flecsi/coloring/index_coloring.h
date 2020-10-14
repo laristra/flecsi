@@ -38,13 +38,13 @@ struct index_coloring_t {
   std::set<size_t> primary;
 
   // Set of entity_info_t type of the exclusive coloring
-  std::set<entity_info_t> exclusive;
+  std::vector<entity_info_t> exclusive;
 
   // Set of entity_info_t type of the shared coloring
-  std::set<entity_info_t> shared;
+  std::vector<entity_info_t> shared;
 
   // Set of entity_info_t type of the ghost coloring
-  std::set<entity_info_t> ghost;
+  std::vector<entity_info_t> ghost;
 
   // Rank id to number of entities
   std::unordered_map<size_t, size_t> entities_per_rank;

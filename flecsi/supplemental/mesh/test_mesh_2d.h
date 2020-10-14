@@ -325,7 +325,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
   auto & cell_coloring{context.coloring(index_spaces::cells)};
 
   auto exclusive_and_shared = cell_coloring.exclusive;
-  exclusive_and_shared.insert(
+  exclusive_and_shared.insert(exclusive_and_shared.end(),
     cell_coloring.shared.begin(), cell_coloring.shared.end());
 
   for(auto c : exclusive_and_shared) {
@@ -354,6 +354,8 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
       this_cell->set_neighbor(above_, cells_vs_ids.at(above_id));
     }
   } // for
+
+  coloring::remove_unique(exclusive_and_shared);
 
 } // initizlize_mesh
 

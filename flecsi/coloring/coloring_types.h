@@ -15,6 +15,8 @@
 
 /*! @file */
 
+#include <flecsi/utils/common.h>
+
 #include <set>
 #include <vector>
 
@@ -70,10 +72,11 @@ operator<<(std::ostream & stream, const coloring_info_t & ci) {
  */
 
 struct entity_info_t {
+  using id_t = utils::indices_t;
   size_t id;
-  size_t rank;
-  size_t offset;
-  std::set<size_t> shared;
+  id_t rank;
+  id_t offset;
+  std::set<id_t> shared;
 
   /*!
    Constructor.
@@ -86,10 +89,17 @@ struct entity_info_t {
    */
 
   entity_info_t(size_t id_ = 0,
-    size_t rank_ = 0,
-    size_t offset_ = 0,
-    std::set<size_t> shared_ = {})
-    : id(id_), rank(rank_), offset(offset_), shared(shared_) {}
+    id_t rank_ = 0,
+    id_t offset_ = 0)
+    : id(id_), rank(rank_), offset(offset_) {}
+
+
+  template<typename T>
+  entity_info_t(size_t id_,
+    id_t rank_,
+    id_t offset_,
+    const std::set<T> & shared_)
+    : id(id_), rank(rank_), offset(offset_), shared(shared_.begin(), shared_.end()) {}
 
   /*!
    Constructor.
@@ -101,15 +111,16 @@ struct entity_info_t {
    \param shared_ The rank that shares this entity.
    */
 
-  entity_info_t(size_t id_, size_t rank_, size_t offset_, size_t shared_)
+  entity_info_t(size_t id_, id_t rank_, id_t offset_, id_t shared_)
     : id(id_), rank(rank_), offset(offset_) {
     shared.emplace(shared_);
   }
 
+  template<typename T>
   entity_info_t(size_t id_,
-    size_t rank_,
-    size_t offset_,
-    std::vector<size_t> shared_)
+    id_t rank_,
+    id_t offset_,
+    const std::vector<T> & shared_)
     : id(id_), rank(rank_), offset(offset_),
       shared(shared_.begin(), shared_.end()) {}
 

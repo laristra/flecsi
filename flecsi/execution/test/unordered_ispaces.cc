@@ -1,4 +1,4 @@
-/*~-------------------------------------------------------------------------~~*
+/*~-------------------------------------------------------------------------~~
  * Copyright (c) 2014 Los Alamos National Security, LLC
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
@@ -287,7 +287,7 @@ add_colorings(int dummy) {
     size_t offset(0);
     for(auto i : std::get<0>(cell_nn_info)) {
       if(i.size()) {
-        cells.shared.insert(flecsi::coloring::entity_info_t(
+        cells.shared.emplace_back(flecsi::coloring::entity_info_t(
           primary_indices_map[offset], rank, offset, i));
 
         // Collect all colors with whom we require communication
@@ -296,24 +296,29 @@ add_colorings(int dummy) {
           flecsi::utils::set_union(cell_color_info.shared_users, i);
       }
       else {
-        cells.exclusive.insert(flecsi::coloring::entity_info_t(
+        cells.exclusive.emplace_back(flecsi::coloring::entity_info_t(
           primary_indices_map[offset], rank, offset, i));
       } // if
       ++offset;
     } // for
   } // scope
 
+  coloring::remove_unique(cells.exclusive);
+  coloring::remove_unique(cells.shared);
+
   // Populate ghost cell information.
   {
     size_t offset(0);
     for(auto i : std::get<1>(cell_nn_info)) {
-      cells.ghost.insert(i);
+      cells.ghost.emplace_back(i);
 
       // Collect all colors with whom we require communication
       // to receive ghost information.
       cell_color_info.ghost_owners.insert(i.rank);
     } // for
   } // scope
+
+  coloring::remove_unique(cells.ghost);
 
   cell_color_info.exclusive = cells.exclusive.size();
   cell_color_info.shared = cells.shared.size();
@@ -361,7 +366,7 @@ add_colorings(int dummy) {
       // off-color. If it is, compare it's rank for
       // the ownership logic below.
       if(remote_info_map.find(c) != remote_info_map.end()) {
-        min_rank = std::min(min_rank, remote_info_map[c].rank);
+        min_rank = std::min<size_t>(min_rank, remote_info_map[c].rank);
         shared_vertices.insert(remote_info_map[c].rank);
       }
       else {
@@ -412,7 +417,7 @@ add_colorings(int dummy) {
 
   for(auto i : vertex_info) {
     if(i.shared.size()) {
-      vertices.shared.insert(i);
+      vertices.shared.emplace_back(i);
 
       // Collect all colors with whom we require communication
       // to send shared information.
@@ -420,9 +425,12 @@ add_colorings(int dummy) {
         flecsi::utils::set_union(vertex_color_info.shared_users, i.shared);
     }
     else {
-      vertices.exclusive.insert(i);
+      vertices.exclusive.emplace_back(i);
     } // if
   } // for
+
+  coloring::remove_unique(vertices.exclusive);
+  coloring::remove_unique(vertices.shared);
 
   {
     size_t r(0);
@@ -430,7 +438,7 @@ add_colorings(int dummy) {
 
       auto offset(vertex_offset_info[r].begin());
       for(auto s : i) {
-        vertices.ghost.insert(flecsi::coloring::entity_info_t(s, r, *offset));
+        vertices.ghost.emplace_back(flecsi::coloring::entity_info_t(s, r, *offset));
         ++offset;
 
         // Collect all colors with whom we require communication
@@ -441,6 +449,8 @@ add_colorings(int dummy) {
       ++r;
     } // for
   } // scope
+  
+  coloring::remove_unique(vertices.ghost);
 
   {
     clog_tag_guard(coloring_output);
