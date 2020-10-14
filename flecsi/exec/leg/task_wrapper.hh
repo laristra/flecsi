@@ -26,6 +26,7 @@
 #include "flecsi/exec/leg/unbind_accessors.hh"
 #include "flecsi/exec/task_attributes.hh"
 #include "flecsi/run/backend.hh"
+#include "flecsi/util/annotation.hh"
 #include "flecsi/util/common.hh"
 #include "flecsi/util/function_traits.hh"
 #include "flecsi/util/serialize.hh"
@@ -240,15 +241,22 @@ struct task_wrapper {
     // Unpack task arguments
     auto task_args = detail::tuple_get<param_tuple>(*task);
 
+    namespace ann = util::annotation;
+    auto tname = util::symbol<F>();
     unbind_accessors ub(task_args);
-    bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
+    (ann::rguard<ann::execute_task_bind>(tname)),
+      bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
-      apply(F, std::forward<param_tuple>(task_args));
+      (ann::rguard<ann::execute_task_user>(tname)),
+        apply(F, std::forward<param_tuple>(task_args));
+      ann::rguard<ann::execute_task_unbind> ann_guard(tname);
       ub();
     }
     else {
-      RETURN result = apply(F, std::forward<param_tuple>(task_args));
+      RETURN result = (ann::rguard<ann::execute_task_user>(tname),
+        apply(F, std::forward<param_tuple>(task_args)));
+      ann::rguard<ann::execute_task_unbind> ann_guard(tname);
       ub();
       return result;
     } // if
@@ -278,19 +286,26 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, task->args, sizeof p);
 
+    namespace ann = util::annotation;
+    auto tname = util::symbol<F>();
     unbind_accessors ub(*p);
-    bind_accessors{runtime, context, regions, task->futures}.walk(*p);
+    (ann::rguard<ann::execute_task_bind>(tname)),
+      bind_accessors{runtime, context, regions, task->futures}.walk(*p);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();
 
     if constexpr(std::is_void_v<RETURN>) {
-      c.mpi_call([&] { apply(F, std::move(*p)); });
+      (ann::rguard<ann::execute_task_user>(tname)),
+        c.mpi_call([&] { apply(F, std::move(*p)); });
+      ann::rguard<ann::execute_task_unbind> ann_guard(tname);
       ub();
     }
     else {
       std::optional<RETURN> result;
-      c.mpi_call([&] { result.emplace(std::apply(F, std::move(*p))); });
+      (ann::rguard<ann::execute_task_user>(tname)),
+        c.mpi_call([&] { result.emplace(std::apply(F, std::move(*p))); });
+      ann::rguard<ann::execute_task_unbind> ann_guard(tname);
       ub();
       return std::move(*result);
     }

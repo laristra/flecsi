@@ -151,6 +151,11 @@ target_link_libraries(runtime-flog ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
 add_unit(runtime-flog)
 
+add_executable(runtime-caliper
+  1-runtime/4-caliper.cc)
+target_link_libraries(runtime-caliper ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+
 #------------------------------------------------------------------------------#
 # 2-control
 #------------------------------------------------------------------------------#
