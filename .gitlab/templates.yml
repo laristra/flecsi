@@ -137,7 +137,7 @@
         ${CMAKE_OPTIONS} \
         ../..
     - make
-    - make test || make test ARGS="-V"
+    - CTEST_OUTPUT_ON_FAILURE=1 make test
     - make install
     - ccache -s
   artifacts:
