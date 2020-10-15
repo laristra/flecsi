@@ -23,10 +23,49 @@
 #error FLECSI_ENABLE_KOKKOS not defined! This file depends on Kokkos!
 #endif
 
+#include "flecsi/exec/fold.hh"
+
 #include <Kokkos_Core.hpp>
 
 namespace flecsi {
 namespace exec {
+namespace kok {
+template<class R, class T>
+struct wrap {
+  using reducer = wrap;
+  using value_type = T;
+  using result_view_type = Kokkos::View<value_type, Kokkos::HostSpace>;
+
+  KOKKOS_INLINE_FUNCTION
+  void join(T & a, const T & b) const {
+    a = R::combine(a, b);
+  }
+
+  KOKKOS_INLINE_FUNCTION
+  void join(volatile T & a, const volatile T & b) const {
+    a = R::combine(a, b);
+  }
+
+  KOKKOS_INLINE_FUNCTION
+  void init(T & v) const {
+    v = detail::identity_traits<R>::template value<T>;
+  }
+
+  // Also useful to read the value!
+  KOKKOS_INLINE_FUNCTION
+  T & reference() const {
+    return t;
+  }
+
+  KOKKOS_INLINE_FUNCTION
+  result_view_type view() const {
+    return &t;
+  }
+
+private:
+  T t;
+};
+} // namespace kok
 
 /*!
   This function is a wrapper for Kokkos::parallel_for that has been adapted to
@@ -128,14 +167,11 @@ private:
   This function is a wrapper for Kokkos::parallel_reduce that has been adapted
   to work with FleCSI's topology iterator types.
  */
-template<typename ITERATOR, typename LAMBDA, typename REDUCER>
-void
-parallel_reduce(ITERATOR iterator,
-  LAMBDA lambda,
-  REDUCER result,
-  std::string name = "") {
+template<class R, class T, typename ITERATOR, typename LAMBDA>
+T
+parallel_reduce(ITERATOR iterator, LAMBDA lambda, std::string name = "") {
 
-  using value_type = typename REDUCER::value_type;
+  using value_type = T;
 
   struct functor {
 
@@ -152,8 +188,10 @@ parallel_reduce(ITERATOR iterator,
 
   }; // struct functor
 
+  kok::wrap<R, T> result;
   Kokkos::parallel_reduce(
-    name, iterator.size(), functor{iterator, lambda}, result);
+    name, iterator.size(), functor{iterator, lambda}, result.kokkos());
+  return result.reference();
 
 } // parallel_reduce
 
@@ -161,46 +199,35 @@ parallel_reduce(ITERATOR iterator,
   The reduce_all type provides a pretty interface for invoking data-parallel
   reductions.
  */
-template<typename ITERATOR, typename REDUCER>
+template<class ITERATOR, class R, class T>
 struct reduceall_t {
 
-  reduceall_t(ITERATOR iterator, REDUCER reducer, std::string name = "")
-    : iterator_(iterator), reducer_(reducer), name_(name) {}
+  reduceall_t(ITERATOR iterator, std::string name = "")
+    : iterator_(iterator), name_(name) {}
 
-  using value_type = typename REDUCER::value_type;
-
-  template<typename LAMBDA>
-  struct functor {
-
-    functor(ITERATOR & iterator, LAMBDA & lambda)
-      : iterator_(iterator), lambda_(lambda) {}
-
-    KOKKOS_INLINE_FUNCTION void operator()(int i, value_type & tmp) const {
-      lambda_(iterator_[i], tmp);
-    } // operator()
-
-  private:
-    ITERATOR iterator_;
-    LAMBDA lambda_;
-
-  }; // struct functor
+  using value_type = T;
 
   template<typename LAMBDA>
-  void operator+(LAMBDA lambda) {
-    Kokkos::parallel_reduce(
-      name_, iterator_.size(), functor<LAMBDA>{iterator_, lambda}, reducer_);
+  T operator->*(LAMBDA lambda) && {
+    return parallel_reduce<R, T>(
+      std::move(iterator_), std::move(lambda), name_);
   } // operator+
 
 private:
   ITERATOR iterator_;
-  REDUCER reducer_;
   std::string name_;
 
 }; // forall_t
 
-#define reduceall(it, tmp, iterator, reducer, name)                            \
-  flecsi::exec::reduceall_t{iterator, reducer, name} +                         \
-    KOKKOS_LAMBDA(auto it, auto & tmp)
+template<class R, class T, class I>
+reduceall_t<I, R, T>
+make_reduce(I i, std::string n) {
+  return {std::move(i), n};
+}
+
+#define reduceall(it, tmp, iterator, R, T, name)                               \
+  ::flecsi::exec::make_reduce<R, T>(iterator, name)                            \
+      ->*KOKKOS_LAMBDA(auto it, T & tmp)
 
 //----------------------------------------------------------------------------//
 //! Abstraction function for fine-grained, data-parallel interface.

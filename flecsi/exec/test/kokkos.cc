@@ -64,16 +64,12 @@ local_kokkos(field<double>::accessor<rw> c) {
     }; // forall
 
     // Reduction
-    std::size_t res = 0;
-    flecsi::exec::parallel_reduce(
+    std::size_t res = exec::parallel_reduce<exec::fold::sum, std::size_t>(
       c.span(),
       KOKKOS_LAMBDA(auto cv, std::size_t & up) { up += cv; },
-      flecsi::exec::reducer::sum<std::size_t>(res),
       std::string("pred1"));
     assert(pvalue * c.span().size() == res);
-    res = 0;
-    reduceall(
-      cv, up, c.span(), flecsi::exec::reducer::sum<std::size_t>(res), "pred2") {
+    res = reduceall(cv, up, c.span(), exec::fold::sum, std::size_t, "pred2") {
       up += cv;
     };
     assert(pvalue * c.span().size() == res);
