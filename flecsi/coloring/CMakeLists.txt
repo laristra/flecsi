@@ -75,6 +75,7 @@ endif()
 if(ENABLE_PARMETIS)
   set(coloring_HEADERS
     ${coloring_HEADERS}
+    metis_colorer.h
     parmetis_colorer.h
     parmetis_geom_colorer.h
     parmetis_geomkway_colorer.h

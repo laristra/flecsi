@@ -543,6 +543,7 @@ public:
   //!
   //! @param e from entity
   //--------------------------------------------------------------------------//
+  //mutable std::set<std::vector<size_t>> asked_;
   template<size_t DIM,
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
@@ -555,6 +556,9 @@ public:
 
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity_u<TO_DOM, etype>;
+    //auto res = asked_.emplace(std::vector<size_t>{FROM_DOM, ENT_TYPE::dimension, TO_DOM, DIM});
+    //if (res.second) 
+    //std::cout << "asking for from (" << FROM_DOM << ", " << ENT_TYPE::dimension << ") to (" << TO_DOM << ", " << DIM << ")" << std::endl;
 
     return xform<dtype>(
       c.get_index_space().cast<etype>().slice(c.range(e->id())));

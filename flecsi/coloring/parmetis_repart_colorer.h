@@ -73,38 +73,68 @@ struct parmetis_repart_colorer_t : public colorer_t {
    */
 
   std::vector<size_t> new_color(size_t num_parts, const dcrs_t & dcrs) override {
-    int rank, size;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   
-    idx_t wgtflag = 0;
-    idx_t numflag = 0;
-    idx_t ncon = 1;
-    std::vector<real_t> tpwgts(ncon * num_parts, 1.0 / num_parts);
+    auto num_ents = dcrs.size();
+    auto comm = create_communicator(MPI_COMM_WORLD, num_ents);
   
-    // We may need to expose some of the ParMETIS configuration options.
-    std::vector<real_t> ubvec(ncon, 1.05);
-    idx_t options[3] = {0, 0, 0};
-    idx_t edgecut;
-    std::vector<idx_t> part(dcrs.size(), std::numeric_limits<idx_t>::max());
+    if (num_ents) {
+
+      idx_t wgtflag = 0;
+      idx_t numflag = 0;
+      idx_t ncon = 1;
+      std::vector<real_t> tpwgts(ncon * num_parts, 1.0 / num_parts);
   
-    // Get the dCRS information using ParMETIS types.
-    auto xadj = dcrs.offsets_as<idx_t>();
-    auto adjncy = dcrs.indices_as<idx_t>();
-    auto vtxdist = dcrs.distribution_as<idx_t>();
-    
-    // Actual call to ParMETIS.
-    idx_t npart = num_parts;
-    MPI_Comm comm = MPI_COMM_WORLD;
-    int result = ParMETIS_V3_RefineKway(&vtxdist[0], &xadj[0], &adjncy[0],
-      nullptr, nullptr, &wgtflag, &numflag, &ncon, &npart, &tpwgts[0],
-      ubvec.data(), options, &edgecut, &part[0], &comm);
-    if(result != METIS_OK)
-      clog_error("Parmetis failed!");
+      // We may need to expose some of the ParMETIS configuration options.
+      std::vector<real_t> ubvec(ncon, 1.05);
+      idx_t options[3] = {0, 0, 0};
+      idx_t edgecut;
+
+      // Get the dCRS information using ParMETIS types.
+      auto xadj = dcrs.offsets_as<idx_t>();
+      auto adjncy = dcrs.indices_as<idx_t>();
+      
+      // colapse distribution
+      int rank, size, world_size, world_rank;
+      MPI_Comm_rank(comm, &rank);
+      MPI_Comm_size(comm, &size);
+      MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+      MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+      if (rank==0) {
+        if (num_parts != size) {
+          std::cout << "WARNING: repartitiioner will not create new partitions" << std::endl;
+        }
+      }
+
+      std::vector<idx_t> vtxdist(size+1);
+      vtxdist[0] = 0;
+      for (int r=0, i=0; r<world_size; ++r) {
+        auto n = dcrs.distribution[r+1] - dcrs.distribution[r];
+        if (n>0) {
+          vtxdist[i+1] = vtxdist[i] + n;
+          i++;
+        }
+      }
+      
+      int defval = (size==num_parts) ? std::numeric_limits<idx_t>::max() : world_rank;
+      std::vector<idx_t> part(dcrs.size(), defval);
+      
+      // Actual call to ParMETIS.
+      idx_t npart = num_parts;
+      int result = ParMETIS_V3_RefineKway(&vtxdist[0], &xadj[0], &adjncy[0],
+        nullptr, nullptr, &wgtflag, &numflag, &ncon, &npart, &tpwgts[0],
+        ubvec.data(), options, &edgecut, &part[0], &comm);
+      if(result != METIS_OK)
+        clog_error("Parmetis failed!");
   
-    std::vector<size_t> partitioning(part.begin(), part.end());
-  
-    return partitioning;
+      std::vector<size_t> partitioning(part.begin(), part.end());
+      std::set<size_t> un(part.begin(), part.end());
+
+      return partitioning;
+    }
+    else {
+      return {};
+    }
 
   } // color
 
