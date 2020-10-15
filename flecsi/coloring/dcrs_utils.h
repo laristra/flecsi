@@ -1,3 +1,4 @@
+
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
    /@@/////  /@@          @@////@@ @@////// /@@
@@ -329,6 +330,8 @@ alltoallv(const SEND_TYPE & sendbuf,
 
   auto num_ranks = sendcounts.size();
 
+  auto intmax = std::numeric_limits<int>::max() - 1;
+
   // create storage for the requests
   std::vector<MPI_Request> requests;
   requests.reserve(2 * num_ranks);
@@ -338,28 +341,36 @@ alltoallv(const SEND_TYPE & sendbuf,
 
   for(size_t rank = 0; rank < num_ranks; ++rank) {
     auto count = recvcounts[rank];
-    if(count > 0) {
-      auto buf = recvbuf.data() + recvdispls[rank];
+    size_t start = 0;
+    while (count > 0) {
+      auto sz = std::min<size_t>( count, intmax );
+      auto buf = recvbuf.data() + recvdispls[rank] + start;
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
       auto ret =
-        MPI_Irecv(buf, count, mpi_recv_t, rank, tag, comm, &my_request);
+        MPI_Irecv(buf, sz, mpi_recv_t, rank, tag, comm, &my_request);
       if(ret != MPI_SUCCESS)
         return ret;
+      count -= sz;
+      start += sz;
     }
   }
 
   // send the data
   for(size_t rank = 0; rank < num_ranks; ++rank) {
     auto count = sendcounts[rank];
-    if(count > 0) {
-      auto buf = sendbuf.data() + senddispls[rank];
+    size_t start = 0;
+    while (count > 0) {
+      auto sz = std::min<size_t>( count, intmax );
+      auto buf = sendbuf.data() + senddispls[rank] + start;
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
       auto ret =
-        MPI_Isend(buf, count, mpi_send_t, rank, tag, comm, &my_request);
+        MPI_Isend(buf, sz, mpi_send_t, rank, tag, comm, &my_request);
       if(ret != MPI_SUCCESS)
         return ret;
+      count -= sz;
+      start += sz;
     }
   }
 
@@ -369,6 +380,62 @@ alltoallv(const SEND_TYPE & sendbuf,
 
   return ret;
 }
+
+template<typename SEND_TYPE, typename ID_TYPE, typename RECV_TYPE>
+auto
+alltoall(const SEND_TYPE & sendbuf,
+  const ID_TYPE & sendcount,
+  RECV_TYPE & recvbuf,
+  const ID_TYPE & recvcount,
+  decltype(MPI_COMM_WORLD) comm) {
+
+  const auto mpi_send_t =
+    utils::mpi_typetraits_u<typename SEND_TYPE::value_type>::type();
+  const auto mpi_recv_t =
+    utils::mpi_typetraits_u<typename RECV_TYPE::value_type>::type();
+
+  int num_ranks;
+  MPI_Comm_size(comm, &num_ranks);
+
+  // create storage for the requests
+  std::vector<MPI_Request> requests;
+  requests.reserve(2 * num_ranks);
+
+  // post receives
+  auto tag = 0;
+
+  size_t count = 0;
+  for(size_t rank = 0; rank < num_ranks; ++rank) {
+    auto buf = recvbuf.data() + count;
+    requests.resize(requests.size() + 1);
+    auto & my_request = requests.back();
+    auto ret =
+      MPI_Irecv(buf, recvcount, mpi_recv_t, rank, tag, comm, &my_request);
+    if(ret != MPI_SUCCESS)
+      return ret;
+    count += recvcount;
+  }
+
+  // send the data
+  count = 0;
+  for(size_t rank = 0; rank < num_ranks; ++rank) {
+    auto buf = sendbuf.data() + count;
+    requests.resize(requests.size() + 1);
+    auto & my_request = requests.back();
+    auto ret =
+      MPI_Isend(buf, sendcount, mpi_send_t, rank, tag, comm, &my_request);
+    if(ret != MPI_SUCCESS)
+      return ret;
+    count += sendcount;
+  }
+
+  // wait for everything to complete
+  std::vector<MPI_Status> status(requests.size());
+  auto ret = MPI_Waitall(requests.size(), requests.data(), status.data());
+
+  return ret;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Simple utility for determining which rank owns an id
