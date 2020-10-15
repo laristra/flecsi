@@ -321,12 +321,12 @@ struct context_u : public CONTEXT_POLICY {
     return index_map_[index_space];
   }
 
-  void add_index_map(size_t index_space, std::map<size_t, size_t> & index_map) {
+  void add_index_map(size_t index_space, std::vector<size_t> & index_map) {
     index_map_[index_space] = index_map;
 
-    for(auto i : index_map) {
-      reverse_index_map_[index_space][i.second] = i.first;
-    } // for
+    auto & rev_map = reverse_index_map_[index_space];
+    for(size_t i=0; i<index_map.size(); ++i)
+      rev_map[index_map[i]] = i;
   } // add_index_map
 
   /*!
