@@ -88,4 +88,19 @@ struct product {
 }; // struct product
 
 } // namespace exec::fold
+
+namespace exec::detail {
+// So that user reduction types can supply a single value or a template:
+template<class R, class = void>
+struct identity_traits {
+  // GCC rejects this if it's a reference (#97340):
+  template<class T>
+  static inline const T value{R::template identity<T>};
+};
+template<class R>
+struct identity_traits<R, decltype(void(&R::identity))> {
+  template<class T>
+  static inline const T & value{R::identity};
+};
+} // namespace exec::detail
 } // namespace flecsi
