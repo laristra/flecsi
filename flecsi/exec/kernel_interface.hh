@@ -30,7 +30,7 @@
 namespace flecsi {
 namespace exec {
 namespace kok {
-template<class R, class T>
+template<class R, class T, class = void>
 struct wrap {
   using reducer = wrap;
   using value_type = T;
@@ -62,8 +62,54 @@ struct wrap {
     return &t;
   }
 
+  wrap & kokkos() {
+    return *this;
+  }
+
+private:
+  mutable T t;
+};
+
+// Kokkos's built-in reducers are just as effective as ours for generic
+// types, although we can't provide Kokkos::reduction_identity in terms of
+// our interface in C++17 because it has no extra template parameter via
+// which to apply SFINAE.
+template<class>
+struct reducer; // undefined
+template<>
+struct reducer<fold::min> {
+  template<class T>
+  using type = Kokkos::Min<T>;
+};
+template<>
+struct reducer<fold::max> {
+  template<class T>
+  using type = Kokkos::Max<T>;
+};
+template<>
+struct reducer<fold::sum> {
+  template<class T>
+  using type = Kokkos::Sum<T>;
+};
+template<>
+struct reducer<fold::product> {
+  template<class T>
+  using type = Kokkos::Prod<T>;
+};
+
+template<class R, class T>
+struct wrap<R, T, decltype(void(reducer<R>()))> {
 private:
   T t;
+  typename reducer<R>::template type<T> native{t};
+
+public:
+  const T & reference() const {
+    return t;
+  }
+  auto & kokkos() {
+    return native;
+  }
 };
 } // namespace kok
 
@@ -267,32 +313,5 @@ reduce_each(R && r, REDUCTION & reduction, FUNCTION && function) {
     function(e, reduction);
 } // reduce_each_u
 
-// Reducers extracted from Kokkos
-namespace reducer {
-template<typename TYPE>
-using sum = Kokkos::Sum<TYPE>;
-template<typename TYPE>
-using prod = Kokkos::Prod<TYPE>;
-template<typename TYPE>
-using max = Kokkos::Max<TYPE>;
-template<typename TYPE>
-using min = Kokkos::Min<TYPE>;
-template<typename TYPE>
-using land = Kokkos::LAnd<TYPE>;
-template<typename TYPE>
-using lor = Kokkos::LOr<TYPE>;
-template<typename TYPE>
-using band = Kokkos::BAnd<TYPE>;
-template<typename TYPE>
-using bor = Kokkos::BOr<TYPE>;
-template<typename TYPE>
-using minmax = Kokkos::MinMax<TYPE>;
-template<typename TYPE, typename IDX, typename SPACE>
-using minloc = Kokkos::MinLoc<TYPE, IDX, SPACE>;
-template<typename TYPE, typename IDX, typename SPACE>
-using maxloc = Kokkos::MaxLoc<TYPE, IDX, SPACE>;
-template<typename TYPE, typename IDX, typename SPACE>
-using minmaxloc = Kokkos::MinMaxLoc<TYPE, IDX, SPACE>;
-} // namespace reducer
 } // namespace exec
 } // namespace flecsi
