@@ -18,5 +18,5 @@ before_script:
     if [[ -d ${CI_PROJECT_DIR}/spack ]];
     then
       spack reindex;
-      spack module tcl refresh -y;
+      spack -e spack_env module tcl refresh -y;
     fi
