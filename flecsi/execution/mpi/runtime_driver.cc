@@ -115,17 +115,20 @@ runtime_driver(int argc, char ** argv) {
 
     for(auto index : is.second.exclusive) {
       _rev_map[index.id] = counter;
-      _map[counter++] = index.id;
+      _map[counter] = index.id;
+      counter++;
     } // for
 
     for(auto index : is.second.shared) {
       _rev_map[index.id] = counter;
-      _map[counter++] = index.id;
+      _map[counter] = index.id;
+      counter++;
     } // for
 
     for(auto index : is.second.ghost) {
       _rev_map[index.id] = counter;
-      _map[counter++] = index.id;
+      _map[counter] = index.id;
+      counter++;
     } // for
 
   } // for
