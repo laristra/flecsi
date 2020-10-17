@@ -7,18 +7,19 @@
    /@@       /@@/@@//// //@@    @@       /@@/@@
    /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
    //       ///  //////   //////  ////////  //
-*/
 
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
 #pragma once
 
+#include <hpx/include/async.hpp>
 #include <hpx/include/lcos.hpp>
-#include <hpx/include/parallel_execution.hpp>
 #include <hpx/runtime_fwd.hpp>
 
 #include <cstddef>
 #include <functional>
 #include <map>
-#include <memory>
 #include <mutex>
 #include <string>
 #include <tuple>
@@ -49,49 +50,6 @@
 #include <flecsi/utils/mpi_type_traits.h>
 
 #include <flecsi/utils/const_string.h>
-
-#if HPX_VERSION_FULL < 0x010500
-namespace flecsi {
-namespace execution {
-
-using pool_executor = hpx::threads::executors::pool_executor;
-} // namespace execution
-} // namespace flecsi
-#else
-namespace flecsi {
-namespace execution {
-
-// newer versions of HPX do not support pool_executor anymore
-class pool_executor : public hpx::parallel::execution::thread_pool_executor
-{
-public:
-  explicit pool_executor(std::string const & pool_name = "default")
-    : hpx::parallel::execution::thread_pool_executor(
-        &hpx::threads::get_thread_manager().get_pool(pool_name),
-        hpx::threads::thread_priority_default,
-        hpx::threads::thread_stacksize_default) {}
-};
-} // namespace execution
-} // namespace flecsi
-
-namespace hpx {
-namespace parallel {
-namespace execution {
-template<>
-struct is_one_way_executor<flecsi::execution::pool_executor> : std::true_type {
-};
-
-template<>
-struct is_two_way_executor<flecsi::execution::pool_executor> : std::true_type {
-};
-
-template<>
-struct is_bulk_two_way_executor<flecsi::execution::pool_executor>
-  : std::true_type {};
-} // namespace execution
-} // namespace parallel
-} // namespace hpx
-#endif
 
 namespace flecsi {
 namespace execution {
@@ -855,14 +813,6 @@ protected:
   start_hpx(void (*driver)(int, char *[]), int argc, char * argv[]);
 
 public:
-  flecsi::execution::pool_executor & get_default_executor() {
-    return *exec_;
-  }
-
-  flecsi::execution::pool_executor & get_mpi_executor() {
-    return *mpi_exec_;
-  }
-
   int rank;
 
   // private:
@@ -886,11 +836,6 @@ public:
 
   // Map to store task registration callback methods.
   std::map<size_t, task_info_t> task_registry_;
-
-private:
-  std::unique_ptr<flecsi::execution::pool_executor> exec_;
-  std::unique_ptr<flecsi::execution::pool_executor> mpi_exec_;
-
 }; // struct hpx_context_policy_t
 
 } // namespace execution

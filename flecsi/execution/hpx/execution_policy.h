@@ -17,9 +17,6 @@
 
 #include <hpx/include/async.hpp>
 #include <hpx/include/lcos.hpp>
-#include <hpx/include/parallel_execution.hpp>
-#include <hpx/include/parallel_executors.hpp>
-#include <hpx/include/thread_executors.hpp>
 
 #include <cinchlog.h>
 #include <functional>
@@ -52,11 +49,10 @@ struct executor_u {
   /*!
    FIXME documentation
    */
-  template<typename Exec, typename T, typename A>
-  static decltype(auto) execute(Exec && exec, T function, A && targs) {
-    auto user_fun = reinterpret_cast<RETURN (*)(std::decay_t<A>)>(function);
-    return hpx::async(
-      std::forward<Exec>(exec), user_fun, std::forward<A>(targs));
+  template<typename T, typename A>
+  static decltype(auto) execute(T function, A && targs) {
+    auto user_fun = reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function);
+    return hpx::async(user_fun, utils::forward_tuple(std::forward<A>(targs)));
   } // execute_task
 }; // struct executor_u
 
@@ -164,27 +160,8 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
 
     annotation::begin<annotation::execute_task_user>(tname);
 
-    //     hpx_future_u<RETURN> future;
-    //     auto processor_type = context_.processor_type<TASK>();
-    //     if(processor_type == processor_type_t::mpi) {
-    //
-    //       {
-    //         clog_tag_guard(execution);
-    //         clog(info) << "Executing MPI task: " << TASK << std::endl;
-    //       }
-    //
-    //       future = executor_u<RETURN, ARG_TUPLE>::execute(
-    //         context_t::instance().get_mpi_executor(), std::move(function),
-    //         task_args);
-    //     }
-    //     else {
-    //       future = executor_u<RETURN, ARG_TUPLE>::execute(
-    //         context_t::instance().get_default_executor(),
-    //         std::move(function), task_args);
-    //     }
-    hpx_future_u<RETURN> future = executor_u<RETURN, ARG_TUPLE>::execute(
-      context_t::instance().get_default_executor(), std::move(function),
-      task_args);
+    hpx_future_u<RETURN> future =
+      executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
 
     annotation::end<annotation::execute_task_user>();
 
@@ -204,7 +181,8 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     if constexpr(REDUCTION != ZERO) {
 
       return future
-        .then([&](hpx_future_u<RETURN> && future) {
+        .then([](hpx_future_u<RETURN> && future) {
+          context_t & context_ = context_t::instance();
           MPI_Datatype datatype =
             flecsi::utils::mpi_typetraits_u<RETURN>::type();
 

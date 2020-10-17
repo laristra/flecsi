@@ -61,16 +61,31 @@ struct hpx_set_topology_storage_policy_u {
   }
 
   void init_entities(size_t index_space,
+    size_t active_migrate_index_space,
     set_entity_t * entities,
-    size_t size,
     size_t num_entities,
+    set_entity_t * active_entities,
+    size_t num_active_entities,
+    set_entity_t * migrate_entities,
+    size_t num_migrate_entities,
+    size_t size,
     bool read) {
+
     auto itr = index_space_map.find(index_space);
     clog_assert(itr != index_space_map.end(), "invalid index space");
     auto & is = index_spaces[itr->second];
     auto s = is.storage();
 
-    s->set_buffer(entities, num_entities, read);
+    *s = {{entities, num_entities}, read ? num_entities : 0};
+
+    itr = index_space_map.find(active_migrate_index_space);
+    clog_assert(
+      itr != index_space_map.end(), "invalid active migrate index space");
+    auto & amis = index_spaces[itr->second];
+    auto s2 = amis.storage();
+
+    // how to handle migration buffer?
+    s2->set_buffer(active_entities, num_entities, read);
 
     if(!read) {
       return;
@@ -101,15 +116,9 @@ struct hpx_set_topology_storage_policy_u {
     constexpr std::size_t index_space =
       find_set_index_space_u<num_index_spaces, entity_types_t, T>::find();
 
-    auto & is = index_spaces[index_space].template cast<T *>();
-    std::size_t entity = is.size();
-
-    auto placement_ptr = static_cast<T *>(is.storage()->buffer()) + entity;
+    auto & is = index_spaces[index_space];
+    auto placement_ptr = static_cast<T *>(is.data.buffer()) + is.ids.size();
     auto ent = new(placement_ptr) T(std::forward<ARG_TYPES>(args)...);
-    auto storage = is.storage();
-    storage->pushed();
-    is.pushed();
-
     return ent;
   }
 };

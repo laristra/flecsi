@@ -58,10 +58,6 @@ hpx_context_policy_t::hpx_main(void (*driver)(int, char *[]),
   int argc,
   char * argv[]) {
 
-  // initialize executors (possible only after runtime is active)
-  exec_ = std::make_unique<flecsi::execution::pool_executor>("default");
-  mpi_exec_ = std::make_unique<flecsi::execution::pool_executor>("mpi");
-
   // execute user code (driver)
   (*driver)(argc, argv);
 
@@ -84,29 +80,15 @@ hpx_context_policy_t::start_hpx(void (*driver)(int, char *[]),
     // disable HPX' short options
     "hpx.commandline.aliasing!=0"};
 
-  auto init_rp = [](hpx::resource::partitioner & rp) {
-    // Create a thread pool encapsulating the default scheduler
-    rp.create_thread_pool("default", hpx::resource::local_priority_fifo);
-
-    // Create a thread pool for executing MPI tasks
-    rp.create_thread_pool("mpi", hpx::resource::static_);
-
-    // Add first core to mpi pool
-    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
-  };
-
   // Now, initialize and run the HPX runtime, will return when done.
 #if HPX_VERSION_FULL < 0x010500
-  hpx::resource::partitioner rp{
+  return hpx::init(
     hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver), argc,
-    argv, cfg};
-  init_rp(rp);
-  return hpx::init();
+    argv, cfg);
 #else
   // Newer versions of HPX do not allow to explicitly initialize the
   // resource partitioner anymore
   hpx::init_params params;
-  params.rp_callback = init_rp;
   params.cfg = std::move(cfg);
 
   return hpx::init(
