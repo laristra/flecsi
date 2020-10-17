@@ -28,8 +28,9 @@
 #include <utility> // forward
 
 namespace flecsi {
+namespace exec {
+namespace detail {
 
-namespace exec::detail {
 template<class... PP, class... AA>
 auto
 replace_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
@@ -38,11 +39,11 @@ replace_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
   return std::tuple<decltype(exec::replace_argument<PP>(std::forward<AA>(
     aa)))...>(exec::replace_argument<PP>(std::forward<AA>(aa))...);
 }
-} // namespace exec::detail
+} // namespace detail
 
 template<auto & F, class REDUCTION, size_t ATTRIBUTES, typename... ARGS>
 auto
-reduce(ARGS &&... args) {
+reduce_internal(ARGS &&... args) {
   using Traits = util::function_traits<decltype(F)>;
   using R = typename Traits::return_type;
   auto args2 = exec::detail::replace_arguments(
@@ -54,6 +55,7 @@ reduce(ARGS &&... args) {
   }
   else
     return future<R>{std::apply(F, std::move(args2))};
-}
+} // reduce_internal
 
+} // namespace exec
 } // namespace flecsi

@@ -340,6 +340,38 @@ colors() {
 /*!
   Execute a reduction task.
 
+  @tparam Task       The user task.
+  @tparam Reduction  The reduction operation type.
+  @tparam Attributes The task attributes mask.
+  @tparam Args       The user-specified task arguments.
+
+  \see \c execute about parameter and argument types.
+ */
+
+// To avoid compile- and runtime recursion, only user tasks trigger logging.
+template<auto & Task, class Reduction, size_t Attributes, typename... Args>
+auto
+reduce(Args &&... args) {
+  using namespace exec;
+
+  // Get the FleCSI runtime context
+  auto & flecsi_context = run::context::instance();
+  std::size_t & flog_task_count = flecsi_context.flog_task_count();
+  ++flog_task_count;
+#if defined(FLECSI_ENABLE_FLOG) && defined(FLOG_ENABLE_MPI)
+  if(flog_task_count % FLOG_SERIALIZATION_INTERVAL == 0 &&
+     reduce_internal<log::log_size, fold::max<std::size_t>, flecsi::mpi>()
+         .get() > FLOG_SERIALIZATION_THRESHOLD)
+    reduce_internal<log::send_to_one, void, flecsi::mpi>();
+#endif
+
+  return reduce_internal<Task, Reduction, Attributes, Args...>(
+    std::forward<Args>(args)...);
+} // reduce
+
+/*!
+  Execute a reduction task.
+
   @tparam TASK                The user task.
   @tparam REDUCTION_OPERATION The reduction operation type.
   @tparam ATTRIBUTES          The task attributes mask.
@@ -347,12 +379,6 @@ colors() {
 
   \see \c execute about parameter and argument types.
  */
-
-template<auto & TASK,
-  class REDUCTION_OPERATION,
-  size_t ATTRIBUTES,
-  typename... ARGS>
-auto reduce(ARGS &&... args);
 
 template<auto & TASK, size_t ATTRIBUTES, typename... ARGS>
 auto
@@ -408,4 +434,23 @@ with_ragged<P>::extend_offsets(F old) {
       old);
 }
 } // namespace topo
+
+namespace log {
+
+/*!
+  Explicitly flush buffered flog output.
+
+  @ingroup flog
+ */
+
+inline void
+flush() {
+#if defined(FLECSI_ENABLE_FLOG) && defined(FLOG_ENABLE_MPI)
+  flecsi::exec::reduce_internal<log::send_to_one, void, flecsi::mpi>();
+  flecsi::run::context::instance().flog_task_count() = 0;
+#endif
+} // flush
+
+} // namespace log
+
 } // namespace flecsi

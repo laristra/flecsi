@@ -556,17 +556,17 @@ currently only for unstructured mesh topologies.
     Return the count of executed tasks. Const version.
    */
 
-  size_t const & tasks_executed() const {
-    return tasks_executed_;
-  } // tasks_executed
+  size_t const & flog_task_count() const {
+    return flog_task_count_;
+  } // flog_task_count
 
   /*!
     Return the count of executed tasks.
    */
 
-  size_t & tasks_executed() {
-    return tasks_executed_;
-  } // tasks_executed
+  size_t & flog_task_count() {
+    return flog_task_count_;
+  } // flog_task_count
 
 protected:
   context() = default;
@@ -661,7 +661,7 @@ protected:
     Task count.
    *--------------------------------------------------------------------------*/
 
-  size_t tasks_executed_ = 0;
+  size_t flog_task_count_ = 0;
 
 private:
   std::vector<void (*)()> init_registry;

@@ -135,6 +135,12 @@ rstrip(const char * file) {
 #endif
 
 /*!
+  Returnt the current number of buffered packets.
+ */
+
+std::size_t log_size();
+
+/*!
   Serialize output to a single process.
  */
 
