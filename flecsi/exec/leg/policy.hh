@@ -248,30 +248,4 @@ reduce_internal(Args &&... args) {
 } // reduce_internal
 
 } // namespace exec
-
-// To avoid compile- and runtime recursion, only user tasks trigger logging.
-template<auto & F, class Reduction, size_t Attributes, typename... Args>
-auto
-reduce(Args &&... args) {
-  using namespace Legion;
-  using namespace exec;
-
-  // This will guard the entire method
-  log::devel_guard guard(execution_tag);
-
-  // Get the FleCSI runtime context
-  auto & flecsi_context = run::context::instance();
-  std::size_t & tasks_executed = flecsi_context.tasks_executed();
-  ++tasks_executed;
-#if defined(FLECSI_ENABLE_FLOG)
-  if(tasks_executed % FLOG_SERIALIZATION_INTERVAL == 0 &&
-     reduce_internal<detail::log_size, fold::max<std::size_t>, flecsi::mpi>()
-         .get() > FLOG_SERIALIZATION_THRESHOLD)
-    reduce_internal<log::send_to_one, void, flecsi::mpi>();
-#endif
-
-  return reduce_internal<F, Reduction, Attributes, Args...>(
-    std::forward<Args>(args)...);
-}
-
 } // namespace flecsi

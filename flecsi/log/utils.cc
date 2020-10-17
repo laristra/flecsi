@@ -24,6 +24,11 @@ namespace log {
 
 #if defined(FLOG_ENABLE_MPI)
 
+std::size_t
+log_size() {
+  return state::instance().packets().size();
+} // log_size
+
 void
 send_to_one() {
 
