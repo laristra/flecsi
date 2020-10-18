@@ -39,7 +39,7 @@ namespace data {
 // layout, minimizing the amount of backend-specific code required.
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<singular, DATA_TYPE, PRIVILEGES> : bind_tag {
+struct accessor<single, DATA_TYPE, PRIVILEGES> : bind_tag {
   using value_type = DATA_TYPE;
   // We don't actually inherit from base_type; we don't want its interface.
   using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;

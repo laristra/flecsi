@@ -115,8 +115,8 @@ struct task_prologue_t {
     std::size_t Priv,
     class Topo,
     typename Topo::index_space Space>
-  void visit(data::accessor<data::singular, T, Priv> * null_p,
-    const data::field_reference<T, data::singular, Topo, Space> & ref) {
+  void visit(data::accessor<data::single, T, Priv> * null_p,
+    const data::field_reference<T, data::single, Topo, Space> & ref) {
     visit(get_null_base(null_p), ref.template cast<data::dense>());
   }
 

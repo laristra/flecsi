@@ -103,7 +103,7 @@ like this:
 
 .. code-block:: console
 
-  Usage: program_options <passenger-list>
+  Usage: runtime-program_options <passenger-list>
 
   Positional Options:
     passenger-list The list of passengers for this trip [.txt].
@@ -123,24 +123,20 @@ like this:
     --lightspeed                          Travel at the speed of light.
 
   FleCSI Options:
+    --backend-args arg             Pass arguments to the runtime backend. The
+                                   single argument is a quoted string of
+                                   backend-specific options.
     --flog-tags arg (=all)         Enable the specified output tags, e.g.,
-                                   --flog-tags=tag1,tag2.
+                                   --flog-tags=tag1,tag2. Use '--flog-tags=all'
+                                   to show all output, and
+                                   '--flog-tags=unscoped' to show only unguarded
+                                   output.
     --flog-verbose [=arg(=1)] (=0) Enable verbose output. Passing '-1' will strip
                                    any additional decorations added by flog and
                                    will only output the user's message.
-    --flog-process arg (=-1)       Restrict output to the specified process id.
-
-  Available FLOG Tags (FleCSI Logging Utility):
-    execution
-    task_wrapper
-    legion_mapper
-    unbind_accessors
-    topologies
-    reduction_wrapper
-    context
-    registration
-    bind_accessors
-    task_prologue
+    --flog-process arg (=0)        Restrict output to the specified process id.
+                                   The default is process 0. Use
+                                   '--flog_process=-1' to enable all processes.
 
 This shows the program usage, the basic options, e.g., ``--help``, the
 command-line and positional options for the example, and some auxiliary
@@ -310,37 +306,42 @@ Example 3: FLOG (FleCSI Logging Utility)
 
 FLOG provides users with a mechanism to print logging information to
 various stream buffers, similar to the C++ objects std::cout, std::cerr,
-and std::clog.  Multiple streams can be used simultaneously, so that
-information about the running state of a program can be captured and
-displayed at the same time.  In this example, we show how FLOG can be
-configured to stream output to a file buffer, and the std::clog stream
-buffer.
+and std::clog.
+Multiple streams can be used simultaneously, so that information about
+the running state of a program can be captured and displayed at the same
+time.
+In this example, we show how FLOG can be configured to stream output to
+a file buffer, and the std::clog stream buffer.
 
 Before attempting this example, you should make sure that you have
-configured and built FleCSI with ENABLE_FLOG=ON. Additional options
-that are useful are:
+configured and built FleCSI with ENABLE_FLOG=ON.
+Additional usefule options are:
 
 * FLOG_ENABLE_COLOR_OUTPUT=ON
 * FLOG_ENABLE_TAGS=ON
 * FLOG_STRIP_LEVEL=0
+* FLOG_ENABLE_DEBUG=OFF
+* FLOG_DEVELOPER_MODE=OFF
 
 .. important::
 
   One of the challenges of using distributed-memory and tasking runtimes
-  is that output written to the console often gets clobbered because
-  multiple threads of execution are all writing to the same descriptor
-  concurrently. FLOG fixes this by collecting output from different
-  threads and serializing it. This is an important and useful feature of
-  FLOG.
+  is that output written to the console often collide because multiple
+  threads of execution are all writing to the same descriptor
+  concurrently.
+  FLOG fixes this by collecting output from different threads and
+  serializing it.
+  This is an important and useful feature of FLOG.
 
 Buffer Configuration
 ^^^^^^^^^^^^^^^^^^^^
 
-By default, FLOG does not produce any output (even when enabled). In
-order to see or capture output, your application must add at least one
-output stream. This should be done after flecsi::initialize has been
-invoked, and before flecsi::start. Consider the main function for this
-example:
+By default, FLOG does not produce any output (even when enabled).
+In order to see or capture output, your application must add at least
+one output stream.
+This should be done after flecsi::initialize has been invoked, and
+before flecsi::start.
+Consider the main function for this example:
 
 .. literalinclude:: ../../../../tutorial/1-runtime/3-flog.cc
   :language: cpp
@@ -475,24 +476,32 @@ tags:
 
 .. code-block:: console
 
-  $ ./flog --help
+  $ ./runtime-flog --help
 
 which should look something like this:
 
 .. code-block:: console
 
-  Usage: flog
+  Usage: runtime-flog
 
   Basic Options:
-    -h [ --help ]                   Print this message and exit.
+    -h [ --help ]         Print this message and exit.
 
   FleCSI Options:
-    --flog-tags arg (=all)          Enable the specified output tags, e.g.,
-                                    --flog-tags=tag1,tag2.
-    --flog-verbose [=arg(=1)] (=0)  Enable verbose output. Passing '-1' will
-                                    strip any additional decorations added by
-                                    flog and will only output the user's message.
-    --flog-process arg (=-1)        Restrict output to the specified process id.
+    --backend-args arg             Pass arguments to the runtime backend. The
+                                   single argument is a quoted string of
+                                   backend-specific options.
+    --flog-tags arg (=all)         Enable the specified output tags, e.g.,
+                                   --flog-tags=tag1,tag2. Use '--flog-tags=all'
+                                   to show all output, and
+                                   '--flog-tags=unscoped' to show only unguarded
+                                   output.
+    --flog-verbose [=arg(=1)] (=0) Enable verbose output. Passing '-1' will strip
+                                   any additional decorations added by flog and
+                                   will only output the user's message.
+    --flog-process arg (=0)        Restrict output to the specified process id.
+                                   The default is process 0. Use
+                                   '--flog_process=-1' to enable all processes.
 
   Available FLOG Tags (FleCSI Logging Utility):
     tag2
@@ -512,5 +521,97 @@ unguarded sections, and for output guarded with the *tag1* tag:
   [info tag1 p0] Info level output (in tag1 guard)
   [Warn tag1 p0] Warn level output (in tag1 guard)
   [ERROR tag1 p0] Error level output (in tag1 guard)
+
+FLOG Options (CMake)
+^^^^^^^^^^^^^^^^^^^^
+
+Defaults for the FLOG options have been chosen in an attempt to most
+closely model the behavoir one would expect from the execution and
+output of a standard MPI program.
+However, because of the asynchronous nature of FleCSI's execution model,
+it is important to understand the options that control FLOG's behavior,
+as it can sometimes be counter-intuitive.
+
+As stated in the preceding sections, FLOG buffers and serializes output
+to avoid collisions from different threads.
+As a safeguard, FleCSI's default settings flush these buffers
+periodically, so as to avoid memory capacity issues.
+The CMake configuration options ``FLOG_SERIALIZATION_INTERVAL`` and
+``FLOG_SERIALIZATION_THRESHOLD`` define this behavior:
+
+* *FLOG_SERIALIZATION_INTERVAL* |br|
+  The serialization iterval specifies how often FleCSI should check for
+  buffered output (requires reduction) as a number of
+  tasks executed, i.e., if the serialization interval is set to 100,
+  FleCSI will check how many messages have been injected into the stream
+  of each process every multiple of 100 task executions. |br|
+  *(default: 1024)*
+
+* *FLOG_SERIALIZATION_THRESHOLD* |br|
+  The serialization threshold sets the number of messages that must have
+  accumulated before output will be collected (requires reduction) to a
+  single process and written to the output streams. |br|
+  *(default: 1024)*
+
+.. caution::
+
+  It is important to understand and tune FLOG serialization to your
+  application.
+  Serialization inhibits task asynchrony.
+  When balanced, the performance effects should be very minimal.
+  However, overly aggressive settings, e.g.,
+  ``FLOG_SERIALIZATION_INTERVAL=1``, and
+  ``FLOG_SERIALIZATION_THRESHOLD=1``, could force complete serialization
+  of your application.
+  This can be beneficial for debugging, but should not be used for
+  actual simulation runs.
+
+For many applications, there is a natural serialization interval that
+implicitly starts at the beginning of the simulation time evolution.
+FleCSI provides a function ``flecsi::log::flush()`` that can be used to
+force FleCSI to serialize, and flush output.
+
+.. tip::
+
+  Best practice for FLOG serialization is to leave the default settings
+  for ``FLOG_SERIALIZATION_INTERVAL`` and
+  ``FLOG_SERIALIZATION_THRESHOLD``, and to use ``flecsi::log::flush()``
+  at an appropriate point in your application to force output.
+
+FLOG Options (Command-Line)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We have already covered the ``--flog-tags`` option.
+There are currently two other options that control FLOG output:
+
+* *--flog-verbose* |br|
+  This option controls how much additional information is output with
+  your ``flog(severity)`` message.
+  A value of ``-1`` will turn off any additional decorations, while a
+  value of ``1`` will add additional information.
+  By default, the severity level and process are output. |br|
+  *(default: 0)*
+
+* *--flog-process* |br|
+  This options allows the user to restrict output to the specified
+  process id.
+  A value of ``-1`` will enable output of all processes.
+  By default, output is restricted to process ``0``. |br|
+  *(default: 0)*
+
+.. caution::
+
+  By default, FLOG only writes output to process ``0``. Pass
+  ``--flog-process=-1`` to enable output from all processes.
+
+.. tip::
+
+  Logging output can sometimes have unexpected behavior.
+  Consider the case where you are viewing output only from process
+  ``0``, and the runtime maps a task to process ``1``.
+  You will not see the messages from that task in the logging output.
+  This is not an error.
+  In general, some experimentation is necessary to achieve the desired
+  level of output with FLOG and FleCSI.
 
 .. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :

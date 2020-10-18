@@ -42,7 +42,7 @@ protected:
   using meta_topo = meta_topology<canonical_base>;
 
 public:
-  static inline const field<Meta, data::singular>::definition<meta_topo>
+  static inline const field<Meta, data::single>::definition<meta_topo>
     meta_field;
 
   // For this simple case, two scalars determine all colors' sizes.

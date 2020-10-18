@@ -12,13 +12,10 @@
    All rights reserved.
                                                                               */
 
-#include "actions.hh"
-#include "specialization/control.hh"
+#include <flecsi/execution.hh>
+#include <flecsi/flog.hh>
 
-#include "flecsi/execution.hh"
-#include "flecsi/flog.hh"
-
-using namespace standalone;
+#include "control.hh"
 
 int
 main(int argc, char ** argv) {
@@ -42,4 +39,4 @@ main(int argc, char ** argv) {
   flecsi::finalize();
 
   return status;
-} // main
+}

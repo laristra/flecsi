@@ -95,7 +95,7 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
       construct(a);
   }
   template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::singular, DATA_TYPE, PRIVILEGES> & accessor) {
+  void visit(data::accessor<data::single, DATA_TYPE, PRIVILEGES> & accessor) {
     visit(accessor.get_base());
   }
   // Without a catch-all, this matches accessor<ragged|sparse,...>.

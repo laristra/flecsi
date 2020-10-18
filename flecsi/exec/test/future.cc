@@ -18,7 +18,7 @@
 
 using namespace flecsi;
 
-using double1 = field<double, data::singular>;
+using double1 = field<double, data::single>;
 const double1::definition<topo::global> energy_field;
 
 namespace future_test {
