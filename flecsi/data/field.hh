@@ -148,7 +148,7 @@ struct field_base<T, dense> {
   using base_type = field<T, raw>;
 };
 template<class T>
-struct field_base<T, singular> {
+struct field_base<T, single> {
   using base_type = field<T>;
 };
 template<class T>
@@ -190,7 +190,7 @@ using field_accessor = // for convenience with decltype
 template<const auto & F, std::size_t Priv>
 struct accessor_member : field_accessor<decltype(F), Priv> {
   accessor_member() : accessor_member::accessor(F.fid) {}
-  using accessor_member::accessor::operator=; // for singular
+  using accessor_member::accessor::operator=; // for single
 };
 
 } // namespace data

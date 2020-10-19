@@ -33,7 +33,7 @@ struct Noisy {
   static inline std::size_t count;
 };
 
-using double1 = field<double, singular>;
+using double1 = field<double, single>;
 const double1::definition<topo::index> pressure_field;
 using intN = field<int, ragged>;
 const intN::definition<topo::index> verts_field;
@@ -89,7 +89,7 @@ drows(double_at::mutator s) {
   };
 }
 
-using noisy = field<Noisy, singular>;
+using noisy = field<Noisy, single>;
 const noisy::definition<topo::index> noisy_field;
 
 void

@@ -71,8 +71,8 @@ struct util::serial_convert<data::accessor<L, T, Priv>> {
   }
 };
 template<class T, std::size_t Priv>
-struct util::serial_convert<data::accessor<data::singular, T, Priv>>
-  : data::detail::convert_accessor<data::accessor<data::singular, T, Priv>> {};
+struct util::serial_convert<data::accessor<data::single, T, Priv>>
+  : data::detail::convert_accessor<data::accessor<data::single, T, Priv>> {};
 template<class T, std::size_t P, std::size_t OP>
 struct util::serial_convert<data::ragged_accessor<T, P, OP>>
   : data::detail::convert_accessor<data::ragged_accessor<T, P, OP>> {};

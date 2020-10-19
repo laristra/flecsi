@@ -25,7 +25,7 @@
 using namespace flecsi;
 using namespace flecsi::data;
 
-using double1 = field<double, singular>;
+using double1 = field<double, single>;
 const double1::definition<topo::index> test_value_1, test_value_2, test_value_3;
 
 const auto fh1 = test_value_1(process_topology);

@@ -244,3 +244,23 @@ add_executable(execution-mpi-task
 target_link_libraries(execution-mpi-task ${FleCSI_LIBRARIES}
   ${FleCSI_LIBRARY_DEPENDENCIES})
 add_unit(execution-mpi-task)
+
+#------------------------------------------------------------------------------#
+# 4-data
+#------------------------------------------------------------------------------#
+
+add_executable(data-global
+  4-data/1-global.cc
+  4-data/main.cc
+)
+target_link_libraries(data-global ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(data-global)
+
+add_executable(data-index
+  4-data/2-index.cc
+  4-data/main.cc
+)
+target_link_libraries(data-index ${FleCSI_LIBRARIES}
+  ${FleCSI_LIBRARY_DEPENDENCIES})
+add_unit(data-index)

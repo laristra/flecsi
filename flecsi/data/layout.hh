@@ -36,12 +36,10 @@ namespace data {
 
 enum layout : size_t {
   raw, ///< Uninitialized memory with no objects constructed or destroyed.
+  single, ///< Access to the single element of an array.
   dense,
-  singular, ///< Access to the single element of an array.
-  sparse,
   ragged,
-  array,
-  subspace
+  sparse
 };
 
 } // namespace data

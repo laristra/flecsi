@@ -1,20 +1,11 @@
 /*
-    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
-   /@@/////  /@@          @@////@@ @@////// /@@
-   /@@       /@@  @@@@@  @@    // /@@       /@@
-   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
-   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
-   /@@       /@@/@@//// //@@    @@       /@@/@@
-   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-   //       ///  //////   //////  ////////  //
-
    Copyright (c) 2016, Triad National Security, LLC
    All rights reserved.
                                                                               */
 #pragma once
 
-#include "flecsi/flog.hh"
-#include "flecsi/run/control.hh"
+#include <flecsi/flog.hh>
+#include <flecsi/run/control.hh>
 
 namespace standalone {
 
