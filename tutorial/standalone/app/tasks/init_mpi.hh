@@ -17,13 +17,11 @@ int
 init_mpi(single<mpi_data *>::accessor<wo> data) {
   flog(info) << "newing data on process " << process() << std::endl;
 
-  mpi_data * d = new mpi_data;
+  data = new mpi_data;
 
   for(std::size_t i{0}; i < 10; ++i) {
-    d->values[i] = i + process() * 10;
+    data->values[i] = i + process() * 10;
   } // for
-
-  data = d;
 
   return 0;
 } // init_mpi
