@@ -31,8 +31,7 @@ namespace flecsi {
   Enumeration for specifying access privleges for data that are passed
   to FleCSI tasks.
 
-  @param nu No-Update access: data are mapped, no updates are done to
-            the state. This privilege is basically \em as \em is.
+  @param na no access: consistency update coalesced with next access
   @param ro Read-Only access: data are mapped, updates are performed for
             consistency, but the data are read-only.
   @param wo Write-Only access: data are mapped, no updates are done to the
@@ -42,7 +41,7 @@ namespace flecsi {
  */
 
 enum partition_privilege_t : size_t {
-  nu = 0b00,
+  na = 0b00,
   ro = 0b01,
   wo = 0b10,
   rw = 0b11
