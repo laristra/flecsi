@@ -17,7 +17,7 @@ int
 finish_mpi(single<mpi_data *>::accessor<wo> data) {
 
   flog(info) << "deleting data on process " << process() << std::endl;
-  delete data.get();
+  delete data;
 
   return 0;
 } // finish_mpi
