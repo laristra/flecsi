@@ -20,6 +20,10 @@
 #endif
 
 #include "flecsi/data/backend.hh"
+#include "flecsi/data/privilege.hh"
+#include "flecsi/run/types.hh"
+
+#include <set>
 
 namespace flecsi::data {
 #ifdef DOXYGEN // implemented per-backend
@@ -54,6 +58,25 @@ struct partition {
 
 struct region : region_base {
   using region_base::region_base;
+
+  std::set<field_id_t> dirty;
+  // Return whether a copy is needed.
+  template<std::size_t P>
+  bool ghost(field_id_t i) {
+    constexpr auto n = privilege_count(P);
+    static_assert(n > 1, "need shared/ghost privileges");
+    constexpr auto g = get_privilege(n - 1, P);
+    constexpr bool gr = privilege_read(g),
+                   sw = privilege_write(get_privilege(n - 2, P));
+    // The logic here is constructed to allow a single read/write set access:
+    // writing to ghosts, or reading from them without also writing to shared,
+    // clears the dirty bit, and otherwise writing to shared sets it.
+    // Otherwise, it retains its value (and we don't copy).
+    return (privilege_write(g) || !sw && gr ? dirty.erase(i)
+                                            : sw && !dirty.insert(i).second) &&
+           gr;
+  }
+
   template<topo::single_space>
   region & get_region() {
     return *this;

@@ -143,12 +143,18 @@ struct task_prologue_t {
     typename Topo::index_space Space>
   void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
     const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
-    auto & instance_data =
-      ref.topology().template get_partition<Space>(ref.fid());
+    const auto f = ref.fid();
+    auto & t = ref.topology();
+    auto & instance_data = t.template get_partition<Space>(f);
 
     constexpr auto np = privilege_count(PRIVILEGES);
     static_assert(np == Topo::template privilege_count<Space>,
       "privilege-count mismatch between accessor and topology type");
+    if constexpr(np > 1) {
+      data::region & reg = t.template get_region<Space>();
+      if(reg.ghost<PRIVILEGES>(f))
+        t.template ghost_copy<Space>(f);
+    }
 
     Legion::RegionRequirement rr(instance_data.logical_partition,
       0,
@@ -157,7 +163,7 @@ struct task_prologue_t {
       Legion::Runtime::get_runtime()->get_parent_logical_region(
         instance_data.logical_partition));
 
-    rr.add_field(ref.fid());
+    rr.add_field(f);
     region_reqs_.push_back(rr);
   } // visit
 
