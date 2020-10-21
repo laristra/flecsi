@@ -54,9 +54,10 @@ struct global : specialization<global_category, global> {}; // struct global
 template<data::layout L, class T, std::size_t Priv>
 struct exec::detail::launch<data::accessor<L, T, Priv>,
   data::field_reference<T, L, topo::global, topo::elements>> {
-  static std::
-    conditional_t<(get_privilege(0, Priv) > ro), std::monostate, std::nullptr_t>
-    get(const data::field_reference<T, L, topo::global, topo::elements> &) {
+  static std::conditional_t<privilege_write(get_privilege(0, Priv)),
+    std::monostate,
+    std::nullptr_t>
+  get(const data::field_reference<T, L, topo::global, topo::elements> &) {
     return {};
   }
 };

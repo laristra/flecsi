@@ -91,10 +91,20 @@ get_privilege(std::size_t i, std::size_t pack) {
     ((1 << privilege_bits) - 1));
 } // get_privilege
 
+// Return whether the privilege allows reading _without_ writing first.
+constexpr bool
+privilege_read(partition_privilege_t p) {
+  return p & 1;
+}
+constexpr bool
+privilege_write(partition_privilege_t p) {
+  return p & 2;
+}
+
 constexpr bool
 privilege_write(std::size_t pack) noexcept {
   for(auto i = privilege_count(pack); i--;)
-    if(get_privilege(i, pack) > ro)
+    if(privilege_write(get_privilege(i, pack)))
       return true;
   return false;
 }
