@@ -67,8 +67,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     auto rank = context_t::instance().color();
 
-    if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na))
+    if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na) || (GHOST_PERMISSIONS == wo))
       return;
+    else
+      *(h.ghost_is_readable) = true;
 
     auto & field_metadata = context.registered_field_metadata().at(h.fid);
 
@@ -97,7 +99,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     if((not*h.ghost_is_readable) and (*h.ghost_was_resized))
       resized_sparse_fields.emplace_back(h.index_space, h.fid);
 
-    if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na))
+    if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na) || (GHOST_PERMISSIONS == wo))
       return;
 
     modified_sparse_fields.emplace_back(h.index_space, h.fid);
