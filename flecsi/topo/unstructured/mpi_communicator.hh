@@ -109,10 +109,10 @@ public:
     // Send the request indices to all other ranks.
     MPI_Alltoall(&input_indices[0],
       max_request_indices,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       &info_indices[0],
       max_request_indices,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       comm);
 
     return info_indices;
@@ -205,19 +205,19 @@ public:
     // Send the indices information back to all ranks.
     MPI_Alltoall(&input_indices[0],
       max_request_indices,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       &info_indices[0],
       max_request_indices,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       comm);
 
     // Send the offsets information back to all ranks.
     MPI_Alltoall(&input_offsets[0],
       max_request_indices,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       &info_offsets[0],
       max_request_indices,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       comm);
 
     std::set<entity_info> remote;
@@ -401,10 +401,10 @@ public:
     std::vector<size_t> recv_cnts(colors);
     MPI_Alltoall(&send_cnts[0],
       1,
-      util::mpi_typetraits<size_t>::type(),
+      util::mpi::type<std::size_t>(),
       &recv_cnts[0],
       1,
-      util::mpi_typetraits<size_t>::type(),
+      util::mpi::type<std::size_t>(),
       comm);
 
     // Start receive operations (non-blocking).
@@ -416,7 +416,7 @@ public:
         requests.push_back({});
         MPI_Irecv(&rbuffers[r][0],
           recv_cnts[r],
-          util::mpi_typetraits<size_t>::type(),
+          util::mpi::type<std::size_t>(),
           r,
           0,
           comm,
@@ -434,7 +434,7 @@ public:
 
         MPI_Send(&sbuffers[r][0],
           send_cnts[r],
-          util::mpi_typetraits<size_t>::type(),
+          util::mpi::type<std::size_t>(),
           r,
           0,
           comm);
@@ -475,7 +475,7 @@ public:
         requests.push_back({});
         MPI_Irecv(&rbuffers[r][0],
           send_cnts[r],
-          util::mpi_typetraits<size_t>::type(),
+          util::mpi::type<std::size_t>(),
           r,
           0,
           comm,
@@ -489,7 +489,7 @@ public:
       if(recv_cnts[r]) {
         MPI_Send(&sbuffers[r][0],
           recv_cnts[r],
-          util::mpi_typetraits<size_t>::type(),
+          util::mpi::type<std::size_t>(),
           r,
           0,
           comm);
@@ -530,10 +530,10 @@ public:
 
     MPI_Allgather(&size,
       1,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       buffer.data(),
       1,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       comm);
 
     return buffer;
@@ -645,7 +645,7 @@ public:
     MPI_Allreduce(&request_indices,
       &max_request_indices,
       1,
-      util::mpi::size_type,
+      util::mpi::type<std::size_t>(),
       MPI_MAX,
       comm);
 

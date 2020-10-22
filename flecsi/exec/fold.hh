@@ -19,15 +19,8 @@
 #error Do not include this file directly!
 #endif
 
-#include "../run/backend.hh"
-
+#include <algorithm>
 #include <limits>
-
-/*----------------------------------------------------------------------------*
-  Reduction Interface
-
-  Legion's reduction interface is used regardless of backend.
- *----------------------------------------------------------------------------*/
 
 namespace flecsi {
 namespace exec::fold {
@@ -35,240 +28,79 @@ namespace exec::fold {
 /*!
   Minimum reduction type.
  */
-
-template<typename T>
 struct min {
+  template<class T>
+  static T combine(T a, T b) {
+    return std::min(a, b);
+  }
 
-  using LHS = T;
-  using RHS = T;
-  static constexpr T identity{std::numeric_limits<T>::max()};
+private:
+  template<class T>
+  using lim = std::numeric_limits<T>;
 
-  template<bool EXCLUSIVE>
-  static void apply(LHS & lhs, RHS rhs) {
-    if constexpr(EXCLUSIVE) {
-      lhs = lhs < rhs ? lhs : rhs;
-    }
-    else {
-      int64_t * target = reinterpret_cast<int64_t *>(&lhs);
-
-      union
-      {
-        int64_t as_int;
-        T as_T;
-      } oldval, newval;
-
-      do {
-        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
-        newval.as_T = std::min(oldval.as_T, rhs);
-      } while(
-        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if
-  } // apply
-
-  template<bool EXCLUSIVE>
-  static void fold(RHS & rhs1, RHS rhs2) {
-
-    if constexpr(EXCLUSIVE) {
-      rhs1 = std::min(rhs1, rhs2);
-    }
-    else {
-      int64_t * target = reinterpret_cast<int64_t *>(&rhs1);
-
-      union
-      {
-        int64_t as_int;
-        T as_T;
-      } oldval, newval;
-
-      do {
-        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
-        newval.as_T = std::min(oldval.as_T, rhs2);
-      } while(
-        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if
-  } // fold
-
+public:
+  template<class T>
+  static constexpr T identity = lim<T>::has_infinity ? lim<T>::infinity()
+                                                     : lim<T>::max();
 }; // struct min
 
 /*!
   Maximum reduction type.
  */
-
-template<typename T>
 struct max {
+  template<class T>
+  static T combine(T a, T b) {
+    return std::max(a, b);
+  }
 
-  using LHS = T;
-  using RHS = T;
-  static constexpr T identity{std::numeric_limits<T>::min()};
+private:
+  template<class T>
+  using lim = std::numeric_limits<T>;
 
-  template<bool EXCLUSIVE = true>
-  static void apply(LHS & lhs, RHS rhs) {
-    if constexpr(EXCLUSIVE) {
-      lhs = lhs > rhs ? lhs : rhs;
-    }
-    else {
-      int64_t * target = reinterpret_cast<int64_t *>(&lhs);
-
-      union
-      {
-        int64_t as_int;
-        T as_T;
-      } oldval, newval;
-
-      do {
-        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
-        newval.as_T = std::max(oldval.as_T, rhs);
-      } while(
-        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if
-  } // apply
-
-  template<bool EXCLUSIVE = true>
-  static void fold(RHS & rhs1, RHS rhs2) {
-
-    if constexpr(EXCLUSIVE) {
-      rhs1 = std::max(rhs1, rhs2);
-    }
-    else {
-      int64_t * target = reinterpret_cast<int64_t *>(&rhs1);
-
-      union
-      {
-        int64_t as_int;
-        T as_T;
-      } oldval, newval;
-
-      do {
-        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
-        newval.as_T = std::max(oldval.as_T, rhs2);
-      } while(
-        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if
-  } // fold
-
+public:
+  template<class T>
+  static constexpr T identity = lim<T>::has_infinity ? -lim<T>::infinity()
+                                                     : lim<T>::lowest();
 }; // struct max
 
 /*!
   Sum reduction type.
  */
-
-template<typename T>
 struct sum {
-
-  using LHS = T;
-  using RHS = T;
-  static constexpr T identity{};
-
-  template<bool EXCLUSIVE = true>
-  static void apply(LHS & lhs, RHS rhs) {
-
-    if constexpr(EXCLUSIVE) {
-      lhs += rhs;
-    }
-    else {
-      int64_t * target = reinterpret_cast<int64_t *>(&lhs);
-
-      union
-      {
-        int64_t as_int;
-        T as_T;
-      } oldval, newval;
-
-      do {
-        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
-        newval.as_T = oldval.as_T + rhs;
-      } while(
-        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if constexpr
-
-  } // apply
-
-  template<bool EXCLUSIVE = true>
-  static void fold(RHS & rhs1, RHS rhs2) {
-
-    if constexpr(EXCLUSIVE) {
-      rhs1 += rhs2;
-    }
-    else {
-      int64_t * target = reinterpret_cast<int64_t *>(&rhs1);
-
-      union
-      {
-        int64_t as_int;
-        T as_T;
-      } oldval, newval;
-
-      do {
-        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
-        newval.as_T = oldval.as_T + rhs2;
-      } while(
-        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if constexpr
-
-  } // fold
-
+  template<class T>
+  static T combine(T a, T b) {
+    return a + b;
+  }
+  template<class T>
+  static constexpr T identity = T(0);
 }; // struct sum
 
 /*!
   Product reduction type.
  */
-
-template<typename T>
 struct product {
-
-  using LHS = T;
-  using RHS = T;
-  static constexpr T identity{};
-
-  template<bool EXCLUSIVE = true>
-  static void apply(LHS & lhs, RHS rhs) {
-
-    if constexpr(EXCLUSIVE) {
-      lhs *= rhs;
-    }
-    else {
-      int64_t * target = reinterpret_cast<int64_t *>(&lhs);
-
-      union
-      {
-        int64_t as_int;
-        T as_T;
-      } oldval, newval;
-
-      do {
-        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
-        newval.as_T = oldval.as_T * rhs;
-      } while(
-        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if constexpr
-
-  } // apply
-
-  template<bool EXCLUSIVE = true>
-  static void fold(RHS & rhs1, RHS rhs2) {
-
-    if constexpr(EXCLUSIVE) {
-      rhs1 *= rhs2;
-    }
-    else {
-      int64_t * target = reinterpret_cast<int64_t *>(&rhs1);
-
-      union
-      {
-        int64_t as_int;
-        T as_T;
-      } oldval, newval;
-
-      do {
-        std::memcpy(&oldval.as_int, target, sizeof(int64_t));
-        newval.as_T = oldval.as_T * rhs2;
-      } while(
-        !__sync_bool_compare_and_swap(target, oldval.as_int, newval.as_int));
-    } // if constexpr
-
-  } // fold
-
+  template<class T>
+  static T combine(T a, T b) {
+    return a * b;
+  }
+  template<class T>
+  static constexpr T identity = T(1);
 }; // struct product
 
 } // namespace exec::fold
+
+namespace exec::detail {
+// So that user reduction types can supply a single value or a template:
+template<class R, class = void>
+struct identity_traits {
+  // GCC rejects this if it's a reference (#97340):
+  template<class T>
+  static inline const T value{R::template identity<T>};
+};
+template<class R>
+struct identity_traits<R, decltype(void(&R::identity))> {
+  template<class T>
+  static inline const T & value{R::identity};
+};
+} // namespace exec::detail
 } // namespace flecsi

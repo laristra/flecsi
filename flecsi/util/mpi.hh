@@ -23,137 +23,127 @@
 #error FLECSI_ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
+#include <complex>
+#include <cstddef> // byte
+#include <cstdint>
+#include <type_traits>
+
 #include <mpi.h>
 
 namespace flecsi {
 namespace util {
-
-/*!
- Wrapper to convert from C++ types to MPI types.
-
- @tparam TYPE The C++ P.O.D. type, e.g., double.
-
- @ingroup coloring
- */
-
-template<typename TYPE>
-struct mpi_typetraits {
-
-  inline static MPI_Datatype type() {
-    static MPI_Datatype data_type = MPI_DATATYPE_NULL;
-
-    if(data_type == MPI_DATATYPE_NULL) {
-      MPI_Type_contiguous(sizeof(TYPE), MPI_BYTE, &data_type);
-      MPI_Type_commit(&data_type);
-    }
-    return data_type;
-  }
-};
-
-template<>
-struct mpi_typetraits<std::size_t> {
-  inline static MPI_Datatype type() {
-    if(sizeof(std::size_t) == 8) {
-      return MPI_UNSIGNED_LONG_LONG;
-    }
-    else {
-      return MPI_UNSIGNED;
-    } // if
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<std::byte> {
-  inline static MPI_Datatype type() {
-    return MPI_BYTE;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<char> {
-  inline static MPI_Datatype type() {
-    return MPI_SIGNED_CHAR;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<unsigned char> {
-  inline static MPI_Datatype type() {
-    return MPI_UNSIGNED_CHAR;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<short> {
-  inline static MPI_Datatype type() {
-    return MPI_SHORT;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<unsigned short> {
-  inline static MPI_Datatype type() {
-    return MPI_UNSIGNED_SHORT;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<int> {
-  inline static MPI_Datatype type() {
-    return MPI_INT;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<unsigned> {
-  inline static MPI_Datatype type() {
-    return MPI_UNSIGNED;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<long> {
-  inline static MPI_Datatype type() {
-    return MPI_LONG;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<float> {
-  inline static MPI_Datatype type() {
-    return MPI_FLOAT;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<double> {
-  inline static MPI_Datatype type() {
-    return MPI_DOUBLE;
-  }
-}; // mpi_typetraits
-
-template<>
-struct mpi_typetraits<long double> {
-  inline static MPI_Datatype type() {
-    return MPI_LONG_DOUBLE;
-  }
-}; // mpi_typetraits
-
 namespace mpi {
 
-// Convenience variables
-inline const auto size_type = mpi_typetraits<std::size_t>::type();
-inline const auto byte_type = mpi_typetraits<std::byte>::type();
-inline const auto char_type = mpi_typetraits<char>::type();
-inline const auto unsigned_char_type = mpi_typetraits<unsigned char>::type();
-inline const auto short_type = mpi_typetraits<short>::type();
-inline const auto unsigned_short_type = mpi_typetraits<unsigned short>::type();
-inline const auto int_type = mpi_typetraits<int>::type();
-inline const auto unsigend_type = mpi_typetraits<unsigned>::type();
-inline const auto long_type = mpi_typetraits<long>::type();
-inline const auto float_type = mpi_typetraits<float>::type();
-inline const auto double_type = mpi_typetraits<double>::type();
-inline const auto long_double_type = mpi_typetraits<long double>::type();
+// NB: OpenMPI's predefined handles are not constant expressions.
+template<class TYPE>
+auto
+maybe_static() {
+  using namespace std;
+  static_assert(is_same_v<TYPE, remove_cv_t<remove_reference_t<TYPE>>>);
+  // List is from MPI 3.2 draft.
+  // TIP: Specializations would collide for, say, int32_t==int.
+  if constexpr(is_arithmetic_v<TYPE>) { // save on template instantiations
+    if constexpr(is_same_v<TYPE, char>)
+      return MPI_CHAR;
+    else if constexpr(is_same_v<TYPE, short>)
+      return MPI_SHORT;
+    else if constexpr(is_same_v<TYPE, int>)
+      return MPI_INT;
+    else if constexpr(is_same_v<TYPE, long>)
+      return MPI_LONG;
+    else if constexpr(is_same_v<TYPE, long long>)
+      return MPI_LONG_LONG;
+    else if constexpr(is_same_v<TYPE, signed char>)
+      return MPI_SIGNED_CHAR;
+    else if constexpr(is_same_v<TYPE, unsigned char>)
+      return MPI_UNSIGNED_CHAR;
+    else if constexpr(is_same_v<TYPE, unsigned short>)
+      return MPI_UNSIGNED_SHORT;
+    else if constexpr(is_same_v<TYPE, unsigned>)
+      return MPI_UNSIGNED;
+    else if constexpr(is_same_v<TYPE, unsigned long>)
+      return MPI_UNSIGNED_LONG;
+    else if constexpr(is_same_v<TYPE, unsigned long long>)
+      return MPI_UNSIGNED_LONG_LONG;
+    else if constexpr(is_same_v<TYPE, float>)
+      return MPI_FLOAT;
+    else if constexpr(is_same_v<TYPE, double>)
+      return MPI_DOUBLE;
+    else if constexpr(is_same_v<TYPE, long double>)
+      return MPI_LONG_DOUBLE;
+    else if constexpr(is_same_v<TYPE, wchar_t>)
+      return MPI_WCHAR;
+#ifdef INT8_MIN
+    else if constexpr(is_same_v<TYPE, int8_t>)
+      return MPI_INT8_T;
+    else if constexpr(is_same_v<TYPE, uint8_t>)
+      return MPI_UINT8_T;
+#endif
+#ifdef INT16_MIN
+    else if constexpr(is_same_v<TYPE, int16_t>)
+      return MPI_INT16_T;
+    else if constexpr(is_same_v<TYPE, uint16_t>)
+      return MPI_UINT16_T;
+#endif
+#ifdef INT32_MIN
+    else if constexpr(is_same_v<TYPE, int32_t>)
+      return MPI_INT32_T;
+    else if constexpr(is_same_v<TYPE, uint32_t>)
+      return MPI_UINT32_T;
+#endif
+#ifdef INT64_MIN
+    else if constexpr(is_same_v<TYPE, int64_t>)
+      return MPI_INT64_T;
+    else if constexpr(is_same_v<TYPE, uint64_t>)
+      return MPI_UINT64_T;
+#endif
+    else if constexpr(is_same_v<TYPE, MPI_Aint>)
+      return MPI_AINT;
+    else if constexpr(is_same_v<TYPE, MPI_Offset>)
+      return MPI_OFFSET;
+    else if constexpr(is_same_v<TYPE, MPI_Count>)
+      return MPI_COUNT;
+    else if constexpr(is_same_v<TYPE, bool>)
+      return MPI_CXX_BOOL;
+  }
+  else if constexpr(is_same_v<TYPE, complex<float>>)
+    return MPI_CXX_FLOAT_COMPLEX;
+  else if constexpr(is_same_v<TYPE, complex<double>>)
+    return MPI_CXX_DOUBLE_COMPLEX;
+  else if constexpr(is_same_v<TYPE, complex<long double>>)
+    return MPI_CXX_LONG_DOUBLE_COMPLEX;
+  else if constexpr(is_same_v<TYPE, byte>)
+    return MPI_BYTE;
+  // else: void
+}
+
+template<class T>
+MPI_Datatype
+type() {
+  if constexpr(!std::is_void_v<decltype(maybe_static<T>())>)
+    return maybe_static<T>();
+  else {
+    // Unfortunately, std::tuple<int> is not trivially copyable:
+    static_assert(std::is_trivially_copy_assignable_v<T> ||
+                  std::is_copy_assignable_v<T> &&
+                    std::is_trivially_copy_constructible_v<T>);
+    // TODO: destroy at MPI_Finalize
+    static const MPI_Datatype ret = [] {
+      MPI_Datatype data_type;
+      MPI_Type_contiguous(sizeof(T), MPI_BYTE, &data_type);
+      MPI_Type_commit(&data_type);
+      return data_type;
+    }();
+    return ret;
+  }
+}
+// Use this to restrict to predefined types before MPI_Init:
+template<class T,
+  class = std::enable_if_t<!std::is_void_v<decltype(maybe_static<T>())>>>
+MPI_Datatype
+static_type() {
+  return maybe_static<T>();
+}
 
 /*!
   Convenience function to get basic MPI communicator information.
@@ -202,10 +192,10 @@ one_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
       const std::size_t bytes = data.size();
 
       requests.resize(requests.size() + 1);
-      MPI_Isend(&bytes, 1, mpi::size_type, r, 0, comm, &requests.back());
+      MPI_Isend(&bytes, 1, type<std::size_t>(), r, 0, comm, &requests.back());
       requests.resize(requests.size() + 1);
       MPI_Isend(
-        data.data(), bytes, mpi::byte_type, r, 0, comm, &requests.back());
+        data.data(), bytes, type<std::byte>(), r, 0, comm, &requests.back());
     } // for
 
     std::vector<MPI_Status> status(requests.size());
@@ -214,9 +204,9 @@ one_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
   else {
     std::size_t bytes{0};
     MPI_Status status;
-    MPI_Recv(&bytes, 1, mpi::size_type, 0, 0, comm, &status);
+    MPI_Recv(&bytes, 1, type<std::size_t>(), 0, 0, comm, &status);
     std::vector<std::byte> data(bytes);
-    MPI_Recv(data.data(), bytes, mpi::byte_type, 0, 0, comm, &status);
+    MPI_Recv(data.data(), bytes, type<std::byte>(), 0, 0, comm, &status);
     auto const * p = data.data();
     return serial_get<typename F::return_type>(p);
   } // if
@@ -256,8 +246,13 @@ all_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
     counts.emplace_back(f.count(r));
   } // for
 
-  MPI_Alltoall(
-    counts.data(), 1, mpi::size_type, bytes.data(), 1, mpi::size_type, comm);
+  MPI_Alltoall(counts.data(),
+    1,
+    type<std::size_t>(),
+    bytes.data(),
+    1,
+    type<std::size_t>(),
+    comm);
 
   std::vector<MPI_Request> requests;
 
@@ -270,7 +265,7 @@ all_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
       requests.resize(requests.size() + 1);
       MPI_Irecv(recv_bufs[r].data(),
         recv_bufs[r].size(),
-        mpi::byte_type,
+        type<std::byte>(),
         r,
         0,
         comm,
@@ -284,7 +279,7 @@ all_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
       send_bufs[r] = serial_put(f(r, size));
       MPI_Isend(send_bufs[r].data(),
         send_bufs[r].size(),
-        mpi::byte_type,
+        type<std::byte>(),
         r,
         0,
         comm,

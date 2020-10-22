@@ -229,7 +229,7 @@ reduce_internal(Args &&... args) {
 
       const auto ret = future<return_t, launch_type_t::single>{
         legion_runtime->execute_index_space(
-          legion_context, launcher, reduction_op<Reduction>)};
+          legion_context, launcher, fold::wrap<Reduction, return_t>::id)};
       if(processor_type == task_processor_type_t::mpi)
         ret.wait();
       return ret;

@@ -360,8 +360,8 @@ reduce(Args &&... args) {
   ++flog_task_count;
 #if defined(FLECSI_ENABLE_FLOG) && defined(FLOG_ENABLE_MPI)
   if(flog_task_count % FLOG_SERIALIZATION_INTERVAL == 0 &&
-     reduce_internal<log::log_size, fold::max<std::size_t>, flecsi::mpi>()
-         .get() > FLOG_SERIALIZATION_THRESHOLD)
+     reduce_internal<log::log_size, fold::max, flecsi::mpi>().get() >
+       FLOG_SERIALIZATION_THRESHOLD)
     reduce_internal<log::send_to_one, void, flecsi::mpi>();
 #endif
 
@@ -409,8 +409,7 @@ template<auto & TASK,
   typename... ARGS>
 int
 test(ARGS &&... args) {
-  return reduce<TASK, exec::fold::sum<int>, ATTRIBUTES>(
-    std::forward<ARGS>(args)...)
+  return reduce<TASK, exec::fold::sum, ATTRIBUTES>(std::forward<ARGS>(args)...)
     .get();
 } // test
 
