@@ -91,7 +91,7 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
         // off-color. If it is, compare it's rank for
         // the ownership logic below.
         if(remote_info_map.find(c) != remote_info_map.end()) {
-          min_rank = std::min(min_rank, remote_info_map.at(c).rank);
+          min_rank = (std::min)(min_rank, remote_info_map.at(c).rank);
           shared_entities.insert(remote_info_map.at(c).rank);
         }
         else {
@@ -99,7 +99,7 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
           // it is a local cell.
 
           // Add our rank to compare for ownership.
-          min_rank = std::min(min_rank, size_t(rank));
+          min_rank = (std::min)(min_rank, size_t(rank));
 
           // If the local cell is shared, we need to add all of
           // the ranks that reference it.

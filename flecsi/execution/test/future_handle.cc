@@ -28,8 +28,8 @@ using index_handle_t =
 
 void
 future_dump(handle_t<double> x) {
-  double tmp = x;
-  std::cout << " future = " << x << std::endl;
+  double tmp = x.get();
+  std::cout << " future = " << x.get() << std::endl;
 }
 
 flecsi_register_task(future_dump, , loc, single);
@@ -44,8 +44,8 @@ flecsi_register_task(writer, , loc, single);
 
 void
 reader(handle_t<double> x, handle_t<double> y) {
-  ASSERT_EQ(x, static_cast<double>(3.14));
-  ASSERT_EQ(x, y);
+  ASSERT_EQ(x.get(), static_cast<double>(3.14));
+  ASSERT_EQ(x.get(), y.get());
 }
 
 flecsi_register_task(reader, , loc, single);

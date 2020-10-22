@@ -6,7 +6,7 @@ flecsale-mm:
   variables:
     UPSTREAM_REPO: "flecsi"
     UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
-    UPSTREAM_URL: $CI_PROJECT_URL
+    UPSTREAM_URL: "git@gitlab.lanl.gov:${CI_PROJECT_URL#https://gitlab.lanl.gov/*}"
     CXXFLAGS: "-Wno-deprecated-declarations"
   trigger:
     project: laristra/flecsale-mm-ci

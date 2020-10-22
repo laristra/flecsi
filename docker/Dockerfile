@@ -37,7 +37,7 @@ RUN chown -R laristra:laristra $HOME/flecsi $HOME/.ccache
 USER laristra
 
 WORKDIR $HOME
-RUN export SPACK_SPEC="flecsi@1.4%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE" && \
+RUN export SPACK_SPEC="flecsi@1%gcc $([ $BUILD_TYPE == 'Debug' ] && echo +debug_backend || echo '' ) backend=$RUNTIME ^$MPI_PACKAGE" && \
     spack repo add --scope site $HOME/flecsi/spack-repo && \
     spack find && \
     echo "spack install --show-log-on-error $SPACK_SPEC" && \

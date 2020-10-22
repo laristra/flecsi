@@ -15,7 +15,9 @@
 #ifndef flecsi_execution_hpx_context_policy_h
 #define flecsi_execution_hpx_context_policy_h
 
-#if !defined(ENABLE_HPX)
+#include <flecsi-config.h>
+
+#if !defined(FLECSI_ENABLE_HPX)
 #error ENABLE_HPX not defined! This file depends on HPX!
 #endif
 
@@ -23,27 +25,76 @@
 #include <hpx/include/parallel_execution.hpp>
 #include <hpx/runtime_fwd.hpp>
 
+#include <cstddef>
 #include <functional>
 #include <map>
 #include <mutex>
+#include <string>
+#include <tuple>
+#include <unordered_map>
 
 #include <cinchlog.h>
-#include <flecsi-config.h>
 
 #include "flecsi/utils/mpi_type_traits.h"
 #include <flecsi/execution/common/launch.h>
 #include <flecsi/execution/common/processor.h>
+#include <flecsi/execution/hpx/future.h>
 #include <flecsi/execution/hpx/runtime_driver.h>
 #include <flecsi/utils/common.h>
 #include <flecsi/utils/export_definitions.h>
 
 #include <flecsi/utils/const_string.h>
 
+#include <flecsi/runtime/types.h>
+
 ///
 /// \file hpx/execution_policy.h
 /// \authors bergen
 /// \date Initial file creation: Nov 15, 2015
 ///
+
+#if HPX_VERSION_FULL < 0x010500
+namespace flecsi {
+namespace execution {
+
+using pool_executor = hpx::threads::executors::pool_executor;
+} // namespace execution
+} // namespace flecsi
+#else
+namespace flecsi {
+namespace execution {
+
+// newer versions of HPX do not support pool_executor anymore
+class pool_executor : public hpx::parallel::execution::thread_pool_executor
+{
+public:
+  explicit pool_executor(std::string const & pool_name = "default")
+    : hpx::parallel::execution::thread_pool_executor(
+        &hpx::threads::get_thread_manager().get_pool(pool_name),
+        hpx::threads::thread_priority_default,
+        hpx::threads::thread_stacksize_default) {}
+};
+} // namespace execution
+} // namespace flecsi
+
+namespace hpx {
+namespace parallel {
+namespace execution {
+template<>
+struct is_one_way_executor<flecsi::execution::pool_executor> : std::true_type {
+};
+
+template<>
+struct is_two_way_executor<flecsi::execution::pool_executor> : std::true_type {
+};
+
+template<>
+struct is_bulk_two_way_executor<flecsi::execution::pool_executor>
+  : std::true_type {};
+} // namespace execution
+} // namespace parallel
+} // namespace hpx
+#endif
 
 namespace flecsi {
 namespace execution {
@@ -78,9 +129,47 @@ struct hpx_context_policy_t {
   ///
   FLECSI_EXPORT size_t color() const;
 
+  /*!
+    Return the number of colors.
+   */
+
+  std::size_t colors() const {
+    return colors_;
+  } // color
+
+  //--------------------------------------------------------------------------//
+  // Task interface.
+  //--------------------------------------------------------------------------//
+
+  /*!
+    The registration_function_t type defines a function type for
+    registration callbacks.
+   */
+
+  using registration_function_t =
+    std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
+
+  /*!
+    The unique_tid_t type create a unique id generator for registering
+    tasks.
+   */
+
+  using unique_tid_t = utils::unique_id_t<task_id_t>;
+
+  /*!
+   Register a task with the runtime.
+
+   @param key       The task hash key.
+   @param name      The task name string.
+   @param call_back The registration call back function.
+   */
+
   //------------------------------------------------------------------------//
   // Function registration.
   //------------------------------------------------------------------------//
+
+  using task_info_t =
+    std::tuple<processor_type_t, launch_t, std::string, void *>;
 
   ///
   /// \tparam T The type of the function being registered.
@@ -93,7 +182,7 @@ struct hpx_context_policy_t {
   template<typename RETURN,
     typename ARG_TUPLE,
     RETURN (*FUNCTION)(ARG_TUPLE),
-    size_t KEY>
+    std::size_t KEY>
   bool register_function() {
     clog_assert(function_registry_.find(KEY) == function_registry_.end(),
       "function has already been registered");
@@ -112,9 +201,63 @@ struct hpx_context_policy_t {
   /// \return A pointer to a std::function<void(void)> that may be cast
   ///         back to the original function type using reinterpret_cast.
   ///
-  void * function(size_t key) {
+  void * function(std::size_t key) {
     return function_registry_[key];
   } // function
+
+  ///
+  /// Register a task with the runtime.
+  ///
+  /// \param key       The task hash key.
+  /// \param processor The task processor.
+  /// \param launch    The task launch type.
+  /// \param name      The task name string.
+  ///
+  template<std::size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE)>
+  bool register_task(processor_type_t processor,
+    launch_t launch,
+    std::string const & name) {
+    clog(info) << "Registering task " << name << " with key " << KEY
+               << std::endl;
+
+    clog_assert(task_registry_.find(KEY) == task_registry_.end(),
+      "task key already exists");
+
+    task_registry_[KEY] = std::make_tuple(
+      processor, launch, name, reinterpret_cast<void *>(FUNCTION));
+
+    return true;
+  } // register_task
+
+  ///
+  /// Return the task associated with \e key.
+  ///
+  /// \param key The unique task identifier.
+  ///
+  /// \return A pointer to a std::function<void(void)> that may be cast
+  ///         back to the original function type using reinterpret_cast.
+  ///
+  template<std::size_t KEY>
+  void * task() const {
+
+    auto it = task_registry_.find(KEY);
+
+    clog_assert(it != task_registry_.end(), "task key does not exists");
+
+    return std::get<3>(it->second);
+  } // task
+
+  template<std::size_t KEY>
+  processor_type_t processor_type() const {
+    auto it = task_registry_.find(KEY);
+
+    clog_assert(it != task_registry_.end(), "task key does not exists");
+
+    return std::get<0>(it->second);
+  }
 
   //--------------------------------------------------------------------
   // Data maps
@@ -124,12 +267,12 @@ struct hpx_context_policy_t {
   };
 
   struct index_subspace_data_t {
-    size_t capacity;
+    std::size_t capacity;
   };
 
   struct local_index_space_data_t {
-    size_t size;
-    size_t capacity;
+    std::size_t size;
+    std::size_t capacity;
   };
 
   auto & index_space_data_map() {
@@ -236,13 +379,15 @@ struct hpx_context_policy_t {
     return global_min_f;
   }
 
-  hpx::threads::executors::pool_executor & get_default_executor() {
+  flecsi::execution::pool_executor & get_default_executor() {
     return exec_;
   }
 
-  hpx::threads::executors::pool_executor & get_mpi_executor() {
+  flecsi::execution::pool_executor & get_mpi_executor() {
     return mpi_exec_;
   }
+
+  int rank;
 
 protected:
   // Helper function for HPX start-up and shutdown
@@ -258,21 +403,20 @@ private:
   // Task data members.
   //--------------------------------------------------------------------------//
 
+  int colors_ = 0;
+
   // Map to store task registration callback methods.
-  //  std::map<
-  //    size_t,
-  //    task_info_t
-  //  > task_registry_;
+  std::map<std::size_t, task_info_t> task_registry_;
 
   // Function registry
-  std::unordered_map<size_t, void *> function_registry_;
+  std::unordered_map<std::size_t, void *> function_registry_;
 
   std::map<field_id_t, std::vector<uint8_t>> field_data;
   std::map<field_id_t, field_metadata_t> field_metadata;
 
-  std::map<size_t, index_space_data_t> index_space_data_map_;
-  std::map<size_t, local_index_space_data_t> local_index_space_data_map_;
-  std::map<size_t, index_subspace_data_t> index_subspace_data_map_;
+  std::map<std::size_t, index_space_data_t> index_space_data_map_;
+  std::map<std::size_t, local_index_space_data_t> local_index_space_data_map_;
+  std::map<std::size_t, index_subspace_data_t> index_subspace_data_map_;
 
   std::map<field_id_t, sparse_field_data_t> sparse_field_data;
   std::map<field_id_t, sparse_field_metadata_t> sparse_field_metadata;
@@ -281,8 +425,8 @@ private:
   double max_reduction_;
 
 private:
-  hpx::threads::executors::pool_executor exec_;
-  hpx::threads::executors::pool_executor mpi_exec_;
+  flecsi::execution::pool_executor exec_;
+  flecsi::execution::pool_executor mpi_exec_;
 
 }; // struct hpx_context_policy_t
 

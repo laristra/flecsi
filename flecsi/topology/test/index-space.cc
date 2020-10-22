@@ -3,6 +3,7 @@
 
 //#include <flecsi/topology/index_space.h>
 #include <flecsi/execution/execution.h>
+#include <flecsi/topology/index_space.h>
 
 #include "pseudo_random.h"
 
