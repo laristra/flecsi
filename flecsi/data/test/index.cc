@@ -133,6 +133,17 @@ check(double1::accessor<ro> p,
 int
 index_driver() {
   UNIT {
+    {
+      region r({}, {});
+      EXPECT_FALSE((r.ghost<privilege_pack<wo, wo, na>>(0)));
+      EXPECT_TRUE((r.ghost<privilege_pack<ro, ro, ro>>(0)));
+      EXPECT_FALSE((r.ghost<privilege_pack<ro, ro, ro>>(0)));
+      EXPECT_FALSE((r.ghost<privilege_pack<ro, rw, rw>>(0)));
+      EXPECT_FALSE((r.ghost<privilege_pack<ro, rw, ro>>(0)));
+      EXPECT_FALSE((r.ghost<privilege_pack<ro, ro, na>>(0)));
+      EXPECT_TRUE((r.ghost<privilege_pack<ro, rw, rw>>(0)));
+    }
+
     Noisy::count = 0;
     for(const auto f : {verts_field.fid, vfrac_field.fid}) {
       auto & p = process_topology->ragged.get_partition<topo::elements>(f);

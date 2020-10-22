@@ -35,4 +35,4 @@ test() {
 static_assert(test<rw>());
 static_assert(test<wo, rw>());
 static_assert(test<ro, wo, rw>());
-static_assert(test<nu, ro, wo, rw>());
+static_assert(test<na, ro, wo, rw>());
