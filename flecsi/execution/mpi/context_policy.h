@@ -205,6 +205,7 @@ struct mpi_context_policy_t {
 
   struct index_space_data_t {
     std::map<field_id_t, bool> ghost_is_readable;
+    std::map<field_id_t, bool> ghost_was_resized;
   };
 
   struct index_subspace_data_t {

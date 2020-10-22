@@ -9,7 +9,7 @@ flecsale-mm:
     UPSTREAM_URL: "git@gitlab.lanl.gov:${CI_PROJECT_URL#https://gitlab.lanl.gov/*}"
     CXXFLAGS: "-Wno-deprecated-declarations"
   trigger:
-    project: laristra/flecsale-mm
+    project: laristra/flecsale-mm-ci
     branch: master
     strategy: depend
   allow_failure: true
