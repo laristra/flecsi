@@ -216,7 +216,7 @@ private:
  *----------------------------------------------------------------------------*/
 
 template<typename Definition>
-util::dcrs
+auto
 make_dcrs(Definition const & md,
   std::size_t through_dimension,
   MPI_Comm comm = MPI_COMM_WORLD) {
@@ -309,7 +309,7 @@ make_dcrs(Definition const & md,
     cs.erase(last, cs.end());
   } // for
 
-  std::map<std::size_t, std::vector<std::size_t>> cell2cells;
+  std::map<std::size_t, std::vector<std::size_t>> cell2cell;
   std::size_t c{offset};
   for(auto & cd /* cell definition */ : cells) {
     std::map<std::size_t, std::size_t> thru_counts;
@@ -327,8 +327,8 @@ make_dcrs(Definition const & md,
 
     for(auto tc : thru_counts) {
       if(tc.second > through_dimension) {
-        cell2cells[c].emplace_back(tc.first);
-        cell2cells[tc.first].emplace_back(c);
+        cell2cell[c].emplace_back(tc.first);
+        cell2cell[tc.first].emplace_back(c);
       } // if
     } // for
 
@@ -336,7 +336,7 @@ make_dcrs(Definition const & md,
   } // for
 
   // Remove duplicate connections
-  for(auto & c : cell2cells) {
+  for(auto & c : cell2cell) {
     auto & cs = c.second;
     std::sort(cs.begin(), cs.end());
     auto first = cs.begin();
@@ -349,16 +349,16 @@ make_dcrs(Definition const & md,
 
   dcrs.offsets.emplace_back(0);
   for(std::size_t c{0}; c < indices; ++c) {
-    for(auto cr : cell2cells[offset + c]) {
+    for(auto cr : cell2cell[offset + c]) {
       dcrs.indices.emplace_back(cr);
     } // for
 
-    dcrs.offsets.emplace_back(dcrs.offsets[c] + cell2cells[offset + c].size());
+    dcrs.offsets.emplace_back(dcrs.offsets[c] + cell2cell[offset + c].size());
   } // for
 
   flog(info) << dcrs << std::endl;
 
-  return dcrs;
+  return std::make_pair(dcrs, cells);
 } // make_dcrs
 
 std::vector<std::vector<std::size_t>>
@@ -383,6 +383,26 @@ distribute(util::dcrs const & naive,
 
   return primaries;
 } // distribute
+
+template<typename Policy>
+auto
+new_closure(std::vector<std::size_t> const & primary,
+  MPI_Comm comm = MPI_COMM_WORLD) {
+  auto [rank, size, group] = util::mpi::info(comm);
+  (void)rank;
+  (void)size;
+  (void)group;
+  (void)primary;
+
+  constexpr std::size_t depth = Policy::primary::depth;
+
+  for(std::size_t d{0}; d < depth; ++d) {
+    // get entity neighbors
+
+  } // for
+
+  return 0;
+} // new_closure
 
 } // namespace unstructured_impl
 } // namespace topo

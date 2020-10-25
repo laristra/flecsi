@@ -56,6 +56,8 @@ struct specialization_base {
   using entity = util::key_type<V, T>;
   template<auto... V>
   using has = util::constants<V...>;
+  template<auto... V>
+  using to = util::constants<V...>;
   template<class... TT>
   using list = util::types<TT...>;
 
@@ -103,6 +105,8 @@ struct specialization : specialization_base {
   template<auto S> // we can't use D::index_space here
   static constexpr std::size_t privilege_count =
     std::is_same_v<decltype(S), typename D::index_space> ? 1 : throw;
+
+  static void initialize(slot &) {}
 };
 
 } // namespace topo

@@ -34,7 +34,7 @@ naive_coloring() {
     ASSERT_EQ(sd.num_entities(0), 289lu);
     ASSERT_EQ(sd.num_entities(2), 256lu);
 
-    auto naive = topo::unstructured_impl::make_dcrs(sd, 1);
+    auto [naive, cells] = topo::unstructured_impl::make_dcrs(sd, 1);
 
     std::vector<size_t> distribution = {0, 52, 103, 154, 205, 256};
 
@@ -189,7 +189,7 @@ parmetis_colorer() {
     // Coloring with 5 colors with MPI_COMM_WORLD
     {
       const size_t colors{5};
-      auto naive = topo::unstructured_impl::make_dcrs(sd, 1);
+      auto [naive, cells] = topo::unstructured_impl::make_dcrs(sd, 1);
       auto raw = util::parmetis::color(naive, colors);
       {
         std::stringstream ss;
@@ -225,7 +225,8 @@ parmetis_colorer() {
         MPI_COMM_WORLD, process() < 2 ? 0 : MPI_UNDEFINED, 0, &group_comm);
 
       if(process() < 2) {
-        auto naive = topo::unstructured_impl::make_dcrs(sd, 1, group_comm);
+        auto [naive, cells] =
+          topo::unstructured_impl::make_dcrs(sd, 1, group_comm);
         auto raw = util::parmetis::color(naive, 5, group_comm);
 
         {
@@ -259,30 +260,19 @@ parmetis_colorer() {
   };
 } // parmetis_colorer
 
-int
-ideas() {
-  UNIT {
-    topo::unstructured_impl::simple_definition sd("simple2d-16x16.msh");
-    auto naive = topo::unstructured_impl::make_dcrs(sd, 1);
-    const std::size_t colors{3};
-    auto raw = util::parmetis::color(naive, colors);
-    auto coloring = topo::unstructured_impl::distribute(naive, colors, raw);
+struct closure_policy {
+  using primary = topo::unstructured_impl::primary_independent<0, 2, 0, 1>;
 
-    {
-      std::stringstream ss;
-      size_t color{0};
-      for(auto c : coloring) {
-        ss << "rank " << process() << " color " << color++ << ":" << std::endl;
-        for(auto i : c) {
-          ss << i << " ";
-        }
-        ss << std::endl;
-      }
-      ss << std::endl;
-      flog_devel(warn) << ss.str();
-    } // scope
-  }; // UNIT
-} // ideas
+  using auxiliary =
+    std::tuple<topo::unstructured_impl::auxiliary_independent<1, 0, 2>>;
+
+  static constexpr size_t auxiliary_colorings =
+    std::tuple_size<auxiliary>::value;
+
+  using definition = topo::unstructured_impl::simple_definition;
+
+  using communicator = topo::unstructured_impl::mpi_communicator;
+};
 
 struct coloring_policy {
 
@@ -306,7 +296,7 @@ dependency_closure() {
     // Coloring with 5 colors with MPI_COMM_WORLD
     {
       const size_t colors{processes()};
-      auto naive = topo::unstructured_impl::make_dcrs(sd, 1);
+      auto [naive, cells] = topo::unstructured_impl::make_dcrs(sd, 1);
       auto raw = util::parmetis::color(naive, colors);
       auto coloring = topo::unstructured_impl::distribute(naive, colors, raw);
       auto closure = topo::unstructured_impl::closure<coloring_policy>(
@@ -320,11 +310,10 @@ dependency_closure() {
 int
 coloring_driver() {
   UNIT {
-    // TODO: use test<> when reduction works for MPI tasks
-    execute<naive_coloring, mpi>();
-    execute<parmetis_colorer, mpi>();
-    execute<dependency_closure, mpi>();
-    execute<ideas, mpi>();
+    // ASSERT_EQ((test<naive_coloring, mpi>()), 0);
+    // ASSERT_EQ((test<parmetis_colorer, mpi>()), 0);
+    ASSERT_EQ((test<dependency_closure, mpi>()), 0);
+    // ASSERT_EQ((test<ideas, mpi>()), 0);
   };
 } // simple2d_8x8
 

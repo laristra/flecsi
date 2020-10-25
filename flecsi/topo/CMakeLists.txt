@@ -68,7 +68,31 @@ set(topo_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-#---------------------------   Structured Mesh  -----------------------------#
+# index -----------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+add_unit(index
+  SOURCES
+    test/index.cc
+  THREADS 2
+  )
+
+endif()
+
+# canonical -------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+add_unit(canonical
+  SOURCES
+    canonical/test/canonical.cc
+  THREADS 2
+  )
+
+endif()
+
+# structured ------------------------------------------------------------------#
 
 add_unit(structured
   SOURCES structured/test/structured.cc
@@ -82,7 +106,7 @@ add_unit(structured
   THREADS 2 
 )
 
-#---------------------------   Unstructured Mesh  -----------------------------#
+# unstructured ---------------------------------------------------------------#
 
 add_unit(coloring
   SOURCES
@@ -111,9 +135,15 @@ add_unit(unstructured
   THREADS 2
 )
 
+add_unit(fixed
+  SOURCES
+    unstructured/test/fixed.cc
+  THREADS 2
+)
+
 endif()
 
-#----------------------------------  NTREE  -----------------------------------#
+# ntree -----------------------------------------------------------------------#
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 

@@ -21,6 +21,8 @@
 
 #include "flecsi/data/accessor.hh"
 #include "flecsi/data/topology.hh"
+#include "flecsi/data/topology_slot.hh"
+#include "flecsi/execution.hh"
 #include "flecsi/flog.hh"
 #include "flecsi/topo/canonical/types.hh"
 #include "flecsi/topo/core.hh" // base
@@ -41,47 +43,50 @@ template<typename Policy>
 struct canonical : canonical_base, with_ragged<Policy> {
   using index_space = typename Policy::index_space;
   using index_spaces = typename Policy::index_spaces;
+  using connectivities = typename Policy::connectivities;
 
   template<std::size_t>
   struct access;
 
   template<class F>
   void fields(F f) {
-    for(auto & r : part)
+    for(auto & r : part_)
       f(resize::field, r.sz);
-    f(mine, *this);
-    f(meta_field, meta);
-    connect_visit([&](const auto & fld) { f(fld, *this); }, connect);
+    f(mine_, *this);
+    f(meta_field, meta_);
+    connect_visit([&](const auto & fd) { f(fd, *this); }, connect_);
   }
 
   canonical(const coloring & c)
-    : with_ragged<Policy>(c.parts),
-      part(make_partitions(c,
+    : with_ragged<Policy>(c.colors),
+      part_(make_partitions(c,
         index_spaces(),
         std::make_index_sequence<index_spaces::size>())),
-      meta(c.parts) {
+      meta_(c.colors) {
     init_ragged(index_spaces());
+    allocate_connectivities(c, connect_);
   }
 
   // The first index space is distinguished in that we decorate it:
-  static inline const field<int>::definition<Policy, index_spaces::first> mine;
-  static inline const connect_t<Policy> connect;
+  static inline const field<int>::definition<Policy, index_spaces::first> mine_;
+  static inline const connect_t<Policy> connect_;
 
-  util::key_array<repartitioned, index_spaces> part;
-  meta_topo::core meta;
+  util::key_array<repartitioned, index_spaces> part_;
+  meta_topo::core meta_;
 
   // These functions are part of the standard topology interface.
   std::size_t colors() const {
-    return part.front().colors();
+    return part_.front().colors();
   }
 
   template<index_space S>
   data::region & get_region() {
-    return part.template get<S>();
+    return part_.template get<S>();
   }
+
   template<index_space S>
   const data::partition & get_partition(field_id_t) const {
-    return part.template get<S>();
+    return part_.template get<S>();
   }
 
 private:
@@ -90,15 +95,34 @@ private:
     const canonical_base::coloring & c,
     util::constants<VV...> /* index_spaces, to deduce a pack */,
     std::index_sequence<II...>) {
-    flog_assert(c.sizes.size() == sizeof...(VV),
-      c.sizes.size() << " sizes for " << sizeof...(VV) << " index spaces");
-    return {{make_repartitioned<Policy, VV>(
-      c.parts, make_partial<allocate>(c.sizes[II], c.parts))...}};
+    flog_assert(c.is_allocs.size() == sizeof...(VV),
+      c.is_allocs.size() << " sizes for " << sizeof...(VV) << " index spaces");
+    return {{make_repartitioned<Policy, VV>(c.colors,
+      make_partial<is_size>(c.is_allocs[II], c.is_allocs.size()))...}};
   }
+
+  template<auto... VV, typename... TT>
+  void allocate_connectivities(const canonical_base::coloring & c,
+    util::key_tuple<util::key_type<VV, TT>...> const & /* deduce pack */) {
+    std::size_t entity = 0;
+    (
+      [&](TT const & row) {
+        auto & cc = c.cn_allocs[entity++];
+        std::size_t is{0};
+        for(auto & fd : row) {
+          auto & p = this->ragged.template get_partition<VV>(fd.fid);
+          execute<cn_size>(cc[is++], p.sizes());
+          p.resize();
+        }
+      }(connect_.template get<VV>()),
+      ...);
+  }
+
   template<index_space... SS>
   void init_ragged(util::constants<SS...>) {
     (this->template extend_offsets<SS>(), ...);
   }
+
 }; // struct canonical
 
 template<class P>
@@ -108,13 +132,13 @@ private:
   template<const auto & F>
   using accessor = data::accessor_member<F, Priv>;
   util::key_array<resize::accessor, index_spaces> size;
-  connect_access<P, Priv> connect;
+  connect_access<P, Priv> connect_;
 
 public:
-  accessor<canonical::mine> mine;
-  accessor<meta_field> meta;
+  accessor<canonical::mine_> mine_;
+  accessor<meta_field> meta_;
 
-  access() : connect(canonical::connect) {}
+  access() : connect_(canonical::connect_) {}
 
   // NB: iota_view's iterators are allowed to outlive it.
   template<index_space S>
@@ -125,11 +149,11 @@ public:
 
   template<index_space F, index_space T>
   auto & get_connect() {
-    return connect.template get<F>().template get<T>();
+    return connect_.template get<F>().template get<T>();
   }
   template<index_space F, index_space T>
   const auto & get_connect() const {
-    return connect.template get<F>().template get<T>();
+    return connect_.template get<F>().template get<T>();
   }
 
   template<index_space T, index_space F>
@@ -141,9 +165,9 @@ public:
   void bind(F f) {
     for(auto & a : size)
       f(a);
-    f(mine);
-    f(meta);
-    connect_visit(f, connect);
+    f(mine_);
+    f(meta_);
+    connect_visit(f, connect_);
   }
 };
 

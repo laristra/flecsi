@@ -187,7 +187,7 @@ make_partial(const AA &... aa) {
 
 /*!
   Single or multiple future.
-  A multi-valued future may be passed to a task expecting a singular one
+  A multi-valued future may be passed to a task expecting a single one
   (which is then executed once with each value).
 
   @tparam Return The return type of the task.

@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/execution.hh"
 #include "flecsi/topo/index.hh"
 
 #include <cstddef>
@@ -30,8 +31,9 @@ namespace topo {
 struct canonical_base {
 
   struct coloring {
-    std::vector<std::size_t> sizes;
-    std::size_t parts;
+    std::size_t colors;
+    std::vector<std::size_t> is_allocs;
+    std::vector<std::vector<std::size_t>> cn_allocs;
   }; // struct coloring
 
   struct Meta {
@@ -45,9 +47,13 @@ public:
   static inline const field<Meta, data::single>::definition<meta_topo>
     meta_field;
 
-  // For this simple case, two scalars determine all colors' sizes.
-  static std::size_t allocate(std::size_t n, std::size_t p, std::size_t i) {
-    return (i + 1) * n / p - i * n / p;
+  static std::size_t
+  is_size(std::size_t size, std::size_t colors, std::size_t) {
+    return size / colors;
+  }
+
+  static void cn_size(std::size_t size, resize::Field::accessor<wo> a) {
+    a = data::partition::make_row(color(), size);
   }
 }; // struct canonical_base
 
