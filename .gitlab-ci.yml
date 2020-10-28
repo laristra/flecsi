@@ -81,7 +81,7 @@ mpich-legion-gnu:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON -DENABLE_KOKKOS=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_KOKKOS=ON
 
 mpich-legion-gnu:release:
   extends: .build_template
@@ -98,7 +98,7 @@ mpich-legion-gnu:release:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON -DENABLE_KOKKOS=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_KOKKOS=ON
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for MPI runtime with MPICH provider,
@@ -122,7 +122,7 @@ mpich-mpi-gnu:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON
 
 mpich-mpi-gnu:release:
   extends: .build_template
@@ -139,7 +139,7 @@ mpich-mpi-gnu:release:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON
 
 #------------------------------------------------------------------------------#
 # Tutorial tests for Legion runtime with MPICH provider,
@@ -184,7 +184,7 @@ openmpi-legion-gnu:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON
 
 openmpi-legion-gnu:release:
   extends: .build_template
@@ -201,7 +201,7 @@ openmpi-legion-gnu:release:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for MPI runtime with OpenMPI provider,
@@ -225,7 +225,7 @@ openmpi-mpi-gnu:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON
 
 openmpi-mpi-gnu:release:
   extends: .build_template
@@ -242,7 +242,7 @@ openmpi-mpi-gnu:release:
     CXX_FLAGS: -Wall -W -Werror -Wno-parentheses
     C_COMPILER: gcc
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for Legion runtime with MPICH provider,
@@ -266,7 +266,7 @@ mpich-legion-clang:
     CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
     C_COMPILER: clang
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON -DENABLE_KOKKOS=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_KOKKOS=ON
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for MPI runtime with MPICH provider,
@@ -290,7 +290,7 @@ mpich-mpi-clang:
     CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
     C_COMPILER: clang
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON
 
 #------------------------------------------------------------------------------#
 # Build and unit tests for MPI runtime with OpenMPI provider,
@@ -314,4 +314,4 @@ openmpi-mpi-clang:
     CXX_FLAGS: -fcolor-diagnostics -Wall -W -Werror -Wno-parentheses
     C_COMPILER: clang
     C_FLAGS: ${CXX_FLAGS}
-    CMAKE_OPTIONS: -DENABLE_FLOG=ON -DENABLE_GRAPHVIZ=ON
+    CMAKE_OPTIONS: -DENABLE_FLOG=ON
