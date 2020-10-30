@@ -80,14 +80,12 @@ RUN \
   && \
   spack fetch --dependencies flecsi@devel backend=legion \
     +hdf5 \
-    +graphviz \
     +kokkos  \
     +debug_backend \
     ^mpich \
   && \
   spack install --only dependencies flecsi@devel backend=legion \
     +hdf5 \
-    +graphviz \
     +kokkos \
     build_type=Debug \
     +debug_backend \
@@ -97,13 +95,12 @@ RUN \
   . .spack-upstream/share/spack/setup-env.sh \
   && \
   spack fetch --dependencies flecsi@devel backend=legion \
-    +hdf5 +graphviz \
+    +hdf5 \
     +kokkos \
     ^mpich \
   && \
   spack install --only dependencies flecsi@devel backend=legion \
     +hdf5 \
-    +graphviz \
     +kokkos \
     build_type=Release \
     ^mpich
@@ -117,14 +114,12 @@ RUN \
   && \
   spack fetch --dependencies flecsi@devel backend=legion \
     +hdf5 \
-    +graphviz \
     +kokkos \
     +debug_backend \
     ^openmpi \
   && \
   spack install --only dependencies flecsi@devel backend=legion \
     +hdf5 \
-    +graphviz \
     +kokkos \
     build_type=Release \
     +debug_backend \
@@ -135,13 +130,11 @@ RUN \
   && \
   spack fetch --dependencies flecsi@devel backend=legion \
     +hdf5 \
-    +graphviz \
     +kokkos \
     ^openmpi \
   && \
   spack install --only dependencies flecsi@devel backend=legion \
     +hdf5 \
-    +graphviz \
     +kokkos \
     build_type=Release \
     ^openmpi

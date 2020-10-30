@@ -7,7 +7,7 @@ packages:
     version: [1.74.0]
     variants: cxxstd=14 +program_options
   cmake:
-    version: [3.18.2]
+    version: [3.18.4]
   gasnet:
     version: [2020.3.0]
     variants: ~aligned-segments~ibv+mpi~pshm~udp segment-mmap-max=16GB
