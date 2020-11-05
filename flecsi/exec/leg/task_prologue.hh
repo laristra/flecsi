@@ -118,12 +118,11 @@ struct task_prologue_t {
   // provide get_region (and, with one exception, get_partition).
   template<typename DATA_TYPE,
     size_t PRIVILEGES,
-    class Topo,
-    typename Topo::index_space Space>
-  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
-    const auto f = ref.fid();
-    auto & t = ref.topology();
+    auto Space,
+    template<class>
+    class C,
+    class Topo>
+  void raw(field_id_t f, C<Topo> & t) {
     data::region & reg = t.template get_region<Space>();
 
     constexpr auto np = privilege_count(PRIVILEGES);
@@ -148,6 +147,12 @@ struct task_prologue_t {
     region_reqs_.back().add_field(f);
   } // visit
 
+  template<class T, size_t P, class Topo, typename Topo::index_space S>
+  void visit(data::accessor<data::raw, T, P> * /* parameter */,
+    const data::field_reference<T, data::raw, Topo, S> & ref) {
+    raw<T, P, S>(ref.fid(), ref.topology());
+  }
+
   template<class T,
     std::size_t P,
     std::size_t OP,
@@ -155,10 +160,7 @@ struct task_prologue_t {
     typename Topo::index_space S>
   void ragged(data::ragged_accessor<T, P, OP> * null_p,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
-    // We rely on the fact that field_reference uses only the field ID.
-    visit(get_null_base(null_p),
-      data::field_reference<T, data::raw, topo::ragged_topology<Topo>, S>(
-        {f.fid(), 0}, f.topology().ragged));
+    raw<T, P, S>(f.fid(), f.topology().ragged);
     visit(
       get_null_offsets(null_p), f.template cast<data::dense, std::size_t>());
     realloc<S, T, P>(f, [=] { execute<destroy<T, data::ragged>>(f); });

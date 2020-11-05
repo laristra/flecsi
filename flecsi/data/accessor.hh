@@ -171,9 +171,6 @@ struct ragged_accessor
   const base_type & get_base() const {
     return *this;
   }
-  friend base_type * get_null_base(ragged_accessor *) { // for task_prologue_t
-    return nullptr;
-  }
 
   Offsets & get_offsets() {
     return off;
