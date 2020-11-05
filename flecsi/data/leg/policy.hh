@@ -136,7 +136,7 @@ struct region {
   template<class D>
   void cleanup(field_id_t f, D d) {
     // We assume that creating the objects will be successful:
-    destroy[f] = d;
+    destroy.insert_or_assign(f, std::move(d));
   }
 
   unique_index_space index_space;
@@ -147,7 +147,6 @@ private:
   // Each field can have a destructor (for individual field values) registered
   // that is invoked when the field is recreated or the region is destroyed.
   struct finalizer {
-    finalizer() = default;
     template<class F>
     finalizer(F f) : f(std::move(f)) {}
     finalizer(finalizer && o) noexcept {
