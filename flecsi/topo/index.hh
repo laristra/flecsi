@@ -131,6 +131,7 @@ struct ragged_base {
 template<class P>
 struct ragged_category : ragged_base {
   using index_spaces = typename P::index_spaces;
+  using index_space = typename P::index_space;
 
   ragged_category(coloring c) : part(make_partitions(c, index_spaces())) {}
 
@@ -138,11 +139,16 @@ struct ragged_category : ragged_base {
     return part.front().size().first;
   }
 
-  template<typename P::index_space S>
+  template<index_space S>
+  data::region & get_region() {
+    return part.template get<S>();
+  }
+
+  template<index_space S>
   const repartition & get_partition(field_id_t i) const {
     return part.template get<S>()[i];
   }
-  template<typename P::index_space S>
+  template<index_space S>
   repartition & get_partition(field_id_t i) {
     return part.template get<S>()[i];
   }

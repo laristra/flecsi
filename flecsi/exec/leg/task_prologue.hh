@@ -114,29 +114,8 @@ struct task_prologue_t {
     visit(get_null_base(null_p), ref.template cast<data::dense>());
   }
 
-  /*--------------------------------------------------------------------------*
-    Global Topology
-   *--------------------------------------------------------------------------*/
-
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::
-      field_reference<DATA_TYPE, data::raw, topo::global, topo::elements> &
-        ref) {
-    Legion::LogicalRegion region = ref.topology().logical_region;
-
-    static_assert(privilege_count(PRIVILEGES) == 1,
-      "global topology accessor type only takes one privilege");
-
-    Legion::RegionRequirement rr(
-      region, privilege_mode(PRIVILEGES), EXCLUSIVE, region);
-
-    rr.add_field(ref.fid());
-    region_reqs_.push_back(rr);
-  } // visit
-
   // This implementation can be generic because all topologies are expected to
-  // provide get_partition.
+  // provide get_region (and, with one exception, get_partition).
   template<typename DATA_TYPE,
     size_t PRIVILEGES,
     class Topo,
@@ -145,26 +124,28 @@ struct task_prologue_t {
     const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
     const auto f = ref.fid();
     auto & t = ref.topology();
-    auto & instance_data = t.template get_partition<Space>(f);
+    data::region & reg = t.template get_region<Space>();
 
     constexpr auto np = privilege_count(PRIVILEGES);
     static_assert(np == Topo::template privilege_count<Space>,
       "privilege-count mismatch between accessor and topology type");
     if constexpr(np > 1) {
-      data::region & reg = t.template get_region<Space>();
       if(reg.ghost<PRIVILEGES>(f))
         t.template ghost_copy<Space>(f);
     }
 
-    Legion::RegionRequirement rr(instance_data.logical_partition,
-      0,
-      privilege_mode(PRIVILEGES),
-      EXCLUSIVE,
-      Legion::Runtime::get_runtime()->get_parent_logical_region(
-        instance_data.logical_partition));
-
-    rr.add_field(f);
-    region_reqs_.push_back(rr);
+    const Legion::PrivilegeMode m = privilege_mode(PRIVILEGES);
+    const Legion::LogicalRegion lr = reg.logical_region;
+    if constexpr(std::is_same_v<typename Topo::base, topo::global_base>)
+      region_reqs_.emplace_back(lr, m, EXCLUSIVE, lr);
+    else
+      region_reqs_.emplace_back(
+        t.template get_partition<Space>(f).logical_partition,
+        0,
+        m,
+        EXCLUSIVE,
+        lr);
+    region_reqs_.back().add_field(f);
   } // visit
 
   template<class T,
