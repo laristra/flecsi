@@ -122,7 +122,7 @@ struct task_prologue_t {
     template<class>
     class C,
     class Topo>
-  void raw(field_id_t f, C<Topo> & t) {
+  void raw(field_id_t f, C<Topo> & t, bool init = false) {
     data::region & reg = t.template get_region<Space>();
 
     constexpr auto np = privilege_count(PRIVILEGES);
@@ -133,7 +133,11 @@ struct task_prologue_t {
         t.template ghost_copy<Space>(f);
     }
 
-    const Legion::PrivilegeMode m = privilege_mode(PRIVILEGES);
+    // For convenience, we always use rw accessors for certain fields that
+    // initially contain no constructed objects; we must indicate that
+    // (vacuous) initialization to Legion.
+    const Legion::PrivilegeMode m =
+      init ? WRITE_DISCARD : privilege_mode(PRIVILEGES);
     const Legion::LogicalRegion lr = reg.logical_region;
     if constexpr(std::is_same_v<typename Topo::base, topo::global_base>)
       region_reqs_.emplace_back(lr, m, EXCLUSIVE, lr);
@@ -160,10 +164,22 @@ struct task_prologue_t {
     typename Topo::index_space S>
   void ragged(data::ragged_accessor<T, P, OP> * null_p,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
-    raw<T, P, S>(f.fid(), f.topology().ragged);
+    const field_id_t i = f.fid();
+    auto & t = f.topology();
+    // It's legitimate, if vacuous, to have the first use of a ragged field be
+    // via an accessor (even a read-only one), since all the rows will have a
+    // (well-defined) length of 0.
+    raw<T, P, S>(i,
+      t.ragged,
+      t.template get_region<S>().cleanup(
+        i,
+        [=] {
+          if constexpr(!std::is_trivially_destructible_v<T>)
+            execute<destroy<T, data::ragged>>(f);
+        },
+        privilege_write_only(P)));
     visit(
       get_null_offsets(null_p), f.template cast<data::dense, std::size_t>());
-    realloc<S, T, P>(f, [=] { execute<destroy<T, data::ragged>>(f); });
   }
   template<class T, std::size_t P, class Topo, typename Topo::index_space S>
   void visit(data::accessor<data::ragged, T, P> * null_p,
