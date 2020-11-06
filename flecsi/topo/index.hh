@@ -179,26 +179,25 @@ struct ragged_topology : specialization<ragged_category, ragged_topology<T>> {
   using index_spaces = typename T::index_spaces;
 };
 
+struct with_ragged_base {
+  template<class F>
+  static void extend(field<std::size_t, data::raw>::accessor<rw> a, F old) {
+    const auto s = a.span();
+    const std::size_t i = old(run::context::instance().color());
+    // The accessor (chosen to support a resized field) constructs nothing:
+    std::uninitialized_fill(s.begin() + i, s.end(), i ? s.back() : 0);
+  }
+};
 template<class P>
-struct with_ragged { // for interface consistency
+struct with_ragged : private with_ragged_base {
   with_ragged(std::size_t n) : ragged(n) {}
 
-  // Extend a offsets fields to define empty rows for the suffix.
+  // Extend an offsets field to define empty rows for the suffix.
   template<typename P::index_space, class F = decltype(zero::partial)>
   void extend_offsets(
     F = zero::partial); // serializable function from color to old size
 
   typename ragged_topology<P>::core ragged;
-
-private:
-  template<class F>
-  static void extend(field<std::size_t, data::raw>::accessor<rw> a, F old) {
-    const auto s = a.span();
-    const std::size_t i = old(run::context::instance().color());
-    // A dense field will be default-constructed on first use, but this
-    // function means to support the case where it was resized.
-    std::uninitialized_fill(s.begin() + i, s.end(), i ? s.back() : 0);
-  }
 };
 
 template<>
