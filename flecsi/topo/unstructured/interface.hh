@@ -419,7 +419,7 @@ private:
   using entity_list = typename Policy::entity_list;
   template<const auto & Field>
   using accessor = data::accessor_member<Field, Privileges>;
-  util::key_array<resize::accessor, index_spaces> size_;
+  util::key_array<resize::accessor<ro>, index_spaces> size_;
   connect_access<Policy, Privileges> connect_;
   list_access<Policy, Privileges> special_{unstructured::special_};
 

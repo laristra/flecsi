@@ -131,7 +131,7 @@ struct canonical<P>::access {
 private:
   template<const auto & F>
   using accessor = data::accessor_member<F, Priv>;
-  util::key_array<resize::accessor, index_spaces> size;
+  util::key_array<resize::accessor<ro>, index_spaces> size;
   connect_access<P, Priv> connect_;
 
 public:

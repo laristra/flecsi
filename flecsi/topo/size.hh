@@ -40,7 +40,8 @@ struct resize : specialization<color_category, resize> {
   // cslot is useless without a color function, but we don't need it.
   using Field = flecsi::field<data::partition::row, data::single>;
   static const Field::definition<resize> field;
-  using accessor = data::accessor_member<field, privilege_pack<ro>>;
+  template<partition_privilege_t P>
+  using accessor = data::accessor_member<field, privilege_pack<P>>;
 };
 // Now that resize is complete:
 inline const resize::Field::definition<resize> resize::field;
