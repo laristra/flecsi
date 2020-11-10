@@ -52,7 +52,21 @@ struct executor_u {
   template<typename T, typename A>
   static decltype(auto) execute(T function, A && targs) {
     auto user_fun = reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function);
-    return hpx::async(user_fun, utils::forward_tuple(std::forward<A>(targs)));
+    return hpx::make_ready_future(
+      user_fun(utils::forward_tuple(std::forward<A>(targs))));
+  } // execute_task
+}; // struct executor_u
+
+template<typename ARG_TUPLE>
+struct executor_u<void, ARG_TUPLE> {
+  /*!
+   FIXME documentation
+   */
+  template<typename T, typename A>
+  static decltype(auto) execute(T function, A && targs) {
+    auto user_fun = reinterpret_cast<void (*)(ARG_TUPLE)>(function);
+    user_fun(utils::forward_tuple(std::forward<A>(targs)));
+    return hpx::make_ready_future();
   } // execute_task
 }; // struct executor_u
 
@@ -131,77 +145,83 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
 
-    context_t & context_ = context_t::instance();
-
-    auto function = context_.function(TASK);
-
-    using annotation = flecsi::utils::annotation;
-#if defined(ENABLE_CALIPER)
-    auto tname = context_.function_name(TASK);
-#else
-    /* using a placeholder so we do not have to maintain function_name_registry
-       when annotations are disabled. */
-    std::string tname{""};
-#endif
-
     // Make a tuple from the task arguments.
-    utils::convert_tuple_t<ARG_TUPLE, std::decay_t> task_args =
-      std::make_tuple(std::forward<ARGS>(args)...);
+    using decayed_args = utils::convert_tuple_t<ARG_TUPLE, std::decay_t>;
 
-    annotation::begin<annotation::execute_task_prolog>(tname);
-    // run task_prolog to copy ghost cells.
-    task_prolog_t task_prolog;
-    task_prolog.walk(task_args);
-#if defined(FLECSI_USE_AGGCOMM)
-    task_prolog.launch_copies();
-    task_prolog.launch_sparse_copies();
+    auto func = [function = context_t::instance().function(TASK),
+                  task_args = decayed_args(
+                    std::make_tuple(std::forward<ARGS>(args)...))]() mutable {
+      context_t & context_ = context_t::instance();
+
+      using annotation = flecsi::utils::annotation;
+#if defined(ENABLE_CALIPER)
+      auto tname = context_.function_name(TASK);
+#else
+      /* using a placeholder so we do not have to maintain
+         function_name_registry when annotations are disabled. */
+      std::string tname{""};
 #endif
-    annotation::end<annotation::execute_task_prolog>();
 
-    annotation::begin<annotation::execute_task_user>(tname);
+      annotation::begin<annotation::execute_task_prolog>(tname);
+      // run task_prolog to copy ghost cells.
+      task_prolog_t task_prolog;
+      task_prolog.walk(task_args);
+#if defined(FLECSI_USE_AGGCOMM)
+      task_prolog.launch_copies();
+      task_prolog.launch_sparse_copies();
+#endif
+      annotation::end<annotation::execute_task_prolog>();
 
-    hpx_future_u<RETURN> future =
-      executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
+      annotation::begin<annotation::execute_task_user>(tname);
 
-    annotation::end<annotation::execute_task_user>();
+      auto user_fun = reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function);
+      hpx_future_u<RETURN> future =
+        executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
+      annotation::end<annotation::execute_task_user>();
 
-    annotation::begin<annotation::execute_task_epilog>(tname);
-    task_epilog_t task_epilog;
-    task_epilog.walk(task_args);
-    annotation::end<annotation::execute_task_epilog>();
+      annotation::begin<annotation::execute_task_epilog>(tname);
+      task_epilog_t task_epilog;
+      task_epilog.walk(task_args);
+      annotation::end<annotation::execute_task_epilog>();
 
-    annotation::begin<annotation::execute_task_finalize>(tname);
-    finalize_handles_t finalize_handles;
-    finalize_handles.walk(task_args);
-    annotation::end<annotation::execute_task_finalize>();
+      annotation::begin<annotation::execute_task_finalize>(tname);
+      finalize_handles_t finalize_handles;
+      finalize_handles.walk(task_args);
+      annotation::end<annotation::execute_task_finalize>();
 
-    constexpr size_t ZERO =
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
+      constexpr size_t ZERO =
+        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(0)}.hash();
 
-    if constexpr(REDUCTION != ZERO) {
+      if constexpr(REDUCTION != ZERO) {
 
-      return future
-        .then([](hpx_future_u<RETURN> && future) {
-          context_t & context_ = context_t::instance();
-          MPI_Datatype datatype =
-            flecsi::utils::mpi_typetraits_u<RETURN>::type();
+        return future
+          .then([](hpx_future_u<RETURN> && future) {
+            context_t & context_ = context_t::instance();
+            MPI_Datatype datatype =
+              flecsi::utils::mpi_typetraits_u<RETURN>::type();
 
-          auto reduction_op = context_.reduction_operations().find(REDUCTION);
+            auto reduction_op = context_.reduction_operations().find(REDUCTION);
 
-          clog_assert(reduction_op != context_.reduction_operations().end(),
-            "invalid reduction operation");
+            clog_assert(reduction_op != context_.reduction_operations().end(),
+              "invalid reduction operation");
 
-          const RETURN sendbuf = future.get();
-          RETURN recvbuf;
+            const RETURN sendbuf = future.get();
+            RETURN recvbuf;
 
-          MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
-            MPI_COMM_WORLD);
+            MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
+              MPI_COMM_WORLD);
 
-          return recvbuf;
-        })
-        .share();
-    }
+            return recvbuf;
+          })
+          .share();
+      }
 
+      return future;
+    };
+
+    // for unwrapping o returned future
+    hpx_future_u<RETURN> future = hpx::async(std::move(func));
+    future.wait();
     return future;
   } // execute_task
 

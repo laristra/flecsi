@@ -49,7 +49,13 @@ hpx_context_policy_t::hpx_context_policy_t() {
 // Return the color for which the context was initialized.
 size_t
 hpx_context_policy_t::color() const {
-  return hpx::get_locality_id();
+  return color_;
+}
+
+// Return the number of colors.
+size_t
+hpx_context_policy_t::colors() const {
+  return colors_;
 }
 
 // Main HPX thread, does nothing but wait for the application to exit
@@ -57,6 +63,9 @@ int
 hpx_context_policy_t::hpx_main(void (*driver)(int, char *[]),
   int argc,
   char * argv[]) {
+
+  color_ = hpx::get_locality_id();
+  colors_ = hpx::get_num_localities(hpx::launch::sync);
 
   // execute user code (driver)
   (*driver)(argc, argv);

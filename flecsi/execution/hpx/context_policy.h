@@ -170,9 +170,7 @@ struct hpx_context_policy_t {
     Return the number of colors.
    */
 
-  std::size_t colors() const {
-    return colors_;
-  } // color
+  FLECSI_EXPORT std::size_t colors() const;
 
   //--------------------------------------------------------------------------//
   // Task interface.
