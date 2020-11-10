@@ -34,8 +34,8 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
   using index_spaces = flecsi::topo::ntree_base::index_spaces;
 
   struct key_t_hasher {
-    std::size_t operator()(const key_int_t & k) const noexcept {
-      return static_cast<std::size_t>(k & ((1 << 22) - 1));
+    std::size_t operator()(const key_t & k) const noexcept {
+      return static_cast<std::size_t>(k.value() & ((1 << 22) - 1));
     }
   };
 
@@ -100,10 +100,8 @@ sph_ntree_t::cslot coloring;
 const field<double>::definition<sph_ntree_t, sph_ntree_t::base::entities>
   entity_field;
 
-std::vector<sph_ntree_t::ent_t> tmp_ents;
-
 int
-init(sph_ntree_t::accessor<wo> t,
+init_task(sph_ntree_t::accessor<wo> t,
   const std::vector<sph_ntree_t::ent_t> & ents) {
   UNIT {
     for(size_t i = 0; i < ents.size(); ++i) {
@@ -111,27 +109,41 @@ init(sph_ntree_t::accessor<wo> t,
       t.e_radius(i) = ents[i].radius();
       t.e_keys(i) = ents[i].key();
     }
+    t.exchange_boundaries();
   };
-} // init
+} // init_task
 
 int
 make_tree(sph_ntree_t::accessor<rw> t) {
-  UNIT { t.make_tree(); };
-}
+  UNIT {
+    t.make_tree();
+    t.graphviz_draw(0);
+  };
+} // make_tree
+
+// The initialization part of the execution model
+// Create the coloring
+// Create the ntree memory space
+// Feed the basic fields of the ntree
+// Create the ntree structure
+int
+init() {
+  std::vector<sph_ntree_t::ent_t> ents;
+  coloring.allocate("coordinates.blessed", ents);
+  sph_ntree.allocate(coloring.get());
+  flecsi::execute<init_task, flecsi::mpi>(sph_ntree, ents);
+  sph_ntree.get().exch();
+  flecsi::execute<make_tree>(sph_ntree);
+
+  std::vector<data::partition::row> rv(coloring.get().nparts_);
+  std::vector<std::vector<data::partition::point>> pv(coloring.get().nparts_);
+  return 0;
+} // init
+flecsi::unit::initialization<init> initialization;
 
 int
 ntree_driver() {
-  UNIT {
 
-    // Call process function
-    coloring.allocate("coordinates.blessed", tmp_ents);
-    sph_ntree.allocate(coloring.get());
-    flecsi::execute<init, flecsi::mpi>(sph_ntree, tmp_ents);
-    tmp_ents.clear();
-
-    // Construct the tree data structure
-    flecsi::execute<make_tree>(sph_ntree);
-  };
+  return 0;
 } // ntree_driver
-
 flecsi::unit::driver<ntree_driver> driver;

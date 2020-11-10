@@ -29,6 +29,7 @@ set(data_HEADERS
   topology_accessor.hh
   topology_slot.hh
   topology.hh
+  copy_plan.hh
 )
 
 set(data_SOURCES
