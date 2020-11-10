@@ -44,12 +44,11 @@ protected:
                //! depth reachable regarding the size of the memory word used
 
   int_t value_;
-  filling_curve(int_t value) : value_(value) {}
 
 public:
-  using type = int_t;
-
   filling_curve() : value_(0) {}
+
+  filling_curve(int_t value) : value_(value) {}
 
   static std::size_t max_depth() {
     return max_depth_;

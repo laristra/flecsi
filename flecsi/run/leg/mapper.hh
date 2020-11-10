@@ -428,6 +428,108 @@ public:
     local_instances_[key1][key2] = result;
   } // create_instance
 
+  static Legion::MappingTagID next_mapping_tag() {
+    return partition_tag++;
+  }
+
+  void tag_index_partition(Legion::MappingTagID tag, Legion::Color & ip) {
+    partition_tag_map.try_emplace(tag, ip);
+  }
+
+  //------------------------------------------------------------------------
+  virtual void select_partition_projection(
+    const Legion::Mapping::MapperContext ctx,
+    const Legion::Partition & partition,
+    const SelectPartitionProjectionInput & input,
+    SelectPartitionProjectionOutput & output) {
+
+    if(!input.open_complete_partitions.empty()) {
+      output.chosen_partition = input.open_complete_partitions.front();
+      return;
+    }
+
+    auto part_color = partition_tag_map.find(partition.tag);
+
+    if(part_color != partition_tag_map.end() &&
+       runtime->has_index_partition(ctx,
+         partition.requirement.parent.get_index_space(),
+         part_color->second)) {
+      Legion::IndexPartition ip = runtime->get_index_partition(ctx,
+        partition.requirement.parent.get_index_space(),
+        part_color->second);
+      output.chosen_partition =
+        runtime->get_logical_partition(ctx, partition.requirement.parent, ip);
+      return;
+    }
+    output.chosen_partition = Legion::LogicalPartition::NO_PART;
+    return;
+  }
+
+  Legion::Mapping::PhysicalInstance choose_instance(
+    const Legion::Mapping::MapperContext ctx,
+    int,
+    int,
+    const Legion::RegionRequirement & req,
+    bool all_fields = true) {
+    using namespace Legion;
+
+    //  int pieces_per_mem = 1 + (num_pieces - 1) / memories.size();
+    //  int mem_idx = piece_index / pieces_per_mem;
+    //  Memory m = memories[mem_idx];
+    Memory m = local_sysmem;
+    LayoutConstraintSet constraints;
+    if(all_fields) {
+      FieldConstraint fc(false /*!contiguous*/);
+      runtime->get_field_space_fields(
+        ctx, req.region.get_field_space(), fc.field_set);
+      constraints.add_constraint(fc);
+    }
+    else {
+      constraints.add_constraint(
+        FieldConstraint(req.privilege_fields, false /*!contiguous*/));
+    }
+    std::vector<LogicalRegion> regions(1, req.region);
+    Mapping::PhysicalInstance result;
+    bool created;
+    bool ok = runtime->find_or_create_physical_instance(
+      ctx, m, constraints, regions, result, created);
+    assert(ok);
+    return result;
+  }
+
+  void map_copy(const Legion::Mapping::MapperContext ctx,
+    const Legion::Copy & copy,
+    const MapCopyInput &,
+    MapCopyOutput & output) {
+
+    using namespace Legion;
+    int index_point = copy.index_point[0];
+    int num_points = copy.index_domain.get_volume();
+
+    for(size_t i = 0; i < copy.src_requirements.size(); i++) {
+      Mapping::PhysicalInstance inst;
+      inst =
+        choose_instance(ctx, index_point, num_points, copy.src_requirements[i]);
+      output.src_instances[i].push_back(inst);
+    }
+
+    for(size_t i = 0; i < copy.dst_requirements.size(); i++) {
+      Mapping::PhysicalInstance inst;
+      inst =
+        choose_instance(ctx, index_point, num_points, copy.dst_requirements[i]);
+      output.dst_instances[i].push_back(inst);
+    }
+
+    if(!copy.src_indirect_requirements.empty()) {
+      assert(copy.src_indirect_requirements.size() == 1);
+
+      Legion::Mapping::PhysicalInstance inst;
+      inst = choose_instance(
+        ctx, index_point, num_points, copy.src_indirect_requirements[0]);
+      output.src_indirect_instances[0] = inst;
+    }
+  }
+
   /*!
    Specialization of the map_task funtion for FLeCSI
    By default, map_task will execute Legions map_task from DefaultMapper.
@@ -639,6 +741,9 @@ private:
 
   instance_map_t local_instances_;
 
+  std::map<Legion::MappingTagID, Legion::Color> partition_tag_map;
+  static inline Legion::MappingTagID partition_tag = 0;
+
 protected:
   std::map<Legion::TaskID, Legion::VariantID> cpu_variants;
   std::map<Legion::TaskID, Legion::VariantID> gpu_variants;
@@ -646,6 +751,24 @@ protected:
 
   Legion::Memory local_sysmem, local_zerocopy, local_framebuffer;
 };
+
+inline Legion::MappingTagID
+tag_index_partition(Legion::Color part_color) {
+
+  // Get the tag
+  Legion::MappingTagID tag = flecsi::run::mpi_mapper_t::next_mapping_tag();
+
+  auto ctx = Legion::Runtime::get_context();
+  auto r = Legion::Runtime::get_runtime();
+
+  for(const auto & [map, proc] : flecsi::run::context::instance().mappers) {
+    Legion::Mapping::MapperContext mctx = r->begin_mapper_call(ctx, 0, proc);
+    map->tag_index_partition(tag, part_color);
+    r->end_mapper_call(mctx);
+  }
+
+  return tag;
+}
 
 /*!
  mapper_registration is used to replace DefaultMapper with mpi_mapper_t in
@@ -663,6 +786,7 @@ mapper_registration(Legion::Machine machine,
       it++) {
     mpi_mapper_t * mapper = new mpi_mapper_t(machine, rt, *it);
     rt->replace_default_mapper(mapper, *it);
+    flecsi::run::context::instance().mappers.push_back({mapper, *it});
   }
 } // mapper registration
 

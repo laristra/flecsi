@@ -31,13 +31,25 @@ struct region {
 };
 
 struct partition {
-  using row = std::size_t;
+  using row = std::pair<std::size_t, std::size_t>;
+  using point = std::size_t;
+
   static row make_row(std::size_t, std::size_t n) {
+    return std::make_pair(0, n);
+  }
+
+  static row make_row(std::size_t, std::pair<std::size_t, std::size_t> n) {
     return n;
   }
   static std::size_t row_size(const row & r) {
-    return r;
+    return r.second - r.first;
   }
+  static point make_point(std::size_t, std::size_t n) {
+    return n;
+  }
+
+  static struct BuildByImage_tag {
+  } buildByImage_tag;
 
   explicit partition(const region &) {}
   partition(const region &,
@@ -59,6 +71,13 @@ struct partition {
 // For backend-agnostic interface:
 using region_base = mpi::region;
 using mpi::partition;
+
+inline void
+launch_copy(const mpi::region &,
+  const partition &,
+  const partition &,
+  const field_id_t &,
+  const field_id_t &) {}
 
 } // namespace data
 } // namespace flecsi

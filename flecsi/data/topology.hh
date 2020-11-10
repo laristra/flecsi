@@ -35,7 +35,10 @@ struct region_base {
 
 struct partition {
   static auto make_row(std::size_t i, std::size_t n);
+  static auto make_row(std::size_t i, std::pair<std::size_t, std::size_t> k);
+  static auto make_point(std::size_t i, std::size_t j);
   using row = decltype(make_row(0, 0));
+  using point = decltype(make_point(0, 0));
   static std::size_t row_size(const row &);
 
   explicit partition(const region_base &); // divides into rows
@@ -54,6 +57,7 @@ struct partition {
     return *this;
   }
 };
+
 #endif
 
 struct region : region_base {

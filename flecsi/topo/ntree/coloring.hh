@@ -35,7 +35,7 @@ struct ntree_base {
 
   struct coloring {
 
-    coloring(int nparts)
+    coloring(std::size_t nparts)
       : nparts_(nparts), global_hmap_(nparts * local_hmap_),
         hmap_offset_(nparts, local_hmap_), tdata_offset_(nparts, 3) {}
 

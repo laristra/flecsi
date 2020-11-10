@@ -24,6 +24,7 @@
 #endif
 
 #include "flecsi/run/backend.hh"
+#include "flecsi/run/leg/mapper.hh"
 #include "flecsi/topo/core.hh" // single_space
 
 #include <legion.h>
@@ -32,6 +33,12 @@
 
 namespace flecsi {
 namespace data {
+
+enum disjointness { compute = 0, disjoint = 1, aliased = 2 };
+constexpr int
+partitionKind(disjointness dis, completeness cpt) {
+  return (dis + 2) % 3 + 3 * cpt;
+}
 
 static_assert(static_cast<Legion::coord_t>(logical_size) == logical_size,
   "logical_size too large for Legion");
@@ -164,21 +171,47 @@ private:
 
 struct partition {
   using row = Legion::Rect<2>;
+  using point = Legion::Point<2>;
+
+  static point make_point(std::size_t i, std::size_t j) {
+    return point(i, j);
+  }
+
   static row make_row(std::size_t i, std::size_t n) {
     const Legion::coord_t r = i;
     return {{r, 0}, {r, upper(n)}};
   }
-  static std::size_t row_size(const row & r) {
-    return r.hi[1] + 1;
+
+  static row make_row(std::size_t i, std::pair<std::size_t, std::size_t> n) {
+    const Legion::coord_t r = i;
+    const Legion::coord_t ln = n.first;
+    return {{r, ln}, {r, upper(n.second)}};
   }
+
+  static std::size_t row_size(const row & r) {
+    return r.hi[1] - r.lo[1] + 1;
+  }
+
+  static constexpr struct BuildByImage_tag {
+  } buildByImage_tag = {};
 
   explicit partition(const region & reg)
     : partition(reg, run().get_index_space_domain(reg.index_space).hi()) {}
   partition(const region & reg,
     const partition & src,
     field_id_t fid,
+    disjointness dis = disjoint,
     completeness cpt = incomplete)
-    : index_partition(part(reg.index_space, src, fid, cpt)),
+    : index_partition(part(reg.index_space, src, fid, dis, cpt)),
+      logical_partition(log(reg)) {}
+
+  partition(const region & reg,
+    const partition & src,
+    field_id_t fid,
+    BuildByImage_tag,
+    disjointness dis = aliased,
+    completeness cpt = incomplete)
+    : index_partition(part_image(reg.index_space, src, fid, dis, cpt)),
       logical_partition(log(reg)) {}
 
   std::size_t colors() const {
@@ -194,13 +227,21 @@ struct partition {
     return *this;
   }
 
-  void
-  update(const partition & src, field_id_t fid, completeness cpt = incomplete) {
+  void update(const partition & src,
+    field_id_t fid,
+    disjointness dis = disjoint,
+    completeness cpt = incomplete) {
     auto & r = run();
-    auto ip = part(r.get_parent_index_space(index_partition), src, fid, cpt);
+    auto ip =
+      part(r.get_parent_index_space(index_partition), src, fid, dis, cpt);
     logical_partition = r.get_logical_partition(
       r.get_parent_logical_region(logical_partition), ip);
     index_partition = std::move(ip); // can't fail
+  }
+
+  // This is the same as color_space when that is non-empty.
+  Legion::IndexSpace get_color_space() const {
+    return run().get_index_partition_color_space_name(index_partition);
   }
 
 private:
@@ -221,30 +262,82 @@ private:
         DISJOINT_COMPLETE_KIND)),
       logical_partition(log(reg)) {}
 
-  // This is the same as color_space when that is non-empty.
-  Legion::IndexSpace get_color_space() const {
-    return run().get_index_partition_color_space_name(index_partition);
-  }
-
   // We document that src must outlive this partitioning, although Legion is
   // said to support deleting its color space before our partition using it.
   unique_index_partition part(const Legion::IndexSpace & is,
     const partition & src,
     field_id_t fid,
+    disjointness dis,
     completeness cpt) {
     auto & r = run();
+
     return r.create_partition_by_image_range(ctx(),
       is,
       src.logical_partition,
       r.get_parent_logical_region(src.logical_partition),
       fid,
       src.get_color_space(),
-      Legion::PartitionKind((cpt + 3) % 3 * 3));
+      Legion::PartitionKind(partitionKind(dis, cpt)));
   }
+
+  unique_index_partition part_image(const Legion::IndexSpace & is,
+    // const region & reg,
+    const partition & src,
+    field_id_t fid,
+    disjointness dis,
+    completeness cpt) {
+    auto & r = run();
+
+    Legion::Color part_color =
+      r.get_index_partition_color(ctx(), src.index_partition);
+
+    auto tag = flecsi::run::tag_index_partition(part_color);
+
+    return r.create_partition_by_image(ctx(),
+      is,
+      src.logical_partition,
+      r.get_parent_logical_region(src.logical_partition),
+      fid,
+      src.get_color_space(),
+      Legion::PartitionKind(partitionKind(dis, cpt)),
+      LEGION_AUTO_GENERATE_ID,
+      0,
+      tag);
+  }
+
   unique_logical_partition log(const region & reg) const {
     return run().get_logical_partition(reg.logical_region, index_partition);
   }
 };
+
+inline void
+launch_copy(const region & reg,
+  const partition & src_partition,
+  const partition & dest_partition,
+  const field_id_t & data_fid,
+  const field_id_t & ptr_fid) {
+
+  Legion::IndexCopyLauncher cl_(src_partition.get_color_space());
+  Legion::LogicalRegion lreg = reg.logical_region;
+  Legion::LogicalPartition lp_source = src_partition.logical_partition;
+  Legion::LogicalPartition lp_dest = dest_partition.logical_partition;
+  Legion::RegionRequirement rr_source(
+    lp_source, 0 /*projection ID*/, READ_ONLY, EXCLUSIVE, lreg);
+  Legion::RegionRequirement rr_dest(
+    lp_dest, 0 /*projection ID*/, WRITE_ONLY, EXCLUSIVE, lreg);
+  Legion::RegionRequirement rr_pos(
+    lp_dest, 0 /*projection ID*/, READ_ONLY, EXCLUSIVE, lreg);
+
+  rr_source.add_field(data_fid);
+  rr_dest.add_field(data_fid);
+  rr_pos.add_field(ptr_fid);
+
+  cl_.add_copy_requirements(rr_source, rr_dest);
+  cl_.add_src_indirect_field(ptr_fid, rr_pos);
+  assert(!cl_.src_indirect_is_range[0]);
+  run().issue_copy_operation(run().get_context(), cl_);
+}
+
 } // namespace leg
 
 // For backend-agnostic interface:
