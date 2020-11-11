@@ -46,7 +46,7 @@ struct detail::base<global_category> {
 
   @ingroup topology
  */
-struct global : specialization<global_category, global> {}; // struct global
+struct global : specialization<global_category, global> {};
 
 } // namespace topo
 

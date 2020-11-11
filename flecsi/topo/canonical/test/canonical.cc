@@ -25,11 +25,33 @@ using namespace flecsi;
 struct canon : topo::specialization<topo::canonical, canon> {
   enum index_space { vertices, cells };
   using index_spaces = has<cells, vertices>;
-  using connectivities = util::types<from<cells, has<vertices>>>;
+  using connectivities = list<entity<cells, has<vertices>>>;
 
   static coloring color(std::string const &) {
-    return {{16, 17}, 2};
+    return {2, {16, 17}, {{10}}};
   } // color
+
+  static void init_cells_to_vertices(field<util::id, data::ragged>::mutator m,
+    util::id f) {
+    // This could provide meaningful initial values, but we want to exercise
+    // writable topology/ragged accessors.
+    for(int i = 0; i < 4; ++i) {
+      m[i].resize(i + 1);
+    }
+
+    m[3].back() = f;
+  }
+
+  static void init_fields(canon::accessor<wo> t, int m) {
+    t.mine_(0) = m;
+    t.meta_ = {6, 3};
+  }
+
+  static void initialize(data::topology_slot<canon> & s, int m, util::id f) {
+    auto & cf = s->connect_.get<canon::cells>().get<canon::vertices>();
+    execute<init_cells_to_vertices, mpi>(cf(s), f);
+    execute<init_fields, mpi>(s, m);
+  }
 };
 
 canon::slot canonical;
@@ -41,24 +63,9 @@ const int mine = 35;
 const util::id favorite = 3;
 const double p0 = 3.5;
 
-void
-allocate0(topo::resize::Field::accessor<wo> a) {
-  a = data::partition::make_row(color(), 1 + 2 + 3 + 4);
-}
-void
-allocate(field<util::id, data::ragged>::mutator m) {
-  // This could provide meaningful initial values, but we want to exercise
-  // writable topology/ragged accessors.
-  for(int i = 0; i < 4; ++i)
-    m[i].resize(i + 1);
-}
-
 int
-init(canon::accessor<wo> t, field<double>::accessor<wo> c) {
+init(canon::accessor<ro> t, field<double>::accessor<wo> c) {
   UNIT {
-    t.mine(0) = mine;
-    t.meta = {6, 3};
-    t.get_connect<canon::cells, canon::vertices>()[3].back() = favorite;
     util::id last = -1;
     for(const auto v : t.entities<canon::vertices>()) {
       static_assert(
@@ -102,10 +109,10 @@ permute(field<util::id, data::ragged>::mutator m) {
 int
 check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
   UNIT {
-    auto & r = t.mine(0);
+    auto & r = t.mine_(0);
     static_assert(std::is_same_v<decltype(r), const int &>);
     EXPECT_EQ(r, mine);
-    auto & m = t.meta.get();
+    auto & m = t.meta_.get();
     static_assert(std::is_same_v<decltype(m), const canon::core::Meta &>);
     EXPECT_EQ(m.column_size, 2 * m.column_offset);
     const auto cv =
@@ -128,19 +135,16 @@ canonical_driver() {
   UNIT {
     const std::string filename = "input.txt";
     coloring.allocate(filename);
-    canonical.allocate(coloring.get());
+    canonical.allocate(coloring.get(), mine, favorite);
 
-    auto & cf = canonical->connect.get<canon::cells>().get<canon::vertices>();
-    auto & p = canonical->ragged.get_partition<canon::cells>(cf.fid);
-    execute<allocate0>(p.sizes());
-    p.resize();
-    execute<allocate>(cf(canonical));
+    auto & cf = canonical->connect_.get<canon::cells>().get<canon::vertices>();
+    // execute<allocate>(cf(canonical));
     auto pc = pressure(canonical);
     EXPECT_EQ(test<init>(canonical, pc), 0);
     EXPECT_EQ(test<permute>(cf(canonical)), 0);
     EXPECT_EQ(test<check>(canonical, pc), 0);
 
-    auto & c = canonical.get().part.get<canon::cells>();
+    auto & c = canonical.get().part_.get<canon::cells>();
     execute<shrink>(c.sizes());
     c.resize();
     EXPECT_EQ(test<check>(canonical, pc), 0);

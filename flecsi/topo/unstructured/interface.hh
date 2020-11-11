@@ -62,6 +62,7 @@ closure(typename Policy::definition const & md,
   auto rank = communicator.rank();
   auto size = communicator.size();
 
+  coloring.colors = size;
   coloring.index_colorings.resize(1 + Policy::auxiliary_colorings);
   coloring.distribution.resize(communicator.size());
   coloring.distribution[rank].resize(1 + Policy::auxiliary_colorings);
@@ -339,35 +340,36 @@ struct unstructured : unstructured_base,
 
   unstructured(coloring const & c)
     : with_ragged<Policy>(c.colors), with_meta<Policy>(c.colors),
-      part(make_partitions(c,
+      part_(make_partitions(c,
         index_spaces(),
         std::make_index_sequence<index_spaces::size>())) {
     init_ragged(index_spaces());
+    allocate_connectivities(c, connect_);
   }
 
   static inline const connect_t<Policy> connect_;
-  static inline const lists_t<Policy> special;
-  util::key_array<repartitioned, index_spaces> part;
+  static inline const lists_t<Policy> special_;
+  util::key_array<repartitioned, index_spaces> part_;
 
   std::size_t colors() const {
-    return part.front().colors();
+    return part_.front().colors();
   }
 
   template<index_space S>
   data::region & get_region() {
-    return part.template get<S>();
+    return part_.template get<S>();
   }
   template<index_space S>
   const data::partition & get_partition(field_id_t) const {
-    return part.template get<S>();
+    return part_.template get<S>();
   }
 
   template<class F>
   void fields(F fn) {
-    for(auto & r : part)
+    for(auto & r : part_)
       fn(resize::field, r.sz);
     connect_visit([&](const auto & f) { fn(f, *this); }, connect_);
-    connect_visit([&](const auto & f) { fn(f, this->meta); }, special);
+    connect_visit([&](const auto & f) { fn(f, this->meta); }, special_);
   }
 
 private:
@@ -379,9 +381,27 @@ private:
     flog_assert(c.index_colorings.size() == sizeof...(Value),
       c.index_colorings.size()
         << " sizes for " << sizeof...(Value) << " index spaces");
-    return {{make_repartitioned<Policy, Value>(c.colors,
-      make_partial<allocate>(c.index_colorings[Index], c.colors))...}};
+    return {{make_repartitioned<Policy, Value>(
+      c.colors, make_partial<is_size>(c.index_colorings[Index], c.colors))...}};
   }
+
+  template<auto... VV, typename... TT>
+  void allocate_connectivities(const unstructured_base::coloring & c,
+    util::key_tuple<util::key_type<VV, TT>...> const & /* deduce pack */) {
+    std::size_t entity = 0;
+    (
+      [&](TT const & row) {
+        auto & cc = c.connectivity_sizes[entity++];
+        std::size_t is{0};
+        for(auto & fd : row) {
+          auto & p = this->ragged.template get_partition<VV>(fd.fid);
+          execute<cn_size>(cc[is++], p.sizes());
+          p.resize();
+        }
+      }(connect_.template get<VV>()),
+      ...);
+  }
+
   template<index_space... SS>
   void init_ragged(util::constants<SS...>) {
     (this->template extend_offsets<SS>(), ...);
@@ -401,7 +421,7 @@ private:
   using accessor = data::accessor_member<Field, Privileges>;
   util::key_array<resize::accessor, index_spaces> size_;
   connect_access<Policy, Privileges> connect_;
-  list_access<Policy, Privileges> special{unstructured::special};
+  list_access<Policy, Privileges> special_{unstructured::special_};
 
   template<index_space From, index_space To>
   auto & connectivity() {
@@ -443,7 +463,7 @@ public:
 
   template<index_space I, entity_list L>
   auto special_entities() const {
-    return make_ids<I>(special.template get<I>().template get<L>()[0]);
+    return make_ids<I>(special_.template get<I>().template get<L>()[0]);
   }
 
   template<class F>
@@ -451,7 +471,7 @@ public:
     for(auto & a : size_)
       f(a);
     connect_visit(f, connect_);
-    connect_visit(f, special);
+    connect_visit(f, special_);
   }
 }; // struct unstructured<Policy>::access
 

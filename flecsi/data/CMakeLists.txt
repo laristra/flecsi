@@ -90,20 +90,6 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-add_unit(canonical
-  SOURCES
-    test/canonical.cc
-  THREADS 2
-)
-
-add_unit(index
-  SOURCES
-    test/index.cc
-  THREADS 2
-)
-endif()
-
 add_unit(privilege_pack
   SOURCES
     test/privilege_pack.cc

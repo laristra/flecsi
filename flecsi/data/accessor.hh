@@ -122,6 +122,10 @@ struct accessor<dense, T, P> : accessor<raw, T, P> {
     return s[index];
   } // operator()
 
+  typename accessor::element_type & operator[](std::size_t index) const {
+    return this->span()[index];
+  }
+
   base_type & get_base() {
     return *this;
   }

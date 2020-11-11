@@ -31,7 +31,7 @@ struct canon : topo::specialization<topo::canonical, canon> {
   using connectivities = util::types<from<cells, has<vertices>>>;
 
   static coloring color(std::string const &) {
-    return {{40, 60}, 2};
+    return {2, {40, 60}, {{10}}};
   } // color
 };
 
