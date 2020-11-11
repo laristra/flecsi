@@ -118,6 +118,7 @@ check(double1::accessor<ro> p,
     const auto me = color();
     flog(info) << "check on " << me << std::endl;
     ASSERT_EQ(p, me);
+    EXPECT_GE(r.get_base().span().size(), r.span().size() * 2);
     ASSERT_EQ(r.size(), 1u);
     const auto s = r[0];
     static_assert(std::is_same_v<decltype(s), const util::span<const int>>);
@@ -147,14 +148,15 @@ index_driver() {
     Noisy::count = 0;
     for(const auto f : {verts_field.fid, vfrac_field.fid}) {
       auto & p = process_topology->ragged.get_partition<topo::elements>(f);
+      p.growth = {0, 0, 0.25, 0.5, 1};
       execute<allocate>(p.sizes());
-      p.resize();
     }
     const auto pressure = pressure_field(process_topology);
     const auto verts = verts_field(process_topology);
     const auto vfrac = vfrac_field(process_topology);
     const auto noise = noisy_field(process_topology);
     execute<rows>(verts);
+    execute<rows>(verts); // to make new size visible
     execute<drows>(vfrac);
     execute<assign>(pressure, verts, vfrac);
     execute<reset>(noise);

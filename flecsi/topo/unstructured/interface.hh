@@ -396,7 +396,6 @@ private:
         for(auto & fd : row) {
           auto & p = this->ragged.template get_partition<VV>(fd.fid);
           execute<cn_size>(cc[is++], p.sizes());
-          p.resize();
         }
       }(connect_.template get<VV>()),
       ...);

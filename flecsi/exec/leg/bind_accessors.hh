@@ -109,6 +109,7 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
   template<class T>
   void visit(data::mutator<data::ragged, T> & m) {
     visit(m.get_base());
+    visit(m.get_size());
     m.bind();
   }
   template<class T>
