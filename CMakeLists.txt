@@ -193,10 +193,10 @@ if(NOT FORMAT_ONLY)
   include(kokkos)
 
   #----------------------------------------------------------------------------#
-  # Caliper
+  # Caliper Annotation options
   #----------------------------------------------------------------------------#
 
-  include(caliper)
+  include(annotation)
 
   #----------------------------------------------------------------------------#
   # Runtime models
@@ -498,6 +498,7 @@ if(NOT FORMAT_ONLY)
   summary_option("ENABLE_GRAPHVIZ" ${ENABLE_GRAPHVIZ} "")
   summary_option("ENABLE_OPENMP" ${ENABLE_OPENMP} "")
   summary_option("ENABLE_HDF5" ${ENABLE_HDF5} "")
+  summary_info("FLECSI_CALIPER_DETAIL" "${FLECSI_CALIPER_DETAIL}" TRUE)
 
   message(STATUS ${_summary})
 

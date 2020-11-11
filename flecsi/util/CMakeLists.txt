@@ -18,6 +18,7 @@
 #------------------------------------------------------------------------------#
 
 set(util_HEADERS
+  annotation.hh
   array_ref.hh
   bit_buffer.hh
   bitutils.hh
@@ -200,3 +201,15 @@ add_unit(hashtable
   SOURCES
     test/hashtable.cc
 )
+
+#------------------------------------------------------------------------------#
+# annotation
+#------------------------------------------------------------------------------#
+if (NOT FLECSI_CALIPER_DETAIL STREQUAL "none")
+add_unit(annotation
+  SOURCES
+  test/annotation.cc
+  THREADS
+  3 4
+)
+endif()

@@ -315,7 +315,7 @@ a file buffer, and the std::clog stream buffer.
 
 Before attempting this example, you should make sure that you have
 configured and built FleCSI with ENABLE_FLOG=ON.
-Additional usefule options are:
+Additional useful options are:
 
 * FLOG_ENABLE_COLOR_OUTPUT=ON
 * FLOG_ENABLE_TAGS=ON
@@ -526,7 +526,7 @@ FLOG Options (CMake)
 ^^^^^^^^^^^^^^^^^^^^
 
 Defaults for the FLOG options have been chosen in an attempt to most
-closely model the behavoir one would expect from the execution and
+closely model the behavior one would expect from the execution and
 output of a standard MPI program.
 However, because of the asynchronous nature of FleCSI's execution model,
 it is important to understand the options that control FLOG's behavior,
@@ -613,5 +613,115 @@ There are currently two other options that control FLOG output:
   This is not an error.
   In general, some experimentation is necessary to achieve the desired
   level of output with FLOG and FleCSI.
+
+
+Example 4: Caliper Annotations
+++++++++++++++++++++++++++++++
+
+The `Caliper <https://software.llnl.gov/Caliper/>`_ Annotation interface in
+FleCSI is used internally to inject Caliper instrumentation throughout the code.
+This enables users to investigate runtime overhead and application performance
+with Caliper.  Users can also use this interface to add additional annotations
+to performance sensitive regions of their applications.
+
+To CMake variable *FLECSI_CALIPER_DETAIL* is used to disable or control the
+level of detail in included Caliper annotations.  The currently available
+options are:
+
+* *FLECSI_CALIPER_DETAIL=none* |br|
+  Caliper annotations are disabled
+* *FLECSI_CALIPER_DETAIL=low* |br|
+  Annotations marked with low severity detail are included
+* *FLECSI_CALIPER_DETAIL=medium* |br|
+  Annotations marked with low and medium severity detail are included
+* *FLECSI_CALIPER_DETAIL=high* |br|
+  All annotations are included
+
+.. caution::
+
+   To use Caliper annotations with the Legion backend, the Legion option
+   ``--ll:force-kthreads`` must be used.  Caliper is not aware of Legion
+   user-level threads, so additional care must be practiced when using
+   annotations with this runtime.
+
+
+Adding Annotations
+^^^^^^^^^^^^^^^^^^
+
+In addition to instrumenting FleCSI runtime overhead, the annotation interface
+can be used to add annotations to applications.  This allows users to instrument
+their code and use Caliper to collect timing data.  An annotation for a code
+region must specify a detail level, context, and name.  The detail level is used
+to selectively control the inclusion of an annotation using the cmake variable
+*FLECSI_CALIPER_DETAIL*.  The context for an annotation is used as a named
+grouping for annotations.  In caliper, this can be used to filter and aggregate
+annotations using the `caliper query language <http://software.llnl.gov/Caliper/calql.html>`_.
+
+To annotation a code region, either scope guards or explicit begin and end
+functions are called.  Consider the main function for this example:
+
+.. literalinclude:: ../../../../tutorial/1-runtime/4-caliper.cc
+  :language: cpp
+  :lines: 72-90
+
+A scope guard is used to annotation the top level task:
+
+.. literalinclude:: ../../../../tutorial/1-runtime/4-caliper.cc
+  :language: cpp
+  :lines: 82-84
+
+For this region, the FleCSI execution context ``annotation::execution`` is
+specified along with a detail level of ``annnotation::detail::low``.
+To avoid hard coding strings throughout an application, annotation regions can be
+specified using structs that inherit from ``annotation::region``:
+
+.. literalinclude:: ../../../../tutorial/1-runtime/4-caliper.cc
+  :language: cpp
+  :lines: 25-46
+
+This first defines a new annotation context ``user_execution`` by inheriting
+from ``annotation::context`` and specifying a name for the context.  Three code
+regions are then defined using this context.  The first two regions use the
+default detail level of ``annotation::detail::medium``.  The main function is
+then annotated using a scope guard:
+
+.. literalinclude:: ../../../../tutorial/1-runtime/4-caliper.cc
+  :language: cpp
+  :lines: 74-74
+
+The sleeper function demonstrates the use of calls to begin and end as opposed to using scope guards:
+
+.. literalinclude:: ../../../../tutorial/1-runtime/4-caliper.cc
+  :language: cpp
+  :lines: 53-55
+
+Generating Reports
+^^^^^^^^^^^^^^^^^^
+`Caliper configuration files
+<http://software.llnl.gov/Caliper/configuration.html>`_ can be used to generate
+configure caliper to generate reports for annotated regions of the code.  For
+example, consider the following caliper configuration file:
+
+.. literalinclude:: ../../../../tutorial/1-runtime/caliper.config
+  :language: bash
+
+This file defines three caliper configuration profiles that can be used to
+generate reports using the ``mpireport`` service (see
+http://software.llnl.gov/Caliper/services.html).  This service aggregates
+timings across all ranks using ``CALI_MPI_REPORT_CONFIG`` query statements.  For
+example, to run with the second configuration profile in this file (named
+user), ensure ``caliper.config`` is in your working directory and run with::
+
+  CALI_CONFIG_PROFILE=user ./runtime-caliper
+
+When the program completes, caliper flushes the aggregated timings to a report
+file named ``report.cali``::
+
+  User-Execution  count min-time max-time total-time-%
+  sleeper/subtask     1 0.400095 0.400095    57.141409
+  sleeper             2 0.300089 0.300089    42.858591
+
+The output represents collected timings for annotations in the
+``User-Execution`` annotation context.
 
 .. vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 :
