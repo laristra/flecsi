@@ -341,8 +341,8 @@ public:
     if(message.size() > FLOG_MAX_MESSAGE_SIZE) {
       tmp.resize(FLOG_MAX_MESSAGE_SIZE - 100);
       std::stringstream stream;
-      stream << tmp << FLOG_COLOR_LTRED << " OUTPUT BUFFER TRUNCATED "
-             << FLOG_MAX_MESSAGE_SIZE << "(" << message.size() << ")"
+      stream << tmp << FLOG_COLOR_LTRED << " OUTPUT BUFFER TRUNCATED TO "
+             << FLOG_MAX_MESSAGE_SIZE << " BYTES (" << message.size() << ")"
              << FLOG_COLOR_PLAIN << std::endl;
       tmp = stream.str();
     } // if

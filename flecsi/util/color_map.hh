@@ -22,6 +22,10 @@
 namespace flecsi {
 namespace util {
 
+struct color_map;
+
+inline std::ostream & operator<<(std::ostream & stream, color_map const & cm);
+
 /*!
   The color_map type provides information for creating mappings of colors to
   processes, where the ratio of processes to colors is not one. Additionally,
@@ -30,6 +34,8 @@ namespace util {
  */
 
 struct color_map {
+
+  friend std::ostream & operator<<(std::ostream & stream, color_map const & cm);
 
   /*!
     Construct a color map.
@@ -197,6 +203,26 @@ private:
   std::vector<size_t> dist_;
 
 }; // struct color_map
+
+inline std::ostream &
+operator<<(std::ostream & stream, color_map const & cm) {
+
+  stream << "colors: " << cm.colors_ << std::endl;
+  stream << "indices: " << cm.indices_ << std::endl;
+  stream << "domain_size: " << cm.domain_size_ << std::endl;
+  stream << "quotient: " << cm.quotient_ << std::endl;
+  stream << "remainder: " << cm.remainder_ << std::endl;
+  stream << "color_quotient: " << cm.color_quotient_ << std::endl;
+  stream << "color_remainder: " << cm.color_remainder_ << std::endl;
+
+  stream << "distribution: ";
+  for(auto r : cm.dist_) {
+    stream << r << " ";
+  } // for
+  stream << std::endl;
+
+  return stream;
+} // operator<<
 
 } // namespace util
 } // namespace flecsi

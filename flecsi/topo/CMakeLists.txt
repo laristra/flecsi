@@ -37,6 +37,7 @@ set(topo_HEADERS
   structured/interface.hh
   structured/simple_box_colorer.hh
   structured/types.hh
+  unstructured/coloring_functors.hh
   unstructured/coloring_utils.hh
   unstructured/interface.hh
   unstructured/types.hh
@@ -122,8 +123,20 @@ add_unit(coloring
 add_unit(closure
   SOURCES
     unstructured/test/closure.cc
-    unstructured/test/test_definition.hh
+    unstructured/test/simple_definition.hh
+    unstructured/test/ugm_definition.hh
+  INPUTS
+    unstructured/test/simple2d-16x16.msh
+    unstructured/test/simple2d-8x8.msh
+    unstructured/test/bunny.ugm
+  THREADS 2
 )
+
+#add_unit(closure
+#  SOURCES
+#    unstructured/test/closure.cc
+#    unstructured/test/test_definition.hh
+#)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
@@ -139,7 +152,7 @@ add_unit(unstructured
 add_unit(fixed
   SOURCES
     unstructured/test/fixed.cc
-  THREADS 2
+  THREADS 4
 )
 
 endif()

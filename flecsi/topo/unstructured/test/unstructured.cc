@@ -17,7 +17,7 @@
 #include "flecsi/execution.hh"
 #include "flecsi/topo/unstructured/coloring_utils.hh"
 #include "flecsi/topo/unstructured/interface.hh"
-#include "flecsi/topo/unstructured/mpi_communicator.hh"
+//#include "flecsi/topo/unstructured/mpi_communicator.hh"
 #include "flecsi/topo/unstructured/test/simple_definition.hh"
 #include "flecsi/util/parmetis.hh"
 #include "flecsi/util/unit.hh"
@@ -73,6 +73,7 @@ struct unstructured : topo::specialization<topo::unstructured, unstructured> {
     Coloring
    *--------------------------------------------------------------------------*/
 
+#if 0
   struct coloring_policy {
     // primary independent closure token
     using primary =
@@ -94,19 +95,24 @@ struct unstructured : topo::specialization<topo::unstructured, unstructured> {
     using definition = topo::unstructured_impl::simple_definition;
     using communicator = topo::unstructured_impl::mpi_communicator;
   }; // struct coloring_policy
+#endif
 
   static coloring color(std::string const & filename) {
+    (void)filename;
     topo::unstructured_impl::simple_definition sd(filename.c_str());
     const size_t colors{processes()};
-    auto [naive, cells] = topo::unstructured_impl::make_dcrs(sd, 1);
+    auto [naive, cells, v2c, c2c] = topo::unstructured_impl::make_dcrs(sd, 1);
     auto raw = util::parmetis::color(naive, colors);
     auto coloring = topo::unstructured_impl::distribute(naive, colors, raw);
+#if 0
     auto closure = topo::unstructured_impl::closure<coloring_policy>(
       sd, coloring[0], MPI_COMM_WORLD);
 
     // FIXME: dummy information so that tests pass
     closure.connectivity_sizes.push_back({10, 10});
     return closure;
+#endif
+    return {};
   } // color
 
   /*--------------------------------------------------------------------------*

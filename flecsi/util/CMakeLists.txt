@@ -22,7 +22,6 @@ set(util_HEADERS
   array_ref.hh
   bit_buffer.hh
   bitutils.hh
-  cache.hh
   color_map.hh
   common.hh
   constant.hh
@@ -37,7 +36,6 @@ set(util_HEADERS
   parmetis.hh
   graphviz.hh
   hashtable.hh
-  macros.hh
   mpi.hh
   offset.hh
   reorder.hh
@@ -102,15 +100,6 @@ add_unit(array_ref
   INPUTS
     test/array_ref.blessed
     ${array_ref_blessed_input}
-)
-
-#------------------------------------------------------------------------------#
-# cache
-#------------------------------------------------------------------------------#
-
-add_unit(cache
-  SOURCES
-    test/cache.cc
 )
 
 #------------------------------------------------------------------------------#
