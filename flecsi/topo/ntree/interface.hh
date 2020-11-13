@@ -173,11 +173,7 @@ struct ntree : ntree_base {
   }
 
   template<index_space S>
-  const data::partition & get_partition(field_id_t fid) const {
-    // Use subtopology that stores partition and then provides this
-    // get_partition
-    if(fid == cp_data_tree.field_id())
-      return cp_data_tree.get_dst_partition();
+  const data::partition & get_partition(field_id_t) const {
     return part.template get<S>();
   }
 
