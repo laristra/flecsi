@@ -101,7 +101,7 @@ struct ntree : ntree_base {
           make_partial<allocate>(c.tdata_offset_))}},
 
       cp_data_tree(
-        get_region<tree_data>(),
+        *this,
         [&] {
           // Vector of dst size
           std::vector<data::partition::row> dst_sizes(c.nparts_);
@@ -110,7 +110,6 @@ struct ntree : ntree_base {
           }
           return dst_sizes;
         }(),
-        data_send(*this),
         [&] {
           std::vector<std::vector<data::partition::point>> dst_ptrs(c.nparts_);
           std::size_t colors = c.nparts_;
@@ -121,7 +120,8 @@ struct ntree : ntree_base {
               data::partition::make_point(i == colors - 1 ? i : i + 1, 0));
           }
           return dst_ptrs;
-        }()) {}
+        }(),
+        util::constant<tree_data>()) {}
   // Ntree mandatory fields ---------------------------------------------------
 
   // Entities fields
@@ -150,9 +150,6 @@ struct ntree : ntree_base {
   static inline const typename field<ntree_data>::template definition<Policy,
     tree_data>
     data_field;
-  static inline const field<data::partition::point>::definition<Policy,
-    tree_data>
-    data_send;
 
   // --------------------------------------------------------------------------
 
@@ -179,7 +176,7 @@ struct ntree : ntree_base {
   const data::partition & get_partition(field_id_t fid) const {
     // Use subtopology that stores partition and then provides this
     // get_partition
-    if(fid == data_send.fid)
+    if(fid == cp_data_tree.field_id())
       return cp_data_tree.get_dst_partition();
     return part.template get<S>();
   }

@@ -20,6 +20,7 @@ All rights reserved.
 #endif
 
 #include "flecsi/data/backend.hh"
+#include "flecsi/data/field.hh"
 #include "flecsi/execution.hh"
 #include "flecsi/topo/index.hh"
 
@@ -33,7 +34,8 @@ All rights reserved.
 
 namespace flecsi::data {
 
-struct copy_plan {
+struct copy_plan : private topo::with_size {
+  using Points = std::vector<std::vector<data::partition::point>>;
 
   static void fill_dst_sizes_task(topo::resize::Field::accessor<wo> a,
     const std::vector<data::partition::row> & v) {
@@ -49,47 +51,47 @@ struct copy_plan {
     std::copy(v[c].begin(), v[c].end(), a.span().begin());
   }
 
-  template<typename FT>
-  copy_plan(const region & reg,
+  template<template<class> class C,
+    class P,
+    typename P::index_space S = P::default_space()>
+  copy_plan(C<P> & t,
     const std::vector<data::partition::row> & dst_row_vec,
-    const FT & ptr_field_ref,
-    const std::vector<std::vector<data::partition::point>> & dst_ptrs_vec)
-    : sizes_(reg.size().first), reg_(reg), ptr_field_id_(ptr_field_ref.fid()),
+    const Points & src,
+    util::constant<S> = {})
+    : with_size(t.colors()), reg_(t.template get_region<S>()),
+      ptr_field_id_(pointers<P, S>.fid),
       // In this first case we use a subtopology to create the
       // destination partition which supposed to be contiguous
       dst_partition_(reg_,
-        sizes_.sz,
-        [&] {
-          auto field = flecsi::topo::resize::field(sizes_.sz);
-          flecsi::execute<fill_dst_sizes_task>(field, dst_row_vec);
-          return field.fid();
-        }()),
+        sz,
+        (execute<fill_dst_sizes_task>(sizes(), dst_row_vec),
+          topo::resize::field.fid)),
       // From the pointers we feed in the destination partition
       // we create the source partition
-      src_partition_(
-        reg_,
+      src_partition_(reg_,
         dst_partition_,
-        [&] {
-          flecsi::execute<fill_dst_ptrs_task>(ptr_field_ref, dst_ptrs_vec);
-          return ptr_field_ref.fid();
-        }(),
+        (execute<fill_dst_ptrs_task>(pointers<P, S>(t), src), ptr_field_id_),
         data::partition::buildByImage_tag) {}
 
   void issue_copy(const field_id_t & data_fid) {
     launch_copy(reg_, src_partition_, dst_partition_, data_fid, ptr_field_id_);
   }
 
+  field_id_t field_id() const {
+    return ptr_field_id_;
+  }
   const partition & get_dst_partition() const {
     return dst_partition_;
   }
 
 private:
-  flecsi::topo::with_size sizes_;
-
   const region & reg_;
   field_id_t ptr_field_id_;
   partition dst_partition_;
   partition src_partition_;
+
+  template<class T, typename T::index_space S>
+  static inline const field<partition::point>::definition<T, S> pointers;
 
   // Subtopology
 
