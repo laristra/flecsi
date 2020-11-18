@@ -184,7 +184,7 @@ struct partition {
     return {{r, 0}, {r, upper(n)}};
   }
 
-  static row make_row(std::size_t i, std::pair<std::size_t, std::size_t> n) {
+  static row make_row(std::size_t i, subrow n) {
     const Legion::coord_t r = i;
     const Legion::coord_t ln = n.first;
     return {{r, ln}, {r, upper(n.second)}};

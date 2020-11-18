@@ -102,14 +102,7 @@ struct ntree : ntree_base {
 
       cp_data_tree(
         *this,
-        [&] {
-          // Vector of dst size
-          std::vector<data::partition::row> dst_sizes(c.nparts_);
-          for(std::size_t i = 0; i < c.nparts_; ++i) {
-            dst_sizes[i] = data::partition::make_row(i, std::make_pair(1, 3));
-          }
-          return dst_sizes;
-        }(),
+        {c.nparts_, {{1, 3}}},
         [&] {
           std::vector<std::vector<data::partition::point>> dst_ptrs(c.nparts_);
           std::size_t colors = c.nparts_;

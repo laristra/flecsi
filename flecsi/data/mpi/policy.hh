@@ -31,14 +31,14 @@ struct region {
 };
 
 struct partition {
-  using row = std::pair<std::size_t, std::size_t>;
+  using row = subrow;
   using point = std::size_t;
 
   static row make_row(std::size_t, std::size_t n) {
     return std::make_pair(0, n);
   }
 
-  static row make_row(std::size_t, std::pair<std::size_t, std::size_t> n) {
+  static row make_row(std::size_t, subrow n) {
     return n;
   }
   static std::size_t row_size(const row & r) {

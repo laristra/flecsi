@@ -34,6 +34,23 @@ All rights reserved.
 
 namespace flecsi {
 namespace data::detail {
+struct intervals_base {
+  using coloring = std::vector<std::size_t>;
+
+protected:
+  static std::size_t index(const coloring & c, std::size_t i) {
+    return c[i];
+  }
+};
+template<class P>
+struct intervals_category : intervals_base, topo::repartitioned {
+  explicit intervals_category(const coloring & c)
+    : partitioned(
+        topo::make_repartitioned<P>(c.size(), make_partial<index>(c))) {
+    resize();
+  }
+};
+
 // NB: Registering a field on an indirect topology doesn't do anything.
 struct indirect_base : partition {
   using coloring = void;
@@ -57,22 +74,34 @@ struct indirect_category : indirect_base {
 } // namespace data::detail
 // Needed before defining a specialization:
 template<>
+struct topo::detail::base<data::detail::intervals_category> {
+  using type = data::detail::intervals_base;
+};
+template<>
 struct topo::detail::base<data::detail::indirect_category> {
   using type = data::detail::indirect_base;
 };
 
 namespace data {
 namespace detail {
+struct intervals : topo::specialization<intervals_category, intervals> {
+  static const field<partition::row>::definition<intervals> field;
+};
+// Now that intervals is complete:
+inline const field<partition::row>::definition<intervals> intervals::field;
 struct indirect : topo::specialization<indirect_category, indirect> {};
 } // namespace detail
 
-struct copy_plan : private topo::with_size {
+struct copy_plan {
+  using Intervals = std::vector<std::vector<subrow>>;
   using Points = std::vector<std::vector<data::partition::point>>;
 
-  static void fill_dst_sizes_task(topo::resize::Field::accessor<wo> a,
-    const std::vector<data::partition::row> & v) {
-    const auto i = run::context::instance().color();
-    a = v[i];
+  static void set_dests(field<partition::row>::accessor<wo> a,
+    const Intervals & v) {
+    const auto i = color();
+    auto * p = a.span().data();
+    for(auto & s : v[i])
+      *p++ = partition::make_row(i, s);
   }
 
   static void fill_dst_ptrs_task(
@@ -87,16 +116,22 @@ struct copy_plan : private topo::with_size {
     class P,
     typename P::index_space S = P::default_space()>
   copy_plan(C<P> & t,
-    const std::vector<data::partition::row> & dst_row_vec,
+    const Intervals & dests,
     const Points & src,
     util::constant<S> = {})
-    : with_size(t.colors()),
+    : dest_ptrs_([&dests] {
+        detail::intervals::coloring ret;
+        ret.reserve(dests.size());
+        for(const auto & v : dests)
+          ret.push_back(v.size());
+        return ret;
+      }()),
       // In this first case we use a subtopology to create the
       // destination partition which supposed to be contiguous
       dest_(&t.template get_region<S>(),
-        sz,
-        (execute<fill_dst_sizes_task>(sizes(), dst_row_vec),
-          topo::resize::field.fid)),
+        dest_ptrs_,
+        (execute<set_dests>(detail::intervals::field(dest_ptrs_), dests),
+          detail::intervals::field.fid)),
       // From the pointers we feed in the destination partition
       // we create the source partition
       src_partition_(dest_.get_region(),
@@ -111,6 +146,7 @@ struct copy_plan : private topo::with_size {
   }
 
 private:
+  detail::intervals::core dest_ptrs_;
   detail::indirect::core dest_;
   partition src_partition_;
 

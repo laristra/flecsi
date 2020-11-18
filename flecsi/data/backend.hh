@@ -26,6 +26,7 @@ namespace flecsi::data {
 // Use {} if unknown:
 enum completeness { unknown = 0, complete = 1, incomplete = 2 };
 using size2 = std::pair<std::size_t, std::size_t>;
+using subrow = std::pair<std::size_t, std::size_t>; // [begin, end)
 constexpr inline std::size_t logical_size = 1ul << 32;
 } // namespace flecsi::data
 
