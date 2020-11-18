@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <flecsi/execution/hpx/future.h>
+#include <flecsi/runtime/types.h>
+
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: Apr 04, 2017
@@ -19,6 +22,9 @@ struct hpx_sparse_data_handle_policy_t {
 
   field_id_t fid;
   bool * ghost_is_readable;
+
+  execution::hpx_future_u<void> future;
+
 }; // class mpi_sparse_data_handle_policy_t
 
 } // namespace flecsi

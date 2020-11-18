@@ -64,8 +64,8 @@ hpx_context_policy_t::hpx_main(void (*driver)(int, char *[]),
   int argc,
   char * argv[]) {
 
-  color_ = hpx::get_locality_id();
-  colors_ = hpx::get_num_localities(hpx::launch::sync);
+  MPI_Comm_rank(MPI_COMM_WORLD, &color_);
+  MPI_Comm_size(MPI_COMM_WORLD, &colors_);
 
   // execute user code (driver)
   (*driver)(argc, argv);

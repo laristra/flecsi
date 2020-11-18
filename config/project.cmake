@@ -448,7 +448,8 @@ endif()
 
 list(APPEND FLECSI_LIBRARY_DEPENDENCIES ${COLORING_LIBRARIES})
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi" OR
+   FLECSI_RUNTIME_MODEL STREQUAL "hpx")
   #------------------------------------------------------------------------------#
   # Use lazy aggregated dense field communication
   #------------------------------------------------------------------------------#
@@ -582,7 +583,7 @@ if (ENABLE_KOKKOS)
   target_link_libraries(
     FleCSI PUBLIC ${Kokkos_LIBRARIES}
   )
-  if(ENABLE_FLECSI_TUTORIAL) 
+  if(ENABLE_FLECSI_TUTORIAL)
     target_link_libraries(FleCSI-Tut PUBLIC ${Kokkos_LIBRARIES})
   endif()
 endif()

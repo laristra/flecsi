@@ -20,6 +20,7 @@
 
 #include <cinchlog.h>
 #include <functional>
+#include <stdexcept>
 #include <tuple>
 #include <unordered_map>
 #include <utility>
@@ -30,6 +31,8 @@
 #include <flecsi/execution/hpx/finalize_handles.h>
 #include <flecsi/execution/hpx/future.h>
 #include <flecsi/execution/hpx/reduction_wrapper.h>
+#include <flecsi/execution/hpx/task_add_dependencies.h>
+#include <flecsi/execution/hpx/task_collect_dependencies.h>
 #include <flecsi/execution/hpx/task_epilog.h>
 #include <flecsi/execution/hpx/task_prolog.h>
 #include <flecsi/utils/annotation.h>
@@ -145,22 +148,42 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     typename... ARGS>
   static decltype(auto) execute_task(ARGS &&... args) {
 
+#if defined(ENABLE_CALIPER)
+    auto tname = context_.function_name(TASK);
+#else
+    /* using a placeholder so we do not have to maintain
+       function_name_registry when annotations are disabled. */
+    std::string tname{""};
+#endif
+
+    using annotation = flecsi::utils::annotation;
+
     // Make a tuple from the task arguments.
     using decayed_args = utils::convert_tuple_t<ARG_TUPLE, std::decay_t>;
 
-    auto func = [function = context_t::instance().function(TASK),
-                  task_args = decayed_args(
-                    std::make_tuple(std::forward<ARGS>(args)...))]() mutable {
-      context_t & context_ = context_t::instance();
+    auto task_args = decayed_args(std::make_tuple(std::forward<ARGS>(args)...));
 
-      using annotation = flecsi::utils::annotation;
-#if defined(ENABLE_CALIPER)
-      auto tname = context_.function_name(TASK);
-#else
-      /* using a placeholder so we do not have to maintain
-         function_name_registry when annotations are disabled. */
-      std::string tname{""};
-#endif
+    // collect dependencies from all arguments for this task
+    annotation::begin<annotation::execute_task_collect_dependencies>(tname);
+    task_collect_dependencies_t task_collect_dependencies;
+    task_collect_dependencies.walk(task_args);
+    annotation::end<annotation::execute_task_collect_dependencies>();
+
+    // add this task as a dependency to all arguments, if needed
+    annotation::begin<annotation::execute_task_add_dependencies>(tname);
+    task_add_dependencies_t task_add_dependencies;
+    task_add_dependencies.walk(task_args);
+    annotation::end<annotation::execute_task_add_dependencies>();
+
+    auto func = [tname, function = context_t::instance().function(TASK),
+                  task_args = std::move(task_args)](
+                  auto && dependencies) mutable {
+      // propagate exceptions
+      for(auto && f : dependencies) {
+        f.get();
+      }
+
+      context_t & context_ = context_t::instance();
 
       annotation::begin<annotation::execute_task_prolog>(tname);
       // run task_prolog to copy ghost cells.
@@ -219,9 +242,29 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
       return future;
     };
 
-    // for unwrapping o returned future
-    hpx_future_u<RETURN> future = hpx::async(std::move(func));
-    future.wait();
+    // force unwrapping of returned future
+    hpx_future_u<RETURN> future = hpx::dataflow(
+      std::move(func), std::move(task_collect_dependencies.dependencies_));
+
+    // make sure the task dependencies are triggered once this future has
+    // become ready
+    if(task_add_dependencies.has_dependencies) {
+      future.then(
+        [p = std::move(task_add_dependencies.promise)](auto && f) mutable {
+          if(f.has_exception()) {
+            try {
+              f.get(); // rethrow exception
+            }
+            catch(...) {
+              p.set_exception(std::current_exception());
+            }
+          }
+          else {
+            p.set_value();
+          }
+        });
+    }
+
     return future;
   } // execute_task
 

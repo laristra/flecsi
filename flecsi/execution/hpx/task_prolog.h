@@ -366,7 +366,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     std::vector<std::pair<size_t, field_id_t>> modified_fields;
 
-    while(not exchange_queue.empty()) {
+    while(!exchange_queue.empty()) {
       auto & fi = exchange_queue.front();
       auto & field_metadata = context.registered_field_metadata().at(fi.second);
       modified_fields.emplace_back(fi.first, fi.second);
@@ -507,7 +507,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     std::vector<std::pair<size_t, field_id_t>> modified_fields;
 
     // compute aggregated communication sizes
-    while(not sparse_exchange_queue.empty()) {
+    while(!sparse_exchange_queue.empty()) {
       auto & fi = sparse_exchange_queue.front();
       auto & field_data = context.registered_sparse_field_data().at(fi.second);
       auto & field_metadata =

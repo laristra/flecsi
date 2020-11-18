@@ -102,6 +102,16 @@ public:
     inline static const std::string tag{"finalize-handles"};
     static constexpr detail detail_level = detail::high;
   };
+  struct execute_task_collect_dependencies
+    : execute_task<execute_task_collect_dependencies> {
+    inline static const std::string tag{"collect-dependencies"};
+    static constexpr detail detail_level = detail::high;
+  };
+  struct execute_task_add_dependencies
+    : execute_task<execute_task_add_dependencies> {
+    inline static const std::string tag{"add-dependencies"};
+    static constexpr detail detail_level = detail::high;
+  };
 
   /**
    * Tag beginning of code region with caliper annotation.
