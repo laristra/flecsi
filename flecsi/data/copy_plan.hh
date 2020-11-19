@@ -58,23 +58,23 @@ struct copy_plan : private topo::with_size {
     const std::vector<data::partition::row> & dst_row_vec,
     const Points & src,
     util::constant<S> = {})
-    : with_size(t.colors()), reg_(t.template get_region<S>()),
+    : with_size(t.colors()), reg_(&t.template get_region<S>()),
       ptr_field_id_(pointers<P, S>.fid),
       // In this first case we use a subtopology to create the
       // destination partition which supposed to be contiguous
-      dst_partition_(reg_,
+      dst_partition_(*reg_,
         sz,
         (execute<fill_dst_sizes_task>(sizes(), dst_row_vec),
           topo::resize::field.fid)),
       // From the pointers we feed in the destination partition
       // we create the source partition
-      src_partition_(reg_,
+      src_partition_(*reg_,
         dst_partition_,
         (execute<fill_dst_ptrs_task>(pointers<P, S>(t), src), ptr_field_id_),
         data::partition::buildByImage_tag) {}
 
-  void issue_copy(const field_id_t & data_fid) {
-    launch_copy(reg_, src_partition_, dst_partition_, data_fid, ptr_field_id_);
+  void issue_copy(const field_id_t & data_fid) const {
+    launch_copy(*reg_, src_partition_, dst_partition_, data_fid, ptr_field_id_);
   }
 
   field_id_t field_id() const {
@@ -85,7 +85,7 @@ struct copy_plan : private topo::with_size {
   }
 
 private:
-  const region & reg_;
+  const region * reg_;
   field_id_t ptr_field_id_;
   partition dst_partition_;
   partition src_partition_;
