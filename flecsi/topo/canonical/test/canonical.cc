@@ -31,8 +31,7 @@ struct canon : topo::specialization<topo::canonical, canon> {
     return {2, {16, 17}, {{10}}};
   } // color
 
-  static void init_cells_to_vertices(
-    field<util::id, data::ragged>::mutator<rw> m,
+  static void init_cells_to_vertices(topo::connect_field::mutator<rw> m,
     util::id f) {
     // This could provide meaningful initial values, but we want to exercise
     // writable topology/ragged accessors.
@@ -83,7 +82,7 @@ init(canon::accessor<ro> t, field<double>::accessor<wo> c) {
 
 // Exercise the std::vector-like interface:
 int
-permute(field<util::id, data::ragged>::mutator<rw> m) {
+permute(topo::connect_field::mutator<rw> m) {
   UNIT {
     const auto &&src = m[3], &&dst = m[0], &&two = m[1];
     // Intermediate sizes can exceed the capacity of the underlying raw field:
