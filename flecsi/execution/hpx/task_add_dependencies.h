@@ -79,89 +79,112 @@ struct task_add_dependencies_t
 
    */
 
-  template<typename T,
+  template<typename Dense,
+    typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(dense_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-
-    auto & h = a.handle;
-    // Skip Read Only handles
-    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
-                 (GHOST_PERMISSIONS == wo)) {
-      return;
-    }
-
-    h.future = future;
-    has_dependencies = true;
-  } // handle
-
-  template<typename T, size_t PERMISSIONS>
-  void handle(global_accessor_u<T, PERMISSIONS> & a) {
-    auto & h = a.handle;
-
-    // Skip Read Only handles
-    if(PERMISSIONS == ro)
-      return;
-
-    h.future = future;
-    has_dependencies = true;
-  } // handle
-
-  template<typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS>
-  void handle(ragged_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-    auto & h = a.handle;
+  void handle(Dense & a,
+    dense_accessor<T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS> &) {
 
     // Skip Read Only handles
     if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
                  (GHOST_PERMISSIONS == wo)) {
       return;
     }
-
-    h.future = future;
-    has_dependencies = true;
+    else {
+      a.future = future;
+      has_dependencies = true;
+    }
   } // handle
 
-  template<typename T,
+  template<typename Global, typename T, size_t PERMISSIONS>
+  void handle(Global & a, global_accessor_u<T, PERMISSIONS> &) {
+    // Skip Read Only handles
+    if constexpr(PERMISSIONS != ro) {
+      a.future = future;
+      has_dependencies = true;
+    }
+  } // handle
+
+  template<typename Ragged,
+    typename T,
     size_t EXCLUSIVE_PERMISSIONS,
     size_t SHARED_PERMISSIONS,
     size_t GHOST_PERMISSIONS>
-  void handle(sparse_accessor<T,
-    EXCLUSIVE_PERMISSIONS,
-    SHARED_PERMISSIONS,
-    GHOST_PERMISSIONS> & a) {
-    handle(a.ragged);
+  void handle(Ragged & a,
+    ragged_accessor<T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS> &) {
+
+    // Skip Read Only handles
+    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
+                 (GHOST_PERMISSIONS == wo)) {
+      return;
+    }
+    else {
+      a.future = future;
+      has_dependencies = true;
+    }
   } // handle
 
-  template<typename T>
-  void handle(ragged_mutator<T> & m) {} // handle
+  template<typename Sparse,
+    typename T,
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS>
+  void handle(Sparse & a1,
+    sparse_accessor<T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS> & a2) {
+    handle(a1, a2.ragged);
+  } // handle
 
-  template<typename T>
-  void handle(sparse_mutator<T> & m) {
-    handle(m.ragged);
+  template<typename Ragged, typename T2>
+  void handle(Ragged & m1, ragged_mutator<T2> & m2) {
+    handle(m1, m2.handle);
+  }
+
+  template<typename Sparse, typename T2>
+  void handle(Sparse & m1, sparse_mutator<T2> & m2) {
+    handle(m1, m2.ragged);
+  }
+
+  template<typename Client, typename T, size_t PERMISSIONS>
+  void handle(Client & h, data_client_handle_u<T, PERMISSIONS> &) {
+
+    // Skip Read Only handles
+    if constexpr(PERMISSIONS == ro) {
+      return;
+    }
+    else {
+      h.future = future;
+      has_dependencies = true;
+    }
   }
 
   /*!
-   Handle individual list items
+    Handle individual list items
    */
-  template<typename T,
-    std::size_t N,
+  template<typename T1,
+    typename T2,
+    std::size_t N1,
+    std::size_t N2,
     template<typename, std::size_t>
-    typename Container,
-    typename =
-      std::enable_if_t<std::is_base_of<data::data_reference_base_t, T>::value>>
-  void handle(Container<T, N> & list) {
-    for(auto & item : list) {
-      handle(item);
+    typename Container1,
+    template<typename, std::size_t>
+    typename Container2>
+  void handle(Container1<T1, N1> & list1, Container2<T2, N2> & list2) {
+
+    static_assert(N1 == N2, "list sizes must match");
+    auto it2 = list2.begin();
+    for(auto it1 = list1.begin(); it1 != list1.end(); ++it1, ++it2) {
+      handle(*it1, *it2);
     }
   }
 
@@ -169,25 +192,25 @@ struct task_add_dependencies_t
    * Handle tuple of items
    */
 
-  template<typename... Ts, size_t... I>
-  void handle_tuple_items(std::tuple<Ts...> & items,
+  template<typename... Ts1, typename... Ts2, size_t... I>
+  void handle_tuple_items(std::tuple<Ts1...> & items1,
+    std::tuple<Ts2...> & items2,
     std::index_sequence<I...>) {
-    (handle(std::get<I>(items)), ...);
+    (handle(std::get<I>(items1), std::get<I>(items2)), ...);
   }
 
-  template<typename... Ts,
-    typename = std::enable_if_t<
-      utils::are_base_of_t<data::data_reference_base_t, Ts...>::value>>
-  void handle(std::tuple<Ts...> & items) {
-    handle_tuple_items(items, std::make_index_sequence<sizeof...(Ts)>{});
+  template<typename... Ts1, typename... Ts2>
+  void handle(std::tuple<Ts1...> & items1, std::tuple<Ts2...> & items2) {
+    handle_tuple_items(
+      items1, items2, std::make_index_sequence<sizeof...(Ts1)>{});
   }
 
   /*!
     This method is called on any task arguments that are not handles, e.g.
     scalars or those that did not need any special handling.
    */
-  template<typename T>
-  void handle(T &) {} // handle
+  template<typename T1, typename T2>
+  void handle(T1 &, T2 &) {} // handle
 
   /*!
     This future is used as a dependency for all arguments, if needed

@@ -159,24 +159,26 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
     using annotation = flecsi::utils::annotation;
 
     // Make a tuple from the task arguments.
-    using decayed_args = utils::convert_tuple_t<ARG_TUPLE, std::decay_t>;
+    auto task_args = std::forward_as_tuple(args...);
 
-    auto task_args = decayed_args(std::make_tuple(std::forward<ARGS>(args)...));
+    using decayed_args = utils::convert_tuple_t<ARG_TUPLE, std::decay_t>;
+    auto decayed_task_args =
+      decayed_args(std::make_tuple(std::forward<ARGS>(args)...));
 
     // collect dependencies from all arguments for this task
     annotation::begin<annotation::execute_task_collect_dependencies>(tname);
     task_collect_dependencies_t task_collect_dependencies;
-    task_collect_dependencies.walk(task_args);
+    task_collect_dependencies.walk(decayed_task_args);
     annotation::end<annotation::execute_task_collect_dependencies>();
 
     // add this task as a dependency to all arguments, if needed
     annotation::begin<annotation::execute_task_add_dependencies>(tname);
     task_add_dependencies_t task_add_dependencies;
-    task_add_dependencies.walk(task_args);
+    task_add_dependencies.walk(task_args, decayed_task_args);
     annotation::end<annotation::execute_task_add_dependencies>();
 
     auto func = [tname, function = context_t::instance().function(TASK),
-                  task_args = std::move(task_args)](
+                  task_args = std::move(decayed_task_args)](
                   auto && dependencies) mutable {
       // propagate exceptions
       for(auto && f : dependencies) {
@@ -196,10 +198,7 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
       annotation::end<annotation::execute_task_prolog>();
 
       annotation::begin<annotation::execute_task_user>(tname);
-
-      auto user_fun = reinterpret_cast<RETURN (*)(ARG_TUPLE)>(function);
-      hpx_future_u<RETURN> future =
-        executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
+      auto future = executor_u<RETURN, ARG_TUPLE>::execute(function, task_args);
       annotation::end<annotation::execute_task_user>();
 
       annotation::begin<annotation::execute_task_epilog>(tname);
@@ -217,55 +216,43 @@ struct FLECSI_EXPORT hpx_execution_policy_t {
 
       if constexpr(REDUCTION != ZERO) {
 
-        return future
-          .then([](hpx_future_u<RETURN> && future) {
-            context_t & context_ = context_t::instance();
-            MPI_Datatype datatype =
-              flecsi::utils::mpi_typetraits_u<RETURN>::type();
+        return future.then([](auto && future) {
+          context_t & context_ = context_t::instance();
+          MPI_Datatype datatype =
+            flecsi::utils::mpi_typetraits_u<RETURN>::type();
 
-            auto reduction_op = context_.reduction_operations().find(REDUCTION);
+          auto reduction_op = context_.reduction_operations().find(REDUCTION);
 
-            clog_assert(reduction_op != context_.reduction_operations().end(),
-              "invalid reduction operation");
+          clog_assert(reduction_op != context_.reduction_operations().end(),
+            "invalid reduction operation");
 
-            const RETURN sendbuf = future.get();
-            RETURN recvbuf;
+          const RETURN sendbuf = future.get();
+          RETURN recvbuf;
 
-            MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
-              MPI_COMM_WORLD);
+          MPI_Allreduce(&sendbuf, &recvbuf, 1, datatype, reduction_op->second,
+            MPI_COMM_WORLD);
 
-            return recvbuf;
-          })
-          .share();
+          return recvbuf;
+        });
       }
 
       return future;
     };
 
     // force unwrapping of returned future
-    hpx_future_u<RETURN> future = hpx::dataflow(
+    hpx::future<RETURN> future = hpx::dataflow(
       std::move(func), std::move(task_collect_dependencies.dependencies_));
 
     // make sure the task dependencies are triggered once this future has
     // become ready
     if(task_add_dependencies.has_dependencies) {
-      future.then(
-        [p = std::move(task_add_dependencies.promise)](auto && f) mutable {
-          if(f.has_exception()) {
-            try {
-              f.get(); // rethrow exception
-            }
-            catch(...) {
-              p.set_exception(std::current_exception());
-            }
-          }
-          else {
-            p.set_value();
-          }
+      hpx::traits::detail::get_shared_state(future)->set_on_completed(
+        [p = std::move(task_add_dependencies.promise)]() mutable {
+          p.set_value();
         });
     }
 
-    return future;
+    return future.share();
   } // execute_task
 
   //--------------------------------------------------------------------------//
