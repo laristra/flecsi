@@ -407,12 +407,13 @@ struct hpx_context_policy_t {
     // compute ghost and shared indicies
     size_t ghost_count = 0;
     for(auto const & ghost : index_coloring.ghost) {
-      metadata.ghost_indices[ghost.rank].push_back(ghost_count);
+      metadata.ghost_indices[static_cast<int>(ghost.rank)].push_back(
+        ghost_count);
       ++ghost_count;
     }
     for(auto const & shared : index_coloring.shared) {
       for(auto const & s : shared.shared) {
-        metadata.shared_indices[s].push_back(shared.offset);
+        metadata.shared_indices[static_cast<int>(s)].push_back(shared.offset);
       }
     }
 

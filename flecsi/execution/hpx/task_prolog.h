@@ -356,8 +356,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 #if defined(FLECSI_USE_AGGCOMM)
   void launch_copies() {
     auto & context = context_t::instance();
-    const int my_color = context.color();
-    const int num_colors = context.colors();
+    auto const my_color = context.color();
+    auto const num_colors = context.colors();
 
     auto & ispace_dmap = context.index_space_data_map();
 
@@ -372,8 +372,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       modified_fields.emplace_back(fi.first, fi.second);
 
       for(auto rank = 0; rank < num_colors; ++rank) {
-        ghostSize[rank] += field_metadata.ghost_field_sizes[rank];
-        sharedSize[rank] += field_metadata.shared_field_sizes[rank];
+        ghostSize[rank] +=
+          static_cast<MPI_Request>(field_metadata.ghost_field_sizes[rank]);
+        sharedSize[rank] +=
+          static_cast<MPI_Request>(field_metadata.shared_field_sizes[rank]);
       }
 
       exchange_queue.pop();
@@ -443,8 +445,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         }
       }
 
-      const int resultSend = MPI_Isend(allSendBuffer[rank], bufSize, MPI_CHAR,
-        rank, my_color, MPI_COMM_WORLD, &allSendRequests[rank]);
+      const int resultSend = MPI_Isend(allSendBuffer[rank],
+        static_cast<int>(bufSize), MPI_CHAR, static_cast<int>(rank),
+        static_cast<int>(my_color), MPI_COMM_WORLD, &allSendRequests[rank]);
       if(resultSend != MPI_SUCCESS) {
         clog(error) << "ERROR: MPI_Isend of rank " << my_color
                     << " for data sent to " << rank
@@ -453,8 +456,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     }
 
     // wait for data to arrive
-    const int result = MPI_Waitall(
-      allRecvRequests.size(), allRecvRequests.data(), MPI_STATUSES_IGNORE);
+    const int result = MPI_Waitall(static_cast<int>(allRecvRequests.size()),
+      allRecvRequests.data(), MPI_STATUSES_IGNORE);
     if(result != MPI_SUCCESS) {
       clog(fatal) << "ERROR: MPI_Waitall of rank " << my_color
                   << " on recv requests failed with error code: " << result
@@ -488,8 +491,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     }
 
     // ensure all send are completed
-    MPI_Waitall(
-      allSendRequests.size(), allSendRequests.data(), MPI_STATUSES_IGNORE);
+    MPI_Waitall(static_cast<int>(allSendRequests.size()),
+      allSendRequests.data(), MPI_STATUSES_IGNORE);
 
     for(int rank = 0; rank < num_colors; ++rank)
       MPI_Free_mem(allSendBuffer[rank]);
@@ -497,8 +500,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
   void launch_sparse_copies() {
     auto & context = context_t::instance();
-    const int my_color = context.color();
-    const int num_colors = context.colors();
+    auto const my_color = context.color();
+    auto const num_colors = context.colors();
 
     auto & ispace_dmap = context.index_space_data_map();
 
@@ -519,9 +522,11 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
           auto count = field_metadata.ghost_row_sizes[ind];
           auto gsize = ghost_sizes.find(el.first);
           if(gsize != ghost_sizes.end())
-            gsize->second += (count * field_data.type_size);
+            gsize->second +=
+              static_cast<MPI_Datatype>(count * field_data.type_size);
           else
-            ghost_sizes[el.first] = (count * field_data.type_size);
+            ghost_sizes[el.first] =
+              static_cast<MPI_Datatype>(count * field_data.type_size);
         }
       }
 
@@ -533,9 +538,11 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
           auto count = row.size();
           auto ssize = shared_sizes.find(el.first);
           if(ssize != shared_sizes.end())
-            ssize->second += (count * field_data.type_size);
+            ssize->second +=
+              static_cast<MPI_Datatype>(count * field_data.type_size);
           else
-            shared_sizes[el.first] = (count * field_data.type_size);
+            shared_sizes[el.first] =
+              static_cast<MPI_Datatype>(count * field_data.type_size);
         }
       }
 
@@ -553,8 +560,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       int bufsize = el.second;
       all_recv_buf.emplace(rank, bufsize);
       all_recv_req.push_back(MPI_REQUEST_NULL);
-      int err = MPI_Irecv(all_recv_buf[rank].data(), bufsize, MPI_BYTE, rank,
-        rank, MPI_COMM_WORLD, &all_recv_req.back());
+      int err = MPI_Irecv(all_recv_buf[rank].data(), static_cast<int>(bufsize),
+        MPI_BYTE, static_cast<int>(rank), static_cast<int>(rank),
+        MPI_COMM_WORLD, &all_recv_req.back());
       if(err != MPI_SUCCESS) {
         clog(error) << "MPI_Irecv failed on rank " << rank
                     << " with error code: " << err << std::endl;
@@ -577,7 +585,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         auto * rows = reinterpret_cast<data::row_vector_u<uint8_t> *>(
           field_data.rows.data());
         for(size_t i : field_metadata.shared_indices[rank]) {
-          int r = i + field_data.num_exclusive;
+          int r = static_cast<int>(i + field_data.num_exclusive);
           const auto & row = rows[r];
           size_t count = row.size();
           std::memcpy(&all_send_buf[rank][buf_offset], row.begin(),
@@ -586,8 +594,9 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         }
       }
 
-      int err = MPI_Isend(all_send_buf[rank].data(), bufsize, MPI_BYTE, rank,
-        my_color, MPI_COMM_WORLD, &all_send_req.back());
+      int err = MPI_Isend(all_send_buf[rank].data(), static_cast<int>(bufsize),
+        MPI_BYTE, static_cast<int>(rank), static_cast<int>(my_color),
+        MPI_COMM_WORLD, &all_send_req.back());
       if(err != MPI_SUCCESS) {
         clog(error) << "MPI_Isend of rank " << my_color
                     << " with error code: " << err << std::endl;
@@ -596,8 +605,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     // wait for halo data
     {
-      int err = MPI_Waitall(
-        all_recv_req.size(), all_recv_req.data(), MPI_STATUSES_IGNORE);
+      int err = MPI_Waitall(static_cast<int>(all_recv_req.size()),
+        all_recv_req.data(), MPI_STATUSES_IGNORE);
       if(err != MPI_SUCCESS) {
         clog(fatal) << "MPI_Waitall "
                     << " on recv requests failed with error code: " << err
@@ -619,7 +628,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         auto * rows = reinterpret_cast<data::row_vector_u<uint8_t> *>(
           field_data.rows.data());
         for(size_t i : field_metadata.ghost_indices[rank]) {
-          int r = field_data.num_exclusive + field_data.num_shared + i;
+          int r = static_cast<int>(
+            field_data.num_exclusive + field_data.num_shared + i);
           auto & row = rows[r];
           int count = field_metadata.ghost_row_sizes[i];
           std::memcpy(row.begin(), &all_recv_buf[rank][buf_offset],
@@ -630,7 +640,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     }
 
     // wait for sends
-    MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
+    MPI_Waitall(static_cast<int>(all_send_req.size()), all_send_req.data(),
+      MPI_STATUSES_IGNORE);
   }
 
   template<typename T, typename HANDLE_TYPE>
@@ -651,7 +662,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     // post revieves
     for(const auto & el : field_metadata.ghost_indices) {
       int rank = el.first;
-      int bufsize = el.second.size();
+      int bufsize = static_cast<int>(el.second.size());
       all_recv_buf.emplace(rank, bufsize);
       all_recv_req.push_back(MPI_REQUEST_NULL);
       MPI_Irecv(all_recv_buf[rank].data(), bufsize, count_mpi_type, rank, rank,
@@ -665,20 +676,23 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       for(size_t i : field_metadata.shared_indices[rank]) {
         all_send_buf[rank].push_back(h.rows[h.num_exclusive_ + i].size());
       }
-      int my_color = context.color();
-      MPI_Isend(all_send_buf[rank].data(), all_send_buf[rank].size(),
-        count_mpi_type, rank, my_color, MPI_COMM_WORLD, &all_send_req.back());
+      int my_color = static_cast<int>(context.color());
+      MPI_Isend(all_send_buf[rank].data(),
+        static_cast<int>(all_send_buf[rank].size()), count_mpi_type,
+        static_cast<int>(rank), static_cast<int>(my_color), MPI_COMM_WORLD,
+        &all_send_req.back());
     }
 
     // wait for row sizes
-    MPI_Waitall(all_recv_req.size(), all_recv_req.data(), MPI_STATUSES_IGNORE);
+    MPI_Waitall(static_cast<int>(all_recv_req.size()), all_recv_req.data(),
+      MPI_STATUSES_IGNORE);
 
     for(const auto & el : field_metadata.ghost_indices) {
       int rank = el.first;
       int buf_offset = 0;
       for(size_t i : field_metadata.ghost_indices[rank]) {
         field_metadata.ghost_row_sizes[i] = all_recv_buf[rank][buf_offset];
-        int r = h.num_exclusive_ + h.num_shared_ + i;
+        int r = static_cast<int>(h.num_exclusive_ + h.num_shared_ + i);
         auto & row = h.rows[r];
         row.resize(field_metadata.ghost_row_sizes[i]);
         buf_offset++;
@@ -686,7 +700,8 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     }
 
     // wait for sends
-    MPI_Waitall(all_send_req.size(), all_send_req.data(), MPI_STATUSES_IGNORE);
+    MPI_Waitall(static_cast<int>(all_send_req.size()), all_send_req.data(),
+      MPI_STATUSES_IGNORE);
   }
 
   std::queue<std::pair<size_t, field_id_t>> exchange_queue;
