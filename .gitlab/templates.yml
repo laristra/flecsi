@@ -86,7 +86,6 @@
     # for MPI (and potentially HPX)
     - spack install --only dependencies ${VERSION}
         backend=legion ${VARIANTS} ^${MPI_PROVIDER}
-    - spack install cmake
     - *env_spack_archive
   artifacts:
     when: on_success
@@ -225,7 +224,7 @@
         -DCMAKE_C_FLAGS="${C_FLAGS}" \
         ../../tutorial
     - make
-    - make test
+    - CTEST_OUTPUT_ON_FAILURE=1 make test
     - ccache -s
 
 #------------------------------------------------------------------------------#
