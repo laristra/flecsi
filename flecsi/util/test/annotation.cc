@@ -39,14 +39,14 @@ wait() {
 int
 annotation_driver() {
   UNIT {
+    namespace ann = flecsi::util::annotation;
+
     auto & c = run::context::instance();
     auto rank = c.process();
     auto size = c.processes();
 
     cali::RegionProfile rp;
     rp.start();
-
-    namespace ann = flecsi::util::annotation;
 
     { // test custom annotation context/region
       {
@@ -62,7 +62,7 @@ annotation_driver() {
         reduce<check_custom, exec::fold::sum<std::size_t>, mpi>(times["custom"])
           .get();
       EXPECT_EQ(combined_time, size * (size + 1) / 2);
-    } // namespace ann=flecsi::util::annotation;
+    }
 
     { // test user execution
       execute<wait, mpi>();

@@ -23,6 +23,7 @@ set(topo_HEADERS
   core.hh
   global.hh
   index.hh
+  size.hh
   ntree/coloring.hh
   ntree/geometry.hh
   ntree/interface.hh

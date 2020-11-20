@@ -133,10 +133,13 @@ struct region {
     return size2(p[0] + 1, p[1] + 1);
   }
 
+  // Returns whether field is new.
   template<class D>
-  void cleanup(field_id_t f, D d) {
+  bool cleanup(field_id_t f, D d, bool hard = true) {
     // We assume that creating the objects will be successful:
-    destroy[f] = d;
+    return (hard ? destroy.insert_or_assign(f, std::move(d))
+                 : destroy.try_emplace(f, std::move(d)))
+      .second;
   }
 
   unique_index_space index_space;
@@ -147,7 +150,6 @@ private:
   // Each field can have a destructor (for individual field values) registered
   // that is invoked when the field is recreated or the region is destroyed.
   struct finalizer {
-    finalizer() = default;
     template<class F>
     finalizer(F f) : f(std::move(f)) {}
     finalizer(finalizer && o) noexcept {
