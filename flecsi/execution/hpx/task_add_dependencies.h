@@ -146,13 +146,15 @@ struct task_add_dependencies_t
   } // handle
 
   template<typename Ragged, typename T2>
-  void handle(Ragged & m1, ragged_mutator<T2> & m2) {
-    handle(m1, m2.handle);
+  void handle(Ragged & r1, ragged_mutator<T2> & r2) {
+    r1.future = future;
+    has_dependencies = true;
   }
 
   template<typename Sparse, typename T2>
   void handle(Sparse & m1, sparse_mutator<T2> & m2) {
-    handle(m1, m2.ragged);
+    m1.future = future;
+    has_dependencies = true;
   }
 
   template<typename Client, typename T, size_t PERMISSIONS>

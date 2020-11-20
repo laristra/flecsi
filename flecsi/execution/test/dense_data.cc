@@ -149,10 +149,11 @@ driver(int argc, char ** argv) {
   auto ph = flecsi_get_handle(ch, hydro, pressure, size_t, dense, 0);
 
   flecsi_execute_task(init, flecsi::execution, index, ch, ph);
-  flecsi_execute_task(print, flecsi::execution, index, ch, ph);
+  auto future = flecsi_execute_task(print, flecsi::execution, index, ch, ph);
+  future.wait(); // wait before modifying the data
 
   flecsi_execute_task(modify, flecsi::execution, index, ch, ph);
-  auto future = flecsi_execute_task(print, flecsi::execution, index, ch, ph);
+  future = flecsi_execute_task(print, flecsi::execution, index, ch, ph);
   future.wait(); // wait before comparing results
 
   auto & context = execution::context_t::instance();

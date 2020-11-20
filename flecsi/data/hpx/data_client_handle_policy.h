@@ -12,6 +12,7 @@
 
 #include <flecsi/execution/hpx/future.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/topology/mesh_types.h>
 
 namespace flecsi {
 
