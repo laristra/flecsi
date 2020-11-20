@@ -13,6 +13,9 @@
                                                                               */
 /*! @file */
 
+#include <hpx/modules/execution_base.hpp> // yield_while
+#include <hpx/modules/runtime_local.hpp> // get_thread_manager
+
 #include <cstddef>
 #include <cstdint>
 
@@ -26,6 +29,17 @@ clog_register_tag(runtime_driver);
 
 namespace flecsi {
 namespace execution {
+
+void
+termination_detection() {
+  auto & tm = hpx::threads::get_thread_manager();
+  hpx::util::yield_while(
+    [&tm]() -> bool {
+      return tm.get_thread_count() >
+             std::int64_t(1) + tm.get_background_thread_count();
+    },
+    "termination_detection");
+}
 
 //----------------------------------------------------------------------------//
 // Implementation of FleCSI runtime driver task.
@@ -97,6 +111,9 @@ hpx_runtime_driver(int argc, char ** argv) {
   // Execute the specialization driver.
   specialization_tlt_init(argc, argv);
   annotation::end<annotation::spl_tlt_init>();
+
+  // make sure all activity has ceased
+  termination_detection();
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   remap_shared_entities();
@@ -149,6 +166,9 @@ hpx_runtime_driver(int argc, char ** argv) {
   annotation::begin<annotation::spl_spmd_init>();
   specialization_spmd_init(argc, argv);
   annotation::end<annotation::spl_spmd_init>();
+
+  // make sure all activity has ceased
+  termination_detection();
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   context_.advance_state();
