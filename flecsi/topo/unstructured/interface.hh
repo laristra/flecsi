@@ -381,8 +381,8 @@ private:
     flog_assert(c.index_colorings.size() == sizeof...(Value),
       c.index_colorings.size()
         << " sizes for " << sizeof...(Value) << " index spaces");
-    return {{make_repartitioned<Policy, Value>(
-      c.colors, make_partial<is_size>(c.index_colorings[Index], c.colors))...}};
+    return {{make_repartitioned<Policy, Value>(c.colors,
+      make_partial<idx_size>(c.index_colorings[Index], c.colors))...}};
   }
 
   template<auto... VV, typename... TT>
@@ -395,7 +395,7 @@ private:
         std::size_t is{0};
         for(auto & fd : row) {
           auto & p = this->ragged.template get_partition<VV>(fd.fid);
-          execute<cn_size>(cc[is++], p.sizes());
+          execute<cnx_size>(cc[is++], p.sizes());
         }
       }(connect_.template get<VV>()),
       ...);

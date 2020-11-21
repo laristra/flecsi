@@ -160,7 +160,7 @@ struct unstructured_base {
     std::vector<std::vector<coloring_meta>> distribution;
   }; // struct coloring
 
-  static std::size_t is_size(
+  static std::size_t idx_size(
     unstructured_impl::index_coloring const & index_coloring,
     std::size_t colors,
     std::size_t color) {
@@ -170,7 +170,7 @@ struct unstructured_base {
     return 10;
   }
 
-  static void cn_size(std::size_t size, resize::Field::accessor<wo> a) {
+  static void cnx_size(std::size_t size, resize::Field::accessor<wo> a) {
     a = data::partition::make_row(color(), size);
   }
 
