@@ -44,7 +44,7 @@ ADD clang_fortran.py ./.clang_fortran.py
 
 RUN export GNU_VERSION=`cat .gnu_version` && \
   export NCURSES_VERSION=`cat .ncurses_version` && \
-  cat .images/${SUBDIR}/spack/upstream-packages.yaml | \
+  cat .images/${SUBDIR}/spack/packages.yaml | \
     sed "s,GNU_VERSION,${GNU_VERSION},g" | \
     sed "s,NCURSES_VERSION,${NCURSES_VERSION},g" > \
     .spack-upstream/etc/spack/packages.yaml
