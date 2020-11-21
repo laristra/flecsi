@@ -4,7 +4,7 @@ packages:
       - gcc@GNU_VERSION
     target: [skylake]
   cmake:
-    version: [3.19.0]
+    version: [3.18.4]
   ncurses:
     buildable: False
     externals:
