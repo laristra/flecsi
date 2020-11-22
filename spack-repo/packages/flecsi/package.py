@@ -58,7 +58,7 @@ class Flecsi(CMakePackage):
 
     # Dependencies
 
-    depends_on('cmake@3.12:')
+    depends_on('cmake@3.12:3.18.4')
 
     depends_on('mpich@3.2.1', when='^mpich')
     depends_on('openmpi@3.1.6', when='^openmpi')
