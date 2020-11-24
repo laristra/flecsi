@@ -142,7 +142,7 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
     visit(DATA_TYPE &) {
     {
       log::devel_guard guard(bind_accessors_tag);
-      flog_devel(info) << "Skipping argument with type "
+      flog_devel(info) << "No setup for parameter of type "
                        << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit

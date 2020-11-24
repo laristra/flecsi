@@ -63,7 +63,7 @@ struct unbind_base {
     visit(DATA_TYPE &) {
     {
       log::devel_guard guard(unbind_accessors_tag);
-      flog_devel(info) << "Skipping argument with type "
+      flog_devel(info) << "No cleanup for parameter of type "
                        << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit
