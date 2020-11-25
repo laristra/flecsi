@@ -227,13 +227,13 @@ struct task_prologue_t {
   /*--------------------------------------------------------------------------*
     Futures
    *--------------------------------------------------------------------------*/
-  template<typename DATA_TYPE>
-  void visit(const future<DATA_TYPE> & f) {
+  template<class P, class T>
+  void visit(P *, const future<T> & f) {
     futures_.push_back(f.legion_future_);
   }
 
-  template<typename DATA_TYPE>
-  void visit(const future<DATA_TYPE, exec::launch_type_t::index> & f) {
+  template<class P, class T>
+  void visit(P *, const future<T, exec::launch_type_t::index> & f) {
     future_maps_.push_back(f.legion_future_);
   }
 
@@ -241,15 +241,12 @@ struct task_prologue_t {
     Non-FleCSI Data Types
    *--------------------------------------------------------------------------*/
 
-  template<typename DATA_TYPE>
-  static void visit(DATA_TYPE &) {
-    static_assert(!std::is_base_of_v<data::convert_tag, DATA_TYPE>,
-      "Unknown task argument type");
-    {
-      log::devel_guard guard(task_prologue_tag);
-      flog_devel(info) << "Skipping argument with type "
-                       << util::type<DATA_TYPE>() << std::endl;
-    }
+  template<class P, class A>
+  static std::enable_if_t<!std::is_base_of_v<data::convert_tag, A>> visit(P *,
+    const A &) {
+    log::devel_guard guard(task_prologue_tag);
+    flog_devel(info) << "Skipping argument with type " << util::type<A>()
+                     << std::endl;
   } // visit
 
 private:
@@ -267,12 +264,6 @@ private:
     else
       (void)ref, (void)f;
   }
-
-  // Argument types for which we don't also need the type of the parameter:
-  template<class P, typename DATA_TYPE>
-  void visit(P *, const DATA_TYPE & x) {
-    visit(x);
-  } // visit
 
   template<class... PP, class... AA>
   void walk(std::tuple<PP...> * /* to deduce PP */, AA &... aa) {
