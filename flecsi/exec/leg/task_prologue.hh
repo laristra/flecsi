@@ -172,12 +172,12 @@ private:
   void visit(data::ragged_accessor<T, P, OP> * null_p,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
     const field_id_t i = f.fid();
-    auto & t = f.topology();
+    auto & t = f.topology().ragged;
     // It's legitimate, if vacuous, to have the first use of a ragged field be
     // via an accessor (even a read-only one), since all the rows will have a
     // (well-defined) length of 0.
     raw<T, P, S>(i,
-      t.ragged,
+      t,
       t.template get_region<S>().cleanup(
         i,
         [=] {
