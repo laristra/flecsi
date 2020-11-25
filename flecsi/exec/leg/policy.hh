@@ -121,8 +121,9 @@ reduce_internal(Args &&... args) {
   auto legion_runtime = Legion::Runtime::get_runtime();
   auto legion_context = Legion::Runtime::get_context();
 
+  constexpr bool mpi_task = processor_type == task_processor_type_t::mpi;
   const auto domain_size = [&args..., &flecsi_context] {
-    if constexpr(processor_type == task_processor_type_t::mpi) {
+    if constexpr(mpi_task) {
       // The status of being an MPI task contributes a launch domain:
       return launch_size<
         typename detail::tuple_prepend<launch_domain, param_tuple>::type>(
@@ -139,7 +140,7 @@ reduce_internal(Args &&... args) {
 
   std::optional<param_tuple> mpi_args;
   std::vector<std::byte> buf;
-  if constexpr(processor_type == task_processor_type_t::mpi) {
+  if constexpr(mpi_task) {
     // MPI tasks must be invoked collectively from one task on each rank.
     // We therefore can transmit merely a pointer to a tuple of the arguments.
     // util::serial_put deliberately doesn't support this, so just memcpy it.
@@ -197,8 +198,7 @@ reduce_internal(Args &&... args) {
     }
 
     static_assert(processor_type == task_processor_type_t::toc ||
-                    processor_type == task_processor_type_t::loc ||
-                    processor_type == task_processor_type_t::mpi,
+                    processor_type == task_processor_type_t::loc || mpi_task,
       "Unknown launch type");
 
     LegionRuntime::Arrays::Rect<1> launch_bounds(
@@ -220,7 +220,7 @@ reduce_internal(Args &&... args) {
     launcher.point_futures.assign(
       pro.future_maps().begin(), pro.future_maps().end());
 
-    if(processor_type == task_processor_type_t::mpi)
+    if(mpi_task)
       launcher.tag = run::mapper::force_rank_match;
 
     if constexpr(!std::is_void_v<Reduction>) {
@@ -230,14 +230,14 @@ reduce_internal(Args &&... args) {
       const auto ret = future<return_t, launch_type_t::single>{
         legion_runtime->execute_index_space(
           legion_context, launcher, fold::wrap<Reduction, return_t>::id)};
-      if(processor_type == task_processor_type_t::mpi)
+      if(mpi_task)
         ret.wait();
       return ret;
     }
     else {
       const auto ret = future<return_t, launch_type_t::index>{
         legion_runtime->execute_index_space(legion_context, launcher)};
-      if(processor_type == task_processor_type_t::mpi)
+      if(mpi_task)
         ret.wait();
 
       return ret;
