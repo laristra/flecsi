@@ -48,7 +48,7 @@ inline log::devel_tag task_prologue_tag("task_prologue");
 namespace exec::leg {
 
 /*!
-  The task_prologue_t type can be called to walk task args before the
+  The task_prologue type can be called to walk task args before the
   task launcher is created. This allows us to gather region requirements
   and to set state on the associated data handles \em before Legion gets
   the task arguments tuple.
@@ -56,7 +56,12 @@ namespace exec::leg {
   @ingroup execution
 */
 
-struct task_prologue_t {
+struct task_prologue {
+  // Accessors here are the empty versions made to be serialized.
+  template<class P, class... AA>
+  task_prologue(P & p, AA &... aa) {
+    std::apply([&](auto &... pp) { (visit(&pp, aa), ...); }, p);
+  }
 
   std::vector<Legion::RegionRequirement> const & region_requirements() const {
     return region_reqs_;
@@ -86,11 +91,6 @@ struct task_prologue_t {
     }
     return r ? w ? READ_WRITE : READ_ONLY : w ? WRITE_DISCARD : NO_ACCESS;
   } // privilege_mode
-
-  template<class P, class... AA>
-  void walk(AA &... aa) {
-    walk(static_cast<P *>(nullptr), aa...);
-  }
 
   // All fields are handled in terms of their underlying raw-layout fields.
 
@@ -260,15 +260,10 @@ private:
       (void)ref, (void)f;
   }
 
-  template<class... PP, class... AA>
-  void walk(std::tuple<PP...> * /* to deduce PP */, AA &... aa) {
-    (visit(static_cast<std::decay_t<PP> *>(nullptr), aa), ...);
-  }
-
   std::vector<Legion::RegionRequirement> region_reqs_;
   std::vector<Legion::Future> futures_;
   std::vector<Legion::FutureMap> future_maps_;
-}; // task_prologue_t
+};
 
 } // namespace exec::leg
 } // namespace flecsi

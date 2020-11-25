@@ -62,27 +62,28 @@ struct nonconst_ref<const T &> {
 template<class T>
 using nonconst_ref_t = typename nonconst_ref<T>::type;
 
-// Serialize a tuple of converted arguments (or references to existing
+// Construct a tuple of converted arguments (or references to existing
 // arguments where possible).  Note that is_constructible_v<const
 // float&,const double&> is true, so we have to check
 // is_constructible_v<float&,double&> instead.
-template<class... PP, class... AA>
-auto
-serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
-  static_assert((std::is_const_v<std::remove_reference_t<const PP>> && ...),
-    "Tasks cannot accept non-const references");
-  return util::serial_put<std::tuple<std::conditional_t<
+template<bool M, class... PP, class... AA>
+std::conditional_t<M,
+  std::tuple<PP...>,
+  std::tuple<std::conditional_t<
     std::is_constructible_v<nonconst_ref_t<PP> &, nonconst_ref_t<AA>>,
     const PP &,
-    std::decay_t<PP>>...>>(
-    {exec::replace_argument<PP>(std::forward<AA>(aa))...});
+    std::decay_t<PP>>...>>
+make_parameters(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
+  static_assert(
+    M || (std::is_const_v<std::remove_reference_t<const PP>> && ...),
+    "only MPI tasks can accept non-const references");
+  return {exec::replace_argument<PP>(std::forward<AA>(aa))...};
 }
 
-// Helper to deduce PP:
-template<class... PP, class... AA>
-void
-mpi_arguments(std::optional<std::tuple<PP...>> & opt, AA &&... aa) {
-  opt.emplace(exec::replace_argument<PP>(std::forward<AA>(aa))...);
+template<bool M, class P, class... AA>
+auto
+make_parameters(AA &&... aa) {
+  return make_parameters<M>(static_cast<P *>(nullptr), std::forward<AA>(aa)...);
 }
 
 template<class, class>
@@ -135,23 +136,21 @@ reduce_internal(Args &&... args) {
     }
   }();
 
-  leg::task_prologue_t pro;
-  pro.walk<param_tuple>(args...);
+  auto params =
+    detail::make_parameters<mpi_task, param_tuple>(std::forward<Args>(args)...);
+  leg::task_prologue pro(params, args...);
 
-  std::optional<param_tuple> mpi_args;
   std::vector<std::byte> buf;
   if constexpr(mpi_task) {
     // MPI tasks must be invoked collectively from one task on each rank.
     // We therefore can transmit merely a pointer to a tuple of the arguments.
     // util::serial_put deliberately doesn't support this, so just memcpy it.
-    detail::mpi_arguments(mpi_args, std::forward<Args>(args)...);
-    const auto p = &*mpi_args;
+    const auto p = &params;
     buf.resize(sizeof p);
     std::memcpy(buf.data(), &p, sizeof p);
   }
   else {
-    buf = detail::serial_arguments(
-      static_cast<param_tuple *>(nullptr), std::forward<Args>(args)...);
+    buf = util::serial_put(params);
   }
 
   //------------------------------------------------------------------------//
