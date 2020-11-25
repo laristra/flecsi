@@ -162,7 +162,7 @@ struct task_prologue_t {
     std::size_t OP,
     class Topo,
     typename Topo::index_space S>
-  void ragged(data::ragged_accessor<T, P, OP> * null_p,
+  void visit(data::ragged_accessor<T, P, OP> * null_p,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
     const field_id_t i = f.fid();
     auto & t = f.topology();
@@ -181,19 +181,14 @@ struct task_prologue_t {
     visit(
       get_null_offsets(null_p), f.template cast<data::dense, std::size_t>());
   }
-  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
-  void visit(data::accessor<data::ragged, T, P> * null_p,
-    const data::field_reference<T, data::ragged, Topo, S> & f) {
-    ragged(null_p, f);
-  }
   template<class T, class Topo, typename Topo::index_space S>
   void visit(data::mutator<data::ragged, T> *,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
     auto & p = f.topology().ragged.template get_partition<S>(f.fid());
     p.resize();
     // A mutator doesn't have privileges, so supply the correct number to it:
-    ragged(data::mutator<data::ragged,
-             T>::template null_base<Topo::template privilege_count<S>>,
+    visit(data::mutator<data::ragged,
+            T>::template null_base<Topo::template privilege_count<S>>,
       f);
     visit(static_cast<topo::resize::Field::accessor<rw> *>(nullptr), p.sizes());
   }
