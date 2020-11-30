@@ -5,6 +5,7 @@
 #pragma once
 
 #include "specialization/control.hh"
+#include "tasks/init.hh"
 #include "tasks/init_mpi.hh"
 
 namespace standalone {
@@ -16,6 +17,7 @@ initialize() {
   control::state().steps() = 20;
 
   execute<task::init_mpi, mpi>(mpi_state(process_topology));
+  execute<task::init>(refinement_max(global_topology));
 
   return 0;
 }

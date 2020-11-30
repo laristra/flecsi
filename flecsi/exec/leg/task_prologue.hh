@@ -114,58 +114,48 @@ struct task_prologue_t {
     visit(get_null_base(null_p), ref.template cast<data::dense>());
   }
 
-  /*--------------------------------------------------------------------------*
-    Global Topology
-   *--------------------------------------------------------------------------*/
-
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::
-      field_reference<DATA_TYPE, data::raw, topo::global, topo::elements> &
-        ref) {
-    Legion::LogicalRegion region = ref.topology().logical_region;
-
-    static_assert(privilege_count(PRIVILEGES) == 1,
-      "global topology accessor type only takes one privilege");
-
-    Legion::RegionRequirement rr(
-      region, privilege_mode(PRIVILEGES), EXCLUSIVE, region);
-
-    rr.add_field(ref.fid());
-    region_reqs_.push_back(rr);
-  } // visit
-
   // This implementation can be generic because all topologies are expected to
-  // provide get_partition.
+  // provide get_region (and, with one exception, get_partition).
   template<typename DATA_TYPE,
     size_t PRIVILEGES,
-    class Topo,
-    typename Topo::index_space Space>
-  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
-    const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & ref) {
-    const auto f = ref.fid();
-    auto & t = ref.topology();
-    auto & instance_data = t.template get_partition<Space>(f);
+    auto Space,
+    template<class>
+    class C,
+    class Topo>
+  void raw(field_id_t f, C<Topo> & t, bool init = false) {
+    data::region & reg = t.template get_region<Space>();
 
     constexpr auto np = privilege_count(PRIVILEGES);
     static_assert(np == Topo::template privilege_count<Space>,
       "privilege-count mismatch between accessor and topology type");
     if constexpr(np > 1) {
-      data::region & reg = t.template get_region<Space>();
       if(reg.ghost<PRIVILEGES>(f))
         t.template ghost_copy<Space>(f);
     }
 
-    Legion::RegionRequirement rr(instance_data.logical_partition,
-      0,
-      privilege_mode(PRIVILEGES),
-      EXCLUSIVE,
-      Legion::Runtime::get_runtime()->get_parent_logical_region(
-        instance_data.logical_partition));
-
-    rr.add_field(f);
-    region_reqs_.push_back(rr);
+    // For convenience, we always use rw accessors for certain fields that
+    // initially contain no constructed objects; we must indicate that
+    // (vacuous) initialization to Legion.
+    const Legion::PrivilegeMode m =
+      init ? WRITE_DISCARD : privilege_mode(PRIVILEGES);
+    const Legion::LogicalRegion lr = reg.logical_region;
+    if constexpr(std::is_same_v<typename Topo::base, topo::global_base>)
+      region_reqs_.emplace_back(lr, m, EXCLUSIVE, lr);
+    else
+      region_reqs_.emplace_back(
+        t.template get_partition<Space>(f).logical_partition,
+        0,
+        m,
+        EXCLUSIVE,
+        lr);
+    region_reqs_.back().add_field(f);
   } // visit
+
+  template<class T, size_t P, class Topo, typename Topo::index_space S>
+  void visit(data::accessor<data::raw, T, P> * /* parameter */,
+    const data::field_reference<T, data::raw, Topo, S> & ref) {
+    raw<T, P, S>(ref.fid(), ref.topology());
+  }
 
   template<class T,
     std::size_t P,
@@ -174,13 +164,22 @@ struct task_prologue_t {
     typename Topo::index_space S>
   void ragged(data::ragged_accessor<T, P, OP> * null_p,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
-    // We rely on the fact that field_reference uses only the field ID.
-    visit(get_null_base(null_p),
-      data::field_reference<T, data::raw, topo::ragged_topology<Topo>, S>(
-        {f.fid(), 0}, f.topology().ragged));
+    const field_id_t i = f.fid();
+    auto & t = f.topology();
+    // It's legitimate, if vacuous, to have the first use of a ragged field be
+    // via an accessor (even a read-only one), since all the rows will have a
+    // (well-defined) length of 0.
+    raw<T, P, S>(i,
+      t.ragged,
+      t.template get_region<S>().cleanup(
+        i,
+        [=] {
+          if constexpr(!std::is_trivially_destructible_v<T>)
+            execute<destroy<T, data::ragged>>(f);
+        },
+        privilege_write_only(P)));
     visit(
       get_null_offsets(null_p), f.template cast<data::dense, std::size_t>());
-    realloc<S, T, P>(f, [=] { execute<destroy<T, data::ragged>>(f); });
   }
   template<class T, std::size_t P, class Topo, typename Topo::index_space S>
   void visit(data::accessor<data::ragged, T, P> * null_p,
@@ -190,10 +189,13 @@ struct task_prologue_t {
   template<class T, class Topo, typename Topo::index_space S>
   void visit(data::mutator<data::ragged, T> *,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
+    auto & p = f.topology().ragged.template get_partition<S>(f.fid());
+    p.resize();
     // A mutator doesn't have privileges, so supply the correct number to it:
     ragged(data::mutator<data::ragged,
              T>::template null_base<Topo::template privilege_count<S>>,
       f);
+    visit(static_cast<topo::resize::Field::accessor<rw> *>(nullptr), p.sizes());
   }
   template<class T, std::size_t P, class Topo, typename Topo::index_space S>
   void visit(data::accessor<data::sparse, T, P> * null_p,

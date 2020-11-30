@@ -133,10 +133,13 @@ struct region {
     return size2(p[0] + 1, p[1] + 1);
   }
 
+  // Returns whether field is new.
   template<class D>
-  void cleanup(field_id_t f, D d) {
+  bool cleanup(field_id_t f, D d, bool hard = true) {
     // We assume that creating the objects will be successful:
-    destroy[f] = d;
+    return (hard ? destroy.insert_or_assign(f, std::move(d))
+                 : destroy.try_emplace(f, std::move(d)))
+      .second;
   }
 
   unique_index_space index_space;
@@ -147,7 +150,6 @@ private:
   // Each field can have a destructor (for individual field values) registered
   // that is invoked when the field is recreated or the region is destroyed.
   struct finalizer {
-    finalizer() = default;
     template<class F>
     finalizer(F f) : f(std::move(f)) {}
     finalizer(finalizer && o) noexcept {
@@ -182,7 +184,7 @@ struct partition {
     return {{r, 0}, {r, upper(n)}};
   }
 
-  static row make_row(std::size_t i, std::pair<std::size_t, std::size_t> n) {
+  static row make_row(std::size_t i, subrow n) {
     const Legion::coord_t r = i;
     const Legion::coord_t ln = n.first;
     return {{r, ln}, {r, upper(n.second)}};
@@ -211,7 +213,7 @@ struct partition {
     BuildByImage_tag,
     disjointness dis = aliased,
     completeness cpt = incomplete)
-    : index_partition(part_image(reg.index_space, src, fid, dis, cpt)),
+    : index_partition(part<false>(reg.index_space, src, fid, dis, cpt)),
       logical_partition(log(reg)) {}
 
   std::size_t colors() const {
@@ -264,24 +266,8 @@ private:
 
   // We document that src must outlive this partitioning, although Legion is
   // said to support deleting its color space before our partition using it.
+  template<bool R = true>
   unique_index_partition part(const Legion::IndexSpace & is,
-    const partition & src,
-    field_id_t fid,
-    disjointness dis,
-    completeness cpt) {
-    auto & r = run();
-
-    return r.create_partition_by_image_range(ctx(),
-      is,
-      src.logical_partition,
-      r.get_parent_logical_region(src.logical_partition),
-      fid,
-      src.get_color_space(),
-      Legion::PartitionKind(partitionKind(dis, cpt)));
-  }
-
-  unique_index_partition part_image(const Legion::IndexSpace & is,
-    // const region & reg,
     const partition & src,
     field_id_t fid,
     disjointness dis,
@@ -293,16 +279,20 @@ private:
 
     auto tag = flecsi::run::tag_index_partition(part_color);
 
-    return r.create_partition_by_image(ctx(),
-      is,
-      src.logical_partition,
-      r.get_parent_logical_region(src.logical_partition),
-      fid,
-      src.get_color_space(),
-      Legion::PartitionKind(partitionKind(dis, cpt)),
-      LEGION_AUTO_GENERATE_ID,
-      0,
-      tag);
+    return [&r](auto &&... aa) {
+      return R ? r.create_partition_by_image_range(
+                   std::forward<decltype(aa)>(aa)...)
+               : r.create_partition_by_image(std::forward<decltype(aa)>(aa)...);
+    }(ctx(),
+             is,
+             src.logical_partition,
+             r.get_parent_logical_region(src.logical_partition),
+             fid,
+             src.get_color_space(),
+             Legion::PartitionKind(partitionKind(dis, cpt)),
+             LEGION_AUTO_GENERATE_ID,
+             0,
+             tag);
   }
 
   unique_logical_partition log(const region & reg) const {

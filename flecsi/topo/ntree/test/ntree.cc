@@ -90,6 +90,8 @@ struct sph_ntree_t : topo::specialization<topo::ntree, sph_ntree_t> {
 
     return c;
   } // color
+
+  static void initialize(data::topology_slot<sph_ntree_t> &) {}
 };
 
 using point_t = typename topo::ntree<sph_ntree_t>::point_t;

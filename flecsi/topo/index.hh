@@ -20,57 +20,11 @@
 #endif
 
 #include "flecsi/data/accessor.hh"
-#include "flecsi/data/topology.hh"
 #include "flecsi/exec/launch.hh"
-#include "flecsi/topo/core.hh"
+#include "flecsi/topo/size.hh"
 
 namespace flecsi {
 namespace topo {
-
-struct index_base {
-  struct coloring {
-    coloring(size_t size) : size_(size) {}
-
-    size_t size() const {
-      return size_;
-    }
-
-  private:
-    size_t size_;
-  };
-};
-
-// A topology with one index point per color.
-// Suitable for the single layout but not the ragged layout, which is
-// implemented in terms of this topology.
-template<class P>
-struct color_category : index_base, data::partitioned<data::partition> {
-  color_category(const coloring & c)
-    : partitioned(data::make_region<P>({c.size(), 1})) {}
-};
-template<>
-struct detail::base<color_category> {
-  using type = index_base;
-};
-
-// A subtopology for storing/updating row sizes of a partition.
-struct resize : specialization<color_category, resize> {
-  // cslot is useless without a color function, but we don't need it.
-  using Field = flecsi::field<data::partition::row, data::single>;
-  static const Field::definition<resize> field;
-  using accessor = data::accessor_member<field, privilege_pack<ro>>;
-};
-// Now that resize is complete:
-inline const resize::Field::definition<resize> resize::field;
-
-// To control initialization order:
-struct with_size {
-  with_size(std::size_t n) : sz(n) {}
-  auto sizes() {
-    return resize::field(sz);
-  }
-  resize::core sz;
-};
 
 namespace zero {
 inline std::size_t
@@ -131,6 +85,7 @@ struct ragged_base {
 template<class P>
 struct ragged_category : ragged_base {
   using index_spaces = typename P::index_spaces;
+  using index_space = typename P::index_space;
 
   ragged_category(coloring c) : part(make_partitions(c, index_spaces())) {}
 
@@ -138,11 +93,16 @@ struct ragged_category : ragged_base {
     return part.front().size().first;
   }
 
-  template<typename P::index_space S>
+  template<index_space S>
+  data::region & get_region() {
+    return part.template get<S>();
+  }
+
+  template<index_space S>
   const repartition & get_partition(field_id_t i) const {
     return part.template get<S>()[i];
   }
-  template<typename P::index_space S>
+  template<index_space S>
   repartition & get_partition(field_id_t i) {
     return part.template get<S>()[i];
   }
@@ -173,26 +133,25 @@ struct ragged_topology : specialization<ragged_category, ragged_topology<T>> {
   using index_spaces = typename T::index_spaces;
 };
 
+struct with_ragged_base {
+  template<class F>
+  static void extend(field<std::size_t, data::raw>::accessor<rw> a, F old) {
+    const auto s = a.span();
+    const std::size_t i = old(run::context::instance().color());
+    // The accessor (chosen to support a resized field) constructs nothing:
+    std::uninitialized_fill(s.begin() + i, s.end(), i ? s.back() : 0);
+  }
+};
 template<class P>
-struct with_ragged { // for interface consistency
+struct with_ragged : private with_ragged_base {
   with_ragged(std::size_t n) : ragged(n) {}
 
-  // Extend a offsets fields to define empty rows for the suffix.
+  // Extend an offsets field to define empty rows for the suffix.
   template<typename P::index_space, class F = decltype(zero::partial)>
   void extend_offsets(
     F = zero::partial); // serializable function from color to old size
 
   typename ragged_topology<P>::core ragged;
-
-private:
-  template<class F>
-  static void extend(field<std::size_t, data::raw>::accessor<rw> a, F old) {
-    const auto s = a.span();
-    const std::size_t i = old(run::context::instance().color());
-    // A dense field will be default-constructed on first use, but this
-    // function means to support the case where it was resized.
-    std::uninitialized_fill(s.begin() + i, s.end(), i ? s.back() : 0);
-  }
 };
 
 template<>

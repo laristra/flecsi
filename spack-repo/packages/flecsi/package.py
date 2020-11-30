@@ -58,11 +58,11 @@ class Flecsi(CMakePackage):
 
     # Dependencies
 
-    depends_on('cmake@3.12:')
+    depends_on('cmake@3.12:3.18.4')
 
     depends_on('mpich@3.2.1', when='^mpich')
     depends_on('openmpi@3.1.6', when='^openmpi')
-    depends_on('legion@ctrl-rep-7:ctrl-rep-99',when='backend=legion')
+    depends_on('legion@ctrl-rep-8:ctrl-rep-99',when='backend=legion')
     depends_on('hpx@1.3.0 cxxstd=14 malloc=system',when='backend=hpx')
 
     depends_on('legion build_type=Debug',

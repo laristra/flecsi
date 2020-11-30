@@ -30,36 +30,39 @@ struct convert_tag {}; // must be recognized as a task argument
 /// A slot that holds a topology, constructed upon request.
 /// Declare a task parameter as a \c topology_accessor to use the topology.
 /// \note A \c specialization provides aliases for both these types.
-template<typename TOPOLOGY_TYPE>
+template<typename Topo>
 struct topology_slot : convert_tag {
-  using data_t = typename TOPOLOGY_TYPE::core;
-  using coloring = typename TOPOLOGY_TYPE::coloring;
+  using core = typename Topo::core;
+  using coloring = typename Topo::coloring;
 
-  data_t & allocate(const coloring & coloring_reference) {
-    return data.emplace(coloring_reference);
-  } // allocate
+  template<typename... AA>
+  core & allocate(const coloring & coloring_reference, AA &&... aa) {
+    data.emplace(coloring_reference);
+    Topo::initialize(*this, std::forward<AA>(aa)...);
+    return get();
+  }
 
   void deallocate() {
     // data.reset();
   } // deallocate
 
-  data_t & get() {
+  core & get() {
     flog_assert(data, "topology not allocated");
     return *data;
   }
-  const data_t & get() const {
+  const core & get() const {
     return const_cast<topology_slot &>(*this).get();
   }
 
-  data_t * operator->() {
+  core * operator->() {
     return &*data;
   }
-  const data_t * operator->() const {
+  const core * operator->() const {
     return &*data;
   }
 
 private:
-  std::optional<data_t> data;
+  std::optional<core> data;
 }; // struct topology_slot
 
 } // namespace data

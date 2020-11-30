@@ -108,3 +108,13 @@
 //----------------------------------------------------------------------------//
 
 #cmakedefine FLECSI_ENABLE_OPENSSL
+
+
+//----------------------------------------------------------------------------//
+// Annotation severity level
+//----------------------------------------------------------------------------//
+#define FLECSI_CALIPER_DETAIL_none 1
+#define FLECSI_CALIPER_DETAIL_low 2
+#define FLECSI_CALIPER_DETAIL_medium 3
+#define FLECSI_CALIPER_DETAIL_high 4
+#cmakedefine FLECSI_CALIPER_DETAIL FLECSI_CALIPER_DETAIL_@FLECSI_CALIPER_DETAIL@

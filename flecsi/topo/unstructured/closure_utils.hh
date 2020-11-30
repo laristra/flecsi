@@ -147,7 +147,7 @@ entity_neighbors(const Definition & md, U && indices) {
   }
 
   return closure;
-} // entity_closure
+} // entity_neighbors
 
 /*!
   Return the cells that reference the given vertex id.

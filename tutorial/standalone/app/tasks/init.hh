@@ -13,17 +13,14 @@ namespace task {
 
 using namespace flecsi;
 
-void
-advance_mpi(single<mpi_data *>::accessor<rw> data) {
+int
+init(single<std::size_t>::accessor<wo> refinement_max) {
+  flog(info) << "initializing max" << std::endl;
 
-  std::stringstream ss;
-  ss << "mpi data: ";
-  for(std::size_t i{0}; i < 10; ++i) {
-    data->values[i] += 1;
-    ss << data->values[i] << " ";
-  } // for
-  flog(info) << ss.str() << std::endl;
-} // advance_mpi
+  refinement_max = 10;
+
+  return 0;
+} // init_mpi
 
 } // namespace task
 } // namespace standalone

@@ -26,6 +26,7 @@
 #include "flecsi/exec/leg/unbind_accessors.hh"
 #include "flecsi/exec/task_attributes.hh"
 #include "flecsi/run/backend.hh"
+#include "flecsi/util/annotation.hh"
 #include "flecsi/util/common.hh"
 #include "flecsi/util/function_traits.hh"
 #include "flecsi/util/serialize.hh"
@@ -77,8 +78,28 @@ template<class T, std::size_t P, std::size_t OP>
 struct util::serial_convert<data::ragged_accessor<T, P, OP>>
   : data::detail::convert_accessor<data::ragged_accessor<T, P, OP>> {};
 template<data::layout L, class T>
-struct util::serial_convert<data::mutator<L, T>>
-  : data::detail::convert_accessor<data::mutator<L, T>> {};
+struct util::serial<data::mutator<L, T>> {
+  using type = data::mutator<L, T>;
+  template<class P>
+  static void put(P & p, const type & m) {
+    serial_put(p, m.get_base());
+  }
+  static type get(const std::byte *& b) {
+    return serial_get<typename type::base_type>(b);
+  }
+};
+template<class T>
+struct util::serial<data::mutator<data::ragged, T>> {
+  using type = data::mutator<data::ragged, T>;
+  template<class P>
+  static void put(P & p, const type & m) {
+    serial_put(p, std::tie(m.get_base(), m.get_grow()));
+  }
+  static type get(const std::byte *& b) {
+    const serial_cast r{b};
+    return {r, r};
+  }
+};
 template<class T, std::size_t Priv>
 struct util::serial<data::topology_accessor<T, Priv>,
   std::enable_if_t<!util::memcpyable_v<data::topology_accessor<T, Priv>>>>
@@ -240,15 +261,22 @@ struct task_wrapper {
     // Unpack task arguments
     auto task_args = detail::tuple_get<param_tuple>(*task);
 
+    namespace ann = util::annotation;
+    auto tname = util::symbol<F>();
     unbind_accessors ub(task_args);
-    bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
+    (ann::rguard<ann::execute_task_bind>(tname)),
+      bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
-      apply(F, std::forward<param_tuple>(task_args));
+      (ann::rguard<ann::execute_task_user>(tname)),
+        apply(F, std::forward<param_tuple>(task_args));
+      ann::rguard<ann::execute_task_unbind> ann_guard(tname);
       ub();
     }
     else {
-      RETURN result = apply(F, std::forward<param_tuple>(task_args));
+      RETURN result = (ann::rguard<ann::execute_task_user>(tname),
+        apply(F, std::forward<param_tuple>(task_args)));
+      ann::rguard<ann::execute_task_unbind> ann_guard(tname);
       ub();
       return result;
     } // if
@@ -278,19 +306,26 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
     std::memcpy(&p, task->args, sizeof p);
 
+    namespace ann = util::annotation;
+    auto tname = util::symbol<F>();
     unbind_accessors ub(*p);
-    bind_accessors{runtime, context, regions, task->futures}.walk(*p);
+    (ann::rguard<ann::execute_task_bind>(tname)),
+      bind_accessors{runtime, context, regions, task->futures}.walk(*p);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();
 
     if constexpr(std::is_void_v<RETURN>) {
-      c.mpi_call([&] { apply(F, std::move(*p)); });
+      (ann::rguard<ann::execute_task_user>(tname)),
+        c.mpi_call([&] { apply(F, std::move(*p)); });
+      ann::rguard<ann::execute_task_unbind> ann_guard(tname);
       ub();
     }
     else {
       std::optional<RETURN> result;
-      c.mpi_call([&] { result.emplace(std::apply(F, std::move(*p))); });
+      (ann::rguard<ann::execute_task_user>(tname)),
+        c.mpi_call([&] { result.emplace(std::apply(F, std::move(*p))); });
+      ann::rguard<ann::execute_task_unbind> ann_guard(tname);
       ub();
       return std::move(*result);
     }

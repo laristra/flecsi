@@ -25,6 +25,7 @@
 
 #include "flecsi/data/reference.hh"
 #include "flecsi/exec/launch.hh"
+#include "flecsi/topo/size.hh"
 #include "flecsi/util/array_ref.hh"
 #include <flecsi/data/field.hh>
 
@@ -122,6 +123,10 @@ struct accessor<dense, T, P> : accessor<raw, T, P> {
     return s[index];
   } // operator()
 
+  typename accessor::element_type & operator[](std::size_t index) const {
+    return this->span()[index];
+  }
+
   base_type & get_base() {
     return *this;
   }
@@ -155,10 +160,13 @@ struct ragged_accessor
   std::size_t size() const noexcept { // not total!
     return off.span().size();
   }
+  std::size_t total() const noexcept {
+    const auto s = off.span();
+    return s.empty() ? 0 : s.back();
+  }
 
   util::span<element_type> span() const {
-    const auto s = off.span();
-    return get_base().span().first(s.empty() ? 0 : s.back());
+    return get_base().span().first(total());
   }
 
   base_type & get_base() {
@@ -166,9 +174,6 @@ struct ragged_accessor
   }
   const base_type & get_base() const {
     return *this;
-  }
-  friend base_type * get_null_base(ragged_accessor *) { // for task_prologue_t
-    return nullptr;
   }
 
   Offsets & get_offsets() {
@@ -472,7 +477,8 @@ public:
     }
   };
 
-  mutator(const base_type & b) : acc(b) {}
+  mutator(const base_type & b, const topo::resize::policy & p)
+    : acc(b), grow(p) {}
 
   row operator[](std::size_t i) const {
     return raw_get(i);
@@ -486,6 +492,12 @@ public:
   }
   const base_type & get_base() const {
     return acc;
+  }
+  auto & get_size() {
+    return sz;
+  }
+  const topo::resize::policy & get_grow() const {
+    return grow;
   }
   void buffer(TaskBuffer & b) { // for unbind_accessors
     over = &b;
@@ -560,6 +572,8 @@ public:
       off(is) += delta += ov.add.size() - ov.del;
       ov.add.clear();
     }
+    sz = data::partition::make_row(
+      run::context::instance().color(), grow(acc.total(), all.size()));
   }
 
 private:
@@ -568,6 +582,8 @@ private:
   }
 
   base_type acc;
+  topo::resize::accessor<wo> sz;
+  topo::resize::policy grow;
   TaskBuffer * over = nullptr;
 };
 
@@ -846,7 +862,8 @@ struct exec::detail::task_param<data::mutator<data::ragged, T>> {
   template<class Topo, typename Topo::index_space S>
   static type replace(
     const data::field_reference<T, data::ragged, Topo, S> & r) {
-    return type::base_type::parameter(r);
+    return {type::base_type::parameter(r),
+      r.topology().ragged.template get_partition<S>(r.fid()).growth};
   }
 };
 template<class T>

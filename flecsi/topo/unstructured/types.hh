@@ -19,6 +19,7 @@
 #error Do not include this file directly!
 #endif
 
+#include "flecsi/execution.hh"
 #include "flecsi/topo/index.hh"
 #include "flecsi/util/serialize.hh"
 
@@ -155,22 +156,31 @@ struct unstructured_base {
   struct coloring {
     std::size_t colors;
     std::vector<index_coloring> index_colorings;
+    std::vector<std::vector<std::size_t>> connectivity_sizes;
     std::vector<std::vector<coloring_meta>> distribution;
   }; // struct coloring
 
-  static std::size_t allocate(
+  static std::size_t idx_size(
     unstructured_impl::index_coloring const & index_coloring,
     std::size_t colors,
     std::size_t color) {
     (void)index_coloring;
     (void)colors;
     (void)color;
-    return 0;
+    return 10;
+  }
+
+  static void cnx_size(std::size_t size, resize::Field::accessor<wo> a) {
+    a = data::partition::make_row(color(), size);
   }
 
 }; // struct unstructured_base
 
 } // namespace topo
+
+/*----------------------------------------------------------------------------*
+  Serialization Rules
+ *----------------------------------------------------------------------------*/
 
 template<>
 struct util::serial<topo::unstructured_impl::entity_info> {
@@ -184,6 +194,7 @@ struct util::serial<topo::unstructured_impl::entity_info> {
     return type{r, r, r, std::set<std::size_t>(r)};
   }
 };
+
 template<>
 struct util::serial<topo::unstructured_impl::index_coloring> {
   using type = topo::unstructured_impl::index_coloring;
@@ -196,4 +207,5 @@ struct util::serial<topo::unstructured_impl::index_coloring> {
     return type{r, r, r, r};
   }
 };
+
 } // namespace flecsi
