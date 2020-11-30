@@ -202,11 +202,12 @@ struct accessor<ragged, T, P>
   using accessor::ragged_accessor::ragged_accessor;
 };
 
-template<class T>
-struct mutator<ragged, T>
-  : util::with_index_iterator<const mutator<ragged, T>> {
-  // NB: Normal accessors might have more than one privilege.
-  using base_type = ragged_accessor<T, privilege_pack<rw>>;
+template<class T, std::size_t P>
+struct mutator<ragged, T, P>
+  : bind_tag, util::with_index_iterator<const mutator<ragged, T, P>> {
+  static_assert(privilege_write(P) && !privilege_write_only(P),
+    "mutators require read/write permissions");
+  using base_type = ragged_accessor<T, P>;
   struct Overflow {
     std::size_t del;
     std::vector<T> add;
@@ -639,10 +640,10 @@ public:
   }
 };
 
-template<class T>
-struct mutator<sparse, T>
-  : util::with_index_iterator<const mutator<sparse, T>> {
-  using base_type = typename field<T, sparse>::base_type::mutator;
+template<class T, std::size_t P>
+struct mutator<sparse, T, P>
+  : bind_tag, util::with_index_iterator<const mutator<sparse, T, P>> {
+  using base_type = typename field<T, sparse>::base_type::template mutator1<P>;
   using TaskBuffer = typename base_type::TaskBuffer;
 
 private:
@@ -856,9 +857,9 @@ struct exec::detail::task_param<data::accessor<L, T, P>> {
     return data::accessor<L, T, P>(r.fid());
   }
 };
-template<class T>
-struct exec::detail::task_param<data::mutator<data::ragged, T>> {
-  using type = data::mutator<data::ragged, T>;
+template<class T, std::size_t P>
+struct exec::detail::task_param<data::mutator<data::ragged, T, P>> {
+  using type = data::mutator<data::ragged, T, P>;
   template<class Topo, typename Topo::index_space S>
   static type replace(
     const data::field_reference<T, data::ragged, Topo, S> & r) {
@@ -866,9 +867,9 @@ struct exec::detail::task_param<data::mutator<data::ragged, T>> {
       r.topology().ragged.template get_partition<S>(r.fid()).growth};
   }
 };
-template<class T>
-struct exec::detail::task_param<data::mutator<data::sparse, T>> {
-  using type = data::mutator<data::sparse, T>;
+template<class T, std::size_t P>
+struct exec::detail::task_param<data::mutator<data::sparse, T, P>> {
+  using type = data::mutator<data::sparse, T, P>;
   template<class Topo, typename Topo::index_space S>
   static type replace(
     const data::field_reference<T, data::sparse, Topo, S> & r) {

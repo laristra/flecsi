@@ -77,9 +77,9 @@ struct util::serial_convert<data::accessor<data::single, T, Priv>>
 template<class T, std::size_t P, std::size_t OP>
 struct util::serial_convert<data::ragged_accessor<T, P, OP>>
   : data::detail::convert_accessor<data::ragged_accessor<T, P, OP>> {};
-template<data::layout L, class T>
-struct util::serial<data::mutator<L, T>> {
-  using type = data::mutator<L, T>;
+template<data::layout L, class T, std::size_t Priv>
+struct util::serial<data::mutator<L, T, Priv>> {
+  using type = data::mutator<L, T, Priv>;
   template<class P>
   static void put(P & p, const type & m) {
     serial_put(p, m.get_base());
@@ -88,9 +88,9 @@ struct util::serial<data::mutator<L, T>> {
     return serial_get<typename type::base_type>(b);
   }
 };
-template<class T>
-struct util::serial<data::mutator<data::ragged, T>> {
-  using type = data::mutator<data::ragged, T>;
+template<class T, std::size_t Priv>
+struct util::serial<data::mutator<data::ragged, T, Priv>> {
+  using type = data::mutator<data::ragged, T, Priv>;
   template<class P>
   static void put(P & p, const type & m) {
     serial_put(p, std::tie(m.get_base(), m.get_grow()));

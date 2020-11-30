@@ -116,14 +116,14 @@ private:
     if constexpr(privilege_write_only(P))
       construct(a);
   }
-  template<class T>
-  void visit(data::mutator<data::ragged, T> & m) {
+  template<class T, std::size_t P>
+  void visit(data::mutator<data::ragged, T, P> & m) {
     visit(m.get_base());
     visit(m.get_size());
     m.bind();
   }
-  template<class T>
-  void visit(data::mutator<data::sparse, T> & m) {
+  template<class T, std::size_t P>
+  void visit(data::mutator<data::sparse, T, P> & m) {
     visit(m.get_base());
   }
 

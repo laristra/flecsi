@@ -48,11 +48,11 @@ allocate(resize::Field::accessor<wo> a) {
   a = partition::make_row(i, i + 1);
 }
 void
-rows(intN::mutator r) {
+rows(intN::mutator<rw> r) {
   r[0].resize(color() + 1);
 }
 int
-drows(double_at::mutator s) {
+drows(double_at::mutator<rw> s) {
   UNIT {
     const auto me = color();
     const auto && m = s[0];

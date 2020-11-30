@@ -188,14 +188,14 @@ private:
     visit(
       get_null_offsets(null_p), f.template cast<data::dense, std::size_t>());
   }
-  template<class T, class Topo, typename Topo::index_space S>
-  void visit(data::mutator<data::ragged, T> *,
+  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
+  void visit(data::mutator<data::ragged, T, P> *,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
     auto & p = f.topology().ragged.template get_partition<S>(f.fid());
     p.resize();
     // A mutator doesn't have privileges, so supply the correct number to it:
-    visit(data::mutator<data::ragged,
-            T>::template null_base<Topo::template privilege_count<S>>,
+    visit(data::mutator<data::ragged, T, P>::template null_base<
+            Topo::template privilege_count<S>>,
       f);
     visit(static_cast<topo::resize::Field::accessor<rw> *>(nullptr), p.sizes());
   }
@@ -206,8 +206,8 @@ private:
       ref.template cast<data::ragged,
         typename field<T, data::sparse>::base_type::value_type>());
   }
-  template<class T, class Topo, typename Topo::index_space S>
-  void visit(data::mutator<data::sparse, T> * null_p,
+  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
+  void visit(data::mutator<data::sparse, T, P> * null_p,
     const data::field_reference<T, data::sparse, Topo, S> & f) {
     visit(get_null_base(null_p),
       f.template cast<data::ragged,

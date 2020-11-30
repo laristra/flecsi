@@ -45,8 +45,8 @@ struct unbind_base {
   template<data::layout L, typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<L, DATA_TYPE, PRIVILEGES> &) {} // visit
 
-  template<data::layout L, class T>
-  void visit(data::mutator<L, T> & m) {
+  template<data::layout L, class T, std::size_t P>
+  void visit(data::mutator<L, T, P> & m) {
     m.commit();
   }
 
