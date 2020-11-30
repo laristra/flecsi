@@ -349,7 +349,10 @@ colors() {
  */
 
 // To avoid compile- and runtime recursion, only user tasks trigger logging.
-template<auto & Task, class Reduction, size_t Attributes, typename... Args>
+template<auto & Task,
+  class Reduction,
+  size_t Attributes = flecsi::loc | flecsi::leaf,
+  typename... Args>
 auto
 reduce(Args &&... args) {
   using namespace exec;

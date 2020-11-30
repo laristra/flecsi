@@ -33,15 +33,13 @@ int
 check(future<double> x, double1::accessor<ro> ga) {
   UNIT {
     static_assert(std::is_same_v<decltype(ga.get()), const double &>);
-    ASSERT_EQ(x.get(), ga + 1 + run::context::instance().color());
+    ASSERT_EQ(x.get(), ga + 1 + color());
   };
 }
 
 double
 index_init(double a, exec::launch_domain) {
-
-  auto & c = run::context::instance();
-  return a + c.color();
+  return a + color();
 }
 
 void
@@ -54,6 +52,11 @@ index_void_task(exec::launch_domain) {
   flog(info) << "this is an index void task" << std::endl;
 }
 } // namespace future_test
+
+int
+reduction_task(int a, exec::launch_domain) {
+  return a + color();
+}
 
 int
 future_driver() {
@@ -85,6 +88,20 @@ future_driver() {
 
     fv2.wait();
     fv2.get();
+
+    int a = 7;
+    // checking reduction operations
+    auto fmin = reduce<reduction_task, exec::fold::min>(a, ld);
+    EXPECT_EQ(fmin.get(), a);
+
+    auto fmax = reduce<reduction_task, exec::fold::max>(a, ld);
+    EXPECT_EQ(fmax.get(), int(a + run::context::instance().processes() - 1));
+
+    auto fsum = reduce<reduction_task, exec::fold::sum>(a, ld);
+    int sum = 0;
+    for(size_t i = 0; i < run::context::instance().processes(); i++)
+      sum += a + i;
+    EXPECT_EQ(fsum.get(), sum);
   };
 } // future
 
