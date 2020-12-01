@@ -63,6 +63,15 @@ struct partition {
 struct region : region_base {
   using region_base::region_base;
 
+  // Returns whether field is new.
+  template<class D>
+  bool cleanup(field_id_t f, D d, bool hard = true) {
+    // We assume that creating the objects will be successful:
+    return (hard ? destroy.insert_or_assign(f, std::move(d))
+                 : destroy.try_emplace(f, std::move(d)))
+      .second;
+  }
+
   std::set<field_id_t> dirty;
   // Return whether a copy is needed.
   template<std::size_t P>
@@ -85,6 +94,30 @@ struct region : region_base {
   region & get_region() {
     return *this;
   }
+
+private:
+  // Each field can have a destructor (for individual field values) registered
+  // that is invoked when the field is recreated or the region is destroyed.
+  struct finalizer {
+    template<class F>
+    finalizer(F f) : f(std::move(f)) {}
+    finalizer(finalizer && o) noexcept {
+      f.swap(o.f); // guarantee o.f is empty
+    }
+    ~finalizer() {
+      if(f)
+        f();
+    }
+    finalizer & operator=(finalizer o) noexcept {
+      f.swap(o.f);
+      return *this;
+    }
+
+  private:
+    std::function<void()> f;
+  };
+
+  std::map<field_id_t, finalizer> destroy;
 };
 
 template<class Topo, typename Topo::index_space Index = Topo::default_space()>
