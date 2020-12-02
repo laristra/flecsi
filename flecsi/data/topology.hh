@@ -31,6 +31,7 @@ template<class, layout, class Topo, typename Topo::index_space>
 struct field_reference;
 
 #ifdef DOXYGEN // implemented per-backend
+// A rectangular abstract array.
 struct region_base {
   region(size2, const fields &);
 
@@ -43,6 +44,7 @@ protected:
   void vacuous(field_id_t);
 };
 
+// A prefix of each row in a region_base.
 struct partition {
   static auto make_row(std::size_t i, std::size_t n);
   static auto make_row(std::size_t i, subrow k);
