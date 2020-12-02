@@ -75,6 +75,7 @@ struct task_prologue {
     return future_maps_;
   } // future_maps
 
+private:
   /*!
     Convert the template privileges to proper Legion privileges.
 
@@ -244,7 +245,6 @@ struct task_prologue {
                      << std::endl;
   } // visit
 
-private:
   template<class T, data::layout L>
   static void destroy(typename field<T, L>::template accessor<rw> a) {
     const auto s = a.span();
