@@ -78,7 +78,6 @@ struct region : region_base {
       vacuous(f);
   }
 
-  std::set<field_id_t> dirty;
   // Return whether a copy is needed.
   template<std::size_t P>
   bool ghost(field_id_t i) {
@@ -124,6 +123,7 @@ private:
   };
 
   std::map<field_id_t, finalizer> destroy;
+  std::set<field_id_t> dirty;
 };
 
 template<class Topo, typename Topo::index_space Index = Topo::default_space()>
