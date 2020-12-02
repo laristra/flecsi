@@ -21,6 +21,7 @@ set(exec_HEADERS
   fold.hh
   kernel_interface.hh
   launch.hh
+  prolog.hh
   task_attributes.hh
 )
 

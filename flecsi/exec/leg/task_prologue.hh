@@ -24,14 +24,7 @@
 #include "flecsi/data/field.hh"
 #include "flecsi/data/privilege.hh"
 #include "flecsi/data/topology.hh"
-#include "flecsi/data/topology_accessor.hh"
 #include "flecsi/exec/leg/future.hh"
-#include "flecsi/run/backend.hh"
-#include "flecsi/topo/set/interface.hh"
-#include "flecsi/topo/structured/interface.hh"
-//#include "flecsi/topo/unstructured/interface.hh"
-#include "flecsi/util/demangle.hh"
-#include "flecsi/util/tuple_walker.hh"
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -45,26 +38,9 @@ namespace topo {
 struct global_base;
 } // namespace topo
 
-inline log::devel_tag task_prologue_tag("task_prologue");
-
-namespace exec::leg {
-
-/*!
-  The task_prologue type can be called to walk task args before the
-  task launcher is created. This allows us to gather region requirements
-  and to set state on the associated data handles \em before Legion gets
-  the task arguments tuple.
-
-  @ingroup execution
-*/
+namespace exec {
 
 struct task_prologue {
-  // Accessors here are the empty versions made to be serialized.
-  template<class P, class... AA>
-  task_prologue(P & p, AA &... aa) {
-    std::apply([&](auto &... pp) { (visit(&pp, aa), ...); }, p);
-  }
-
   std::vector<Legion::RegionRequirement> const & region_requirements() const {
     return region_reqs_;
   } // region_requirements
@@ -95,20 +71,11 @@ private:
     return r ? w ? READ_WRITE : READ_ONLY : w ? WRITE_DISCARD : NO_ACCESS;
   } // privilege_mode
 
-  template<class A>
-  auto visitor(A & a) {
-    return
-      [&](auto & p, auto && f) { visit(&p, std::forward<decltype(f)>(f)(a)); };
-  }
-
-  // All fields are handled in terms of their underlying raw-layout fields.
-  // Other (topology) accessors provide a send function that decomposes them
-  // (and any associated argument).
-
+protected:
   // This implementation can be generic because all topologies are expected to
   // provide get_region (and, with one exception, get_partition).
   template<typename DATA_TYPE, size_t PRIVILEGES, auto Space, class Topo>
-  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
+  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> &,
     const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & r) {
     const field_id_t f = r.fid();
     auto & t = r.topology();
@@ -137,40 +104,24 @@ private:
     region_reqs_.back().add_field(f);
   } // visit
 
-  template<class P, class A>
-  std::enable_if_t<std::is_base_of_v<data::send_tag, P>> visit(P * p, A && a) {
-    p->send(visitor(a));
-  }
-
   /*--------------------------------------------------------------------------*
     Futures
    *--------------------------------------------------------------------------*/
   template<class P, class T>
-  void visit(P *, const future<T> & f) {
+  void visit(P &, const future<T> & f) {
     futures_.push_back(f.legion_future_);
   }
 
   template<class P, class T>
-  void visit(P *, const future<T, exec::launch_type_t::index> & f) {
+  void visit(P &, const future<T, exec::launch_type_t::index> & f) {
     future_maps_.push_back(f.legion_future_);
   }
 
-  /*--------------------------------------------------------------------------*
-    Non-FleCSI Data Types
-   *--------------------------------------------------------------------------*/
-
-  template<class P, class A>
-  static std::enable_if_t<!std::is_base_of_v<data::convert_tag, A>> visit(P *,
-    const A &) {
-    log::devel_guard guard(task_prologue_tag);
-    flog_devel(info) << "Skipping argument with type " << util::type<A>()
-                     << std::endl;
-  } // visit
-
+private:
   std::vector<Legion::RegionRequirement> region_reqs_;
   std::vector<Legion::Future> futures_;
   std::vector<Legion::FutureMap> future_maps_;
 };
 
-} // namespace exec::leg
+} // namespace exec
 } // namespace flecsi

@@ -24,8 +24,8 @@
 #include "flecsi/exec/launch.hh"
 #include "flecsi/exec/leg/future.hh"
 #include "flecsi/exec/leg/reduction_wrapper.hh"
-#include "flecsi/exec/leg/task_prologue.hh"
 #include "flecsi/exec/leg/task_wrapper.hh"
+#include "flecsi/exec/prolog.hh"
 #include "flecsi/run/backend.hh"
 #include "flecsi/util/demangle.hh"
 #include "flecsi/util/function_traits.hh"
@@ -138,7 +138,7 @@ reduce_internal(Args &&... args) {
 
   auto params =
     detail::make_parameters<mpi_task, param_tuple>(std::forward<Args>(args)...);
-  leg::task_prologue pro(params, args...);
+  prolog pro(params, args...);
 
   std::vector<std::byte> buf;
   if constexpr(mpi_task) {
