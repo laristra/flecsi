@@ -265,7 +265,7 @@ struct task_wrapper {
     auto tname = util::symbol<F>();
     unbind_accessors ub(task_args);
     (ann::rguard<ann::execute_task_bind>(tname)),
-      bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
+      bind_accessors(runtime, context, regions, task->futures)(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       (ann::rguard<ann::execute_task_user>(tname)),
@@ -310,7 +310,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     auto tname = util::symbol<F>();
     unbind_accessors ub(*p);
     (ann::rguard<ann::execute_task_bind>(tname)),
-      bind_accessors{runtime, context, regions, task->futures}.walk(*p);
+      bind_accessors(runtime, context, regions, task->futures)(*p);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();

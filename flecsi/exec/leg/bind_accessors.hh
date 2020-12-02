@@ -27,7 +27,6 @@
 #include "flecsi/exec/leg/future.hh"
 #include "flecsi/run/backend.hh"
 #include "flecsi/util/demangle.hh"
-#include "flecsi/util/tuple_walker.hh"
 
 #if !defined(FLECSI_ENABLE_LEGION)
 #error FLECSI_ENABLE_LEGION not defined! This file depends on Legion!
@@ -52,7 +51,7 @@ namespace exec::leg {
   This is the other half of the wire protocol implemented by \c task_prologue.
  */
 
-struct bind_accessors : public util::tuple_walker<bind_accessors> {
+struct bind_accessors {
 
   /*!
     Construct an bind_accessors instance.
@@ -68,6 +67,12 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
     : legion_runtime_(legion_runtime), legion_context_(legion_context),
       regions_(regions), futures_(futures) {}
 
+  template<class A>
+  void operator()(A & a) {
+    std::apply([&](auto &... aa) { (visit(aa), ...); }, a);
+  }
+
+private:
   // All accessors are handled in terms of their underlying raw accessors.
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
@@ -147,7 +152,6 @@ struct bind_accessors : public util::tuple_walker<bind_accessors> {
     }
   } // visit
 
-private:
   template<class A>
   static void construct(const A & a) {
     const auto s = a.span();
