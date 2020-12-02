@@ -279,8 +279,13 @@ private:
   }
 };
 
+} // namespace leg
+
+using region_base = leg::region;
+using leg::partition;
+
 inline void
-launch_copy(const region & reg,
+launch_copy(const region_base & reg,
   const partition & src_partition,
   const partition & dest_partition,
   const field_id_t & data_fid,
@@ -304,14 +309,8 @@ launch_copy(const region & reg,
   cl_.add_copy_requirements(rr_source, rr_dest);
   cl_.add_src_indirect_field(ptr_fid, rr_pos);
   assert(!cl_.src_indirect_is_range[0]);
-  run().issue_copy_operation(run().get_context(), cl_);
+  leg::run().issue_copy_operation(leg::ctx(), cl_);
 }
-
-} // namespace leg
-
-// For backend-agnostic interface:
-using region_base = leg::region;
-using leg::partition;
 
 } // namespace data
 } // namespace flecsi
