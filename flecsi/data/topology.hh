@@ -31,6 +31,12 @@ struct region_base {
   region(size2, const fields &);
 
   size2 size() const;
+
+protected:
+  // For convenience, we always use rw accessors for certain fields that
+  // initially contain no constructed objects; this call indicates that no
+  // initialization is needed.
+  void vacuous(field_id_t);
 };
 
 struct partition {
@@ -63,13 +69,13 @@ struct partition {
 struct region : region_base {
   using region_base::region_base;
 
-  // Returns whether field is new.
   template<class D>
-  bool cleanup(field_id_t f, D d, bool hard = true) {
+  void cleanup(field_id_t f, D d, bool hard = true) {
     // We assume that creating the objects will be successful:
-    return (hard ? destroy.insert_or_assign(f, std::move(d))
-                 : destroy.try_emplace(f, std::move(d)))
-      .second;
+    if(hard)
+      destroy.insert_or_assign(f, std::move(d));
+    else if(destroy.try_emplace(f, std::move(d)).second)
+      vacuous(f);
   }
 
   std::set<field_id_t> dirty;

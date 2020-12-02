@@ -133,9 +133,21 @@ struct region {
     return size2(p[0] + 1, p[1] + 1);
   }
 
+  bool poll_discard(field_id_t f) {
+    return discard.erase(f);
+  }
+
   unique_index_space index_space;
   unique_field_space field_space;
   unique_logical_region logical_region;
+
+protected:
+  void vacuous(field_id_t f) {
+    discard.insert(f);
+  }
+
+private:
+  std::set<field_id_t> discard;
 };
 
 struct partition {

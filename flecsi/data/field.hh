@@ -63,6 +63,7 @@ struct field_register<T, raw, Topo, Space> : field_info_t {
 /// Identifies a field on a particular topology instance.
 template<class Topo>
 struct field_reference_t : convert_tag {
+  using Topology = Topo;
   using topology_t = typename Topo::core;
 
   field_reference_t(const field_info_t & info, topology_t & topology)
@@ -90,6 +91,7 @@ template<class T, layout L, class Topo, typename Topo::index_space Space>
 struct field_reference : field_reference_t<Topo> {
   using Base = typename field_reference::field_reference_t; // TIP: dependent
   using value_type = T;
+  static constexpr auto space = Space;
 
   using Base::Base;
   explicit field_reference(const Base & b) : Base(b) {}
@@ -216,12 +218,18 @@ struct accessor_member : field_accessor<decltype(F), Priv> {
 
   template<class G>
   void topology_send(G && g) {
-    std::forward<G>(g)(*this, F);
+    // Using get_base() works around a GCC 9 bug that claims that the
+    // inheritance of various accessor types is ambiguous.
+    std::forward<G>(g)(get_base(), F);
   }
   template<class G, class S>
   void topology_send(G && g, S && s) { // s: topology -> subtopology
-    std::forward<G>(g)(*this,
+    std::forward<G>(g)(get_base(),
       [&s](auto & t) { return F(std::invoke(std::forward<S>(s), t.get())); });
+  }
+
+  typename accessor_member::accessor & get_base() {
+    return *this;
   }
 };
 

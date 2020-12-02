@@ -21,11 +21,12 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/accessor.hh"
+#include "flecsi/data/field.hh"
 #include "flecsi/data/privilege.hh"
 #include "flecsi/data/topology_accessor.hh"
 #include "flecsi/exec/leg/future.hh"
 #include "flecsi/run/backend.hh"
+#include "flecsi/util/array_ref.hh"
 #include "flecsi/util/demangle.hh"
 
 #if !defined(FLECSI_ENABLE_LEGION)
@@ -98,38 +99,9 @@ private:
       r.hi[1] - r.lo[1] + 1));
   }
 
-  template<typename T, size_t P>
-  void visit(data::accessor<data::dense, T, P> & a) {
-    visit(a.get_base());
-    if constexpr(privilege_write_only(P))
-      construct(a);
-  }
-  template<typename DATA_TYPE, size_t PRIVILEGES>
-  void visit(data::accessor<data::single, DATA_TYPE, PRIVILEGES> & accessor) {
-    visit(accessor.get_base());
-  }
-  // Without a catch-all, this matches accessor<ragged|sparse,...>.
-  template<class T, std::size_t P, std::size_t OP>
-  void visit(data::ragged_accessor<T, P, OP> & a) {
-    visit(a.get_base());
-    visit(a.get_offsets());
-    if constexpr(privilege_write_only(P))
-      construct(a);
-  }
-  template<class T, std::size_t P>
-  void visit(data::mutator<data::ragged, T, P> & m) {
-    visit(m.get_base());
-    visit(m.get_size());
-    m.bind();
-  }
-  template<class T, std::size_t P>
-  void visit(data::mutator<data::sparse, T, P> & m) {
-    visit(m.get_base());
-  }
-
-  template<class Topo, std::size_t Priv>
-  void visit(data::topology_accessor<Topo, Priv> & a) {
-    a.send(visitor());
+  template<class P>
+  std::enable_if_t<std::is_base_of_v<data::send_tag, P>> visit(P & p) {
+    p.send(visitor());
   }
 
   /*--------------------------------------------------------------------------*
@@ -154,12 +126,6 @@ private:
                        << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit
-
-  template<class A>
-  static void construct(const A & a) {
-    const auto s = a.span();
-    std::uninitialized_default_construct(s.begin(), s.end());
-  }
 
   Legion::Runtime * legion_runtime_;
   Legion::Context & legion_context_;

@@ -28,6 +28,9 @@ struct region {
   size2 size() const {
     return {};
   }
+
+protected:
+  void vacuous(field_id_t) {}
 };
 
 struct partition {

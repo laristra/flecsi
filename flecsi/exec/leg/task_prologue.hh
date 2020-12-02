@@ -21,12 +21,12 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/accessor.hh"
+#include "flecsi/data/field.hh"
 #include "flecsi/data/privilege.hh"
+#include "flecsi/data/topology.hh"
 #include "flecsi/data/topology_accessor.hh"
 #include "flecsi/exec/leg/future.hh"
 #include "flecsi/run/backend.hh"
-#include "flecsi/topo/global.hh"
 #include "flecsi/topo/set/interface.hh"
 #include "flecsi/topo/structured/interface.hh"
 //#include "flecsi/topo/unstructured/interface.hh"
@@ -39,9 +39,11 @@
 
 #include <legion.h>
 
-#include <memory>
-
 namespace flecsi {
+
+namespace topo {
+struct global_base;
+} // namespace topo
 
 inline log::devel_tag task_prologue_tag("task_prologue");
 
@@ -100,36 +102,16 @@ private:
   }
 
   // All fields are handled in terms of their underlying raw-layout fields.
-
-  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
-    The following methods are specializations on layout and client
-    type, potentially for every permutation thereof.
-   *^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-
-  template<class T, std::size_t Priv, class Topo, typename Topo::index_space S>
-  void visit(data::accessor<data::dense, T, Priv> * null_p,
-    const data::field_reference<T, data::dense, Topo, S> & ref) {
-    visit(get_null_base(null_p), ref.template cast<data::raw>());
-    realloc<T, Priv>(ref, [ref] { execute<destroy<T, data::dense>>(ref); });
-  }
-  template<class T,
-    std::size_t Priv,
-    class Topo,
-    typename Topo::index_space Space>
-  void visit(data::accessor<data::single, T, Priv> * null_p,
-    const data::field_reference<T, data::single, Topo, Space> & ref) {
-    visit(get_null_base(null_p), ref.template cast<data::dense>());
-  }
+  // Other (topology) accessors provide a send function that decomposes them
+  // (and any associated argument).
 
   // This implementation can be generic because all topologies are expected to
   // provide get_region (and, with one exception, get_partition).
-  template<typename DATA_TYPE,
-    size_t PRIVILEGES,
-    auto Space,
-    template<class>
-    class C,
-    class Topo>
-  void raw(field_id_t f, C<Topo> & t, bool init = false) {
+  template<typename DATA_TYPE, size_t PRIVILEGES, auto Space, class Topo>
+  void visit(data::accessor<data::raw, DATA_TYPE, PRIVILEGES> * /* parameter */,
+    const data::field_reference<DATA_TYPE, data::raw, Topo, Space> & r) {
+    const field_id_t f = r.fid();
+    auto & t = r.topology();
     data::region & reg = t.template get_region<Space>();
 
     constexpr auto np = privilege_count(PRIVILEGES);
@@ -140,11 +122,8 @@ private:
         t.template ghost_copy<Space>(f);
     }
 
-    // For convenience, we always use rw accessors for certain fields that
-    // initially contain no constructed objects; we must indicate that
-    // (vacuous) initialization to Legion.
     const Legion::PrivilegeMode m =
-      init ? WRITE_DISCARD : privilege_mode(PRIVILEGES);
+      reg.poll_discard(f) ? WRITE_DISCARD : privilege_mode(PRIVILEGES);
     const Legion::LogicalRegion lr = reg.logical_region;
     if constexpr(std::is_same_v<typename Topo::base, topo::global_base>)
       region_reqs_.emplace_back(lr, m, EXCLUSIVE, lr);
@@ -158,66 +137,9 @@ private:
     region_reqs_.back().add_field(f);
   } // visit
 
-  template<class T, size_t P, class Topo, typename Topo::index_space S>
-  void visit(data::accessor<data::raw, T, P> * /* parameter */,
-    const data::field_reference<T, data::raw, Topo, S> & ref) {
-    raw<T, P, S>(ref.fid(), ref.topology());
-  }
-
-  template<class T,
-    std::size_t P,
-    std::size_t OP,
-    class Topo,
-    typename Topo::index_space S>
-  void visit(data::ragged_accessor<T, P, OP> * null_p,
-    const data::field_reference<T, data::ragged, Topo, S> & f) {
-    const field_id_t i = f.fid();
-    auto & t = f.topology().ragged;
-    // It's legitimate, if vacuous, to have the first use of a ragged field be
-    // via an accessor (even a read-only one), since all the rows will have a
-    // (well-defined) length of 0.
-    raw<T, P, S>(i,
-      t,
-      f.get_region(t).cleanup(
-        i,
-        [=] {
-          if constexpr(!std::is_trivially_destructible_v<T>)
-            execute<destroy<T, data::ragged>>(f);
-        },
-        privilege_write_only(P)));
-    visit(
-      get_null_offsets(null_p), f.template cast<data::dense, std::size_t>());
-  }
-  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
-  void visit(data::mutator<data::ragged, T, P> *,
-    const data::field_reference<T, data::ragged, Topo, S> & f) {
-    auto & p = f.get_partition(f.topology().ragged);
-    p.resize();
-    // A mutator doesn't have privileges, so supply the correct number to it:
-    visit(data::mutator<data::ragged, T, P>::template null_base<
-            Topo::template privilege_count<S>>,
-      f);
-    visit(static_cast<topo::resize::Field::accessor<rw> *>(nullptr), p.sizes());
-  }
-  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
-  void visit(data::accessor<data::sparse, T, P> * null_p,
-    const data::field_reference<T, data::sparse, Topo, S> & ref) {
-    visit(get_null_base(null_p),
-      ref.template cast<data::ragged,
-        typename field<T, data::sparse>::base_type::value_type>());
-  }
-  template<class T, std::size_t P, class Topo, typename Topo::index_space S>
-  void visit(data::mutator<data::sparse, T, P> * null_p,
-    const data::field_reference<T, data::sparse, Topo, S> & f) {
-    visit(get_null_base(null_p),
-      f.template cast<data::ragged,
-        typename field<T, data::sparse>::base_type::value_type>());
-  }
-
-  template<class Topo, std::size_t Priv>
-  void visit(data::topology_accessor<Topo, Priv> * a,
-    data::topology_slot<Topo> & slot) {
-    a->send(visitor(slot));
+  template<class P, class A>
+  std::enable_if_t<std::is_base_of_v<data::send_tag, P>> visit(P * p, A && a) {
+    p->send(visitor(a));
   }
 
   /*--------------------------------------------------------------------------*
@@ -244,21 +166,6 @@ private:
     flog_devel(info) << "Skipping argument with type " << util::type<A>()
                      << std::endl;
   } // visit
-
-  template<class T, data::layout L>
-  static void destroy(typename field<T, L>::template accessor<rw> a) {
-    const auto s = a.span();
-    std::destroy(s.begin(), s.end());
-  }
-  template<class T, std::size_t Priv, class R, class F>
-  static void realloc(const R & ref, F f) {
-    // TODO: use just one task for all fields
-    if constexpr(privilege_write_only(Priv) &&
-                 !std::is_trivially_destructible_v<T>)
-      ref.get_region().cleanup(ref.fid(), std::move(f));
-    else
-      (void)ref, (void)f;
-  }
 
   std::vector<Legion::RegionRequirement> region_reqs_;
   std::vector<Legion::Future> futures_;

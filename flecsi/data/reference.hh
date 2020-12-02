@@ -30,6 +30,10 @@ namespace flecsi {
 namespace data {
 
 struct bind_tag {}; // must be recognized as a task parameter
+// Provides a send member function that accepts a function to call with a
+// (subsidiary) task parameter and another function to call to transform the
+// corresponding task argument (used only on the caller side).
+struct send_tag {};
 
 /// An integer used to identify a resource to bind in a task.
 struct reference_base : bind_tag {

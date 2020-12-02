@@ -45,7 +45,11 @@ namespace flecsi {
 
 inline log::devel_tag task_wrapper_tag("task_wrapper");
 
-namespace data::detail {
+namespace data {
+template<class, std::size_t, std::size_t>
+struct ragged_accessor;
+
+namespace detail {
 template<class A>
 struct convert_accessor {
   using type = A;
@@ -57,7 +61,8 @@ struct convert_accessor {
     return b;
   }
 };
-} // namespace data::detail
+} // namespace detail
+} // namespace data
 
 // Send and receive only the reference_base portion:
 template<data::layout L, class T, std::size_t Priv>

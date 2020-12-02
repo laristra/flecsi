@@ -24,7 +24,7 @@
 #endif
 
 #include "flecsi/data/reference.hh"
-#include "flecsi/exec/launch.hh"
+#include "flecsi/execution.hh"
 #include "flecsi/topo/size.hh"
 #include "flecsi/util/array_ref.hh"
 #include <flecsi/data/field.hh>
@@ -36,11 +36,26 @@
 namespace flecsi {
 namespace data {
 
+namespace detail {
+template<class A>
+void
+construct(const A & a) {
+  const auto s = a.span();
+  std::uninitialized_default_construct(s.begin(), s.end());
+}
+template<class T, layout L>
+void
+destroy(typename field<T, L>::template accessor<rw> a) {
+  const auto s = a.span();
+  std::destroy(s.begin(), s.end());
+}
+} // namespace detail
+
 // All accessors are ultimately implemented in terms of those for the raw
 // layout, minimizing the amount of backend-specific code required.
 
 template<typename DATA_TYPE, size_t PRIVILEGES>
-struct accessor<single, DATA_TYPE, PRIVILEGES> : bind_tag {
+struct accessor<single, DATA_TYPE, PRIVILEGES> : bind_tag, send_tag {
   using value_type = DATA_TYPE;
   // We don't actually inherit from base_type; we don't want its interface.
   using base_type = accessor<dense, DATA_TYPE, PRIVILEGES>;
@@ -76,8 +91,9 @@ struct accessor<single, DATA_TYPE, PRIVILEGES> : bind_tag {
   const base_type & get_base() const {
     return base;
   }
-  friend base_type * get_null_base(accessor *) { // for task_prologue_t
-    return nullptr;
+  template<class F>
+  void send(F && f) {
+    f(get_base(), [](const auto & r) { return r.template cast<dense>(); });
   }
 
 private:
@@ -105,7 +121,7 @@ private:
 }; // struct accessor
 
 template<class T, std::size_t P>
-struct accessor<dense, T, P> : accessor<raw, T, P> {
+struct accessor<dense, T, P> : accessor<raw, T, P>, send_tag {
   using base_type = accessor<raw, T, P>;
   using base_type::base_type;
 
@@ -133,8 +149,18 @@ struct accessor<dense, T, P> : accessor<raw, T, P> {
   const base_type & get_base() const {
     return *this;
   }
-  friend base_type * get_null_base(accessor *) { // for task_prologue_t
-    return nullptr;
+  template<class F>
+  void send(F && f) {
+    f(get_base(), [](const auto & r) {
+      // TODO: use just one task for all fields
+      if constexpr(privilege_write_only(P) &&
+                   !std::is_trivially_destructible_v<T>)
+        r.get_region().cleanup(
+          r.fid(), [r] { execute<detail::destroy<T, dense>>(r); });
+      return r.template cast<raw>();
+    });
+    if constexpr(privilege_write_only(P))
+      detail::construct(*this); // no-op on caller side
   }
 };
 
@@ -143,6 +169,7 @@ struct accessor<dense, T, P> : accessor<raw, T, P> {
 template<class T, std::size_t P, std::size_t OP = P>
 struct ragged_accessor
   : accessor<raw, T, P>,
+    send_tag,
     util::with_index_iterator<const ragged_accessor<T, P, OP>> {
   using base_type = typename ragged_accessor::accessor;
   using typename base_type::element_type;
@@ -182,8 +209,29 @@ struct ragged_accessor
   const Offsets & get_offsets() const {
     return off;
   }
-  friend Offsets * get_null_offsets(ragged_accessor *) { // for task_prologue_t
-    return nullptr;
+  template<class F>
+  void send(F && f) {
+    f(get_base(), [](const auto & r) {
+      using R = std::remove_reference_t<decltype(r)>;
+      const field_id_t i = r.fid();
+      auto & t = r.topology().ragged;
+      r.get_region(t).cleanup(
+        i,
+        [=] {
+          if constexpr(!std::is_trivially_destructible_v<T>)
+            execute<detail::destroy<T, ragged>>(r);
+        },
+        privilege_write_only(P));
+      // We rely on the fact that field_reference uses only the field ID.
+      return field_reference<T,
+        raw,
+        topo::ragged_topology<typename R::Topology>,
+        R::space>({i, 0}, t);
+    });
+    f(get_offsets(),
+      [](const auto & r) { return r.template cast<dense, std::size_t>(); });
+    if constexpr(privilege_write_only(P))
+      detail::construct(*this); // no-op on caller side
   }
 
   template<class Topo, typename Topo::index_space S>
@@ -204,7 +252,7 @@ struct accessor<ragged, T, P>
 
 template<class T, std::size_t P>
 struct mutator<ragged, T, P>
-  : bind_tag, util::with_index_iterator<const mutator<ragged, T, P>> {
+  : bind_tag, send_tag, util::with_index_iterator<const mutator<ragged, T, P>> {
   static_assert(privilege_write(P) && !privilege_write_only(P),
     "mutators require read/write permissions");
   using base_type = ragged_accessor<T, P>;
@@ -503,12 +551,18 @@ public:
   void buffer(TaskBuffer & b) { // for unbind_accessors
     over = &b;
   }
-  void bind() const { // for bind_accessors
-    over->resize(acc.size());
+  template<class F>
+  void send(F && f) {
+    f(get_base(), [](const auto & r) {
+      r.get_partition(r.topology().ragged).resize();
+      return r;
+    });
+    f(get_size(), [](const auto & r) {
+      return r.get_partition(r.topology().ragged).sizes();
+    });
+    if(over)
+      over->resize(acc.size()); // no-op on caller side
   }
-  template<std::size_t N>
-  static constexpr ragged_accessor<T, privilege_repeat(rw, N)> * null_base =
-    nullptr; // for task_prologue_t
 
   void commit() const {
     // To move each element before overwriting it, we propagate moves outward
@@ -635,14 +689,16 @@ public:
   const base_type & get_base() const {
     return *this;
   }
-  friend base_type * get_null_base(accessor *) { // for task_prologue_t
-    return nullptr;
+  template<class F>
+  void send(F && f) {
+    f(get_base(),
+      [](const auto & r) { return r.template cast<ragged, value_type>(); });
   }
 };
 
 template<class T, std::size_t P>
 struct mutator<sparse, T, P>
-  : bind_tag, util::with_index_iterator<const mutator<sparse, T, P>> {
+  : bind_tag, send_tag, util::with_index_iterator<const mutator<sparse, T, P>> {
   using base_type = typename field<T, sparse>::base_type::template mutator1<P>;
   using TaskBuffer = typename base_type::TaskBuffer;
 
@@ -833,8 +889,11 @@ public:
   const base_type & get_base() const {
     return rag;
   }
-  friend base_type * get_null_base(mutator *) { // for task_prologue_t
-    return nullptr;
+  template<class F>
+  void send(F && f) {
+    f(get_base(), [](const auto & r) {
+      return r.template cast<ragged, typename base_row::value_type>();
+    });
   }
   void buffer(TaskBuffer & b) { // for unbind_accessors
     rag.buffer(b);

@@ -40,7 +40,12 @@ struct repartition : with_size, data::partition {
   // f is passed as a task argument, so it must be serializable;
   // consider using make_partial.
   template<class F = decltype(zero::partial)>
-  repartition(const data::region & r, F f = zero::partial);
+  repartition(const data::region & r, F f = zero::partial)
+    : with_size(r.size().first), partition(r, sz, [&] {
+        const auto r = sizes();
+        execute<fill<F>>(r, f);
+        return r.fid();
+      }()) {}
   void resize() { // apply sizes stored in the field
     update(sz, resize::field.fid);
   }
@@ -147,9 +152,16 @@ struct with_ragged : private with_ragged_base {
   with_ragged(std::size_t n) : ragged(n) {}
 
   // Extend an offsets field to define empty rows for the suffix.
-  template<typename P::index_space, class F = decltype(zero::partial)>
+  template<typename P::index_space S, class F = decltype(zero::partial)>
   void extend_offsets(
-    F = zero::partial); // serializable function from color to old size
+    F old = zero::partial) // serializable function from color to old size
+  {
+    for(auto f :
+      run::context::instance().get_field_info_store<ragged_topology<P>, S>())
+      execute<extend<F>>(data::field_reference<std::size_t, data::raw, P, S>(
+                           *f, static_cast<typename P::core &>(*this)),
+        old);
+  }
 
   typename ragged_topology<P>::core ragged;
 };
