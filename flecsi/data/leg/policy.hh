@@ -190,7 +190,7 @@ struct partition {
     const partition & src,
     field_id_t fid,
     BuildByImage_tag,
-    disjointness dis = aliased,
+    disjointness dis = compute,
     completeness cpt = incomplete)
     : index_partition(part<false>(reg.index_space, src, fid, dis, cpt)),
       logical_partition(log(reg)) {}
