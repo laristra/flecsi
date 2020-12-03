@@ -50,63 +50,37 @@ struct intervals_category : intervals_base, topo::repartitioned {
     resize();
   }
 };
-
-// NB: Registering a field on an indirect topology doesn't do anything.
-struct indirect_base : partition {
-  struct coloring {};
-
-  template<class... AA>
-  explicit indirect_base(region * r, AA &&... aa)
-    : partition(*r, std::forward<AA>(aa)...), reg(r) {}
-
-  template<topo::single_space = topo::elements>
-  region & get_region() const {
-    return *reg;
-  }
-
-private:
-  region * reg;
-};
-template<class>
-struct indirect_category : indirect_base {
-  using indirect_base::indirect_base;
-};
 } // namespace data::detail
 // Needed before defining a specialization:
 template<>
 struct topo::detail::base<data::detail::intervals_category> {
   using type = data::detail::intervals_base;
 };
-template<>
-struct topo::detail::base<data::detail::indirect_category> {
-  using type = data::detail::indirect_base;
-};
 
 namespace data {
 namespace detail {
 struct intervals : topo::specialization<intervals_category, intervals> {
-  static const field<partition::row>::definition<intervals> field;
+  static const field<data::intervals::Value>::definition<intervals> field;
 };
 // Now that intervals is complete:
-inline const field<partition::row>::definition<intervals> intervals::field;
-struct indirect : topo::specialization<indirect_category, indirect> {};
+inline const field<data::intervals::Value>::definition<intervals>
+  intervals::field;
 } // namespace detail
 
 struct copy_plan {
   using Intervals = std::vector<std::vector<subrow>>;
-  using Points = std::vector<std::vector<data::partition::point>>;
+  using Points = std::vector<std::vector<points::Value>>;
 
-  static void set_dests(field<partition::row>::accessor<wo> a,
+  static void set_dests(field<intervals::Value>::accessor<wo> a,
     const Intervals & v) {
     const auto i = color();
     auto * p = a.span().data();
     for(auto & s : v[i])
-      *p++ = partition::make_row(i, s);
+      *p++ = intervals::make(s, i);
   }
 
-  static void fill_dst_ptrs_task(
-    flecsi::field<data::partition::point>::accessor<wo> a,
-    const std::vector<std::vector<data::partition::point>> & v) {
+  static void fill_dst_ptrs_task(flecsi::field<points::Value>::accessor<wo> a,
+    const Points & v) {
     const auto c = run::context::instance().color();
     assert(v[c].size() == a.span().size());
     std::copy(v[c].begin(), v[c].end(), a.span().begin());
@@ -119,7 +93,7 @@ struct copy_plan {
     const Intervals & dests,
     const Points & src,
     util::constant<S> = {})
-    : dest_ptrs_([&dests] {
+    : reg(&t.template get_region<S>()), dest_ptrs_([&dests] {
         detail::intervals::coloring ret;
         ret.reserve(dests.size());
         for(const auto & v : dests)
@@ -128,33 +102,30 @@ struct copy_plan {
       }()),
       // In this first case we use a subtopology to create the
       // destination partition which supposed to be contiguous
-      dest_(&t.template get_region<S>(),
+      dest_(*reg,
         dest_ptrs_,
         (execute<set_dests>(detail::intervals::field(dest_ptrs_), dests),
           detail::intervals::field.fid)),
+      ptr_fid(pointers<P, S>.fid),
       // From the pointers we feed in the destination partition
       // we create the source partition
-      src_partition_(dest_.get_region(),
+      src_partition_(*reg,
         dest_,
-        (execute<fill_dst_ptrs_task>(indirect_register<P, S>(dest_), src),
-          pointers.fid),
-        data::partition::buildByImage_tag) {}
+        (execute<fill_dst_ptrs_task>(pointers<P, S>(t), src), ptr_fid)) {}
 
   void issue_copy(const field_id_t & data_fid) const {
-    launch_copy(
-      dest_.get_region(), src_partition_, dest_, data_fid, pointers.fid);
+    launch_copy(*reg, src_partition_, dest_, data_fid, ptr_fid);
   }
 
 private:
+  const region * reg;
   detail::intervals::core dest_ptrs_;
-  detail::indirect::core dest_;
-  partition src_partition_;
+  intervals dest_;
+  field_id_t ptr_fid;
+  points src_partition_;
 
-  static inline const field<partition::point>::definition<detail::indirect>
-    pointers;
   template<class T, typename T::index_space S>
-  static inline auto & indirect_register =
-    (run::context::instance().add_field_info<T, S>(&pointers), pointers);
+  static inline const field<points::Value>::definition<T, S> pointers;
 }; // struct copy_plan
 
 } // namespace data

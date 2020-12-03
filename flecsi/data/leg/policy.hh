@@ -150,84 +150,25 @@ private:
   std::set<field_id_t> discard;
 };
 
-struct partition {
-  using row = Legion::Rect<2>;
-  using point = Legion::Point<2>;
-
-  static point make_point(std::size_t i, std::size_t j) {
-    return point(i, j);
-  }
-
-  static row make_row(std::size_t i, std::size_t n) {
-    const Legion::coord_t r = i;
-    return {{r, 0}, {r, upper(n)}};
-  }
-
-  static row make_row(std::size_t i, subrow n) {
-    const Legion::coord_t r = i;
-    const Legion::coord_t ln = n.first;
-    return {{r, ln}, {r, upper(n.second)}};
-  }
-
-  static std::size_t row_size(const row & r) {
-    return r.hi[1] - r.lo[1] + 1;
-  }
-
-  static constexpr struct BuildByImage_tag {
-  } buildByImage_tag = {};
-
-  explicit partition(const region & reg)
-    : partition(reg, run().get_index_space_domain(reg.index_space).hi()) {}
-  partition(const region & reg,
-    const partition & src,
-    field_id_t fid,
-    disjointness dis = disjoint,
-    completeness cpt = incomplete)
-    : index_partition(part(reg.index_space, src, fid, dis, cpt)),
-      logical_partition(log(reg)) {}
-
-  partition(const region & reg,
-    const partition & src,
-    field_id_t fid,
-    BuildByImage_tag,
-    disjointness dis = compute,
-    completeness cpt = incomplete)
-    : index_partition(part<false>(reg.index_space, src, fid, dis, cpt)),
-      logical_partition(log(reg)) {}
-
-  std::size_t colors() const {
-    return run().get_index_space_domain(get_color_space()).get_volume();
-  }
-
+struct partition_base {
   unique_index_space color_space; // empty when made from another partition
   unique_index_partition index_partition;
   unique_logical_partition logical_partition;
-
-  template<topo::single_space>
-  const partition & get_partition(field_id_t) const {
-    return *this;
-  }
-
-  void update(const partition & src,
-    field_id_t fid,
-    disjointness dis = disjoint,
-    completeness cpt = incomplete) {
-    auto & r = run();
-    auto ip =
-      part(r.get_parent_index_space(index_partition), src, fid, dis, cpt);
-    logical_partition = r.get_logical_partition(
-      r.get_parent_logical_region(logical_partition), ip);
-    index_partition = std::move(ip); // can't fail
-  }
 
   // This is the same as color_space when that is non-empty.
   Legion::IndexSpace get_color_space() const {
     return run().get_index_partition_color_space_name(index_partition);
   }
 
+protected:
+  partition_base(const region & reg)
+    : partition_base(reg, run().get_index_space_domain(reg.index_space).hi()) {}
+  partition_base(const region & r, unique_index_partition ip)
+    : index_partition(std::move(ip)), logical_partition(log(r)) {}
+
 private:
   // The type-erased version assumes a square transformation matrix.
-  partition(const region & reg, Legion::DomainPoint hi)
+  partition_base(const region & reg, Legion::DomainPoint hi)
     : color_space(run().create_index_space(ctx(), Legion::Rect<1>(0, hi[0]))),
       index_partition(run().create_partition_by_restriction(
         ctx(),
@@ -243,11 +184,41 @@ private:
         DISJOINT_COMPLETE_KIND)),
       logical_partition(log(reg)) {}
 
+  unique_logical_partition log(const region & reg) const {
+    return run().get_logical_partition(reg.logical_region, index_partition);
+  }
+};
+
+template<bool R = true>
+struct partition : partition_base {
+  using partition_base::partition_base;
+  partition(const region & reg,
+    const partition<> & src,
+    field_id_t fid,
+    disjointness dis = def_dis,
+    completeness cpt = incomplete)
+    : partition_base(reg, part(reg.index_space, src, fid, dis, cpt)) {}
+
+protected:
+  void update(const partition & src,
+    field_id_t fid,
+    disjointness dis = def_dis,
+    completeness cpt = incomplete) {
+    auto & r = run();
+    auto ip =
+      part(r.get_parent_index_space(index_partition), src, fid, dis, cpt);
+    logical_partition = r.get_logical_partition(
+      r.get_parent_logical_region(logical_partition), ip);
+    index_partition = std::move(ip); // can't fail
+  }
+
+private:
+  static constexpr disjointness def_dis = R ? disjoint : compute;
+
   // We document that src must outlive this partitioning, although Legion is
   // said to support deleting its color space before our partition using it.
-  template<bool R = true>
   unique_index_partition part(const Legion::IndexSpace & is,
-    const partition & src,
+    const partition<> & src,
     field_id_t fid,
     disjointness dis,
     completeness cpt) {
@@ -273,21 +244,65 @@ private:
              0,
              tag);
   }
-
-  unique_logical_partition log(const region & reg) const {
-    return run().get_logical_partition(reg.logical_region, index_partition);
-  }
 };
 
 } // namespace leg
 
 using region_base = leg::region;
-using leg::partition;
+
+struct partition : leg::partition<> {
+  using row = Legion::Rect<2>;
+
+  static row make_row(std::size_t i, std::size_t n) {
+    const Legion::coord_t r = i;
+    return {{r, 0}, {r, leg::upper(n)}};
+  }
+  static std::size_t row_size(const row & r) {
+    return r.hi[1] - r.lo[1] + 1;
+  }
+
+  using leg::partition<>::partition;
+  explicit partition(const region_base & r) : leg::partition<>(r) {}
+
+  using leg::partition<>::update;
+
+  std::size_t colors() const {
+    return leg::run().get_index_space_domain(get_color_space()).get_volume();
+  }
+
+  template<topo::single_space>
+  const partition & get_partition(field_id_t) const {
+    return *this;
+  }
+};
+
+struct intervals : leg::partition<> {
+  using Value = data::partition::row;
+
+  static Value make(subrow n,
+    std::size_t i = run::context::instance().color()) {
+    const Legion::coord_t r = i;
+    const Legion::coord_t ln = n.first;
+    return {{r, ln}, {r, leg::upper(n.second)}};
+  }
+
+  using partition::partition;
+};
+
+struct points : leg::partition<false> {
+  using Value = Legion::Point<2>;
+
+  static auto make(std::size_t r, std::size_t i) {
+    return Value(r, i);
+  }
+
+  using partition::partition;
+};
 
 inline void
 launch_copy(const region_base & reg,
-  const partition & src_partition,
-  const partition & dest_partition,
+  const points & src_partition,
+  const intervals & dest_partition,
   const field_id_t & data_fid,
   const field_id_t & ptr_fid) {
 

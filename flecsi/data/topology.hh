@@ -47,10 +47,7 @@ protected:
 // A prefix of each row in a region_base.
 struct partition {
   static auto make_row(std::size_t i, std::size_t n);
-  static auto make_row(std::size_t i, subrow k);
-  static auto make_point(std::size_t i, std::size_t j);
   using row = decltype(make_row(0, 0));
-  using point = decltype(make_point(0, 0));
   static std::size_t row_size(const row &);
 
   explicit partition(const region_base &); // divides into rows
@@ -70,6 +67,39 @@ struct partition {
   }
 };
 
+// A subset of each row in a region_base, expressed as a set of intervals.
+struct intervals {
+  static auto make(subrow, std::size_t r = color());
+  using Value = decltype(make({}));
+
+  // Derives intervals from the field values (which should be of type Value)
+  // in each row of the argument partition, which must outlive this value.
+  intervals(const region_base &,
+    const partition &,
+    field_id_t,
+    completeness = incomplete);
+};
+
+// A set of elements in a region_base for (not of!) each row.
+struct points {
+  static auto make(std::size_t r, std::size_t);
+  using Value = decltype(make(0, 0));
+
+  // Derives points from the field values (which should be of type Value)
+  // in each row of the argument partition, which must outlive this value.
+  points(const region_base &,
+    const partition &,
+    field_id_t,
+    completeness = incomplete);
+};
+
+// Copy field data within a region, using the points::Value field srcs to
+// select a (possibly non-unique) src value to assign to each dest element.
+void launch_copy(const region &,
+  const points & src,
+  const intervals & dest,
+  const field_id_t & data,
+  const field_id_t & srcs);
 #endif
 
 struct region : region_base {
