@@ -43,11 +43,20 @@ construct(const A & a) {
   const auto s = a.span();
   std::uninitialized_default_construct(s.begin(), s.end());
 }
-template<class T, layout L>
+template<class T, layout L, std::size_t P>
 void
-destroy(typename field<T, L>::template accessor<rw> a) {
+destroy_task(typename field<T, L>::template accessor1<P> a) {
   const auto s = a.span();
   std::destroy(s.begin(), s.end());
+}
+template<std::size_t P,
+  class T,
+  layout L,
+  class Topo,
+  typename Topo::index_space S>
+void
+destroy(const field_reference<T, L, Topo, S> & r) {
+  execute<destroy_task<T, L, privilege_repeat(rw, privilege_count(P))>>(r);
 }
 } // namespace detail
 
@@ -155,8 +164,7 @@ struct accessor<dense, T, P> : accessor<raw, T, P>, send_tag {
       // TODO: use just one task for all fields
       if constexpr(privilege_write_only(P) &&
                    !std::is_trivially_destructible_v<T>)
-        r.get_region().cleanup(
-          r.fid(), [r] { execute<detail::destroy<T, dense>>(r); });
+        r.get_region().cleanup(r.fid(), [r] { detail::destroy<P>(r); });
       return r.template cast<raw>();
     });
     if constexpr(privilege_write_only(P))
@@ -219,7 +227,7 @@ struct ragged_accessor
         i,
         [=] {
           if constexpr(!std::is_trivially_destructible_v<T>)
-            execute<detail::destroy<T, ragged>>(r);
+            detail::destroy<P>(r);
         },
         privilege_write_only(P));
       // We rely on the fact that field_reference uses only the field ID.
