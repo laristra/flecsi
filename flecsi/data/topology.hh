@@ -20,12 +20,16 @@
 #endif
 
 #include "flecsi/data/backend.hh"
+#include "flecsi/data/layout.hh"
 #include "flecsi/data/privilege.hh"
 #include "flecsi/run/types.hh"
 
 #include <set>
 
 namespace flecsi::data {
+template<class, layout, class Topo, typename Topo::index_space>
+struct field_reference;
+
 #ifdef DOXYGEN // implemented per-backend
 struct region_base {
   region(size2, const fields &);
@@ -93,6 +97,21 @@ struct region : region_base {
     return (privilege_write(g) || !sw && gr ? dirty.erase(i)
                                             : sw && !dirty.insert(i).second) &&
            gr;
+  }
+
+  // Perform a ghost copy if needed.
+  template<std::size_t P,
+    class T,
+    layout L,
+    class Topo,
+    typename Topo::index_space S>
+  void ghost_copy(const field_reference<T, L, Topo, S> & f) {
+    constexpr auto np = privilege_count(P);
+    static_assert(np == Topo::template privilege_count<S>,
+      "privilege-count mismatch between accessor and topology type");
+    if constexpr(np > 1)
+      if(ghost<P>(f.fid()))
+        f.topology().ghost_copy(f);
   }
 
   template<topo::single_space>

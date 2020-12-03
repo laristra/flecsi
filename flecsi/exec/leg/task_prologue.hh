@@ -81,13 +81,7 @@ protected:
     auto & t = r.topology();
     data::region & reg = t.template get_region<Space>();
 
-    constexpr auto np = privilege_count(PRIVILEGES);
-    static_assert(np == Topo::template privilege_count<Space>,
-      "privilege-count mismatch between accessor and topology type");
-    if constexpr(np > 1) {
-      if(reg.ghost<PRIVILEGES>(f))
-        t.ghost_copy(r);
-    }
+    reg.ghost_copy<PRIVILEGES>(r);
 
     const Legion::PrivilegeMode m =
       reg.poll_discard(f) ? WRITE_DISCARD : privilege_mode(PRIVILEGES);
