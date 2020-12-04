@@ -86,7 +86,7 @@ protected:
       "privilege-count mismatch between accessor and topology type");
     if constexpr(np > 1) {
       if(reg.ghost<PRIVILEGES>(f))
-        t.template ghost_copy<Space>(f);
+        t.ghost_copy(r);
     }
 
     const Legion::PrivilegeMode m =
