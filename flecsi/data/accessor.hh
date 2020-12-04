@@ -221,6 +221,7 @@ struct ragged_accessor
     f(get_base(), [](const auto & r) {
       using R = std::remove_reference_t<decltype(r)>;
       const field_id_t i = r.fid();
+      r.get_region().template ghost_copy<P>(r);
       auto & t = r.topology().ragged;
       r.get_region(t).cleanup(
         i,
@@ -235,8 +236,11 @@ struct ragged_accessor
         topo::ragged_topology<typename R::Topology>,
         R::space>({i, 0}, t);
     });
-    f(get_offsets(),
-      [](const auto & r) { return r.template cast<dense, std::size_t>(); });
+    f(get_offsets(), [](const auto & r) {
+      // Disable normal ghost copy of offsets:
+      r.get_region().template ghost<privilege_pack<wo, wo>>(r.fid());
+      return r.template cast<dense, std::size_t>();
+    });
     if constexpr(privilege_discard(P))
       detail::construct(*this); // no-op on caller side
   }
