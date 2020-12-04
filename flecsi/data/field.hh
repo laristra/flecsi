@@ -94,6 +94,23 @@ struct field_reference : field_reference_t<Topo> {
   using Base::Base;
   explicit field_reference(const Base & b) : Base(b) {}
 
+  // We can't forward-declare partition, so just deduce these:
+  template<class S>
+  static auto & get_region(S & topo) {
+    return topo.template get_region<Space>();
+  }
+  template<class S>
+  auto & get_partition(S & topo) const {
+    return topo.template get_partition<Space>(this->fid());
+  }
+
+  auto & get_region() const {
+    return get_region(this->topology());
+  }
+  auto & get_partition() const {
+    return get_partition(this->topology());
+  }
+
   template<layout L2, class T2 = T> // TODO: allow only safe casts
   auto cast() const {
     return field_reference<T2, L2, Topo, Space>(*this);

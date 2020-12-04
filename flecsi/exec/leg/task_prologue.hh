@@ -110,7 +110,7 @@ private:
   void visit(data::accessor<data::dense, T, Priv> * null_p,
     const data::field_reference<T, data::dense, Topo, S> & ref) {
     visit(get_null_base(null_p), ref.template cast<data::raw>());
-    realloc<S, T, Priv>(ref, [ref] { execute<destroy<T, data::dense>>(ref); });
+    realloc<T, Priv>(ref, [ref] { execute<destroy<T, data::dense>>(ref); });
   }
   template<class T,
     std::size_t Priv,
@@ -178,7 +178,7 @@ private:
     // (well-defined) length of 0.
     raw<T, P, S>(i,
       t,
-      t.template get_region<S>().cleanup(
+      f.get_region(t).cleanup(
         i,
         [=] {
           if constexpr(!std::is_trivially_destructible_v<T>)
@@ -191,7 +191,7 @@ private:
   template<class T, std::size_t P, class Topo, typename Topo::index_space S>
   void visit(data::mutator<data::ragged, T, P> *,
     const data::field_reference<T, data::ragged, Topo, S> & f) {
-    auto & p = f.topology().ragged.template get_partition<S>(f.fid());
+    auto & p = f.get_partition(f.topology().ragged);
     p.resize();
     // A mutator doesn't have privileges, so supply the correct number to it:
     visit(data::mutator<data::ragged, T, P>::template null_base<
@@ -250,12 +250,12 @@ private:
     const auto s = a.span();
     std::destroy(s.begin(), s.end());
   }
-  template<auto S, class T, std::size_t Priv, class R, class F>
+  template<class T, std::size_t Priv, class R, class F>
   static void realloc(const R & ref, F f) {
     // TODO: use just one task for all fields
     if constexpr(privilege_write_only(Priv) &&
                  !std::is_trivially_destructible_v<T>)
-      ref.topology().template get_region<S>().cleanup(ref.fid(), std::move(f));
+      ref.get_region().cleanup(ref.fid(), std::move(f));
     else
       (void)ref, (void)f;
   }
