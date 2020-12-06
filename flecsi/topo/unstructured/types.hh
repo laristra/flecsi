@@ -32,20 +32,140 @@ namespace topo {
 namespace unstructured_impl {
 
 struct shared_entity {
-  size_t id;
-  std::vector<size_t> dependants;
+  std::size_t id;
+  std::vector<std::size_t> dependents;
 };
 
 struct ghost_entity {
-  size_t id;
-  size_t color;
+  std::size_t id;
+  std::size_t color;
+};
+
+struct index_coloring {
+  std::vector<std::size_t> exclusive;
+  std::vector<shared_entity> shared;
+  std::vector<ghost_entity> ghost;
+};
+
+// FIXME: may not need this
+struct crs {
+  std::vector<std::size_t> offsets;
+  std::vector<std::size_t> indices;
+};
+
+struct coloring {
+  std::size_t colors;
+  std::vector<std::size_t> idx_allocs;
+  std::vector<index_coloring> idx_colorings; // not sure about this
+  std::vector<std::vector<std::size_t>> cnx_allocs;
+  std::vector<std::vector<crs>> cnx_colorings; // not sure about this
+};
+
+/*
+  Closure tokens for specifying the behavior of closure function.
+ */
+
+template<size_t IndexSpace,
+  size_t Dimension,
+  size_t ThroughDimension,
+  size_t Depth = 1>
+struct primary_independent {
+  static constexpr size_t index_space = IndexSpace;
+  static constexpr size_t dimension = Dimension;
+  static constexpr size_t thru_dimension = ThroughDimension;
+  static constexpr size_t depth = Depth;
+}; // struct primary_independent
+
+template<size_t IndexSpace, size_t Dimension, size_t PrimaryDimension>
+struct auxiliary_independent {
+  static constexpr size_t index_space = IndexSpace;
+  static constexpr size_t dimension = Dimension;
+  static constexpr size_t primary_dimension = PrimaryDimension;
+}; // struct auxiliary_independent
+
+} // namespace unstructured_impl
+
+struct unstructured_base {
+
+  using index_coloring = unstructured_impl::index_coloring;
+  using shared_entity = unstructured_impl::shared_entity;
+  using ghost_entity = unstructured_impl::ghost_entity;
+  using crs = unstructured_impl::crs;
+
+  struct coloring {
+    std::size_t colors;
+    std::vector<std::size_t> idx_allocs;
+    std::vector<index_coloring> idx_colorings;
+    std::vector<std::vector<std::size_t>> cnx_allocs;
+    std::vector<std::vector<crs>> cnx_colorings;
+  };
+
+  static std::size_t idx_size(
+    unstructured_impl::index_coloring const & index_coloring,
+    std::size_t) {
+    return index_coloring.exclusive.size() + index_coloring.shared.size() +
+           index_coloring.ghost.size();
+  }
+
+  static void cnx_size(std::size_t size, resize::Field::accessor<wo> a) {
+    a = data::partition::make_row(color(), size);
+  }
+
+}; // struct unstructured_base
+
+} // namespace topo
+
+/*----------------------------------------------------------------------------*
+  Serialization Rules
+ *----------------------------------------------------------------------------*/
+
+template<>
+struct util::serial<topo::unstructured_impl::shared_entity> {
+  using type = topo::unstructured_impl::shared_entity;
+  template<class P>
+  static void put(P & p, const type & s) {
+    serial_put(p, std::tie(s.id, s.dependents));
+  }
+  static type get(const std::byte *& p) {
+    const serial_cast r{p};
+    return type{r, r};
+  }
+};
+
+template<>
+struct util::serial<topo::unstructured_impl::index_coloring> {
+  using type = topo::unstructured_impl::index_coloring;
+  template<class P>
+  static void put(P & p, const type & c) {
+    serial_put(p, std::tie(c.exclusive, c.shared, c.ghost));
+  }
+  static type get(const std::byte *& p) {
+    const serial_cast r{p};
+    return type{r, r, r};
+  }
+};
+
+} // namespace flecsi
+
+#if 0
+template<>
+struct util::serial<topo::unstructured_impl::entity_info> {
+  using type = topo::unstructured_impl::entity_info;
+  template<class P>
+  static void put(P & p, const type & c) {
+    serial_put(p, std::tie(c.id, c.rank, c.offset, c.shared));
+  }
+  static type get(const std::byte *& p) {
+    const serial_cast r{p};
+    return type{r, r, r, std::set<std::size_t>(r)};
+  }
 };
 
 struct entity_info {
-  size_t id;
-  size_t rank;
-  size_t offset;
-  std::set<size_t> shared;
+  std::size_t id;
+  std::size_t rank;
+  std::size_t offset;
+  std::set<std::size_t> shared;
 
   /*!
    Constructor.
@@ -104,108 +224,15 @@ struct entity_info {
   } // operator ==
 
 }; // struct entity_info
+#endif
 
-struct index_coloring {
-  std::set<size_t> primary;
-  std::set<entity_info> exclusive;
-  std::set<entity_info> shared;
-  std::set<entity_info> ghost;
-};
-
+#if 0
 struct coloring_meta {
   size_t exclusive;
   size_t shared;
   size_t ghost;
 
-  std::set<size_t> dependants; // depend on us
+  std::set<size_t> dependents; // depend on us
   std::set<size_t> dependencies; // we depend on them
 };
-
-/*
-  Closure tokens for specifying the behavior of closure function.
- */
-
-template<size_t IndexSpace,
-  size_t Dimension,
-  size_t ThroughDimension,
-  size_t Depth = 1>
-struct primary_independent {
-  static constexpr size_t index_space = IndexSpace;
-  static constexpr size_t dimension = Dimension;
-  static constexpr size_t thru_dimension = ThroughDimension;
-  static constexpr size_t depth = Depth;
-}; // struct primary_independent
-
-template<size_t IndexSpace, size_t Dimension, size_t PrimaryDimension>
-struct auxiliary_independent {
-  static constexpr size_t index_space = IndexSpace;
-  static constexpr size_t dimension = Dimension;
-  static constexpr size_t primary_dimension = PrimaryDimension;
-}; // struct auxiliary_independent
-
-} // namespace unstructured_impl
-
-struct unstructured_base {
-
-  using index_coloring = unstructured_impl::index_coloring;
-  using shared_entity = unstructured_impl::shared_entity;
-  using ghost_entity = unstructured_impl::ghost_entity;
-  using entity_info = unstructured_impl::entity_info;
-  using coloring_meta = unstructured_impl::coloring_meta;
-
-  struct coloring {
-    std::size_t colors;
-    std::vector<index_coloring> index_colorings;
-    std::vector<std::vector<std::size_t>> connectivity_sizes;
-    std::vector<std::vector<coloring_meta>> distribution;
-  }; // struct coloring
-
-  static std::size_t idx_size(
-    unstructured_impl::index_coloring const & index_coloring,
-    std::size_t colors,
-    std::size_t color) {
-    (void)index_coloring;
-    (void)colors;
-    (void)color;
-    return 10;
-  }
-
-  static void cnx_size(std::size_t size, resize::Field::accessor<wo> a) {
-    a = data::partition::make_row(color(), size);
-  }
-
-}; // struct unstructured_base
-
-} // namespace topo
-
-/*----------------------------------------------------------------------------*
-  Serialization Rules
- *----------------------------------------------------------------------------*/
-
-template<>
-struct util::serial<topo::unstructured_impl::entity_info> {
-  using type = topo::unstructured_impl::entity_info;
-  template<class P>
-  static void put(P & p, const type & c) {
-    serial_put(p, std::tie(c.id, c.rank, c.offset, c.shared));
-  }
-  static type get(const std::byte *& p) {
-    const serial_cast r{p};
-    return type{r, r, r, std::set<std::size_t>(r)};
-  }
-};
-
-template<>
-struct util::serial<topo::unstructured_impl::index_coloring> {
-  using type = topo::unstructured_impl::index_coloring;
-  template<class P>
-  static void put(P & p, const type & c) {
-    serial_put(p, std::tie(c.primary, c.exclusive, c.shared, c.ghost));
-  }
-  static type get(const std::byte *& p) {
-    const serial_cast r{p};
-    return type{r, r, r, r};
-  }
-};
-
-} // namespace flecsi
+#endif

@@ -20,6 +20,8 @@
 #endif
 
 #include "flecsi/flog.hh"
+#include "flecsi/topo/unstructured/coloring_functors.hh"
+#include "flecsi/topo/unstructured/types.hh"
 #include "flecsi/util/color_map.hh"
 #include "flecsi/util/dcrs.hh"
 #include "flecsi/util/mpi.hh"
@@ -34,186 +36,31 @@ namespace flecsi {
 namespace topo {
 namespace unstructured_impl {
 
-/*----------------------------------------------------------------------------*
-  Functors
- *----------------------------------------------------------------------------*/
+template<typename T>
+void
+force_unique(std::vector<T> & v) {
+  std::sort(v.begin(), v.end());
+  auto first = v.begin();
+  auto last = std::unique(first, v.end());
+  v.erase(last, v.end());
+}
 
-template<typename Definition>
-struct pack_cells {
-  using return_type = std::vector<std::vector<std::size_t>>;
+template<typename K, typename T>
+void
+force_unique(std::map<K, std::vector<T>> & m) {
+  for(auto & v : m)
+    force_unique(v.second);
+}
 
-  pack_cells(Definition const & md, std::vector<std::size_t> const & dist)
-    : md_(md), dist_(dist) {}
+template<typename T>
+void
+force_unique(std::vector<std::vector<T>> & vv) {
+  for(auto & v : vv)
+    force_unique(v);
+}
 
-  return_type operator()(int rank, int) const {
-    return_type cells;
-    cells.reserve(dist_[rank + 1] - dist_[rank]);
-
-    for(size_t i{dist_[rank]}; i < dist_[rank + 1]; ++i) {
-      cells.emplace_back(md_.entities(Definition::dimension(), 0, i));
-    } // for
-
-    return cells;
-  } // operator(int, int)
-
-private:
-  Definition const & md_;
-  std::vector<std::size_t> const & dist_;
-}; // struct pack_cells
-
-template<typename Definition>
-struct pack_vertices {
-  using return_type = std::vector<typename Definition::point>;
-
-  pack_vertices(Definition const & md, std::vector<std::size_t> const & dist)
-    : md_(md), dist_(dist) {}
-
-  return_type operator()(int rank, int) const {
-    return_type vertices;
-    vertices.reserve(dist_[rank + 1] - dist_[rank]);
-
-    for(size_t i{dist_[rank]}; i < dist_[rank + 1]; ++i) {
-      vertices.emplace_back(md_.vertex(i));
-    } // for
-
-    return vertices;
-  } // operator(int, int)
-
-private:
-  Definition const & md_;
-  std::vector<std::size_t> const & dist_;
-}; // struct pack_vertices
-
-/*
-  Send partial vertex-to-cell connectivity information to the rank that owns
-  the vertex in the naive vertex distribution.
+/*!
  */
-
-struct vertex_referencers {
-  using return_type = std::map<std::size_t, std::vector<std::size_t>>;
-
-  vertex_referencers(
-    std::map<std::size_t, std::vector<std::size_t>> const & vertex2cell,
-    std::vector<std::size_t> const & dist,
-    int rank)
-    : size_(dist.size() - 1), rank_(rank) {
-    references_.resize(size_);
-    for(auto v : vertex2cell) {
-      auto r = util::distribution_offset(dist, v.first);
-      if(r != rank_) {
-        for(auto c : v.second) {
-          references_[r][v.first].emplace_back(c);
-        } // for
-      } // if
-    } // for
-  } // vertex_refernces
-
-  std::size_t count(int rank) const {
-    flog_assert(rank < size_, "invalid rank");
-    return rank == rank_ ? 0
-                         : util::serial_size<return_type>(references_[rank]);
-  }
-
-  return_type operator()(int rank, int) const {
-    flog_assert(rank < size_, "invalid rank");
-    return references_[rank];
-  } // operator(int, int)
-
-private:
-  const int size_;
-  const int rank_;
-  std::vector<std::map<std::size_t, std::vector<std::size_t>>> references_;
-}; // struct vertex_referencers
-
-/*
-  Send full vertex-to-cell connectivity information to all ranks that reference
-  one of our vertices.
- */
-
-struct cell_connectivity {
-
-  using return_type = std::map<std::size_t, std::vector<std::size_t>>;
-
-  cell_connectivity(std::vector<std::vector<std::size_t>> const & vertices,
-    std::map<std::size_t, std::vector<std::size_t>> const & connectivity,
-    std::vector<std::size_t> const & dist,
-    int rank)
-    : size_(dist.size() - 1), rank_(rank), connectivity_(size_) {
-
-    int offset{0};
-    for(auto r : vertices) {
-      if(offset != rank_) {
-        for(auto v : r) {
-          connectivity_[offset][v] = connectivity.at(v);
-        } // for
-      } // for
-      ++offset;
-    } // for
-  } // cell_connectivity
-
-  std::size_t count(int rank) const {
-    flog_assert(rank < size_, "invalid rank");
-    return rank == rank_ ? 0
-                         : util::serial_size<return_type>(connectivity_[rank]);
-  }
-
-  return_type operator()(int rank, int) const {
-    flog_assert(rank < size_, "invalid rank");
-    return connectivity_[rank];
-  } // operator(int, int)
-
-private:
-  const int size_;
-  const int rank_;
-  std::vector<std::map<std::size_t, std::vector<std::size_t>>> connectivity_;
-}; // struct cell_connectivity
-
-/*
-  Send cells to colors that own them.
- */
-
-struct distribute_cells {
-
-  using return_type = std::vector<std::array<std::size_t, 2>>;
-
-  distribute_cells(util::dcrs const & naive,
-    std::size_t colors,
-    std::vector<std::size_t> const & index_colors,
-    int rank)
-    : size_(naive.distribution.size() - 1) {
-    util::color_map cm(size_, colors, naive.distribution.back());
-
-    for(std::size_t r{0}; r < std::size_t(size_); ++r) {
-      std::vector<std::array<std::size_t, 2>> indices;
-
-      for(std::size_t i{0}; i < naive.entries(); ++i) {
-        if(cm.process(index_colors[i]) == r) {
-          indices.push_back({index_colors[i], naive.distribution[rank] + i});
-        } // if
-      } // for
-
-      cells_.emplace_back(indices);
-    } // for
-  } // distribute_cells
-
-  std::size_t count(int rank) const {
-    flog_assert(rank < size_, "invalid rank");
-    return util::serial_size<return_type>(cells_[rank]);
-  }
-
-  return_type operator()(int rank, int) const {
-    flog_assert(rank < size_, "invalid rank");
-    return cells_[rank];
-  }
-
-private:
-  const int size_;
-  std::vector<std::vector<std::array<std::size_t, 2>>> cells_;
-}; // struct distribute_cells
-
-/*----------------------------------------------------------------------------*
-  Interface
- *----------------------------------------------------------------------------*/
 
 template<typename Definition>
 auto
@@ -222,55 +69,109 @@ make_dcrs(Definition const & md,
   MPI_Comm comm = MPI_COMM_WORLD) {
   auto [rank, size, group] = util::mpi::info(comm);
 
-  // Get the cells for this rank
   util::color_map cm(size, size, md.num_entities(Definition::dimension()));
-  auto cells = util::mpi::one_to_allv<pack_cells<Definition>>(
+
+  /*
+    Get the initial cells for this rank. The cells will be read by
+    the root process and sent to each initially "owning" rank using
+    a naive distribution.
+   */
+
+  auto c2v = util::mpi::one_to_allv<pack_cells<Definition>>(
     {md, cm.distribution()}, comm);
+
+#if 1
+  {
+    std::stringstream ss;
+    std::size_t cid{cm.distribution()[rank]};
+    for(auto & cd : c2v) {
+      ss << "cell " << cid++ << ": ";
+      for(auto v : cd) {
+        ss << v << " ";
+      } // for
+      ss << std::endl;
+    } // for
+    flog(warn) << ss.str() << std::endl;
+  } // scope
+#endif
+
+  /*
+    Create a map of vertex-to-cell connectivity information from
+    the initial cell distribution.
+   */
 
   // Populate local vertex connectivity information
   std::size_t offset{cm.distribution()[rank]};
   std::size_t indices{cm.indices(rank, 0)};
-  std::map<std::size_t, std::vector<std::size_t>> vertex2cell;
+  std::map<std::size_t, std::vector<std::size_t>> v2c;
 
   std::size_t i{0};
-  for(auto c : cells) {
+  for(auto c : c2v) {
     for(auto v : c) {
-      vertex2cell[v].emplace_back(offset + i);
+      v2c[v].emplace_back(offset + i);
     } // for
     ++i;
   } // for
 
-  // Request all referencers of our local vertices
+#if 1
+  {
+    std::stringstream ss;
+    for(auto v : v2c) {
+      ss << v.first << ": ";
+
+      for(auto c : v.second) {
+        ss << c << " ";
+      } // for
+      ss << std::endl;
+    } // for
+    flog(warn) << ss.str() << std::endl;
+  } // scope
+#endif
+
+  // Request all referencers of our connected vertices
   util::color_map vm(size, size, md.num_entities(0));
   auto referencers = util::mpi::all_to_allv<vertex_referencers>(
-    {vertex2cell, vm.distribution(), rank}, comm);
+    {v2c, vm.distribution(), rank}, comm);
 
-  // Update our local connectivity information (We now have all vertex-to-cell
-  // connectivity informaiton for the naive distribution of vertices that we
-  // own.)
+  /*
+    Update our local connectivity information. We now have all
+    vertex-to-cell connectivity informaiton for the naive distribution
+    of cells that we own.
+   */
+
   i = 0;
   for(auto & r : referencers) {
     for(auto v : r) {
-      // referencer_inverse[i].emplace_back(v.first);
       for(auto c : v.second) {
-        vertex2cell[v.first].emplace_back(c);
+        v2c[v.first].emplace_back(c);
       } // for
     } // for
     ++i;
   } // for
 
   // Remove duplicate referencers
-  for(auto & v : vertex2cell) {
-    auto & cs = v.second;
-    std::sort(cs.begin(), cs.end());
-    auto first = cs.begin();
-    auto last = std::unique(first, cs.end());
-    cs.erase(last, cs.end());
-  } // for
+  force_unique(v2c);
+
+#if 1
+  {
+    flog_devel(warn) << vm << std::endl;
+
+    std::stringstream ss;
+    for(auto v : v2c) {
+      ss << v.first << ": ";
+
+      for(auto c : v.second) {
+        ss << c << " ";
+      } // for
+      ss << std::endl;
+    } // for
+    flog(warn) << ss.str() << std::endl;
+  } // scope
+#endif
 
   std::vector<std::vector<std::size_t>> referencer_inverse(size);
 
-  for(auto const & v : vertex2cell) {
+  for(auto const & v : v2c) {
     for(auto c : v.second) {
       auto r = util::distribution_offset(cm.distribution(), c);
       if(r != rank) {
@@ -280,44 +181,63 @@ make_dcrs(Definition const & md,
   } // for
 
   // Remove duplicate inverses
-  for(auto & r : referencer_inverse) {
-    std::sort(r.begin(), r.end());
-    auto first = r.begin();
-    auto last = std::unique(first, r.end());
-    r.erase(last, r.end());
-  } // for
+  force_unique(referencer_inverse);
 
-  // Request vertex-to-cell connectivity for the cells that we own in the naive
-  // cell distribution.
+#if 1
+  {
+    std::stringstream ss;
+    std::size_t rid{0};
+    for(auto r : referencer_inverse) {
+      ss << "rank " << rid++ << ": ";
+      for(auto v : r) {
+        ss << v << " ";
+      } // for
+      ss << std::endl;
+    } // for
+    flog(warn) << ss.str() << std::endl;
+  } // scope
+#endif
+
+  // Request vertex-to-cell connectivity for the cells that are
+  // on other ranks in the naive cell distribution.
   auto connectivity = util::mpi::all_to_allv<cell_connectivity>(
-    {referencer_inverse, vertex2cell, vm.distribution(), rank}, comm);
+    {referencer_inverse, v2c, vm.distribution(), rank}, comm);
 
   for(auto & r : connectivity) {
     for(auto & v : r) {
       for(auto c : v.second) {
-        vertex2cell[v.first].emplace_back(c);
+        v2c[v.first].emplace_back(c);
       } // for
     } // for
   } // for
 
   // Remove duplicate referencers
-  for(auto & v : vertex2cell) {
-    auto & cs = v.second;
-    std::sort(cs.begin(), cs.end());
-    auto first = cs.begin();
-    auto last = std::unique(first, cs.end());
-    cs.erase(last, cs.end());
-  } // for
+  force_unique(v2c);
 
-  std::map<std::size_t, std::vector<std::size_t>> cell2cell;
+#if 1
+  {
+    std::stringstream ss;
+    for(auto v : v2c) {
+      ss << v.first << ": ";
+
+      for(auto c : v.second) {
+        ss << c << " ";
+      } // for
+      ss << std::endl;
+    } // for
+    flog(warn) << "COMPLETE V2C" << std::endl << ss.str() << std::endl;
+  } // scope
+#endif
+
+  std::map<std::size_t, std::vector<std::size_t>> c2c;
   std::size_t c{offset};
-  for(auto & cd /* cell definition */ : cells) {
+  for(auto & cd /* cell definition */ : c2v) {
     std::map<std::size_t, std::size_t> thru_counts;
 
     for(auto v : cd) {
-      auto it = vertex2cell.find(v);
-      if(it != vertex2cell.end()) {
-        for(auto rc : vertex2cell[v]) {
+      auto it = v2c.find(v);
+      if(it != v2c.end()) {
+        for(auto rc : v2c[v]) {
           if(rc != c) {
             thru_counts[rc] += 1;
           } // if
@@ -327,8 +247,8 @@ make_dcrs(Definition const & md,
 
     for(auto tc : thru_counts) {
       if(tc.second > through_dimension) {
-        cell2cell[c].emplace_back(tc.first);
-        cell2cell[tc.first].emplace_back(c);
+        c2c[c].emplace_back(tc.first);
+        c2c[tc.first].emplace_back(c);
       } // if
     } // for
 
@@ -336,29 +256,23 @@ make_dcrs(Definition const & md,
   } // for
 
   // Remove duplicate connections
-  for(auto & c : cell2cell) {
-    auto & cs = c.second;
-    std::sort(cs.begin(), cs.end());
-    auto first = cs.begin();
-    auto last = std::unique(first, cs.end());
-    cs.erase(last, cs.end());
-  } // for
+  force_unique(c2c);
 
   util::dcrs dcrs;
   dcrs.distribution = cm.distribution();
 
   dcrs.offsets.emplace_back(0);
   for(std::size_t c{0}; c < indices; ++c) {
-    for(auto cr : cell2cell[offset + c]) {
+    for(auto cr : c2c[offset + c]) {
       dcrs.indices.emplace_back(cr);
     } // for
 
-    dcrs.offsets.emplace_back(dcrs.offsets[c] + cell2cell[offset + c].size());
+    dcrs.offsets.emplace_back(dcrs.offsets[c] + c2c[offset + c].size());
   } // for
 
   flog(info) << dcrs << std::endl;
 
-  return std::make_pair(dcrs, cells);
+  return std::make_tuple(dcrs, c2v, v2c, c2c);
 } // make_dcrs
 
 std::vector<std::vector<std::size_t>>
@@ -384,13 +298,57 @@ distribute(util::dcrs const & naive,
   return primaries;
 } // distribute
 
-template<typename Policy>
 auto
-new_closure(std::vector<std::size_t> const & primary,
+migrate(util::dcrs const & naive,
+  size_t colors,
+  std::vector<std::size_t> const & index_colors,
+  std::vector<std::vector<std::size_t>> & c2v,
+  std::map<std::size_t, std::vector<std::size_t>> & v2c,
+  std::map<std::size_t, std::vector<std::size_t>> & c2c,
   MPI_Comm comm = MPI_COMM_WORLD) {
   auto [rank, size, group] = util::mpi::info(comm);
+
+  auto migrated = util::mpi::all_to_allv<migrate_cells>(
+    {naive, colors, index_colors, c2v, v2c, c2c, rank}, comm);
+
+  std::map<std::size_t, std::vector<std::size_t>> primaries;
+  std::vector<std::size_t> l2m;
+
+  for(auto const & r : migrated) {
+    auto const & cell_pack = std::get<0>(r);
+    for(auto const & c : cell_pack) {
+      auto const & info = std::get<0>(c);
+      c2v.emplace_back(std::get<1>(c));
+      l2m.emplace_back(std::get<1>(info));
+      primaries[std::get<0>(info)].emplace_back(std::get<1>(info));
+    } // for
+
+    auto v2c_pack = std::get<1>(r);
+    for(auto const & v : v2c_pack) {
+      v2c.try_emplace(v.first, v.second);
+    } // for
+
+    auto c2c_pack = std::get<2>(r);
+    for(auto const & c : c2c_pack) {
+      c2c.try_emplace(c.first, c.second);
+    } // for
+  } // for
+
+  return std::make_pair(primaries, l2m);
+} // migrate
+
+template<typename Policy>
+auto
+closure(std::vector<std::size_t> const & primary,
+  MPI_Comm comm = MPI_COMM_WORLD) {
+  auto [rank, size, group] = util::mpi::info(comm);
+
+  unstructured_base::coloring coloring;
+  coloring.colors = size;
+  coloring.idx_allocs.resize(1 + Policy::auxiliary_colorings);
+  coloring.idx_colorings.resize(1 + Policy::auxiliary_colorings);
+
   (void)rank;
-  (void)size;
   (void)group;
   (void)primary;
 
@@ -401,8 +359,8 @@ new_closure(std::vector<std::size_t> const & primary,
 
   } // for
 
-  return 0;
-} // new_closure
+  return coloring;
+} // closure
 
 } // namespace unstructured_impl
 } // namespace topo

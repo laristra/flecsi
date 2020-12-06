@@ -53,7 +53,7 @@ struct intervals_category : intervals_base, topo::repartitioned {
 
 // NB: Registering a field on an indirect topology doesn't do anything.
 struct indirect_base : partition {
-  using coloring = void;
+  struct coloring {};
 
   template<class... AA>
   explicit indirect_base(region * r, AA &&... aa)

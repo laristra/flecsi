@@ -44,6 +44,11 @@ struct dcrs {
   std::vector<size_t> indices;
   std::vector<size_t> distribution;
 
+  /*
+    Return the number of entries. This is the number of nodes in the graph,
+    or the number of rows in the compressed matrix.
+   */
+
   size_t entries() const {
     flog_assert(
       !offsets.empty(), "attempted to call colors() on empty offsets");

@@ -17,12 +17,11 @@
 #include "flecsi/flog.hh"
 #include "flecsi/topo/unstructured/coloring_utils.hh"
 #include "flecsi/topo/unstructured/interface.hh"
-#include "flecsi/topo/unstructured/mpi_communicator.hh"
 #include "flecsi/topo/unstructured/test/simple_definition.hh"
 #include "flecsi/util/parmetis.hh"
 #include "flecsi/util/unit.hh"
 
-#include "tikz_writer.hh"
+//#include "tikz_writer.hh"
 
 using namespace flecsi;
 
@@ -34,7 +33,7 @@ naive_coloring() {
     ASSERT_EQ(sd.num_entities(0), 289lu);
     ASSERT_EQ(sd.num_entities(2), 256lu);
 
-    auto [naive, cells] = topo::unstructured_impl::make_dcrs(sd, 1);
+    auto [naive, c2v, v2c, c2c] = topo::unstructured_impl::make_dcrs(sd, 1);
 
     std::vector<size_t> distribution = {0, 52, 103, 154, 205, 256};
 
@@ -189,7 +188,7 @@ parmetis_colorer() {
     // Coloring with 5 colors with MPI_COMM_WORLD
     {
       const size_t colors{5};
-      auto [naive, cells] = topo::unstructured_impl::make_dcrs(sd, 1);
+      auto [naive, c2v, v2c, c2c] = topo::unstructured_impl::make_dcrs(sd, 1);
       auto raw = util::parmetis::color(naive, colors);
       {
         std::stringstream ss;
@@ -225,7 +224,8 @@ parmetis_colorer() {
         MPI_COMM_WORLD, process() < 2 ? 0 : MPI_UNDEFINED, 0, &group_comm);
 
       if(process() < 2) {
-        auto [naive, cells] =
+        topo::unstructured_impl::make_dcrs(sd, 1, group_comm);
+        auto [naive, c2v, v2c, c2c] =
           topo::unstructured_impl::make_dcrs(sd, 1, group_comm);
         auto raw = util::parmetis::color(naive, 5, group_comm);
 
@@ -256,10 +256,13 @@ parmetis_colorer() {
           flog_devel(warn) << ss.str();
         } // scope
       } // if
+
+      MPI_Barrier(MPI_COMM_WORLD);
     } // scope
   };
 } // parmetis_colorer
 
+#if 0
 struct closure_policy {
   using primary = topo::unstructured_impl::primary_independent<0, 2, 0, 1>;
 
@@ -296,7 +299,7 @@ dependency_closure() {
     // Coloring with 5 colors with MPI_COMM_WORLD
     {
       const size_t colors{processes()};
-      auto [naive, cells] = topo::unstructured_impl::make_dcrs(sd, 1);
+      auto [naive, c2v, v2c, c2c] = topo::unstructured_impl::make_dcrs(sd, 1);
       auto raw = util::parmetis::color(naive, colors);
       auto coloring = topo::unstructured_impl::distribute(naive, colors, raw);
       auto closure = topo::unstructured_impl::closure<coloring_policy>(
@@ -306,14 +309,14 @@ dependency_closure() {
     } // UNIT
   };
 } // dependency_closure
+#endif
 
 int
 coloring_driver() {
   UNIT {
-    // ASSERT_EQ((test<naive_coloring, mpi>()), 0);
-    // ASSERT_EQ((test<parmetis_colorer, mpi>()), 0);
-    ASSERT_EQ((test<dependency_closure, mpi>()), 0);
-    // ASSERT_EQ((test<ideas, mpi>()), 0);
+    ASSERT_EQ((test<naive_coloring, mpi>()), 0);
+    ASSERT_EQ((test<parmetis_colorer, mpi>()), 0);
+    // ASSERT_EQ((test<dependency_closure, mpi>()), 0);
   };
 } // simple2d_8x8
 

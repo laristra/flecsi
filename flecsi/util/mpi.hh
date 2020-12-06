@@ -182,6 +182,8 @@ info(MPI_Comm comm = MPI_COMM_WORLD) {
 template<typename F>
 inline auto
 one_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
+  static_assert(F::one_to_allv_callable, "invalid collective operation");
+
   auto [rank, size, group] = info(comm);
 
   std::vector<MPI_Request> requests;
@@ -236,6 +238,8 @@ one_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
 template<typename F>
 inline auto
 all_to_allv(F const & f, MPI_Comm comm = MPI_COMM_WORLD) {
+  static_assert(F::all_to_allv_callable, "invalid collective operation");
+
   auto [rank, size, group] = info(comm);
 
   std::vector<std::size_t> counts;

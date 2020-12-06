@@ -47,7 +47,10 @@ struct canon : topo::specialization<topo::canonical, canon> {
     t.meta_ = {6, 3};
   }
 
-  static void initialize(data::topology_slot<canon> & s, int m, util::id f) {
+  static void initialize(data::topology_slot<canon> & s,
+    coloring const &,
+    int m,
+    util::id f) {
     auto & cf = s->connect_.get<canon::cells>().get<canon::vertices>();
     execute<init_cells_to_vertices, mpi>(cf(s), f);
     execute<init_fields, mpi>(s, m);

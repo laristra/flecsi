@@ -18,6 +18,7 @@
 
 #include <vector>
 
+#if 0
 struct shared_entity {
   size_t id;
   std::vector<size_t> dependents;
@@ -46,9 +47,12 @@ struct coloring {
   std::vector<std::vector<std::size_t>> cnx_allocs;
   std::vector<std::vector<crs>> cnx_colorings;
 };
+#endif
+
+namespace ftui = flecsi::topo::unstructured_impl;
 
 // clang-format off
-inline std::vector<std::vector<crs>> connectivity = {
+inline std::vector<std::vector<ftui::crs>> connectivity = {
   { /* color 0 */
     { /* cell -> vertex */
       { /* offsets */
@@ -57,7 +61,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164,
         168, 172, 176, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220,
         224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276,
-        280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320
+        280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324
       },
       { /* indices */
           7,   8,  25,  24,
@@ -152,7 +156,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164,
         168, 172, 176, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220,
         224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276,
-        280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320
+        280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324
       },
       { /* indices */
           0,   1,  18,  17,
@@ -247,7 +251,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164,
         168, 172, 176, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220,
         224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276,
-        280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320
+        280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324
       },
       { /* indices */
         126, 127, 144, 143,
@@ -259,6 +263,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         132, 133, 150, 149,
         133, 134, 151, 150,
         134, 135, 152, 151,
+
         143, 144, 161, 160,
         144, 145, 162, 161,
         145, 146, 163, 162,
@@ -268,6 +273,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         149, 150, 167, 166,
         150, 151, 168, 167,
         151, 152, 169, 168,
+
         160, 161, 178, 177,
         161, 162, 179, 178,
         162, 163, 180, 179,
@@ -277,6 +283,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         166, 167, 184, 183,
         167, 168, 185, 184,
         168, 169, 186, 185,
+
         177, 178, 195, 194,
         178, 179, 196, 195,
         179, 180, 197, 196,
@@ -286,6 +293,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         183, 184, 201, 200,
         184, 185, 202, 201,
         185, 186, 203, 202,
+
         194, 195, 212, 211,
         195, 196, 213, 212,
         196, 197, 214, 213,
@@ -295,6 +303,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         200, 201, 218, 217,
         201, 202, 219, 218,
         202, 203, 220, 219,
+
         211, 212, 229, 228,
         212, 213, 230, 229,
         213, 214, 231, 230,
@@ -304,6 +313,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         217, 218, 235, 234,
         218, 219, 236, 235,
         219, 220, 237, 236,
+
         228, 229, 246, 245,
         229, 230, 247, 246,
         230, 231, 248, 247,
@@ -313,6 +323,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         234, 235, 252, 251,
         235, 236, 253, 252,
         236, 237, 254, 253,
+
         245, 246, 263, 262,
         246, 247, 264, 263,
         247, 248, 265, 264,
@@ -322,6 +333,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         251, 252, 269, 268,
         252, 253, 270, 269,
         253, 254, 271, 270,
+
         262, 263, 280, 279,
         263, 264, 281, 280,
         264, 265, 282, 281,
@@ -342,7 +354,7 @@ inline std::vector<std::vector<crs>> connectivity = {
         112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164,
         168, 172, 176, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220,
         224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276,
-        280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320
+        280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324
       },
       { /* indices */
         119, 120, 137, 136,
@@ -431,7 +443,7 @@ inline std::vector<std::vector<crs>> connectivity = {
   }
 };
 
-inline std::vector<index_coloring> cells = {
+inline std::vector<ftui::index_coloring> cells = {
   { /* color 0 */
     { /* exclusive */
         9,  10,  11,  12,  13,  14,  15,
@@ -468,7 +480,15 @@ inline std::vector<index_coloring> cells = {
       {  87, 1 },
       { 103, 1 },
       { 119, 1 },
-      { 135, 3 }
+      { 135, 3 },
+      { 136, 2 },
+      { 137, 2 },
+      { 138, 2 },
+      { 139, 2 },
+      { 140, 2 },
+      { 141, 2 },
+      { 142, 2 },
+      { 143, 2 }
     }
   },
   { /* color 1 */
@@ -489,14 +509,14 @@ inline std::vector<index_coloring> cells = {
       {  71, {3} },
       {  87, {3} },
       { 103, {3} },
-      { 119, {1, 2, 3} },
       { 112, {0} },
       { 113, {0} },
       { 114, {0} },
       { 115, {0} },
       { 116, {0} },
       { 117, {0} },
-      { 118, {0} }
+      { 118, {0} },
+      { 119, {1, 2, 3} }
     },
     { /* ghost */
       {   8, 0 },
@@ -507,6 +527,14 @@ inline std::vector<index_coloring> cells = {
       {  88, 0 },
       { 104, 0 },
       { 120, 0 },
+      { 128, 3 },
+      { 129, 3 },
+      { 130, 3 },
+      { 131, 3 },
+      { 132, 3 },
+      { 133, 3 },
+      { 134, 3 },
+      { 135, 3 },
       { 136, 2 }
     }
   },
@@ -526,6 +554,8 @@ inline std::vector<index_coloring> cells = {
       { 138, {0} },
       { 139, {0} },
       { 140, {0} },
+      { 141, {0} },
+      { 142, {0} },
       { 143, {0} },
       { 152, {3} },
       { 168, {3} },
@@ -604,7 +634,7 @@ inline std::vector<index_coloring> cells = {
   }
 };
 
-inline std::vector<index_coloring> vertices = {
+inline std::vector<ftui::index_coloring> vertices = {
   { /* color 0 */
     { /* exclusive */
        10,  11,  12,  13,  14,  15,  16,
@@ -679,10 +709,7 @@ inline std::vector<index_coloring> vertices = {
        51,  52,  53,  54,  55,  56,  57,
        68,  69,  70,  71,  72,  73,  74,
        85,  86,  87,  88,  89,  90,  91,
-      102, 103, 104, 105, 106, 107, 108,
-      119, 120, 121, 122, 123, 124, 125,
-      136, 137, 138, 139, 140, 141, 142,
-      153, 154, 155, 156, 157, 158, 159
+      102, 103, 104, 105, 106, 107, 108
     },
     { /* shared */
       {   7, {0} },
@@ -872,6 +899,82 @@ inline std::vector<index_coloring> vertices = {
       { 281, 2 }
     }
   },
+};
+
+std::vector<std::vector<std::size_t>> idx_allocs = {
+  {/* color 0 */
+    cells[0].exclusive.size() + cells[0].shared.size() + cells[0].ghost.size(),
+    vertices[0].exclusive.size() + vertices[0].shared.size() +
+      vertices[0].ghost.size()
+  },
+  {/* color 1 */
+    cells[1].exclusive.size() + cells[1].shared.size() + cells[1].ghost.size(),
+    vertices[1].exclusive.size() + vertices[1].shared.size() +
+      vertices[1].ghost.size()
+  },
+  {/* color 2 */
+    cells[2].exclusive.size() + cells[2].shared.size() + cells[2].ghost.size(),
+    vertices[2].exclusive.size() + vertices[2].shared.size() +
+      vertices[2].ghost.size()
+  },
+  {/* color 3 */
+    cells[3].exclusive.size() + cells[3].shared.size() + cells[3].ghost.size(),
+    vertices[3].exclusive.size() + vertices[3].shared.size() +
+      vertices[3].ghost.size()
+  }
+};
+
+std::vector<std::vector<ftui::index_coloring>> idx_colorings = {
+  {/* color 0 */
+    cells[0],
+    vertices[0]
+  },
+  {/* color 1 */
+    cells[1],
+    vertices[1]
+  },
+  {/* color 2 */
+    cells[2],
+    vertices[2]
+  },
+  {/* color 3 */
+    cells[3],
+    vertices[3]
+  }
+};
+
+std::vector<std::vector<std::vector<std::size_t>>> cnx_allocs = {
+  {/* color 0 */
+    {connectivity[0][0].indices.size(), },
+    {connectivity[0][0].indices.size(), }
+  },
+  {/* color 1 */
+    {connectivity[1][0].indices.size()},
+    {connectivity[1][0].indices.size()}
+  },
+  {/* color 2 */
+    {connectivity[2][0].indices.size()},
+    {connectivity[2][0].indices.size()}
+  },
+  {/* color 3 */
+    {connectivity[3][0].indices.size()},
+    {connectivity[3][0].indices.size()}
+  }
+};
+
+std::vector<std::vector<std::vector<ftui::crs>>> cnx_colorings = {
+  {/* color 0 */
+    connectivity[0]
+  },
+  {/* color 1 */
+    connectivity[1]
+  },
+  {/* color 2 */
+    connectivity[2]
+  },
+  {/* color 3 */
+    connectivity[3]
+  }
 };
 // clang-format on
 

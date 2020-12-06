@@ -106,7 +106,7 @@ struct specialization : specialization_base {
   static constexpr std::size_t privilege_count =
     std::is_same_v<decltype(S), typename D::index_space> ? 1 : throw;
 
-  static void initialize(slot &) {}
+  static void initialize(slot &, coloring const &) {}
 };
 
 } // namespace topo

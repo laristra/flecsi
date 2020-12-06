@@ -36,9 +36,9 @@ struct topology_slot : convert_tag {
   using coloring = typename Topo::coloring;
 
   template<typename... AA>
-  core & allocate(const coloring & coloring_reference, AA &&... aa) {
+  core & allocate(coloring const & coloring_reference, AA &&... aa) {
     data.emplace(coloring_reference);
-    Topo::initialize(*this, std::forward<AA>(aa)...);
+    Topo::initialize(*this, coloring_reference, std::forward<AA>(aa)...);
     return get();
   }
 
