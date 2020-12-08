@@ -4,8 +4,9 @@ packages:
       - gcc@GNU_VERSION
     target: [skylake]
   cmake:
-    version: [3.17.1]
+    version: [3.18.4]
   ncurses:
     buildable: False
-    paths:
-      ncurses@NCURSES_VERSION: /usr
+    externals:
+    - spec: ncurses@NCURSES_VERSION
+      prefix: /usr
