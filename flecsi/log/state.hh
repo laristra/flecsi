@@ -347,7 +347,7 @@ public:
       tmp = stream.str();
     } // if
 
-    std::lock_guard<std::mutex> guard(message_mutex_);
+    std::lock_guard<std::mutex> guard(packets_mutex_);
     packets_.push_back({tmp.c_str()});
   }
 
@@ -389,8 +389,6 @@ private:
   int verbose_ = 0;
 
   tee_stream_t stream_;
-
-  std::mutex message_mutex_;
 
   size_t tag_id_;
   size_t active_tag_;

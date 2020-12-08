@@ -50,6 +50,7 @@ compute_closure() {
     auto [naive, c2v, v2c, c2c] = topo::unstructured_impl::make_dcrs(sd, 1);
     auto raw = util::parmetis::color(naive, colors);
 
+#if 0
     {
       std::stringstream ss;
       ss << "v2c:" << std::endl;
@@ -72,6 +73,7 @@ compute_closure() {
       ss << std::endl;
       flog_devel(warn) << ss.str();
     } // scope
+#endif
 
 #if 0
     auto primaries = topo::unstructured_impl::distribute(naive, colors, raw);
