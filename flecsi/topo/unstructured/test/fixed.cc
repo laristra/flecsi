@@ -92,7 +92,7 @@ struct unstructured : topo::specialization<topo::unstructured, unstructured> {
     Initialization
    *--------------------------------------------------------------------------*/
 
-  static void init_c2v(field<util::id, data::ragged>::mutator c2v,
+  static void init_c2v(field<util::id, data::ragged>::mutator<rw> c2v,
     topo::unstructured_impl::crs const & cnx,
     std::map<std::size_t, std::size_t> & map) {
     std::size_t off{0};
@@ -110,7 +110,7 @@ struct unstructured : topo::specialization<topo::unstructured, unstructured> {
     }
   }
 
-  static void init_v2c(field<util::id, data::ragged>::mutator v2c,
+  static void init_v2c(field<util::id, data::ragged>::mutator<rw> v2c,
     field<util::id, data::ragged>::accessor<ro> c2v) {
     for(std::size_t c{0}; c < c2v.size(); ++c) {
       for(std::size_t v{0}; v < c2v[c].size(); ++v) {

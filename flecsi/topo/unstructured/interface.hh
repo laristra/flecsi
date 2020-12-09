@@ -79,14 +79,6 @@ struct unstructured : unstructured_base,
     return part_.template get<S>();
   }
 
-  template<class F>
-  void fields(F fn) {
-    for(auto & r : part_)
-      fn(resize::field, r.sz);
-    connect_visit([&](const auto & f) { fn(f, *this); }, connect_);
-    connect_visit([&](const auto & f) { fn(f, this->meta); }, special_);
-  }
-
 private:
   template<auto... Value, std::size_t... Index>
   util::key_array<repartitioned, util::constants<Value...>> make_partitions(
@@ -181,11 +173,12 @@ public:
   }
 
   template<class F>
-  void bind(F f) {
+  void send(F && f) {
+    std::size_t i = 0;
     for(auto & a : size_)
-      f(a);
-    connect_visit(f, connect_);
-    connect_visit(f, special_);
+      f(a, [&i](typename Policy::slot & u) { return u->part_[i++].sizes(); });
+    connect_send(f, connect_, unstructured::connect_);
+    connect_send(f, special_, unstructured::special_, &unstructured::meta);
   }
 }; // struct unstructured<Policy>::access
 

@@ -21,7 +21,7 @@
 #error Do not include this file directly!
 #endif
 
-#include "flecsi/data/accessor.hh"
+#include "flecsi/data/field.hh"
 #include "flecsi/data/privilege.hh"
 #include "flecsi/exec/launch.hh"
 #include "flecsi/run/context.hh"
@@ -45,8 +45,8 @@ struct unbind_base {
   template<data::layout L, typename DATA_TYPE, size_t PRIVILEGES>
   void visit(data::accessor<L, DATA_TYPE, PRIVILEGES> &) {} // visit
 
-  template<data::layout L, class T>
-  void visit(data::mutator<L, T> & m) {
+  template<data::layout L, class T, std::size_t P>
+  void visit(data::mutator<L, T, P> & m) {
     m.commit();
   }
 
@@ -63,7 +63,7 @@ struct unbind_base {
     visit(DATA_TYPE &) {
     {
       log::devel_guard guard(unbind_accessors_tag);
-      flog_devel(info) << "Skipping argument with type "
+      flog_devel(info) << "No cleanup for parameter of type "
                        << util::type<DATA_TYPE>() << std::endl;
     }
   } // visit

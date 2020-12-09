@@ -20,17 +20,27 @@
 #endif
 
 #include "flecsi/data/backend.hh"
+#include "flecsi/data/layout.hh"
 #include "flecsi/data/privilege.hh"
 #include "flecsi/run/types.hh"
 
 #include <set>
 
 namespace flecsi::data {
+template<class, layout, class Topo, typename Topo::index_space>
+struct field_reference;
+
 #ifdef DOXYGEN // implemented per-backend
 struct region_base {
   region(size2, const fields &);
 
   size2 size() const;
+
+protected:
+  // For convenience, we always use rw accessors for certain fields that
+  // initially contain no constructed objects; this call indicates that no
+  // initialization is needed.
+  void vacuous(field_id_t);
 };
 
 struct partition {
@@ -63,7 +73,15 @@ struct partition {
 struct region : region_base {
   using region_base::region_base;
 
-  std::set<field_id_t> dirty;
+  template<class D>
+  void cleanup(field_id_t f, D d, bool hard = true) {
+    // We assume that creating the objects will be successful:
+    if(hard)
+      destroy.insert_or_assign(f, std::move(d));
+    else if(destroy.try_emplace(f, std::move(d)).second)
+      vacuous(f);
+  }
+
   // Return whether a copy is needed.
   template<std::size_t P>
   bool ghost(field_id_t i) {
@@ -81,10 +99,50 @@ struct region : region_base {
            gr;
   }
 
+  // Perform a ghost copy if needed.
+  template<std::size_t P,
+    class T,
+    layout L,
+    class Topo,
+    typename Topo::index_space S>
+  void ghost_copy(const field_reference<T, L, Topo, S> & f) {
+    constexpr auto np = privilege_count(P);
+    static_assert(np == Topo::template privilege_count<S>,
+      "privilege-count mismatch between accessor and topology type");
+    if constexpr(np > 1)
+      if(ghost<P>(f.fid()))
+        f.topology().ghost_copy(f);
+  }
+
   template<topo::single_space>
   region & get_region() {
     return *this;
   }
+
+private:
+  // Each field can have a destructor (for individual field values) registered
+  // that is invoked when the field is recreated or the region is destroyed.
+  struct finalizer {
+    template<class F>
+    finalizer(F f) : f(std::move(f)) {}
+    finalizer(finalizer && o) noexcept {
+      f.swap(o.f); // guarantee o.f is empty
+    }
+    ~finalizer() {
+      if(f)
+        f();
+    }
+    finalizer & operator=(finalizer o) noexcept {
+      f.swap(o.f);
+      return *this;
+    }
+
+  private:
+    std::function<void()> f;
+  };
+
+  std::map<field_id_t, finalizer> destroy;
+  std::set<field_id_t> dirty;
 };
 
 template<class Topo, typename Topo::index_space Index = Topo::default_space()>

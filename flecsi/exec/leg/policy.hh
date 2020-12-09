@@ -24,8 +24,8 @@
 #include "flecsi/exec/launch.hh"
 #include "flecsi/exec/leg/future.hh"
 #include "flecsi/exec/leg/reduction_wrapper.hh"
-#include "flecsi/exec/leg/task_prologue.hh"
 #include "flecsi/exec/leg/task_wrapper.hh"
+#include "flecsi/exec/prolog.hh"
 #include "flecsi/run/backend.hh"
 #include "flecsi/util/demangle.hh"
 #include "flecsi/util/function_traits.hh"
@@ -62,27 +62,28 @@ struct nonconst_ref<const T &> {
 template<class T>
 using nonconst_ref_t = typename nonconst_ref<T>::type;
 
-// Serialize a tuple of converted arguments (or references to existing
+// Construct a tuple of converted arguments (or references to existing
 // arguments where possible).  Note that is_constructible_v<const
 // float&,const double&> is true, so we have to check
 // is_constructible_v<float&,double&> instead.
-template<class... PP, class... AA>
-auto
-serial_arguments(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
-  static_assert((std::is_const_v<std::remove_reference_t<const PP>> && ...),
-    "Tasks cannot accept non-const references");
-  return util::serial_put<std::tuple<std::conditional_t<
+template<bool M, class... PP, class... AA>
+std::conditional_t<M,
+  std::tuple<PP...>,
+  std::tuple<std::conditional_t<
     std::is_constructible_v<nonconst_ref_t<PP> &, nonconst_ref_t<AA>>,
     const PP &,
-    std::decay_t<PP>>...>>(
-    {exec::replace_argument<PP>(std::forward<AA>(aa))...});
+    std::decay_t<PP>>...>>
+make_parameters(std::tuple<PP...> * /* to deduce PP */, AA &&... aa) {
+  static_assert(
+    M || (std::is_const_v<std::remove_reference_t<const PP>> && ...),
+    "only MPI tasks can accept non-const references");
+  return {exec::replace_argument<PP>(std::forward<AA>(aa))...};
 }
 
-// Helper to deduce PP:
-template<class... PP, class... AA>
-void
-mpi_arguments(std::optional<std::tuple<PP...>> & opt, AA &&... aa) {
-  opt.emplace(exec::replace_argument<PP>(std::forward<AA>(aa))...);
+template<bool M, class P, class... AA>
+auto
+make_parameters(AA &&... aa) {
+  return make_parameters<M>(static_cast<P *>(nullptr), std::forward<AA>(aa)...);
 }
 
 template<class, class>
@@ -121,8 +122,9 @@ reduce_internal(Args &&... args) {
   auto legion_runtime = Legion::Runtime::get_runtime();
   auto legion_context = Legion::Runtime::get_context();
 
+  constexpr bool mpi_task = processor_type == task_processor_type_t::mpi;
   const auto domain_size = [&args..., &flecsi_context] {
-    if constexpr(processor_type == task_processor_type_t::mpi) {
+    if constexpr(mpi_task) {
       // The status of being an MPI task contributes a launch domain:
       return launch_size<
         typename detail::tuple_prepend<launch_domain, param_tuple>::type>(
@@ -134,23 +136,21 @@ reduce_internal(Args &&... args) {
     }
   }();
 
-  leg::task_prologue_t pro;
-  pro.walk<param_tuple>(args...);
+  auto params =
+    detail::make_parameters<mpi_task, param_tuple>(std::forward<Args>(args)...);
+  prolog pro(params, args...);
 
-  std::optional<param_tuple> mpi_args;
   std::vector<std::byte> buf;
-  if constexpr(processor_type == task_processor_type_t::mpi) {
+  if constexpr(mpi_task) {
     // MPI tasks must be invoked collectively from one task on each rank.
     // We therefore can transmit merely a pointer to a tuple of the arguments.
     // util::serial_put deliberately doesn't support this, so just memcpy it.
-    detail::mpi_arguments(mpi_args, std::forward<Args>(args)...);
-    const auto p = &*mpi_args;
+    const auto p = &params;
     buf.resize(sizeof p);
     std::memcpy(buf.data(), &p, sizeof p);
   }
   else {
-    buf = detail::serial_arguments(
-      static_cast<param_tuple *>(nullptr), std::forward<Args>(args)...);
+    buf = util::serial_put(params);
   }
 
   //------------------------------------------------------------------------//
@@ -197,8 +197,7 @@ reduce_internal(Args &&... args) {
     }
 
     static_assert(processor_type == task_processor_type_t::toc ||
-                    processor_type == task_processor_type_t::loc ||
-                    processor_type == task_processor_type_t::mpi,
+                    processor_type == task_processor_type_t::loc || mpi_task,
       "Unknown launch type");
 
     LegionRuntime::Arrays::Rect<1> launch_bounds(
@@ -220,7 +219,7 @@ reduce_internal(Args &&... args) {
     launcher.point_futures.assign(
       pro.future_maps().begin(), pro.future_maps().end());
 
-    if(processor_type == task_processor_type_t::mpi)
+    if(mpi_task)
       launcher.tag = run::mapper::force_rank_match;
 
     if constexpr(!std::is_void_v<Reduction>) {
@@ -230,14 +229,14 @@ reduce_internal(Args &&... args) {
       const auto ret = future<return_t, launch_type_t::single>{
         legion_runtime->execute_index_space(
           legion_context, launcher, fold::wrap<Reduction, return_t>::id)};
-      if(processor_type == task_processor_type_t::mpi)
+      if(mpi_task)
         ret.wait();
       return ret;
     }
     else {
       const auto ret = future<return_t, launch_type_t::index>{
         legion_runtime->execute_index_space(legion_context, launcher)};
-      if(processor_type == task_processor_type_t::mpi)
+      if(mpi_task)
         ret.wait();
 
       return ret;

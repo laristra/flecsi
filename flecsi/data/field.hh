@@ -38,7 +38,7 @@ template<layout L, typename T, std::size_t Priv>
 struct accessor;
 
 /// A specialized accessor for changing the extent of dynamic layouts.
-template<layout, class>
+template<layout, class, std::size_t Priv>
 struct mutator;
 
 namespace detail {
@@ -63,6 +63,7 @@ struct field_register<T, raw, Topo, Space> : field_info_t {
 /// Identifies a field on a particular topology instance.
 template<class Topo>
 struct field_reference_t : convert_tag {
+  using Topology = Topo;
   using topology_t = typename Topo::core;
 
   field_reference_t(const field_info_t & info, topology_t & topology)
@@ -90,9 +91,27 @@ template<class T, layout L, class Topo, typename Topo::index_space Space>
 struct field_reference : field_reference_t<Topo> {
   using Base = typename field_reference::field_reference_t; // TIP: dependent
   using value_type = T;
+  static constexpr auto space = Space;
 
   using Base::Base;
   explicit field_reference(const Base & b) : Base(b) {}
+
+  // We can't forward-declare partition, so just deduce these:
+  template<class S>
+  static auto & get_region(S & topo) {
+    return topo.template get_region<Space>();
+  }
+  template<class S>
+  auto & get_partition(S & topo) const {
+    return topo.template get_partition<Space>(this->fid());
+  }
+
+  auto & get_region() const {
+    return get_region(this->topology());
+  }
+  auto & get_partition() const {
+    return get_partition(this->topology());
+  }
 
   template<layout L2, class T2 = T> // TODO: allow only safe casts
   auto cast() const {
@@ -112,11 +131,16 @@ struct field : data::detail::field_base<T, L> {
 
   template<std::size_t Priv>
   using accessor1 = data::accessor<L, T, Priv>;
+  template<std::size_t Priv>
+  using mutator1 = data::mutator<L, T, Priv>;
   /// The accessor to use as a parameter to receive this sort of field.
   /// \tparam PP the appropriate number of privilege values
   template<partition_privilege_t... PP>
   using accessor = accessor1<privilege_pack<PP...>>;
-  using mutator = data::mutator<L, T>; // usable only for certain layouts
+  // The mutator to use as a parameter for this sort of field (usable only for
+  // certain layouts).
+  template<partition_privilege_t... PP>
+  using mutator = mutator1<privilege_pack<PP...>>;
 
   template<class Topo, typename Topo::index_space S>
   using Register = data::detail::field_register<T, L, Topo, S>;
@@ -191,6 +215,22 @@ template<const auto & F, std::size_t Priv>
 struct accessor_member : field_accessor<decltype(F), Priv> {
   accessor_member() : accessor_member::accessor(F.fid) {}
   using accessor_member::accessor::operator=; // for single
+
+  template<class G>
+  void topology_send(G && g) {
+    // Using get_base() works around a GCC 9 bug that claims that the
+    // inheritance of various accessor types is ambiguous.
+    std::forward<G>(g)(get_base(), F);
+  }
+  template<class G, class S>
+  void topology_send(G && g, S && s) { // s: topology -> subtopology
+    std::forward<G>(g)(get_base(),
+      [&s](auto & t) { return F(std::invoke(std::forward<S>(s), t.get())); });
+  }
+
+  typename accessor_member::accessor & get_base() {
+    return *this;
+  }
 };
 
 } // namespace data

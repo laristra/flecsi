@@ -45,7 +45,11 @@ namespace flecsi {
 
 inline log::devel_tag task_wrapper_tag("task_wrapper");
 
-namespace data::detail {
+namespace data {
+template<class, std::size_t, std::size_t>
+struct ragged_accessor;
+
+namespace detail {
 template<class A>
 struct convert_accessor {
   using type = A;
@@ -57,7 +61,8 @@ struct convert_accessor {
     return b;
   }
 };
-} // namespace data::detail
+} // namespace detail
+} // namespace data
 
 // Send and receive only the reference_base portion:
 template<data::layout L, class T, std::size_t Priv>
@@ -77,9 +82,9 @@ struct util::serial_convert<data::accessor<data::single, T, Priv>>
 template<class T, std::size_t P, std::size_t OP>
 struct util::serial_convert<data::ragged_accessor<T, P, OP>>
   : data::detail::convert_accessor<data::ragged_accessor<T, P, OP>> {};
-template<data::layout L, class T>
-struct util::serial<data::mutator<L, T>> {
-  using type = data::mutator<L, T>;
+template<data::layout L, class T, std::size_t Priv>
+struct util::serial<data::mutator<L, T, Priv>> {
+  using type = data::mutator<L, T, Priv>;
   template<class P>
   static void put(P & p, const type & m) {
     serial_put(p, m.get_base());
@@ -88,9 +93,9 @@ struct util::serial<data::mutator<L, T>> {
     return serial_get<typename type::base_type>(b);
   }
 };
-template<class T>
-struct util::serial<data::mutator<data::ragged, T>> {
-  using type = data::mutator<data::ragged, T>;
+template<class T, std::size_t Priv>
+struct util::serial<data::mutator<data::ragged, T, Priv>> {
+  using type = data::mutator<data::ragged, T, Priv>;
   template<class P>
   static void put(P & p, const type & m) {
     serial_put(p, std::tie(m.get_base(), m.get_grow()));
@@ -265,7 +270,7 @@ struct task_wrapper {
     auto tname = util::symbol<F>();
     unbind_accessors ub(task_args);
     (ann::rguard<ann::execute_task_bind>(tname)),
-      bind_accessors{runtime, context, regions, task->futures}.walk(task_args);
+      bind_accessors(runtime, context, regions, task->futures)(task_args);
 
     if constexpr(std::is_same_v<RETURN, void>) {
       (ann::rguard<ann::execute_task_user>(tname)),
@@ -310,7 +315,7 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
     auto tname = util::symbol<F>();
     unbind_accessors ub(*p);
     (ann::rguard<ann::execute_task_bind>(tname)),
-      bind_accessors{runtime, context, regions, task->futures}.walk(*p);
+      bind_accessors(runtime, context, regions, task->futures)(*p);
 
     // Set the MPI function and make the runtime active.
     auto & c = run::context::instance();

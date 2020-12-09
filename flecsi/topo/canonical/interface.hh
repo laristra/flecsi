@@ -48,15 +48,6 @@ struct canonical : canonical_base, with_ragged<Policy> {
   template<std::size_t>
   struct access;
 
-  template<class F>
-  void fields(F f) {
-    for(auto & r : part_)
-      f(resize::field, r.sz);
-    f(mine_, *this);
-    f(meta_field, meta_);
-    connect_visit([&](const auto & fd) { f(fd, *this); }, connect_);
-  }
-
   canonical(const coloring & c)
     : with_ragged<Policy>(c.colors),
       part_(make_partitions(c,
@@ -161,12 +152,13 @@ public:
   }
 
   template<class F>
-  void bind(F f) {
+  void send(F && f) {
+    std::size_t i = 0;
     for(auto & a : size)
-      f(a);
-    f(mine_);
-    f(meta_);
-    connect_visit(f, connect_);
+      f(a, [&i](typename P::slot & c) { return c->part_[i++].sizes(); });
+    mine_.topology_send(f);
+    meta_.topology_send(f, &canonical::meta_);
+    connect_send(f, connect_, canonical::connect_);
   }
 };
 

@@ -28,7 +28,6 @@
 #include "flecsi/exec/fold.hh"
 #include "flecsi/flog.hh"
 #include "flecsi/run/backend.hh"
-#include "flecsi/topo/index.hh" // for member definitions
 
 /*----------------------------------------------------------------------------*
   Basic runtime interface
@@ -415,27 +414,6 @@ test(ARGS &&... args) {
   return reduce<TASK, exec::fold::sum, ATTRIBUTES>(std::forward<ARGS>(args)...)
     .get();
 } // test
-
-// Defined here to avoid a circularity via global and ragged.
-namespace topo {
-template<class F>
-repartition::repartition(const data::region & r, F f)
-  : with_size(r.size().first), partition(r, sz, [&] {
-      const auto r = sizes();
-      execute<fill<F>>(r, f);
-      return r.fid();
-    }()) {}
-template<class P>
-template<typename P::index_space S, class F>
-void
-with_ragged<P>::extend_offsets(F old) {
-  for(auto f :
-    run::context::instance().get_field_info_store<ragged_topology<P>, S>())
-    execute<extend<F>>(data::field_reference<std::size_t, data::raw, P, S>(
-                         *f, static_cast<typename P::core &>(*this)),
-      old);
-}
-} // namespace topo
 
 namespace log {
 

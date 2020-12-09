@@ -87,6 +87,13 @@ private:
     return {{typename T::value_type(m.template get<VV>().fid)...}};
   }
 };
+
+struct identity {
+  template<class T>
+  T && operator()(T && x) {
+    return std::forward<T>(x);
+  }
+};
 } // namespace detail
 
 // Accessors for the connectivity requested by a topology.
@@ -102,18 +109,20 @@ using lists_t =
 template<class P, std::size_t Priv>
 using list_access = detail::connect_access<lists_t<P>, Priv>;
 
-// For either kind of sparse matrix:
-template<class F, class T>
-void
-connect_visit(F && f, T && t) {
-  std::forward<T>(t).apply([&](auto &... rr) {
-    (
-      [&](auto & r) {
-        for(auto & x : r)
-          std::forward<F>(f)(x);
-      }(rr),
-      ...);
-  });
+template<class F, class... VT, class C, class S = detail::identity>
+void connect_send(F && f,
+  util::key_tuple<VT...> & ca,
+  C & cf,
+  S && s = {}) { // s: topology -> subtopology
+  (
+    [&] {
+      std::size_t i = 0;
+      for(auto & a : ca.template get<VT::value>())
+        f(a, [&](auto & t) {
+          return cf.template get<VT::value>()[i++](std::invoke(s, t.get()));
+        });
+    }(),
+    ...);
 }
 
 // A "strong typedef" for T that supports overload resolution, template
