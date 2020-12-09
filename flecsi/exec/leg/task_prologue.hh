@@ -93,6 +93,12 @@ private:
     return r ? w ? READ_WRITE : READ_ONLY : w ? WRITE_DISCARD : NO_ACCESS;
   } // privilege_mode
 
+  template<class A>
+  auto visitor(A & a) {
+    return
+      [&](auto & p, auto && f) { visit(&p, std::forward<decltype(f)>(f)(a)); };
+  }
+
   // All fields are handled in terms of their underlying raw-layout fields.
 
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*
@@ -208,16 +214,10 @@ private:
         typename field<T, data::sparse>::base_type::value_type>());
   }
 
-  // Topology accessors use the Visitor pattern: topologies provide a fields
-  // function that maps recursive calls to visit over all their fields.
   template<class Topo, std::size_t Priv>
-  void visit(data::topology_accessor<Topo, Priv> * /* parameter */,
+  void visit(data::topology_accessor<Topo, Priv> * a,
     data::topology_slot<Topo> & slot) {
-    // Clang 10.0.1 deems 'this' unused:
-    slot->fields([&](auto & f, auto & s) {
-      visit(
-        static_cast<data::field_accessor<decltype(f), Priv> *>(nullptr), f(s));
-    });
+    a->send(visitor(slot));
   }
 
   /*--------------------------------------------------------------------------*

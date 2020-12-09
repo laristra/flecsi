@@ -78,18 +78,6 @@ struct ntree : ntree_base {
   template<std::size_t>
   struct access;
 
-  template<class F>
-  void fields(F f) {
-    f(e_coordinates, *this);
-    f(e_radius, *this);
-    f(e_keys, *this);
-    f(n_coordinates, *this);
-    f(n_radius, *this);
-    f(n_keys, *this);
-    f(data_field, *this);
-    f(hcells, *this);
-  }
-
   ntree(const coloring & c)
     : part{{make_repartitioned<Policy, entities>(c.nparts_,
               make_partial<allocate>(c.entities_offset_)),
@@ -189,16 +177,15 @@ struct ntree<Policy>::access {
   accessor<ntree::hcells> hcells;
 
   template<class F>
-  void bind(F f) {
-    //!!! Same order as function fields()
-    f(e_coordinates);
-    f(e_radius);
-    f(e_keys);
-    f(n_coordinates);
-    f(n_radius);
-    f(n_keys);
-    f(data_field);
-    f(hcells);
+  void send(F && f) {
+    e_coordinates.topology_send(f);
+    e_radius.topology_send(f);
+    e_keys.topology_send(f);
+    n_coordinates.topology_send(f);
+    n_radius.topology_send(f);
+    n_keys.topology_send(f);
+    data_field.topology_send(f);
+    hcells.topology_send(f);
   }
 
   using hmap_t = util::hashtable<ntree::key_t, ntree::hcell_t, ntree::hash_f>;

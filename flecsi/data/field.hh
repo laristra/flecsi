@@ -191,6 +191,16 @@ template<const auto & F, std::size_t Priv>
 struct accessor_member : field_accessor<decltype(F), Priv> {
   accessor_member() : accessor_member::accessor(F.fid) {}
   using accessor_member::accessor::operator=; // for single
+
+  template<class G>
+  void topology_send(G && g) {
+    std::forward<G>(g)(*this, F);
+  }
+  template<class G, class S>
+  void topology_send(G && g, S && s) { // s: topology -> subtopology
+    std::forward<G>(g)(*this,
+      [&s](auto & t) { return F(std::invoke(std::forward<S>(s), t.get())); });
+  }
 };
 
 } // namespace data

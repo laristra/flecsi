@@ -73,6 +73,11 @@ struct bind_accessors {
   }
 
 private:
+  auto visitor() {
+    return
+      [&](auto & p, auto &&) { visit(p); }; // Clang 8.0.1 deems 'this' unused
+  }
+
   // All accessors are handled in terms of their underlying raw accessors.
 
   template<typename DATA_TYPE, size_t PRIVILEGES>
@@ -122,11 +127,9 @@ private:
     visit(m.get_base());
   }
 
-  // Topology accessors use the Visitor pattern: core topology interfaces
-  // provide a bind function that calls visit on all their accessors.
   template<class Topo, std::size_t Priv>
   void visit(data::topology_accessor<Topo, Priv> & a) {
-    a.bind([&](auto & x) { visit(x); }); // Clang 8.0.1 deems 'this' unused
+    a.send(visitor());
   }
 
   /*--------------------------------------------------------------------------*
