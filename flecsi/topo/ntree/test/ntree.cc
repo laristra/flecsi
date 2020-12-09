@@ -137,9 +137,6 @@ init() {
   flecsi::execute<init_task, flecsi::mpi>(sph_ntree, ents);
   sph_ntree.get().exch();
   flecsi::execute<make_tree>(sph_ntree);
-
-  std::vector<data::partition::row> rv(coloring.get().nparts_);
-  std::vector<std::vector<data::partition::point>> pv(coloring.get().nparts_);
   return 0;
 } // init
 flecsi::unit::initialization<init> initialization;

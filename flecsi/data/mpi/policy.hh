@@ -34,25 +34,13 @@ protected:
 };
 
 struct partition {
-  using row = subrow;
-  using point = std::size_t;
-
+  using row = std::size_t;
   static row make_row(std::size_t, std::size_t n) {
-    return std::make_pair(0, n);
-  }
-
-  static row make_row(std::size_t, subrow n) {
     return n;
   }
   static std::size_t row_size(const row & r) {
-    return r.second - r.first;
+    return r;
   }
-  static point make_point(std::size_t, std::size_t n) {
-    return n;
-  }
-
-  static struct BuildByImage_tag {
-  } buildByImage_tag;
 
   explicit partition(const region &) {}
   partition(const region &,
@@ -75,10 +63,34 @@ struct partition {
 using region_base = mpi::region;
 using mpi::partition;
 
+struct intervals {
+  using Value = subrow;
+  static Value make(subrow r, std::size_t = 0) {
+    return r;
+  }
+
+  intervals(const region_base &,
+    const partition &,
+    field_id_t,
+    completeness = incomplete) {}
+};
+
+struct points {
+  using Value = std::pair<std::size_t, std::size_t>;
+  static Value make(std::size_t r, std::size_t i) {
+    return {r, i};
+  }
+
+  points(const region_base &,
+    const partition &,
+    field_id_t,
+    completeness = incomplete) {}
+};
+
 inline void
 launch_copy(const mpi::region &,
-  const partition &,
-  const partition &,
+  const points &,
+  const intervals &,
   const field_id_t &,
   const field_id_t &) {}
 

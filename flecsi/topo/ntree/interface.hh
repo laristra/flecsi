@@ -92,13 +92,13 @@ struct ntree : ntree_base {
         *this,
         {c.nparts_, {{1, 3}}},
         [&] {
-          std::vector<std::vector<data::partition::point>> dst_ptrs(c.nparts_);
+          data::copy_plan::Points dst_ptrs(c.nparts_);
           std::size_t colors = c.nparts_;
           for(std::size_t i = 0; i < colors; ++i) {
-            dst_ptrs[i].push_back(
-              data::partition::make_point(i == 0 ? i : i - 1, 0));
-            dst_ptrs[i].push_back(
-              data::partition::make_point(i == colors - 1 ? i : i + 1, 0));
+            auto & v = dst_ptrs[i];
+            v.resize(3);
+            v[1] = data::points::make(i == 0 ? i : i - 1, 0);
+            v[2] = data::points::make(i == colors - 1 ? i : i + 1, 0);
           }
           return dst_ptrs;
         }(),
