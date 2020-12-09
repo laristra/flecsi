@@ -255,9 +255,9 @@ parmetis_colorer() {
           ss << std::endl;
           flog_devel(warn) << ss.str();
         } // scope
-      } // if
 
-      MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Comm_free(&group_comm);
+      } // if
     } // scope
   };
 } // parmetis_colorer

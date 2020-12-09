@@ -35,15 +35,11 @@ namespace unstructured_impl {
 
 template<typename Definition>
 struct pack_cells {
-  static constexpr bool one_to_allv_callable = true;
-
-  using return_type = std::vector<std::vector<std::size_t>>;
-
   pack_cells(Definition const & md, std::vector<std::size_t> const & dist)
     : md_(md), dist_(dist) {}
 
-  return_type operator()(int rank, int) const {
-    return_type c2v;
+  auto operator()(int rank, int) const {
+    std::vector<std::vector<std::size_t>> c2v;
     c2v.reserve(dist_[rank + 1] - dist_[rank]);
 
     for(size_t i{dist_[rank]}; i < dist_[rank + 1]; ++i) {
@@ -60,15 +56,11 @@ private:
 
 template<typename Definition>
 struct pack_vertices {
-  static constexpr bool one_to_allv_callable = true;
-
-  using return_type = std::vector<typename Definition::point>;
-
   pack_vertices(Definition const & md, std::vector<std::size_t> const & dist)
     : md_(md), dist_(dist) {}
 
-  return_type operator()(int rank, int) const {
-    return_type vertices;
+  auto operator()(int rank, int) const {
+    std::vector<typename Definition::point> vertices;
     vertices.reserve(dist_[rank + 1] - dist_[rank]);
 
     for(size_t i{dist_[rank]}; i < dist_[rank + 1]; ++i) {
@@ -89,10 +81,6 @@ private:
  */
 
 struct vertex_referencers {
-  static constexpr bool all_to_allv_callable = true;
-
-  using return_type = std::map<std::size_t, std::vector<std::size_t>>;
-
   vertex_referencers(
     std::map<std::size_t, std::vector<std::size_t>> const & vertex2cell,
     std::vector<std::size_t> const & dist,
@@ -109,13 +97,7 @@ struct vertex_referencers {
     } // for
   } // vertex_refernces
 
-  std::size_t count(int rank) const {
-    flog_assert(rank < size_, "invalid rank");
-    return rank == rank_ ? 0
-                         : util::serial_size<return_type>(references_[rank]);
-  }
-
-  return_type operator()(int rank, int) const {
+  auto operator()(int rank, int) const {
     flog_assert(rank < size_, "invalid rank");
     return references_[rank];
   } // operator(int, int)
@@ -132,10 +114,6 @@ private:
  */
 
 struct cell_connectivity {
-  static constexpr bool all_to_allv_callable = true;
-
-  using return_type = std::map<std::size_t, std::vector<std::size_t>>;
-
   cell_connectivity(std::vector<std::vector<std::size_t>> const & vertices,
     std::map<std::size_t, std::vector<std::size_t>> const & connectivity,
     std::vector<std::size_t> const & dist,
@@ -153,13 +131,7 @@ struct cell_connectivity {
     } // for
   } // cell_connectivity
 
-  std::size_t count(int rank) const {
-    flog_assert(rank < size_, "invalid rank");
-    return rank == rank_ ? 0
-                         : util::serial_size<return_type>(connectivity_[rank]);
-  }
-
-  return_type operator()(int rank, int) const {
+  auto operator()(int rank, int) const {
     flog_assert(rank < size_, "invalid rank");
     return connectivity_[rank];
   } // operator(int, int)
@@ -175,10 +147,6 @@ private:
  */
 
 struct distribute_cells {
-  static constexpr bool all_to_allv_callable = true;
-
-  using return_type = std::vector<std::array<std::size_t, 2>>;
-
   distribute_cells(util::dcrs const & naive,
     std::size_t colors,
     std::vector<std::size_t> const & index_colors,
@@ -200,12 +168,7 @@ struct distribute_cells {
     } // for
   } // distribute_cells
 
-  std::size_t count(int rank) const {
-    flog_assert(rank < size_, "invalid rank");
-    return util::serial_size<return_type>(cells_[rank]);
-  }
-
-  return_type operator()(int rank, int) const {
+  auto operator()(int rank, int) const {
     flog_assert(rank < size_, "invalid rank");
     return cells_[rank];
   }
@@ -219,8 +182,6 @@ private:
  */
 
 struct migrate_cells {
-  static constexpr bool all_to_allv_callable = true;
-
   using return_type =
     std::tuple<std::vector</* over cells */
                  std::tuple<std::array<std::size_t, 2> /* color, mid> */,
@@ -289,11 +250,6 @@ struct migrate_cells {
     c2c.clear();
     v2c.clear();
   } // migrate_cells
-
-  std::size_t count(int rank) const {
-    flog_assert(rank < size_, "invalid rank");
-    return util::serial_size<return_type>(packs_[rank]);
-  }
 
   return_type operator()(int rank, int) const {
     flog_assert(rank < size_, "invalid rank");

@@ -67,7 +67,7 @@ auto
 make_dcrs(Definition const & md,
   std::size_t through_dimension,
   MPI_Comm comm = MPI_COMM_WORLD) {
-  auto [rank, size, group] = util::mpi::info(comm);
+  auto [rank, size] = util::mpi::info(comm);
 
   util::color_map cm(size, size, md.num_entities(Definition::dimension()));
 
@@ -79,21 +79,6 @@ make_dcrs(Definition const & md,
 
   auto c2v = util::mpi::one_to_allv<pack_cells<Definition>>(
     {md, cm.distribution()}, comm);
-
-#if 1
-  {
-    std::stringstream ss;
-    std::size_t cid{cm.distribution()[rank]};
-    for(auto & cd : c2v) {
-      ss << "cell " << cid++ << ": ";
-      for(auto v : cd) {
-        ss << v << " ";
-      } // for
-      ss << std::endl;
-    } // for
-    flog(warn) << ss.str() << std::endl;
-  } // scope
-#endif
 
   /*
     Create a map of vertex-to-cell connectivity information from
@@ -112,21 +97,6 @@ make_dcrs(Definition const & md,
     } // for
     ++i;
   } // for
-
-#if 1
-  {
-    std::stringstream ss;
-    for(auto v : v2c) {
-      ss << v.first << ": ";
-
-      for(auto c : v.second) {
-        ss << c << " ";
-      } // for
-      ss << std::endl;
-    } // for
-    flog(warn) << ss.str() << std::endl;
-  } // scope
-#endif
 
   // Request all referencers of our connected vertices
   util::color_map vm(size, size, md.num_entities(0));
@@ -152,23 +122,6 @@ make_dcrs(Definition const & md,
   // Remove duplicate referencers
   force_unique(v2c);
 
-#if 1
-  {
-    flog_devel(warn) << vm << std::endl;
-
-    std::stringstream ss;
-    for(auto v : v2c) {
-      ss << v.first << ": ";
-
-      for(auto c : v.second) {
-        ss << c << " ";
-      } // for
-      ss << std::endl;
-    } // for
-    flog(warn) << ss.str() << std::endl;
-  } // scope
-#endif
-
   std::vector<std::vector<std::size_t>> referencer_inverse(size);
 
   for(auto const & v : v2c) {
@@ -182,21 +135,6 @@ make_dcrs(Definition const & md,
 
   // Remove duplicate inverses
   force_unique(referencer_inverse);
-
-#if 1
-  {
-    std::stringstream ss;
-    std::size_t rid{0};
-    for(auto r : referencer_inverse) {
-      ss << "rank " << rid++ << ": ";
-      for(auto v : r) {
-        ss << v << " ";
-      } // for
-      ss << std::endl;
-    } // for
-    flog(warn) << ss.str() << std::endl;
-  } // scope
-#endif
 
   // Request vertex-to-cell connectivity for the cells that are
   // on other ranks in the naive cell distribution.
@@ -213,21 +151,6 @@ make_dcrs(Definition const & md,
 
   // Remove duplicate referencers
   force_unique(v2c);
-
-#if 1
-  {
-    std::stringstream ss;
-    for(auto v : v2c) {
-      ss << v.first << ": ";
-
-      for(auto c : v.second) {
-        ss << c << " ";
-      } // for
-      ss << std::endl;
-    } // for
-    flog(warn) << "COMPLETE V2C" << std::endl << ss.str() << std::endl;
-  } // scope
-#endif
 
   std::map<std::size_t, std::vector<std::size_t>> c2c;
   std::size_t c{offset};
@@ -270,8 +193,6 @@ make_dcrs(Definition const & md,
     dcrs.offsets.emplace_back(dcrs.offsets[c] + c2c[offset + c].size());
   } // for
 
-  flog(info) << dcrs << std::endl;
-
   return std::make_tuple(dcrs, c2v, v2c, c2c);
 } // make_dcrs
 
@@ -280,7 +201,7 @@ distribute(util::dcrs const & naive,
   size_t colors,
   std::vector<std::size_t> const & index_colors,
   MPI_Comm comm = MPI_COMM_WORLD) {
-  auto [rank, size, group] = util::mpi::info(comm);
+  auto [rank, size] = util::mpi::info(comm);
 
   auto color_primaries = util::mpi::all_to_allv<distribute_cells>(
     {naive, colors, index_colors, rank}, comm);
@@ -306,7 +227,7 @@ migrate(util::dcrs const & naive,
   std::map<std::size_t, std::vector<std::size_t>> & v2c,
   std::map<std::size_t, std::vector<std::size_t>> & c2c,
   MPI_Comm comm = MPI_COMM_WORLD) {
-  auto [rank, size, group] = util::mpi::info(comm);
+  auto [rank, size] = util::mpi::info(comm);
 
   auto migrated = util::mpi::all_to_allv<migrate_cells>(
     {naive, colors, index_colors, c2v, v2c, c2c, rank}, comm);
@@ -341,7 +262,7 @@ template<typename Policy>
 auto
 closure(std::vector<std::size_t> const & primary,
   MPI_Comm comm = MPI_COMM_WORLD) {
-  auto [rank, size, group] = util::mpi::info(comm);
+  auto [rank, size] = util::mpi::info(comm);
 
   unstructured_base::coloring coloring;
   coloring.colors = size;
@@ -349,7 +270,6 @@ closure(std::vector<std::size_t> const & primary,
   coloring.idx_colorings.resize(1 + Policy::auxiliary_colorings);
 
   (void)rank;
-  (void)group;
   (void)primary;
 
   constexpr std::size_t depth = Policy::primary::depth;

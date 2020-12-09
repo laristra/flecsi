@@ -78,7 +78,7 @@ send_to_one() {
 
         if(!state::instance().one_process() ||
            p == state::instance().output_process()) {
-          const auto remote_packets = util::serial_get1<std::vector<packet_t>>(
+          auto remote_packets = util::serial_get1<std::vector<packet_t>>(
             buffer.data() + offsets[p]);
 
           std::vector<packet_t> & packets = state::instance().packets();
