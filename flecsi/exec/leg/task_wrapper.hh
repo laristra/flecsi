@@ -306,10 +306,9 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
       flog_devel(info) << "In execute_mpi_task" << std::endl;
     }
 
-    // Unpack task arguments.
-    param_tuple * p;
-    flog_assert(task->arglen == sizeof p, "Bad Task::arglen");
-    std::memcpy(&p, task->args, sizeof p);
+    flog_assert(!task->arglen, "unexpected task arguments");
+    auto & c = run::context::instance();
+    const auto p = static_cast<param_tuple *>(c.mpi_params);
 
     namespace ann = util::annotation;
     auto tname = util::symbol<F>();
@@ -318,8 +317,6 @@ struct task_wrapper<F, task_processor_type_t::mpi> {
       bind_accessors(runtime, context, regions, task->futures)(*p);
 
     // Set the MPI function and make the runtime active.
-    auto & c = run::context::instance();
-
     if constexpr(std::is_void_v<RETURN>) {
       (ann::rguard<ann::execute_task_user>(tname)),
         c.mpi_call([&] { apply(F, std::move(*p)); });
