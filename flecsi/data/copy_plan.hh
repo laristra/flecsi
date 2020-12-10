@@ -68,50 +68,31 @@ inline const field<data::intervals::Value>::definition<intervals>
 } // namespace detail
 
 struct copy_plan {
-  using Intervals = std::vector<std::vector<subrow>>;
-  using Points = std::vector<std::vector<points::Value>>;
-
-  static void set_dests(field<intervals::Value>::accessor<wo> a,
-    const Intervals & v) {
-    const auto i = color();
-    auto * p = a.span().data();
-    for(auto & s : v[i])
-      *p++ = intervals::make(s, i);
-  }
-
-  static void fill_dst_ptrs_task(flecsi::field<points::Value>::accessor<wo> a,
-    const Points & v) {
-    const auto c = run::context::instance().color();
-    assert(v[c].size() == a.span().size());
-    std::copy(v[c].begin(), v[c].end(), a.span().begin());
-  }
+  using Sizes = detail::intervals::coloring;
 
   template<template<class> class C,
     class P,
-    typename P::index_space S = P::default_space()>
+    typename P::index_space S = P::default_space(),
+    class D,
+    class F>
   copy_plan(C<P> & t,
-    const Intervals & dests,
-    const Points & src,
+    const Sizes & ndests,
+    D && dests,
+    F && src,
     util::constant<S> = {})
-    : reg(&t.template get_region<S>()), dest_ptrs_([&dests] {
-        detail::intervals::coloring ret;
-        ret.reserve(dests.size());
-        for(const auto & v : dests)
-          ret.push_back(v.size());
-        return ret;
-      }()),
+    : reg(&t.template get_region<S>()), dest_ptrs_(ndests),
       // In this first case we use a subtopology to create the
       // destination partition which supposed to be contiguous
       dest_(*reg,
         dest_ptrs_,
-        (execute<set_dests>(detail::intervals::field(dest_ptrs_), dests),
+        (std::forward<D>(dests)(detail::intervals::field(dest_ptrs_)),
           detail::intervals::field.fid)),
       ptr_fid(pointers<P, S>.fid),
       // From the pointers we feed in the destination partition
       // we create the source partition
       src_partition_(*reg,
         dest_,
-        (execute<fill_dst_ptrs_task>(pointers<P, S>(t), src), ptr_fid)) {}
+        (std::forward<F>(src)(pointers<P, S>(t)), ptr_fid)) {}
 
   void issue_copy(const field_id_t & data_fid) const {
     launch_copy(*reg, src_partition_, dest_, data_fid, ptr_fid);
