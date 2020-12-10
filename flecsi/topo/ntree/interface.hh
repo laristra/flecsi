@@ -89,7 +89,9 @@ struct ntree : ntree_base {
           make_partial<allocate>(c.tdata_offset_))}},
 
       cp_data_tree(*this,
-        {c.nparts_, {{1, 3}}},
+        // Avoid initializer-list constructor:
+        data::copy_plan::Sizes(c.nparts_, 1),
+        task<set_dests>,
         task<set_ptrs>,
         util::constant<tree_data>()) {}
   // Ntree mandatory fields ---------------------------------------------------

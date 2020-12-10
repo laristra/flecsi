@@ -70,6 +70,10 @@ struct ntree_base {
     return arr[i];
   }
 
+  static void set_dests(field<data::intervals::Value>::accessor<wo> a) {
+    assert(a.span().size() == 1);
+    a[0] = data::intervals::make({1, 3});
+  }
   static void set_ptrs(field<data::points::Value>::accessor<wo> a) {
     const auto & c = run::context::instance();
     const auto i = c.color(), n = c.colors();
