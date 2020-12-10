@@ -9,7 +9,7 @@ flecsale-mm:
     UPSTREAM_URL: $CI_PROJECT_URL
     CXXFLAGS: "-Wno-deprecated-declarations"
   trigger:
-    project: laristra/flecsale-mm
+    project: laristra/flecsale-mm-ci
     branch: master
     strategy: depend
   allow_failure: true

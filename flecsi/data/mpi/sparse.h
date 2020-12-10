@@ -125,6 +125,8 @@ struct storage_class_u<ragged> {
     auto & ism = context.index_space_data_map();
     hb.ghost_is_readable =
       &(ism[field_info.index_space].ghost_is_readable[field_info.fid]);
+    hb.ghost_was_resized =
+      &(ism[field_info.index_space].ghost_was_resized[field_info.fid]);
 
     return h;
   }

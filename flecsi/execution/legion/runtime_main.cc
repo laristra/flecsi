@@ -42,34 +42,23 @@ int
 main(int argc, char ** argv) {
 
 #if defined(FLECSI_ENABLE_MPI)
-  // Get the MPI version
-  int version, subversion;
-  MPI_Get_version(&version, &subversion);
+#if defined(GASNET_CONDUIT_MPI) || defined(REALM_USE_MPI)
+  // We require MPI support THREAD_MULTIPLE for the Legion runtime
+  int provided;
+  MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+  // If you fail this assertion, then your version of MPI
+  // does not support calls from multiple threads and you
+  // cannot use the GASNet MPI conduit
+  if(provided < MPI_THREAD_MULTIPLE)
+    printf("ERROR: Your implementation of MPI does not support "
+           "MPI_THREAD_MULTIPLE which is required for use of the "
+           "GASNet MPI conduit with the Legion-MPI Interop!\n");
+  assert(provided == MPI_THREAD_MULTIPLE);
 
-#if defined(GASNET_CONDUIT_MPI)
-  if(version == 3 && subversion > 0) {
-    int provided;
-    MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
-    // If you fail this assertion, then your version of MPI
-    // does not support calls from multiple threads and you
-    // cannot use the GASNet MPI conduit
-    if(provided < MPI_THREAD_MULTIPLE)
-      printf("ERROR: Your implementation of MPI does not support "
-             "MPI_THREAD_MULTIPLE which is required for use of the "
-             "GASNet MPI conduit with the Legion-MPI Interop!\n");
-    assert(provided == MPI_THREAD_MULTIPLE);
-  }
-  else {
-    // Initialize the MPI runtime
-    MPI_Init(&argc, &argv);
-  } // if
 #else
+  // Perform MPI start-up like normal for most GASNet conduits
   MPI_Init(&argc, &argv);
 #endif
-
-  //#if defined(ENABLE_CALIPER)
-  //  cali_mpi_init();
-  //#endif
 
   // get the rank
   int rank{0};
@@ -144,12 +133,11 @@ main(int argc, char ** argv) {
 
   } // if
 
-#if defined(FLECSI_ENABLE_MPI)
-  // Shutdown the MPI runtime
 #ifndef GASNET_CONDUIT_MPI
+  // Then finalize MPI like normal
+  // Exception for the MPI conduit which does its own finalization
   MPI_Finalize();
 #endif
-#endif // FLECSI_ENABLE_MPI
 
   return result;
 } // main

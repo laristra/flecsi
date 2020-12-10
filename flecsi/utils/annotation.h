@@ -136,10 +136,11 @@ public:
   static std::enable_if_t<std::is_base_of<context<typename reg::outer_context>,
                             typename reg::outer_context>::value &&
                           std::is_base_of<execute_task<reg>, reg>::value>
-  begin(std::string task_name) {
+  begin(std::string_view task_name) {
 #if defined(ENABLE_CALIPER)
     if constexpr(reg::detail_level <= detail_level) {
-      std::string atag{reg::name + "->" + task_name};
+      std::string atag{reg::name + "->"};
+      atag.append(task_name);
       reg::outer_context::ann.begin(atag.c_str());
     }
 #endif
@@ -156,13 +157,21 @@ public:
    */
   template<class ctx, detail severity>
   static std::enable_if_t<std::is_base_of<context<ctx>, ctx>::value> begin(
-    std::string region_name) {
+    const char * region_name) {
 #if defined(ENABLE_CALIPER)
     if constexpr(severity <= detail_level) {
-      ctx::ann.begin(region_name.c_str());
+      ctx::ann.begin(region_name);
     }
 #endif
   }
+  template<class ctx, detail severity>
+  static std::enable_if_t<std::is_base_of<context<ctx>, ctx>::value> begin(
+    const std::string & region_name) {
+#if defined(ENABLE_CALIPER)
+    begin<ctx, severity>(region_name.c_str());
+#endif
+  }
+
 
   /**
    * Tag end of code region with caliper annotation.
