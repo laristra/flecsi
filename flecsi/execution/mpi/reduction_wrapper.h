@@ -312,7 +312,6 @@ struct sum<std::array<T, N>> {
 
 }; // struct sum
 
-
 /*!
   Product reduction type.
  */

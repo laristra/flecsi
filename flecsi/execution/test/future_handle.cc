@@ -44,7 +44,7 @@ writer(double a) {
 
 array_t
 array_writer(double a) {
-  return {3.14, 2*3.14};
+  return {3.14, 2 * 3.14};
 }
 
 flecsi_register_task(writer, , loc, single);
@@ -59,9 +59,8 @@ reader(handle_t<double> x, handle_t<double> y) {
 void
 array_reader(handle_t<array_t> x) {
   ASSERT_EQ(x.get()[0], static_cast<double>(3.14));
-  ASSERT_EQ(x.get()[1], static_cast<double>(2*3.14));
+  ASSERT_EQ(x.get()[1], static_cast<double>(2 * 3.14));
 }
-
 
 flecsi_register_task(reader, , loc, single);
 flecsi_register_task(array_reader, , loc, single);
@@ -113,7 +112,7 @@ driver(int argc, char ** argv) {
   auto future = flecsi_execute_task(writer, , single, 0.0);
   flecsi_execute_task(future_dump, , single, future);
   flecsi_execute_task(reader, , single, future, future);
-  
+
   auto array_future = flecsi_execute_task(array_writer, , single, 0.0);
   flecsi_execute_task(array_reader, , single, array_future);
 
