@@ -70,6 +70,15 @@ struct ntree_base {
     return arr[i];
   }
 
+  static void set_ptrs(field<data::points::Value>::accessor<wo> a) {
+    const auto & c = run::context::instance();
+    const auto i = c.color(), n = c.colors();
+    assert(a.span().size() == 3);
+    a[1] = data::points::make(i == 0 ? i : i - 1, 0);
+    a[2] = data::points::make(i == n - 1 ? i : i + 1, 0);
+  }
+  template<auto * F> // work around Clang 10.0.1 bug with auto&
+  static constexpr inline auto task = [](auto f) { execute<*F>(f); };
 }; // struct ntree_base
 
 } // namespace topo

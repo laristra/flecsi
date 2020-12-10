@@ -88,20 +88,9 @@ struct ntree : ntree_base {
         make_repartitioned<Policy, tree_data>(c.nparts_,
           make_partial<allocate>(c.tdata_offset_))}},
 
-      cp_data_tree(
-        *this,
+      cp_data_tree(*this,
         {c.nparts_, {{1, 3}}},
-        [&] {
-          data::copy_plan::Points dst_ptrs(c.nparts_);
-          std::size_t colors = c.nparts_;
-          for(std::size_t i = 0; i < colors; ++i) {
-            auto & v = dst_ptrs[i];
-            v.resize(3);
-            v[1] = data::points::make(i == 0 ? i : i - 1, 0);
-            v[2] = data::points::make(i == colors - 1 ? i : i + 1, 0);
-          }
-          return dst_ptrs;
-        }(),
+        task<set_ptrs>,
         util::constant<tree_data>()) {}
   // Ntree mandatory fields ---------------------------------------------------
 

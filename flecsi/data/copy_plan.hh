@@ -69,7 +69,6 @@ inline const field<data::intervals::Value>::definition<intervals>
 
 struct copy_plan {
   using Intervals = std::vector<std::vector<subrow>>;
-  using Points = std::vector<std::vector<points::Value>>;
 
   static void set_dests(field<intervals::Value>::accessor<wo> a,
     const Intervals & v) {
@@ -79,20 +78,11 @@ struct copy_plan {
       *p++ = intervals::make(s, i);
   }
 
-  static void fill_dst_ptrs_task(flecsi::field<points::Value>::accessor<wo> a,
-    const Points & v) {
-    const auto c = run::context::instance().color();
-    assert(v[c].size() == a.span().size());
-    std::copy(v[c].begin(), v[c].end(), a.span().begin());
-  }
-
   template<template<class> class C,
     class P,
-    typename P::index_space S = P::default_space()>
-  copy_plan(C<P> & t,
-    const Intervals & dests,
-    const Points & src,
-    util::constant<S> = {})
+    typename P::index_space S = P::default_space(),
+    class F>
+  copy_plan(C<P> & t, const Intervals & dests, F && src, util::constant<S> = {})
     : reg(&t.template get_region<S>()), dest_ptrs_([&dests] {
         detail::intervals::coloring ret;
         ret.reserve(dests.size());
@@ -111,7 +101,7 @@ struct copy_plan {
       // we create the source partition
       src_partition_(*reg,
         dest_,
-        (execute<fill_dst_ptrs_task>(pointers<P, S>(t), src), ptr_fid)) {}
+        (std::forward<F>(src)(pointers<P, S>(t)), ptr_fid)) {}
 
   void issue_copy(const field_id_t & data_fid) const {
     launch_copy(*reg, src_partition_, dest_, data_fid, ptr_fid);
