@@ -68,7 +68,9 @@ private:
       r = r || privilege_read(p);
       w = w || privilege_write(p);
     }
-    return r ? w ? READ_WRITE : READ_ONLY : w ? WRITE_DISCARD : NO_ACCESS;
+    return r ? w ? READ_WRITE : READ_ONLY
+             : w ? privilege_discard(mode) ? WRITE_DISCARD : WRITE_ONLY
+                 : NO_ACCESS;
   } // privilege_mode
 
 protected:
