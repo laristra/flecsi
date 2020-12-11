@@ -105,22 +105,32 @@ runtime_driver(int argc, char ** argv) {
   // Currently, this is Exclusive - Shared - Ghost.
 
   for(auto is : context_.coloring_map()) {
-    std::map<size_t, size_t> _map;
+    auto nents = is.second.exclusive.size() + is.second.shared.size() + is.second.ghost.size();
+
+    auto & _map = context_.new_index_map(is.first);
+    auto & _rev_map = context_.new_reverse_index_map(is.first);
+
+    _map.resize(nents);
     size_t counter(0);
 
     for(auto index : is.second.exclusive) {
-      _map[counter++] = index.id;
+      _rev_map[index.id] = counter;
+      _map[counter] = index.id;
+      counter++;
     } // for
 
     for(auto index : is.second.shared) {
-      _map[counter++] = index.id;
+      _rev_map[index.id] = counter;
+      _map[counter] = index.id;
+      counter++;
     } // for
 
     for(auto index : is.second.ghost) {
-      _map[counter++] = index.id;
+      _rev_map[index.id] = counter;
+      _map[counter] = index.id;
+      counter++;
     } // for
 
-    context_.add_index_map(is.first, _map);
   } // for
 
 #if defined(FLECSI_USE_AGGCOMM)

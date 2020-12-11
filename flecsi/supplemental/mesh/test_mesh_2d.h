@@ -19,6 +19,7 @@
 
 #include <cinchlog.h>
 
+#include <flecsi/coloring/dcrs_utils.h>
 #include <flecsi/data/data_client_handle.h>
 #include <flecsi/execution/execution.h>
 #include <flecsi/supplemental/coloring/add_colorings.h>
@@ -282,7 +283,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
 
   // make vertices
   for(auto & vm : vertex_map) {
-    const size_t mid{vm.second};
+    const size_t mid{vm};
     const size_t row{mid / (width + 1)};
     const size_t column{mid % (width + 1)};
     // printf("vertex %lu: (%lu, %lu)\n", mid, row, column);
@@ -296,7 +297,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
   std::unordered_map<size_t, cell_t *> cells_vs_ids;
 
   for(auto & cm : cell_map) {
-    const size_t mid{cm.second};
+    const size_t mid{cm};
 
     const size_t row{mid / width};
     const size_t column{mid % width};
@@ -325,7 +326,7 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
   auto & cell_coloring{context.coloring(index_spaces::cells)};
 
   auto exclusive_and_shared = cell_coloring.exclusive;
-  exclusive_and_shared.insert(
+  exclusive_and_shared.insert(exclusive_and_shared.end(),
     cell_coloring.shared.begin(), cell_coloring.shared.end());
 
   for(auto c : exclusive_and_shared) {
@@ -354,6 +355,8 @@ initialize_mesh(data_client_handle_u<test_mesh_2d_t, wo> mesh) {
       this_cell->set_neighbor(above_, cells_vs_ids.at(above_id));
     }
   } // for
+
+  coloring::remove_unique(exclusive_and_shared);
 
 } // initizlize_mesh
 

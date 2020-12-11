@@ -201,7 +201,6 @@ driver(int argc, char ** argv) {
       "incorrect product from reduction");
 
   } // scope
-
   {
     auto f = flecsi_execute_reduction_task(
       sum_array, flecsi::execution, index, sum, array_t, mh, vh);

@@ -48,7 +48,7 @@ TEST(index_space, index_space) {
   pseudo_random rng;
 
   std::vector<std::unique_ptr<object>> ptrs;
-  using index_space_t = index_space_u<object *>;
+  using index_space_t = index_space_u<object *, object::id_t>;
   index_space_t is;
 
   for(size_t i = 0; i < 10000; ++i) {

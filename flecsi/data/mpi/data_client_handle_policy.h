@@ -9,6 +9,7 @@
 //----------------------------------------------------------------------------//
 
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
 
 namespace flecsi {
 
@@ -61,8 +62,8 @@ struct data_client_handle_adjacency_t {
   field_id_t offset_fid;
   size_t index_fid_size;
   size_t offset_fid_size;
-  size_t * offsets_buf;
-  id_t * indices_buf;
+  utils::offset_t * offsets_buf;
+  utils::indices_t * indices_buf;
 };
 
 struct data_client_handle_index_subspace_t {

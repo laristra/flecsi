@@ -72,17 +72,37 @@ driver(int argc, char ** argv) {
 
   const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map =
     context_.coloring_map();
-  auto index_coloring = coloring_map.find(INDEX_ID);
+  auto is = coloring_map.find(INDEX_ID);
 
-  std::map<size_t, size_t> gid_to_lid_map;
+  std::vector<size_t> gid_to_lid_map;
 
-  auto entries = index_coloring->second.exclusive;
+  auto nents = is->second.exclusive.size() + is->second.shared.size() +
+    is->second.ghost.size();
 
+  gid_to_lid_map.resize(nents);
+  size_t counter(0);
+
+  for(auto index : is->second.exclusive) {
+      gid_to_lid_map[counter] = index.id;
+      counter++;
+    } // for
+
+   for(auto index : is->second.shared) {
+      gid_to_lid_map[counter] = index.id;
+      counter++;
+    } // for
+
+    for(auto index : is->second.ghost) {
+      gid_to_lid_map[counter] = index.id;
+      counter++;
+    } // for
+
+#if 0
   size_t lid = 0;
   for(auto entity_itr = entries.begin(); entity_itr != entries.end();
       ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
-    gid_to_lid_map[lid++] = entity.id;
+    gid_to_lid_map.push_back(entity.id);
   }
 
   entries = index_coloring->second.shared;
@@ -98,8 +118,13 @@ driver(int argc, char ** argv) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[lid++] = entity.id;
   }
+#endif
+  std::vector<size_t> index_map = context_.index_map(INDEX_ID);
 
-  std::map<size_t, size_t> index_map = context_.index_map(INDEX_ID);
+
+  for (size_t i=0; i< index_map.size(); i++){
+    std::cout << " i, = " << i << index_map[i] << "=?"<<gid_to_lid_map[i]<<std::endl;
+  }
 
   clog_assert(
     gid_to_lid_map == index_map, "global to local ID mapping is incorrect");

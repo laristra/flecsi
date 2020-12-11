@@ -42,6 +42,9 @@ main(int argc, char ** argv) {
   int rank{0};
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  std::stringstream ss;
+  ss << "hprof.rank" << rank;
+
   //--------------------------------------------------------------------------//
   // INIT CLOG
   //--------------------------------------------------------------------------//

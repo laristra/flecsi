@@ -325,13 +325,15 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       auto ids = ac2_ptr;
       id_pointers.emplace(i, ids);
 
+      auto ids_new = reinterpret_cast<utils::id_t *>(ac2_ptr);
+
       // calculating exclusive, shared and ghost sizes fro the entity
       const auto & coloring = context_.coloring(ent.index_space);
       ent.num_exclusive = coloring.exclusive.size();
       ent.num_shared = coloring.shared.size();
       ent.num_ghost = coloring.ghost.size();
 
-      h.storage.init_entities(ent.domain, ent.dim, ents, ids, ent.size,
+      h.storage.init_entities(ent.domain, ent.dim, ents, ids_new, ent.size,
         num_ents, ent.num_exclusive, ent.num_shared, ent.num_ghost, _read);
 
       auto & ism = context_.index_space_data_map();
@@ -372,15 +374,15 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
 
       lr = regions[region].get_logical_region();
       is = lr.get_index_space();
-      const Legion::UnsafeFieldAccessor<utils::id_t, 2, Legion::coord_t,
-        Realm::AffineAccessor<utils::id_t, 2, Legion::coord_t>>
-        ac3(regions[region], adj.index_fid, sizeof(utils::id_t));
+      const Legion::UnsafeFieldAccessor<utils::indices_t, 2, Legion::coord_t,
+        Realm::AffineAccessor<utils::indices_t, 2, Legion::coord_t>>
+        ac3(regions[region], adj.index_fid, sizeof(utils::indices_t));
 
       d = runtime->get_index_space_domain(context, is);
 
       dr = d.get_rect<2>();
 
-      utils::id_t * indices = (utils::id_t *)(ac3.ptr(itr.p));
+      utils::indices_t * indices = (utils::indices_t *)(ac3.ptr(itr.p));
 
       size_t num_indices = dr.hi[1] - dr.lo[1] + 1;
 
@@ -399,14 +401,14 @@ struct init_handles_t : public flecsi::utils::tuple_walker_u<init_handles_t> {
       Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
       Legion::Domain d = runtime->get_index_space_domain(context, is);
-      const Legion::UnsafeFieldAccessor<utils::id_t, 2, Legion::coord_t,
-        Realm::AffineAccessor<utils::id_t, 2, Legion::coord_t>>
-        ac(regions[region], iss.index_fid, sizeof(utils::id_t));
+      const Legion::UnsafeFieldAccessor<utils::indices_t, 2, Legion::coord_t,
+        Realm::AffineAccessor<utils::indices_t, 2, Legion::coord_t>>
+        ac(regions[region], iss.index_fid, sizeof(utils::indices_t));
       Legion::Domain::DomainPointIterator itr(d);
 
       dr = d.get_rect<2>();
 
-      utils::id_t * ids = (utils::id_t *)(ac.ptr(itr.p));
+      utils::indices_t * ids = (utils::indices_t *)(ac.ptr(itr.p));
 
       size_t num_indices = dr.hi[1] - dr.lo[1] + 1;
 

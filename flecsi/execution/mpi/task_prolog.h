@@ -67,8 +67,10 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
 
     auto rank = context_t::instance().color();
 
-    if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na))
+    if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na) || (GHOST_PERMISSIONS == wo))
       return;
+    else
+      *(h.ghost_is_readable) = true;
 
     auto & field_metadata = context.registered_field_metadata().at(h.fid);
 
@@ -97,7 +99,7 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
     if((not*h.ghost_is_readable) and (*h.ghost_was_resized))
       resized_sparse_fields.emplace_back(h.index_space, h.fid);
 
-    if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na))
+    if(*(h.ghost_is_readable) || (GHOST_PERMISSIONS == na) || (GHOST_PERMISSIONS == wo))
       return;
 
     modified_sparse_fields.emplace_back(h.index_space, h.fid);
@@ -211,28 +213,29 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
         (color_info.exclusive + color_info.shared + color_info.ghost);
       auto fieldDataIter = registered_field_data.find(adj.offset_fid);
       if(fieldDataIter == registered_field_data.end()) {
-        size_t size = sizeof(size_t) * adj.num_offsets;
+        size_t size = sizeof(utils::offset_t) * (adj.num_offsets+1);
 
         execution::context_t::instance().register_field_data(
           adj.offset_fid, size);
       }
-      adj.offsets_buf = reinterpret_cast<size_t *>(
+      adj.offsets_buf = reinterpret_cast<utils::offset_t *>(
         registered_field_data[adj.offset_fid].data());
 
       auto adj_info = (context_.adjacency_info()).at(adj_index_space);
       adj.num_indices = adj_info.color_sizes[color];
       fieldDataIter = registered_field_data.find(adj.index_fid);
       if(fieldDataIter == registered_field_data.end()) {
-        size_t size = sizeof(utils::id_t) * adj.num_indices;
+        size_t size = sizeof(utils::indices_t) * adj.num_indices;
         execution::context_t::instance().register_field_data(
           adj.index_fid, size);
       }
       adj.indices_buf =
-        reinterpret_cast<id_t *>(registered_field_data[adj.index_fid].data());
+        reinterpret_cast<utils::indices_t *>(registered_field_data[adj.index_fid].data());
 
-      h.storage.init_connectivity(adj.from_domain, adj.to_domain, adj.from_dim,
-        adj.to_dim, reinterpret_cast<utils::offset_t *>(adj.offsets_buf),
-        adj.num_offsets, reinterpret_cast<utils::id_t *>(adj.indices_buf),
+      h.storage.init_connectivity(
+        adj.from_domain, adj.to_domain, adj.from_dim,
+        adj.to_dim, adj.offsets_buf,
+        adj.num_offsets, adj.indices_buf,
         adj.num_indices, _read);
     }
 
@@ -246,16 +249,16 @@ struct task_prolog_t : public flecsi::utils::tuple_walker_u<task_prolog_t> {
       auto & registered_field_data = context_.registered_field_data();
       auto fieldDataIter = registered_field_data.find(iss.index_fid);
       if(fieldDataIter == registered_field_data.end()) {
-        auto size = sizeof(utils::id_t) * num_indices;
+        auto size = sizeof(utils::indices_t) * num_indices;
         execution::context_t::instance().register_field_data(
           iss.index_fid, size);
       }
       // assign the storage to the buffer
       iss.indices_buf =
-        reinterpret_cast<id_t *>(registered_field_data[iss.index_fid].data());
+        reinterpret_cast<utils::indices_t *>(registered_field_data[iss.index_fid].data());
       // now initialize the index subspace
       h.storage.init_index_subspace(iss.index_space, iss.index_subspace,
-        iss.domain, iss.dim, reinterpret_cast<utils::id_t *>(iss.indices_buf),
+        iss.domain, iss.dim, iss.indices_buf,
         num_indices, _read);
     }
 
