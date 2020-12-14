@@ -144,10 +144,8 @@ reduce_internal(Args &&... args) {
   if constexpr(mpi_task) {
     // MPI tasks must be invoked collectively from one task on each rank.
     // We therefore can transmit merely a pointer to a tuple of the arguments.
-    // util::serial_put deliberately doesn't support this, so just memcpy it.
-    const auto p = &params;
-    buf.resize(sizeof p);
-    std::memcpy(buf.data(), &p, sizeof p);
+    // The TaskArgument must be identical on every shard, so use the context.
+    flecsi_context.mpi_params = &params;
   }
   else {
     buf = util::serial_put(params);
