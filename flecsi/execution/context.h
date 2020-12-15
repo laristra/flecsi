@@ -316,7 +316,7 @@ struct context_u : public CONTEXT_POLICY {
     @param index_space The map key.
     @param index_map   The map to add.
    */
-  
+
   auto & new_index_map(size_t index_space) {
     return index_map_[index_space];
   }
@@ -325,7 +325,7 @@ struct context_u : public CONTEXT_POLICY {
     index_map_[index_space] = index_map;
 
     auto & rev_map = reverse_index_map_[index_space];
-    for(size_t i=0; i<index_map.size(); ++i)
+    for(size_t i = 0; i < index_map.size(); ++i)
       rev_map[index_map[i]] = i;
   } // add_index_map
 

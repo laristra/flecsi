@@ -519,7 +519,8 @@ public:
                 allocator.allocate_field(fi.size, fi.fid);
                 auto tmp = malloc(fi.size);
                 memset(tmp, 0, fi.size);
-                runtime_->fill_field(ctx_, is.logical_region, is.logical_region, fi.fid, tmp, fi.size);
+                runtime_->fill_field(ctx_, is.logical_region, is.logical_region,
+                  fi.fid, tmp, fi.size);
                 free(tmp);
               }
               else {
@@ -530,7 +531,8 @@ public:
                 auto sz = sizeof(data::row_vector_u<uint8_t>);
                 auto tmp = malloc(sz);
                 memset(tmp, 0, sz);
-                runtime_->fill_field(ctx_, is.logical_region, is.logical_region, fi.fid, tmp, sz);
+                runtime_->fill_field(
+                  ctx_, is.logical_region, is.logical_region, fi.fid, tmp, sz);
                 free(tmp);
               }
             }
@@ -540,7 +542,8 @@ public:
               allocator.allocate_field(fi.size, fi.fid);
               auto tmp = malloc(fi.size);
               memset(tmp, 0, fi.size);
-              runtime_->fill_field(ctx_, is.logical_region, is.logical_region, fi.fid, tmp, fi.size);
+              runtime_->fill_field(ctx_, is.logical_region, is.logical_region,
+                fi.fid, tmp, fi.size);
               free(tmp);
             }
             break;

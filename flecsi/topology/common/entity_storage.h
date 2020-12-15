@@ -35,7 +35,8 @@ public:
   }
 
   void add_count(uint32_t count) {
-    if (s_.empty()) s_.push_back(0);
+    if(s_.empty())
+      s_.push_back(0);
     s_.push_back(s_.back() + count);
   }
 
@@ -46,7 +47,7 @@ public:
 
   FLECSI_INLINE_TARGET
   std::pair<size_t, size_t> range(size_t i) const {
-    return {s_[i], s_[i+1]};
+    return {s_[i], s_[i + 1]};
   }
 
   void clear() {

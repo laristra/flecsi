@@ -77,25 +77,25 @@ driver(int argc, char ** argv) {
   std::vector<size_t> gid_to_lid_map;
 
   auto nents = is->second.exclusive.size() + is->second.shared.size() +
-    is->second.ghost.size();
+               is->second.ghost.size();
 
   gid_to_lid_map.resize(nents);
   size_t counter(0);
 
   for(auto index : is->second.exclusive) {
-      gid_to_lid_map[counter] = index.id;
-      counter++;
-    } // for
+    gid_to_lid_map[counter] = index.id;
+    counter++;
+  } // for
 
-   for(auto index : is->second.shared) {
-      gid_to_lid_map[counter] = index.id;
-      counter++;
-    } // for
+  for(auto index : is->second.shared) {
+    gid_to_lid_map[counter] = index.id;
+    counter++;
+  } // for
 
-    for(auto index : is->second.ghost) {
-      gid_to_lid_map[counter] = index.id;
-      counter++;
-    } // for
+  for(auto index : is->second.ghost) {
+    gid_to_lid_map[counter] = index.id;
+    counter++;
+  } // for
 
 #if 0
   size_t lid = 0;
@@ -121,9 +121,9 @@ driver(int argc, char ** argv) {
 #endif
   std::vector<size_t> index_map = context_.index_map(INDEX_ID);
 
-
-  for (size_t i=0; i< index_map.size(); i++){
-    std::cout << " i, = " << i << index_map[i] << "=?"<<gid_to_lid_map[i]<<std::endl;
+  for(size_t i = 0; i < index_map.size(); i++) {
+    std::cout << " i, = " << i << index_map[i] << "=?" << gid_to_lid_map[i]
+              << std::endl;
   }
 
   clog_assert(

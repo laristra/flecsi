@@ -112,7 +112,7 @@ driver(int argc, char ** argv) {
   auto future = flecsi_execute_task(writer, , single, 0.0);
   flecsi_execute_task(future_dump, , single, future);
   flecsi_execute_task(reader, , single, future, future);
-  
+
   auto array_future = flecsi_execute_task(array_writer, , single, 0.0);
   flecsi_execute_task(array_reader, , single, array_future);
 

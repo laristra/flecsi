@@ -39,22 +39,23 @@ namespace flecsi {
 namespace coloring {
 
 clog_register_tag(dcrs_utils);
-  
+
 template<typename T>
-static void remove_unique(T & list) {
+static void
+remove_unique(T & list) {
   std::sort(list.begin(), list.end());
   auto last = std::unique(list.begin(), list.end());
   list.erase(last, list.end());
 };
 
-template<typename T, typename...ARGS>
+template<typename T, typename... ARGS>
 static std::pair<typename T::iterator, bool>
-insert(T & list, ARGS...args) {
+insert(T & list, ARGS... args) {
   auto e = typename T::value_type{std::forward<ARGS>(args)...};
   auto it = std::find(list.begin(), list.end(), e);
-  if (it == list.end()) {
+  if(it == list.end()) {
     list.emplace_back(std::move(e));
-    return {std::prev(list.end()), true}; 
+    return {std::prev(list.end()), true};
   }
   else {
     return {it, false};
@@ -342,13 +343,12 @@ alltoallv(const SEND_TYPE & sendbuf,
   for(size_t rank = 0; rank < num_ranks; ++rank) {
     auto count = recvcounts[rank];
     size_t start = 0;
-    while (count > 0) {
-      auto sz = std::min<size_t>( count, intmax );
+    while(count > 0) {
+      auto sz = std::min<size_t>(count, intmax);
       auto buf = recvbuf.data() + recvdispls[rank] + start;
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
-      auto ret =
-        MPI_Irecv(buf, sz, mpi_recv_t, rank, tag, comm, &my_request);
+      auto ret = MPI_Irecv(buf, sz, mpi_recv_t, rank, tag, comm, &my_request);
       if(ret != MPI_SUCCESS)
         return ret;
       count -= sz;
@@ -360,13 +360,12 @@ alltoallv(const SEND_TYPE & sendbuf,
   for(size_t rank = 0; rank < num_ranks; ++rank) {
     auto count = sendcounts[rank];
     size_t start = 0;
-    while (count > 0) {
-      auto sz = std::min<size_t>( count, intmax );
+    while(count > 0) {
+      auto sz = std::min<size_t>(count, intmax);
       auto buf = sendbuf.data() + senddispls[rank] + start;
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
-      auto ret =
-        MPI_Isend(buf, sz, mpi_send_t, rank, tag, comm, &my_request);
+      auto ret = MPI_Isend(buf, sz, mpi_send_t, rank, tag, comm, &my_request);
       if(ret != MPI_SUCCESS)
         return ret;
       count -= sz;
@@ -435,7 +434,6 @@ alltoall(const SEND_TYPE & sendbuf,
 
   return ret;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Simple utility for determining which rank owns an id
@@ -523,8 +521,9 @@ make_dcrs_distributed(
   using conn_t = decltype(md.local_to_global(0));
   using decayed_conn_t = std::decay_t<conn_t>;
   decayed_conn_t empty_conn;
-  const auto & vertex_local_to_global = (md.num_entities(to_dimension)) ?
-    md.local_to_global(to_dimension) : empty_conn;
+  const auto & vertex_local_to_global = (md.num_entities(to_dimension))
+                                          ? md.local_to_global(to_dimension)
+                                          : empty_conn;
 
   size_t max_global_vert_id{0};
   for(auto v : vertex_local_to_global)
@@ -546,11 +545,12 @@ make_dcrs_distributed(
   // essentially vertex to cell connectivity
   std::map<size_t, std::vector<size_t>> vertex2cell;
 
-  using entities_t = decltype(md.entities_crs(0,0));
+  using entities_t = decltype(md.entities_crs(0, 0));
   using decayed_entities_t = std::decay_t<entities_t>;
   decayed_entities_t empty_entities;
-  const auto & cells2vertex = (md.num_entities(from_dimension)) ?
-    md.entities_crs(from_dimension, to_dimension) : empty_entities;
+  const auto & cells2vertex = (md.num_entities(from_dimension))
+                                ? md.entities_crs(from_dimension, to_dimension)
+                                : empty_entities;
 
   // Travel from the FROM_DIMENSION (cell) to the TO_DIMENSION (other)
   for(size_t ic = 0; ic < num_cells; ++ic) {
@@ -821,12 +821,14 @@ make_dcrs_distributed(
 
 } // make_dcrs
 
-
-inline bool owned_by( const std::vector<size_t> & dist, size_t id, size_t owner)
-{
-  if (id < dist[owner]) return false;
-  else if (id < dist[owner+1]) return true;
-  else return false;
+inline bool
+owned_by(const std::vector<size_t> & dist, size_t id, size_t owner) {
+  if(id < dist[owner])
+    return false;
+  else if(id < dist[owner + 1])
+    return true;
+  else
+    return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -844,7 +846,7 @@ migrate(size_t dimension,
 
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
-  
+
   //----------------------------------------------------------------------------
   // Pack information together.
   //
@@ -878,12 +880,12 @@ migrate(size_t dimension,
 
       //------------------------------------------------------------------------
       // No migration necessary
-      if( owned_by(partition_dist, partition_id, comm_rank) ) {
+      if(owned_by(partition_dist, partition_id, comm_rank)) {
         // just keep track of the global ids
       }
       //------------------------------------------------------------------------
       // Entity to be migrated
-      else if( owned_by(partition_dist, partition_id, rank) ) {
+      else if(owned_by(partition_dist, partition_id, rank)) {
         // mark for deletion
         erase_local_ids.emplace_back(local_id);
         // global id
@@ -1076,7 +1078,8 @@ get_owner_info(const dcrs_t & dcrs,
 
     // the original cell is exclusive
     if(shared_ranks.empty()) {
-      entities.exclusive.emplace_back(entity_info_t(global_id, comm_rank, local_id));
+      entities.exclusive.emplace_back(
+        entity_info_t(global_id, comm_rank, local_id));
     }
     // otherwise it must be shared
     else {
@@ -1556,7 +1559,7 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
       } // is ghost
     }
   }
-  
+
   remove_unique(entities.shared);
   remove_unique(entities.ghost);
 
@@ -1983,39 +1986,37 @@ ghost_connectivity(
     from2to, to_local2global, from_entities, from_ids, connectivity);
 }
 
-static MPI_Comm create_communicator(MPI_Comm parent_comm, bool flag)
-{
+static MPI_Comm
+create_communicator(MPI_Comm parent_comm, bool flag) {
   int parent_size, parent_rank;
   MPI_Comm_size(parent_comm, &parent_size);
   MPI_Comm_rank(parent_comm, &parent_rank);
 
   std::vector<char> rank_flags(parent_size);
-  MPI_Allgather(&flag, 1, MPI_CHAR, rank_flags.data(), 1, MPI_CHAR, parent_comm);
-  
+  MPI_Allgather(
+    &flag, 1, MPI_CHAR, rank_flags.data(), 1, MPI_CHAR, parent_comm);
+
   size_t num_ranks = 0;
-  for (auto i : rank_flags) if (i) num_ranks++;
+  for(auto i : rank_flags)
+    if(i)
+      num_ranks++;
 
   std::vector<int> included_ranks;
   included_ranks.reserve(num_ranks);
-  for (unsigned i=0; i<parent_size; ++i)
-    if (rank_flags[i])
+  for(unsigned i = 0; i < parent_size; ++i)
+    if(rank_flags[i])
       included_ranks.emplace_back(i);
 
   MPI_Group parent_group;
   MPI_Comm_group(parent_comm, &parent_group);
 
   MPI_Group new_group;
-  MPI_Group_incl(
-    parent_group,
-    num_ranks,
-    included_ranks.data(),
-    &new_group);
+  MPI_Group_incl(parent_group, num_ranks, included_ranks.data(), &new_group);
 
   MPI_Comm new_comm;
   MPI_Comm_create_group(parent_comm, new_group, 0, &new_comm);
   return new_comm;
 }
-  
 
 } // namespace coloring
 } // namespace flecsi

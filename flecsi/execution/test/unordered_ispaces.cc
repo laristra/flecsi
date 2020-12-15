@@ -438,7 +438,8 @@ add_colorings(int dummy) {
 
       auto offset(vertex_offset_info[r].begin());
       for(auto s : i) {
-        vertices.ghost.emplace_back(flecsi::coloring::entity_info_t(s, r, *offset));
+        vertices.ghost.emplace_back(
+          flecsi::coloring::entity_info_t(s, r, *offset));
         ++offset;
 
         // Collect all colors with whom we require communication
@@ -449,7 +450,7 @@ add_colorings(int dummy) {
       ++r;
     } // for
   } // scope
-  
+
   coloring::remove_unique(vertices.ghost);
 
   {

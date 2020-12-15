@@ -88,18 +88,16 @@ struct entity_info_t {
    \param shared_ The list of ranks that share this entity.
    */
 
-  entity_info_t(size_t id_ = 0,
-    id_t rank_ = 0,
-    id_t offset_ = 0)
+  entity_info_t(size_t id_ = 0, id_t rank_ = 0, id_t offset_ = 0)
     : id(id_), rank(rank_), offset(offset_) {}
-
 
   template<typename T>
   entity_info_t(size_t id_,
     id_t rank_,
     id_t offset_,
     const std::set<T> & shared_)
-    : id(id_), rank(rank_), offset(offset_), shared(shared_.begin(), shared_.end()) {}
+    : id(id_), rank(rank_), offset(offset_),
+      shared(shared_.begin(), shared_.end()) {}
 
   /*!
    Constructor.

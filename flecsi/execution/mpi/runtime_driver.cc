@@ -105,7 +105,8 @@ runtime_driver(int argc, char ** argv) {
   // Currently, this is Exclusive - Shared - Ghost.
 
   for(auto is : context_.coloring_map()) {
-    auto nents = is.second.exclusive.size() + is.second.shared.size() + is.second.ghost.size();
+    auto nents = is.second.exclusive.size() + is.second.shared.size() +
+                 is.second.ghost.size();
 
     auto & _map = context_.new_index_map(is.first);
     auto & _rev_map = context_.new_reverse_index_map(is.first);

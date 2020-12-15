@@ -76,7 +76,9 @@ public:
 
   virtual void set_partitioning(const std::vector<size_t> &) {}
 
-  virtual std::vector<real_t> midpoints(size_t) const { return {}; }
+  virtual std::vector<real_t> midpoints(size_t) const {
+    return {};
+  }
 };
 
 //----------------------------------------------------------------------------

@@ -123,7 +123,7 @@ public:
     auto num_offsets = sz ? sz - 1 : 0;
     for(size_t i = 0; i < num_offsets; ++i) {
       offset_t oi = offsets_[i];
-      auto count = offsets_[i+1] - oi;
+      auto count = offsets_[i + 1] - oi;
       for(size_t j = 0; j < count; ++j) {
         stream << ids[oi + j] << std::endl;
       }
@@ -138,7 +138,7 @@ public:
     stream << "=== offsets" << std::endl;
     for(size_t i = 0; i < num_offsets; ++i) {
       offset_t oi = offsets_[i];
-      auto count = offsets_[i+1] - oi;
+      auto count = offsets_[i + 1] - oi;
       stream << oi << " : " << count << std::endl;
     } // for
     return stream;
@@ -161,9 +161,9 @@ public:
 private:
   template<class C>
   auto get(C & c, std::size_t index) const {
-    assert(index < offsets_.size()-1);
+    assert(index < offsets_.size() - 1);
     offset_t o = offsets_[index];
-    auto count = offsets_[index+1] - o;
+    auto count = offsets_[index + 1] - o;
     return utils::span(c.data() + o, count);
   }
 
@@ -187,9 +187,9 @@ public:
   //! Get the entities of the specified from index and return the count.
   //-----------------------------------------------------------------//
   void reverse_entities(size_t index) {
-    assert(index < offsets_.size()-1);
+    assert(index < offsets_.size() - 1);
     offset_t start = offsets_[index];
-    offset_t end = offsets_[index+1];
+    offset_t end = offsets_[index + 1];
     const auto b = index_space_.ids.begin();
     std::reverse(b + start, b + end);
   }
@@ -199,9 +199,9 @@ public:
   //-----------------------------------------------------------------//
   template<class U>
   void reorder_entities(size_t index, U && order) {
-    assert(index < offsets_.size()-1);
+    assert(index < offsets_.size() - 1);
     offset_t start = offsets_[index];
-    offset_t end = offsets_[index+1];
+    offset_t end = offsets_[index + 1];
     auto count = end - start;
     assert(order.size() == count);
     utils::reorder(
@@ -228,7 +228,7 @@ public:
   //-----------------------------------------------------------------//
   size_t from_size() const {
     auto sz = offsets_.size();
-    return sz ? sz-1 : 0;
+    return sz ? sz - 1 : 0;
   }
 
   //-----------------------------------------------------------------//
@@ -242,7 +242,8 @@ public:
   //! Set/init the connectivity use by compute topology methods like transpose.
   //-----------------------------------------------------------------//
   template<size_t DOM, size_t NUM_DOMAINS>
-  void set(entity_vector_t<NUM_DOMAINS> & ev, std::vector<std::vector<id_t>> & conns) {
+  void set(entity_vector_t<NUM_DOMAINS> & ev,
+    std::vector<std::vector<id_t>> & conns) {
     clear();
 
     size_t n = conns.size();
@@ -308,7 +309,10 @@ public:
     offsets_.add_end(to_size());
   } // end_from
 
-  index_space_u<entity_base_, utils::indices_t, topology_storage_u, entity_storage_t>
+  index_space_u<entity_base_,
+    utils::indices_t,
+    topology_storage_u,
+    entity_storage_t>
     index_space_;
 
   offset_storage_t offsets_;

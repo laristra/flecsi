@@ -214,7 +214,7 @@ add_colorings(coloring_map_t map) {
       cell_color_info.ghost_owners.insert(i.rank);
     } // for
   } // scope
-  
+
   coloring::remove_unique(cells.ghost);
 
   cell_color_info.exclusive = cells.exclusive.size();

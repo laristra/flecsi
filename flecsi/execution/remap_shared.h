@@ -12,8 +12,8 @@
    All rights reserved.
                                                                               */
 /*! @file */
-#include "flecsi/utils/mpi_type_traits.h"
 #include "flecsi/coloring/dcrs_utils.h"
+#include "flecsi/utils/mpi_type_traits.h"
 
 namespace flecsi {
 namespace execution {
@@ -41,7 +41,7 @@ remap_shared_entities() {
     //                         << ", offset: " << shared.offset
     //                         << ", index: " << index << std::endl;
     //     }
-      
+
     auto send_buffers = new std::unordered_map<size_t, std::vector<size_t>>;
 
     // we are renumbering the entities such that the shared will be

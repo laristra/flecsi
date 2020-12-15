@@ -166,7 +166,7 @@ color_entity(topology::mesh_definition_u<DIMENSION> const & md,
       ++r;
     } // for
   } // scope
-  
+
   coloring::remove_unique(entities.ghost);
 
 #if 0

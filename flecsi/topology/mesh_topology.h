@@ -543,7 +543,7 @@ public:
   //!
   //! @param e from entity
   //--------------------------------------------------------------------------//
-  //mutable std::set<std::vector<size_t>> asked_;
+  // mutable std::set<std::vector<size_t>> asked_;
   template<size_t DIM,
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
@@ -556,9 +556,10 @@ public:
 
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity_u<TO_DOM, etype>;
-    //auto res = asked_.emplace(std::vector<size_t>{FROM_DOM, ENT_TYPE::dimension, TO_DOM, DIM});
-    //if (res.second) 
-    //std::cout << "asking for from (" << FROM_DOM << ", " << ENT_TYPE::dimension << ") to (" << TO_DOM << ", " << DIM << ")" << std::endl;
+    // auto res = asked_.emplace(std::vector<size_t>{FROM_DOM,
+    // ENT_TYPE::dimension, TO_DOM, DIM}); if (res.second) std::cout << "asking
+    // for from (" << FROM_DOM << ", " << ENT_TYPE::dimension << ") to (" <<
+    // TO_DOM << ", " << DIM << ")" << std::endl;
 
     return xform<dtype>(
       c.get_index_space().cast<etype>().slice(c.range(e->id())));
@@ -1050,24 +1051,26 @@ private:
   template<size_t, size_t, class>
   friend struct compute_bindings_u;
 
-  template<class D, class IS,
-    std::enable_if_t<std::is_same_v<utils::id_t, typename IS::id_t>>* = nullptr >
+  template<class D,
+    class IS,
+    std::enable_if_t<std::is_same_v<utils::id_t, typename IS::id_t>> * =
+      nullptr>
   FLECSI_INLINE_TARGET static auto xform(IS && is) {
     // We depend on the fact that is.ids does not own its iterators/elements.
     return utils::transform_view(
       is.ids, [d = std::forward<IS>(is).data](
                 const auto & i) { return D(&d[i.entity()]); });
   }
-  
-  template<class D, class IS,
-    typename = typename std::enable_if_t<!std::is_same_v<utils::id_t, typename IS::id_t>> >
+
+  template<class D,
+    class IS,
+    typename = typename std::enable_if_t<
+      !std::is_same_v<utils::id_t, typename IS::id_t>>>
   FLECSI_INLINE_TARGET static auto xform(IS && is) {
     // We depend on the fact that is.ids does not own its iterators/elements.
-    return utils::transform_view(
-      is.ids, [d = std::forward<IS>(is).data](
-                const auto & i) { return D(&d[i]); });
+    return utils::transform_view(is.ids,
+      [d = std::forward<IS>(is).data](const auto & i) { return D(&d[i]); });
   }
-  
 
   template<size_t DOM, typename VERT_TYPE>
   void init_cell_(entity_type<MESH_TYPE::num_dimensions, DOM> * cell,
@@ -1203,14 +1206,14 @@ private:
         for(auto id : v) {
           h |= static_cast<size_t>(id.entity());
         } // for
-    
+
         return h;
       } // operator()
     }; // struct id_vector_hash_t
 
     // used when building the topology connectivities
     using id_vector_map_t =
-    std::unordered_map<std::vector<id_t>, id_t, id_vector_hash_t>;
+      std::unordered_map<std::vector<id_t>, id_t, id_vector_hash_t>;
 
     id_vector_map_t entity_vertices_map;
 
@@ -1359,7 +1362,8 @@ private:
 
           // what does this do?
           auto ev2 = id_vector_t(m);
-          for (unsigned i=0; i<m; ++i) ev2[i] = (a+i)->entity();
+          for(unsigned i = 0; i < m; ++i)
+            ev2[i] = (a + i)->entity();
           entity_vertex_conn.emplace_back(std::move(ev2));
           entity_ids.emplace_back(entity_id);
 
@@ -1989,8 +1993,8 @@ private:
 
           // get domain and dimension again
           // FIXME - BROKEN FOR MILESTONE
-          auto dim = 1; //connection_id.dimension();
-          auto dom = 0; //connection_id.domain();
+          auto dim = 1; // connection_id.dimension();
+          auto dom = 0; // connection_id.domain();
           std::cerr << "BROKEN FOR MILESTONE" << std::endl;
           abort();
 
@@ -2033,8 +2037,8 @@ private:
       // domain and dimension is encoded in the ids
       const auto & first = binding_to_entity.at(0).at(0);
       // FIXME - BROKEN FOR MILESTONE
-      auto dom = 1; //first.domain();
-      auto dim = 0; //first.dimension();
+      auto dom = 1; // first.domain();
+      auto dim = 0; // first.dimension();
       // initialize the connectivity
       get_connectivity_(TO_DOM, dom, TO_DIM, dim)
         .init(std::move(binding_to_entity));

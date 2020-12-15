@@ -172,7 +172,6 @@ public:
 #endif
   }
 
-
   /**
    * Tag end of code region with caliper annotation.
    *

@@ -34,7 +34,8 @@ struct view_tag {}; // indicates that a type can be copied cheaply
 //!
 //! @ingroup topology
 //----------------------------------------------------------------------------//
-template<class T, class W,
+template<class T,
+  class W,
   template<typename, typename...> class ID_STORAGE_TYPE = flecsi::vector,
   template<typename, typename...> class STORAGE_TYPE = ID_STORAGE_TYPE>
 class index_space_u
@@ -133,7 +134,9 @@ public:
 private:
   // We duplicate the template-id to avoid generating additional
   // specializations that involve a member alias template.
-  template<class U = T, class V = W, bool View = std::is_base_of_v<view_tag, id_storage_t>>
+  template<class U = T,
+    class V = W,
+    bool View = std::is_base_of_v<view_tag, id_storage_t>>
   using rebind = std::conditional_t<
     std::is_convertible_v<decltype(data), utils::vector_ref<U>>,
     std::conditional_t<View,
