@@ -43,11 +43,20 @@ construct(const A & a) {
   const auto s = a.span();
   std::uninitialized_default_construct(s.begin(), s.end());
 }
-template<class T, layout L>
+template<class T, layout L, std::size_t P>
 void
-destroy(typename field<T, L>::template accessor<rw> a) {
+destroy_task(typename field<T, L>::template accessor1<P> a) {
   const auto s = a.span();
   std::destroy(s.begin(), s.end());
+}
+template<std::size_t P,
+  class T,
+  layout L,
+  class Topo,
+  typename Topo::index_space S>
+void
+destroy(const field_reference<T, L, Topo, S> & r) {
+  execute<destroy_task<T, L, privilege_repeat(rw, privilege_count(P))>>(r);
 }
 } // namespace detail
 
@@ -153,13 +162,11 @@ struct accessor<dense, T, P> : accessor<raw, T, P>, send_tag {
   void send(F && f) {
     f(get_base(), [](const auto & r) {
       // TODO: use just one task for all fields
-      if constexpr(privilege_write_only(P) &&
-                   !std::is_trivially_destructible_v<T>)
-        r.get_region().cleanup(
-          r.fid(), [r] { execute<detail::destroy<T, dense>>(r); });
+      if constexpr(privilege_discard(P) && !std::is_trivially_destructible_v<T>)
+        r.get_region().cleanup(r.fid(), [r] { detail::destroy<P>(r); });
       return r.template cast<raw>();
     });
-    if constexpr(privilege_write_only(P))
+    if constexpr(privilege_discard(P))
       detail::construct(*this); // no-op on caller side
   }
 };
@@ -214,23 +221,27 @@ struct ragged_accessor
     f(get_base(), [](const auto & r) {
       using R = std::remove_reference_t<decltype(r)>;
       const field_id_t i = r.fid();
+      r.get_region().template ghost_copy<P>(r);
       auto & t = r.topology().ragged;
       r.get_region(t).cleanup(
         i,
         [=] {
           if constexpr(!std::is_trivially_destructible_v<T>)
-            execute<detail::destroy<T, ragged>>(r);
+            detail::destroy<P>(r);
         },
-        privilege_write_only(P));
+        privilege_discard(P));
       // We rely on the fact that field_reference uses only the field ID.
       return field_reference<T,
         raw,
         topo::ragged_topology<typename R::Topology>,
         R::space>({i, 0}, t);
     });
-    f(get_offsets(),
-      [](const auto & r) { return r.template cast<dense, std::size_t>(); });
-    if constexpr(privilege_write_only(P))
+    f(get_offsets(), [](const auto & r) {
+      // Disable normal ghost copy of offsets:
+      r.get_region().template ghost<privilege_pack<wo, wo>>(r.fid());
+      return r.template cast<dense, std::size_t>();
+    });
+    if constexpr(privilege_discard(P))
       detail::construct(*this); // no-op on caller side
   }
 
@@ -253,7 +264,7 @@ struct accessor<ragged, T, P>
 template<class T, std::size_t P>
 struct mutator<ragged, T, P>
   : bind_tag, send_tag, util::with_index_iterator<const mutator<ragged, T, P>> {
-  static_assert(privilege_write(P) && !privilege_write_only(P),
+  static_assert(privilege_write(P) && !privilege_discard(P),
     "mutators require read/write permissions");
   using base_type = ragged_accessor<T, P>;
   struct Overflow {
@@ -647,7 +658,7 @@ template<class T, std::size_t P>
 struct accessor<sparse, T, P>
   : field<T, sparse>::base_type::template accessor1<P>,
     util::with_index_iterator<const accessor<sparse, T, P>> {
-  static_assert(!privilege_write_only(P),
+  static_assert(!privilege_discard(P),
     "sparse accessor requires read permission");
 
 private:

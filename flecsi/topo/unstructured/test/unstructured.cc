@@ -129,7 +129,7 @@ unstructured::slot mesh;
 unstructured::cslot coloring;
 
 void
-init(field<util::id, data::ragged>::mutator<rw> m) {
+init(topo::connect_field::mutator<rw> m) {
   m[0].resize(2, 47);
 }
 

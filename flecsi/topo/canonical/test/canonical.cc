@@ -31,8 +31,7 @@ struct canon : topo::specialization<topo::canonical, canon> {
     return {2, {16, 17}, {{10}}};
   } // color
 
-  static void init_cells_to_vertices(
-    field<util::id, data::ragged>::mutator<rw> m,
+  static void init_cells_to_vertices(topo::connect_field::mutator<rw> m,
     util::id f) {
     // This could provide meaningful initial values, but we want to exercise
     // writable topology/ragged accessors.
@@ -83,7 +82,7 @@ init(canon::accessor<ro> t, field<double>::accessor<wo> c) {
 
 // Exercise the std::vector-like interface:
 int
-permute(field<util::id, data::ragged>::mutator<rw> m) {
+permute(topo::connect_field::mutator<rw> m) {
   UNIT {
     const auto &&src = m[3], &&dst = m[0], &&two = m[1];
     // Intermediate sizes can exceed the capacity of the underlying raw field:
@@ -110,6 +109,20 @@ permute(field<util::id, data::ragged>::mutator<rw> m) {
   };
 }
 
+void
+ragged_start(topo::connect_field::mutator<rw> c, data::buffers::Start mv) {
+  assert(mv.span().size() == 2u);
+  data::buffers::ragged::truncate(mv[0])(c, 0);
+  c[c.size() - 1].clear();
+}
+
+int
+ragged_xfer(topo::connect_field::mutator<rw> c, data::buffers::Transfer mv) {
+  data::buffers::ragged::read(
+    c, mv[1], [n = c.size() - 1](std::size_t) { return n; });
+  return !data::buffers::ragged{mv[0]}(c, 0);
+}
+
 int
 check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
   UNIT {
@@ -120,7 +133,8 @@ check(canon::accessor<ro> t, field<double>::accessor<ro> c) {
     static_assert(std::is_same_v<decltype(m), const canon::core::Meta &>);
     EXPECT_EQ(m.column_size, 2 * m.column_offset);
     const auto cv =
-      t.entities<canon::vertices>(topo::id<canon::cells>(0)).front();
+      t.entities<canon::vertices>(topo::id<canon::cells>(c.span().size() - 1))
+        .front();
     static_assert(
       std::is_same_v<decltype(cv), const topo::id<canon::vertices>>);
     EXPECT_EQ(cv - decltype(cv)(favorite), 0);
@@ -146,6 +160,19 @@ canonical_driver() {
     auto pc = pressure(canonical);
     EXPECT_EQ(test<init>(canonical, pc), 0);
     EXPECT_EQ(test<permute>(cf(canonical)), 0);
+
+    data::buffers::core buf([] {
+      const auto p = processes();
+      data::buffers::coloring ret(p);
+      std::size_t i = 0;
+      for(auto & g : ret)
+        g.push_back(++i % p);
+      return ret;
+    }());
+    execute<ragged_start>(cf(canonical), *buf);
+    while(reduce<ragged_xfer, exec::fold::max>(cf(canonical), *buf).get())
+      ;
+
     EXPECT_EQ(test<check>(canonical, pc), 0);
 
     auto & c = canonical.get().part_.get<canon::cells>();

@@ -108,11 +108,24 @@ privilege_write(std::size_t pack) noexcept {
   return false;
 }
 
+// Return whether the privileges destroy any existing data.
 constexpr bool
-privilege_write_only(std::size_t pack) noexcept {
-  for(auto i = privilege_count(pack); i--;)
-    if(get_privilege(i, pack) != wo)
-      return false;
+privilege_discard(std::size_t pack) noexcept {
+  // With privilege_pack<na,wo>, the non-ghost can be read later.  With
+  // privilege_pack<wo,na>, the ghost data is invalidated either by a
+  // subsequent wo or by a ghost copy.
+  auto i = privilege_count(pack);
+  bool ghost = i > 1;
+  for(; i--; ghost = false)
+    switch(get_privilege(i, pack)) {
+      case wo:
+        break;
+      case na:
+        if(ghost)
+          break; // else fall through
+      default:
+        return false;
+    }
   return true;
 }
 

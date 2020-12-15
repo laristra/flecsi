@@ -28,6 +28,7 @@
 
 namespace flecsi {
 namespace topo {
+using connect_field = field<util::id, data::ragged>;
 
 namespace detail {
 template<class, class>
@@ -35,7 +36,7 @@ struct connect;
 template<class P, class... VT>
 struct connect<P, util::types<VT...>> {
   using type = util::key_tuple<util::key_type<VT::value,
-    util::key_array<field<util::id, data::ragged>::definition<P, VT::value>,
+    util::key_array<connect_field::definition<P, VT::value>,
       typename VT::type>>...>;
 };
 
@@ -44,8 +45,7 @@ struct lists;
 template<class P, class... VT>
 struct lists<P, util::types<VT...>> {
   using type = util::key_tuple<util::key_type<VT::value,
-    util::key_array<field<util::id, data::ragged>::definition<P>,
-      typename VT::type>>...>;
+    util::key_array<connect_field::definition<P>, typename VT::type>>...>;
 };
 
 template<class, std::size_t>

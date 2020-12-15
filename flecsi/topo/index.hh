@@ -121,6 +121,10 @@ struct ragged_category : ragged_base {
     return get_partition<P::default_space()>(i);
   }
 
+  // Ragged ghost copies must be handled at the level of the host topology.
+  template<class R>
+  void ghost_copy(const R &) {}
+
 private:
   template<auto... VV>
   static util::key_array<ragged_partitioned, util::constants<VV...>>
