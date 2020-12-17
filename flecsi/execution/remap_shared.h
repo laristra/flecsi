@@ -12,6 +12,7 @@
    All rights reserved.
                                                                               */
 /*! @file */
+#include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/utils/mpi_type_traits.h"
 
 namespace flecsi {
@@ -41,21 +42,25 @@ remap_shared_entities() {
     //                         << ", index: " << index << std::endl;
     //     }
 
+    auto send_buffers = new std::unordered_map<size_t, std::vector<size_t>>;
+
     // we are renumbering the entities such that the shared will be
     // gather the data to send into one buffer per rank
-    size_t index = 0;
-    std::unordered_map<size_t, std::vector<size_t>> send_buffers;
-    std::set<flecsi::coloring::entity_info_t> new_shared;
+    {
+      size_t index = 0;
+      decltype(index_coloring.shared) new_shared;
 
-    for(auto & shared : index_coloring.shared) {
-      for(auto peer : shared.shared) {
-        send_buffers[peer].emplace_back(index);
+      for(auto & shared : index_coloring.shared) {
+        for(auto peer : shared.shared) {
+          (*send_buffers)[peer].emplace_back(index);
+        }
+        new_shared.emplace_back(flecsi::coloring::entity_info_t(
+          shared.id, shared.rank, index, shared.shared));
+        index++;
       }
-      new_shared.insert(flecsi::coloring::entity_info_t(
-        shared.id, shared.rank, index, shared.shared));
-      index++;
-    }
-    context_t::instance().coloring(index_space).shared.swap(new_shared);
+      coloring::remove_unique(new_shared);
+      context_t::instance().coloring(index_space).shared.swap(new_shared);
+    } // scope
 
     // create storage for the requests
     std::vector<MPI_Request> requests;
@@ -86,7 +91,7 @@ remap_shared_entities() {
     }
 
     // send the data
-    for(const auto & comm_pair : send_buffers) {
+    for(const auto & comm_pair : *send_buffers) {
       const auto & rank = comm_pair.first;
       clog_assert(rank != my_color, "Why would I be sending data to myself?");
       const auto & buf = comm_pair.second;
@@ -100,32 +105,38 @@ remap_shared_entities() {
     std::vector<MPI_Status> status(requests.size());
     MPI_Waitall(requests.size(), requests.data(), status.data());
 
-    // now we can unpack the messages and reconstruct the ghost entities
-    std::set<flecsi::coloring::entity_info_t> new_ghost;
-    std::fill(counts.begin(), counts.end(), 0);
+    // release send_buffers
+    delete send_buffers;
 
-    for(auto ghost : index_coloring.ghost) {
-      auto & offset = counts[ghost.rank];
-      auto index = recv_buffers.at(ghost.rank).at(offset);
-      new_ghost.insert(
-        flecsi::coloring::entity_info_t(ghost.id, ghost.rank, index, {}));
-      offset++;
-    }
-    //    for (auto ghost : index_coloring.ghost) {
-    //      clog_rank(warn, 1) << "myrank: " << my_color
-    //                         << " old ghost id: " << ghost.id
-    //                         << ", rank: " << ghost.rank
-    //                         << ", offset: " << ghost.offset
-    //                         << std::endl;
-    //    }
-    //    for (auto ghost : new_ghost) {
-    //      clog_rank(warn, 1) << "myrank: " << my_color
-    //                         << " new ghost id: " << ghost.id
-    //                         << ", rank: " << ghost.rank
-    //                         << ", offset: " << ghost.offset
-    //                         << std::endl;
-    //    }
-    context_t::instance().coloring(index_space).ghost.swap(new_ghost);
+    // now we can unpack the messages and reconstruct the ghost entities
+    {
+      decltype(index_coloring.ghost) new_ghost;
+      std::fill(counts.begin(), counts.end(), 0);
+
+      for(auto ghost : index_coloring.ghost) {
+        auto & offset = counts[ghost.rank];
+        auto index = recv_buffers.at(ghost.rank).at(offset);
+        new_ghost.emplace_back(
+          flecsi::coloring::entity_info_t(ghost.id, ghost.rank, index, {}));
+        offset++;
+      }
+      //    for (auto ghost : index_coloring.ghost) {
+      //      clog_rank(warn, 1) << "myrank: " << my_color
+      //                         << " old ghost id: " << ghost.id
+      //                         << ", rank: " << ghost.rank
+      //                         << ", offset: " << ghost.offset
+      //                         << std::endl;
+      //    }
+      //    for (auto ghost : new_ghost) {
+      //      clog_rank(warn, 1) << "myrank: " << my_color
+      //                         << " new ghost id: " << ghost.id
+      //                         << ", rank: " << ghost.rank
+      //                         << ", offset: " << ghost.offset
+      //                         << std::endl;
+      //    }
+      coloring::remove_unique(new_ghost);
+      context_t::instance().coloring(index_space).ghost.swap(new_ghost);
+    } // scope
   }
 }
 

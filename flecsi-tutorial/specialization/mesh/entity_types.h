@@ -77,17 +77,17 @@ struct cell_t : public flecsi::topology::mesh_entity_u<2, 1> {
     id_t * e) {
     const auto v = c.get_entities(cell_id, 0);
 
-    e[0] = v[0];
-    e[1] = v[2];
+    e[0] = id_t(v[0]);
+    e[1] = id_t(v[2]);
 
-    e[2] = v[1];
-    e[3] = v[3];
+    e[2] = id_t(v[1]);
+    e[3] = id_t(v[3]);
 
-    e[4] = v[0];
-    e[5] = v[1];
+    e[4] = id_t(v[0]);
+    e[5] = id_t(v[1]);
 
-    e[6] = v[2];
-    e[7] = v[3];
+    e[6] = id_t(v[2]);
+    e[7] = id_t(v[3]);
 
     return {2, 2, 2, 2};
   } // create_entities

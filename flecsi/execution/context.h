@@ -33,6 +33,7 @@
 #include <flecsi/execution/common/execution_state.h>
 #include <flecsi/execution/global_object_wrapper.h>
 #include <flecsi/runtime/types.h>
+#include <flecsi/utils/common.h>
 #include <flecsi/utils/hash.h>
 #include <flecsi/utils/simple_id.h>
 
@@ -316,12 +317,16 @@ struct context_u : public CONTEXT_POLICY {
     @param index_map   The map to add.
    */
 
-  void add_index_map(size_t index_space, std::map<size_t, size_t> & index_map) {
+  auto & new_index_map(size_t index_space) {
+    return index_map_[index_space];
+  }
+
+  void add_index_map(size_t index_space, std::vector<size_t> & index_map) {
     index_map_[index_space] = index_map;
 
-    for(auto i : index_map) {
-      reverse_index_map_[index_space][i.second] = i.first;
-    } // for
+    auto & rev_map = reverse_index_map_[index_space];
+    for(size_t i = 0; i < index_map.size(); ++i)
+      rev_map[index_map[i]] = i;
   } // add_index_map
 
   /*!
@@ -424,6 +429,9 @@ struct context_u : public CONTEXT_POLICY {
 
     @param index_space The map key.
    */
+  auto & new_reverse_index_map(size_t index_space) {
+    return reverse_index_map_[index_space];
+  }
 
   auto & reverse_index_map(size_t index_space) {
     auto it = reverse_index_map_.find(index_space);
@@ -967,8 +975,8 @@ private:
   // key: mesh index space entity id
   //--------------------------------------------------------------------------//
 
-  std::map<size_t, std::map<size_t, size_t>> index_map_;
-  std::map<size_t, std::map<size_t, size_t>> reverse_index_map_;
+  std::map<size_t, std::vector<size_t>> index_map_;
+  std::map<size_t, std::map<size_t, utils::indices_t>> reverse_index_map_;
 
   //--------------------------------------------------------------------------//
   // key: index space

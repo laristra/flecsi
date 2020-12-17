@@ -201,23 +201,13 @@ struct mpi_execution_policy_t {
 
     if constexpr(REDUCTION != ZERO) {
 
-      MPI_Datatype datatype;
-      datatype = flecsi::utils::mpi_typetraits_u<RETURN>::type();
-
       auto reduction_op = context_.reduction_operations().find(REDUCTION);
 
       clog_assert(reduction_op != context_.reduction_operations().end(),
         "invalid reduction operation");
 
-      const RETURN sendbuf = future.get();
-      RETURN recvbuf;
-
-      MPI_Allreduce(
-        &sendbuf, &recvbuf, 1, datatype, reduction_op->second, MPI_COMM_WORLD);
-
-      mpi_future_u<RETURN> gfuture;
-      gfuture.set(recvbuf);
-      return gfuture;
+      future.reduce(reduction_op->second);
+      return future;
     }
     else {
       return future;

@@ -192,7 +192,7 @@ add_colorings(coloring_map_t map) {
     size_t offset(0);
     for(auto i : std::get<0>(cell_nn_info)) {
       if(i.size()) {
-        cells.shared.insert(flecsi::coloring::entity_info_t(
+        cells.shared.emplace_back(flecsi::coloring::entity_info_t(
           primary_indices_map[offset], rank, offset, i));
 
         // Collect all colors with whom we require communication
@@ -201,7 +201,7 @@ add_colorings(coloring_map_t map) {
           flecsi::utils::set_union(cell_color_info.shared_users, i);
       }
       else {
-        cells.exclusive.insert(flecsi::coloring::entity_info_t(
+        cells.exclusive.emplace_back(flecsi::coloring::entity_info_t(
           primary_indices_map[offset], rank, offset, i));
       } // if
       ++offset;
@@ -212,7 +212,7 @@ add_colorings(coloring_map_t map) {
   {
     size_t offset(0);
     for(auto i : std::get<1>(cell_nn_info)) {
-      cells.ghost.insert(i);
+      cells.ghost.emplace_back(i);
 
       // Collect all colors with whom we require communication
       // to receive ghost information.

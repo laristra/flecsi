@@ -1,3 +1,4 @@
+
 /*
     @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
    /@@/////  /@@          @@////@@ @@////// /@@
@@ -38,6 +39,28 @@ namespace flecsi {
 namespace coloring {
 
 clog_register_tag(dcrs_utils);
+
+template<typename T>
+static void
+remove_unique(T & list) {
+  std::sort(list.begin(), list.end());
+  auto last = std::unique(list.begin(), list.end());
+  list.erase(last, list.end());
+};
+
+template<typename T, typename... ARGS>
+static std::pair<typename T::iterator, bool>
+insert(T & list, ARGS... args) {
+  auto e = typename T::value_type{std::forward<ARGS>(args)...};
+  auto it = std::find(list.begin(), list.end(), e);
+  if(it == list.end()) {
+    list.emplace_back(std::move(e));
+    return {std::prev(list.end()), true};
+  }
+  else {
+    return {it, false};
+  }
+}
 
 /*!
  Create a naive coloring suitable for calling a distributed-memory
@@ -308,6 +331,8 @@ alltoallv(const SEND_TYPE & sendbuf,
 
   auto num_ranks = sendcounts.size();
 
+  auto intmax = std::numeric_limits<int>::max() - 1;
+
   // create storage for the requests
   std::vector<MPI_Request> requests;
   requests.reserve(2 * num_ranks);
@@ -317,29 +342,90 @@ alltoallv(const SEND_TYPE & sendbuf,
 
   for(size_t rank = 0; rank < num_ranks; ++rank) {
     auto count = recvcounts[rank];
-    if(count > 0) {
-      auto buf = recvbuf.data() + recvdispls[rank];
+    size_t start = 0;
+    while(count > 0) {
+      auto sz = std::min<size_t>(count, intmax);
+      auto buf = recvbuf.data() + recvdispls[rank] + start;
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
-      auto ret =
-        MPI_Irecv(buf, count, mpi_recv_t, rank, tag, comm, &my_request);
+      auto ret = MPI_Irecv(buf, sz, mpi_recv_t, rank, tag, comm, &my_request);
       if(ret != MPI_SUCCESS)
         return ret;
+      count -= sz;
+      start += sz;
     }
   }
 
   // send the data
   for(size_t rank = 0; rank < num_ranks; ++rank) {
     auto count = sendcounts[rank];
-    if(count > 0) {
-      auto buf = sendbuf.data() + senddispls[rank];
+    size_t start = 0;
+    while(count > 0) {
+      auto sz = std::min<size_t>(count, intmax);
+      auto buf = sendbuf.data() + senddispls[rank] + start;
       requests.resize(requests.size() + 1);
       auto & my_request = requests.back();
-      auto ret =
-        MPI_Isend(buf, count, mpi_send_t, rank, tag, comm, &my_request);
+      auto ret = MPI_Isend(buf, sz, mpi_send_t, rank, tag, comm, &my_request);
       if(ret != MPI_SUCCESS)
         return ret;
+      count -= sz;
+      start += sz;
     }
+  }
+
+  // wait for everything to complete
+  std::vector<MPI_Status> status(requests.size());
+  auto ret = MPI_Waitall(requests.size(), requests.data(), status.data());
+
+  return ret;
+}
+
+template<typename SEND_TYPE, typename ID_TYPE, typename RECV_TYPE>
+auto
+alltoall(const SEND_TYPE & sendbuf,
+  const ID_TYPE & sendcount,
+  RECV_TYPE & recvbuf,
+  const ID_TYPE & recvcount,
+  decltype(MPI_COMM_WORLD) comm) {
+
+  const auto mpi_send_t =
+    utils::mpi_typetraits_u<typename SEND_TYPE::value_type>::type();
+  const auto mpi_recv_t =
+    utils::mpi_typetraits_u<typename RECV_TYPE::value_type>::type();
+
+  int num_ranks;
+  MPI_Comm_size(comm, &num_ranks);
+
+  // create storage for the requests
+  std::vector<MPI_Request> requests;
+  requests.reserve(2 * num_ranks);
+
+  // post receives
+  auto tag = 0;
+
+  size_t count = 0;
+  for(size_t rank = 0; rank < num_ranks; ++rank) {
+    auto buf = recvbuf.data() + count;
+    requests.resize(requests.size() + 1);
+    auto & my_request = requests.back();
+    auto ret =
+      MPI_Irecv(buf, recvcount, mpi_recv_t, rank, tag, comm, &my_request);
+    if(ret != MPI_SUCCESS)
+      return ret;
+    count += recvcount;
+  }
+
+  // send the data
+  count = 0;
+  for(size_t rank = 0; rank < num_ranks; ++rank) {
+    auto buf = sendbuf.data() + count;
+    requests.resize(requests.size() + 1);
+    auto & my_request = requests.back();
+    auto ret =
+      MPI_Isend(buf, sendcount, mpi_send_t, rank, tag, comm, &my_request);
+    if(ret != MPI_SUCCESS)
+      return ret;
+    count += sendcount;
   }
 
   // wait for everything to complete
@@ -432,7 +518,12 @@ make_dcrs_distributed(
   //----------------------------------------------------------------------------
 
   // first figure out the maximum global id on this rank
-  const auto & vertex_local_to_global = md.local_to_global(to_dimension);
+  using conn_t = decltype(md.local_to_global(0));
+  using decayed_conn_t = std::decay_t<conn_t>;
+  decayed_conn_t empty_conn;
+  const auto & vertex_local_to_global = (md.num_entities(to_dimension))
+                                          ? md.local_to_global(to_dimension)
+                                          : empty_conn;
 
   size_t max_global_vert_id{0};
   for(auto v : vertex_local_to_global)
@@ -453,7 +544,13 @@ make_dcrs_distributed(
 
   // essentially vertex to cell connectivity
   std::map<size_t, std::vector<size_t>> vertex2cell;
-  const auto & cells2vertex = md.entities_crs(from_dimension, to_dimension);
+
+  using entities_t = decltype(md.entities_crs(0, 0));
+  using decayed_entities_t = std::decay_t<entities_t>;
+  decayed_entities_t empty_entities;
+  const auto & cells2vertex = (md.num_entities(from_dimension))
+                                ? md.entities_crs(from_dimension, to_dimension)
+                                : empty_entities;
 
   // Travel from the FROM_DIMENSION (cell) to the TO_DIMENSION (other)
   for(size_t ic = 0; ic < num_cells; ++ic) {
@@ -724,6 +821,16 @@ make_dcrs_distributed(
 
 } // make_dcrs
 
+inline bool
+owned_by(const std::vector<size_t> & dist, size_t id, size_t owner) {
+  if(id < dist[owner])
+    return false;
+  else if(id < dist[owner + 1])
+    return true;
+  else
+    return false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief Migrate pieces of a mesh from one processor to another
 ////////////////////////////////////////////////////////////////////////////////
@@ -731,6 +838,7 @@ template<std::size_t DIMENSION>
 void
 migrate(size_t dimension,
   const std::vector<size_t> & partitioning,
+  const std::vector<size_t> & partition_dist,
   dcrs_t & dcrs,
   typename topology::parallel_mesh_definition_u<DIMENSION> & md) {
 
@@ -768,15 +876,16 @@ migrate(size_t dimension,
 
       // the global id
       auto global_id = dcrs.distribution[comm_rank] + local_id;
+      auto partition_id = partitioning[local_id];
 
       //------------------------------------------------------------------------
       // No migration necessary
-      if(partitioning[local_id] == comm_rank) {
+      if(owned_by(partition_dist, partition_id, comm_rank)) {
         // just keep track of the global ids
       }
       //------------------------------------------------------------------------
       // Entity to be migrated
-      else if(partitioning[local_id] == rank) {
+      else if(owned_by(partition_dist, partition_id, rank)) {
         // mark for deletion
         erase_local_ids.emplace_back(local_id);
         // global id
@@ -955,10 +1064,10 @@ get_owner_info(const dcrs_t & dcrs,
         auto ghost_id = neighbor - dcrs.distribution[rank];
         auto e = entity_info_t(neighbor, rank, ghost_id, comm_rank);
         // search for it
-        auto it = entities.ghost.find(e);
+        auto it = std::find(entities.ghost.begin(), entities.ghost.end(), e);
         // if it has not been added, then add it!
         if(it == entities.ghost.end()) {
-          entities.ghost.emplace(e);
+          entities.ghost.emplace_back(e);
           color_info.ghost_owners.insert(rank);
           // num_ghost++;
         }
@@ -969,15 +1078,20 @@ get_owner_info(const dcrs_t & dcrs,
 
     // the original cell is exclusive
     if(shared_ranks.empty()) {
-      entities.exclusive.emplace(entity_info_t(global_id, comm_rank, local_id));
+      entities.exclusive.emplace_back(
+        entity_info_t(global_id, comm_rank, local_id));
     }
     // otherwise it must be shared
     else {
-      entities.shared.emplace(
+      entities.shared.emplace_back(
         entity_info_t(global_id, comm_rank, local_id, shared_ranks));
       color_info.shared_users.insert(shared_ranks.begin(), shared_ranks.end());
     }
   }
+
+  remove_unique(entities.exclusive);
+  remove_unique(entities.shared);
+  remove_unique(entities.ghost);
 
   // store the sizes of each set
   color_info.exclusive = entities.exclusive.size();
@@ -1028,11 +1142,6 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   }
 
   // remove duplicates
-  auto remove_unique = [](auto & list) {
-    std::sort(list.begin(), list.end());
-    auto last = std::unique(list.begin(), list.end());
-    list.erase(last, list.end());
-  };
   remove_unique(potential_shared);
 
   //----------------------------------------------------------------------------
@@ -1423,9 +1532,10 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
   for(size_t local_id = 0; local_id < num_ents; ++local_id) {
     if(exclusive[local_id]) {
       auto global_id = local2global[local_id];
-      entities.exclusive.emplace(global_id, comm_rank, local_id);
+      entities.exclusive.emplace_back(global_id, comm_rank, local_id);
     }
   }
+  remove_unique(entities.exclusive);
 
   // shared and ghost
   for(const auto pair : entities2rank) {
@@ -1434,21 +1544,24 @@ color_entities(const flecsi::coloring::crs_t & cells2entity,
     // if i am the owner, shared
     if(owner.rank == comm_rank) {
       assert(owner.ghost_ranks.size() && "shared/ghost has no ghost ranks!");
-      auto it = entities.shared.emplace(
+      entities.shared.emplace_back(
         global_id, owner.rank, owner.local_id, owner.ghost_ranks);
       color_info.shared_users.insert(
-        it.first->shared.begin(), it.first->shared.end());
+        owner.ghost_ranks.begin(), owner.ghost_ranks.end());
     }
     // otherwise this "may" be a ghost
     else {
       auto is_ghost = std::binary_search(
         potential_ghost.begin(), potential_ghost.end(), global_id);
       if(is_ghost) {
-        auto it = entities.ghost.emplace(global_id, owner.rank, owner.local_id);
-        color_info.ghost_owners.insert(owner.rank);
+        entities.ghost.emplace_back(global_id, owner.rank, owner.local_id);
+        color_info.ghost_owners.emplace(owner.rank);
       } // is ghost
     }
   }
+
+  remove_unique(entities.shared);
+  remove_unique(entities.ghost);
 
   // entitiy summaries
   color_info.exclusive = entities.exclusive.size();
@@ -1871,6 +1984,38 @@ ghost_connectivity(
 
   ghost_connectivity(
     from2to, to_local2global, from_entities, from_ids, connectivity);
+}
+
+static MPI_Comm
+create_communicator(MPI_Comm parent_comm, bool flag) {
+  int parent_size, parent_rank;
+  MPI_Comm_size(parent_comm, &parent_size);
+  MPI_Comm_rank(parent_comm, &parent_rank);
+
+  std::vector<char> rank_flags(parent_size);
+  MPI_Allgather(
+    &flag, 1, MPI_CHAR, rank_flags.data(), 1, MPI_CHAR, parent_comm);
+
+  size_t num_ranks = 0;
+  for(auto i : rank_flags)
+    if(i)
+      num_ranks++;
+
+  std::vector<int> included_ranks;
+  included_ranks.reserve(num_ranks);
+  for(unsigned i = 0; i < parent_size; ++i)
+    if(rank_flags[i])
+      included_ranks.emplace_back(i);
+
+  MPI_Group parent_group;
+  MPI_Comm_group(parent_comm, &parent_group);
+
+  MPI_Group new_group;
+  MPI_Group_incl(parent_group, num_ranks, included_ranks.data(), &new_group);
+
+  MPI_Comm new_comm;
+  MPI_Comm_create_group(parent_comm, new_group, 0, &new_comm);
+  return new_comm;
 }
 
 } // namespace coloring

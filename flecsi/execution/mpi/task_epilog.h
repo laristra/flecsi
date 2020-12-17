@@ -114,8 +114,7 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
 #else
     auto & context = context_t::instance();
 
-    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
-                 (GHOST_PERMISSIONS == wo))
+    if constexpr((GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo))
       *(h.ghost_is_readable) = true;
     else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo)
       *(h.ghost_is_readable) = false;
@@ -267,11 +266,10 @@ struct task_epilog_t : public flecsi::utils::tuple_walker_u<task_epilog_t> {
       delete[] ghost_data;
     } // else
 #else
-    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
-                 (GHOST_PERMISSIONS == wo)) {
+    if constexpr((GHOST_PERMISSIONS == rw) || (GHOST_PERMISSIONS == wo)) {
       *(h.ghost_is_readable) = true;
     }
-    else {
+    else if(SHARED_PERMISSIONS == rw || SHARED_PERMISSIONS == wo) {
       *(h.ghost_is_readable) = false;
     }
 #endif

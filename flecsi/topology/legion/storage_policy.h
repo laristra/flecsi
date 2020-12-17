@@ -31,7 +31,7 @@
 #include <flecsi/topology/index_space.h>
 #include <flecsi/topology/mesh_storage.h>
 #include <flecsi/topology/mesh_types.h>
-#include <flecsi/utils/id.h>
+#include <flecsi/topology/mesh_utils.h>
 
 namespace flecsi {
 namespace topology {
@@ -50,16 +50,25 @@ struct legion_topology_storage_policy_t_u {
 
   using id_t = utils::id_t;
 
-  using storage_t =
-    index_space_u<mesh_entity_base_, topology_storage_u, entity_storage_t>;
+  using storage_t = index_space_u<mesh_entity_base_,
+    mesh_entity_base_::id_t,
+    topology_storage_u,
+    entity_storage_t>;
+
+  using id_storage_t = index_space_u<mesh_entity_base_,
+    utils::indices_t,
+    topology_storage_u,
+    entity_storage_t>;
 
   using index_spaces_t = std::array<storage_t, NUM_DIMS + 1>;
 
-  using index_subspaces_t = std::array<storage_t, NUM_INDEX_SUBSPACES>;
+  using index_subspaces_t = std::array<id_storage_t, NUM_INDEX_SUBSPACES>;
 
-  using partition_index_spaces_t =
-    std::array<index_space_u<mesh_entity_base_, utils::span, entity_storage_t>,
-      NUM_DIMS + 1>;
+  using partition_index_spaces_t = std::array<index_space_u<mesh_entity_base_,
+                                                mesh_entity_base_::id_t,
+                                                utils::span,
+                                                entity_storage_t>,
+    NUM_DIMS + 1>;
 
   // array of array of domain_connectivity_u
   std::array<std::array<domain_connectivity_u<NUM_DIMS>, NUM_DOMAINS>,
@@ -140,7 +149,7 @@ struct legion_topology_storage_policy_t_u {
     size_t index_subspace,
     size_t domain,
     size_t dim,
-    utils::id_t * ids,
+    utils::indices_t * ids,
     size_t num_entities,
     bool read) {
 
@@ -169,7 +178,7 @@ struct legion_topology_storage_policy_t_u {
     size_t to_dim,
     utils::offset_t * offsets,
     size_t num_offsets,
-    utils::id_t * indices,
+    utils::indices_t * indices,
     size_t num_indices,
     bool read) {
     // TODO - this is an initial implementation for testing purposes.
@@ -181,7 +190,7 @@ struct legion_topology_storage_policy_t_u {
     auto & id_storage = conn.get_index_space().ids;
     id_storage = full_array(indices, num_indices, read);
 
-    conn.offsets().storage() = full_array(offsets, num_offsets, read);
+    conn.offsets().storage() = full_array(offsets, num_offsets + 1, read);
   } // init_connectivities
 
   template<class T, size_t DOM, class... ARG_TYPES>

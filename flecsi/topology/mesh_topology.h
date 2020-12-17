@@ -543,6 +543,7 @@ public:
   //!
   //! @param e from entity
   //--------------------------------------------------------------------------//
+  // mutable std::set<std::vector<size_t>> asked_;
   template<size_t DIM,
     size_t FROM_DOM,
     size_t TO_DOM = FROM_DOM,
@@ -555,6 +556,10 @@ public:
 
     using etype = entity_type<DIM, TO_DOM>;
     using dtype = domain_entity_u<TO_DOM, etype>;
+    // auto res = asked_.emplace(std::vector<size_t>{FROM_DOM,
+    // ENT_TYPE::dimension, TO_DOM, DIM}); if (res.second) std::cout << "asking
+    // for from (" << FROM_DOM << ", " << ENT_TYPE::dimension << ") to (" <<
+    // TO_DOM << ", " << DIM << ")" << std::endl;
 
     return xform<dtype>(
       c.get_index_space().cast<etype>().slice(c.range(e->id())));
@@ -1046,12 +1051,25 @@ private:
   template<size_t, size_t, class>
   friend struct compute_bindings_u;
 
-  template<class D, class IS>
+  template<class D,
+    class IS,
+    std::enable_if_t<std::is_same_v<utils::id_t, typename IS::id_t>> * =
+      nullptr>
   FLECSI_INLINE_TARGET static auto xform(IS && is) {
     // We depend on the fact that is.ids does not own its iterators/elements.
     return utils::transform_view(
       is.ids, [d = std::forward<IS>(is).data](
-                const auto & i) { return D(&d[i.index_space_index()]); });
+                const auto & i) { return D(&d[i.entity()]); });
+  }
+
+  template<class D,
+    class IS,
+    typename = typename std::enable_if_t<
+      !std::is_same_v<utils::id_t, typename IS::id_t>>>
+  FLECSI_INLINE_TARGET static auto xform(IS && is) {
+    // We depend on the fact that is.ids does not own its iterators/elements.
+    return utils::transform_view(is.ids,
+      [d = std::forward<IS>(is).data](const auto & i) { return D(&d[i]); });
   }
 
   template<size_t DOM, typename VERT_TYPE>
@@ -1062,7 +1080,7 @@ private:
     assert(cell->id() == c.from_size() && "id mismatch");
 
     for(entity_type<0, DOM> * v : std::forward<VERT_TYPE>(verts)) {
-      c.push(v->global_id());
+      c.push(v->global_id().entity());
     } // for
 
     c.add_count(static_cast<std::uint32_t>(verts.size()));
@@ -1075,7 +1093,7 @@ private:
     assert(super->id() == c.from_size() && "id mismatch");
 
     for(auto e : std::forward<ENT_TYPE2>(subs)) {
-      c.push(e->global_id());
+      c.push(e->global_id().entity());
     } // for
 
     c.add_count(subs.size());
@@ -1093,7 +1111,7 @@ private:
     assert(super->id() == c.from_size() && "id mismatch");
 
     for(auto e : std::forward<ENT_TYPE2>(subs)) {
-      c.push(e->global_id());
+      c.push(e->global_id().entity());
     } // for
 
     c.add_count(subs.size());
@@ -1180,6 +1198,23 @@ private:
     // created multiple times, i.e., that they are unique.  The
     // emplace method of the map is used to only define a new entity
     // if it does not already exist in the map.
+
+    // hash use for mapping in building topology connectivity
+    struct id_vector_hash_t {
+      size_t operator()(const std::vector<id_t> & v) const {
+        size_t h = 0;
+        for(auto id : v) {
+          h |= static_cast<size_t>(id.entity());
+        } // for
+
+        return h;
+      } // operator()
+    }; // struct id_vector_hash_t
+
+    // used when building the topology connectivities
+    using id_vector_map_t =
+      std::unordered_map<std::vector<id_t>, id_t, id_vector_hash_t>;
+
     id_vector_map_t entity_vertices_map;
 
     // This buffer should be large enough to hold all entities
@@ -1262,7 +1297,7 @@ private:
         // a pointer to the vector-of-vector data and then constructing
         // a vector of ids for only this entity.
         id_t * a = &entity_vertices[pos];
-        id_vector_t ev(a, a + m);
+        std::vector<id_t> ev(a, a + m);
 
         // Sort the ids for the current entity so that they are
         // monotonically increasing. This ensures that entities are
@@ -1320,13 +1355,15 @@ private:
           id_t::make<DimensionToBuild, Domain>(entity_id, cell_id.partition()));
 
         // Add this id to the cell to entity connections
-        conns.push_back(itr.first->second);
+        conns.push_back(itr.first->second.entity());
 
         // If the insertion took place
         if(itr.second) {
 
           // what does this do?
-          id_vector_t ev2 = id_vector_t(a, a + m);
+          auto ev2 = id_vector_t(m);
+          for(unsigned i = 0; i < m; ++i)
+            ev2[i] = (a + i)->entity();
           entity_vertex_conn.emplace_back(std::move(ev2));
           entity_ids.emplace_back(entity_id);
 
@@ -1355,7 +1392,7 @@ private:
 
     // Set the connectivity information from the created entities to
     // the vertices.
-    connectivity_t & entity_to_vertex = dc.template get<DimensionToBuild>(0);
+    auto & entity_to_vertex = dc.template get<DimensionToBuild>(0);
     entity_to_vertex.init(entity_vertex_conn);
     cell_to_entity.init(cell_entity_conn);
   } // build_connectivity
@@ -1388,8 +1425,8 @@ private:
 
     // Count how many connectivities go into each slot
     for(auto to_entity : to_entities) {
-      for(id_t from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
-        ++pos[from_id.entity()];
+      for(auto from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
+        ++pos[from_id];
       }
     }
 
@@ -1399,9 +1436,8 @@ private:
 
     // now do the actual transpose
     for(auto to_entity : to_entities) {
-      for(auto from_id : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
-        auto from_lid = from_id.entity();
-        out_conn.set(from_lid, to_entity->global_id(), pos[from_lid]++);
+      for(auto from_lid : entity_ids<FROM_DIM, TO_DOM, FROM_DOM>(to_entity)) {
+        out_conn.set(from_lid, to_entity, pos[from_lid]++);
       }
     }
 
@@ -1418,6 +1454,7 @@ private:
       typename MESH_TYPE::entity_types, TO_DIM, TO_DOM>::find();
 
     const auto & to_cis_to_gis = context_.index_map(to_index_space);
+    const auto & to_ids = entity_ids<TO_DIM, TO_DOM>();
 
     // do the final sort of the connectivity arrays
     for(auto from_id : entity_ids<FROM_DIM, FROM_DOM>()) {
@@ -1426,14 +1463,15 @@ private:
       // pack it into a list of id and global id pairs
       std::vector<std::pair<std::size_t, id_t>> gids(conn.size());
       std::transform(conn.begin(), conn.end(), gids.begin(), [&](auto id) {
-        return std::make_pair(to_cis_to_gis.at(id.entity()), id);
+        auto gid = to_ids[id];
+        return std::make_pair(to_cis_to_gis.at(id), gid);
       });
       // sort via global id
       std::sort(gids.begin(), gids.end(),
         [](auto a, auto b) { return a.first < b.first; });
       // upack the results
       std::transform(gids.begin(), gids.end(), conn.begin(),
-        [](auto id_pair) { return id_pair.second; });
+        [](auto id_pair) { return id_pair.second.entity(); });
     }
   } // transpose
 
@@ -1499,31 +1537,31 @@ private:
 
       // initially set all to id's to unvisited
       for(auto from_ent2 : entities<DIM, FROM_DOM>(from_entity)) {
-        for(id_t to_id : entity_ids<TO_DIM, TO_DOM>(from_ent2)) {
-          visited[to_id.entity()] = false;
+        for(auto to_id : entity_ids<TO_DIM, TO_DOM>(from_ent2)) {
+          visited[to_id] = false;
         }
       }
 
       // Loop through each from entity again
       for(auto from_ent2 : entities<DIM, FROM_DOM>(from_entity)) {
-        for(id_t to_id : entity_ids<TO_DIM, TO_DOM>(from_ent2)) {
+        for(auto to_id : entity_ids<TO_DIM, TO_DOM>(from_ent2)) {
 
           // If we have already visited, skip
-          if(visited[to_id.entity()]) {
+          if(visited[to_id]) {
             continue;
           } // if
 
-          visited[to_id.entity()] = true;
+          visited[to_id] = true;
 
           // If the topological dimensions are the same, always add to id
           if(FROM_DIM == TO_DIM) {
-            if(from_id != to_id) {
+            if(from_id.entity() != to_id) {
               ents.push_back(to_id);
             } // if
           }
           else {
             // Create a copy of to vertices so they can be sorted
-            auto to_verts = c2.get_entities_vec(to_id.entity());
+            auto to_verts = c2.get_entities_vec(to_id);
             // Sort to verts so we can do an inclusion check
             std::sort(to_verts.begin(), to_verts.end());
 
@@ -1893,7 +1931,7 @@ private:
           auto dom = connection_id.domain();
 
           // add it to the main list
-          connected_entities.push_back(connection_id);
+          connected_entities.push_back(connection_id.entity());
 
           // if domain is the same as from domain, the connected item is part
           // of the primal mesh
@@ -1940,7 +1978,7 @@ private:
           id_t::make<TO_DIM, TO_DOM>(new_binding_id_cis, color);
 
         // Add this id to the cell entity connections
-        this_cell_to_binding_conn.push_back(new_binding_id);
+        this_cell_to_binding_conn.push_back(new_binding_id.entity());
 
         // now buid the new entity
         auto ent = MESH_TYPE::template create_entity<TO_DOM, TO_DIM>(
@@ -1954,8 +1992,11 @@ private:
         for(auto connection_id : connected_entities) {
 
           // get domain and dimension again
-          auto dim = connection_id.dimension();
-          auto dom = connection_id.domain();
+          // FIXME - BROKEN FOR MILESTONE
+          auto dim = 1; // connection_id.dimension();
+          auto dom = 0; // connection_id.domain();
+          std::cerr << "BROKEN FOR MILESTONE" << std::endl;
+          abort();
 
           // search the map for this particular connectivity info, if its
           // not found, create it
@@ -1995,8 +2036,9 @@ private:
       auto & binding_to_entity = binding_pair.second;
       // domain and dimension is encoded in the ids
       const auto & first = binding_to_entity.at(0).at(0);
-      auto dom = first.domain();
-      auto dim = first.dimension();
+      // FIXME - BROKEN FOR MILESTONE
+      auto dom = 1; // first.domain();
+      auto dim = 0; // first.dimension();
       // initialize the connectivity
       get_connectivity_(TO_DOM, dom, TO_DIM, dim)
         .init(std::move(binding_to_entity));

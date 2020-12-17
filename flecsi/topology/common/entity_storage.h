@@ -35,24 +35,23 @@ public:
   }
 
   void add_count(uint32_t count) {
-    offset_t o(start_, count);
-    s_.push_back(o);
-    start_ += count;
+    if(s_.empty())
+      s_.push_back(0);
+    s_.push_back(s_.back() + count);
   }
 
   void add_end(size_t end) {
-    assert(end > start_);
-    add_count(static_cast<uint32_t>(end - start_));
+    assert(end > s_.back());
+    add_count(static_cast<uint32_t>(end - s_.back()));
   }
 
   FLECSI_INLINE_TARGET
   std::pair<size_t, size_t> range(size_t i) const {
-    return s_[i].range();
+    return {s_[i], s_[i + 1]};
   }
 
   void clear() {
     s_.clear();
-    start_ = 0;
   }
 
   auto & storage() {
@@ -69,7 +68,6 @@ public:
 
 private:
   topology_storage_u<offset_t> s_;
-  size_t start_ = 0;
 };
 
 template<typename T>

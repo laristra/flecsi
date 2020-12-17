@@ -22,6 +22,7 @@ flecsi_register_operation_types(sum);
 flecsi_register_operation_types(min);
 flecsi_register_operation_types(max);
 flecsi_register_operation_types(product);
+
 } // namespace reduction
 } // namespace execution
 } // namespace flecsi

@@ -23,7 +23,34 @@
 #include <legion.h>
 
 clog_register_tag(reduction_wrapper);
+namespace Legion {
 
+template<typename T, std::size_t N>
+struct SumReduction<std::array<T, N>> {
+
+  // using array_t = std::array<T, N>;
+  using LHS = std::array<T, N>;
+  using RHS = std::array<T, N>;
+  using value_type = T;
+  static constexpr std::array<T, N> identity{};
+
+  template<bool EXCLUSIVE = true>
+  static void apply(LHS & lhs, RHS rhs) {
+    for(size_t i = 0; i < N; i++) {
+      Legion::SumReduction<T>::template apply<EXCLUSIVE>(lhs.at(i), rhs.at(i));
+    }
+  } // apply
+
+  template<bool EXCLUSIVE = true>
+  static void fold(LHS & lhs, RHS rhs) {
+
+    for(size_t i = 0; i < N; i++) {
+      Legion::SumReduction<T>::template fold<EXCLUSIVE>(lhs.at(i), rhs.at(i));
+    }
+  } // fold
+
+}; // sum
+} // namespace Legion
 namespace flecsi {
 namespace execution {
 
@@ -67,6 +94,7 @@ struct reduction_wrapper_u {
 }; // struct reduction_wrapper_u
 
 namespace reduction {
+
 template<typename T>
 using sum = Legion::SumReduction<T>;
 template<typename T>
@@ -75,6 +103,7 @@ template<typename T>
 using max = Legion::MaxReduction<T>;
 template<typename T>
 using product = Legion::ProdReduction<T>;
+
 // TODO:  Legion Provides additonal reductions that we're not using:
 //  diff, div, or, and, xor.
 } // namespace reduction

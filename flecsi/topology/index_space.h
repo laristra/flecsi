@@ -35,6 +35,7 @@ struct view_tag {}; // indicates that a type can be copied cheaply
 //! @ingroup topology
 //----------------------------------------------------------------------------//
 template<class T,
+  class W,
   template<typename, typename...> class ID_STORAGE_TYPE = flecsi::vector,
   template<typename, typename...> class STORAGE_TYPE = ID_STORAGE_TYPE>
 class index_space_u
@@ -44,7 +45,7 @@ class index_space_u
 
 public:
   //! ID type
-  using id_t = copy_const<T, typename std::remove_pointer<T>::type::id_t>;
+  using id_t = copy_const<T, W>;
 
   //! ID storage type
   using id_storage_t = ID_STORAGE_TYPE<id_t>;
@@ -133,15 +134,17 @@ public:
 private:
   // We duplicate the template-id to avoid generating additional
   // specializations that involve a member alias template.
-  template<class U = T, bool View = std::is_base_of_v<view_tag, id_storage_t>>
+  template<class U = T,
+    class V = W,
+    bool View = std::is_base_of_v<view_tag, id_storage_t>>
   using rebind = std::conditional_t<
     std::is_convertible_v<decltype(data), utils::vector_ref<U>>,
     std::conditional_t<View,
-      index_space_u<U, ID_STORAGE_TYPE, utils::vector_ref>,
-      index_space_u<U, utils::span, utils::vector_ref>>,
+      index_space_u<U, W, ID_STORAGE_TYPE, utils::vector_ref>,
+      index_space_u<U, W, utils::span, utils::vector_ref>>,
     std::conditional_t<View,
-      index_space_u<U, ID_STORAGE_TYPE, utils::span>,
-      index_space_u<U, utils::span, utils::span>>>;
+      index_space_u<U, W, ID_STORAGE_TYPE, utils::span>,
+      index_space_u<U, W, utils::span, utils::span>>>;
 
   template<class U>
   T & append(U && item) {

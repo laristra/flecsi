@@ -41,7 +41,8 @@ struct colorer_t {
    */
 
   virtual std::set<size_t> color(const dcrs_t & dcrs) = 0;
-  virtual std::vector<size_t> new_color(const dcrs_t & dcrs) = 0;
+  virtual std::vector<size_t> new_color(size_t num_parts,
+    const dcrs_t & dcrs) = 0;
 
 }; // class colorer_t
 
