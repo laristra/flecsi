@@ -77,6 +77,7 @@ class Flecsi(CMakePackage):
     depends_on('doxygen', when='+doxygen')
     depends_on('llvm', when='+flecstan')
     depends_on('pfunit@3.0:3.99')
+    depends_on('py-gcovr', when='+coverage')
 
     conflicts('+tutorial', when='backend=hpx')
     # conflicts('+hdf5', when='backend=hpx')
