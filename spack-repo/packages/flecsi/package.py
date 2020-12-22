@@ -20,8 +20,8 @@ class Flecsi(CMakePackage):
     git      = 'https://github.com/laristra/flecsi.git'
 
     version('devel', branch='devel', submodules=False, preferred=False)
-    version('1', branch='1', submodules=False, preferred=True)
-    version('1.4', branch='1.4', submodules=False, preferred=False)
+    version('1', branch='1', submodules=False, preferred=False)
+    version('1.4', branch='1.4', submodules=False, preferred=True)
 
     variant('build_type', default='Release',
             values=('Debug', 'Release', 'RelWithDebInfo', 'MinSizeRel'),
@@ -71,11 +71,13 @@ class Flecsi(CMakePackage):
     depends_on('parmetis@4.0.3:')
     depends_on('googletest@1.8.1+gmock')
     depends_on('hdf5+hl+mpi', when='+hdf5')
-    depends_on('caliper', when='+caliper')
+    depends_on('caliper@2.0.1~adiak', when='+caliper')
     depends_on('graphviz', when='+graphviz')
     depends_on('python@3.0:', when='+tutorial')
     depends_on('doxygen', when='+doxygen')
     depends_on('llvm', when='+flecstan')
+    depends_on('pfunit@3.0:3.99')
+    depends_on('py-gcovr', when='+coverage')
 
     conflicts('+tutorial', when='backend=hpx')
     # conflicts('+hdf5', when='backend=hpx')
@@ -92,7 +94,6 @@ class Flecsi(CMakePackage):
 
         if '+cinch' in spec:
             options.append('-DCINCH_SOURCE_DIR=' + spec['cinch'].prefix)
-
 
         if spec.variants['backend'].value == 'legion':
             options.append('-DFLECSI_RUNTIME_MODEL=legion')
@@ -159,4 +160,3 @@ class Flecsi(CMakePackage):
             options.append('-DENABLE_COVERAGE_BUILD=OFF')
 
         return options
-
