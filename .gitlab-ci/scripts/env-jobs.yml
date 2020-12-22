@@ -25,8 +25,8 @@
   script:
     - cd ${CI_PROJECT_DIR}
     - module load gcc/${FLECSI_GCC_VERSION}
-    - git clone https://github.com/laristra/ristra_spackages.git
-    - git clone git@gitlab.lanl.gov:laristra/ristra-spack-configurations.git
+    - git clone https://${RISTRA_SPACKAGES_USERNAME}:${RISTRA_SPACKAGES_PASSWORD}@gitlab.lanl.gov/laristra/ristra_spackages.git
+    - git clone https://${RISTRA_SPACK_CONFIG_USERNAME}:${RISTRA_SPACK_CONFIG_PASSWORD}@gitlab.lanl.gov/laristra/ristra-spack-configurations.git
     - echo 'Spack Version:' ${FLECSI_SPACK_REF}
     - git clone ${FLECSI_SPACK_REPO}
     - cd spack && git checkout ${FLECSI_SPACK_REF} && cd ${CI_PROJECT_DIR}
