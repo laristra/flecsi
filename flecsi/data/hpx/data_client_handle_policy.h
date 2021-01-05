@@ -105,7 +105,7 @@ struct hpx_data_client_handle_policy_t {
   data_client_handle_index_subspace_t
     handle_index_subspaces[MAX_INDEX_SUBSPACES];
 
-  execution::hpx_future_u<void> future;
+  execution::hpx_future_u<void>* future = nullptr;
 
 }; // struct data_client_handle_policy_t
 

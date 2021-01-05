@@ -184,6 +184,11 @@ struct storage_class_u<global> {
     h.global = true;
     h.state = context.execution_state();
 
+    auto& registered_field_futures = context.registered_field_futures();
+    h.future = &registered_field_futures[field_info.fid];
+
+    h.ghost_is_readable = nullptr;
+
     return h;
   }
 

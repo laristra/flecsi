@@ -378,6 +378,15 @@ struct data_client_policy_handler_u<topology::mesh_topology_u<POLICY_TYPE>> {
         *ent.ghost_id_updated = false;
       }
 #endif
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+      auto ritr = ism.find(ent.index_space);
+      clog_assert(ritr != ism.end(), "invalid index space " << ei.index_space);
+
+      // make client handle depend on only one of the fields
+      if(h.future == nullptr) {
+        h.future = &(ritr->second.future[ent.fid]);
+      }
+#endif
 
       ++entity_index;
     } // for

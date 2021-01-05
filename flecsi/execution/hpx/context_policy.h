@@ -49,6 +49,7 @@
 #include <flecsi/utils/export_definitions.h>
 #include <flecsi/utils/mpi_type_traits.h>
 
+#include <flecsi/execution/hpx/future.h>
 #include <flecsi/utils/const_string.h>
 
 namespace flecsi {
@@ -197,6 +198,7 @@ struct hpx_context_policy_t {
 
   struct index_space_data_t {
     std::map<field_id_t, bool> ghost_is_readable;
+    std::map<field_id_t, execution::hpx_future_u<void>> future;
   };
 
   struct index_subspace_data_t {
@@ -629,6 +631,7 @@ struct hpx_context_policy_t {
     auto it = field_data.find(fid);
     if(it == field_data.end()) {
       field_data.insert({fid, std::vector<uint8_t>(size)});
+      field_futures.insert({fid, execution::hpx_future_u<void>{}});
     }
     else {
       it->second.resize(size);
@@ -637,6 +640,11 @@ struct hpx_context_policy_t {
 
   std::map<field_id_t, std::vector<uint8_t>> & registered_field_data() {
     return field_data;
+  }
+
+  std::map<field_id_t, execution::hpx_future_u<void>> &
+  registered_field_futures() {
+    return field_futures;
   }
 
   /*!
@@ -820,6 +828,7 @@ public:
 
   std::map<field_id_t, std::vector<uint8_t>> field_data;
   std::map<field_id_t, field_metadata_t> field_metadata;
+  std::map<field_id_t, execution::hpx_future_u<void>> field_futures;
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, index_subspace_data_t> index_subspace_data_map_;

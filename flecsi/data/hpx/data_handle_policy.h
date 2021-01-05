@@ -25,7 +25,7 @@ struct hpx_data_handle_policy_t {
   size_t data_client_hash;
   bool * ghost_is_readable;
 
-  execution::hpx_future_u<void> future;
+  execution::hpx_future_u<void>* future = nullptr;
 
 }; // class mpi_data_handle_policy_t
 

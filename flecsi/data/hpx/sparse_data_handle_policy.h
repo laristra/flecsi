@@ -23,7 +23,7 @@ struct hpx_sparse_data_handle_policy_t {
   field_id_t fid;
   bool * ghost_is_readable;
 
-  execution::hpx_future_u<void> future;
+  execution::hpx_future_u<void>* future = nullptr;
 
 }; // class mpi_sparse_data_handle_policy_t
 

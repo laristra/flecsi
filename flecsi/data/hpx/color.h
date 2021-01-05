@@ -183,6 +183,11 @@ struct storage_class_u<storage_label_type_t::color> {
     h.color = true;
     h.state = context.execution_state();
 
+    auto& registered_field_futures = context.registered_field_futures();
+    h.future = &registered_field_futures[field_info.fid];
+
+    h.ghost_is_readable = nullptr;
+
     return h;
   }
 

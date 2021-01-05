@@ -91,12 +91,10 @@ struct task_add_dependencies_t
       GHOST_PERMISSIONS> &) {
 
     // Skip Read Only handles
-    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
-                 (GHOST_PERMISSIONS == wo)) {
-      return;
-    }
-    else {
-      a.future = future;
+    if constexpr((EXCLUSIVE_PERMISSIONS != ro && EXCLUSIVE_PERMISSIONS != na) ||
+                 (SHARED_PERMISSIONS != ro && SHARED_PERMISSIONS != na) ||
+                 (GHOST_PERMISSIONS != ro && GHOST_PERMISSIONS != na)) {
+      *a.future = future;
       has_dependencies = true;
     }
   } // handle
@@ -104,9 +102,22 @@ struct task_add_dependencies_t
   template<typename Global, typename T, size_t PERMISSIONS>
   void handle(Global & a, global_accessor_u<T, PERMISSIONS> &) {
     // Skip Read Only handles
-    if constexpr(PERMISSIONS != ro) {
-      a.future = future;
-      has_dependencies = true;
+    if constexpr(PERMISSIONS != ro && PERMISSIONS != na) {
+      if(a.future != nullptr) {
+        *a.future = future;
+        has_dependencies = true;
+      }
+    }
+  } // handle
+
+  template<typename Local, typename T, size_t PERMISSIONS>
+  void handle(Local & a, color_accessor_u<T, PERMISSIONS> &) {
+    // Skip Read Only handles
+    if constexpr(PERMISSIONS != ro && PERMISSIONS != na) {
+      if(a.future != nullptr) {
+        *a.future = future;
+        has_dependencies = true;
+      }
     }
   } // handle
 
@@ -122,12 +133,10 @@ struct task_add_dependencies_t
       GHOST_PERMISSIONS> &) {
 
     // Skip Read Only handles
-    if constexpr((SHARED_PERMISSIONS == ro) || (GHOST_PERMISSIONS == rw) ||
-                 (GHOST_PERMISSIONS == wo)) {
-      return;
-    }
-    else {
-      a.future = future;
+    if constexpr((EXCLUSIVE_PERMISSIONS != ro && EXCLUSIVE_PERMISSIONS != na) ||
+                 (SHARED_PERMISSIONS != ro && SHARED_PERMISSIONS != na) ||
+                 (GHOST_PERMISSIONS != ro && GHOST_PERMISSIONS != na)) {
+      *a.future = future;
       has_dependencies = true;
     }
   } // handle
@@ -147,13 +156,13 @@ struct task_add_dependencies_t
 
   template<typename Ragged, typename T2>
   void handle(Ragged & r1, ragged_mutator<T2> & r2) {
-    r1.future = future;
+    *r1.future = future;
     has_dependencies = true;
   }
 
   template<typename Sparse, typename T2>
   void handle(Sparse & m1, sparse_mutator<T2> & m2) {
-    m1.future = future;
+    *m1.future = future;
     has_dependencies = true;
   }
 
@@ -161,11 +170,8 @@ struct task_add_dependencies_t
   void handle(Client & h, data_client_handle_u<T, PERMISSIONS> &) {
 
     // Skip Read Only handles
-    if constexpr(PERMISSIONS == ro) {
-      return;
-    }
-    else {
-      h.future = future;
+    if constexpr(PERMISSIONS != ro && PERMISSIONS != na) {
+      *h.future = future;
       has_dependencies = true;
     }
   }

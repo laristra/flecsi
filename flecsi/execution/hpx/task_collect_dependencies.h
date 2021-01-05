@@ -88,8 +88,9 @@ struct task_collect_dependencies_t
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    if(h.future.valid()) {
-      dependencies_.push_back(h.future);
+    clog_assert(h.future != nullptr, "invalid future handle");
+    if(h.future->valid()) {
+      dependencies_.push_back(*h.future);
     }
   } // handle
 
@@ -97,8 +98,19 @@ struct task_collect_dependencies_t
   void handle(global_accessor_u<T, PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    if(h.future.valid()) {
-      dependencies_.push_back(h.future);
+    clog_assert(h.future != nullptr, "invalid future handle");
+    if(h.future->valid()) {
+      dependencies_.push_back(*h.future);
+    }
+  } // handle
+
+  template<typename T, size_t PERMISSIONS>
+  void handle(color_accessor_u<T, PERMISSIONS> & a) {
+    auto & h = a.handle;
+
+    clog_assert(h.future != nullptr, "invalid future handle");
+    if(h.future->valid()) {
+      dependencies_.push_back(*h.future);
     }
   } // handle
 
@@ -112,8 +124,9 @@ struct task_collect_dependencies_t
     GHOST_PERMISSIONS> & a) {
     auto & h = a.handle;
 
-    if(h.future.valid()) {
-      dependencies_.push_back(h.future);
+    clog_assert(h.future != nullptr, "invalid future handle");
+    if(h.future->valid()) {
+      dependencies_.push_back(*h.future);
     }
   } // handle
 
@@ -141,8 +154,9 @@ struct task_collect_dependencies_t
   template<typename T, size_t PERMISSIONS>
   void handle(data_client_handle_u<T, PERMISSIONS> h) {
 
-    if(h.future.valid()) {
-      dependencies_.push_back(h.future);
+    clog_assert(h.future != nullptr, "invalid future handle");
+    if(h.future->valid()) {
+      dependencies_.push_back(*h.future);
     }
   }
 
