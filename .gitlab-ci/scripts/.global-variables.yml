@@ -29,4 +29,4 @@ variables:
   FLECSI_PYTHON_VERSION: "3.5.1"
   FLECSI_SPACK_SPEC: "flecsi@1.4%gcc@${FLECSI_GCC_VERSION}+doxygen+coverage backend=${FLECSI_RUNTIME}"
   FLECSI_SPACK_REPO: "https://github.com/spack/spack.git"
-  FLECSI_SPACK_REF: "v0.15.3"
+  FLECSI_SPACK_REF: "v0.15.4"
