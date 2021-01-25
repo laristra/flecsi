@@ -1,12 +1,18 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*
+    @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+   /@@/////  /@@          @@////@@ @@////// /@@
+   /@@       /@@  @@@@@  @@    // /@@       /@@
+   /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+   /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+   /@@       /@@/@@//// //@@    @@       /@@/@@
+   /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+   //       ///  //////   //////  ////////  //
 
-//----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Jul 26, 2016
-//----------------------------------------------------------------------------//
+   Copyright (c) 2016, Los Alamos National Security, LLC
+   All rights reserved.
+                                                                              */
+
+/*! @file */
 
 #include <flecsi-config.h>
 
@@ -18,52 +24,58 @@
 #include <hpx/hpx_init.hpp>
 
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <flecsi/execution/hpx/context_policy.h>
-
 #include <flecsi/data/storage.h>
+#include <flecsi/execution/hpx/context_policy.h>
 
 namespace flecsi {
 namespace execution {
 
-hpx_context_policy_t::hpx_context_policy_t()
-  : min_reduction_{0}, max_reduction_{0} {
+//----------------------------------------------------------------------------//
+// Implementation of hpx_context_policy_t.
+//----------------------------------------------------------------------------//
+
+hpx_context_policy_t::hpx_context_policy_t() {
 #if defined(_MSC_VER)
   hpx::detail::init_winsocket();
 #endif
-}
+} // namespace execution
 
 // Return the color for which the context was initialized.
 size_t
 hpx_context_policy_t::color() const {
-  return hpx::get_locality_id();
+  return color_;
+}
+
+// Return the number of colors.
+size_t
+hpx_context_policy_t::colors() const {
+  return colors_;
 }
 
 // Main HPX thread, does nothing but wait for the application to exit
 int
-hpx_context_policy_t::hpx_main(int (*driver)(int, char *[]),
+hpx_context_policy_t::hpx_main(void (*driver)(int, char *[]),
   int argc,
   char * argv[]) {
 
-  // initialize executors (possible only after runtime is active)
-  exec_ = flecsi::execution::pool_executor{"default"};
-  mpi_exec_ = flecsi::execution::pool_executor{"mpi"};
+  MPI_Comm_rank(MPI_COMM_WORLD, &color_);
+  MPI_Comm_size(MPI_COMM_WORLD, &colors_);
 
   // execute user code (driver)
-  int retval = (*driver)(argc, argv);
+  (*driver)(argc, argv);
 
   // tell the runtime it's ok to exit
-  hpx::finalize();
-
-  return retval;
+  return hpx::finalize();
 }
 
 int
-hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
+hpx_context_policy_t::start_hpx(void (*driver)(int, char *[]),
   int argc,
   char * argv[]) {
 
@@ -77,29 +89,15 @@ hpx_context_policy_t::start_hpx(int (*driver)(int, char *[]),
     // disable HPX' short options
     "hpx.commandline.aliasing!=0"};
 
-  auto init_rp = [](hpx::resource::partitioner & rp) {
-    // Create a thread pool encapsulating the default scheduler
-    rp.create_thread_pool("default", hpx::resource::local_priority_fifo);
-
-    // Create a thread pool for executing MPI tasks
-    rp.create_thread_pool("mpi", hpx::resource::static_);
-
-    // Add first core to mpi pool
-    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
-  };
-
   // Now, initialize and run the HPX runtime, will return when done.
 #if HPX_VERSION_FULL < 0x010500
-  hpx::resource::partitioner rp{
+  return hpx::init(
     hpx::util::bind_front(&hpx_context_policy_t::hpx_main, this, driver), argc,
-    argv, cfg};
-  init_rp(rp);
-  return hpx::init();
+    argv, cfg);
 #else
-  // Newer versions of HPX do not allow to explicitly initialice the
+  // Newer versions of HPX do not allow to explicitly initialize the
   // resource partitioner anymore
   hpx::init_params params;
-  params.rp_callback = init_rp;
   params.cfg = std::move(cfg);
 
   return hpx::init(

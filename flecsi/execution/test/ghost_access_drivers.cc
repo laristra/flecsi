@@ -93,8 +93,9 @@ driver(int argc, char ** argv) {
     flecsi_execute_task_simple(
       set_primary_cells_task, index, handle, test_handle, cycle);
 
-    flecsi_execute_task_simple(
+    auto future = flecsi_execute_task_simple(
       check_all_cells_task, index, handle, test_handle, cycle);
+    future.get(); // make sure that next iteration doesn't start prematurely
   }
 
 } // driver

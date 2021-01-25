@@ -117,13 +117,13 @@ set(utils_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "hpx")
 cinch_add_devel_target(clog
   SOURCES
     test/clog.cc
+  LIBRARIES
+    ${CINCH_RUNTIME_LIBRARIES}
   POLICY ${UNIT_POLICY}
 )
-endif()
 
 set(factory_blessed_input test/factory.blessed.gnug)
 
@@ -133,11 +133,12 @@ endif()
 
 cinch_add_unit(factory
   SOURCES
-    demangle.cc
     test/factory.cc
   INPUTS
     test/factory.blessed
     ${factory_blessed_input}
+  LIBRARIES
+    FleCSI
 )
 
 cinch_add_unit(fixed_vector
@@ -190,10 +191,11 @@ cinch_add_unit(static_verify
 
 cinch_add_unit(test_utility
   SOURCES
-    demangle.cc
     test/utility.cc
   INPUTS
     test/utility.blessed.gnug
+  LIBRARIES
+    FleCSI
 )
 
 set(tuple_type_converter_blessed_input test/tuple_type_converter.blessed.gnug)
@@ -204,16 +206,18 @@ endif()
 
 cinch_add_unit(tuple_type_converter
   SOURCES
-    demangle.cc
     test/tuple_type_converter.cc
   INPUTS
     ${tuple_type_converter_blessed_input}
+  LIBRARIES
+    FleCSI
 )
 
 cinch_add_unit(tuple_wrapper
   SOURCES
-    demangle.cc
     test/tuple_wrapper.cc
+  LIBRARIES
+    FleCSI
 )
 
 set(array_ref_blessed_input test/array_ref.blessed.gnug)
@@ -224,10 +228,11 @@ endif()
 
 cinch_add_unit(array_ref
   SOURCES
-    demangle.cc
     test/array_ref.cc
   INPUTS
     test/array_ref.blessed ${array_ref_blessed_input}
+  LIBRARIES
+    FleCSI
 )
 
 set(common_blessed_input test/common.blessed.gnug)
@@ -238,10 +243,11 @@ endif()
 
 cinch_add_unit(common
   SOURCES
-    demangle.cc
     test/common.cc
   INPUTS
     test/common.blessed.ppc test/common.blessed ${common_blessed_input}
+  LIBRARIES
+    FleCSI
 )
 
 set(id_blessed_input test/id.blessed.gnug)
@@ -252,10 +258,11 @@ endif()
 
 cinch_add_unit(id
   SOURCES
-    demangle.cc
     test/id.cc
   INPUTS
     test/id.blessed ${id_blessed_input}
+  LIBRARIES
+    FleCSI
 )
 
 if(ENABLE_OPENSSL)
