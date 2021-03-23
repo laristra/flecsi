@@ -24,4 +24,4 @@
 - Gitlab CI has passed
 - All "issues" in the MR have been resolved
 - `WIP:` has been removed
-- Branch is up-to-date with `master`
+- Branch is up-to-date with `1`
