@@ -499,10 +499,6 @@ public:
 
       using field_info_t = context_t::field_info_t;
 
-      is.logical_region =
-        runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
-      attach_name(is, is.logical_region, "expanded logical region");
-
       for(const field_info_t & fi : context.registered_fields()) {
         switch(fi.storage_class) {
           case global:
@@ -517,39 +513,26 @@ public:
                 // CRF:  I don't think this is correct -
                 // but it also appears to be unused currently
                 allocator.allocate_field(fi.size, fi.fid);
-                auto tmp = malloc(fi.size);
-                memset(tmp, 0, fi.size);
-                runtime_->fill_field(ctx_, is.logical_region, is.logical_region,
-                  fi.fid, tmp, fi.size);
-                free(tmp);
               }
               else {
                 // CRF hack - use lowest bits of name_hash as serdez id
                 int sid = fi.name_hash & 0x7FFFFFFF;
                 allocator.allocate_field(
                   sizeof(data::row_vector_u<uint8_t>), fi.fid, sid);
-                auto sz = sizeof(data::row_vector_u<uint8_t>);
-                auto tmp = malloc(sz);
-                memset(tmp, 0, sz);
-                runtime_->fill_field(
-                  ctx_, is.logical_region, is.logical_region, fi.fid, tmp, sz);
-                free(tmp);
               }
             }
             break;
           default:
             if(fi.index_space == is.index_space_id) {
               allocator.allocate_field(fi.size, fi.fid);
-              auto tmp = malloc(fi.size);
-              memset(tmp, 0, fi.size);
-              runtime_->fill_field(ctx_, is.logical_region, is.logical_region,
-                fi.fid, tmp, fi.size);
-              free(tmp);
             }
             break;
         }
       } // for
 
+      is.logical_region =
+        runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+      attach_name(is, is.logical_region, "expanded logical region");
       // Partition expanded IndexSpace color-wise & create associated
       DomainColoring color_partitioning;
       MultiDomainColoring access_partitioning;
@@ -601,6 +584,64 @@ public:
         is.color_partition = runtime_->create_index_partition(ctx_,
           is.index_space, color_domain_, color_partitioning, true /*disjoint*/);
         attach_name(is, is.color_partition, "color partitioning");
+
+        // automatically init fields to remove uninitialized warnings
+
+        LogicalPartition color_lp = runtime_->get_logical_partition(
+          ctx_, is.logical_region, is.color_partition);
+      
+        for(const field_info_t & fi : context.registered_fields()) {
+          switch(fi.storage_class) {
+            case global:
+            case color:
+            case local:
+            case subspace:
+              break;
+            case ragged:
+            case sparse:
+              if(fi.index_space == is.index_space_id) {
+                if(utils::hash::is_internal(fi.key)) {
+                  // CRF:  I don't think this is correct -
+                  // but it also appears to be unused currently
+                  auto tmp = malloc(fi.size);
+                  memset(tmp, 0, fi.size);
+                  IndexFillLauncher fill_launcher(color_domain_, color_lp,
+                    is.logical_region, TaskArgument (&tmp, fi.size));
+                  fill_launcher.add_field(fi.fid);
+                  fill_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+                  runtime_->fill_fields( ctx_, fill_launcher);
+                  free(tmp);
+                }
+                else {
+                  // CRF hack - use lowest bits of name_hash as serdez id
+                  int sid = fi.name_hash & 0x7FFFFFFF;
+                  auto sz = sizeof(data::row_vector_u<uint8_t>);
+                  auto tmp = malloc(sz);
+                  memset(tmp, 0, sz);
+                  IndexFillLauncher fill_launcher(color_domain_, color_lp,
+                    is.logical_region, TaskArgument (&tmp, sz));
+                  fill_launcher.add_field(fi.fid);
+                  fill_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+                  // legion/runtime/realm/transfer/transfer.cc:3206: void Realm::TransferDesc::perform_analysis(): Assertion `srcs[i].serdez_id == dsts[i].serdez_id' failed.
+                  // runtime_->fill_fields( ctx_, fill_launcher);
+                  free(tmp);
+                }
+              }
+              break;
+            dense:
+              if(fi.index_space == is.index_space_id) {
+                auto tmp = malloc(fi.size);
+                memset(tmp, 0, fi.size);
+                IndexFillLauncher fill_launcher(color_domain_, color_lp,
+                  is.logical_region, TaskArgument (&tmp, fi.size));
+                fill_launcher.add_field(fi.fid);
+                fill_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+                runtime_->fill_fields( ctx_, fill_launcher);
+                free(tmp);
+              }
+              break;
+          }
+        } // for
 
         LegionRuntime::Arrays::Rect<1> access_bounds(
           PRIMARY_ACCESS, GHOST_ACCESS);
