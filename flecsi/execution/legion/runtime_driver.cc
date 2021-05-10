@@ -208,14 +208,28 @@ runtime_driver(const Legion::Task * task,
     size_t idx_space = is.first;
     auto & flecsi_ispace = data.index_space(idx_space);
 
+    Legion::LogicalPartition access_lp = runtime->get_logical_partition(
+      ctx, flecsi_ispace.logical_region, flecsi_ispace.access_partition);
+    Legion::LogicalRegion primary_lr =
+      runtime->get_logical_subregion_by_color(ctx, access_lp, PRIMARY_ACCESS);
+    Legion::LogicalRegion ghost_lr =
+      runtime->get_logical_subregion_by_color(ctx, access_lp, GHOST_ACCESS);
+    runtime->attach_name(ghost_lr, "ghost logical region");
+    Legion::LogicalRegion unused_lr =
+      runtime->get_logical_subregion_by_color(ctx, access_lp, UNUSED_ACCESS);
+    runtime->attach_name(unused_lr, "unused logical region");
+
     Legion::LogicalPartition exclusive_lp = runtime->get_logical_partition(
-      ctx, flecsi_ispace.logical_region, flecsi_ispace.exclusive_partition);
+      ctx, primary_lr, flecsi_ispace.exclusive_partition);
+    runtime->attach_name(exclusive_lp, "exclusive logical color partitioning");
 
     Legion::LogicalPartition shared_lp = runtime->get_logical_partition(
-      ctx, flecsi_ispace.logical_region, flecsi_ispace.shared_partition);
+      ctx, primary_lr, flecsi_ispace.shared_partition);
+    runtime->attach_name(shared_lp, "shared logical color partitioning");
 
     Legion::LogicalPartition ghost_lp = runtime->get_logical_partition(
-      ctx, flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
+      ctx, ghost_lr, flecsi_ispace.ghost_partition);
+    runtime->attach_name(ghost_lp, "ghost logical color partitioning");
 
     Legion::MappingTagID tag = EXCLUSIVE_LR;
     Legion::RegionRequirement ex_rr(exclusive_lp, 0 /*projection ID*/,
@@ -250,25 +264,32 @@ runtime_driver(const Legion::Task * task,
 
   Legion::IndexSpace is_of_colors =
     runtime->create_index_space(ctx, data.color_domain());
+  runtime->attach_name(is_of_colors, "color index space for ghost correction");
+
 
   for(auto is : context_.coloring_map()) {
     size_t idx_space = is.first;
     auto & flecsi_ispace = data.index_space(idx_space);
 
-    Legion::LogicalPartition ghost_lp = runtime->get_logical_partition(
-      ctx, flecsi_ispace.logical_region, flecsi_ispace.ghost_partition);
-
     Legion::LogicalPartition access_lp = runtime->get_logical_partition(
       ctx, flecsi_ispace.logical_region, flecsi_ispace.access_partition);
     Legion::LogicalRegion primary_lr =
       runtime->get_logical_subregion_by_color(ctx, access_lp, PRIMARY_ACCESS);
+    Legion::LogicalRegion ghost_lr =
+      runtime->get_logical_subregion_by_color(ctx, access_lp, GHOST_ACCESS);
+    Legion::LogicalRegion unused_lr =
+      runtime->get_logical_subregion_by_color(ctx, access_lp, UNUSED_ACCESS);
+
+    Legion::LogicalPartition ghost_lp = runtime->get_logical_partition(
+      ctx, ghost_lr, flecsi_ispace.ghost_partition);
 
     Legion::IndexPartition shared_corr_ip = runtime->create_partition_by_image(
       ctx, primary_lr.get_index_space(), ghost_lp, flecsi_ispace.logical_region,
       ghost_owner_pos_fid, is_of_colors);
-    runtime->attach_name(shared_corr_ip, "shared_corr_ip");
+    runtime->attach_name(shared_corr_ip, "shared correction index color partitioning");
     Legion::LogicalPartition shared_corr_lp = runtime->get_logical_partition(
       ctx, flecsi_ispace.logical_region, shared_corr_ip);
+    runtime->attach_name(shared_corr_lp, "shared correction logical color partitioning");
 
     Legion::RegionRequirement sh_rr(shared_corr_lp, 0 /*projection ID*/,
       READ_ONLY, EXCLUSIVE, flecsi_ispace.logical_region);
@@ -410,6 +431,7 @@ runtime_driver(const Legion::Task * task,
       Legion::LogicalRegion color_lregion =
         runtime->get_logical_subregion_by_color(
           ctx, sparse_metadata.logical_partition, color);
+    runtime->attach_name(color_lregion, "sparse metadata logical subregion by color");
 
       Legion::RegionRequirement reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
         sparse_metadata.logical_region);
@@ -451,49 +473,44 @@ runtime_driver(const Legion::Task * task,
       runtime->get_logical_subregion_by_color(ctx, access_lp, PRIMARY_ACCESS);
     Legion::LogicalRegion ghost_lr =
       runtime->get_logical_subregion_by_color(ctx, access_lp, GHOST_ACCESS);
+    Legion::LogicalRegion unused_lr =
+      runtime->get_logical_subregion_by_color(ctx, access_lp, UNUSED_ACCESS);
 
     ispace_dmap[idx_space].entire_region = flecsi_ispace.logical_region;
 
     ispace_dmap[idx_space].color_partition = runtime->get_logical_partition(
       ctx, flecsi_ispace.logical_region, flecsi_ispace.color_partition);
-    runtime->attach_name(
-      ispace_dmap[idx_space].color_partition, "color logical partition");
 
     ispace_dmap[idx_space].primary_lp = runtime->get_logical_partition(
       ctx, primary_lr, flecsi_ispace.primary_partition);
     runtime->attach_name(
-      ispace_dmap[idx_space].primary_lp, "primary logical partition");
+      ispace_dmap[idx_space].primary_lp, "primary logical color partitioning");
 
     ispace_dmap[idx_space].exclusive_lp = runtime->get_logical_partition(
       ctx, primary_lr, flecsi_ispace.exclusive_partition);
-    runtime->attach_name(
-      ispace_dmap[idx_space].exclusive_lp, "exclusive logical partition");
 
     ispace_dmap[idx_space].shared_lp = runtime->get_logical_partition(
       ctx, primary_lr, flecsi_ispace.shared_partition);
-    runtime->attach_name(
-      ispace_dmap[idx_space].shared_lp, "shared logical partition");
 
     ispace_dmap[idx_space].ghost_lp = runtime->get_logical_partition(
       ctx, ghost_lr, flecsi_ispace.ghost_partition);
-    runtime->attach_name(
-      ispace_dmap[idx_space].ghost_lp, "ghost logical partition");
 
     // Now that ghosts point to post-compacted shared positions, we can
     // partition set of shared positions that ghosts need
     Legion::IndexSpace is_of_colors =
       runtime->create_index_space(ctx, data.color_domain());
+    runtime->attach_name(is_of_colors, "color index space for ghost owners");
 
     ispace_dmap[idx_space].ghost_owners_ip = runtime->create_partition_by_image(
       ctx, primary_lr.get_index_space(), ispace_dmap[idx_space].ghost_lp,
       flecsi_ispace.logical_region, ghost_owner_pos_fid, is_of_colors);
     runtime->attach_name(
-      ispace_dmap[idx_space].ghost_owners_ip, "ghost owners index partition");
+      ispace_dmap[idx_space].ghost_owners_ip, "ghost owners index color partitioning");
     ispace_dmap[idx_space].ghost_owners_lp = runtime->get_logical_partition(
       ctx, primary_lr, ispace_dmap[idx_space].ghost_owners_ip);
 
     runtime->attach_name(
-      ispace_dmap[idx_space].ghost_owners_lp, "ghost owners logical partition");
+      ispace_dmap[idx_space].ghost_owners_lp, "ghost owners logical color partitioning");
 
     // initialize read/write flags for task_prolog
     //  for(auto is: context_.coloring_map()) {
@@ -511,6 +528,7 @@ runtime_driver(const Legion::Task * task,
     ispace_dmap[idx].entire_region = adjacency.logical_region;
     ispace_dmap[idx].color_partition = runtime->get_logical_partition(
       ctx, adjacency.logical_region, adjacency.index_partition);
+    runtime->attach_name(ispace_dmap[idx].color_partition, "adjacency color logical partition");
     ispace_dmap[idx].ghost_is_readable[0] = true;
     ispace_dmap[idx].write_phase_started[0] = true;
   }
@@ -527,6 +545,7 @@ runtime_driver(const Legion::Task * task,
     isubspace_dmap[index].logical_partition =
       runtime->get_logical_partition(ctx, isubspace_dmap[index].logical_region,
         data_subspace_map.at(index).index_partition);
+    runtime->attach_name(isubspace_dmap[index].logical_partition, "subspace color logical partition");
   }
 
   // adding information for the global and color handles to the ispace_map
@@ -551,6 +570,7 @@ runtime_driver(const Legion::Task * task,
     ispace_dmap[color_index_space].color_partition =
       runtime->get_logical_partition(
         ctx, color_ispace.logical_region, color_ispace.color_partition);
+    runtime->attach_name(ispace_dmap[color_index_space].color_partition, "color logical partition");
   } // if
 
   annotation::end<annotation::create_regions>();
@@ -801,6 +821,7 @@ setup_rank_context_task(const Legion::Task * task,
     Legion::PhysicalRegion pr = regions[region_index];
     Legion::LogicalRegion lr = pr.get_logical_region();
     Legion::IndexSpace is = lr.get_index_space();
+    runtime->attach_name(is, "sparse index space for setup rank context task");
 
     for(const field_info_t & fi : context_.registered_fields()) {
       if(fi.storage_class != data::sparse && fi.storage_class != data::ragged) {
