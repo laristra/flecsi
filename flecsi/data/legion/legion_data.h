@@ -291,17 +291,17 @@ public:
     // Create expanded index space
     LegionRuntime::Arrays::Rect<2> expanded_bounds =
       LegionRuntime::Arrays::Rect<2>(LegionRuntime::Arrays::Point<2>::ZEROES(),
-        make_point(num_colors_, is.total_num_entities));
+        make_point(num_colors_-1, is.total_num_entities));
 
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
 
     is.index_space = runtime_->create_index_space(ctx_, expanded_dom);
-    attach_name(is, is.index_space, "expanded index space");
+    attach_name(is, is.index_space, "BLoated Index Space");
 
     // Read user + FleCSI registered field spaces
     is.field_space = runtime_->create_field_space(ctx_);
 
-    attach_name(is, is.field_space, "expanded field space");
+    attach_name(is, is.field_space, "BLIS field space");
 
     if(sparse_info) {
       is.has_sparse_fields = true;
@@ -368,14 +368,15 @@ public:
     // Create expanded index space
     LegionRuntime::Arrays::Rect<2> expanded_bounds =
       LegionRuntime::Arrays::Rect<2>(LegionRuntime::Arrays::Point<2>::ZEROES(),
-        make_point(num_colors_, c.max_conn_size));
+        make_point(num_colors_-1, c.max_conn_size));
 
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
     c.index_space = runtime_->create_index_space(ctx_, expanded_dom);
-    attach_name(c, c.index_space, "expanded index space");
+    attach_name(c, c.index_space, "adjacency BLoated Index Space");
 
     // Read user + FleCSI registered field spaces
     c.field_space = runtime_->create_field_space(ctx_);
+    attach_name(c, c.field_space, "adjacency BLIS field space");
 
     FieldAllocator allocator =
       runtime_->create_field_allocator(ctx_, c.field_space);
@@ -386,26 +387,32 @@ public:
       }
     }
 
-    attach_name(c, c.field_space, "expanded field space");
-
     c.logical_region =
       runtime_->create_logical_region(ctx_, c.index_space, c.field_space);
-    attach_name(c, c.logical_region, "expanded logical region");
+    attach_name(c, c.logical_region, "adjacency BLIS logical region");
 
     clog_assert(adjacency_info.color_sizes.size() == num_colors_,
       "mismatch in color sizes");
 
-    DomainColoring color_partitioning;
+    MultiDomainColoring color_partitioning;
     for(size_t color = 0; color < num_colors_; ++color) {
       LegionRuntime::Arrays::Rect<2> subrect(make_point(color, 0),
         make_point(color, adjacency_info.color_sizes[color] - 1));
+      LegionRuntime::Arrays::Rect<2> remainder(
+        make_point(color, adjacency_info.color_sizes[color]),
+        make_point(color, c.max_conn_size));
 
-      color_partitioning[color] = Domain::from_rect<2>(subrect);
+      color_partitioning[color].insert(Domain::from_rect<2>(subrect));
+      color_partitioning[num_colors_].insert(Domain::from_rect<2>(remainder));
     }
 
+    LegionRuntime::Arrays::Rect<1> color_bounds(0, num_colors_);
+    Legion::Domain color_domain(Legion::Domain::from_rect<1>(color_bounds));
+
     c.index_partition = runtime_->create_index_partition(ctx_, c.index_space,
-      color_domain_, color_partitioning, true /*disjoint*/);
-    attach_name(c, c.index_partition, "adj olor partitioning");
+      color_domain, color_partitioning, true /*disjoint*/);
+
+    attach_name(c, c.index_partition, "adjacency color index partition");
 
     adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
   }
@@ -428,12 +435,16 @@ public:
     // Create expanded index space
     LegionRuntime::Arrays::Rect<2> expanded_bounds =
       LegionRuntime::Arrays::Rect<2>(LegionRuntime::Arrays::Point<2>::ZEROES(),
-        make_point(num_colors_, is.capacity));
+        make_point(num_colors_-1, is.capacity));
 
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
 
     is.index_space = runtime_->create_index_space(ctx_, expanded_dom);
+
+    runtime_->attach_name(is.index_space, "subspace BLoated Index Space");
+
     is.field_space = runtime_->create_field_space(ctx_);
+    runtime_->attach_name(is.field_space, "subspace BLIS field space");
 
     using field_info_t = context_t::field_info_t;
 
@@ -450,18 +461,19 @@ public:
 
     is.logical_region =
       runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+    runtime_->attach_name(is.logical_region, "subspace BLIS logical region");
 
     DomainColoring color_partitioning;
     for(size_t color = 0; color < num_colors_; ++color) {
       LegionRuntime::Arrays::Rect<2> subrect(
-        make_point(color, 0), make_point(color, is.capacity - 1));
+        make_point(color, 0), make_point(color, is.capacity));
 
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
     is.index_partition = runtime_->create_index_partition(ctx_, is.index_space,
       color_domain_, color_partitioning, true /*disjoint*/);
-    runtime_->attach_name(is.index_partition, "subspace color partitioning");
+    runtime_->attach_name(is.index_partition, "subspace color index partition");
     index_subspace_map_.emplace(info.index_subspace, std::move(is));
   }
 
@@ -499,6 +511,11 @@ public:
 
       using field_info_t = context_t::field_info_t;
 
+      is.logical_region =
+        runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+
+      attach_name(is, is.logical_region, "pre-field BLIS logical region");
+
       for(const field_info_t & fi : context.registered_fields()) {
         switch(fi.storage_class) {
           case global:
@@ -532,9 +549,9 @@ public:
 
       is.logical_region =
         runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
-      attach_name(is, is.logical_region, "expanded logical region");
+      attach_name(is, is.logical_region, "BLIS logical region");
       // Partition expanded IndexSpace color-wise & create associated
-      DomainColoring color_partitioning;
+      MultiDomainColoring color_partitioning;
       MultiDomainColoring access_partitioning;
       MultiDomainColoring owner_partitioning;
       DomainColoring primary_partitioning;
@@ -547,10 +564,17 @@ public:
         clog_assert(citr != coloring_info_map.end(), "invalid color info");
         const coloring_info_t & color_info = citr->second;
 
+        LegionRuntime::Arrays::Rect<2> remainder_rect(make_point(color,
+          color_info.exclusive + color_info.shared + color_info.ghost),
+          make_point(color, is.total_num_entities));
+        access_partitioning[UNUSED_ACCESS].insert(
+          Domain::from_rect<2>(remainder_rect));
+
         LegionRuntime::Arrays::Rect<2> subrect(make_point(color, 0),
           make_point(color,
             color_info.exclusive + color_info.shared + color_info.ghost - 1));
-        color_partitioning[color] = Domain::from_rect<2>(subrect);
+        color_partitioning[color].insert(Domain::from_rect<2>(subrect));
+        color_partitioning[num_colors_].insert(Domain::from_rect<2>(remainder_rect));
         LegionRuntime::Arrays::Rect<2> primary_rect(make_point(color, 0),
           make_point(color, color_info.exclusive + color_info.shared - 1));
         primary_partitioning[color] = Domain::from_rect<2>(primary_rect);
@@ -581,9 +605,11 @@ public:
 
       { // scope
 
+        LegionRuntime::Arrays::Rect<1> color_bounds(0, num_colors_);
+        Legion::Domain color_domain(Legion::Domain::from_rect<1>(color_bounds));
+
         is.color_partition = runtime_->create_index_partition(ctx_,
-          is.index_space, color_domain_, color_partitioning, true /*disjoint*/);
-        attach_name(is, is.color_partition, "color partitioning");
+          is.index_space, color_domain, color_partitioning, true /*disjoint*/);
 
         // automatically init fields to remove uninitialized warnings
 
@@ -643,29 +669,34 @@ public:
           }
         } // for
 
+        attach_name(is, is.color_partition, "color index partition");
+
         LegionRuntime::Arrays::Rect<1> access_bounds(
-          PRIMARY_ACCESS, GHOST_ACCESS);
+          PRIMARY_ACCESS, UNUSED_ACCESS);
         Legion::Domain access_domain(
           Legion::Domain::from_rect<1>(access_bounds));
 
         is.access_partition =
           runtime_->create_index_partition(ctx_, is.index_space, access_domain,
             access_partitioning, true /*disjoint*/);
-        attach_name(is, is.access_partition, "access partitioning");
+        attach_name(is, is.access_partition, "access index partition");
 
         LogicalPartition access_lp = runtime_->get_logical_partition(
           ctx_, is.logical_region, is.access_partition);
+        runtime_->attach_name(access_lp, "access logical partition");
 
         LogicalRegion primary_region = runtime_->get_logical_subregion_by_color(
           ctx_, access_lp, PRIMARY_ACCESS);
+        runtime_->attach_name(primary_region, "primary logical region");
 
         IndexSpace ghost_is =
           runtime_->get_logical_subregion_by_color(
                     ctx_, access_lp, GHOST_ACCESS)
             .get_index_space();
+        runtime_->attach_name(ghost_is, "ghost index space");
         is.ghost_partition = runtime_->create_index_partition(
           ctx_, ghost_is, color_domain_, ghost_partitioning, true /*disjoint*/);
-        attach_name(is, is.ghost_partition, "ghost partitioning");
+        attach_name(is, is.ghost_partition, "ghost index color partitioning");
 
         LegionRuntime::Arrays::Rect<1> owner_bounds(
           EXCLUSIVE_OWNER, SHARED_OWNER);
@@ -674,31 +705,35 @@ public:
         IndexPartition owner_partition = runtime_->create_index_partition(ctx_,
           primary_region.get_index_space(), owner_domain, owner_partitioning,
           true /*disjoint*/);
-        attach_name(is, owner_partition, "owner partitioning");
+        attach_name(is, owner_partition, "owner index color partitioning");
 
         LogicalPartition owner_lp = runtime_->get_logical_partition(
           ctx_, primary_region, owner_partition);
+        runtime_->attach_name(owner_lp, "owner logical color partitioning");
 
         IndexSpace primary_is = primary_region.get_index_space();
+        runtime_->attach_name(primary_is, "primary index space");
         is.primary_partition = runtime_->create_index_partition(ctx_,
           primary_is, color_domain_, primary_partitioning, true /*disjoint*/);
-        attach_name(is, is.primary_partition, "primary partitioning");
+        attach_name(is, is.primary_partition, "primary index color partitioning");
 
         IndexSpace exclusive_is =
           runtime_
             ->get_logical_subregion_by_color(ctx_, owner_lp, EXCLUSIVE_OWNER)
             .get_index_space();
+        runtime_->attach_name(exclusive_is, "exclusive index space");
         is.exclusive_partition =
           runtime_->create_index_partition(ctx_, exclusive_is, color_domain_,
             exclusive_partitioning, true /*disjoint*/);
-        attach_name(is, is.exclusive_partition, "exclusive partitioning");
+        attach_name(is, is.exclusive_partition, "exclusive index color partitioning");
 
         IndexSpace shared_is =
           runtime_->get_logical_subregion_by_color(ctx_, owner_lp, SHARED_OWNER)
             .get_index_space();
+        runtime_->attach_name(shared_is, "shared index space");
         is.shared_partition = runtime_->create_index_partition(ctx_, shared_is,
           color_domain_, shared_partitioning, true /*disjoint*/);
-        attach_name(is, is.shared_partition, "shared partitioning");
+        attach_name(is, is.shared_partition, "shared index color partitioning");
       } // scope
     }
 
@@ -724,7 +759,7 @@ public:
         ctx_, color_index_space_.index_space, coloring);
 
       attach_name(color_index_space_, color_index_space_.color_partition,
-        "color partitioning");
+        "color index partition");
     } // scope
 
   } // finalize
@@ -790,20 +825,20 @@ public:
 
     LegionRuntime::Arrays::Rect<2> expanded_bounds =
       LegionRuntime::Arrays::Rect<2>(
-        LegionRuntime::Arrays::Point<2>::ZEROES(), make_point(num_colors_, 1));
+        LegionRuntime::Arrays::Point<2>::ZEROES(), make_point(num_colors_-1, 1));
 
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
 
     sparse_metadata_.index_space =
       runtime_->create_index_space(ctx_, expanded_dom);
     attach_name(sparse_metadata_, sparse_metadata_.index_space,
-      "expanded sparse metadata index space");
+      "sparse metadata BLoated Index Space");
 
     // Read user + FleCSI registered field spaces
     sparse_metadata_.field_space = runtime_->create_field_space(ctx_);
 
     attach_name(sparse_metadata_, sparse_metadata_.field_space,
-      "expanded sparse metadata field space");
+      "sparse metadata BLIS field space");
 
     FieldAllocator allocator =
       runtime_->create_field_allocator(ctx_, sparse_metadata_.field_space);
@@ -819,7 +854,7 @@ public:
       ctx_, sparse_metadata_.index_space, sparse_metadata_.field_space);
 
     attach_name(sparse_metadata_, sparse_metadata_.logical_region,
-      "expanded sparse metadata logical region");
+      "sparse metadata BLIS logical region");
 
     DomainColoring color_partitioning;
     for(int color = 0; color < num_colors_; color++) {
@@ -834,10 +869,13 @@ public:
         color_domain_, color_partitioning, true /*disjoint*/);
 
     attach_name(sparse_metadata_, sparse_metadata_.index_partition,
-      "sparse metadata color partitioning");
+      "sparse metadata color index partition");
 
     sparse_metadata_.logical_partition = runtime_->get_logical_partition(
       ctx_, sparse_metadata_.logical_region, sparse_metadata_.index_partition);
+
+    attach_name(sparse_metadata_, sparse_metadata_.logical_partition,
+      "sparse metadata color logical partition");
   }
 
   const sparse_metadata_t & sparse_metadata() {

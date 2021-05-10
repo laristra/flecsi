@@ -39,6 +39,7 @@
 #define SHARED_OWNER 1
 #define PRIMARY_ACCESS 0
 #define GHOST_ACCESS 1
+#define UNUSED_ACCESS 2
 
 using legion_map = Legion::STL::map<LegionRuntime::Arrays::coord_t,
   LegionRuntime::Arrays::coord_t>;
