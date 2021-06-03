@@ -52,7 +52,6 @@
     - export modName="${CI_PROJECT_DIR}/spack_env/loads"
     #- sed -i "1s;^;module load python/${FLECSI_PYTHON_VERSION}\n;" ${modName}
     - sed -i "1s;^;module load gcc/${FLECSI_GCC_VERSION}\n;" ${modName}
-    #- sed -i "1s;^;source ${CI_PROJECT_DIR}/spack/share/spack/setup-env.sh\n;" ${modName}
     - sed -i "1s;^;#%Module\n;" ${modName}
 
 ############
