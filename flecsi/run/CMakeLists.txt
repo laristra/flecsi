@@ -48,6 +48,19 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/context.cc
   )
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm")
+
+  set(run_HEADERS
+    ${run_HEADERS}
+    charm/context.hh
+  )
+
+  set(run_SOURCES
+    ${run_SOURCES}
+    charm/context.decl.h
+    charm/context.cc
+  )
+
 endif()
 
 #------------------------------------------------------------------------------#

@@ -11,6 +11,7 @@
 #define FLECSI_RUNTIME_MODEL_legion 1
 #define FLECSI_RUNTIME_MODEL_mpi 2
 #define FLECSI_RUNTIME_MODEL_hpx 3
+#define FLECSI_RUNTIME_MODEL_charm 4
 #cmakedefine FLECSI_RUNTIME_MODEL FLECSI_RUNTIME_MODEL_@FLECSI_RUNTIME_MODEL@
 
 //----------------------------------------------------------------------------//
@@ -19,6 +20,7 @@
 
 #cmakedefine FLECSI_ENABLE_MPI
 #cmakedefine FLECSI_ENABLE_LEGION
+#cmakedefine FLECSI_ENABLE_CHARM
 
 //----------------------------------------------------------------------------//
 // Enable Legion thread-local storage interface

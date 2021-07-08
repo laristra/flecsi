@@ -23,7 +23,14 @@ mark_as_advanced(ENABLE_EXPENSIVE_TESTS)
 
 if(ENABLE_UNIT_TESTS)
   enable_testing()
-  add_library(unit-main OBJECT ${CMAKE_SOURCE_DIR}/flecsi/util/unit/main.cc)
+
+  if(FLECSI_RUNTIME_MODEL STREQUAL "charm")
+    # Ensure that decl and def headers are generated before tests are compiled
+    add_library(unit-main OBJECT
+      ${CMAKE_SOURCE_DIR}/flecsi/util/unit/main.cc ${all-ci-outputs})
+  else()
+    add_library(unit-main OBJECT ${CMAKE_SOURCE_DIR}/flecsi/util/unit/main.cc)
+  endif()
 endif()
 
 function(add_unit name)
@@ -118,6 +125,17 @@ function(add_unit name)
       ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH})
     set(unit_policy_libraries ${Legion_LIBRARIES} ${Legion_LIB_FLAGS}
       ${MPI_${MPI_LANGUAGE}_LIBRARIES})
+    set(unit_policy_exec ${MPIEXEC})
+    set(unit_policy_exec_threads ${MPIEXEC_NUMPROC_FLAG})
+    set(unit_policy_exec_preflags ${MPIEXEC_PREFLAGS})
+    set(unit_policy_exec_postflags ${MPIEXEC_POSTFLAGS})
+
+  elseif(FLECSI_RUNTIME_MODEL STREQUAL "charm"
+    AND MPI_${MPI_LANGUAGE}_FOUND)
+
+    set(unit_policy_flags ${MPI_${MPI_LANGUAGE}_COMPILE_FLAGS})
+    set(unit_policy_includes ${MPI_${MPI_LANGUAGE}_INCLUDE_PATH})
+    set(unit_policy_libraries ${MPI_${MPI_LANGUAGE}_LIBRARIES})
     set(unit_policy_exec ${MPIEXEC})
     set(unit_policy_exec_threads ${MPIEXEC_NUMPROC_FLAG})
     set(unit_policy_exec_preflags ${MPIEXEC_PREFLAGS})
